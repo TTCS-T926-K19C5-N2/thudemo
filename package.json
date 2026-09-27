@@ -1,0 +1,24 @@
+{
+  "name": "event-ticketing-platform",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx pnpm -r run dev",
+    "build": "npx pnpm -r run build",
+    "test": "npx pnpm -r run test",
+    "lint": "npx pnpm -r run lint"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "unrs-resolver",
+      "argon2",
+      "prisma",
+      "@prisma/client",
+      "@nestjs/core"
+    ]
+  }
+}
