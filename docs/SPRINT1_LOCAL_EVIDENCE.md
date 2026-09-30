@@ -9,11 +9,11 @@ Ngày kiểm tra: 01/10/2026 (giờ Việt Nam). Môi trường: máy phát tri�
 | T-01 | DONE | `tasks/T-01.md` ghi từng AC; lượt này Node 24.21.0, pnpm 10.15.1, Docker Engine 29.5.3, Compose 5.1.4, frozen install, health, migration và kiểm thử vẫn đạt. | Không có AC T-01 còn thiếu. |
 | T-02 | PARTIALLY DONE | Workflow push/PR, quyền `contents: read`, runtime đúng TECH-01, frozen install; actionlint đạt. GitHub run `36765657553` xanh 3/3 check trong 48 giây; PR proof #2 có lint đỏ. | Chủ repository phải đặt required checks và chứng minh PR lỗi lint bị chặn merge; review độc lập. |
 | T-03 | BLOCKED | Chưa triển khai staging. | T-02 chưa Done; cần quyền và cấu hình staging. |
-| T-04 | PARTIALLY DONE | Migration `users`/`roles`/`user_roles`; unique email từ chối trùng; seed local tạo 5 vai trò và 2 tài khoản giả với Argon2id. Migration bù rồi tái áp dụng trên DB cô lập, giữ lịch sử. | CI, staging, review độc lập theo DoD. |
-| T-05 | PARTIALLY DONE | Phiên phía máy chủ theo TECH-02, cookie HttpOnly/Secure trên HTTPS, kiểm nguồn thao tác ghi; đăng nhập web local thành công. E2E xác nhận lần sai thứ 6 bị khoá sau 5 lần sai và khoá còn khi tạo ứng dụng mới. | CI, staging, review độc lập; kiểm browser mobile. |
-| T-06 | PARTIALLY DONE | Guard kiểm vai trò từ DB mỗi yêu cầu, thu hồi quyền có hiệu lực ngay; đăng xuất thu hồi phiên. `curl` local: organizer route 200, route không khai báo 403, admin vào route organizer 403. | CI, staging và review độc lập. |
-| T-09 | PARTIALLY DONE | Migration `events`/`showtimes`, FK chặn xoá event còn showtime, thời gian `timestamptz`; migration bù rồi tái áp dụng trên DB cô lập. | CI, staging và review độc lập. |
-| T-10 | PARTIALLY DONE | UI tạo/sửa/danh sách sự kiện và suất diễn bằng shadcn; API kiểm owner, trường nhập và thời gian. E2E xác nhận user khác nhận 403; browser local tạo/sửa/thêm suất diễn và validation đạt. | CI, staging, review độc lập và browser mobile. |
+| T-04 | PARTIALLY DONE | Migration `users`/`roles`/`user_roles`; unique email từ chối trùng; seed local tạo 5 vai trò và 2 tài khoản giả với Argon2id. Migration bù rồi tái áp dụng trên DB cô lập, giữ lịch sử; CI PR #3 xanh. | Staging và review độc lập theo DoD. |
+| T-05 | PARTIALLY DONE | Phiên phía máy chủ theo TECH-02, cookie HttpOnly/Secure trên HTTPS, kiểm nguồn thao tác ghi; đăng nhập web local thành công. E2E xác nhận khoá Redis và dọn phiên hết hạn; CI PR #3 xanh. | Staging, review độc lập; kiểm browser mobile. |
+| T-06 | PARTIALLY DONE | Guard kiểm vai trò từ DB mỗi yêu cầu, thu hồi quyền có hiệu lực ngay; đăng xuất thu hồi phiên. `curl` local: organizer route 200, route không khai báo 403, admin vào route organizer 403; CI PR #3 xanh. | Staging và review độc lập. |
+| T-09 | PARTIALLY DONE | Migration `events`/`showtimes`, FK chặn xoá event còn showtime, thời gian `timestamptz`; migration bù rồi tái áp dụng trên DB cô lập; CI PR #3 xanh. | Staging và review độc lập. |
+| T-10 | PARTIALLY DONE | UI tạo/sửa/danh sách sự kiện và suất diễn bằng shadcn; API kiểm owner, trường nhập và thời gian. E2E xác nhận user khác nhận 403; browser local tạo/sửa/thêm suất diễn và validation đạt; CI PR #3 xanh. | Staging, review độc lập và browser mobile. |
 | K-01 | BLOCKED | Chưa chạy spike hoặc chọn kho giữ ghế. | S-01/staging chưa Done; cần thử hai phương án với 200 yêu cầu đồng thời và reviewer. |
 
 Database cô lập `sprint1_verify_b7lad8x8` giữ 9 bản ghi migration sau chuỗi apply → migration bù → tái áp dụng T-04/T-09. Database local `event_demo` có 6 migration hiện hành gồm T-01, T-04, T-09 và T-05. Không dùng `db push`, reset hay xoá database. `WEB_ORIGIN` giới hạn nguồn yêu cầu ghi dùng cookie; khi chạy trên domain HTTPS phải đặt đúng origin của web.
@@ -27,7 +27,7 @@ Database cô lập `sprint1_verify_b7lad8x8` giữ 9 bản ghi migration sau chu
 5. Đăng nhập bằng `organizer@demo.invalid` và mật khẩu giả vừa đặt. Trang `/events` chỉ hiện sự kiện của organizer đó. Chọn **Tạo sự kiện**, thử gửi form trống để thấy lỗi tại từng ô, nhập dữ liệu giả rồi lưu. Sửa sự kiện, thêm suất diễn trong tương lai, quay lại danh sách, tìm theo tên và đăng xuất. Vào lại `/events` sau đăng xuất phải được chuyển về `/login`.
 6. Dừng dev server bằng Ctrl+C; `docker compose stop` dừng dependency mà vẫn giữ volume.
 
-Giới hạn: UI mới được kiểm trên trình duyệt desktop local; chưa kiểm browser mobile/thiết bị thật. T-03 staging và K-01 chưa có bằng chứng; CI GitHub đã chạy thật cho PR #1 và #3. Sự kiện tạo ra giữ trạng thái nháp; không có thao tác xuất bản trong phạm vi Sprint 1.
+Giới hạn: UI mới được kiểm trên trình duyệt desktop local; chưa kiểm browser mobile/thiết bị thật. T-03 staging và K-01 chưa có bằng chứng; CI GitHub đã chạy thật cho PR #1 và #3, run PR #3 gần nhất xanh 3/3 trong 51 giây. Sự kiện tạo ra giữ trạng thái nháp; không có thao tác xuất bản trong phạm vi Sprint 1.
 
 ## Kiểm thử và rollback
 

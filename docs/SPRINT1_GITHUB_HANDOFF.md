@@ -14,7 +14,7 @@ Required checks cần đặt trên `main`: `T-02 / build-and-typecheck`, `T-02 /
 
 ## PR tích hợp auth và sự kiện
 
-PR tích hợp https://github.com/thuytrang158/thudemo/pull/3 (draft), branch `task/Sprint1-auth-events`, xếp sau T-02. GitHub Actions run `36766045202` có cả ba check xanh trong **52 giây**. Các task dùng chung `apps/api/prisma/schema.prisma`, auth contract, web components và `pnpm-lock.yaml`, nên được trình bày trong một PR tích hợp có phần review/AC riêng; không tạo các PR trung gian không typecheck. Cần review độc lập theo thứ tự logic:
+PR tích hợp https://github.com/thuytrang158/thudemo/pull/3 (draft), branch `task/Sprint1-auth-events`, xếp sau T-02. GitHub Actions run mới nhất `36767440948` trên commit `dd4ff55` có cả ba check xanh trong **51 giây**. Các task dùng chung `apps/api/prisma/schema.prisma`, auth contract, web components và `pnpm-lock.yaml`, nên được trình bày trong một PR tích hợp có phần review/AC riêng; không tạo các PR trung gian không typecheck. Cần review độc lập theo thứ tự logic:
 
 1. **T-04:** migration users/roles/user_roles, unique email, 5 roles và 2 tài khoản demo Argon2id; kiểm migration bù/tái áp dụng.
 2. **T-09:** migration events/showtimes, FK owner và restrict xoá, `timestamptz`; kiểm migration bù/tái áp dụng.
@@ -24,7 +24,7 @@ PR tích hợp https://github.com/thuytrang158/thudemo/pull/3 (draft), branch `t
 
 Review checklist: migration/data rollback; không có secret trong Git/log; quyền server và owner isolation; browser desktop/mobile, keyboard; frozen install, lint/typecheck/unit/E2E/build; CI PR xanh; staging demo với dữ liệu giả. Bằng chứng local ở `docs/SPRINT1_LOCAL_EVIDENCE.md`. TECH-02 hiện ghi trong `../docs/decision-log.md` ngoài Git root và phải được trích dẫn trong PR review, không tự coi file này là nguồn quyết định mới.
 
-Review bảo mật trên commit `f5731b9` ghi một phát hiện mức thấp: phiên hết hạn tồn tại trong database. PR đã bổ sung dọn phiên hết hạn khi đăng nhập và E2E xác nhận phiên mới còn hiệu lực; cần kiểm CI cho commit bổ sung. Báo cáo review nằm trong Codex Security scan `3887e6d6-2edd-4c1a-a676-a97611a1c4fa`.
+Review bảo mật trên commit `f5731b9` ghi một phát hiện mức thấp: phiên hết hạn tồn tại trong database. PR đã bổ sung dọn phiên hết hạn khi đăng nhập và E2E xác nhận phiên mới còn hiệu lực. CI lần đầu sau sửa thất bại do hai file E2E cùng tạo role trên database sạch; fixture đã được sửa để tạo role an toàn khi chạy đồng thời, run mới nhất xanh. Báo cáo review nằm trong Codex Security scan `3887e6d6-2edd-4c1a-a676-a97611a1c4fa`.
 
 ## T-03 và K-01
 
