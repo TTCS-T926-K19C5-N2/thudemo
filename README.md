@@ -1,45 +1,48 @@
-# Event Ticketing Platform
+# Event Ticketing Platform — môi trường local T-01
 
-Dự án nền tảng bán vé sự kiện có sơ đồ ghế - Sprint 1.
+Scaffold hiện có chạy web và API trực tiếp trên máy phát triển. Docker Compose chỉ chạy PostgreSQL và Redis. T-01 chưa triển khai staging, thanh toán thật, schema người dùng hoặc cơ chế giữ ghế.
 
-## 🚀 Hướng dẫn chạy dự án chi tiết (Sử dụng PowerShell)
+## Yêu cầu
 
-Do dự án sử dụng cấu trúc Monorepo với `pnpm` và cần build một số native packages, hãy làm theo các bước sau bằng PowerShell trên Windows:
+- Node.js **24.21.0 LTS**, pnpm **10.15.1**, Docker Desktop/Compose.
+- Chạy các lệnh dưới đây từ thư mục `thudemo/`.
+- Copy `.env.example` thành `.env`, thay các placeholder bằng **giá trị thử nghiệm local**. Không dùng credential production. `.env` đã bị Git ignore; không đưa bí mật vào `NEXT_PUBLIC_*` hoặc log.
 
-### Bước 1: Khởi động Docker Desktop
-Hãy đảm bảo bạn đã mở ứng dụng **Docker Desktop** trên Windows và đợi cho đến khi Engine ở trạng thái "Running". Điều này bắt buộc để có thể khởi chạy database.
+## Chạy local
 
-### Bước 2: Dọn dẹp và cài đặt gói phụ thuộc (Dependencies)
-Mở PowerShell tại thư mục gốc của dự án (`d:\Downloads\DEMO`) và cấp quyền chạy các script cài đặt (để `prisma` và `argon2` có thể build đúng):
 ```powershell
-# Bật tính năng cho phép chạy post-install scripts
-npx pnpm config set ignore-scripts false
-
-# Tiến hành cài đặt lại toàn bộ gói phụ thuộc
-npx pnpm install --force
+node --version
+pnpm --version
+docker compose up -d --wait postgres redis
+pnpm install --frozen-lockfile
+pnpm --filter api exec prisma migrate deploy
+pnpm --filter api exec prisma generate
 ```
 
-### Bước 3: Khởi chạy Database & Redis
-Khởi động cơ sở dữ liệu PostgreSQL và Redis thông qua Docker:
-```powershell
-docker compose up -d postgres redis
-```
-*(Đợi một lát cho đến khi console thông báo container `Started`)*
+Mở hai terminal riêng, cùng ở root `thudemo/`:
 
-### Bước 4: Đồng bộ CSDL và Sinh Prisma Client
-Tạo các bảng (tables) trong Database và generate thư viện Prisma:
 ```powershell
-cd apps\api
-npx prisma db push
-npx prisma generate
-cd ..\..
+pnpm --filter api run start:dev
 ```
 
-### Bước 5: Chạy API Server
-Khởi động server backend (NestJS) môi trường dev:
 ```powershell
-npx pnpm --filter api run start:dev
+pnpm --filter web run dev
 ```
-Server sẽ chạy tại `http://localhost:3000`. 
 
-**Kiểm tra:** Mở trình duyệt và truy cập [http://localhost:3000/health](http://localhost:3000/health). Nếu màn hình hiện `{"status": "ok", "timestamp": "..."}` thì xin chúc mừng, API của bạn đã chạy thành công!
+- API: `http://localhost:3001/health`. Endpoint chỉ trả `200` khi PostgreSQL và Redis cùng phản hồi; lỗi kết nối trả `503`.
+- Web: `http://localhost:3000`.
+- PostgreSQL và Redis chỉ công bố trên `localhost:5432` và `localhost:6379`.
+
+## Kiểm tra
+
+```powershell
+pnpm build
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm --filter api run test:e2e
+```
+
+Các migration T-01 trong `apps/api/prisma/migrations/` chỉ chứng minh thay đổi schema kỹ thuật, migration bù và tái áp dụng. Chúng không tạo bảng User/Event/Showtime đang khai báo trong scaffold; các bảng nghiệp vụ thuộc task sau. Không dùng `prisma db push`, reset hoặc xóa database để nghiệm thu migration. Lịch sử migration phải được giữ nguyên.
+
+CI hoàn chỉnh và chặn merge thuộc T-02; Docker image ứng dụng, staging và rollback deployment thuộc T-03.

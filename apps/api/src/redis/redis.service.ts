@@ -5,6 +5,19 @@ import { Redis } from 'ioredis';
 export class RedisService {
   constructor(@Inject('REDIS_CLIENT') private readonly redis: Redis) {}
 
+  async ping(): Promise<void> {
+    if (this.redis.status !== 'ready') {
+      throw new Error('Redis is unavailable');
+    }
+    const result = await Promise.race([
+      this.redis.ping(),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Redis timeout')), 1000)),
+    ]);
+    if (result !== 'PONG') {
+      throw new Error('Redis is unavailable');
+    }
+  }
+
   async incrementLoginFailures(email: string): Promise<number> {
     const key = `login_fails:${email}`;
     const count = await this.redis.incr(key);

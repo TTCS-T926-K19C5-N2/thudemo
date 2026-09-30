@@ -1,0 +1,2 @@
+# Prisma Migrate provider; keep this file and applied migrations in version control.
+provider = "postgresql"

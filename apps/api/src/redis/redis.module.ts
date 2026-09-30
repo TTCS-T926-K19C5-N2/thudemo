@@ -10,8 +10,11 @@ import { RedisService } from './redis.service.js';
     {
       provide: 'REDIS_CLIENT',
       useFactory: (configService: ConfigService) => {
-        const host = configService.get<string>('REDIS_HOST', 'localhost');
-        const port = configService.get<number>('REDIS_PORT', 6379);
+        const host = configService.getOrThrow<string>('REDIS_HOST');
+        const port = Number(configService.getOrThrow<string>('REDIS_PORT'));
+        if (!Number.isInteger(port) || port < 1 || port > 65535) {
+          throw new Error('Invalid REDIS_PORT');
+        }
         return new Redis(port, host);
       },
       inject: [ConfigService],
