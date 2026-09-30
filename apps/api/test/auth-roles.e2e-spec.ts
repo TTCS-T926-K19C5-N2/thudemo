@@ -26,10 +26,12 @@ describe('Role assignments (e2e)', () => {
   it('uses current database roles and denies an undeclared route', async () => {
     const email = `organizer-${randomUUID()}@demo.invalid`;
     const password = randomUUID();
-    const role = await prisma.role.upsert({
+    await prisma.role.createMany({
+      data: [{ name: 'ORGANIZER' }],
+      skipDuplicates: true,
+    });
+    const role = await prisma.role.findUniqueOrThrow({
       where: { name: 'ORGANIZER' },
-      update: {},
-      create: { name: 'ORGANIZER' },
     });
     const user = await prisma.user.create({
       data: {
@@ -137,10 +139,12 @@ describe('Role assignments (e2e)', () => {
   it('rejects an expired server-side session', async () => {
     const email = `session-${randomUUID()}@demo.invalid`;
     const password = randomUUID();
-    const role = await prisma.role.upsert({
+    await prisma.role.createMany({
+      data: [{ name: 'BUYER' }],
+      skipDuplicates: true,
+    });
+    const role = await prisma.role.findUniqueOrThrow({
       where: { name: 'BUYER' },
-      update: {},
-      create: { name: 'BUYER' },
     });
     const user = await prisma.user.create({
       data: {

@@ -24,10 +24,12 @@ describe('Organizer events (e2e)', () => {
   async function createOrganizer() {
     const email = `${randomUUID()}@demo.invalid`;
     const password = randomUUID();
-    const role = await prisma.role.upsert({
+    await prisma.role.createMany({
+      data: [{ name: 'ORGANIZER' }],
+      skipDuplicates: true,
+    });
+    const role = await prisma.role.findUniqueOrThrow({
       where: { name: 'ORGANIZER' },
-      update: {},
-      create: { name: 'ORGANIZER' },
     });
     const user = await prisma.user.create({
       data: {
