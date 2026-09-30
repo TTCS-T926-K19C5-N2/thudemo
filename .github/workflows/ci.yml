@@ -32,6 +32,10 @@ jobs:
           test "$(pnpm --version)" = '10.15.1'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Generate Prisma client
+        env:
+          DATABASE_URL: postgresql://ci_placeholder:ci_placeholder@localhost:5432/unused
+        run: pnpm --filter api exec prisma generate
       - name: Typecheck
         run: pnpm typecheck
       - name: Build
