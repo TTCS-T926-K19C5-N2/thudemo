@@ -165,6 +165,21 @@ describe('Role assignments (e2e)', () => {
         .get('/auth/me')
         .set('Cookie', cookie)
         .expect(401);
+
+      const secondLogin = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ email, password })
+        .expect(200);
+      const activeCookie = secondLogin.headers['set-cookie'][0].split(
+        ';',
+      )[0] as string;
+      expect(await prisma.session.count({ where: { userId: user.id } })).toBe(
+        1,
+      );
+      await request(app.getHttpServer())
+        .get('/auth/me')
+        .set('Cookie', activeCookie)
+        .expect(200);
     } finally {
       await prisma.user.delete({ where: { id: user.id } });
     }

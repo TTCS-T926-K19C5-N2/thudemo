@@ -90,6 +90,9 @@ export class AuthService {
 
     const token = randomBytes(32).toString('base64url');
     const expiresAt = new Date(Date.now() + SESSION_TTL_SECONDS * 1000);
+    await this.prisma.session.deleteMany({
+      where: { expiresAt: { lte: new Date() } },
+    });
     await this.prisma.session.create({
       data: { tokenHash: hashSessionToken(token), userId: user.id, expiresAt },
     });

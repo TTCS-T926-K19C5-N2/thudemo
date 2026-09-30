@@ -14,7 +14,7 @@ Required checks cần đặt trên `main`: `T-02 / build-and-typecheck`, `T-02 /
 
 ## PR tích hợp auth và sự kiện
 
-Branch `task/Sprint1-auth-events` xếp sau T-02. Các task dùng chung `apps/api/prisma/schema.prisma`, auth contract, web components và `pnpm-lock.yaml`, nên được trình bày trong một PR tích hợp có phần review/AC riêng; không tạo các PR trung gian không typecheck. Cần review độc lập theo thứ tự logic:
+PR tích hợp https://github.com/thuytrang158/thudemo/pull/3 (draft), branch `task/Sprint1-auth-events`, xếp sau T-02. GitHub Actions run `36766045202` có cả ba check xanh trong **52 giây**. Các task dùng chung `apps/api/prisma/schema.prisma`, auth contract, web components và `pnpm-lock.yaml`, nên được trình bày trong một PR tích hợp có phần review/AC riêng; không tạo các PR trung gian không typecheck. Cần review độc lập theo thứ tự logic:
 
 1. **T-04:** migration users/roles/user_roles, unique email, 5 roles và 2 tài khoản demo Argon2id; kiểm migration bù/tái áp dụng.
 2. **T-09:** migration events/showtimes, FK owner và restrict xoá, `timestamptz`; kiểm migration bù/tái áp dụng.
@@ -23,6 +23,8 @@ Branch `task/Sprint1-auth-events` xếp sau T-02. Các task dùng chung `apps/ap
 5. **T-10:** UI/API tạo/sửa/danh sách sự kiện và suất diễn, lỗi tại trường, chống gửi đúp, owner 403.
 
 Review checklist: migration/data rollback; không có secret trong Git/log; quyền server và owner isolation; browser desktop/mobile, keyboard; frozen install, lint/typecheck/unit/E2E/build; CI PR xanh; staging demo với dữ liệu giả. Bằng chứng local ở `docs/SPRINT1_LOCAL_EVIDENCE.md`. TECH-02 hiện ghi trong `../docs/decision-log.md` ngoài Git root và phải được trích dẫn trong PR review, không tự coi file này là nguồn quyết định mới.
+
+Review bảo mật trên commit `f5731b9` ghi một phát hiện mức thấp: phiên hết hạn tồn tại trong database. PR đã bổ sung dọn phiên hết hạn khi đăng nhập và E2E xác nhận phiên mới còn hiệu lực; cần kiểm CI cho commit bổ sung. Báo cáo review nằm trong Codex Security scan `3887e6d6-2edd-4c1a-a676-a97611a1c4fa`.
 
 ## T-03 và K-01
 
