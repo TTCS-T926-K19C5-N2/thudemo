@@ -39,6 +39,33 @@ export class AuthController {
     return { status: 'ok', expiresAt: session.expiresAt.toISOString() };
   }
 
+  @Public()
+  @Post('register')
+  @HttpCode(HttpStatus.OK)
+  async register(@Body() body: unknown) {
+    const input =
+      body && typeof body === 'object' ? (body as Record<string, unknown>) : {};
+    return this.authService.register(input.email, input.password);
+  }
+
+  @Public()
+  @Post('activate')
+  @HttpCode(HttpStatus.OK)
+  async activate(@Body() body: unknown) {
+    const input =
+      body && typeof body === 'object' ? (body as Record<string, unknown>) : {};
+    return this.authService.activate(input.token);
+  }
+
+  @Public()
+  @Post('resend-activation')
+  @HttpCode(HttpStatus.OK)
+  async resendActivation(@Body() body: unknown) {
+    const input =
+      body && typeof body === 'object' ? (body as Record<string, unknown>) : {};
+    return this.authService.resendActivation(input.email);
+  }
+
   @Roles(...ROLE_NAMES)
   @Get('me')
   me(@Req() request: AuthenticatedRequest) {

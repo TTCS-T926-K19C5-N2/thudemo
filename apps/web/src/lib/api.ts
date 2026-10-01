@@ -22,3 +22,49 @@ export async function loadCurrentUser(): Promise<CurrentUser | null> {
   if (!response.ok) throw new Error("Không tải được phiên đăng nhập.");
   return response.json() as Promise<CurrentUser>;
 }
+
+export type RegisterResult = {
+  status: string;
+  message: string;
+  activationToken?: string;
+};
+
+export async function registerUser(email: string, password: string): Promise<RegisterResult> {
+  const response = await fetch("/api/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!response.ok) {
+    const error = await readApiError(response);
+    throw error;
+  }
+  return response.json() as Promise<RegisterResult>;
+}
+
+export async function activateAccount(token: string): Promise<{ status: string; message: string }> {
+  const response = await fetch("/api/auth/activate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  });
+  if (!response.ok) {
+    const error = await readApiError(response);
+    throw error;
+  }
+  return response.json() as Promise<{ status: string; message: string }>;
+}
+
+export async function resendActivationLink(email: string): Promise<{ status: string; message: string }> {
+  const response = await fetch("/api/auth/resend-activation", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  if (!response.ok) {
+    const error = await readApiError(response);
+    throw error;
+  }
+  return response.json() as Promise<{ status: string; message: string }>;
+}
+

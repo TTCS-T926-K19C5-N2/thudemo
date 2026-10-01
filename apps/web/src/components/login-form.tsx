@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -71,6 +72,20 @@ export function LoginForm() {
           <Button type="submit" disabled={pending} className="h-11 w-full">{pending ? "Đang đăng nhập…" : "Đăng nhập"}</Button>
           <p aria-live="polite" className="sr-only">{pending ? "Đang kiểm tra tài khoản" : ""}</p>
         </form>
+        <div className="mt-6 border-t border-border pt-4 text-center text-sm text-muted-foreground flex flex-col gap-2">
+          <div>
+            Chưa có tài khoản?{" "}
+            <Link href="/register" className="font-semibold text-primary underline">
+              Đăng ký tài khoản người mua vé
+            </Link>
+          </div>
+          <div>
+            Chưa kích hoạt email?{" "}
+            <Link href="/resend-activation" className="font-semibold text-slate-700 underline">
+              Gửi lại link kích hoạt
+            </Link>
+          </div>
+        </div>
       </div>
       <p className="mt-5 text-xs text-muted-foreground">Môi trường phát triển · Chỉ dùng tài khoản và dữ liệu giả.</p>
     </main>
