@@ -1,6 +1,6 @@
 # T-03 — bằng chứng đóng gói Docker local
 
-Ngày 01/10/2026. Đây là phần chuẩn bị local cho T-03, **chưa phải nghiệm thu staging**. T-02 chưa chứng minh required check chặn merge; chưa có máy chủ staging, registry, đường cấp SSH hoặc kho secret. Không có image nào được push hoặc deploy.
+Ngày 01/10/2026. Đây là phần chuẩn bị local cho T-03, **chưa phải nghiệm thu staging**. T-02 đã chứng minh required check chặn merge nhưng chưa đạt DoD vì còn chờ review độc lập; chưa có máy chủ staging, registry, đường cấp SSH hoặc kho secret. Không có image nào được push hoặc deploy.
 
 ## Image và kiểm tra local
 
@@ -26,7 +26,7 @@ Lượt kiểm tra local: cả hai image build thành công; API **852 MB**, web
 
 ## Điều kiện còn thiếu
 
-- Chủ repository cấu hình required checks của T-02 trên `main`; PR cố ý sai lint phải bị chặn merge. T-02 chỉ được đánh dấu Done khi có bằng chứng này.
+- T-02 đã có required checks và bằng chứng PR sai lint bị chặn; còn cần review độc lập trước khi đánh dấu Done và merge.
 - Cung cấp máy chủ staging Docker, registry, tên miền/HTTPS, cách cấp SSH và secret riêng. Web image hiện dùng Docker DNS `api:3001` cho rewrite; staging cần service/alias `api` trên cùng network.
 - Thiết kế và kiểm chứng thao tác migration trên staging, health gate trước chuyển traffic, giữ container cũ khi image lỗi, rollback image không đảo migration phá dữ liệu. Đo từ merge đến staging hoạt động dưới 10 phút.
 - Chạy smoke với dữ liệu giả và review độc lập trước khi nghiệm thu T-03. Không mở PostgreSQL/Redis ra Internet hoặc dùng cấu hình local làm cấu hình staging.
