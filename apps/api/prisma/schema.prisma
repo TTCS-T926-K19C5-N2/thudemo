@@ -18,6 +18,7 @@ model User {
   userRoles         UserRole[]
   sessions          Session[]
   events            Event[]    @relation("OrganizerEvents")
+  orders            Order[]
 
   @@map("users")
 }
@@ -62,6 +63,7 @@ model Event {
   organizerId String     @db.Uuid
   organizer   User       @relation("OrganizerEvents", fields: [organizerId], references: [id], onDelete: Restrict)
   showtimes   Showtime[]
+  orders      Order[]
   createdAt   DateTime   @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime   @updatedAt @db.Timestamptz(3)
 
@@ -81,3 +83,25 @@ model Showtime {
   @@index([eventId])
   @@map("showtimes")
 }
+
+model Order {
+  id            String    @id @default(uuid()) @db.Uuid
+  orderCode     String    @unique
+  userId        String?   @db.Uuid
+  user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  eventId       String?   @db.Uuid
+  event         Event?    @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  amount        Int       @default(0)
+  status        String    @default("PENDING") // PENDING, PAID, CANCELLED
+  paymentMethod String?   @default("GATEWAY")
+  transactionId String?
+  ticketUrl     String?
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime  @updatedAt @db.Timestamptz(3)
+
+  @@index([orderCode])
+  @@index([userId])
+  @@index([eventId])
+  @@map("orders")
+}
+
