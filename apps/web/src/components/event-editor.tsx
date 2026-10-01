@@ -21,6 +21,16 @@ type EventDetails = {
 
 const empty = { name: "", description: "", location: "" };
 
+function getLocalMinDateTime() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
 export function EventEditor({ eventId }: { eventId?: string }) {
   const router = useRouter();
   const [draft, setDraft] = useState(empty);
@@ -32,6 +42,8 @@ export function EventEditor({ eventId }: { eventId?: string }) {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [showtimeError, setShowtimeError] = useState("");
+  const [showtimeSuccess, setShowtimeSuccess] = useState("");
   const [forbidden, setForbidden] = useState(false);
   const submitting = useRef(false);
   const showtimeSubmitting = useRef(false);
@@ -68,12 +80,78 @@ export function EventEditor({ eventId }: { eventId?: string }) {
     setMessage("");
   }
 
+  function handleStartTimeChange(value: string) {
+    setStartTime(value);
+    setShowtimeError("");
+    setShowtimeSuccess("");
+    if (!value) {
+      setFieldErrors((current) => ({ ...current, startTime: "" }));
+      return;
+    }
+    const selected = new Date(value);
+    if (isNaN(selected.getTime())) {
+      setFieldErrors((current) => ({ ...current, startTime: "Định dạng thời gian không hợp lệ." }));
+    } else if (selected <= new Date()) {
+      setFieldErrors((current) => ({ ...current, startTime: "Thời gian bắt đầu phải ở tương lai." }));
+    } else {
+      setFieldErrors((current) => ({ ...current, startTime: "" }));
+    }
+  }
+
+  async function performAddShowtime(targetEventId: string): Promise<boolean> {
+    if (!startTime) {
+      setFieldErrors((current) => ({ ...current, startTime: "Vui lòng chọn thời gian bắt đầu." }));
+      return false;
+    }
+    const selected = new Date(startTime);
+    if (isNaN(selected.getTime()) || selected <= new Date()) {
+      setFieldErrors((current) => ({ ...current, startTime: "Thời gian bắt đầu phải ở tương lai." }));
+      return false;
+    }
+
+    showtimeSubmitting.current = true;
+    setSavingShowtime(true);
+    setShowtimeError("");
+    setShowtimeSuccess("");
+    try {
+      const response = await fetch(`/api/events/${targetEventId}/showtimes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ startTime: selected.toISOString() }),
+      });
+      if (response.status === 403) { setForbidden(true); return false; }
+      if (!response.ok) {
+        const detail = await readApiError(response);
+        setFieldErrors(detail.errors ?? {});
+        setShowtimeError(detail.message ?? "Không lưu được suất diễn.");
+        return false;
+      }
+      const result = await response.json() as { id: string; startTime: string; warning: string | null };
+      setDetails((current) => current ? { ...current, showtimes: [...current.showtimes, result].sort((a, b) => a.startTime.localeCompare(b.startTime)) } : current);
+      setStartTime("");
+      setShowtimeSuccess(result.warning ?? "Đã thêm suất diễn thành công!");
+      return true;
+    } catch {
+      setShowtimeError("Không thể kết nối. Hãy thử lại.");
+      return false;
+    } finally {
+      showtimeSubmitting.current = false;
+      setSavingShowtime(false);
+    }
+  }
+
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submitting.current) return;
     const errors: Record<string, string> = {};
     for (const field of ["name", "description", "location"] as const) {
       if (!draft[field].trim()) errors[field] = "Trường này không được để trống.";
+    }
+    if (startTime) {
+      const selected = new Date(startTime);
+      if (isNaN(selected.getTime()) || selected <= new Date()) {
+        errors.startTime = "Thời gian bắt đầu phải ở tương lai.";
+      }
     }
     setFieldErrors(errors);
     if (Object.keys(errors).length > 0) return;
@@ -96,8 +174,15 @@ export function EventEditor({ eventId }: { eventId?: string }) {
         return;
       }
       const result = await response.json() as EventDetails;
-      if (!eventId) router.replace(`/events/${result.id}`);
-      else { setDetails((current) => current ? { ...current, ...result } : result); setMessage("Đã lưu thay đổi."); }
+      if (!eventId) {
+        router.replace(`/events/${result.id}`);
+      } else {
+        setDetails((current) => current ? { ...current, ...result } : result);
+        setMessage("Đã lưu thay đổi thông tin sự kiện.");
+        if (startTime) {
+          await performAddShowtime(eventId);
+        }
+      }
     } catch {
       setError("Không thể kết nối. Nội dung đã nhập vẫn được giữ; hãy thử lại.");
     } finally {
@@ -109,38 +194,10 @@ export function EventEditor({ eventId }: { eventId?: string }) {
   async function addShowtime(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!eventId || showtimeSubmitting.current) return;
-    if (!startTime || new Date(startTime) <= new Date()) {
-      setFieldErrors((current) => ({ ...current, startTime: "Chọn thời gian trong tương lai." }));
-      return;
-    }
-    showtimeSubmitting.current = true;
-    setSavingShowtime(true);
-    setError("");
-    setMessage("");
-    try {
-      const response = await fetch(`/api/events/${eventId}/showtimes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ startTime: new Date(startTime).toISOString() }),
-      });
-      if (response.status === 403) { setForbidden(true); return; }
-      if (!response.ok) {
-        const detail = await readApiError(response);
-        setFieldErrors(detail.errors ?? {});
-        setError(detail.message ?? "Không lưu được suất diễn.");
-        return;
-      }
-      const result = await response.json() as { id: string; startTime: string; warning: string | null };
-      setDetails((current) => current ? { ...current, showtimes: [...current.showtimes, result].sort((a, b) => a.startTime.localeCompare(b.startTime)) } : current);
-      setStartTime("");
-      setMessage(result.warning ?? "Đã thêm suất diễn.");
-    } catch {
-      setError("Không thể kết nối. Hãy thử lại.");
-    } finally {
-      showtimeSubmitting.current = false;
-      setSavingShowtime(false);
-    }
+    await performAddShowtime(eventId);
   }
+
+  const minDateTime = getLocalMinDateTime();
 
   return (
     <>
@@ -162,7 +219,33 @@ export function EventEditor({ eventId }: { eventId?: string }) {
               <Button type="submit" disabled={saving} className="h-11">{saving ? "Đang lưu…" : eventId ? "Lưu thay đổi" : "Tạo sự kiện"}</Button>
             </form>
           </section>
-          {eventId && details && <section aria-labelledby="showtimes-title"><div className="border-b border-border pb-4"><h2 id="showtimes-title" className="text-lg font-semibold">Suất diễn</h2><p className="mt-1 text-sm text-muted-foreground">Thêm thời gian bắt đầu cho sự kiện này.</p></div><form onSubmit={addShowtime} className="mt-6 space-y-3" noValidate><Label htmlFor="showtime-start">Thời gian bắt đầu</Label><Input id="showtime-start" type="datetime-local" value={startTime} onChange={(event) => { setStartTime(event.target.value); setFieldErrors((current) => ({ ...current, startTime: "" })); }} aria-invalid={Boolean(fieldErrors.startTime)} aria-describedby={fieldErrors.startTime ? "showtime-error" : undefined} disabled={savingShowtime} className="h-10" />{fieldErrors.startTime && <p id="showtime-error" className="text-sm text-destructive">{fieldErrors.startTime}</p>}<Button type="submit" disabled={savingShowtime} variant="outline" className="h-11">{savingShowtime ? "Đang thêm…" : "Thêm suất diễn"}</Button></form>{details.showtimes.length === 0 ? <p className="mt-8 border-t border-border pt-5 text-sm text-muted-foreground">Chưa có suất diễn.</p> : <ul className="mt-8 border-t border-border">{details.showtimes.map((showtime) => <li key={showtime.id} className="border-b border-border py-4 text-sm"><time dateTime={showtime.startTime}>{new Intl.DateTimeFormat("vi-VN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(showtime.startTime))}</time></li>)}</ul>}</section>}
+          {eventId && details && <section aria-labelledby="showtimes-title">
+            <div className="border-b border-border pb-4">
+              <h2 id="showtimes-title" className="text-lg font-semibold">Suất diễn</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Thêm thời gian bắt đầu cho sự kiện này (phải ở tương lai).</p>
+            </div>
+            {showtimeError && <p role="alert" className="mt-4 border-l-2 border-destructive bg-red-50 px-3 py-2 text-sm text-destructive">{showtimeError}</p>}
+            {showtimeSuccess && <p role="status" className="mt-4 border-l-2 border-green-700 bg-green-50 px-3 py-2 text-sm text-green-800">{showtimeSuccess}</p>}
+            <form onSubmit={addShowtime} className="mt-6 space-y-3" noValidate>
+              <Label htmlFor="showtime-start">Thời gian bắt đầu</Label>
+              <Input
+                id="showtime-start"
+                type="datetime-local"
+                min={minDateTime}
+                value={startTime}
+                onChange={(event) => handleStartTimeChange(event.target.value)}
+                aria-invalid={Boolean(fieldErrors.startTime)}
+                aria-describedby={fieldErrors.startTime ? "showtime-error" : undefined}
+                disabled={savingShowtime}
+                className="h-10"
+              />
+              {fieldErrors.startTime && <p id="showtime-error" className="text-sm text-destructive font-medium">{fieldErrors.startTime}</p>}
+              <Button type="submit" disabled={savingShowtime || Boolean(fieldErrors.startTime)} className="h-11">
+                {savingShowtime ? "Đang thêm…" : "Thêm suất diễn"}
+              </Button>
+            </form>
+            {details.showtimes.length === 0 ? <p className="mt-8 border-t border-border pt-5 text-sm text-muted-foreground">Chưa có suất diễn nào được tạo.</p> : <ul className="mt-8 border-t border-border">{details.showtimes.map((showtime) => <li key={showtime.id} className="border-b border-border py-4 text-sm flex items-center justify-between"><div><span className="font-medium text-foreground block">Suất diễn</span><time dateTime={showtime.startTime} className="text-muted-foreground">{new Intl.DateTimeFormat("vi-VN", { dateStyle: "full", timeStyle: "short" }).format(new Date(showtime.startTime))}</time></div><span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Sắp diễn ra</span></li>)}</ul>}
+          </section>}
         </div>}
       </main>
     </>
