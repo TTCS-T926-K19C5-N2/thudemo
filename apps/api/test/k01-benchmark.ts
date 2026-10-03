@@ -118,4 +118,4 @@ async function runSeatHoldingBenchmark() {
   }
 }
 
-runSeatHoldingBenchmark();
+void runSeatHoldingBenchmark();
