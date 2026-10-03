@@ -11,9 +11,10 @@ export interface HoldSeatsParams {
 
 export interface HoldSeatsResult {
   success: boolean;
-  message: string;
-  expiresIn: number;
+  showtimeId: string;
   heldSeats: string[];
+  expiresInSeconds: number;
+  expiresAt: string;
 }
 
 @Injectable()
@@ -48,7 +49,9 @@ export class SeatHoldService {
 
     const acquiredKeys: string[] = [];
     const heldAt = Date.now();
-    const payload = JSON.stringify({ userId, heldAt });
+    const expiresAt = new Date(heldAt + this.HOLD_TTL_SECONDS * 1000);
+    const expiresAtIso = expiresAt.toISOString();
+    const payload = JSON.stringify({ userId, heldAt, expiresAt: expiresAtIso });
 
     // 2. Atomic Multi-Lock từng ghế với Redis SET key val EX 600 NX
     for (const seatId of seatIds) {
@@ -58,19 +61,20 @@ export class SeatHoldService {
       if (result === 'OK') {
         acquiredKeys.push(key);
       } else {
-        // 3. Rollback: Nếu có ghế bị trùng, xóa toàn bộ các ghế đã giữ thành công trước đó
+        // 3. Rollback: Nếu có BẤT KỲ ghế nào bị trùng, xóa toàn bộ các ghế đã giữ thành công trước đó
         if (acquiredKeys.length > 0) {
           await this.redis.del(...acquiredKeys);
         }
-        throw new ConflictException(`Ghế ${seatId} hiện đang được người khác giữ hoặc không khả dụng`);
+        throw new ConflictException(`Ghế ${seatId} đã bị người khác chọn`);
       }
     }
 
     return {
       success: true,
-      message: 'Giữ ghế thành công',
-      expiresIn: this.HOLD_TTL_SECONDS,
+      showtimeId,
       heldSeats: seatIds,
+      expiresInSeconds: this.HOLD_TTL_SECONDS,
+      expiresAt: expiresAtIso,
     };
   }
 
@@ -80,7 +84,10 @@ export class SeatHoldService {
     await this.redis.del(...keys);
   }
 
-  async getHeldSeat(showtimeId: string, seatId: string): Promise<{ userId: string; heldAt: number } | null> {
+  async getHeldSeat(
+    showtimeId: string,
+    seatId: string,
+  ): Promise<{ userId: string; heldAt: number; expiresAt?: string } | null> {
     const key = this.getSeatKey(showtimeId, seatId);
     const data = await this.redis.get(key);
     if (!data) return null;
