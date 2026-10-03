@@ -11,11 +11,11 @@ import { ImportSeatsDto } from './dto/import-seats.dto.js';
 export class SeatsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // --- TASK T-12: Import Seats ---
   async importSeats(dto: ImportSeatsDto) {
     const { showtimeId, categories, seats } = dto;
 
     return this.prisma.$transaction(async (tx: any) => {
-      // 1. Kiểm tra suất diễn có tồn tại không
       const showtime = await tx.showtime.findUnique({
         where: { id: showtimeId },
       });
@@ -24,7 +24,6 @@ export class SeatsService {
         throw new NotFoundException('Suất diễn không tồn tại');
       }
 
-      // 2. Chặn nếu suất diễn đã có sơ đồ ghế
       const existingSeatsCount = await tx.seat.count({
         where: { showtimeId },
       });
@@ -35,7 +34,6 @@ export class SeatsService {
         );
       }
 
-      // 3. Tạo các hạng ghế (SeatCategory)
       const categoryMap = new Map<string, string>();
 
       for (const catDto of categories) {
@@ -48,7 +46,6 @@ export class SeatsService {
         categoryMap.set(catDto.name, createdCat.id);
       }
 
-      // 4. Chuẩn bị dữ liệu danh sách ghế để chèn theo lô (createMany)
       const seatsToCreate = seats.map((s) => {
         const seatCategoryId = s.categoryName
           ? categoryMap.get(s.categoryName)
@@ -68,7 +65,6 @@ export class SeatsService {
         };
       });
 
-      // 5. Ghi theo lô nhiều dòng trong 1 lệnh duy nhất
       const result = await tx.seat.createMany({
         data: seatsToCreate,
       });
@@ -78,6 +74,41 @@ export class SeatsService {
         importedCategories: categoryMap.size,
         importedSeats: result.count,
       };
+    });
+  }
+
+  // --- TASK T-13: Lấy danh sách ghế theo Suất diễn ---
+  async getSeatsByShowtime(showtimeId: string) {
+    const showtime = await this.prisma.showtime.findUnique({
+      where: { id: showtimeId },
+    });
+
+    if (!showtime) {
+      throw new NotFoundException('Suất diễn không tồn tại');
+    }
+
+    return this.prisma.seat.findMany({
+      where: { showtimeId },
+      include: {
+        seatCategory: true,
+      },
+      orderBy: [{ seatRow: 'asc' }, { seatNumber: 'asc' }],
+    });
+  }
+
+  // --- TASK T-14: Lấy danh sách hạng ghế theo Suất diễn ---
+  async getSeatCategoriesByShowtime(showtimeId: string) {
+    const showtime = await this.prisma.showtime.findUnique({
+      where: { id: showtimeId },
+    });
+
+    if (!showtime) {
+      throw new NotFoundException('Suất diễn không tồn tại');
+    }
+
+    return this.prisma.seatCategory.findMany({
+      where: { showtimeId },
+      orderBy: { name: 'asc' },
     });
   }
 }
