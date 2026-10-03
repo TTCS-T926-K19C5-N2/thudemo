@@ -2,7 +2,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   formatRemainingTime,
   parseExpiryTimestamp,
+<<<<<<< HEAD
 } from '@/hooks/useSeatHoldTimer';
+=======
+} from '../hooks/useSeatHoldTimer';
+>>>>>>> task/T-24-seat-hold-countdown
 
 describe('useSeatHoldTimer', () => {
   beforeEach(() => {
