@@ -5,6 +5,7 @@ import { SeatHoldController } from './seat-hold.controller.js';
 import { SEAT_VALIDATOR } from './interfaces/seat-validator.interface.js';
 import { MockSeatValidatorAdapter } from './adapters/mock-seat-validator.adapter.js';
 import { SeatExpiryJobService } from './jobs/seat-expiry-job.service.js';
+import { SeatAvailabilityQueryService } from './queries/seat-availability.query.js';
 
 @Module({
   imports: [ScheduleModule.forRoot()],
@@ -12,11 +13,12 @@ import { SeatExpiryJobService } from './jobs/seat-expiry-job.service.js';
   providers: [
     SeatHoldService,
     SeatExpiryJobService,
+    SeatAvailabilityQueryService,
     {
       provide: SEAT_VALIDATOR,
       useClass: MockSeatValidatorAdapter,
     },
   ],
-  exports: [SeatHoldService, SeatExpiryJobService, SEAT_VALIDATOR],
+  exports: [SeatHoldService, SeatExpiryJobService, SeatAvailabilityQueryService, SEAT_VALIDATOR],
 })
 export class SeatsModule {}
