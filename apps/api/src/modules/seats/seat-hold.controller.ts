@@ -17,7 +17,7 @@ export class SeatHoldController {
 
   @Public()
   @Post(':showtimeId/hold-seats')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   async holdSeats(
     @Param('showtimeId') showtimeId: string,
     @Body() body: HoldSeatsDto,

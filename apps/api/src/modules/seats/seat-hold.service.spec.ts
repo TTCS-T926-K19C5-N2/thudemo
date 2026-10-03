@@ -77,12 +77,13 @@ describe('SeatHoldService', () => {
 
       expect(mockRedis.del).not.toHaveBeenCalled();
 
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         success: true,
-        message: 'Giữ ghế thành công',
-        expiresIn: 600,
+        showtimeId: 'st_101',
         heldSeats: ['A1', 'A2', 'A3'],
+        expiresInSeconds: 600,
       });
+      expect(result.expiresAt).toBeDefined();
     });
   });
 
@@ -100,7 +101,7 @@ describe('SeatHoldService', () => {
         userId: 'usr_buyer_123',
       };
 
-      await expect(service.holdSeats(params)).rejects.toBeInstanceOf(ConflictException);
+      await expect(service.holdSeats(params)).rejects.toThrow('Ghế A3 đã bị người khác chọn');
 
       // Đã thử set 3 lần
       expect(mockRedis.set).toHaveBeenCalledTimes(3);
