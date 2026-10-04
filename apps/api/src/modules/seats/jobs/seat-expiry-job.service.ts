@@ -1,8 +1,20 @@
-import { Injectable, Inject, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  Logger,
+  OnApplicationBootstrap,
+  Optional,
+} from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import type { Redis } from 'ioredis';
+import { SeatHoldStorage } from '../seat-hold.storage.js';
+import { SeatStatusQueryService } from '../queries/seat-status-query.service.js';
+import { PrismaService } from '../../../prisma/prisma.service.js';
 
 export interface HoldSeatMetadata {
+  holdId?: string;
+  showtimeId?: string;
+  seatIds?: string[];
   userId: string;
   heldAt: number;
   expiresAt?: string;
@@ -24,7 +36,12 @@ export class SeatExpiryJobService implements OnApplicationBootstrap {
   private readonly logger = new Logger(SeatExpiryJobService.name);
   private isRunning = false;
 
-  constructor(@Inject('REDIS_CLIENT') private readonly redis: Redis) {}
+  constructor(
+    @Inject('REDIS_CLIENT') private readonly redis: Redis,
+    @Optional() private readonly seatHoldStorage?: SeatHoldStorage,
+    @Optional() private readonly seatStatusQueryService?: SeatStatusQueryService,
+    @Optional() private readonly prisma?: PrismaService,
+  ) {}
 
   /**
    * Khôi phục sau sự cố (S-12 AC):
@@ -60,11 +77,13 @@ export class SeatExpiryJobService implements OnApplicationBootstrap {
     };
 
     try {
-      // 1. Quét toàn bộ key giữ chỗ theo pattern hold:showtime:*:seat:*
+      // 1. Quét toàn bộ key giữ chỗ theo pattern hold:showtime:*:seat:* (T-22 Redis)
       const keys = await this.scanHoldKeys('hold:showtime:*:seat:*');
       stats.scanned = keys.length;
 
       if (keys.length === 0) {
+        // Đồng thời dọn dẹp giữ chỗ quá hạn trong Prisma DB (T-19) nếu có
+        await this.cleanupPrismaExpiredHolds();
         return stats;
       }
 
@@ -107,7 +126,7 @@ export class SeatExpiryJobService implements OnApplicationBootstrap {
           : false;
 
         if (ttl <= 0 || isPastExpiryTime || isHeldLongerThan10Mins) {
-          // Xóa an toàn và có tính Idempotent (chạy nhiều lần không gây lỗi)
+          // Xóa an toàn và có tính Idempotent qua Redis hoặc SeatHoldStorage
           await this.redis.del(key);
           stats.expired++;
           this.logger.log(`Đã giải phóng ghế hết hạn: ${key}`);
@@ -115,6 +134,9 @@ export class SeatExpiryJobService implements OnApplicationBootstrap {
           stats.active++;
         }
       }
+
+      // 4. Đồng thời giải phóng các hold quá hạn trong Prisma DB (T-19)
+      await this.cleanupPrismaExpiredHolds();
 
       if (stats.expired > 0 || stats.protected > 0) {
         this.logger.log(
@@ -125,6 +147,29 @@ export class SeatExpiryJobService implements OnApplicationBootstrap {
       return stats;
     } finally {
       this.isRunning = false;
+    }
+  }
+
+  /**
+   * Dọn dẹp các lượt giữ chỗ đã quá hạn trong bảng seat_holds của Prisma (T-19)
+   */
+  private async cleanupPrismaExpiredHolds(): Promise<void> {
+    if (!this.prisma) return;
+    try {
+      const client = this.prisma as any;
+      const seatHoldModel = client.seatHold || client.seat_holds;
+      if (seatHoldModel && typeof seatHoldModel.deleteMany === 'function') {
+        const result = await seatHoldModel.deleteMany({
+          where: {
+            expiresAt: { lte: new Date() },
+          },
+        });
+        if (result?.count && result.count > 0) {
+          this.logger.log(`Đã dọn dẹp ${result.count} lượt giữ chỗ hết hạn trong Database (Prisma).`);
+        }
+      }
+    } catch (err) {
+      this.logger.debug('Bỏ qua dọn dẹp DB nếu bảng chưa tồn tại hoặc DB chưa kết nối:', err);
     }
   }
 
