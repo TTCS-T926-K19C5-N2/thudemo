@@ -1,16 +1,16 @@
-import { Controller, Get, Post, Body, Param, Request } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req } from '@nestjs/common';
 import { EventsService } from './events.service.js';
-import { Roles, Public } from '../auth/decorators/roles.decorator.js';
-import { Role } from '@prisma/client';
+import { Public, Roles } from '../auth/decorators/roles.decorator.js';
+import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js';
 
 @Controller('events')
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
-  @Roles(Role.ORGANIZER)
+  @Roles('ORGANIZER')
   @Post()
-  create(@Request() req: any, @Body() body: any) {
-    return this.eventsService.create(req.user.id, body);
+  create(@Req() request: AuthenticatedRequest, @Body() body: unknown) {
+    return this.eventsService.create(request.user.id, body);
   }
 
   @Public()
@@ -19,15 +19,41 @@ export class EventsController {
     return this.eventsService.findAll();
   }
 
+  @Roles('ORGANIZER')
+  @Get('mine')
+  findMine(@Req() request: AuthenticatedRequest) {
+    return this.eventsService.findMine(request.user.id);
+  }
+
+  @Roles('ORGANIZER')
+  @Get(':id/manage')
+  findOwned(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
+    return this.eventsService.findOwned(id, request.user.id);
+  }
+
+  @Roles('ORGANIZER')
+  @Patch(':id')
+  update(
+    @Req() request: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ) {
+    return this.eventsService.update(id, request.user.id, body);
+  }
+
+  @Roles('ORGANIZER')
+  @Post(':id/showtimes')
+  addShowtime(
+    @Req() request: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ) {
+    return this.eventsService.addShowtime(id, request.user.id, body);
+  }
+
   @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.eventsService.findOne(id);
-  }
-
-  @Roles(Role.ORGANIZER)
-  @Post(':id/showtimes')
-  addShowtime(@Request() req: any, @Param('id') eventId: string, @Body('startTime') startTime: string) {
-    return this.eventsService.addShowtime(eventId, req.user.id, startTime);
   }
 }
