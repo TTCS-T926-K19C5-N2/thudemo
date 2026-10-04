@@ -1,6 +1,6 @@
 # Sprint 1 dependency integration: authentication review fixes
 
-Date: 2026-10-05. AI-assisted implementation by Codex under the authorization of Nguyễn Văn Sáng. This is not evidence that a human independently reviewed the code.
+Date: 2026-10-05. Implementation authorized by Nguyễn Văn Sáng. Technical review is automated. This is not evidence that a human independently reviewed the code.
 
 ## Reviewed revision and findings
 
