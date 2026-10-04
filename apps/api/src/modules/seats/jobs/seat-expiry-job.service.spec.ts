@@ -149,4 +149,27 @@ describe('SeatExpiryJobService', () => {
       expect(cleanupSpy).toHaveBeenCalledOnce();
     });
   });
+
+  describe('Dọn dẹp Prisma Database (T-19)', () => {
+    it('gọi deleteMany trên seatHold khi có PrismaService được truyền vào', async () => {
+      const mockPrisma = {
+        seatHold: {
+          deleteMany: vi.fn().mockResolvedValue({ count: 2 }),
+        },
+      };
+
+      const jobWithPrisma = new SeatExpiryJobService(
+        mockRedis as unknown as Redis,
+        undefined,
+        undefined,
+        mockPrisma as any,
+      );
+
+      mockRedis.scan.mockResolvedValue(['0', []]);
+
+      await jobWithPrisma.handleSeatExpiryCleanup();
+
+      expect(mockPrisma.seatHold.deleteMany).toHaveBeenCalled();
+    });
+  });
 });
