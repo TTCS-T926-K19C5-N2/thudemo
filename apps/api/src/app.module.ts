@@ -8,7 +8,8 @@ import { RedisModule } from './redis/redis.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { UsersModule } from './users/users.module.js';
 import { EventsModule } from './events/events.module.js';
-import { SeatsModule } from './modules/seats/seats.module.js';
+import { SeatsModule as SeatHoldModule } from './modules/seats/seats.module.js';
+import { SeatsModule } from './seats/seats.module.js';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { SeatsModule } from './modules/seats/seats.module.js';
     UsersModule,
     EventsModule,
     SeatsModule,
+    SeatHoldModule,
   ],
   controllers: [AppController],
   providers: [AppService],
