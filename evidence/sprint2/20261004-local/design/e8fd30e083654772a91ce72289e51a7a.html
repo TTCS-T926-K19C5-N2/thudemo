@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-background" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nạp sơ đồ JSON · Đêm nhạc Tháng Mười · Vé Sự Kiện</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Script -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "error-container": "#ffdad6",
+            "on-error": "#ffffff",
+            "surface-container-low": "#f3f3fd",
+            "primary-container": "#175cd3",
+            "on-secondary-fixed-variant": "#344572",
+            "inverse-primary": "#b1c5ff",
+            "error": "#ba1a1a",
+            "on-primary-fixed": "#001847",
+            "primary": "#0045a9",
+            "on-tertiary-container": "#ffd8c9",
+            "surface-variant": "#e1e2ec",
+            "outline": "#737785",
+            "on-secondary-container": "#415381",
+            "tertiary": "#853000",
+            "secondary": "#4c5d8b",
+            "on-primary-container": "#d7e0ff",
+            "primary-fixed-dim": "#b1c5ff",
+            "primary-fixed": "#dae2ff",
+            "inverse-on-surface": "#f0f0fa",
+            "secondary-fixed-dim": "#b4c5fa",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "surface-container": "#ededf7",
+            "surface-tint": "#0957ce",
+            "surface": "#faf8ff",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed": "#ffdbcd",
+            "on-tertiary-fixed": "#360f00",
+            "surface-container-high": "#e7e7f2",
+            "surface-container-lowest": "#ffffff",
+            "on-surface": "#191b23",
+            "surface-bright": "#faf8ff",
+            "on-background": "#191b23",
+            "tertiary-container": "#ac4100",
+            "background": "#faf8ff",
+            "secondary-container": "#b6c8fd",
+            "surface-container-highest": "#e1e2ec",
+            "secondary-fixed": "#dae2ff",
+            "on-surface-variant": "#424654",
+            "on-primary": "#ffffff",
+            "outline-variant": "#c3c6d6",
+            "on-secondary-fixed": "#031944",
+            "tertiary-fixed-dim": "#ffb597",
+            "surface-dim": "#d9d9e3",
+            "inverse-surface": "#2e3038",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-error-container": "#93000a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .seat-glyph {
+      width: 15px;
+      height: 15px;
+      border-radius: 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body class="font-body text-on-surface bg-background antialiased flex h-screen overflow-hidden selection:bg-primary-container selection:text-on-primary">
+<!-- SIDEBAR NAVIGATION (240px) -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-surface-container-lowest border-r border-outline-variant flex flex-col justify-between p-4 select-none">
+<div>
+<!-- Brand & Operations Identity -->
+<div class="px-2 pt-1 pb-4 border-b border-outline-variant">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded bg-primary-container flex items-center justify-center text-on-primary font-bold text-xs">
+            VK
+          </div>
+<div>
+<h1 class="text-base font-headline font-bold text-on-surface tracking-tight leading-tight">Vé Sự Kiện · Quản trị</h1>
+<p class="text-xs text-on-surface-variant font-label">Vận hành sự kiện</p>
+</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="mt-4 space-y-1"><a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150" href="#"><span class="material-symbols-outlined" data-icon="dashboard">dashboard</span><span class="text-sm font-label">Sự kiện</span></a><a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150" href="#"><span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span><span class="text-sm font-label">Suất diễn</span></a><a class="flex items-center gap-3 px-3 py-2 bg-surface-container-low text-primary font-medium rounded-lg transition-colors duration-150" href="#"><span class="material-symbols-outlined" data-icon="event_seat" style="font-variation-settings: 'FILL' 1;">event_seat</span><span class="text-sm font-label">Sơ đồ ghế</span></a><a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150" href="#"><span class="material-symbols-outlined" data-icon="payments">payments</span><span class="text-sm font-label">Giá vé</span></a><a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150" href="#"><span class="material-symbols-outlined" data-icon="account_circle">account_circle</span><span class="text-sm font-label">Tài khoản</span></a></nav>
+</div>
+<!-- Sidebar Bottom / Technical Assistance -->
+<div class="pt-3 border-t border-outline-variant space-y-2">
+<div class="px-2 py-1 bg-surface-container-low rounded text-xs text-on-surface-variant">
+<span class="font-medium text-primary block">Sprint 2 Vận hành</span>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="text-sm font-label">Hỗ trợ kỹ thuật</span>
+</a>
+</div>
+</aside>
+<!-- MAIN WRAPPER (Left padding 240px for fixed sidebar) -->
+<div class="pl-60 flex flex-col flex-1 h-screen overflow-hidden">
+<!-- TOPBAR NAVIGATION (56px / h-14) -->
+<header class="h-14 bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-6 z-20 flex-shrink-0">
+<!-- Breadcrumbs & Context -->
+<div class="flex items-center gap-3 text-xs">
+<span class="text-on-surface-variant">Sự kiện: Đêm nhạc Tháng Mười · Nhà hát Ánh Dương (16/10/2026)</span>
+<span class="text-outline">/</span>
+<span class="text-primary font-medium">Nạp sơ đồ JSON</span>
+</div>
+<!-- Trailing Tools & Profile -->
+<div class="flex items-center gap-4">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container text-[11px] text-on-surface-variant font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+          Demo Sprint 2 · dữ liệu giả
+        </div>
+<div class="h-4 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-outline" data-icon="account_circle">account_circle</span>
+<span class="font-medium text-on-surface">Ban tổ chức / Kỹ thuật</span>
+</div>
+<button class="text-xs text-primary hover:underline font-medium" type="button">
+          Đổi tài khoản
+        </button>
+</div>
+</header>
+<!-- MANDATORY DISCREET SPRINT BANNER -->
+<div class="bg-surface-container-low px-6 py-1.5 border-b border-outline-variant flex items-center justify-between text-xs text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline" data-icon="verified_user">verified_user</span>
+<span>Môi trường thử nghiệm kỹ thuật: <strong>Demo Sprint 2 · dữ liệu giả. Fictional events only.</strong></span>
+</div>
+<div class="text-[11px] text-outline">Mã suất: SN-20261016-1930 · Trạng thái: <span class="text-primary font-medium">Nháp (Draft)</span></div>
+</div>
+<!-- MAIN SCROLLABLE OPERATIONS CANVAS -->
+<main class="flex-1 overflow-y-auto p-8 space-y-6">
+<!-- PAGE HEADER -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h2 class="text-2xl font-headline font-semibold text-on-surface tracking-tight">05 Nạp sơ đồ JSON (T14)</h2>
+<p class="text-sm text-on-surface-variant mt-1 font-body">Kiểm tra định dạng ma trận chỗ ngồi, tọa độ hàng ghế và nạp dữ liệu chính thức cho suất diễn 16/10/2026 19:30.</p>
+</div>
+<div class="flex items-center gap-2">
+</div>
+</div>
+<!-- STEPPER PROGRESS BAR -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Step 1 Complete -->
+<div class="flex items-center gap-3 p-3 rounded bg-surface-container-low border border-outline-variant/60">
+<div class="w-7 h-7 rounded-full bg-primary-container text-on-primary flex items-center justify-center flex-shrink-0 text-xs font-semibold">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+</div>
+<div class="min-w-0">
+<p class="text-xs font-medium text-primary">Bước 1: Kiểm tra tệp JSON (Đã hoàn tất)</p>
+<p class="text-xs text-on-surface-variant truncate">Cú pháp hợp lệ, ma trận 2.000 ghế đã sẵn sàng xác thực preview.</p>
+</div>
+</div>
+<!-- Step 2 Pending -->
+<div class="flex items-center gap-3 p-3 rounded bg-surface-container-lowest border border-primary-container/40">
+<div class="w-7 h-7 rounded-full bg-surface-container-high text-primary flex items-center justify-center flex-shrink-0 text-xs font-bold border border-primary-container">
+              2
+            </div>
+<div class="min-w-0">
+<p class="text-xs font-semibold text-on-surface">Bước 2: Nạp và áp dụng sơ đồ vào hệ thống (Đang chờ xác nhận)</p>
+<p class="text-xs text-on-surface-variant truncate">Cần người vận hành duyệt bản xem trước tọa độ trước khi ghi cơ sở dữ liệu.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- FILE METADATA & SUMMARY BENTO GRID -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left: Uploaded File Info Card -->
+<div class="lg:col-span-1 bg-surface-container-lowest rounded-lg border border-outline-variant p-5 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="description">description</span>
+<h3 class="text-sm font-headline font-semibold text-on-surface">Thông tin tệp nạp</h3>
+</div>
+<span class="inline-flex items-center gap-1 text-[11px] font-medium text-primary px-2 py-0.5 rounded bg-surface-container">
+<span class="material-symbols-outlined text-xs" data-icon="task_alt">task_alt</span>
+                Đã phân tích
+              </span>
+</div>
+<div class="mt-4 space-y-3"><div><p class="text-xs text-outline">Tên tệp JSON</p><p class="text-sm font-mono font-medium text-on-surface mt-0.5">seats-demo-2000.json</p></div><div class="grid grid-cols-2 gap-2 text-xs"><div><p class="text-outline">Dung lượng</p><p class="font-medium text-on-surface mt-0.5">842 KB</p></div><div><p class="text-outline">Định dạng</p><p class="font-medium text-on-surface mt-0.5">JSON</p></div></div><div class="p-3 bg-surface-container-low rounded border border-outline-variant/70"><div class="flex items-center gap-1.5 text-xs text-primary font-medium"><span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>Tệp hợp lệ · 2.000 ghế · 3 hạng</div><p class="text-[11px] text-on-surface-variant mt-1">Cấu trúc dữ liệu đã được đối soát sẵn sàng để nạp.</p></div></div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant text-[11px] text-outline flex items-center justify-between">
+<span>Thời gian nạp kiểm thử:</span>
+<span>Hôm nay 14:28:10</span>
+</div>
+</div>
+<!-- Right: Seating Distribution Stats Card -->
+<div class="lg:col-span-2 bg-surface-container-lowest rounded-lg border border-outline-variant p-5">
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="table_chart">table_chart</span>
+<h3 class="text-sm font-headline font-semibold text-on-surface">Phân bố hạng vé theo sơ đồ JSON</h3>
+</div>
+<span class="text-xs font-medium text-on-surface">Tổng cộng: <strong class="text-primary font-bold text-sm">2.000 ghế</strong> / 2.000 ghế tối đa</span>
+</div>
+<div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+<!-- VIP -->
+<div class="p-3.5 rounded border border-outline-variant bg-surface-bright flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-primary uppercase tracking-wider">Khu vực VIP</span>
+<span class="w-3 h-3 rounded-full bg-primary-container"></span>
+</div>
+<div class="mt-2 text-xl font-bold font-headline text-on-surface">400 <span class="text-xs font-normal text-on-surface-variant">ghế</span></div>
+<p class="text-xs font-medium text-primary mt-1">1.200.000 ₫</p>
+</div>
+<p class="text-[11px] text-outline mt-3">Hàng A - B (Khu vực sát sân khấu)</p>
+</div>
+<!-- Tiêu chuẩn -->
+<div class="p-3.5 rounded border border-outline-variant bg-surface-bright flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-secondary uppercase tracking-wider">Khu Tiêu chuẩn</span>
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+</div>
+<div class="mt-2 text-xl font-bold font-headline text-on-surface">1.000 <span class="text-xs font-normal text-on-surface-variant">ghế</span></div>
+<p class="text-xs font-medium text-secondary mt-1">650.000 ₫</p>
+</div>
+<p class="text-[11px] text-outline mt-3">Hàng C - D - E - F (Tầng trệt chính)</p>
+</div>
+<!-- Ban công -->
+<div class="p-3.5 rounded border border-outline-variant bg-surface-bright flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-tertiary uppercase tracking-wider">Khu Ban công</span>
+<span class="w-3 h-3 rounded-full bg-tertiary"></span>
+</div>
+<div class="mt-2 text-xl font-bold font-headline text-on-surface">600 <span class="text-xs font-normal text-on-surface-variant">ghế</span></div>
+<p class="text-xs font-medium text-tertiary mt-1">350.000 ₫</p>
+</div>
+<p class="text-[11px] text-outline mt-3">Hàng G - H (Tầng lầu ban công)</p>
+</div>
+</div>
+<!-- Proportion meter bar -->
+<div class="mt-4">
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden flex">
+<div class="h-full bg-primary-container" style="width: 20%;" title="VIP: 20%"></div>
+<div class="h-full bg-secondary" style="width: 50%;" title="Tiêu chuẩn: 50%"></div>
+<div class="h-full bg-tertiary" style="width: 30%;" title="Ban công: 30%"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-outline mt-1.5">
+<span>VIP: 20% (400)</span>
+<span>Tiêu chuẩn: 50% (1.000)</span>
+<span>Ban công: 30% (600)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- VISUAL PREVIEW SECTION -->
+<section class="bg-surface-container-lowest rounded-lg border border-outline-variant overflow-hidden">
+<!-- Section Header with Controls -->
+<div class="px-5 py-3.5 border-b border-outline-variant flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="preview">preview</span>
+<h3 class="text-sm font-headline font-semibold text-on-surface">Sơ đồ mô phỏng tọa độ ghế (Visual Map Preview)</h3>
+<span class="text-xs text-outline">· Nhà hát Ánh Dương</span>
+</div>
+<!-- Zoom & Map Controls -->
+<div class="flex items-center gap-1.5">
+<div class="inline-flex rounded border border-outline-variant bg-surface-container-lowest p-0.5 text-xs text-on-surface-variant">
+<button class="px-2 py-1 hover:bg-surface-container-low rounded text-xs flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="zoom_out">zoom_out</span>
+                Thu nhỏ
+              </button>
+<div class="w-[1px] bg-outline-variant my-1"></div>
+<button class="px-2 py-1 hover:bg-surface-container-low rounded text-xs flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="zoom_in">zoom_in</span>
+                Phóng to
+              </button>
+<div class="w-[1px] bg-outline-variant my-1"></div>
+<button class="px-2 py-1 bg-surface-container-low font-medium text-primary rounded text-xs flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="fit_screen">fit_screen</span>
+                Vừa màn hình
+              </button>
+</div>
+</div>
+</div>
+<!-- Warning Callout Banner -->
+<div class="bg-surface-container-low px-5 py-2.5 border-b border-outline-variant flex items-center gap-2.5 text-xs text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base" data-icon="info">info</span><span><strong>Xem trước chưa lưu dữ liệu</strong> — Vui lòng kiểm tra sơ đồ trước khi hoàn tất nạp.</span></div>
+<!-- SEAT CANVAS PREVIEW -->
+<div class="p-6 bg-background flex flex-col items-center select-none overflow-x-auto">
+<!-- Stage Indicator Top -->
+<div class="w-full max-w-2xl mb-8 flex flex-col items-center">
+<div class="w-full py-2 bg-surface-container-high rounded border border-outline text-center text-xs font-headline font-semibold text-on-surface tracking-widest uppercase shadow-sm">
+              [ SÂN KHẤU BIỂU DIỄN - HƯỚNG NHÌN ]
+            </div>
+<div class="w-48 h-1 bg-primary-container/30 mx-auto mt-1 rounded-full"></div>
+<p class="text-[11px] text-outline mt-1.5 font-label">Khu vực âm thanh &amp; ánh sáng kỹ thuật chính diện</p>
+</div>
+<!-- SEAT MATRIX GRID -->
+<div class="space-y-6 w-full max-w-3xl">
+<!-- SECTION 1: VIP (Rows A & B) -->
+<div class="bg-surface-container-lowest p-4 rounded-lg border border-outline-variant">
+<div class="flex items-center justify-between mb-3 text-xs">
+<span class="font-semibold text-primary">KHU VỰC VIP (Hàng A, B · 400 Ghế · 1.200.000 ₫)</span>
+<span class="text-outline text-[11px]">Lối thoát hiểm cánh trái / phải</span>
+</div>
+<!-- Row A -->
+<div class="flex items-center gap-3 my-1.5">
+<span class="w-5 text-xs font-mono text-outline font-semibold text-center">A</span>
+<!-- Left Block -->
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-primary text-primary" title="A-01">1</span>
+<span class="seat-glyph border border-primary text-primary" title="A-02">2</span>
+<span class="seat-glyph border border-primary text-primary" title="A-03">3</span>
+<span class="seat-glyph border border-primary text-primary" title="A-04">4</span>
+<span class="seat-glyph border border-primary text-primary" title="A-05">5</span>
+<span class="seat-glyph border border-primary text-primary" title="A-06">6</span>
+<span class="seat-glyph border border-primary text-primary" title="A-07">7</span>
+<span class="seat-glyph border border-primary text-primary" title="A-08">8</span>
+</div>
+<!-- Aisle -->
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<!-- Center Block -->
+<div class="flex items-center gap-1 flex-1 justify-center">
+<span class="seat-glyph border border-primary text-primary" title="A-09">9</span>
+<span class="seat-glyph border border-primary text-primary" title="A-10">10</span>
+<span class="seat-glyph border border-primary text-primary" title="A-11">11</span>
+<span class="seat-glyph border border-primary text-primary" title="A-12">12</span>
+<span class="seat-glyph border border-primary text-primary" title="A-13">13</span>
+<span class="seat-glyph border border-primary text-primary" title="A-14">14</span>
+<span class="seat-glyph border border-primary text-primary" title="A-15">15</span>
+<span class="seat-glyph border border-primary text-primary" title="A-16">16</span>
+<span class="seat-glyph border border-primary text-primary" title="A-17">17</span>
+<span class="seat-glyph border border-primary text-primary" title="A-18">18</span>
+</div>
+<!-- Aisle -->
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<!-- Right Block -->
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-primary text-primary" title="A-19">19</span>
+<span class="seat-glyph border border-primary text-primary" title="A-20">20</span>
+<span class="seat-glyph border border-primary text-primary" title="A-21">21</span>
+<span class="seat-glyph border border-primary text-primary" title="A-22">22</span>
+<span class="seat-glyph border border-primary text-primary" title="A-23">23</span>
+<span class="seat-glyph border border-primary text-primary" title="A-24">24</span>
+<span class="seat-glyph border border-primary text-primary" title="A-25">25</span>
+<span class="seat-glyph border border-primary text-primary" title="A-26">26</span>
+</div>
+</div>
+<!-- Row B -->
+<div class="flex items-center gap-3 my-1.5">
+<span class="w-5 text-xs font-mono text-outline font-semibold text-center">B</span>
+<!-- Left Block -->
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-primary text-primary" title="B-01">1</span>
+<span class="seat-glyph border border-primary text-primary" title="B-02">2</span>
+<span class="seat-glyph border border-primary text-primary" title="B-03">3</span>
+<span class="seat-glyph border border-primary text-primary" title="B-04">4</span>
+<span class="seat-glyph border border-primary text-primary" title="B-05">5</span>
+<span class="seat-glyph border border-primary text-primary" title="B-06">6</span>
+<span class="seat-glyph border border-primary text-primary" title="B-07">7</span>
+<span class="seat-glyph border border-primary text-primary" title="B-08">8</span>
+</div>
+<!-- Aisle -->
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<!-- Center Block -->
+<div class="flex items-center gap-1 flex-1 justify-center">
+<span class="seat-glyph border border-primary text-primary" title="B-09">9</span>
+<span class="seat-glyph border border-primary text-primary" title="B-10">10</span>
+<span class="seat-glyph border border-primary text-primary" title="B-11">11</span>
+<span class="seat-glyph border border-primary text-primary" title="B-12">12</span>
+<span class="seat-glyph border border-primary text-primary" title="B-13">13</span>
+<span class="seat-glyph border border-primary text-primary" title="B-14">14</span>
+<span class="seat-glyph border border-primary text-primary" title="B-15">15</span>
+<span class="seat-glyph border border-primary text-primary" title="B-16">16</span>
+<span class="seat-glyph border border-primary text-primary" title="B-17">17</span>
+<span class="seat-glyph border border-primary text-primary" title="B-18">18</span>
+</div>
+<!-- Aisle -->
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<!-- Right Block -->
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-primary text-primary" title="B-19">19</span>
+<span class="seat-glyph border border-primary text-primary" title="B-20">20</span>
+<span class="seat-glyph border border-primary text-primary" title="B-21">21</span>
+<span class="seat-glyph border border-primary text-primary" title="B-22">22</span>
+<span class="seat-glyph border border-primary text-primary" title="B-23">23</span>
+<span class="seat-glyph border border-primary text-primary" title="B-24">24</span>
+<span class="seat-glyph border border-primary text-primary" title="B-25">25</span>
+<span class="seat-glyph border border-primary text-primary" title="B-26">26</span>
+</div>
+</div>
+</div>
+<!-- SECTION 2: TIÊU CHUẨN (Rows C, D, E, F) -->
+<div class="bg-surface-container-lowest p-4 rounded-lg border border-outline-variant">
+<div class="flex items-center justify-between mb-3 text-xs">
+<span class="font-semibold text-secondary">KHU TIÊU CHUẨN (Hàng C, D, E, F · 1.000 Ghế · 650.000 ₫)</span>
+<span class="text-outline text-[11px]">Trệt trung tâm</span>
+</div>
+<!-- Row C -->
+<div class="flex items-center gap-3 my-1.5">
+<span class="w-5 text-xs font-mono text-outline font-semibold text-center">C</span>
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-secondary text-secondary" title="C-01">1</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-02">2</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-03">3</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-04">4</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-05">5</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-06">6</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-07">7</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-08">8</span>
+</div>
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<div class="flex items-center gap-1 flex-1 justify-center">
+<span class="seat-glyph border border-secondary text-secondary" title="C-09">9</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-10">10</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-11">11</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-12">12</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-13">13</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-14">14</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-15">15</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-16">16</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-17">17</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-18">18</span>
+</div>
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-secondary text-secondary" title="C-19">19</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-20">20</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-21">21</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-22">22</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-23">23</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-24">24</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-25">25</span>
+<span class="seat-glyph border border-secondary text-secondary" title="C-26">26</span>
+</div>
+</div>
+<!-- Row D -->
+<div class="flex items-center gap-3 my-1.5">
+<span class="w-5 text-xs font-mono text-outline font-semibold text-center">D</span>
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-secondary text-secondary">1</span>
+<span class="seat-glyph border border-secondary text-secondary">2</span>
+<span class="seat-glyph border border-secondary text-secondary">3</span>
+<span class="seat-glyph border border-secondary text-secondary">4</span>
+<span class="seat-glyph border border-secondary text-secondary">5</span>
+<span class="seat-glyph border border-secondary text-secondary">6</span>
+<span class="seat-glyph border border-secondary text-secondary">7</span>
+<span class="seat-glyph border border-secondary text-secondary">8</span>
+</div>
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<div class="flex items-center gap-1 flex-1 justify-center">
+<span class="seat-glyph border border-secondary text-secondary">9</span>
+<span class="seat-glyph border border-secondary text-secondary">10</span>
+<span class="seat-glyph border border-secondary text-secondary">11</span>
+<span class="seat-glyph border border-secondary text-secondary">12</span>
+<span class="seat-glyph border border-secondary text-secondary">13</span>
+<span class="seat-glyph border border-secondary text-secondary">14</span>
+<span class="seat-glyph border border-secondary text-secondary">15</span>
+<span class="seat-glyph border border-secondary text-secondary">16</span>
+<span class="seat-glyph border border-secondary text-secondary">17</span>
+<span class="seat-glyph border border-secondary text-secondary">18</span>
+</div>
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-secondary text-secondary">19</span>
+<span class="seat-glyph border border-secondary text-secondary">20</span>
+<span class="seat-glyph border border-secondary text-secondary">21</span>
+<span class="seat-glyph border border-secondary text-secondary">22</span>
+<span class="seat-glyph border border-secondary text-secondary">23</span>
+<span class="seat-glyph border border-secondary text-secondary">24</span>
+<span class="seat-glyph border border-secondary text-secondary">25</span>
+<span class="seat-glyph border border-secondary text-secondary">26</span>
+</div>
+</div>
+<!-- Row E -->
+<div class="flex items-center gap-3 my-1.5 opacity-90">
+<span class="w-5 text-xs font-mono text-outline font-semibold text-center">E</span>
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-secondary text-secondary">1</span>
+<span class="seat-glyph border border-secondary text-secondary">2</span>
+<span class="seat-glyph border border-secondary text-secondary">3</span>
+<span class="seat-glyph border border-secondary text-secondary">4</span>
+<span class="seat-glyph border border-secondary text-secondary">5</span>
+<span class="seat-glyph border border-secondary text-secondary">6</span>
+<span class="seat-glyph border border-secondary text-secondary">7</span>
+<span class="seat-glyph border border-secondary text-secondary">8</span>
+</div>
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<div class="flex items-center gap-1 flex-1 justify-center">
+<span class="seat-glyph border border-secondary text-secondary">9</span>
+<span class="seat-glyph border border-secondary text-secondary">10</span>
+<span class="seat-glyph border border-secondary text-secondary">11</span>
+<span class="seat-glyph border border-secondary text-secondary">12</span>
+<span class="seat-glyph border border-secondary text-secondary">13</span>
+<span class="seat-glyph border border-secondary text-secondary">14</span>
+<span class="seat-glyph border border-secondary text-secondary">15</span>
+<span class="seat-glyph border border-secondary text-secondary">16</span>
+<span class="seat-glyph border border-secondary text-secondary">17</span>
+<span class="seat-glyph border border-secondary text-secondary">18</span>
+</div>
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-secondary text-secondary">19</span>
+<span class="seat-glyph border border-secondary text-secondary">20</span>
+<span class="seat-glyph border border-secondary text-secondary">21</span>
+<span class="seat-glyph border border-secondary text-secondary">22</span>
+<span class="seat-glyph border border-secondary text-secondary">23</span>
+<span class="seat-glyph border border-secondary text-secondary">24</span>
+<span class="seat-glyph border border-secondary text-secondary">25</span>
+<span class="seat-glyph border border-secondary text-secondary">26</span>
+</div>
+</div>
+<!-- Row F -->
+<div class="flex items-center gap-3 my-1.5 opacity-90">
+<span class="w-5 text-xs font-mono text-outline font-semibold text-center">F</span>
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-secondary text-secondary">1</span>
+<span class="seat-glyph border border-secondary text-secondary">2</span>
+<span class="seat-glyph border border-secondary text-secondary">3</span>
+<span class="seat-glyph border border-secondary text-secondary">4</span>
+<span class="seat-glyph border border-secondary text-secondary">5</span>
+<span class="seat-glyph border border-secondary text-secondary">6</span>
+<span class="seat-glyph border border-secondary text-secondary">7</span>
+<span class="seat-glyph border border-secondary text-secondary">8</span>
+</div>
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<div class="flex items-center gap-1 flex-1 justify-center">
+<span class="seat-glyph border border-secondary text-secondary">9</span>
+<span class="seat-glyph border border-secondary text-secondary">10</span>
+<span class="seat-glyph border border-secondary text-secondary">11</span>
+<span class="seat-glyph border border-secondary text-secondary">12</span>
+<span class="seat-glyph border border-secondary text-secondary">13</span>
+<span class="seat-glyph border border-secondary text-secondary">14</span>
+<span class="seat-glyph border border-secondary text-secondary">15</span>
+<span class="seat-glyph border border-secondary text-secondary">16</span>
+<span class="seat-glyph border border-secondary text-secondary">17</span>
+<span class="seat-glyph border border-secondary text-secondary">18</span>
+</div>
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-secondary text-secondary">19</span>
+<span class="seat-glyph border border-secondary text-secondary">20</span>
+<span class="seat-glyph border border-secondary text-secondary">21</span>
+<span class="seat-glyph border border-secondary text-secondary">22</span>
+<span class="seat-glyph border border-secondary text-secondary">23</span>
+<span class="seat-glyph border border-secondary text-secondary">24</span>
+<span class="seat-glyph border border-secondary text-secondary">25</span>
+<span class="seat-glyph border border-secondary text-secondary">26</span>
+</div>
+</div>
+</div>
+<!-- SECTION 3: BAN CÔNG (Rows G & H) -->
+<div class="bg-surface-container-lowest p-4 rounded-lg border border-outline-variant">
+<div class="flex items-center justify-between mb-3 text-xs">
+<span class="font-semibold text-tertiary">KHU BAN CÔNG (Hàng G, H · 600 Ghế · 350.000 ₫)</span>
+<span class="text-outline text-[11px]">Tầng lầu cao</span>
+</div>
+<!-- Row G -->
+<div class="flex items-center gap-3 my-1.5">
+<span class="w-5 text-xs font-mono text-outline font-semibold text-center">G</span>
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-tertiary text-tertiary">1</span>
+<span class="seat-glyph border border-tertiary text-tertiary">2</span>
+<span class="seat-glyph border border-tertiary text-tertiary">3</span>
+<span class="seat-glyph border border-tertiary text-tertiary">4</span>
+<span class="seat-glyph border border-tertiary text-tertiary">5</span>
+<span class="seat-glyph border border-tertiary text-tertiary">6</span>
+<span class="seat-glyph border border-tertiary text-tertiary">7</span>
+<span class="seat-glyph border border-tertiary text-tertiary">8</span>
+</div>
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<div class="flex items-center gap-1 flex-1 justify-center">
+<span class="seat-glyph border border-tertiary text-tertiary">9</span>
+<span class="seat-glyph border border-tertiary text-tertiary">10</span>
+<span class="seat-glyph border border-tertiary text-tertiary">11</span>
+<span class="seat-glyph border border-tertiary text-tertiary">12</span>
+<span class="seat-glyph border border-tertiary text-tertiary">13</span>
+<span class="seat-glyph border border-tertiary text-tertiary">14</span>
+<span class="seat-glyph border border-tertiary text-tertiary">15</span>
+<span class="seat-glyph border border-tertiary text-tertiary">16</span>
+<span class="seat-glyph border border-tertiary text-tertiary">17</span>
+<span class="seat-glyph border border-tertiary text-tertiary">18</span>
+</div>
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-tertiary text-tertiary">19</span>
+<span class="seat-glyph border border-tertiary text-tertiary">20</span>
+<span class="seat-glyph border border-tertiary text-tertiary">21</span>
+<span class="seat-glyph border border-tertiary text-tertiary">22</span>
+<span class="seat-glyph border border-tertiary text-tertiary">23</span>
+<span class="seat-glyph border border-tertiary text-tertiary">24</span>
+<span class="seat-glyph border border-tertiary text-tertiary">25</span>
+<span class="seat-glyph border border-tertiary text-tertiary">26</span>
+</div>
+</div>
+<!-- Row H -->
+<div class="flex items-center gap-3 my-1.5">
+<span class="w-5 text-xs font-mono text-outline font-semibold text-center">H</span>
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-tertiary text-tertiary">1</span>
+<span class="seat-glyph border border-tertiary text-tertiary">2</span>
+<span class="seat-glyph border border-tertiary text-tertiary">3</span>
+<span class="seat-glyph border border-tertiary text-tertiary">4</span>
+<span class="seat-glyph border border-tertiary text-tertiary">5</span>
+<span class="seat-glyph border border-tertiary text-tertiary">6</span>
+<span class="seat-glyph border border-tertiary text-tertiary">7</span>
+<span class="seat-glyph border border-tertiary text-tertiary">8</span>
+</div>
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<div class="flex items-center gap-1 flex-1 justify-center">
+<span class="seat-glyph border border-tertiary text-tertiary">9</span>
+<span class="seat-glyph border border-tertiary text-tertiary">10</span>
+<span class="seat-glyph border border-tertiary text-tertiary">11</span>
+<span class="seat-glyph border border-tertiary text-tertiary">12</span>
+<span class="seat-glyph border border-tertiary text-tertiary">13</span>
+<span class="seat-glyph border border-tertiary text-tertiary">14</span>
+<span class="seat-glyph border border-tertiary text-tertiary">15</span>
+<span class="seat-glyph border border-tertiary text-tertiary">16</span>
+<span class="seat-glyph border border-tertiary text-tertiary">17</span>
+<span class="seat-glyph border border-tertiary text-tertiary">18</span>
+</div>
+<span class="w-8 text-center text-[10px] text-outline font-mono">lối</span>
+<div class="flex items-center gap-1">
+<span class="seat-glyph border border-tertiary text-tertiary">19</span>
+<span class="seat-glyph border border-tertiary text-tertiary">20</span>
+<span class="seat-glyph border border-tertiary text-tertiary">21</span>
+<span class="seat-glyph border border-tertiary text-tertiary">22</span>
+<span class="seat-glyph border border-tertiary text-tertiary">23</span>
+<span class="seat-glyph border border-tertiary text-tertiary">24</span>
+<span class="seat-glyph border border-tertiary text-tertiary">25</span>
+<span class="seat-glyph border border-tertiary text-tertiary">26</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Legend under Preview -->
+<div class="mt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="seat-glyph border border-outline bg-surface-container-lowest text-outline">○</span>
+<span>Ghế trống / Khả dụng (Hollow)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="seat-glyph bg-primary-container text-on-primary">✓</span>
+<span>Giữ chỗ bởi bạn (Blue + Check)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="seat-glyph bg-surface-container-high text-on-surface-variant">🔒</span>
+<span>Đang được giữ bởi người khác</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="seat-glyph bg-inverse-surface text-inverse-on-surface">✕</span>
+<span>Đã thanh toán (Sold Dark + X)</span>
+</div>
+</div>
+</div>
+</section>
+<!-- CRITICAL GUARDRAILS / TECHNICAL CONSTRAINTS CARD -->
+<section class="bg-surface-container-lowest rounded-lg border border-outline-variant p-5"><div class="flex items-start gap-3"><div class="p-2 rounded bg-surface-container text-primary flex-shrink-0"><span class="material-symbols-outlined" data-icon="lock_clock">lock_clock</span></div><div class="space-y-1 flex-1"><h4 class="text-sm font-headline font-semibold text-on-surface">Lưu ý khi nạp sơ đồ</h4><p class="text-xs text-on-surface-variant leading-relaxed">Chỉ áp dụng khi suất diễn ở trạng thái <strong>Nháp (Draft)</strong> và chưa mở bán vé. Sơ đồ ghế sẽ được áp dụng trực tiếp từ tệp JSON.</p></div></div></section>
+<!-- ACTION FOOTER / CONFIRMATION PANEL -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-2 text-xs text-on-surface-variant">
+</div>
+<div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+<!-- Secondary Action -->
+<button class="px-4 py-2 rounded text-xs font-medium text-on-surface-variant border border-outline-variant hover:bg-surface-container-low transition-colors duration-150" type="button">
+            Hủy / Chọn tệp JSON khác
+          </button>
+<!-- Primary Action (Single high contrast primary) -->
+<button class="px-5 py-2 rounded text-xs font-medium bg-primary-container text-on-primary hover:bg-primary transition-colors duration-150 flex items-center gap-1.5 shadow-sm" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="publish">publish</span>
+            Nạp sơ đồ vào suất diễn
+          </button>
+</div>
+</div>
+<!-- Footer Metadata -->
+<div class="pb-6 text-center text-xs text-outline">
+<p>Vé Sự Kiện · Nền tảng phân phối và vận hành sự kiện trực tiếp · Đêm nhạc Tháng Mười (16/10/2026)</p>
+<p class="text-[11px] mt-0.5">Dữ liệu kiểm thử nội bộ phục vụ nghiệm thu Sprint 2 · Không phục vụ giao dịch tài chính công khai.</p>
+</div>
+</main>
+</div>
+</body></html>

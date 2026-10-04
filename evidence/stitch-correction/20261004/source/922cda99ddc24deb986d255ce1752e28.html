@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M07 Xem sơ đồ ghế (Read-only) · Vé sự kiện</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface": "#191b23",
+            "inverse-surface": "#2e3038",
+            "on-secondary": "#ffffff",
+            "on-primary": "#ffffff",
+            "secondary": "#4c5d8b",
+            "primary": "#0045a9",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed": "#031944",
+            "on-secondary-container": "#415381",
+            "tertiary-fixed": "#ffdbcd",
+            "surface-variant": "#e1e2ec",
+            "on-tertiary-container": "#ffd8c9",
+            "inverse-primary": "#b1c5ff",
+            "surface-container": "#ededf7",
+            "surface-bright": "#faf8ff",
+            "primary-container": "#175cd3",
+            "on-primary-fixed": "#001847",
+            "outline": "#737785",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "outline-variant": "#c3c6d6",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-error-container": "#93000a",
+            "surface-dim": "#d9d9e3",
+            "on-primary-container": "#d7e0ff",
+            "surface-container-low": "#f3f3fd",
+            "on-tertiary": "#ffffff",
+            "inverse-on-surface": "#f0f0fa",
+            "secondary-fixed-dim": "#b4c5fa",
+            "surface-tint": "#0957ce",
+            "on-tertiary-fixed": "#360f00",
+            "surface-container-highest": "#e1e2ec",
+            "on-secondary-fixed-variant": "#344572",
+            "surface": "#faf8ff",
+            "primary-fixed-dim": "#b1c5ff",
+            "surface-container-high": "#e7e7f2",
+            "on-surface-variant": "#424654",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "background": "#faf8ff",
+            "tertiary-container": "#ac4100",
+            "secondary-container": "#b6c8fd",
+            "secondary-fixed": "#dae2ff",
+            "tertiary-fixed-dim": "#ffb597",
+            "primary-fixed": "#dae2ff",
+            "tertiary": "#853000",
+            "on-background": "#191b23",
+            "error": "#ba1a1a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      line-height: 1;
+    }
+    /* Quiet Operations custom subtle scrollbar */
+    .seat-scroll::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .seat-scroll::-webkit-scrollbar-thumb {
+      background: #c3c6d6;
+      border-radius: 4px;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased flex justify-center min-h-screen">
+<!-- 390px Mobile Canvas Container -->
+<main class="w-full max-w-[390px] min-h-screen bg-surface-container-lowest flex flex-col relative pb-6 shadow-sm border-x border-outline-variant">
+<!-- Top Bar Quản Trị (44px touch targets, Quiet Operations) -->
+<header class="sticky top-0 z-40 bg-surface-container-lowest px-4 h-14 flex items-center justify-between border-b border-outline-variant">
+<div class="flex items-center gap-2">
+<button aria-label="Menu Drawer" class="w-11 h-11 flex items-center justify-center rounded-lg text-on-surface hover:bg-surface-container transition-colors duration-150 active:scale-95">
+<span class="material-symbols-outlined text-xl">menu</span>
+</button>
+<div class="flex flex-col">
+<span class="font-headline text-xs font-bold text-primary tracking-tight">Vé Sự Kiện · Admin</span>
+<h1 class="font-headline text-sm font-semibold text-on-surface leading-tight truncate max-w-[190px]">07 Xem sơ đồ ghế</h1>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<span class="px-2 py-0.5 text-[11px] font-medium rounded bg-surface-container text-on-surface-variant border border-outline-variant">
+          Read-only
+        </span>
+<button aria-label="Làm mới" class="w-11 h-11 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors duration-150">
+<span class="material-symbols-outlined text-lg">refresh</span>
+</button>
+</div>
+</header>
+<!-- Context Metadata Banner -->
+<div class="bg-surface-container-low px-4 py-2.5 border-b border-outline-variant">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="material-symbols-outlined text-secondary text-base flex-shrink-0">theater_comedy</span>
+<p class="text-xs font-semibold text-on-surface truncate">Đêm nhạc Tháng Mười · Suất 01</p>
+</div>
+<span class="text-[11px] font-medium text-secondary flex-shrink-0">16/10/2026 19:30</span>
+</div>
+<p class="text-[11px] text-on-surface-variant mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">location_on</span>
+        Nhà hát Ánh Dương (địa điểm giả) · Khán phòng Grand Hall
+      </p>
+</div>
+<!-- Huy hiệu chế độ bảo vệ -->
+<section class="mx-4 mt-3 px-3 py-2 bg-surface-container rounded-lg border border-outline-variant flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-base flex-shrink-0 mt-0.5">visibility</span>
+<div class="text-[11px] leading-tight">
+<span class="font-semibold text-on-surface">Chế độ: CHỈ XEM (Read-only)</span>
+<p class="text-on-surface-variant mt-0.5">Thao tác chạm không làm thay đổi trạng thái ghế trên hệ thống. Server locks được bảo lưu toàn vẹn.</p>
+</div>
+</section>
+<!-- Dòng trạng thái đồng bộ -->
+<div class="mx-4 mt-2 px-3 py-1.5 bg-surface-container-low rounded border border-outline-variant flex items-center justify-between text-[11px] text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+<span>Đồng bộ: <strong class="text-on-surface font-medium">14:32:10</strong></span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-outline">sync</span>
+<span>2.000 ghế · Tự động</span>
+</div>
+</div>
+<!-- Thanh công cụ nhanh (Quick Operations) -->
+<div class="px-4 mt-3 flex items-center gap-2">
+<button class="flex-1 h-9 px-3 bg-surface-container-lowest border border-outline-variant rounded-md text-xs font-medium text-on-surface flex items-center justify-center gap-1.5 hover:bg-surface-container active:scale-95 transition-all duration-150">
+<span class="material-symbols-outlined text-sm text-secondary">file_upload</span>
+<span>Nạp sơ đồ JSON mới</span>
+</button>
+<button class="flex-1 h-9 px-3 bg-surface-container-lowest border border-outline-variant rounded-md text-xs font-medium text-on-surface flex items-center justify-center gap-1.5 hover:bg-surface-container active:scale-95 transition-all duration-150">
+<span class="material-symbols-outlined text-sm text-secondary">price_change</span>
+<span>Chỉnh sửa bảng giá</span>
+</button>
+</div>
+<!-- Chú thích ký hiệu ghế theo chuẩn Sprint 2 -->
+<div class="px-4 mt-3 py-2 bg-surface-container-low border-y border-outline-variant flex items-center justify-around text-[11px]"><div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[10px] font-mono text-outline"></span><span class="text-on-surface">Còn trống</span></div><div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-sm bg-primary-container text-white flex items-center justify-center"><span class="material-symbols-outlined text-[11px]">lock</span></span><span class="text-on-surface">Đang được giữ</span></div><div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-sm bg-on-surface text-surface-container-lowest flex items-center justify-center"><span class="material-symbols-outlined text-[11px]">close</span></span><span class="text-on-surface">Đã bán</span></div></div>
+<!-- Khu vực sơ đồ ghế trực tiếp thu nhỏ có hỗ trợ cuộn / pan (Sân khấu + Matrix ghế) -->
+<section class="mt-2 mx-4 border border-outline-variant rounded-lg bg-surface-container-low overflow-hidden flex flex-col">
+<!-- Header thanh công cụ zoom / pan -->
+<div class="px-3 py-1.5 bg-surface-container border-b border-outline-variant flex items-center justify-between text-[11px]">
+<span class="text-on-surface-variant font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">pinch</span>
+          Vuốt để cuộn ma trận ghế (100%)
+        </span>
+<div class="flex items-center gap-1">
+<button aria-label="Zoom out" class="w-7 h-7 flex items-center justify-center rounded bg-surface-container-lowest border border-outline-variant text-on-surface active:bg-surface-dim">
+<span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<button aria-label="Zoom in" class="w-7 h-7 flex items-center justify-center rounded bg-surface-container-lowest border border-outline-variant text-on-surface active:bg-surface-dim">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+</div>
+<!-- Sân khấu đại diện -->
+<div class="pt-3 pb-2 flex flex-col items-center">
+<div class="w-48 h-3 rounded-full bg-secondary-fixed flex items-center justify-center border border-secondary/30">
+<span class="text-[9px] uppercase tracking-wider font-semibold text-on-secondary-container">Sân khấu biểu diễn</span>
+</div>
+</div>
+<!-- Grid sơ đồ ghế dạng scroll ngang/dọc -->
+<div class="seat-scroll overflow-x-auto overflow-y-hidden px-4 py-3 bg-surface-container-lowest border-t border-outline-variant">
+<div class="min-w-[420px] flex flex-col gap-2 pb-2">
+<!-- Hàng A (VIP 1.200.000 ₫) -->
+<div class="flex items-center gap-1.5">
+<span class="w-4 text-[10px] font-bold text-on-surface-variant text-center">A</span>
+<div class="flex items-center gap-1">
+<!-- A01 - A06 -->
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">03</div>
+<div class="w-6 h-6 rounded-sm bg-primary-container text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">lock</span></div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">05</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">06</div>
+</div>
+<!-- Lối đi chính -->
+<div class="w-4 flex justify-center"><span class="text-[8px] text-outline">||</span></div>
+<!-- Trung tâm hàng A: A07 - A12 -->
+<div class="flex items-center gap-1">
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">09</div>
+<div class="w-6 h-6 rounded-sm bg-primary-container text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">lock</span></div>
+<div class="w-6 h-6 rounded-sm bg-primary-container text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">lock</span></div>
+<!-- GHẾ A12: ĐANG GIÁM ĐỊNH -->
+<div class="w-6 h-6 rounded-sm ring-2 ring-primary ring-offset-1 bg-primary text-white font-bold flex items-center justify-center text-[10px] shadow-sm">
+<span class="material-symbols-outlined text-[12px]">lock</span>
+</div>
+</div>
+<!-- Lối đi phụ -->
+<div class="w-3"></div>
+<!-- A13 - A16 -->
+<div class="flex items-center gap-1">
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">13</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">14</div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+</div>
+</div>
+<!-- Hàng B (VIP 1.200.000 ₫) -->
+<div class="flex items-center gap-1.5">
+<span class="w-4 text-[10px] font-bold text-on-surface-variant text-center">B</span>
+<div class="flex items-center gap-1">
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">02</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">03</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">04</div>
+<div class="w-6 h-6 rounded-sm bg-primary-container text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">lock</span></div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">06</div>
+</div>
+<div class="w-4 flex justify-center"><span class="text-[8px] text-outline">||</span></div>
+<div class="flex items-center gap-1">
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">10</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">11</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">12</div>
+</div>
+<div class="w-3"></div>
+<div class="flex items-center gap-1">
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">13</div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">16</div>
+</div>
+</div>
+<!-- Phân tầng Tiêu chuẩn (650.000 ₫) -->
+<div class="flex items-center gap-1.5 mt-1 pt-1 border-t border-outline-variant/60">
+<span class="w-4 text-[10px] font-bold text-on-surface-variant text-center">C</span>
+<div class="flex items-center gap-1">
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">01</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">02</div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm bg-primary-container text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">lock</span></div>
+<div class="w-6 h-6 rounded-sm bg-primary-container text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">lock</span></div>
+</div>
+<div class="w-4 flex justify-center"><span class="text-[8px] text-outline">||</span></div>
+<div class="flex items-center gap-1">
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">07</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">08</div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">11</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">12</div>
+</div>
+<div class="w-3"></div>
+<div class="flex items-center gap-1">
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">13</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">14</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">15</div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+</div>
+</div>
+<!-- Phân tầng Ban công (350.000 ₫) -->
+<div class="flex items-center gap-1.5">
+<span class="w-4 text-[10px] font-bold text-on-surface-variant text-center">D</span>
+<div class="flex items-center gap-1">
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">01</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">02</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">03</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">04</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">05</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">06</div>
+</div>
+<div class="w-4 flex justify-center"><span class="text-[8px] text-outline">||</span></div>
+<div class="flex items-center gap-1">
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">07</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">08</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">09</div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm bg-on-surface text-white flex items-center justify-center text-[10px]"><span class="material-symbols-outlined text-[10px]">close</span></div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">12</div>
+</div>
+<div class="w-3"></div>
+<div class="flex items-center gap-1">
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">13</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">14</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">15</div>
+<div class="w-6 h-6 rounded-sm border border-outline bg-surface-container-lowest flex items-center justify-center text-[9px] font-mono text-outline">16</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Mobile Inspector Bottom Sheet: Thanh giám định chi tiết ghế đang chọn xem -->
+<section class="mx-4 mt-3 rounded-lg border border-outline-variant bg-surface-container-lowest overflow-hidden shadow-sm"><div class="px-3.5 py-2.5 bg-surface-container-low border-b border-outline-variant flex items-center justify-between"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span><span class="text-xs font-bold text-on-surface">Chi tiết ghế</span></div><span class="text-[11px] px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">Chỉ xem</span></div><div class="p-3.5 space-y-3"><div class="flex items-baseline justify-between border-b border-outline-variant/60 pb-2.5"><div><div class="flex items-center gap-2"><span class="text-base font-bold text-on-surface">Ghế A12</span><span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-tertiary-fixed text-on-tertiary-fixed">Hạng VIP</span></div><p class="text-[11px] text-on-surface-variant mt-0.5">Hàng A · Ghế 12</p></div><div class="text-right"><span class="text-xs text-on-surface-variant block">Đơn giá</span><span class="text-sm font-bold text-on-surface">1.200.000 ₫</span></div></div><div class="space-y-2 text-[11px]"><div class="flex items-center justify-between py-1 border-b border-outline-variant/30"><span class="text-on-surface-variant">Trạng thái:</span><span class="font-medium text-primary flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-primary-container"></span>Đang được giữ</span></div><div class="flex items-center justify-between py-1"><span class="text-on-surface-variant">Thời điểm ghi nhận:</span><span class="text-on-surface font-medium">14:28:10</span></div></div></div></section>
+<!-- Khung tóm tắt tải phòng chiếu -->
+<!-- Phân chia hạng vé & Bảng giá tham chiếu -->
+<section class="mx-4 mt-3 mb-2 p-3 bg-surface-container-low rounded-lg border border-outline-variant">
+<span class="text-[11px] font-bold text-on-surface block mb-1.5">Bảng giá niêm yết suất diễn:</span>
+<div class="flex items-center justify-between text-xs py-1 border-b border-outline-variant/40">
+<span class="text-on-surface-variant">VIP (Hàng A - B)</span>
+<span class="font-semibold text-on-surface font-mono">1.200.000 ₫</span>
+</div>
+<div class="flex items-center justify-between text-xs py-1 border-b border-outline-variant/40">
+<span class="text-on-surface-variant">Tiêu chuẩn (Hàng C - G)</span>
+<span class="font-semibold text-on-surface font-mono">650.000 ₫</span>
+</div>
+<div class="flex items-center justify-between text-xs py-1">
+<span class="text-on-surface-variant">Ban công (Hàng D - F lầu 1)</span>
+<span class="font-semibold text-on-surface font-mono">350.000 ₫</span>
+</div>
+</section>
+<!-- Footer tiêu chuẩn dự án -->
+<footer class="flex flex-col items-center justify-center py-6 px-4 mt-auto space-y-2 w-full text-center border-t border-outline-variant bg-surface-container-low font-body text-xs text-on-surface-variant leading-relaxed"><span class="font-headline text-xs font-medium text-outline">Demo Sprint 2 · dữ liệu giả</span></footer>
+</main>
+</body></html>

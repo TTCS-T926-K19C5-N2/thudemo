@@ -1,0 +1,408 @@
+<!DOCTYPE html><html class="light" lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>02 Chi tiết suất diễn - Đêm nhạc Tháng Mười | Vé Sự Kiện</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed": "#dae2ff",
+            "primary": "#0045a9",
+            "secondary-fixed-dim": "#b4c5fa",
+            "inverse-surface": "#2e3038",
+            "tertiary-fixed": "#ffdbcd",
+            "error": "#ba1a1a",
+            "primary-fixed-dim": "#b1c5ff",
+            "on-background": "#191b23",
+            "on-tertiary-fixed": "#360f00",
+            "inverse-on-surface": "#f0f0fa",
+            "secondary-fixed": "#dae2ff",
+            "on-tertiary-container": "#ffd8c9",
+            "tertiary": "#853000",
+            "surface-variant": "#e1e2ec",
+            "on-surface-variant": "#424654",
+            "background": "#faf8ff",
+            "surface-dim": "#d9d9e3",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "inverse-primary": "#b1c5ff",
+            "on-primary-container": "#d7e0ff",
+            "surface": "#faf8ff",
+            "outline": "#737785",
+            "on-error": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "surface-container": "#ededf7",
+            "outline-variant": "#c3c6d6",
+            "on-secondary-fixed-variant": "#344572",
+            "secondary-container": "#b6c8fd",
+            "on-primary-fixed-variant": "#0040a0",
+            "primary-container": "#175cd3",
+            "on-secondary-container": "#415381",
+            "error-container": "#ffdad6",
+            "surface-container-lowest": "#ffffff",
+            "surface-bright": "#faf8ff",
+            "secondary": "#4c5d8b",
+            "surface-container-high": "#e7e7f2",
+            "surface-container-low": "#f3f3fd",
+            "on-secondary-fixed": "#031944",
+            "on-secondary": "#ffffff",
+            "surface-tint": "#0957ce",
+            "tertiary-fixed-dim": "#ffb597",
+            "surface-container-highest": "#e1e2ec",
+            "on-surface": "#191b23",
+            "on-primary": "#ffffff",
+            "on-error-container": "#93000a",
+            "tertiary-container": "#ac4100",
+            "on-primary-fixed": "#001847"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.filled {
+      font-variation-settings: 'FILL' 1;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased min-h-screen flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Header Notice Banner: Demo Sprint 2 -->
+<aside class="w-full bg-surface-container-high text-on-surface-variant text-xs py-2 px-6 text-center border-b border-outline-variant font-label flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm leading-none" data-icon="info">info</span>
+<span class="">Demo Sprint 2 · dữ liệu giả. Fictional events only.</span>
+</aside>
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-40">
+<div class="flex justify-between items-center w-full px-6 md:px-8 max-w-7xl mx-auto h-16">
+<!-- Brand Logo & Global Nav -->
+<div class="flex items-center gap-8">
+<a class="font-headline text-lg font-bold text-primary flex items-center gap-2 tracking-tight" href="#">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="confirmation_number">confirmation_number</span>
+<span class="">Vé Sự Kiện</span>
+</a>
+<!-- Desktop Navigation Links -->
+<nav class="hidden md:flex items-center gap-6 font-body text-sm font-medium tracking-normal">
+<a class="text-primary border-b-2 border-primary font-semibold pb-1" href="#">Sự kiện</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors pb-1" href="#">Nhà hát</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors pb-1" href="#">Vé của tôi</a>
+</nav>
+</div>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-4">
+<!-- City Selector -->
+<button class="hidden sm:flex items-center gap-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container px-2.5 py-1.5 rounded transition-colors duration-150" type="button">
+<span class="material-symbols-outlined text-base" data-icon="location_on">location_on</span>
+<span class="">TP. Hồ Chí Minh</span>
+<span class="material-symbols-outlined text-xs" data-icon="expand_more">expand_more</span>
+</button>
+<div class="h-4 w-px bg-outline-variant hidden sm:block"></div>
+<!-- Auth CTA -->
+<button class="px-4 py-2 text-xs font-semibold text-primary hover:bg-surface-container rounded transition-colors duration-150" type="button">
+          Đăng nhập
+        </button>
+<!-- Profile Avatar Placeholder -->
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-outline text-lg" data-icon="person">person</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Breadcrumbs & Screen Subtitle Bar -->
+<div class="w-full bg-surface-container-lowest border-b border-outline-variant/60">
+<div class="max-w-7xl mx-auto px-6 md:px-8 py-3 flex items-center justify-between">
+<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-medium text-on-surface-variant">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="home">home</span>
+          Trang chủ
+        </a>
+<span class="material-symbols-outlined text-xs text-outline" data-icon="chevron_right">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Sự kiện</a>
+<span class="material-symbols-outlined text-xs text-outline" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-surface font-semibold truncate max-w-xs sm:max-w-md">Đêm nhạc Tháng Mười</span>
+</nav>
+<div class="text-[11px] font-label text-outline uppercase tracking-wider font-semibold">
+        Màn hình: 02 Chi tiết suất diễn
+      </div>
+</div>
+</div>
+<!-- Main Content Layout -->
+<main class="flex-grow w-full max-w-7xl mx-auto px-6 md:px-8 py-8 space-y-10">
+<!-- Event Key Visual & Summary Hero Card -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden shadow-sm">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
+<!-- Left: Poster Column -->
+<div class="lg:col-span-4 bg-inverse-surface relative min-h-[340px] flex items-center justify-center p-6 overflow-hidden">
+<img class="w-full h-full max-h-[380px] object-cover rounded shadow-md border border-outline-variant/30" data-alt="An elegant classical orchestra concert poster on a sophisticated deep indigo and charcoal backdrop, showcasing golden glowing violin strings, autumn leaves silhouettes, and ambient stage lighting. The light mode event banner typography displays rich musical aesthetics with modern minimalist design layout." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv9uogRf2X5i6LbMLljOfow9DYdVHrj_FjDi6phSx2-vcfc0--TlOhVRWz-eOkdCw5_mvs_4RrxOlF_ZQQLDzpTiKlfjampBjslOLhm4x1qFKhKaodcpIKYEDmVaKEEIjUwTLlh8jZEUso7tz3ZDE8TACHbGZiRJ6YUkoyn2B0HIXbsrk5XY9J53m_ZTq0PcOtBSWfoomsPgLMUsDjmWwHBOMZ5W5mzrefDwizsr8T5nQZPO-0Pgd_3UJBx2ecXtsA5XQb0hdUH50">
+<div class="absolute top-4 left-4 bg-inverse-surface/90 text-inverse-on-surface text-[11px] font-medium tracking-wide uppercase px-2.5 py-1 rounded border border-outline-variant/30 backdrop-blur-sm">
+            Hòa nhạc thính phòng
+          </div>
+</div>
+<!-- Right: Event Overview & Key Metadata -->
+<div class="lg:col-span-8 p-6 md:p-8 flex flex-col justify-between space-y-6">
+<div class="space-y-4">
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-semibold bg-primary-fixed text-on-primary-fixed">
+<span class="material-symbols-outlined text-sm" data-icon="stars">stars</span>
+                Chương trình đặc sắc mùa thu
+              </span>
+<span class="text-xs text-on-surface-variant font-medium">Mã sự kiện: SK-2026-1016</span>
+</div>
+<h1 class="text-2xl md:text-3xl font-extrabold text-on-surface font-headline tracking-tight leading-tight">
+              Đêm nhạc Tháng Mười - Giai điệu Mùa Thu
+            </h1>
+<p class="text-sm md:text-base text-on-surface-variant leading-relaxed font-body max-w-3xl">
+              Chương trình hòa nhạc nghệ thuật tôn vinh những giai điệu mùa thu lãng mạn qua phần trình diễn của dàn nhạc thính phòng và các nghệ sĩ khách mời.
+            </p>
+<!-- Metadata Table / Row -->
+<div class="pt-2 grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-outline-variant/60">
+<div class="flex items-start gap-3">
+<div class="p-2 rounded bg-surface-container text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-lg" data-icon="calendar_today">calendar_today</span>
+</div>
+<div>
+<span class="text-xs font-semibold text-outline uppercase tracking-wider block">Thời gian biểu diễn</span>
+<span class="text-sm font-semibold text-on-surface">19:30 · Thứ Sáu, 16/10/2026</span>
+<span class="text-xs text-on-surface-variant block mt-0.5">Thời lượng ước tính: 120 phút</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="p-2 rounded bg-surface-container text-primary flex-shrink-0"><span class="text-xs font-semibold text-outline uppercase tracking-wider block">Địa điểm tổ chức</span>
+<span class="text-sm font-semibold text-on-surface">Nhà hát Ánh Dương (địa điểm giả)</span>
+<span class="text-xs text-on-surface-variant block mt-0.5">Khán phòng chính Grand Hall</span></div>
+<div><span class="text-xs font-semibold text-outline uppercase tracking-wider block">Địa điểm tổ chức</span>
+<span class="text-sm font-semibold text-on-surface">Nhà hát Ánh Dương (địa điểm giả)</span>
+<span class="text-xs text-on-surface-variant block mt-0.5">Khán phòng chính Grand Hall</span></div>
+</div>
+</div>
+</div>
+<!-- Price Spectrum Footprint -->
+<div class="bg-surface-container-low p-4 rounded border border-outline-variant/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div>
+<span class="text-xs font-medium text-on-surface-variant block">Khoảng giá vé niêm yết:</span>
+<div class="text-lg font-bold text-primary font-headline">
+                350.000 ₫ – 1.200.000 ₫
+              </div>
+</div>
+<div class="flex items-center gap-3 text-xs text-on-surface-variant">
+<span class="inline-flex items-center gap-1 text-on-surface-variant">
+<span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span> 3 hạng vé chính
+              </span>
+<span class="text-outline">·</span>
+<span class="">Đã bao gồm thuế GTGT</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Showtime Selection Core Section -->
+<section class="space-y-6">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-outline-variant pb-4">
+<div>
+<h2 class="text-xl font-bold font-headline text-on-surface tracking-tight flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="event_seat">event_seat</span>
+            Lựa chọn suất diễn &amp; Hạng vé
+          </h2>
+<p class="text-xs md:text-sm text-on-surface-variant mt-1">
+            Chọn suất diễn phù hợp để tiến hành chọn vị trí ghế ngồi trực quan trên sơ đồ nhà hát.
+          </p>
+</div>
+<span class="text-xs font-medium text-outline">Tổng cộng 2 suất diễn</span>
+</div>
+<div class="space-y-4">
+<!-- CARD 1: Suất 1 (ĐANG MỞ BÁN - ACTIVE TASK) -->
+<article class="bg-surface-container-lowest border-2 border-primary rounded-lg p-6 shadow-sm relative transition hover:border-primary-container">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+<!-- Left Info Block -->
+<div class="space-y-3 flex-1">
+<div class="flex flex-wrap items-center gap-3">
+<span class="px-2.5 py-0.5 rounded text-xs font-bold bg-primary text-on-primary uppercase tracking-wide">
+                  Suất 1
+                </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                  Còn vé · Đang mở bán
+                </span>
+<span class="text-xs text-outline font-medium">Mở cổng check-in từ 18:30</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-on-surface font-headline">
+                  Thứ Sáu, 16/10/2026 · 19:30
+                </h3>
+<p class="text-sm text-on-surface-variant mt-0.5 flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-outline" data-icon="pin_drop">pin_drop</span>
+Nhà hát Ánh Dương (địa điểm giả) — Khán phòng chính Grand Hall (Tầng trệt &amp; Ban công)</p>
+</div>
+<!-- Price Breakdown Matrix -->
+<div class="pt-2">
+<span class="text-xs font-semibold text-outline uppercase tracking-wider block mb-2">Bảng giá từng hạng vé:</span>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<div class="p-2.5 rounded bg-surface-container-low border border-outline-variant/60 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-on-surface">VIP</span>
+<span class="text-[10px] uppercase font-bold text-primary px-1.5 py-0.2 rounded bg-primary-fixed">Tầng trệt</span>
+</div>
+<div class="mt-2 text-base font-bold text-primary font-headline">
+                      1.200.000 ₫
+                    </div>
+<span class="text-[11px] text-on-surface-variant">Khu vực trung tâm hàng A-D</span>
+</div>
+<div class="p-2.5 rounded bg-surface-container-low border border-outline-variant/60 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-on-surface">Tiêu chuẩn</span>
+<span class="text-[10px] uppercase font-medium text-on-surface-variant px-1.5 py-0.2 rounded bg-surface-container">Cánh trệt</span>
+</div>
+<div class="mt-2 text-base font-bold text-on-surface font-headline">
+                      650.000 ₫
+                    </div>
+<span class="text-[11px] text-on-surface-variant">Hàng ghế E-J góc nhìn rộng</span>
+</div>
+<div class="p-2.5 rounded bg-surface-container-low border border-outline-variant/60 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-on-surface">Ban công</span>
+<span class="text-[10px] uppercase font-medium text-on-surface-variant px-1.5 py-0.2 rounded bg-surface-container">Tầng 1</span>
+</div>
+<div class="mt-2 text-base font-bold text-on-surface font-headline">
+                      350.000 ₫
+                    </div>
+<span class="text-[11px] text-on-surface-variant">Toàn cảnh sân khấu từ trên cao</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right CTA Action Block -->
+<div class="lg:w-64 flex flex-col items-stretch lg:items-end justify-center pt-4 lg:pt-0 lg:border-l lg:border-outline-variant/60 lg:pl-6 space-y-3">
+<div class="text-right hidden lg:block">
+<span class="text-xs text-on-surface-variant">Hạn giữ chỗ</span>
+<p class="text-xs font-semibold text-primary">10 phút khi chọn ghế</p>
+</div>
+<!-- Primary prominent CTA: Chọn ghế -->
+<a class="w-full inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary hover:bg-primary font-semibold text-sm px-6 py-3.5 rounded transition-all duration-150 shadow-sm active:scale-[0.99] text-center" href="#seatmap-selection">
+<span class="material-symbols-outlined text-lg" data-icon="airline_seat_recline_normal">airline_seat_recline_normal</span>
+<span class="">Chọn ghế</span>
+</a>
+<p class="text-[11px] text-center lg:text-right text-on-surface-variant leading-tight">
+                Không hỗ trợ đổi trả vé sau khi hoàn tất phiên giữ chỗ.
+              </p>
+</div>
+</div>
+</article>
+<!-- CARD 2: Suất 2 (DISCREET SECOND STATE / CLOSED SHOWTIME) -->
+<article class="bg-surface-container-low border border-outline-variant rounded-lg p-6 opacity-85">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+<!-- Left Info Block (Muted / Closed State) -->
+<div class="space-y-3 flex-1">
+<div class="flex flex-wrap items-center gap-3">
+<span class="px-2.5 py-0.5 rounded text-xs font-semibold bg-surface-container-highest text-on-surface-variant uppercase tracking-wide">
+                  Suất 2
+                </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-medium bg-surface-dim text-on-surface-variant">
+<span class="material-symbols-outlined text-xs text-outline" data-icon="lock">lock</span>
+                  Đã đóng bán
+                </span>
+<span class="text-xs text-outline">Đợt diễn dự phòng</span>
+</div>
+<div>
+<h3 class="text-lg font-semibold text-on-surface-variant font-headline">
+                  Thứ Bảy, 17/10/2026 · 19:30
+                </h3>
+<p class="text-sm text-outline mt-0.5 flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-outline" data-icon="pin_drop">pin_drop</span>
+Nhà hát Ánh Dương (địa điểm giả)</p>
+</div>
+<!-- Price Reference (Muted) -->
+<div class="pt-1">
+<div class="text-xs text-outline">
+                  Khoảng giá tham chiếu: 350.000 ₫ – 1.200.000 ₫ (Hết hạn giao dịch trực tuyến)
+                </div>
+</div>
+<!-- Closed State Alert Context -->
+<div class="p-3 bg-surface-container rounded border border-outline-variant/50 text-xs text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-outline" data-icon="cancel">cancel</span>
+<span class="">Suất diễn này đã kết thúc đợt mở bán vé trực tuyến hoặc đã hết toàn bộ số lượng vé quy định.</span>
+</div>
+</div>
+<!-- Right CTA Action Block (Disabled Button) -->
+<div class="lg:w-64 flex flex-col items-stretch lg:items-end justify-center pt-4 lg:pt-0 lg:border-l lg:border-outline-variant/60 lg:pl-6 space-y-2">
+<!-- Disabled Inactive Action Button -->
+<button aria-disabled="true" class="w-full inline-flex items-center justify-center gap-2 bg-surface-dim text-outline cursor-not-allowed font-medium text-sm px-6 py-3.5 rounded border border-outline-variant/70" disabled="" type="button">
+<span class="material-symbols-outlined text-lg" data-icon="block">block</span>
+<span class="">Đã đóng bán</span>
+</button>
+<span class="text-[11px] text-center lg:text-right text-outline">
+                Không thể chọn ghế cho suất diễn này
+              </span>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Operational Guidelines / Quiet Operations Card -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 space-y-4">
+  <h3 class="text-base font-bold font-headline text-on-surface flex items-center gap-2">
+    <span class="material-symbols-outlined text-primary text-lg" data-icon="info">info</span>
+    Thông tin lưu ý khi tham dự đêm nhạc
+  </h3>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs leading-relaxed text-on-surface-variant">
+    <div class="p-3.5 rounded bg-surface-container-low border border-outline-variant/40 space-y-1">
+      <div class="font-semibold text-on-surface flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm text-primary" data-icon="schedule">schedule</span>
+        Thời gian đón khách
+      </div>
+      <p class="">Cửa khán phòng mở trước giờ diễn 60 phút. Quý khán giả vui lòng ổn định chỗ ngồi trước 19:15 để đêm diễn diễn ra trọn vẹn.</p>
+    </div>
+    <div class="p-3.5 rounded bg-surface-container-low border border-outline-variant/40 space-y-1">
+      <div class="font-semibold text-on-surface flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm text-primary" data-icon="confirmation_number">confirmation_number</span>
+        Vé điện tử vào cửa
+      </div>
+      <p class="">Mỗi vé tương ứng 01 vị trí ghế ngồi cố định trên sơ đồ. Quý khách xuất trình mã QR vé điện tử trên điện thoại tại quầy soát vé.</p>
+    </div>
+    <div class="p-3.5 rounded bg-surface-container-low border border-outline-variant/40 space-y-1">
+      <div class="font-semibold text-on-surface flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm text-primary" data-icon="theater_comedy">theater_comedy</span>
+        Quy định trang phục &amp; thưởng thức
+      </div>
+      <p class="">Trang phục lịch sự, nhã nhặn. Vui lòng chuyển điện thoại sang chế độ rung và hạn chế ghi hình có flash trong suốt chương trình.</p>
+    </div>
+  </div>
+</section>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="bg-surface border-t border-outline-variant mt-12">
+<div class="w-full py-8 px-6 md:px-8 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4"><div class="flex flex-col sm:flex-row items-center justify-center w-full gap-3 text-center">
+  <span class="font-headline text-sm font-bold text-on-surface flex items-center gap-1.5">
+    <span class="material-symbols-outlined text-primary text-lg" data-icon="confirmation_number">confirmation_number</span>
+    Vé Sự Kiện
+  </span>
+  <span class="hidden sm:inline text-outline">|</span>
+  <p class="font-body text-xs text-on-surface-variant leading-relaxed">
+    © 2026 Vé Sự Kiện · Demo Sprint 2 · dữ liệu giả
+  </p>
+</div></div>
+</footer>
+
+
+</body></html>

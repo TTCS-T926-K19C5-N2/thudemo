@@ -1,0 +1,65 @@
+{
+  "adapter": "TypeScript AST; approved Next.js overrides",
+  "results": [
+    {
+      "file": "apps/web/src/components/ui/material-icon.tsx",
+      "issues": [],
+      "pass": true
+    },
+    {
+      "file": "apps/web/src/components/login-form.tsx",
+      "issues": [],
+      "pass": true
+    },
+    {
+      "file": "apps/web/src/components/layout/product-layout.tsx",
+      "issues": [],
+      "pass": true
+    },
+    {
+      "file": "apps/web/src/components/seat-map/seat-map.tsx",
+      "issues": [],
+      "pass": true
+    },
+    {
+      "file": "apps/web/src/features/event-catalog/event-catalog.tsx",
+      "issues": [],
+      "pass": true
+    },
+    {
+      "file": "apps/web/src/features/event-catalog/event-poster.tsx",
+      "issues": [],
+      "pass": true
+    },
+    {
+      "file": "apps/web/src/features/event-catalog/public-showtime.tsx",
+      "issues": [],
+      "pass": true
+    },
+    {
+      "file": "apps/web/src/features/seat-map-import/seat-map-import-form.tsx",
+      "issues": [],
+      "pass": true
+    },
+    {
+      "file": "apps/web/src/features/seat-pricing/seat-pricing-form.tsx",
+      "issues": [],
+      "pass": true
+    },
+    {
+      "file": "apps/web/src/features/seat-selection/seat-selection.tsx",
+      "issues": [],
+      "pass": true
+    },
+    {
+      "file": "apps/web/src/features/showtime-management/sale-status-control.tsx",
+      "issues": [],
+      "pass": true
+    },
+    {
+      "file": "apps/web/src/features/showtime-management/showtime-workspace.tsx",
+      "issues": [],
+      "pass": true
+    }
+  ]
+}

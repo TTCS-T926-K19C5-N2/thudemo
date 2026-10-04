@@ -1,0 +1,14 @@
+{
+  "web": {
+    "status": "ok",
+    "timestamp": "2026-10-04T12:50:43.969Z"
+  },
+  "api": {
+    "status": "ok",
+    "timestamp": "2026-10-04T12:50:41.899Z"
+  },
+  "local": true,
+  "user": "node",
+  "render": false,
+  "image": "sha256:e05bbdc2ea1f48d472c692502104160a9dfbbcab0738347321e47d1350a51184"
+}

@@ -1,0 +1,33 @@
+{
+  "local": true,
+  "ci": false,
+  "staging": false,
+  "correctnessPass": true,
+  "invariantChecks": 45,
+  "nfrPass": false,
+  "latestTotal": {
+    "count": 2000,
+    "p50": 342.4933999999994,
+    "p95": 750.963600000001,
+    "p99": 890.982399999999,
+    "max": 898.6327000000001
+  },
+  "latestSteady": {
+    "count": 1800,
+    "p50": 330.9527999999991,
+    "p95": 549.5733,
+    "p99": 698.5843000000004,
+    "max": 712.4570999999996
+  },
+  "firstBurst": {
+    "count": 200,
+    "p50": 750.963600000001,
+    "p95": 893.1143999999986,
+    "p99": 894.4470000000001,
+    "max": 898.6327000000001
+  },
+  "localStartupToHealthMs": 2077.0161999999996,
+  "firstValidHoldMs": 41.89860000000044,
+  "coldEndpointMeasured": false,
+  "raw": "http-concurrency.json"
+}

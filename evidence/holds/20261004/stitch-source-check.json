@@ -1,0 +1,242 @@
+{
+  "local": true,
+  "staging": false,
+  "liveProjectCount": 43,
+  "ledgerCount": 29,
+  "exactIds": true,
+  "allExportsAndCapturesExist": true,
+  "rows": [
+    {
+      "id": "067ffc23e523451f8a347980081c73e6",
+      "source": "../../stitch-correction/20261004/source/067ffc23e523451f8a347980081c73e6-css.png",
+      "html": "../../stitch-correction/20261004/source/067ffc23e523451f8a347980081c73e6.html",
+      "after": "after/catalog-1280.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "e44ee9ca7e104e9caa80e894f2bdcdfd",
+      "source": "../../stitch-correction/20261004/source/e44ee9ca7e104e9caa80e894f2bdcdfd-css.png",
+      "html": "../../stitch-correction/20261004/source/e44ee9ca7e104e9caa80e894f2bdcdfd.html",
+      "after": "after/detail-1280.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "fc17da850a404552be43970014418499",
+      "source": "../../stitch-correction/20261004/source/fc17da850a404552be43970014418499-css.png",
+      "html": "../../stitch-correction/20261004/source/fc17da850a404552be43970014418499.html",
+      "after": "after/held-1280.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "held"
+    },
+    {
+      "id": "00e1f736c6bb4aca894f4728ff92135e",
+      "source": "../../stitch-correction/20261004/source/00e1f736c6bb4aca894f4728ff92135e-css.png",
+      "html": "../../stitch-correction/20261004/source/00e1f736c6bb4aca894f4728ff92135e.html",
+      "after": "after/manage-1280.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "e8fd30e083654772a91ce72289e51a7a",
+      "source": "../../stitch-correction/20261004/source/e8fd30e083654772a91ce72289e51a7a-css.png",
+      "html": "../../stitch-correction/20261004/source/e8fd30e083654772a91ce72289e51a7a.html",
+      "after": "after/import-1280.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "6f8e57d7a84e4723a6f9686db5018ca0",
+      "source": "../../stitch-correction/20261004/source/6f8e57d7a84e4723a6f9686db5018ca0-css.png",
+      "html": "../../stitch-correction/20261004/source/6f8e57d7a84e4723a6f9686db5018ca0.html",
+      "after": "after/prices-1280.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "9b294786f6ba4aabb770caef00d59377",
+      "source": "../../stitch-correction/20261004/source/9b294786f6ba4aabb770caef00d59377-css.png",
+      "html": "../../stitch-correction/20261004/source/9b294786f6ba4aabb770caef00d59377.html",
+      "after": "after/map-1280.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "5f054a02e26949728d70914f88f5b2da",
+      "source": "../../stitch-correction/20261004/source/5f054a02e26949728d70914f88f5b2da-css.png",
+      "html": "../../stitch-correction/20261004/source/5f054a02e26949728d70914f88f5b2da.html",
+      "after": "after/login-1280.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "0250def27ff14f23bc9e472b16637e72",
+      "source": "../../stitch-correction/20261004/source/0250def27ff14f23bc9e472b16637e72-css.png",
+      "html": "../../stitch-correction/20261004/source/0250def27ff14f23bc9e472b16637e72.html",
+      "after": "after/import-error-1280.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "c8e82fa54a344a2fad66d66d6c9985bf",
+      "source": "../../stitch-correction/20261004/source/c8e82fa54a344a2fad66d66d6c9985bf-css.png",
+      "html": "../../stitch-correction/20261004/source/c8e82fa54a344a2fad66d66d6c9985bf.html",
+      "after": "after/prices-error-1280.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "f165167c08454f238a9902c085879e0e",
+      "source": "../../stitch-correction/20261004/source/f165167c08454f238a9902c085879e0e-css.png",
+      "html": "../../stitch-correction/20261004/source/f165167c08454f238a9902c085879e0e.html",
+      "after": "after/draft-1280.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "4362f9256dd941f590b097ad207e340e",
+      "source": "../../stitch-correction/20261004/source/4362f9256dd941f590b097ad207e340e-css.png",
+      "html": "../../stitch-correction/20261004/source/4362f9256dd941f590b097ad207e340e.html",
+      "after": "after/conflict-1280.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "conflict"
+    },
+    {
+      "id": "907bd2951a6141d398c52cc953ca4f86",
+      "source": "../../stitch-correction/20261004/source/907bd2951a6141d398c52cc953ca4f86-css.png",
+      "html": "../../stitch-correction/20261004/source/907bd2951a6141d398c52cc953ca4f86.html",
+      "after": "after/expired-1280.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "expired"
+    },
+    {
+      "id": "8a1b1fb6473340aba5c54604c49d452f",
+      "source": "../../stitch-correction/20261004/source/8a1b1fb6473340aba5c54604c49d452f-css.png",
+      "html": "../../stitch-correction/20261004/source/8a1b1fb6473340aba5c54604c49d452f.html",
+      "after": "after/catalog-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "fd494f22ffa34f38a402bc2e3bf4cdb1",
+      "source": "../../stitch-correction/20261004/source/fd494f22ffa34f38a402bc2e3bf4cdb1-css.png",
+      "html": "../../stitch-correction/20261004/source/fd494f22ffa34f38a402bc2e3bf4cdb1.html",
+      "after": "after/detail-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "77ecdad3c24549b69584f589105bc3cf",
+      "source": "../../stitch-correction/20261004/source/77ecdad3c24549b69584f589105bc3cf-css.png",
+      "html": "../../stitch-correction/20261004/source/77ecdad3c24549b69584f589105bc3cf.html",
+      "after": "after/held-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "held"
+    },
+    {
+      "id": "ace8a0b9fe7e454e910c70806cfcba9a",
+      "source": "../../stitch-correction/20261004/source/ace8a0b9fe7e454e910c70806cfcba9a-css.png",
+      "html": "../../stitch-correction/20261004/source/ace8a0b9fe7e454e910c70806cfcba9a.html",
+      "after": "after/manage-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "dba783fc4ece44e2948c0ba46034960d",
+      "source": "../../stitch-correction/20261004/source/dba783fc4ece44e2948c0ba46034960d-css.png",
+      "html": "../../stitch-correction/20261004/source/dba783fc4ece44e2948c0ba46034960d.html",
+      "after": "after/import-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "20fc786dd53d4ea4b9bbad8dd29ee5e5",
+      "source": "../../stitch-correction/20261004/source/20fc786dd53d4ea4b9bbad8dd29ee5e5-css.png",
+      "html": "../../stitch-correction/20261004/source/20fc786dd53d4ea4b9bbad8dd29ee5e5.html",
+      "after": "after/prices-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "922cda99ddc24deb986d255ce1752e28",
+      "source": "../../stitch-correction/20261004/source/922cda99ddc24deb986d255ce1752e28-css.png",
+      "html": "../../stitch-correction/20261004/source/922cda99ddc24deb986d255ce1752e28.html",
+      "after": "after/map-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "fa4f08ad2ccc4ebaa18d0ee4d1019a89",
+      "source": "../../stitch-correction/20261004/source/fa4f08ad2ccc4ebaa18d0ee4d1019a89-css.png",
+      "html": "../../stitch-correction/20261004/source/fa4f08ad2ccc4ebaa18d0ee4d1019a89.html",
+      "after": "after/login-clean-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "349f28c3ac9241efa2dedf6003cbfedd",
+      "source": "../../stitch-correction/20261004/source/349f28c3ac9241efa2dedf6003cbfedd-css.png",
+      "html": "../../stitch-correction/20261004/source/349f28c3ac9241efa2dedf6003cbfedd.html",
+      "after": "after/import-error-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "70cbb7d303394a5c83e16cb46f19491a",
+      "source": "../../stitch-correction/20261004/source/70cbb7d303394a5c83e16cb46f19491a-css.png",
+      "html": "../../stitch-correction/20261004/source/70cbb7d303394a5c83e16cb46f19491a.html",
+      "after": "after/prices-error-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "52811634066d4855beb17a3dfb21740f",
+      "source": "../../stitch-correction/20261004/source/52811634066d4855beb17a3dfb21740f-css.png",
+      "html": "../../stitch-correction/20261004/source/52811634066d4855beb17a3dfb21740f.html",
+      "after": "after/draft-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "b03b8e50691045b8a10a003180aeaa25",
+      "source": "../../stitch-correction/20261004/source/b03b8e50691045b8a10a003180aeaa25-css.png",
+      "html": "../../stitch-correction/20261004/source/b03b8e50691045b8a10a003180aeaa25.html",
+      "after": "after/conflict-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "conflict"
+    },
+    {
+      "id": "bd9a6672cc0c44ad8a1d646526d12dc0",
+      "source": "../../stitch-correction/20261004/source/bd9a6672cc0c44ad8a1d646526d12dc0-css.png",
+      "html": "../../stitch-correction/20261004/source/bd9a6672cc0c44ad8a1d646526d12dc0.html",
+      "after": "after/expired-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "expired"
+    },
+    {
+      "id": "6d416705815141dfaba897aab6a06016",
+      "source": "../../stitch-correction/20261004/source/6d416705815141dfaba897aab6a06016-css.png",
+      "html": "../../stitch-correction/20261004/source/6d416705815141dfaba897aab6a06016.html",
+      "after": "after/loading-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "68eb789cfc394ba4b087518c22d2fbd2",
+      "source": "../../stitch-correction/20261004/source/68eb789cfc394ba4b087518c22d2fbd2-css.png",
+      "html": "../../stitch-correction/20261004/source/68eb789cfc394ba4b087518c22d2fbd2.html",
+      "after": "after/empty-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    },
+    {
+      "id": "58028de332754185802595452f0a41b9",
+      "source": "../../stitch-correction/20261004/source/58028de332754185802595452f0a41b9-css.png",
+      "html": "../../stitch-correction/20261004/source/58028de332754185802595452f0a41b9.html",
+      "after": "after/error-390.png",
+      "status": "LOCAL_RENDER_REVIEWED_WITH_DEVIATIONS",
+      "state": "regression"
+    }
+  ]
+}

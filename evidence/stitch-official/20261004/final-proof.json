@@ -1,0 +1,11 @@
+{
+  "exactReferenceIds": 29,
+  "galleryAndReportLinks": 263,
+  "brokenLinks": 0,
+  "privatePasswordAbsentFromTaskArtifacts": true,
+  "appHealth": {
+    "status": "ok",
+    "timestamp": "2026-10-04T15:19:56.277Z"
+  },
+  "note": "No private value printed. Functional PASS is separate from visual REVIEWED_WITH_DEVIATIONS; no remote/staging claim."
+}

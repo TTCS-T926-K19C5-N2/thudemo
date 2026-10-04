@@ -1,0 +1,15 @@
+{
+  "schema": "https://render.com/schema/render.yaml.json",
+  "schemaValidation": "PASS",
+  "freeProfileGuards": "PASS",
+  "rejectedNegativeCases": [
+    "implicit-paid-plan",
+    "paid-worker",
+    "auto-upload-on-commit",
+    "private-api-assumption",
+    "unapproved-postgres-upgrade"
+  ],
+  "mode": "Offline; no Render API submission/account/provision validation",
+  "staging": false,
+  "uploaded": false
+}

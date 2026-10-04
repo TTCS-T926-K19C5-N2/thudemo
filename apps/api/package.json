@@ -15,13 +15,16 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "start:worker": "node dist/hold-expiry-worker.js",
+    "test:holds": "node scripts/verify-holds-http.mjs",
     "lint": "oxlint --type-aware src/ test/",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
-    "test:e2e": "vitest run --config ./vitest.config.e2e.ts"
+    "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
+    "seed:demo": "node prisma/seed-demo.mjs"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",

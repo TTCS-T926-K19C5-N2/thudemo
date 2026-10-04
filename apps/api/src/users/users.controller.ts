@@ -14,7 +14,7 @@ export class UsersController {
 
   @Public()
   @Get('activate')
-  activate(@Query('token') token: string) {
+  activate(@Query('token') token: unknown) {
     return this.usersService.activate(token);
   }
 
