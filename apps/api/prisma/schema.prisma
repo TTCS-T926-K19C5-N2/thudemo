@@ -14,6 +14,12 @@ enum Role {
   ADMIN
 }
 
+enum ShowtimeStatus {
+  nhap
+  dang_ban  
+  da_dong
+}
+
 model User {
   id                String   @id @default(uuid())
   email             String   @unique
@@ -46,7 +52,21 @@ model Showtime {
   event      Event    @relation(fields: [eventId], references: [id])
   startTime  DateTime
   seatMapId  String?  // Nullable for now as per S-04
+
+status         ShowtimeStatus  @default(nhap)
+  seatCategories SeatCategory[]
+  
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  id         String   @id @default(uuid())
+  name       String
+  price      Int?     
+  showtimeId String
+  showtime   Showtime @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@map("seat_categories")
 }
 
