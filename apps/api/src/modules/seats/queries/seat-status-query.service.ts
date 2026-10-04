@@ -149,12 +149,28 @@ export class SeatStatusQueryService {
 
     // 2. Kiểm tra trạng thái HELD trong Redis (Atomic Seat Holds)
     if (this.redis) {
+      const nowMs = Date.now();
       for (const seatId of seatIds) {
         const key = this.getSeatKey(showtimeId, seatId);
         const data = await this.redis.get(key);
         if (data) {
           try {
             const parsed = JSON.parse(data);
+
+            // Kiểm tra điều kiện hết hạn (T-28): nếu expiresAt <= now, coi là AVAILABLE
+            let expiryTimestamp: number | null = null;
+            if (parsed.expiresAt) {
+              expiryTimestamp = new Date(parsed.expiresAt).getTime();
+            } else if (parsed.heldAt) {
+              expiryTimestamp = parsed.heldAt + 600 * 1000;
+            }
+
+            if (expiryTimestamp !== null && expiryTimestamp <= nowMs) {
+              // Lazy cleanup
+              this.redis.del(key).catch(() => {});
+              continue;
+            }
+
             if (
               !currentUserId ||
               (parsed.userId && parsed.userId !== currentUserId)
@@ -170,5 +186,34 @@ export class SeatStatusQueryService {
         }
       }
     }
+  }
+
+  /**
+   * Lấy trạng thái của một ghế (T-19 + T-28)
+   */
+  async getSeatStatus(showtimeId: string, seatId: string): Promise<SeatStatus> {
+    if (this.redis) {
+      const key = this.getSeatKey(showtimeId, seatId);
+      const data = await this.redis.get(key);
+      if (data) {
+        try {
+          const parsed = JSON.parse(data);
+          let expiryTimestamp: number | null = null;
+          if (parsed.expiresAt) {
+            expiryTimestamp = new Date(parsed.expiresAt).getTime();
+          } else if (parsed.heldAt) {
+            expiryTimestamp = parsed.heldAt + 600 * 1000;
+          }
+          if (expiryTimestamp !== null && expiryTimestamp <= Date.now()) {
+            this.redis.del(key).catch(() => {});
+            return 'AVAILABLE';
+          }
+          return 'HELD';
+        } catch {
+          return 'HELD';
+        }
+      }
+    }
+    return 'AVAILABLE';
   }
 }

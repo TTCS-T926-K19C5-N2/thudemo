@@ -15,6 +15,7 @@ import { SeatHoldService, HoldSeatsResult } from './seat-hold.service.js';
 import { SeatAvailabilityQueryService, SeatStatusItem } from './queries/seat-availability.query.js';
 import { SeatHoldCountdownService } from './services/seat-hold-countdown.service.js';
 import type { SeatHoldCountdownResponseDto } from './dto/seat-hold-countdown.dto.js';
+import type { ExpiredHoldsResponseDto } from './dto/expired-holds.dto.js';
 import { HoldSeatsDto } from './dto/hold-seats.dto.js';
 import { Public } from '../../auth/decorators/roles.decorator.js';
 
@@ -66,6 +67,44 @@ export class SeatHoldController {
 
     return this.seatAvailabilityQueryService.getSeatsAvailability(showtimeId, seatIds);
   }
+
+  /**
+   * Truy vấn danh sách tất cả các lượt giữ chỗ đã hết hạn trong hệ thống (Task T-28)
+   * GET /api/showtimes/expired-holds?showtimeId=...
+   */
+  @Public()
+  @Get('expired-holds')
+  async getExpiredHolds(
+    @Query('showtimeId') showtimeId?: string,
+  ): Promise<ExpiredHoldsResponseDto> {
+    return this.seatAvailabilityQueryService.getExpiredHolds(showtimeId);
+  }
+
+  /**
+   * Truy vấn danh sách các lượt giữ chỗ đã hết hạn theo suất chiếu cụ thể (Task T-28)
+   * GET /api/showtimes/:showtimeId/expired-holds
+   */
+  @Public()
+  @Get(':showtimeId/expired-holds')
+  async getExpiredHoldsByShowtime(
+    @Param('showtimeId') showtimeId: string,
+  ): Promise<ExpiredHoldsResponseDto> {
+    return this.seatAvailabilityQueryService.getExpiredHolds(showtimeId);
+  }
+
+  /**
+   * Giải phóng/xóa các lượt giữ chỗ đã hết hạn theo suất chiếu (Task T-28)
+   * POST /api/showtimes/:showtimeId/release-expired-holds
+   */
+  @Public()
+  @Post(':showtimeId/release-expired-holds')
+  @HttpCode(HttpStatus.OK)
+  async releaseExpiredHoldsByShowtime(
+    @Param('showtimeId') showtimeId: string,
+  ): Promise<{ releasedCount: number; seatIds: string[] }> {
+    return this.seatAvailabilityQueryService.releaseExpiredHolds(showtimeId);
+  }
+
 
   /**
    * API Đếm ngược thời gian giữ ghế theo suất chiếu và ghế cụ thể (Task T-24)
