@@ -1,5 +1,6 @@
-import { LoginForm } from "@/components/login-form";
+import { PublicLayout } from "@/components/layout/product-layout";
+import { EventCatalog } from "@/features/event-catalog/event-catalog";
 
 export default function Home() {
-  return <LoginForm />;
+  return <PublicLayout><EventCatalog /></PublicLayout>;
 }

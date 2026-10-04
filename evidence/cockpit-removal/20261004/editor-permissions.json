@@ -1,0 +1,2 @@
+{"checks":[{"path":"/events/new","forbidden":true,"formAbsent":true},{"path":"/events/c0100400-0000-4000-8000-000000000001","forbidden":true,"formAbsent":true}],"serverStatus":403}
+

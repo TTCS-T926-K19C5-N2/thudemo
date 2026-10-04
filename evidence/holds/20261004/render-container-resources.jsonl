@@ -1,0 +1,2 @@
+{"BlockIO":"164kB / 0B","CPUPerc":"0.00%","Container":"sang-holds-render-api-20261004","ID":"74e0b78d9570","MemPerc":"15.72%","MemUsage":"80.49MiB / 512MiB","Name":"sang-holds-render-api-20261004","NetIO":"233kB / 301kB","PIDs":"18"}
+{"BlockIO":"20.5kB / 0B","CPUPerc":"0.00%","Container":"sang-holds-render-web-20261004","ID":"2a18e42192aa","MemPerc":"11.95%","MemUsage":"61.18MiB / 512MiB","Name":"sang-holds-render-web-20261004","NetIO":"278kB / 278kB","PIDs":"18"}

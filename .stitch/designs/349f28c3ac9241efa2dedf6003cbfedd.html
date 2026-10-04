@@ -1,0 +1,308 @@
+<!DOCTYPE html><html class="light" lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>M09 JSON Không Hợp Lệ (T14) - Quản Trị Phòng Vé</title>
+<!-- Material Symbols Font -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Geist Font CDN -->
+<link href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-container": "#d7e0ff",
+            "surface-container": "#ededf7",
+            "on-secondary-container": "#415381",
+            "on-primary-fixed": "#001847",
+            "secondary": "#4c5d8b",
+            "inverse-on-surface": "#f0f0fa",
+            "tertiary": "#853000",
+            "surface-bright": "#faf8ff",
+            "surface-container-lowest": "#ffffff",
+            "on-surface-variant": "#424654",
+            "on-error": "#ffffff",
+            "background": "#faf8ff",
+            "surface-dim": "#d9d9e3",
+            "surface-container-low": "#f3f3fd",
+            "surface-container-highest": "#e1e2ec",
+            "on-secondary-fixed-variant": "#344572",
+            "surface-container-high": "#e7e7f2",
+            "primary-fixed-dim": "#b1c5ff",
+            "on-tertiary-fixed": "#360f00",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "inverse-primary": "#b1c5ff",
+            "on-primary": "#ffffff",
+            "on-surface": "#191b23",
+            "secondary-container": "#b6c8fd",
+            "error": "#ba1a1a",
+            "surface": "#faf8ff",
+            "outline": "#737785",
+            "on-tertiary-container": "#ffd8c9",
+            "outline-variant": "#c3c6d6",
+            "surface-tint": "#0957ce",
+            "on-secondary": "#ffffff",
+            "on-background": "#191b23",
+            "secondary-fixed-dim": "#b4c5fa",
+            "on-secondary-fixed": "#031944",
+            "inverse-surface": "#2e3038",
+            "primary-fixed": "#dae2ff",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-error-container": "#93000a",
+            "secondary-fixed": "#dae2ff",
+            "tertiary-fixed-dim": "#ffb597",
+            "tertiary-fixed": "#ffdbcd",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "tertiary-container": "#ac4100",
+            "primary": "#0045a9",
+            "surface-variant": "#e1e2ec",
+            "primary-container": "#175cd3"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body antialiased flex justify-center min-h-screen selection:bg-secondary-container">
+<!-- Mobile Frame Container (Max 390px viewport width) -->
+<div class="w-full max-w-[390px] min-h-screen bg-surface-container-lowest flex flex-col shadow-sm relative">
+<!-- TopAppBar (Based on Shared Components JSON) -->
+<header class="bg-surface docked full-width top-0 sticky z-40 flex items-center justify-between px-4 h-14 w-full">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="confirmation_number">confirmation_number</span>
+<div class="flex flex-col">
+<span class="font-headline text-base font-bold text-primary tracking-tight">Vé Sự Kiện</span>
+<span class="text-[10px] font-medium text-outline">Quản trị phòng vé</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium text-on-surface-variant bg-surface-container px-2.5 py-1 rounded">TP. HCM</span>
+</div>
+</header>
+<!-- Context Header: Event Info -->
+<section class="px-4 pt-3 pb-3 bg-surface border-b border-outline-variant/40">
+<div class="flex items-center space-x-1.5 text-outline text-xs mb-1">
+<span class="material-symbols-outlined text-sm" data-icon="tune">tune</span>
+<span class="font-medium">Quản lý sơ đồ ghế</span>
+</div>
+<h1 class="font-headline text-sm font-bold text-on-surface tracking-tight leading-snug">
+        Đêm nhạc Tháng Mười · 16/10/2026 19:30
+      </h1>
+<p class="text-xs text-outline mt-0.5">Nhà hát Ánh Dương (địa điểm giả)</p>
+</section>
+<!-- Main Content Area -->
+<main class="flex-1 px-4 py-3 space-y-3.5 pb-24 overflow-y-auto">
+<!-- Alert Banner: Tệp JSON chưa hợp lệ -->
+<div class="bg-error-container/50 border border-error/20 rounded-lg p-3 flex items-start space-x-2.5">
+<span class="material-symbols-outlined text-error text-xl shrink-0 mt-0.5" data-icon="error">error</span>
+<div class="space-y-0.5">
+<p class="font-headline text-xs font-bold text-on-error-container">
+            Tệp JSON chưa hợp lệ. Vui lòng sửa lỗi trước khi nạp lại.
+          </p>
+<p class="text-[11px] text-on-surface-variant leading-tight">
+            Hệ thống phát hiện lỗi cú pháp và ràng buộc nghiệp vụ trong tệp đã tải lên.
+          </p>
+</div>
+</div>
+<!-- File Status Card -->
+<div class="bg-surface-container-low rounded-lg p-3 border border-outline-variant/60 space-y-2">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-outline">Tệp nguồn</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-error-container text-on-error-container">
+            Không thể áp dụng
+          </span>
+</div>
+<div class="flex items-center space-x-2.5 bg-surface-container-lowest p-2.5 rounded border border-outline-variant/40">
+<span class="material-symbols-outlined text-error text-2xl shrink-0" data-icon="data_object">data_object</span>
+<div class="overflow-hidden min-w-0 flex-1">
+<p class="text-xs font-semibold text-on-surface truncate font-mono">seats-invalid.json</p>
+<p class="text-[11px] text-error font-medium flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-xs" data-icon="warning">warning</span>
+              Phát hiện lỗi cấu trúc dữ liệu
+            </p>
+</div>
+</div>
+</div>
+<!-- Error Checklist Section: Exact 3 errors -->
+<section class="space-y-2">
+<div class="flex items-center justify-between">
+<h2 class="font-headline text-xs font-bold text-on-surface uppercase tracking-wide">
+            Chi tiết lỗi phát hiện (3)
+          </h2>
+<span class="text-[11px] text-outline font-medium">Bắt buộc khắc phục</span>
+</div>
+<div class="space-y-2">
+<!-- Lỗi 1: Dòng 12, Ghế #12 -->
+<div class="bg-surface-container-lowest rounded-lg p-2.5 border-l-4 border-l-error border border-outline-variant/40 flex items-start space-x-2.5">
+<span class="material-symbols-outlined text-error text-base mt-0.5 shrink-0" data-icon="cancel">cancel</span>
+<div class="text-xs flex-1">
+<div class="flex items-center justify-between">
+<span class="font-semibold text-on-surface font-mono text-[11px]">Dòng 12 · Ghế #12</span>
+<span class="text-[10px] text-on-surface-variant bg-surface-container-high px-1.5 py-0.5 rounded font-mono">Sai định dạng</span>
+</div>
+<p class="text-error font-medium mt-1 leading-snug">Số ghế phải là số nguyên</p>
+<p class="text-[11px] text-outline mt-0.5">Giá trị nhận: <code class="font-mono text-on-surface-variant bg-surface-container px-1 rounded">"seat_number": "12A"</code></p>
+</div>
+</div>
+<!-- Lỗi 2: Dòng 48, Ghế #48 -->
+<div class="bg-surface-container-lowest rounded-lg p-2.5 border-l-4 border-l-error border border-outline-variant/40 flex items-start space-x-2.5">
+<span class="material-symbols-outlined text-error text-base mt-0.5 shrink-0" data-icon="cancel">cancel</span>
+<div class="text-xs flex-1">
+<div class="flex items-center justify-between">
+<span class="font-semibold text-on-surface font-mono text-[11px]">Dòng 48 · Ghế #48</span>
+<span class="text-[10px] text-on-surface-variant bg-surface-container-high px-1.5 py-0.5 rounded font-mono">Trùng lặp</span>
+</div>
+<p class="text-error font-medium mt-1 leading-snug">Hàng A số 12 bị trùng lặp</p>
+<p class="text-[11px] text-outline mt-0.5">Toạ độ ghế này đã được định nghĩa tại Dòng 12</p>
+</div>
+</div>
+<!-- Lỗi 3: Dòng 1999, Ghế #1999 -->
+<div class="bg-surface-container-lowest rounded-lg p-2.5 border-l-4 border-l-error border border-outline-variant/40 flex items-start space-x-2.5">
+<span class="material-symbols-outlined text-error text-base mt-0.5 shrink-0" data-icon="cancel">cancel</span>
+<div class="text-xs flex-1">
+<div class="flex items-center justify-between">
+<span class="font-semibold text-on-surface font-mono text-[11px]">Dòng 1999 · Ghế #1999</span>
+<span class="text-[10px] text-on-surface-variant bg-surface-container-high px-1.5 py-0.5 rounded font-mono">Thiếu trường</span>
+</div>
+<p class="text-error font-medium mt-1 leading-snug">Tên hạng không được để trống</p>
+<p class="text-[11px] text-outline mt-0.5">Yêu cầu thuộc: VIP, Tiêu chuẩn, hoặc Ban công</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Khung xem trước sơ đồ ghế kèm ghi chú rõ ràng -->
+<section class="space-y-2 pt-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-outline text-base" data-icon="visibility">visibility</span>
+<h2 class="font-headline text-xs font-bold text-on-surface">Khung xem trước sơ đồ ghế</h2>
+</div>
+<!-- Ghi chú rõ ràng: Xem trước chưa lưu dữ liệu -->
+<span class="text-[10px] font-semibold text-tertiary bg-on-tertiary-container/30 px-2 py-0.5 rounded">
+            Xem trước chưa lưu dữ liệu
+          </span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-3 border border-outline-variant/50 relative overflow-hidden">
+<!-- Sân khấu mô phỏng -->
+<div class="w-full bg-surface-container-high py-1 rounded text-center mb-3 border border-outline-variant/30">
+<span class="text-[10px] font-bold text-outline tracking-wider uppercase">SÂN KHẤU CHÍNH</span>
+</div>
+<!-- Price tiers Reference (Design System: VIP, Tiêu chuẩn, Ban công) -->
+<div class="grid grid-cols-3 gap-1 mb-2 text-center text-[10px]">
+<div class="bg-surface-container-lowest p-1 rounded border border-outline-variant/40">
+<span class="block font-bold text-primary">VIP</span>
+<span class="text-outline text-[9px]">1.200.000 ₫</span>
+</div>
+<div class="bg-surface-container-lowest p-1 rounded border border-outline-variant/40">
+<span class="block font-bold text-on-surface">Tiêu chuẩn</span>
+<span class="text-outline text-[9px]">650.000 ₫</span>
+</div>
+<div class="bg-surface-container-lowest p-1 rounded border border-outline-variant/40">
+<span class="block font-bold text-secondary">Ban công</span>
+<span class="text-outline text-[9px]">350.000 ₫</span>
+</div>
+</div>
+<!-- Mock seat visual matrix showing error glyphs -->
+<div class="space-y-1 py-1">
+<div class="flex justify-center items-center space-x-1">
+<span class="text-[9px] font-mono text-outline w-3 text-right">A</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">1</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">2</span>
+<!-- Error seat 12 simulation -->
+<span class="w-5 h-5 rounded-[3px] border-2 border-error bg-error-container text-error text-[10px] flex items-center justify-center font-bold" title="Ghế #12 lỗi định dạng">!</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">4</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">5</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">6</span>
+</div>
+<div class="flex justify-center items-center space-x-1">
+<span class="text-[9px] font-mono text-outline w-3 text-right">B</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">1</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">2</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">3</span>
+<!-- Error seat 48 simulation -->
+<span class="w-5 h-5 rounded-[3px] border-2 border-error bg-error-container text-error text-[10px] flex items-center justify-center font-bold" title="Ghế #48 trùng lặp">✕</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">5</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">6</span>
+</div>
+<div class="flex justify-center items-center space-x-1 opacity-75">
+<span class="text-[9px] font-mono text-outline w-3 text-right">C</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">1</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">2</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">3</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">4</span>
+<span class="w-5 h-5 rounded-[3px] border border-outline text-[9px] flex items-center justify-center bg-surface-container-lowest">5</span>
+<!-- Error seat 1999 simulation -->
+<span class="w-5 h-5 rounded-[3px] border-2 border-error bg-error-container text-error text-[10px] flex items-center justify-center font-bold" title="Ghế #1999 thiếu hạng">?</span>
+</div>
+</div>
+<!-- Bottom Warning Overlay note -->
+<div class="mt-2 text-center text-[10px] text-outline italic">
+            * Hiển thị dạng cắt lớp tạm thời. Cấu trúc đầy đủ bị chặn cho đến khi sửa hết 3 lỗi.
+          </div>
+</div>
+</section>
+<!-- Sprint Disclaimer (Discreet text) -->
+<div class="text-center pt-1 pb-2">
+<span class="text-[11px] text-outline font-normal">Demo Sprint 2 · dữ liệu giả</span>
+</div>
+</main>
+<!-- Fixed Action Buttons Container (Height 44px compliant) -->
+<footer class="fixed bottom-16 left-0 right-0 max-w-[390px] mx-auto bg-surface-container-lowest border-t border-outline-variant/60 px-4 py-3 flex gap-2 z-40">
+<!-- Nút phụ: Chọn tệp khác (Khả dụng) -->
+<button class="h-11 flex-1 px-3 rounded-[6px] border border-outline text-on-surface hover:bg-surface-container font-headline text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors duration-150 active:scale-[0.99]" type="button">
+<span class="material-symbols-outlined text-base" data-icon="file_upload">file_upload</span>
+<span>Chọn tệp khác</span>
+</button>
+<!-- Nút chính: Nạp sơ đồ & Áp dụng (BỊ VÔ HIỆU HÓA / DISABLED) -->
+<button aria-disabled="true" class="h-11 flex-1 px-3 rounded-[6px] bg-surface-dim text-outline font-headline text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-not-allowed opacity-70 select-none border border-outline-variant/40" disabled="" title="Không thể áp dụng khi còn lỗi" type="button">
+<span class="material-symbols-outlined text-base" data-icon="block">block</span>
+<span>Nạp sơ đồ &amp; Áp dụng</span>
+</button>
+</footer>
+<!-- BottomNavBar (Shared Component JSON - Destination count 4) -->
+<nav class="fixed bottom-0 left-0 max-w-[390px] mx-auto right-0 w-full z-50 flex justify-around items-center h-16 px-2 bg-surface border-t border-outline-variant pb-safe">
+<!-- 1. Sự kiện -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary py-1 transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="explore">explore</span>
+<span class="font-label text-xs font-medium">Sự kiện</span>
+</a>
+<!-- 2. Sơ đồ vé -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary py-1 transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="event_seat">event_seat</span>
+<span class="font-label text-xs font-medium">Sơ đồ vé</span>
+</a>
+<!-- 3. Vé của tôi -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary py-1 transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="confirmation_number">confirmation_number</span>
+<span class="font-label text-xs font-medium">Vé của tôi</span>
+</a>
+<!-- 4. Quản trị (Active Tab for M09 Management) -->
+<a class="flex flex-col items-center justify-center text-primary font-medium py-1 transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="admin_panel_settings" data-weight="fill" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+<span class="font-label text-xs font-medium">Quản trị</span>
+</a>
+</nav>
+</div>
+</body></html>

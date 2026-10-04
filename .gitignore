@@ -128,5 +128,6 @@ dist
 *.swo
 
 # Prisma
+.playwright-cli/
 apps/api/prisma/*.db
 apps/api/prisma/*.db-journal

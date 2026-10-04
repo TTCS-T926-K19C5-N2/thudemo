@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>06 Đặt giá theo hạng (T35) — Cấu hình giá chưa hợp lệ</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-low": "#f3f3fd",
+            "on-secondary-container": "#415381",
+            "background": "#faf8ff",
+            "surface-tint": "#0957ce",
+            "primary-fixed-dim": "#b1c5ff",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-primary-container": "#d7e0ff",
+            "tertiary-fixed-dim": "#ffb597",
+            "surface-dim": "#d9d9e3",
+            "inverse-on-surface": "#f0f0fa",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "inverse-surface": "#2e3038",
+            "tertiary-fixed": "#ffdbcd",
+            "tertiary": "#853000",
+            "on-surface": "#191b23",
+            "on-error-container": "#93000a",
+            "secondary": "#4c5d8b",
+            "surface-container": "#ededf7",
+            "surface": "#faf8ff",
+            "surface-bright": "#faf8ff",
+            "surface-container-high": "#e7e7f2",
+            "primary-fixed": "#dae2ff",
+            "error": "#ba1a1a",
+            "primary": "#0045a9",
+            "outline-variant": "#c3c6d6",
+            "on-error": "#ffffff",
+            "secondary-container": "#b6c8fd",
+            "primary-container": "#175cd3",
+            "on-background": "#191b23",
+            "on-primary-fixed": "#001847",
+            "on-secondary-fixed-variant": "#344572",
+            "on-secondary": "#ffffff",
+            "secondary-fixed-dim": "#b4c5fa",
+            "surface-variant": "#e1e2ec",
+            "on-tertiary-container": "#ffd8c9",
+            "tertiary-container": "#ac4100",
+            "inverse-primary": "#b1c5ff",
+            "outline": "#737785",
+            "on-tertiary-fixed": "#360f00",
+            "on-primary": "#ffffff",
+            "on-surface-variant": "#424654",
+            "secondary-fixed": "#dae2ff",
+            "on-secondary-fixed": "#031944",
+            "surface-container-highest": "#e1e2ec",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Geist', sans-serif;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 20px;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased flex min-h-screen">
+<!-- SIDEBAR NAVIGATION (Shared Component faithfully applied) -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-surface-container-lowest border-r border-outline-variant flex flex-col justify-between p-4">
+<div class="flex flex-col gap-6">
+<!-- Brand Logo / Header -->
+<div class="flex items-center gap-3 px-1 py-1">
+<div class="w-9 h-9 rounded bg-primary-container text-on-primary flex items-center justify-center font-bold text-lg">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-headline font-bold text-on-surface tracking-tight">Vé Sự Kiện · Quản trị</span>
+<span class="text-xs text-outline font-label">Vận hành sự kiện</span>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex flex-col gap-1"><a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150" href="#"><span class="material-symbols-outlined" data-icon="theater_comedy">theater_comedy</span><span class="text-sm font-label">Sự kiện</span></a><a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150" href="#"><span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span><span class="text-sm font-label">Suất diễn</span></a><a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150" href="#"><span class="material-symbols-outlined" data-icon="event_seat">event_seat</span><span class="text-sm font-label">Sơ đồ ghế</span></a><a class="flex items-center gap-3 px-3 py-2 bg-surface-container-low text-primary font-medium rounded-lg transition-colors duration-150" href="#"><span class="material-symbols-outlined" data-icon="payments">payments</span><span class="text-sm font-label">Giá vé</span></a><a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150" href="#"><span class="material-symbols-outlined" data-icon="account_circle">account_circle</span><span class="text-sm font-label">Tài khoản</span></a></nav>
+</div>
+<!-- Sidebar Footer -->
+</aside>
+<!-- MAIN WRAPPER -->
+<div class="pl-60 flex-1 flex flex-col min-w-0">
+<!-- TOP NAVBAR (Shared Component) -->
+<header class="fixed top-0 right-0 left-60 h-14 z-20 bg-surface-container-lowest border-b border-outline-variant flex justify-between items-center px-6">
+<div class="flex items-center gap-3 truncate">
+<span class="text-xs font-semibold px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">Internal Admin</span>
+<span class="text-sm font-headline font-medium text-on-surface truncate">Sự kiện: Đêm nhạc Tháng Mười · Nhà hát Ánh Dương (16/10/2026)</span>
+<span class="text-xs px-2 py-0.5 rounded bg-surface-variant text-outline font-normal">Demo Sprint 2 · dữ liệu giả</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs text-outline font-label">Ban tổ chức / Kỹ thuật</span>
+<div class="h-4 w-px bg-outline-variant"></div>
+<button class="text-xs text-primary font-medium hover:underline" type="button">
+          Đổi tài khoản
+        </button>
+<div class="flex items-center gap-2 pl-2">
+<button class="text-on-surface-variant hover:text-on-surface p-1 rounded hover:bg-surface-container-low" title="Thông báo" type="button">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface p-1 rounded hover:bg-surface-container-low" title="Tài khoản" type="button">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- CONTENT CANVAS -->
+<main class="mt-14 p-8 flex flex-col gap-6 max-w-7xl mx-auto w-full">
+<!-- Breadcrumbs & Status Indicator -->
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-2 text-xs font-label text-outline">
+<span>Quản trị</span>
+<span class="material-symbols-outlined text-xs" data-icon="chevron_right">chevron_right</span>
+<span>Đêm nhạc Tháng Mười</span>
+<span class="material-symbols-outlined text-xs" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-surface font-medium">Cấu hình giá vé</span>
+</div>
+<div class="flex items-center gap-2">
+<!-- Draft Badge -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-high text-on-surface-variant text-xs font-medium border border-outline-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+            Nháp (Draft) — Đang cấu hình trước mở bán
+          </span>
+<span class="text-xs text-outline font-mono">ID: T35-PRICING-INVALID</span>
+</div>
+</div>
+<!-- Page Header -->
+<div class="flex flex-col gap-1 border-b border-outline-variant pb-5">
+<h1 class="text-2xl font-headline font-bold text-on-surface tracking-tight">
+          06 Đặt giá theo hạng (T35) — Cấu hình giá chưa hợp lệ
+        </h1>
+<p class="text-sm font-body text-on-surface-variant">
+          Kiểm tra đơn giá niêm yết cho các phân khu trước khi lưu và kích hoạt mở bán.
+        </p>
+</div>
+<!-- Edge Case Warning Readiness Banner (Quiet Operations styling) -->
+<section class="rounded-lg border border-error bg-error-container/40 p-4 text-on-surface">
+<div class="flex items-start gap-3">
+<div class="mt-0.5 text-error">
+<span class="material-symbols-outlined" data-icon="error">error</span>
+</div>
+<div class="flex-1">
+<h2 class="text-sm font-headline font-semibold text-error">
+              Chưa đủ điều kiện mở bán: Còn phân khu chưa có giá hợp lệ hoặc mang giá trị âm.
+            </h2>
+<p class="text-xs text-on-surface-variant mt-1 leading-relaxed">Tất cả các phân khu phải có đơn giá hợp lệ (≥ 0 ₫). Nút lưu cấu hình tạm thời bị vô hiệu hoá cho đến khi hoàn thành chỉnh sửa.</p>
+<div class="mt-3 flex flex-wrap gap-2 text-xs">
+<span class="px-2 py-0.5 rounded bg-error/10 text-error font-medium inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="close">close</span> Hạng VIP: Giá âm (-50.000 ₫)
+              </span>
+<span class="px-2 py-0.5 rounded bg-tertiary-container/30 text-tertiary font-medium inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="warning">warning</span> Hạng Tiêu chuẩn: Chưa nhập giá
+              </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-medium inline-flex items-center gap-1"><span class="material-symbols-outlined text-xs" data-icon="check">check</span> Hạng Ban công: 0 ₫ (Miễn phí)</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Layout: Table and Diagnostic Summary Card -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Pricing Form & Table (Col 8) -->
+<div class="lg:col-span-8 flex flex-col gap-4">
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant overflow-hidden shadow-none">
+<div class="px-5 py-4 border-b border-outline-variant flex items-center justify-between bg-surface-container-low/40">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="tune">tune</span>
+<h3 class="text-sm font-headline font-semibold text-on-surface">Bảng định giá 3 phân khu ghế ngồi</h3>
+</div>
+<span class="text-xs text-outline font-label">Tổng sức chứa: 2.000 chỗ</span>
+</div>
+<!-- Categories Table -->
+<div class="divide-y divide-outline-variant">
+<!-- ROW 1: Hạng VIP (INVALID NEGATIVE VALUE) -->
+<div class="p-5 bg-error-container/10 flex flex-col gap-3 transition-colors">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded border border-outline-variant bg-surface-container flex items-center justify-center font-bold text-xs text-on-surface">
+                      VIP
+                    </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-headline font-bold text-on-surface">1. Hạng VIP</span>
+<span class="text-xs px-2 py-0.5 rounded bg-error-container text-on-error-container font-medium border border-error/30">Lỗi giá trị</span>
+</div>
+<div class="text-xs text-outline mt-0.5">Vị trí: Hàng A – B · Sức chứa: <strong>400 ghế</strong></div>
+</div>
+</div>
+<div class="flex flex-col sm:items-end gap-1 min-w-[220px]">
+<label class="text-xs font-label text-outline" for="price-vip">Đơn giá niêm yết (VNĐ)</label>
+<div class="relative w-full">
+<input aria-describedby="vip-error-msg" aria-invalid="true" class="w-full text-right text-sm font-medium rounded border-2 border-error bg-surface-container-lowest text-error px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-error" id="price-vip" type="text" value="-50.000 ₫"/>
+</div>
+</div>
+</div>
+<!-- Inline Error Message -->
+<div class="flex items-center gap-1.5 text-xs text-error font-medium pt-1 border-t border-error/20" id="vip-error-msg">
+<span class="material-symbols-outlined text-sm" data-icon="cancel">cancel</span>
+<span>Giá không được là số âm. Vui lòng nhập số nguyên dương (ví dụ: 1.200.000 ₫).</span>
+</div>
+</div>
+<!-- ROW 2: Hạng Tiêu chuẩn (MISSING VALUE) -->
+<div class="p-5 bg-surface-container-low/20 flex flex-col gap-3 transition-colors">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded border border-outline-variant bg-surface-container flex items-center justify-center font-bold text-xs text-on-surface">
+                      STD
+                    </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-headline font-bold text-on-surface">2. Hạng Tiêu chuẩn</span>
+<!-- Amber Badge: Chưa đặt -->
+<span class="text-xs px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed-variant font-medium border border-tertiary/20">
+                          Chưa đặt
+                        </span>
+</div>
+<div class="text-xs text-outline mt-0.5">Vị trí: Hàng C – F · Sức chứa: <strong>1.000 ghế</strong></div>
+</div>
+</div>
+<div class="flex flex-col sm:items-end gap-1 min-w-[220px]">
+<label class="text-xs font-label text-outline" for="price-std">Đơn giá niêm yết (VNĐ)</label>
+<div class="relative w-full">
+<input aria-describedby="std-error-msg" class="w-full text-right text-sm font-medium rounded border border-tertiary bg-surface-container-lowest text-on-surface px-3 py-1.5 placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-tertiary" id="price-std" placeholder="Chưa đặt" type="text"/>
+</div>
+</div>
+</div>
+<!-- Note / Missing Value Alert -->
+<div class="flex items-center gap-1.5 text-xs text-tertiary font-medium pt-1 border-t border-outline-variant/40" id="std-error-msg">
+<span class="material-symbols-outlined text-sm" data-icon="report">report</span>
+<span>Bắt buộc nhập đơn giá cho hạng vé này (tham chiếu chuẩn sự kiện: 650.000 ₫).</span>
+</div>
+</div>
+<!-- ROW 3: Hạng Ban công (0 ₫ - VALID COMPLIMENTARY) -->
+<div class="p-5 bg-surface-container-lowest flex flex-col gap-3 transition-colors">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded border border-outline-variant bg-surface-container flex items-center justify-center font-bold text-xs text-on-surface">
+                      BAL
+                    </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-headline font-bold text-on-surface">3. Hạng Ban công</span>
+<!-- Neutral badge 0 ₫ · Miễn phí (clearly distinguished from missing price) -->
+<span class="text-xs px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-medium border border-outline-variant inline-flex items-center gap-1"><span class="material-symbols-outlined text-xs text-primary" data-icon="check_circle">check_circle</span> 0 ₫ · Miễn phí</span>
+</div>
+<div class="text-xs text-outline mt-0.5">Vị trí: Hàng G – H · Sức chứa: <strong>600 ghế</strong></div>
+</div>
+</div>
+<div class="flex flex-col sm:items-end gap-1 min-w-[220px]">
+<label class="text-xs font-label text-outline" for="price-bal">Đơn giá niêm yết (VNĐ)</label>
+<div class="relative w-full">
+<input class="w-full text-right text-sm font-semibold rounded border border-outline-variant bg-surface-container-lowest text-on-surface px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary" id="price-bal" type="text" value="0 ₫"/>
+</div>
+</div>
+</div>
+<!-- Info distinguishing valid zero from missing price -->
+<div class="flex items-center gap-1.5 text-xs text-outline pt-1 border-t border-outline-variant/30"><span class="material-symbols-outlined text-sm text-secondary" data-icon="info">info</span><span>Đơn giá 0 ₫ được ghi nhận là miễn phí hợp lệ.</span></div>
+</div>
+</div>
+<!-- Table Footer Stats -->
+<div class="p-4 bg-surface-container-low border-t border-outline-variant flex flex-wrap items-center justify-between text-xs text-on-surface-variant">
+<div class="flex items-center gap-4">
+<span>Trạng thái cấu hình: <strong class="text-error font-medium">1 lỗi định dạng</strong>, <strong class="text-tertiary font-medium">1 thiếu đơn giá</strong></span>
+</div>
+<div class="font-mono text-outline">Hợp lệ: 1/3 phân khu</div>
+</div>
+</div>
+<!-- Helper Rules Box -->
+</div>
+<!-- Right Side: Checklist & Context Card (Col 4) -->
+<div class="lg:col-span-4 flex flex-col gap-4">
+<!-- Readiness Checklist Card -->
+<!-- Event Summary Reference -->
+<div class="bg-surface-container-low rounded-lg border border-outline-variant p-4 flex flex-col gap-3">
+<span class="text-xs font-headline font-semibold text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-xs" data-icon="theater_comedy">theater_comedy</span>
+              Thông tin suất diễn hiện tại
+            </span>
+<div class="space-y-1.5 text-xs">
+<div class="flex justify-between">
+<span class="text-outline">Tên chương trình:</span>
+<span class="font-medium text-on-surface text-right">Đêm nhạc Tháng Mười</span>
+</div>
+<div class="flex justify-between">
+<span class="text-outline">Địa điểm:</span>
+<span class="font-medium text-on-surface text-right">Nhà hát Ánh Dương</span>
+</div>
+<div class="flex justify-between">
+<span class="text-outline">Suất diễn:</span>
+<span class="font-medium text-on-surface text-right">16/10/2026 · 19:30</span>
+</div>
+<div class="flex justify-between">
+<span class="text-outline">Khung giá tham chiếu:</span>
+<span class="font-medium text-on-surface text-right">350.000 ₫ – 1.200.000 ₫</span>
+</div>
+</div>
+<div class="mt-1 pt-2 border-t border-outline-variant/60 flex items-center justify-between text-xs text-outline">
+<span>Mã suất: SD-20261016</span>
+<span class="font-mono">T35-DEMO</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Bar (Disabled Lock State) -->
+<footer class="mt-4 bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-outline">
+<span class="material-symbols-outlined text-base" data-icon="lock">lock</span>
+</div>
+<div>
+<div class="text-xs font-headline font-semibold text-on-surface">Thao tác đang bị khóa an toàn</div>
+<div class="text-xs text-error font-medium">Nút bị khóa cho đến khi sửa hết các giá trị chưa hợp lệ.</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 rounded text-xs font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150 border border-outline-variant" type="button">
+            Hủy thay đổi
+          </button>
+<!-- Disabled Primary Action Button -->
+<button class="px-5 py-2 rounded text-xs font-semibold bg-surface-variant text-outline cursor-not-allowed flex items-center gap-2 border border-outline-variant/50" disabled="" title="Không thể lưu khi còn giá trị lỗi" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+<span>Lưu cấu hình giá</span>
+</button>
+</div>
+</footer>
+<!-- Discreet Environment Watermark -->
+<div class="flex justify-between items-center text-xs text-outline pt-2 pb-6"><div>Demo Sprint 2 · dữ liệu giả</div><div class="font-mono">T35-DEMO</div></div>
+</main>
+</div>
+</body></html>

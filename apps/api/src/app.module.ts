@@ -8,6 +8,8 @@ import { RedisModule } from './redis/redis.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { UsersModule } from './users/users.module.js';
 import { EventsModule } from './events/events.module.js';
+import { ShowtimesModule } from './showtimes/showtimes.module.js';
+import { HoldsModule } from './holds/holds.module.js';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { EventsModule } from './events/events.module.js';
     AuthModule,
     UsersModule,
     EventsModule,
+    ShowtimesModule,
+    HoldsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

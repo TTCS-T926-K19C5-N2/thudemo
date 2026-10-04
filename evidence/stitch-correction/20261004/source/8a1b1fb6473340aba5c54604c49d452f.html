@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-surface" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>M01 Khám phá sự kiện - Vé Sự Kiện</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface": "#191b23",
+            "inverse-surface": "#2e3038",
+            "on-secondary": "#ffffff",
+            "on-primary": "#ffffff",
+            "secondary": "#4c5d8b",
+            "primary": "#0045a9",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed": "#031944",
+            "on-secondary-container": "#415381",
+            "tertiary-fixed": "#ffdbcd",
+            "surface-variant": "#e1e2ec",
+            "on-tertiary-container": "#ffd8c9",
+            "inverse-primary": "#b1c5ff",
+            "surface-container": "#ededf7",
+            "surface-bright": "#faf8ff",
+            "primary-container": "#175cd3",
+            "on-primary-fixed": "#001847",
+            "outline": "#737785",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "outline-variant": "#c3c6d6",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-error-container": "#93000a",
+            "surface-dim": "#d9d9e3",
+            "on-primary-container": "#d7e0ff",
+            "surface-container-low": "#f3f3fd",
+            "on-tertiary": "#ffffff",
+            "inverse-on-surface": "#f0f0fa",
+            "secondary-fixed-dim": "#b4c5fa",
+            "surface-tint": "#0957ce",
+            "on-tertiary-fixed": "#360f00",
+            "surface-container-highest": "#e1e2ec",
+            "on-secondary-fixed-variant": "#344572",
+            "surface": "#faf8ff",
+            "primary-fixed-dim": "#b1c5ff",
+            "surface-container-high": "#e7e7f2",
+            "on-surface-variant": "#424654",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "background": "#faf8ff",
+            "tertiary-container": "#ac4100",
+            "secondary-container": "#b6c8fd",
+            "secondary-fixed": "#dae2ff",
+            "tertiary-fixed-dim": "#ffb597",
+            "primary-fixed": "#dae2ff",
+            "tertiary": "#853000",
+            "on-background": "#191b23",
+            "error": "#ba1a1a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        },
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Hide scrollbar for clean horizontal tag list */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body antialiased flex justify-center min-h-screen selection:bg-secondary-container selection:text-on-secondary-fixed">
+<!-- Mobile Simulator Wrap (Strict 390px layout container) -->
+<div class="w-full max-w-[390px] min-h-screen bg-surface flex flex-col relative pb-20 shadow-sm border-x border-outline-variant/40">
+<!-- Top Notice Pill / Sprint Identity -->
+<div class="bg-surface-container-low px-4 py-1.5 flex items-center justify-between border-b border-outline-variant/40 text-[11px] text-on-surface-variant font-label">
+<span class="inline-flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span>Demo Sprint 2 · dữ liệu giả</span>
+</span>
+<span class="font-medium text-primary">v0.2-mobile</span>
+</div>
+<!-- TopAppBar (from Shared Components JSON specifications) -->
+<header class="docked full-width top-0 sticky z-40 bg-surface flex items-center justify-between px-4 h-14 w-full border-b border-outline-variant/40 shadow-none">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary text-[22px]">confirmation_number</span>
+<span class="font-headline text-base font-bold text-primary tracking-tight">Vé Sự Kiện</span>
+</div>
+<div class="flex items-center space-x-1.5">
+<!-- Location Indicator -->
+<button class="flex items-center gap-0.5 px-2 py-1 text-xs font-medium text-on-surface-variant hover:text-primary transition-colors duration-150 min-h-[44px]" type="button">
+<span class="material-symbols-outlined text-base">location_on</span>
+<span>TP. HCM</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<!-- Auth Button -->
+<button class="px-2.5 py-1.5 text-xs font-semibold text-primary hover:bg-surface-container rounded transition-colors duration-150 min-h-[44px] flex items-center justify-center" type="button">
+          Đăng nhập
+        </button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col px-4 pt-3.5 pb-6">
+<!-- Compact Search Bar with 44px min tap target -->
+<section class="mb-3.5">
+<div class="relative flex items-center w-full">
+<span class="material-symbols-outlined absolute left-3 text-outline text-[20px] pointer-events-none">search</span>
+<input class="w-full h-11 pl-9 pr-9 bg-surface-container-low border border-outline-variant rounded-md text-xs font-body text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container" placeholder="Tìm theo tên sự kiện, nghệ sĩ..." readonly="" type="text"/>
+<button aria-label="Bộ lọc" class="absolute right-1 w-9 h-9 flex items-center justify-center text-outline hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+</div>
+</section>
+<!-- Category Filter (Horizontal scrollable chips) -->
+<section class="mb-4 -mx-4 px-4 overflow-x-auto no-scrollbar flex items-center gap-1.5 py-0.5">
+<button class="px-3.5 py-2 text-xs font-medium rounded-full bg-primary-container text-on-primary whitespace-nowrap min-h-[36px] flex items-center shadow-none" type="button">
+          Tất cả
+        </button>
+<button class="px-3 py-2 text-xs font-medium rounded-full bg-surface-container text-on-surface-variant hover:text-primary whitespace-nowrap min-h-[36px] flex items-center transition-colors" type="button">
+          Ca nhạc
+        </button>
+<button class="px-3 py-2 text-xs font-medium rounded-full bg-surface-container text-on-surface-variant hover:text-primary whitespace-nowrap min-h-[36px] flex items-center transition-colors" type="button">
+          Kịch &amp; Hài kịch
+        </button>
+<button class="px-3 py-2 text-xs font-medium rounded-full bg-surface-container text-on-surface-variant hover:text-primary whitespace-nowrap min-h-[36px] flex items-center transition-colors" type="button">
+          Workshop
+        </button>
+<button class="px-3 py-2 text-xs font-medium rounded-full bg-surface-container text-on-surface-variant hover:text-primary whitespace-nowrap min-h-[36px] flex items-center transition-colors" type="button">
+          Cổ điển
+        </button>
+</section>
+<!-- Section Headline & Metadata Count -->
+<div class="flex items-baseline justify-between mb-3 border-b border-outline-variant/30 pb-2">
+<h1 class="font-headline text-sm font-bold text-on-surface tracking-tight">
+          Sự kiện đang mở bán <span class="text-xs font-normal text-outline">(24 sự kiện)</span>
+</h1>
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant">
+<span>Sắp xếp: Mới nhất</span>
+<span class="material-symbols-outlined text-xs">arrow_drop_down</span>
+</div>
+</div>
+<!-- Events List (Stacked Rows separated by thin dividers) -->
+<section class="flex flex-col divide-y divide-outline-variant/40">
+<!-- Item 1: Primary Event (Fictional Anchor Event) -->
+<article class="py-3.5 flex flex-col gap-2.5">
+<div class="flex gap-3">
+<!-- Poster Thumbnail -->
+<div class="relative w-20 h-24 flex-shrink-0 rounded overflow-hidden bg-surface-container border border-outline-variant/60">
+<img alt="Đêm nhạc Tháng Mười poster" class="w-full h-full object-cover" data-alt="Modern acoustic concert stage illuminated with warm amber spotlights and indigo atmospheric lights, featuring string instruments and an acoustic grand piano in a prestigious symphony theater hall. The mood is intimate, refined, and vibrant, maintaining a clean architectural composition with blue and soft gold reflections." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKT2GqEks-LP6qGMyc7C45b9aIKSdUYij2J5VUztkorfQ-6x14ZWW0Pnd2WG4-vLwlkwJ6RHgu3RQmdC1P-MW37hqJ5CSltBar7o9mSiX6zCvWXuCvI3ksc7F4tFOSo4JDNk7jqunuXTH7F_MCkV_OQxBNLh4dx44iReDXvxsHuOJhKA4KoxtO5qfb0zcIkkZq1RkdLVJtqHB7NaONuDRDW7CWIZAWPd-X1-Ri8-QkdtmoiY1pcXkMIgMHQUzoxZHsfybFUeD0ovs"/>
+<span class="absolute top-1 left-1 bg-surface-container-lowest/90 text-primary text-[9px] font-bold px-1 py-0.5 rounded leading-none border border-outline-variant/30">
+                16/10
+              </span>
+</div>
+<!-- Content Meta -->
+<div class="flex-1 flex flex-col justify-between min-w-0">
+<div>
+<div class="inline-flex items-center gap-1 mb-1">
+<span class="inline-flex items-center text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1"></span>Đang mở bán
+                  </span>
+<span class="text-[10px] text-outline font-label">Ca nhạc</span>
+</div>
+<h2 class="font-headline text-xs font-bold text-on-surface leading-snug line-clamp-2">
+                  Đêm nhạc Tháng Mười - Giai điệu Mùa Thu
+                </h2>
+</div>
+<div class="space-y-0.5 text-[11px] text-on-surface-variant font-body">
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px] text-outline">schedule</span>
+<span>Thứ Sáu, 16/10/2026 · 19:30</span>
+</div>
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px] text-outline">theater_comedy</span>
+<span class="truncate">Nhà hát Ánh Dương, Q.1, TP.HCM</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Row: Price & Action CTA -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-label uppercase tracking-wide">Giá vé</span>
+<span class="font-headline text-xs font-bold text-primary">Từ 350.000 ₫</span>
+</div>
+<button class="h-11 px-4 text-xs font-semibold rounded bg-primary-container text-on-primary hover:bg-primary transition-colors flex items-center justify-center shadow-none active:scale-[0.98]" type="button">
+              Xem chi tiết
+            </button>
+</div>
+</article>
+<!-- Item 2 -->
+<article class="py-3.5 flex flex-col gap-2.5">
+<div class="flex gap-3">
+<div class="relative w-20 h-24 flex-shrink-0 rounded overflow-hidden bg-surface-container border border-outline-variant/60">
+<img alt="Hòa nhạc Thính phòng Ánh Sao poster" class="w-full h-full object-cover" data-alt="Classical orchestra string quartet performing under gentle architectural lighting in a grand concert hall with dark acoustic wooden paneling. The ambience is quiet and elegant, utilizing clean natural light and subtle deep blue stage shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnihz5KXeVO-OC2Es6NEXkZWjdfCt4hdxETsKnNILeEl_qrfDVdYh_pQF00J3-mlKy5tWL3tucTmKPkdTljYcRt-LwZymguAYs8-wu4qOuVwXhzYZ488jOA6vIfMNN5TR7p83j8MkfWcIvGNntrAU4eGDfwHT_QnKnXTcXUkwM3IPqNOoVDO_6rUcIAHgPPbfXfQW9NevtlzAh08hiBd1Tbhy8QMTgVV0X_itw6YYI5OgP2sSV24dOL2bX1DHs8cj8fX1yHNMnuSA"/>
+<span class="absolute top-1 left-1 bg-surface-container-lowest/90 text-on-surface text-[9px] font-bold px-1 py-0.5 rounded leading-none border border-outline-variant/30">
+                18/10
+              </span>
+</div>
+<div class="flex-1 flex flex-col justify-between min-w-0">
+<div>
+<div class="inline-flex items-center gap-1 mb-1">
+<span class="inline-flex items-center text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1"></span>Đang mở bán
+                  </span>
+<span class="text-[10px] text-outline font-label">Cổ điển</span>
+</div>
+<h2 class="font-headline text-xs font-bold text-on-surface leading-snug line-clamp-2">
+                  Hòa nhạc Thính phòng Ánh Sao
+                </h2>
+</div>
+<div class="space-y-0.5 text-[11px] text-on-surface-variant font-body">
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px] text-outline">schedule</span>
+<span>Chủ Nhật, 18/10/2026 · 20:00</span>
+</div>
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px] text-outline">location_on</span>
+<span class="truncate">Nhà hát Thành Phố, Q.1, TP.HCM</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-label uppercase tracking-wide">Giá vé</span>
+<span class="font-headline text-xs font-bold text-primary">Từ 450.000 ₫</span>
+</div>
+<button class="h-11 px-4 text-xs font-semibold rounded bg-surface-container text-primary hover:bg-surface-variant transition-colors flex items-center justify-center border border-outline-variant active:scale-[0.98]" type="button">
+              Xem chi tiết
+            </button>
+</div>
+</article>
+<!-- Item 3 -->
+<article class="py-3.5 flex flex-col gap-2.5">
+<div class="flex gap-3">
+<div class="relative w-20 h-24 flex-shrink-0 rounded overflow-hidden bg-surface-container border border-outline-variant/60">
+<img alt="Vở kịch Mùa Hoa Cải Nở poster" class="w-full h-full object-cover" data-alt="Theatrical dramatic stage set featuring stylized minimalist scenery of rural blooming flowers and vintage wooden frames under dramatic spotlighting. A poignant artistic theatrical mood rendered with soft contrast and serene palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhSI0qQTVO_iAotSQkCHzUE6KZtnfPSqTnCV30hgVJOsNRHE30Xp14FfTRsknQGilgAoNGbGneQhrO0ePbCHFSq7XQbUe6jtCBhZaAITVul6lGzwygEmXOT4FxWBEKdZBLfUsFUglkn3g-oOxdKh0QqDtcOcG2EY304BbMJI_J8A_oM4oYrIGQ-hAC8xk4uBTwgT-6YU0WRCXhhd2iegdB8ZISnaS5VbQx3yZruczIjHLDRj0Fq3FO7dwBbsYMd2Eg_UQEiRW7lk8"/>
+<span class="absolute top-1 left-1 bg-surface-container-lowest/90 text-on-surface text-[9px] font-bold px-1 py-0.5 rounded leading-none border border-outline-variant/30">
+                24/10
+              </span>
+</div>
+<div class="flex-1 flex flex-col justify-between min-w-0">
+<div>
+<div class="inline-flex items-center gap-1 mb-1">
+<span class="inline-flex items-center text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1"></span>Đang mở bán
+                  </span>
+<span class="text-[10px] text-outline font-label">Kịch</span>
+</div>
+<h2 class="font-headline text-xs font-bold text-on-surface leading-snug line-clamp-2">
+                  Vở kịch: Mùa Hoa Cải Nở
+                </h2>
+</div>
+<div class="space-y-0.5 text-[11px] text-on-surface-variant font-body">
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px] text-outline">schedule</span>
+<span>Thứ Bảy, 24/10/2026 · 19:00</span>
+</div>
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px] text-outline">location_on</span>
+<span class="truncate">Sân khấu Kịch IDECAF, TP.HCM</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-label uppercase tracking-wide">Giá vé</span>
+<span class="font-headline text-xs font-bold text-primary">Từ 250.000 ₫</span>
+</div>
+<button class="h-11 px-4 text-xs font-semibold rounded bg-surface-container text-primary hover:bg-surface-variant transition-colors flex items-center justify-center border border-outline-variant active:scale-[0.98]" type="button">
+              Xem chi tiết
+            </button>
+</div>
+</article>
+<!-- Item 4 -->
+<article class="py-3.5 flex flex-col gap-2.5">
+<div class="flex gap-3">
+<div class="relative w-20 h-24 flex-shrink-0 rounded overflow-hidden bg-surface-container border border-outline-variant/60">
+<img alt="Indie Night TP.HCM poster" class="w-full h-full object-cover" data-alt="Indie rock concert venue with young musicians holding electric guitars under vivid deep sapphire blue and magenta stage wash lighting. Lively youth culture atmosphere captured in sharp focus with clean composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-WVF5lrhJqt-XquEzzCOPNsPBD34CPjl_RbZrYXxRFvR6YpkJKnwMEuo-yJ7Aja6P-6zsegQKza_7PlktMpMszGdeDhu6YCAt8fW2vDecdvaUnhHP-8-K-195Vdi6gm3uKa6lp5Gzgfs7MfoOI1CBkzBLMiHZbmz4i1T8BxwILVzsf-jeXipyJzgSyyRFmEw-fnX8HzygV9EDfu1NRDiTiNFEyod5zy0iKO4EKphtOr9jfUn0fFE1CsOPuGMg8qVgLkNJmjSWxRQ"/>
+<span class="absolute top-1 left-1 bg-surface-container-lowest/90 text-on-surface text-[9px] font-bold px-1 py-0.5 rounded leading-none border border-outline-variant/30">
+                30/10
+              </span>
+</div>
+<div class="flex-1 flex flex-col justify-between min-w-0">
+<div>
+<div class="inline-flex items-center gap-1 mb-1">
+<span class="inline-flex items-center text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1"></span>Đang mở bán
+                  </span>
+<span class="text-[10px] text-outline font-label">Indie</span>
+</div>
+<h2 class="font-headline text-xs font-bold text-on-surface leading-snug line-clamp-2">
+                  Indie Night TP.HCM Vol. 4
+                </h2>
+</div>
+<div class="space-y-0.5 text-[11px] text-on-surface-variant font-body">
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px] text-outline">schedule</span>
+<span>Thứ Sáu, 30/10/2026 · 20:30</span>
+</div>
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px] text-outline">location_on</span>
+<span class="truncate">The Factory Contemporary Arts Centre</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-label uppercase tracking-wide">Giá vé</span>
+<span class="font-headline text-xs font-bold text-primary">Từ 300.000 ₫</span>
+</div>
+<button class="h-11 px-4 text-xs font-semibold rounded bg-surface-container text-primary hover:bg-surface-variant transition-colors flex items-center justify-center border border-outline-variant active:scale-[0.98]" type="button">
+              Xem chi tiết
+            </button>
+</div>
+</article>
+<!-- Item 5 -->
+<article class="py-3.5 flex flex-col gap-2.5">
+<div class="flex gap-3">
+<div class="relative w-20 h-24 flex-shrink-0 rounded overflow-hidden bg-surface-container border border-outline-variant/60">
+<img alt="Đêm Thơ &amp; Nhạc Trịnh Công Sơn poster" class="w-full h-full object-cover" data-alt="Poetic tribute stage setting with an acoustic nylon guitar leaning against a vintage wooden chair beside warm floor lamps and handwritten lyric sheets in soft focus. Nostalgic aesthetic rendered in subtle warm sepia and cool evening tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSTl9c37X2KeN5QFHnw2i9UqUvrQoFak9FWgvCS0KfnsBsz5iHhf7CnCi614-4jbiS9cUwZZ75mbIzW-RuXSRvdwDXEoMLJF4vXaNiIQ376D7Ef6vNLDZzaJyJkChEGWG5Q0Asrd4RrDZ9RfIKP2Qa6cylFsKj-KuGSlykoj8nj2W6iCMjh3pouJl73pI08MKNwYUvv5l0GvBnNIQGB3f6W4JFStbSAcK-dy12dCM6rm8NE6Rbqzb07PW6b-eblB5IoT9KojD3N90"/>
+<span class="absolute top-1 left-1 bg-surface-container-lowest/90 text-on-surface text-[9px] font-bold px-1 py-0.5 rounded leading-none border border-outline-variant/30">
+                07/11
+              </span>
+</div>
+<div class="flex-1 flex flex-col justify-between min-w-0">
+<div>
+<div class="inline-flex items-center gap-1 mb-1">
+<span class="inline-flex items-center text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1"></span>Đang mở bán
+                  </span>
+<span class="text-[10px] text-outline font-label">Nhạc Trịnh</span>
+</div>
+<h2 class="font-headline text-xs font-bold text-on-surface leading-snug line-clamp-2">
+                  Đêm Thơ &amp; Nhạc Trịnh Công Sơn
+                </h2>
+</div>
+<div class="space-y-0.5 text-[11px] text-on-surface-variant font-body">
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px] text-outline">schedule</span>
+<span>Thứ Bảy, 07/11/2026 · 19:30</span>
+</div>
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px] text-outline">location_on</span>
+<span class="truncate">Phòng trà Đồng Dao, Q.1, TP.HCM</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-label uppercase tracking-wide">Giá vé</span>
+<span class="font-headline text-xs font-bold text-primary">Từ 400.000 ₫</span>
+</div>
+<button class="h-11 px-4 text-xs font-semibold rounded bg-surface-container text-primary hover:bg-surface-variant transition-colors flex items-center justify-center border border-outline-variant active:scale-[0.98]" type="button">
+              Xem chi tiết
+            </button>
+</div>
+</article>
+</section>
+<!-- Pagination Component (Mobile touch targets >= 44px) -->
+<section class="mt-5 pt-3 border-t border-outline-variant/40 flex items-center justify-between">
+<button class="h-11 px-3 text-xs font-medium text-outline bg-surface-container-low rounded border border-outline-variant/60 flex items-center justify-center opacity-60 cursor-not-allowed" disabled="" type="button">
+<span class="material-symbols-outlined text-base mr-1">chevron_left</span>
+<span>Trước</span>
+</button>
+<span class="text-xs font-medium text-on-surface-variant font-label">
+          Trang <span class="text-on-surface font-semibold">1</span> / 4
+        </span>
+<button class="h-11 px-3 text-xs font-medium text-primary bg-surface-container rounded border border-outline-variant hover:bg-surface-container-high transition-colors flex items-center justify-center active:scale-95" type="button">
+<span>Sau</span>
+<span class="material-symbols-outlined text-base ml-1">chevron_right</span>
+</button>
+</section>
+<!-- Sprint 2 Policy / Quiet Rules Banner -->
+<div class="mt-6 p-3 bg-surface-container-low rounded-lg border border-outline-variant/60 text-on-surface-variant space-y-1">
+<div class="flex items-center gap-1.5 text-primary text-xs font-semibold">
+<span class="material-symbols-outlined text-sm">info</span>
+<span>Quy chuẩn giữ chỗ Sprint 2</span>
+</div>
+<p class="text-[11px] leading-relaxed font-body">
+          Quy chuẩn giữ chỗ: Hỗ trợ khóa ghế tối đa 10 phút tính từ ghế đầu tiên được chọn. Xung đột mua vé áp dụng cơ chế xác nhận toàn bộ hoặc từ chối. Không hỗ trợ khôi phục phiên hết hạn tại phiên bản này.
+        </p>
+</div>
+</main>
+<!-- Footer from Shared Components -->
+<footer class="flex flex-col items-center justify-center py-4 px-4 space-y-1.5 w-full text-center border-t border-outline-variant/40 bg-surface-container-low">
+<p class="font-headline text-xs font-semibold text-on-surface-variant">Demo Sprint 2 · dữ liệu giả</p>
+<div class="flex items-center justify-center space-x-3 text-xs font-body text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">Điều khoản</a>
+<span>·</span>
+<a class="hover:text-primary transition-colors" href="#">Bảo mật</a>
+<span>·</span>
+<a class="hover:text-primary transition-colors" href="#">Hỗ trợ kỹ thuật</a>
+</div>
+</footer>
+<!-- BottomNavBar (from Shared Components JSON: Active on 'Sự kiện') -->
+<nav class="fixed bottom-0 left-0 right-0 max-w-[390px] mx-auto z-50 flex justify-around items-center h-16 px-2 bg-surface border-t border-outline-variant shadow-none">
+<!-- Tab 1: Sự kiện (ACTIVE) -->
+<a class="flex flex-col items-center justify-center text-primary font-medium py-1 min-w-[64px] min-h-[44px] transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="font-label text-xs font-medium mt-0.5">Sự kiện</span>
+</a>
+<!-- Tab 2: Sơ đồ vé -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1 min-w-[64px] min-h-[44px] hover:text-primary transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]">event_seat</span>
+<span class="font-label text-xs font-medium mt-0.5">Sơ đồ vé</span>
+</a>
+<!-- Tab 3: Vé của tôi -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1 min-w-[64px] min-h-[44px] hover:text-primary transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]">confirmation_number</span>
+<span class="font-label text-xs font-medium mt-0.5">Vé của tôi</span>
+</a>
+<!-- Tab 4: Quản trị -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1 min-w-[64px] min-h-[44px] hover:text-primary transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+<span class="font-label text-xs font-medium mt-0.5">Quản trị</span>
+</a>
+</nav>
+</div>
+</body></html>

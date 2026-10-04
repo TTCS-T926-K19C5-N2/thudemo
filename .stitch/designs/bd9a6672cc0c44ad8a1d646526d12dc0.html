@@ -1,0 +1,339 @@
+<!DOCTYPE html><html class="light" lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>M13 Hết thời gian giữ chỗ - Vé Sự Kiện</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Geist Font CDN -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-container": "#d7e0ff",
+            "surface-container": "#ededf7",
+            "on-secondary-container": "#415381",
+            "on-primary-fixed": "#001847",
+            "secondary": "#4c5d8b",
+            "inverse-on-surface": "#f0f0fa",
+            "tertiary": "#853000",
+            "surface-bright": "#faf8ff",
+            "surface-container-lowest": "#ffffff",
+            "on-surface-variant": "#424654",
+            "on-error": "#ffffff",
+            "background": "#faf8ff",
+            "surface-dim": "#d9d9e3",
+            "surface-container-low": "#f3f3fd",
+            "surface-container-highest": "#e1e2ec",
+            "on-secondary-fixed-variant": "#344572",
+            "surface-container-high": "#e7e7f2",
+            "primary-fixed-dim": "#b1c5ff",
+            "on-tertiary-fixed": "#360f00",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "inverse-primary": "#b1c5ff",
+            "on-primary": "#ffffff",
+            "on-surface": "#191b23",
+            "secondary-container": "#b6c8fd",
+            "error": "#ba1a1a",
+            "surface": "#faf8ff",
+            "outline": "#737785",
+            "on-tertiary-container": "#ffd8c9",
+            "outline-variant": "#c3c6d6",
+            "surface-tint": "#0957ce",
+            "on-secondary": "#ffffff",
+            "on-background": "#191b23",
+            "secondary-fixed-dim": "#b4c5fa",
+            "on-secondary-fixed": "#031944",
+            "inverse-surface": "#2e3038",
+            "primary-fixed": "#dae2ff",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-error-container": "#93000a",
+            "secondary-fixed": "#dae2ff",
+            "tertiary-fixed-dim": "#ffb597",
+            "tertiary-fixed": "#ffdbcd",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "tertiary-container": "#ac4100",
+            "primary": "#0045a9",
+            "surface-variant": "#e1e2ec",
+            "primary-container": "#175cd3"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    body {
+      font-family: 'Geist', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Seat custom hatched pattern for held seats */
+    .seat-hatched {
+      background: repeating-linear-gradient(
+        45deg,
+        #f3f3fd,
+        #f3f3fd 2px,
+        #c3c6d6 2px,
+        #c3c6d6 4px
+      );
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-low text-on-surface flex justify-center min-h-screen antialiased">
+<!-- Mobile Viewport Container (390px spec) -->
+<div class="w-full max-w-[390px] bg-surface flex flex-col min-h-screen shadow-sm relative pb-36">
+<!-- TopAppBar (Shared Component Implementation) -->
+<header class="docked full-width top-0 sticky z-40 bg-surface flex items-center justify-between px-4 h-14 w-full border-b border-outline-variant">
+<div class="flex items-center space-x-2.5">
+<button aria-label="Quay lại" class="p-1 rounded text-on-surface-variant hover:bg-surface-container transition-colors duration-150 active:opacity-80 flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-xl">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<span class="font-headline text-base font-semibold leading-5 text-on-surface">Chọn và giữ ghế</span>
+<span class="font-body text-xs text-on-surface-variant leading-tight truncate max-w-[200px]">Đêm nhạc Tháng Mười</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="font-body text-xs font-medium text-on-surface-variant bg-surface-container px-2 py-0.5 rounded border border-outline-variant">TP. HCM</span>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 px-4 py-3 space-y-3.5">
+<!-- Fictional Event Metadata Pill -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded p-3 text-xs space-y-1">
+<div class="flex items-center justify-between">
+<span class="font-semibold text-on-surface text-sm">Đêm nhạc Tháng Mười</span>
+<span class="text-tertiary-container font-medium text-[11px] bg-tertiary-fixed px-1.5 py-0.5 rounded">Phiên T24/T28</span>
+</div>
+<div class="text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">calendar_month</span>
+<span>16/10/2026 · 19:30</span>
+<span class="mx-1">|</span>
+<span class="material-symbols-outlined text-sm">theater_comedy</span>
+<span>Nhà hát Ánh Dương</span>
+</div>
+</section>
+<!-- Khung Cảnh Báo Hết Hạn (Prominent Expiration Alert) -->
+<section class="bg-error-container/40 border-2 border-error rounded-lg p-3.5 space-y-2.5 animate-pulse-once">
+<div class="flex items-start gap-2.5">
+<div class="w-9 h-9 rounded-full bg-error flex items-center justify-center text-on-error flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-xl">hourglass_disabled</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="font-headline text-xs font-bold text-on-error-container tracking-wider uppercase">Cảnh báo hệ thống</span>
+<span class="text-[10px] font-mono font-bold bg-error text-on-error px-1.5 py-0.2 rounded">TỰ ĐỘNG GIẢI PHÓNG</span>
+</div>
+<div class="font-headline text-lg font-bold text-error tracking-tight mt-0.5 flex items-center gap-1.5">
+<span>ĐÃ HẾT HẠN - 00:00</span>
+</div>
+<p class="text-[11px] text-on-surface-variant font-medium">Thời hạn tối đa 10 phút/phiên giữ chỗ.</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest/80 border border-outline-variant/60 rounded p-2 text-xs text-on-surface leading-snug">
+          Thời gian giữ ghế đã kết thúc. Sơ đồ đã được cập nhật lại; các ghế bạn chọn trước đó (<strong class="text-error font-semibold">A12, A13</strong>) đã được giải phóng trở lại phòng vé cho khán giả khác.
+        </div>
+</section>
+<!-- Sơ Đồ Ghế Khán Phòng (Seat Map Canvas) -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-base">event_seat</span>
+<span class="font-headline text-xs font-bold uppercase tracking-wide text-on-surface">Sơ đồ ghế khán phòng</span>
+</div>
+<span class="text-[11px] text-outline font-medium">Đã cập nhật tự động</span>
+</div>
+<!-- Stage Graphic Marker -->
+<div class="w-full bg-surface-container py-1 text-center rounded border border-outline-variant">
+<span class="font-headline text-[10px] uppercase font-bold text-on-surface-variant tracking-widest">SÂN KHẤU TRUNG TÂM</span>
+</div>
+<!-- Interactive Visual Seat Grid -->
+<div class="pt-2 overflow-x-auto">
+<div class="min-w-[280px] flex flex-col items-center gap-2">
+<!-- Row A (VIP) -->
+<div class="flex items-center gap-1.5">
+<span class="w-4 text-[10px] font-bold text-on-surface-variant text-right">A</span>
+<div class="flex gap-1.5">
+<!-- Sold Seat A10 -->
+<div class="w-6 h-6 rounded bg-inverse-surface text-inverse-on-surface flex items-center justify-center text-[10px] font-medium" title="A10 - Đã bán">
+                  ✕
+                </div>
+<!-- Sold Seat A11 -->
+<div class="w-6 h-6 rounded bg-inverse-surface text-inverse-on-surface flex items-center justify-center text-[10px] font-medium" title="A11 - Đã bán">
+                  ✕
+                </div>
+<!-- Ghế A12: Vừa giải phóng -> Trạng thái Còn trống (hollow square) -->
+<div class="w-6 h-6 rounded bg-surface border-2 border-primary text-primary flex items-center justify-center text-[10px] font-bold shadow-sm relative group cursor-pointer" title="A12 - Vừa giải phóng (Còn trống)">
+                  12
+                  <span class="absolute -top-1 -right-1 w-2 h-2 bg-error rounded-full ring-1 ring-surface animate-ping"></span>
+</div>
+<!-- Ghế A13: Vừa giải phóng -> Trạng thái Còn trống (hollow square) -->
+<div class="w-6 h-6 rounded bg-surface border-2 border-primary text-primary flex items-center justify-center text-[10px] font-bold shadow-sm relative group cursor-pointer" title="A13 - Vừa giải phóng (Còn trống)">
+                  13
+                  <span class="absolute -top-1 -right-1 w-2 h-2 bg-error rounded-full ring-1 ring-surface animate-ping"></span>
+</div>
+<!-- Available Seat A14 -->
+<div class="w-6 h-6 rounded bg-surface border border-outline text-on-surface flex items-center justify-center text-[10px]" title="A14 - Còn trống">
+                  14
+                </div>
+<!-- Available Seat A15 -->
+<div class="w-6 h-6 rounded bg-surface border border-outline text-on-surface flex items-center justify-center text-[10px]" title="A15 - Còn trống">
+                  15
+                </div>
+</div>
+</div>
+<!-- Row B (Tiêu chuẩn) -->
+<div class="flex items-center gap-1.5">
+<span class="w-4 text-[10px] font-bold text-on-surface-variant text-right">B</span>
+<div class="flex gap-1.5">
+<!-- Available B10 -->
+<div class="w-6 h-6 rounded bg-surface border border-outline text-on-surface flex items-center justify-center text-[10px]">10</div>
+<!-- Held by others (neutral + lock glyph) -->
+<div class="w-6 h-6 rounded seat-hatched border border-outline-variant text-on-surface-variant flex items-center justify-center text-[10px]" title="B11 - Đang được giữ bởi người khác">
+<span class="material-symbols-outlined text-[12px]">lock</span>
+</div>
+<!-- Held by others -->
+<div class="w-6 h-6 rounded seat-hatched border border-outline-variant text-on-surface-variant flex items-center justify-center text-[10px]" title="B12 - Đang được giữ bởi người khác">
+<span class="material-symbols-outlined text-[12px]">lock</span>
+</div>
+<!-- Available B13 -->
+<div class="w-6 h-6 rounded bg-surface border border-outline text-on-surface flex items-center justify-center text-[10px]">13</div>
+<!-- Available B14 -->
+<div class="w-6 h-6 rounded bg-surface border border-outline text-on-surface flex items-center justify-center text-[10px]">14</div>
+<!-- Sold B15 -->
+<div class="w-6 h-6 rounded bg-inverse-surface text-inverse-on-surface flex items-center justify-center text-[10px]">✕</div>
+</div>
+</div>
+<!-- Row C (Ban công) -->
+<div class="flex items-center gap-1.5">
+<span class="w-4 text-[10px] font-bold text-on-surface-variant text-right">C</span>
+<div class="flex gap-1.5">
+<div class="w-6 h-6 rounded bg-surface border border-outline text-on-surface flex items-center justify-center text-[10px]">01</div>
+<div class="w-6 h-6 rounded bg-surface border border-outline text-on-surface flex items-center justify-center text-[10px]">02</div>
+<div class="w-6 h-6 rounded bg-surface border border-outline text-on-surface flex items-center justify-center text-[10px]">03</div>
+<div class="w-6 h-6 rounded bg-inverse-surface text-inverse-on-surface flex items-center justify-center text-[10px]">✕</div>
+<div class="w-6 h-6 rounded bg-surface border border-outline text-on-surface flex items-center justify-center text-[10px]">05</div>
+<div class="w-6 h-6 rounded bg-surface border border-outline text-on-surface flex items-center justify-center text-[10px]">06</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Seat Legend (Quy ước ký hiệu theo Design System) -->
+<div class="grid grid-cols-2 gap-2 pt-2 border-t border-outline-variant text-[11px] text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<div class="w-3.5 h-3.5 rounded bg-surface border-2 border-primary"></div>
+<span>Còn trống (Hollow)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<div class="w-3.5 h-3.5 rounded bg-inverse-surface text-inverse-on-surface flex items-center justify-center text-[9px]">✕</div>
+<span>Đã bán (Sold Dark X)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<div class="w-3.5 h-3.5 rounded seat-hatched border border-outline-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px]">lock</span>
+</div>
+<span>Đang giữ (Khác / Lock)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<div class="w-3.5 h-3.5 rounded bg-primary-container text-white flex items-center justify-center text-[9px] font-bold">✓</div>
+<span>Ghế của bạn (Trống)</span>
+</div>
+</div>
+</section>
+<!-- Bảng Giá & Danh Mục Vé (Price Tier Reference) -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 space-y-2">
+<span class="font-headline text-xs font-bold uppercase tracking-wide text-on-surface block">Bảng giá tiêu chuẩn</span>
+<div class="divide-y divide-outline-variant text-xs">
+<div class="py-1.5 flex justify-between items-center">
+<span class="text-on-surface font-medium">Hạng VIP (Hàng A)</span>
+<span class="font-semibold text-on-surface">1.200.000 ₫</span>
+</div>
+<div class="py-1.5 flex justify-between items-center">
+<span class="text-on-surface font-medium">Tiêu chuẩn (Hàng B)</span>
+<span class="font-semibold text-on-surface">650.000 ₫</span>
+</div>
+<div class="py-1.5 flex justify-between items-center">
+<span class="text-on-surface font-medium">Ban công (Hàng C)</span>
+<span class="font-semibold text-on-surface">350.000 ₫</span>
+</div>
+</div>
+</section>
+<!-- Danh Mục Ghế Đang Chọn (Empty State Confirmation) -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-3.5 text-center space-y-2">
+<div class="w-8 h-8 rounded-full bg-surface-container mx-auto flex items-center justify-center text-outline">
+<span class="material-symbols-outlined text-lg">event_seat</span>
+</div>
+<div class="space-y-1">
+<h4 class="font-headline text-xs font-bold text-on-surface">Danh mục vé đã chọn (0 ghế)</h4>
+<p class="font-body text-xs text-on-surface-variant leading-relaxed px-2">
+            Chưa có ghế nào được chọn. Vui lòng nhấp vào các ô ghế còn trống trên sơ đồ để bắt đầu lượt giữ mới.
+          </p>
+</div>
+<div class="pt-2 border-t border-outline-variant flex items-center justify-between text-xs">
+<span class="text-on-surface-variant font-medium">Tạm tính:</span>
+<span class="font-headline text-base font-bold text-on-surface">0 ₫</span>
+</div>
+</section>
+<!-- Technical Protocol Notice -->
+<div class="bg-surface-container-low border border-outline-variant rounded p-2.5 text-[11px] text-outline flex items-start gap-1.5">
+<span class="material-symbols-outlined text-sm mt-0.5 text-tertiary">info</span>
+<span>Theo quy tắc kiểm soát phòng vé Sprint 2, phiên giữ chỗ hết hạn không hỗ trợ khôi phục tự động hoặc gia hạn. Vui lòng thao tác lại từ đầu.</span>
+</div>
+</main>
+<!-- Fixed Bottom Sticky Summary Bar & Primary CTAs -->
+<div class="fixed bottom-0 left-0 right-0 max-w-[390px] mx-auto bg-surface border-t border-outline-variant p-3.5 z-50 space-y-2 shadow-md">
+<!-- Total Bar -->
+<div class="flex items-center justify-between text-xs px-0.5">
+<span class="text-on-surface-variant font-medium">Tổng tiền (0 ghế):</span>
+<span class="font-headline text-lg font-bold text-on-surface">0 ₫</span>
+</div>
+<!-- Action Buttons Cluster -->
+<div class="grid grid-cols-2 gap-2">
+<!-- Primary Action CTA (>= 44px touch target) -->
+<button class="h-11 bg-primary text-on-primary font-headline text-xs font-semibold rounded flex items-center justify-center gap-1.5 hover:bg-primary-container active:scale-[0.98] transition-all duration-150" onclick="location.reload()" type="button">
+<span class="material-symbols-outlined text-base">refresh</span>
+<span>Chọn lại ghế</span>
+</button>
+<!-- Disabled Next Action CTA (Sprint 2 Spec: Visibly Disabled & Inactive) -->
+<button class="h-11 bg-surface-container-highest text-outline font-headline text-xs font-semibold rounded flex items-center justify-center gap-1 cursor-not-allowed opacity-70" disabled="" type="button">
+<span>Tiếp tục</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<!-- Sprint 2 Mandatory Discrete Watermark -->
+<div class="text-center pt-1">
+<span class="text-[10px] text-outline tracking-tight">Demo Sprint 2 · dữ liệu giả</span>
+</div>
+</div>
+</div>
+</body></html>

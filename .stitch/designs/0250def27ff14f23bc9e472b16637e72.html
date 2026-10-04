@@ -1,0 +1,348 @@
+<!DOCTYPE html><html class="light" lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>05 Nạp sơ đồ JSON (T14) — Tệp không hợp lệ · Vé Sự Kiện</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-low": "#f3f3fd",
+            "on-secondary-container": "#415381",
+            "background": "#faf8ff",
+            "surface-tint": "#0957ce",
+            "primary-fixed-dim": "#b1c5ff",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-primary-container": "#d7e0ff",
+            "tertiary-fixed-dim": "#ffb597",
+            "surface-dim": "#d9d9e3",
+            "inverse-on-surface": "#f0f0fa",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "inverse-surface": "#2e3038",
+            "tertiary-fixed": "#ffdbcd",
+            "tertiary": "#853000",
+            "on-surface": "#191b23",
+            "on-error-container": "#93000a",
+            "secondary": "#4c5d8b",
+            "surface-container": "#ededf7",
+            "surface": "#faf8ff",
+            "surface-bright": "#faf8ff",
+            "surface-container-high": "#e7e7f2",
+            "primary-fixed": "#dae2ff",
+            "error": "#ba1a1a",
+            "primary": "#0045a9",
+            "outline-variant": "#c3c6d6",
+            "on-error": "#ffffff",
+            "secondary-container": "#b6c8fd",
+            "primary-container": "#175cd3",
+            "on-background": "#191b23",
+            "on-primary-fixed": "#001847",
+            "on-secondary-fixed-variant": "#344572",
+            "on-secondary": "#ffffff",
+            "secondary-fixed-dim": "#b4c5fa",
+            "surface-variant": "#e1e2ec",
+            "on-tertiary-container": "#ffd8c9",
+            "tertiary-container": "#ac4100",
+            "inverse-primary": "#b1c5ff",
+            "outline": "#737785",
+            "on-tertiary-fixed": "#360f00",
+            "on-primary": "#ffffff",
+            "on-surface-variant": "#424654",
+            "secondary-fixed": "#dae2ff",
+            "on-secondary-fixed": "#031944",
+            "surface-container-highest": "#e1e2ec",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {},
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          },
+          "fontSize": {}
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface font-body antialiased min-h-screen flex selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- Side Navigation Bar (Anchored from Shared JSON) -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-surface-container-lowest dark:bg-surface border-r border-outline-variant dark:border-outline flex flex-col justify-between p-4">
+<div class="flex flex-col gap-6">
+<!-- Brand & Header -->
+<div class="px-2 pt-1">
+<div class="flex items-center gap-2 mb-1">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-white flex items-center justify-center font-bold text-sm">
+<span class="material-symbols-outlined text-lg" data-icon="confirmation_number">confirmation_number</span>
+</div>
+<div>
+<div class="text-base font-headline font-bold text-on-surface dark:text-inverse-on-surface tracking-tight">Vé Sự Kiện · Quản trị</div>
+<div class="text-xs font-label text-outline">Vận hành sự kiện</div>
+</div>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex flex-col gap-1"><!-- 1: Sự kiện -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant dark:text-surface-variant font-normal rounded-lg hover:bg-surface-container-low dark:hover:bg-surface-container-high hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="calendar_today">calendar_today</span>
+<span class="text-sm font-label">Sự kiện</span>
+</a>
+<!-- 2: Suất diễn -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant dark:text-surface-variant font-normal rounded-lg hover:bg-surface-container-low dark:hover:bg-surface-container-high hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="schedule">schedule</span>
+<span class="text-sm font-label">Suất diễn</span>
+</a>
+<!-- 3: Sơ đồ ghế (ACTIVE TAB) -->
+<a class="flex items-center gap-3 px-3 py-2 bg-surface-container-low dark:bg-surface-container-high text-primary dark:text-inverse-primary font-medium rounded-lg transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="event_seat">event_seat</span>
+<span class="text-sm font-label">Sơ đồ ghế</span>
+</a>
+<!-- 4: Giá vé -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant dark:text-surface-variant font-normal rounded-lg hover:bg-surface-container-low dark:hover:bg-surface-container-high hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="payments">payments</span>
+<span class="text-sm font-label">Giá vé</span>
+</a>
+<!-- 5: Tài khoản -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant dark:text-surface-variant font-normal rounded-lg hover:bg-surface-container-low dark:hover:bg-surface-container-high hover:text-on-surface dark:hover:text-inverse-on-surface transition-colors duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="manage_accounts">manage_accounts</span>
+<span class="text-sm font-label">Tài khoản</span>
+</a></nav>
+</div>
+<!-- Sidebar Footer / Secondary Support -->
+<div class="border-t border-outline-variant pt-3 flex flex-col gap-2">
+<div class="px-2 py-1 bg-surface-container-high rounded text-[11px] text-outline font-label">
+<span class="font-medium text-on-surface-variant">Phân hạng áp dụng:</span><br>
+        VIP 1.200.000 ₫ · Tiêu chuẩn 650.000 ₫ · Ban công 350.000 ₫
+      </div>
+</div>
+</aside>
+<!-- Main Content Wrap -->
+<div class="pl-60 flex-1 flex flex-col min-h-screen">
+<!-- TopNavBar (Anchored from Shared JSON) -->
+<header class="h-14 fixed top-0 right-0 left-60 z-20 bg-surface-container-lowest dark:bg-surface border-b border-outline-variant dark:border-outline flex justify-between items-center px-6">
+<div class="flex items-center gap-3">
+<!-- Breadcrumbs & Event context -->
+<span class="material-symbols-outlined text-outline text-[18px]" data-icon="theater_comedy">theater_comedy</span>
+<div class="flex items-center gap-1.5 text-xs font-label">
+<span class="text-on-surface-variant font-medium">Sự kiện: Đêm nhạc Tháng Mười · Nhà hát Ánh Dương (16/10/2026)</span>
+<span class="text-outline">/</span>
+<span class="text-primary font-medium">Nạp sơ đồ JSON</span>
+</div>
+<!-- Status indicator -->
+<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-surface-container-high text-on-surface-variant border border-outline-variant">
+          Nháp (Draft)
+        </span>
+</div>
+<div class="flex items-center gap-4">
+<!-- Sprint Notice -->
+<span class="text-xs font-label text-outline bg-surface-container px-2.5 py-1 rounded">Demo Sprint 2 · dữ liệu giả</span>
+<div class="h-4 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-label text-on-surface-variant">Ban tổ chức / Kỹ thuật</span>
+<button class="p-1 rounded-full text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" title="Thông báo">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+</button>
+<button class="p-1 rounded-full text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" title="Đổi tài khoản">
+<span class="material-symbols-outlined text-[20px]" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Canvas / Operational Area -->
+<main class="mt-14 p-8 max-w-7xl w-full mx-auto flex flex-col gap-6">
+<!-- Page Heading Anchor -->
+<section class="flex flex-col gap-1 pb-2 border-b border-outline-variant">
+<div class="flex items-center justify-between">
+<h1 class="text-2xl font-headline font-bold text-on-surface tracking-tight">
+            05 Nạp sơ đồ JSON (T14) — Tệp không hợp lệ
+          </h1>
+<span class="text-xs text-outline font-label">Mã tác vụ: IMP-SEAT-2026-T14</span>
+</div>
+<p class="text-sm text-on-surface-variant">
+          Kiểm tra định dạng ma trận chỗ ngồi và danh sách lỗi kỹ thuật trước khi nạp.
+        </p>
+</section>
+<!-- Preview Notice Banner (Error / Warning alert) -->
+<section class="bg-error-container/40 border border-error/30 rounded-lg p-4 flex items-start gap-3.5">
+<span class="material-symbols-outlined text-error text-[22px] mt-0.5" data-icon="error">error</span>
+<div class="flex-1">
+<h2 class="text-sm font-headline font-semibold text-on-error-container">
+            Xem trước chưa lưu dữ liệu. Vui lòng sửa lỗi trong tệp JSON trước khi nạp lại.
+          </h2>
+<p class="text-xs text-on-surface-variant mt-0.5">
+            Quy trình nạp ma trận yêu cầu tính toàn vẹn 100%. Các vị trí lỗi đã được cô lập bên dưới theo số dòng và ID ghế.
+          </p>
+</div>
+</section>
+<!-- Bento Grid Overview (File Info & Diagnostic Highlights) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- File Name & Meta -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col justify-between">
+<div class="flex items-center justify-between text-outline mb-2">
+<span class="text-xs font-label uppercase tracking-wider font-semibold">Tệp nguồn tải lên</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="code">code</span>
+</div>
+<div>
+<div class="text-base font-mono font-medium text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-outline text-[16px]" data-icon="draft">draft</span>
+              seats-invalid.json
+            </div>
+<div class="text-xs text-outline mt-1">Dung lượng: <span class="font-mono text-on-surface-variant">842 KB</span> · Định dạng UTF-8</div>
+</div>
+</div>
+<!-- File Status Badge Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col justify-between">
+<div class="flex items-center justify-between text-outline mb-2">
+<span class="text-xs font-label uppercase tracking-wider font-semibold">Trạng thái tệp</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="verified">verified</span>
+</div>
+<div>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-error-container text-error text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>
+              Không hợp lệ · Phát hiện 3 lỗi cấu trúc
+            </div>
+<div class="text-xs text-outline mt-1.5">Chặn phê duyệt: Không đáp ứng quy chuẩn tệp JSON</div>
+</div>
+</div>
+<!-- Venue & Show Context Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col justify-between">
+<div class="flex items-center justify-between text-outline mb-2">
+<span class="text-xs font-label uppercase tracking-wider font-semibold">Địa điểm &amp; Suất diễn mục tiêu</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="pin_drop">pin_drop</span>
+</div>
+<div>
+<div class="text-sm font-medium text-on-surface">Nhà hát Ánh Dương (địa điểm giả)</div>
+<div class="text-xs text-outline mt-0.5">16/10/2026 lúc 19:30 · Sức chứa dự kiến: 2.000 ghế</div>
+</div>
+</div>
+</section>
+<!-- Flat Table Listing ALL 3 Errors -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden">
+<div class="px-5 py-3.5 border-b border-outline-variant flex items-center justify-between bg-surface-container-low/50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error text-[18px]" data-icon="flag">flag</span>
+<h3 class="text-sm font-headline font-semibold text-on-surface">Chi tiết danh sách 3 lỗi phát hiện</h3>
+</div>
+<span class="text-xs font-mono text-outline">Quy tắc xác thực: Quy chuẩn tệp JSON</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse text-xs">
+<thead>
+<tr class="border-b border-outline-variant bg-surface-container-low text-on-surface-variant font-label">
+<th class="py-3 px-5 font-semibold w-1/4">Vị trí trong tệp</th>
+<th class="py-3 px-5 font-semibold w-1/3">Lỗi phát hiện</th>
+<th class="py-3 px-5 font-semibold">Hướng khắc phục</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/60 font-body">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors">
+<td class="py-3.5 px-5 font-mono text-on-surface flex items-center gap-2">
+<span class="inline-block w-2 h-2 rounded-full bg-error"></span>
+<span>Dòng 12, Ghế #12</span>
+</td>
+<td class="py-3.5 px-5 text-error font-medium">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]" data-icon="warning">warning</span>
+<span>Số ghế phải là số nguyên</span>
+</div>
+</td>
+<td class="py-3.5 px-5 text-on-surface-variant">
+                  Sửa giá trị <code class="bg-surface-container px-1 py-0.5 rounded font-mono text-on-surface text-[11px] font-semibold">'12B'</code> thành số nguyên hợp lệ (VD: <span class="font-mono text-primary font-semibold">12</span>).
+                </td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors">
+<td class="py-3.5 px-5 font-mono text-on-surface flex items-center gap-2">
+<span class="inline-block w-2 h-2 rounded-full bg-error"></span>
+<span>Dòng 48, Ghế #48</span>
+</td>
+<td class="py-3.5 px-5 text-error font-medium">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]" data-icon="copy_all">copy_all</span>
+<span>Hàng A số 12 bị trùng lặp</span>
+</div>
+</td>
+<td class="py-3.5 px-5 text-on-surface-variant">
+                  Xóa hoặc đổi mã số ghế bị trùng trong cùng một hàng <span class="font-semibold text-on-surface">A</span>.
+                </td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors">
+<td class="py-3.5 px-5 font-mono text-on-surface flex items-center gap-2">
+<span class="inline-block w-2 h-2 rounded-full bg-error"></span>
+<span>Dòng 1999, Ghế #1999</span>
+</td>
+<td class="py-3.5 px-5 text-error font-medium">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]" data-icon="label_off">label_off</span>
+<span>Tên hạng không được để trống</span>
+</div>
+</td>
+<td class="py-3.5 px-5 text-on-surface-variant">
+                  Bổ sung tên phân hạng vé (<span class="font-medium text-on-surface">VIP</span>, <span class="font-medium text-on-surface">Tiêu chuẩn</span> hoặc <span class="font-medium text-on-surface">Ban công</span>).
+                </td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Matrix Preview Snippet Box (Technical Verification Area) -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5">
+<div class="flex items-center justify-between pb-3 mb-3 border-b border-outline-variant">
+<div>
+<h4 class="text-sm font-headline font-semibold text-on-surface">Trích đoạn mã JSON chứa vị trí bất thường</h4>
+<p class="text-xs text-outline mt-0.5">Dữ liệu thô phân tích trực tiếp từ bộ đọc parser</p>
+</div>
+<span class="text-[11px] font-mono text-outline bg-surface-container-high px-2 py-0.5 rounded">Trích xuất JSON</span>
+</div>
+<div class="bg-surface-container-high/40 rounded p-3 font-mono text-xs text-on-surface-variant overflow-x-auto space-y-1">
+<div class="text-outline select-none">// Đoạn mã phát hiện lỗi tại dòng 12</div>
+<div class="pl-2"><span class="text-outline">11:</span> &nbsp;&nbsp;{ <span class="text-primary">"seat_id"</span>: 11, <span class="text-primary">"row"</span>: "A", <span class="text-primary">"number"</span>: 11, <span class="text-primary">"tier"</span>: "VIP" },</div>
+<div class="pl-2 bg-error-container/60 border-l-2 border-error text-error py-0.5"><span class="text-error font-bold">12:</span> &nbsp;&nbsp;{ "seat_id": 12, "row": "A", <span class="font-bold underline">"number": "12B"</span>, "tier": "VIP" }, <span class="text-outline select-none">// Lỗi: number phải là integer</span></div>
+<div class="pl-2"><span class="text-outline">13:</span> &nbsp;&nbsp;{ <span class="text-primary">"seat_id"</span>: 13, <span class="text-primary">"row"</span>: "A", <span class="text-primary">"number"</span>: 13, <span class="text-primary">"tier"</span>: "VIP" },</div>
+</div>
+</section>
+<!-- Operational Action Bar -->
+<section class="pt-2 pb-8 flex items-center justify-between border-t border-outline-variant">
+<div class="flex items-center gap-2 text-xs text-outline">
+<span class="material-symbols-outlined text-[16px]" data-icon="info">info</span>
+<span>Không có thay đổi nào được ghi vào cơ sở dữ liệu khi tệp chưa đạt chuẩn.</span>
+</div>
+<div class="flex items-center gap-3">
+<!-- Enabled Secondary Outline Button: Chọn tệp khác -->
+<button class="px-4 py-2 text-sm font-medium text-on-surface border border-outline-variant rounded hover:bg-surface-container-low transition-colors duration-150 ease-in-out flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="file_upload">file_upload</span>
+<span>Chọn tệp khác</span>
+</button>
+<!-- Disabled Primary Action Button with Tooltip -->
+<div class="relative group inline-block">
+<button class="px-4 py-2 text-sm font-medium text-outline bg-surface-container-high cursor-not-allowed rounded flex items-center gap-2 opacity-75" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="check_circle">check_circle</span>
+<span>Nạp sơ đồ &amp; Áp dụng</span>
+</button>
+<!-- Native-styled CSS Tooltip -->
+<div class="absolute bottom-full right-0 mb-2 hidden group-hover:flex items-center gap-1.5 px-3 py-1.5 bg-inverse-surface text-inverse-on-surface text-xs rounded shadow-lg whitespace-nowrap z-50 pointer-events-none">
+<span class="material-symbols-outlined text-[14px] text-error-container" data-icon="lock">lock</span>
+              Tệp JSON còn lỗi, không thể nạp
+            </div>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

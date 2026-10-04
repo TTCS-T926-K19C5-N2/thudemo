@@ -1,0 +1,319 @@
+<!DOCTYPE html><html class="h-full" lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>06 Đặt giá theo hạng · Vé Sự Kiện · Quản trị</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "error-container": "#ffdad6",
+            "on-error": "#ffffff",
+            "surface-container-low": "#f3f3fd",
+            "primary-container": "#175cd3",
+            "on-secondary-fixed-variant": "#344572",
+            "inverse-primary": "#b1c5ff",
+            "error": "#ba1a1a",
+            "on-primary-fixed": "#001847",
+            "primary": "#0045a9",
+            "on-tertiary-container": "#ffd8c9",
+            "surface-variant": "#e1e2ec",
+            "outline": "#737785",
+            "on-secondary-container": "#415381",
+            "tertiary": "#853000",
+            "secondary": "#4c5d8b",
+            "on-primary-container": "#d7e0ff",
+            "primary-fixed-dim": "#b1c5ff",
+            "primary-fixed": "#dae2ff",
+            "inverse-on-surface": "#f0f0fa",
+            "secondary-fixed-dim": "#b4c5fa",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "surface-container": "#ededf7",
+            "surface-tint": "#0957ce",
+            "surface": "#faf8ff",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed": "#ffdbcd",
+            "on-tertiary-fixed": "#360f00",
+            "surface-container-high": "#e7e7f2",
+            "surface-container-lowest": "#ffffff",
+            "on-surface": "#191b23",
+            "surface-bright": "#faf8ff",
+            "on-background": "#191b23",
+            "tertiary-container": "#ac4100",
+            "background": "#faf8ff",
+            "secondary-container": "#b6c8fd",
+            "surface-container-highest": "#e1e2ec",
+            "secondary-fixed": "#dae2ff",
+            "on-surface-variant": "#424654",
+            "on-primary": "#ffffff",
+            "outline-variant": "#c3c6d6",
+            "on-secondary-fixed": "#031944",
+            "tertiary-fixed-dim": "#ffb597",
+            "surface-dim": "#d9d9e3",
+            "inverse-surface": "#2e3038",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-error-container": "#93000a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased flex h-full selection:bg-secondary-container selection:text-on-secondary-fixed overflow-hidden">
+<!-- Side Navigation Bar (Shared Component Anchor) -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-surface-container-lowest border-r border-outline-variant flex flex-col justify-between p-4">
+<div class="flex flex-col gap-5">
+<!-- App Brand Title -->
+<div class="px-2 pt-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="w-6 h-6 rounded bg-primary-container text-on-primary flex items-center justify-center text-xs font-headline font-bold">VS</span>
+<h1 class="text-base font-headline font-bold text-on-surface tracking-tight leading-snug">Vé Sự Kiện · Quản trị</h1>
+</div>
+<p class="text-xs font-label text-on-surface-variant">Vận hành sự kiện</p>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex flex-col gap-1"><a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150 ease-in-out text-sm font-label" href="#"><span class="material-symbols-outlined text-[20px]" data-icon="event">event</span><span>Sự kiện</span></a><a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150 ease-in-out text-sm font-label" href="#"><span class="material-symbols-outlined text-[20px]" data-icon="calendar_month">calendar_month</span><span>Suất diễn</span></a><a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150 ease-in-out text-sm font-label" href="#"><span class="material-symbols-outlined text-[20px]" data-icon="event_seat">event_seat</span><span>Sơ đồ ghế</span></a><a class="flex items-center gap-3 px-3 py-2 bg-surface-container-low text-primary font-medium rounded-lg transition-colors duration-150 ease-in-out text-sm font-label" href="#"><span class="material-symbols-outlined text-[20px]" data-icon="payments" data-weight="fill" style="font-variation-settings: 'FILL' 1;">payments</span><span>Giá vé</span></a><a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150 ease-in-out text-sm font-label" href="#"><span class="material-symbols-outlined text-[20px]" data-icon="person">person</span><span>Tài khoản</span></a></nav>
+</div>
+<!-- SideNav Footer -->
+<div class="pt-3 border-t border-outline-variant/60 flex flex-col gap-2">
+<div class="px-2 py-1.5 bg-surface-container-high rounded text-[11px] leading-tight text-on-surface-variant">
+<span class="font-medium text-on-surface">Quiet Operations:</span> Môi trường quản trị nội bộ không chứa công cụ thanh toán.
+      </div>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150 ease-in-out text-sm font-label" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="help">help</span>
+<span>Hỗ trợ kỹ thuật</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas Wrapper -->
+<div class="pl-60 flex-1 flex flex-col h-screen overflow-hidden">
+<!-- Top Navigation Bar (Shared Component Anchor) -->
+<header class="fixed top-0 right-0 left-60 h-14 z-20 bg-surface-container-lowest border-b border-outline-variant flex justify-between items-center px-6">
+<!-- Breadcrumb & Event Identity -->
+<div class="flex items-center gap-2">
+<span class="text-xs text-on-surface-variant font-label">Quản trị</span>
+<span class="text-xs text-outline">/</span>
+<span class="text-xs text-on-surface-variant font-label">Đêm nhạc Tháng Mười</span>
+<span class="text-xs text-outline">/</span>
+<span class="text-xs font-medium text-primary font-label">Cấu hình giá vé</span>
+<span class="mx-2 h-3.5 w-px bg-outline-variant"></span>
+<span class="text-xs font-label text-on-surface font-medium hidden lg:inline">
+          Sự kiện: Đêm nhạc Tháng Mười · Nhà hát Ánh Dương (16/10/2026)
+        </span>
+</div>
+<!-- Trailing Controls & Mandatory Sprint 2 Badge -->
+<div class="flex items-center gap-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-surface-container-high text-on-surface-variant border border-outline-variant/80">
+          Demo Sprint 2 · dữ liệu giả. Fictional events only.
+        </span>
+<span class="h-4 w-px bg-outline-variant"></span>
+<span class="text-xs text-on-surface-variant font-label hidden sm:inline">Ban tổ chức / Kỹ thuật</span>
+<button class="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" title="Thông báo" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+</button>
+<button class="flex items-center gap-1.5 text-xs text-primary font-medium hover:underline pl-1" title="Đổi tài khoản" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="account_circle">account_circle</span>
+<span class="hidden md:inline">Đổi tài khoản</span>
+</button>
+</div>
+</header>
+<!-- Scrollable Workspace -->
+<main class="flex-1 overflow-y-auto mt-14 p-8 bg-surface space-y-6">
+<!-- Screen Header with Quiet Operations Typography -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2 border-b border-outline-variant">
+<div>
+<h2 class="text-2xl font-headline font-semibold text-on-surface tracking-tight">06 Đặt giá theo hạng (T35)</h2>
+<p class="text-sm font-label text-on-surface-variant mt-0.5">Thiết lập đơn giá chính thức cho từng phân khu ghế trước khi kích hoạt mở bán.</p>
+</div>
+<div class="flex items-center gap-2">
+<a class="inline-flex items-center gap-1 text-xs text-primary font-medium hover:underline px-2.5 py-1.5 rounded border border-outline-variant bg-surface-container-lowest" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="open_in_new">open_in_new</span>
+<span>Xem sơ đồ ghế kiểm tra vị trí →</span>
+</a>
+</div>
+</div>
+<!-- Context Card: Current Session Metadata -->
+<section class="bg-surface-container-lowest rounded-lg border border-outline-variant p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-start md:items-center gap-3">
+<div class="w-9 h-9 rounded bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[22px]" data-icon="confirmation_number">confirmation_number</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-semibold uppercase tracking-wider text-outline">Suất diễn đang cấu hình:</span>
+<span class="text-sm font-semibold text-on-surface font-headline">Suất 01: Thứ Sáu, 16/10/2026 · 19:30 - Khán phòng Ánh Dương</span>
+</div>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant mt-1">
+<span>Địa điểm giả định: Nhà hát Ánh Dương</span>
+<span>·</span>
+<span>Tổng sức chứa: 2.000 ghế</span>
+<span>·</span>
+<span>Quy tắc: Đồng bộ đơn giá theo block ghế</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="text-xs text-on-surface-variant">Trạng thái:</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-surface-container-high text-on-surface border border-outline-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+            Nháp (Draft) - Đang cấu hình trước mở bán
+          </span>
+</div>
+</section>
+<!-- Compact Pricing Configuration Table -->
+<section class="bg-surface-container-lowest rounded-lg border border-outline-variant overflow-hidden">
+<div class="px-5 py-3.5 border-b border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+<div>
+<h3 class="text-sm font-headline font-semibold text-on-surface">Bảng định giá hạng ghế niêm yết</h3>
+<p class="text-xs text-on-surface-variant">Nhập giá chính xác bằng VNĐ. Hệ thống tự động kiểm tra định dạng và tính hợp lệ trước khi lưu.</p>
+</div>
+<span class="text-xs text-outline font-label">3 phân khu đã nạp từ JSON</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm border-collapse">
+<thead>
+<tr class="bg-surface-container text-xs text-on-surface-variant font-label border-b border-outline-variant">
+<th class="py-2.5 px-4 font-medium" scope="col">Hạng vé</th>
+<th class="py-2.5 px-4 font-medium" scope="col">Phân khu &amp; Số lượng ghế</th>
+<th class="py-2.5 px-4 font-medium" scope="col">Trạng thái giá</th>
+<th class="py-2.5 px-4 font-medium w-64" scope="col">Đơn giá niêm yết (VNĐ)</th>
+<th class="py-2.5 px-4 font-medium" scope="col">Ghi chú vận hành</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant text-on-surface">
+<!-- Row 1: VIP -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-medium">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-sm bg-primary inline-block"></span>
+<span class="text-on-surface font-semibold">Hạng VIP</span>
+</div>
+</td>
+<td class="py-3 px-4 text-xs font-label">
+<span class="text-on-surface font-medium">Hàng A - B</span>
+<span class="text-outline ml-1">(400 ghế)</span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-surface-container-high text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="check">check</span>
+                    Đã định giá
+                  </span>
+</td>
+<td class="py-3 px-4">
+<div class="relative rounded">
+<input aria-label="Đơn giá VIP" class="w-full text-sm font-medium py-1.5 px-3 rounded border border-outline-variant bg-surface-container-lowest text-on-surface focus:ring-1 focus:ring-primary focus:border-primary focus:outline-none" type="text" value="1.200.000 ₫">
+</div>
+</td>
+<td class="py-3 px-4 text-xs text-on-surface-variant">
+                  Khu vực trung tâm sát sân khấu, kèm lối đi riêng cho khách mời VIP.
+                </td>
+</tr>
+<!-- Row 2: Tiêu chuẩn -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-medium">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-sm bg-secondary inline-block"></span>
+<span class="text-on-surface font-semibold">Hạng Tiêu chuẩn</span>
+</div>
+</td>
+<td class="py-3 px-4 text-xs font-label">
+<span class="text-on-surface font-medium">Hàng C - F</span>
+<span class="text-outline ml-1">(1.000 ghế)</span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-surface-container-high text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="check">check</span>
+                    Đã định giá
+                  </span>
+</td>
+<td class="py-3 px-4">
+<div class="relative rounded">
+<input aria-label="Đơn giá Tiêu chuẩn" class="w-full text-sm font-medium py-1.5 px-3 rounded border border-outline-variant bg-surface-container-lowest text-on-surface focus:ring-1 focus:ring-primary focus:border-primary focus:outline-none" type="text" value="650.000 ₫">
+</div>
+</td>
+<td class="py-3 px-4 text-xs text-on-surface-variant">
+                  Khán phòng tầng trệt, góc nhìn bao quát toàn bộ dàn nhạc giao hưởng.
+                </td>
+</tr>
+<!-- Row 3: Ban công -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-medium">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-sm bg-surface-variant border border-outline-variant inline-block"></span>
+<span class="text-on-surface font-semibold">Hạng Ban công</span>
+</div>
+</td>
+<td class="py-3 px-4 text-xs font-label">
+<span class="text-on-surface font-medium">Hàng G - H</span>
+<span class="text-outline ml-1">(600 ghế)</span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-surface-container-high text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="check">check</span>
+                    Đã định giá
+                  </span>
+</td>
+<td class="py-3 px-4">
+<div class="relative rounded">
+<input aria-label="Đơn giá Ban công" class="w-full text-sm font-medium py-1.5 px-3 rounded border border-outline-variant bg-surface-container-lowest text-on-surface focus:ring-1 focus:ring-primary focus:border-primary focus:outline-none" type="text" value="350.000 ₫">
+</div>
+</td>
+<td class="py-3 px-4 text-xs text-on-surface-variant">
+                  Tầng lầu cao, độ dốc khán đài tối ưu cho âm học hòa nhạc thính phòng.
+                </td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Special Edge Case Demonstration & Validation Showcase -->
+<!-- Readiness Checklist Card -->
+<!-- Action Bar (Quiet Operations: Single primary per task, clear hierarchy) -->
+<section class="bg-surface-container-lowest rounded-lg border border-outline-variant p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<a class="text-xs text-primary font-medium hover:underline inline-flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="preview">preview</span>
+<span>Xem trước trên sơ đồ ghế</span>
+</a>
+<span class="text-outline">·</span>
+<span class="text-xs text-on-surface-variant">Không hỗ trợ giao dịch thanh toán tại màn hình này</span>
+</div>
+<div class="flex items-center gap-2.5">
+<!-- Secondary Action -->
+<button class="px-4 py-2 text-xs font-medium text-on-surface-variant bg-surface-container-lowest border border-outline-variant rounded hover:bg-surface-container-low transition-colors duration-150" type="button">
+            Khôi phục mặc định
+          </button>
+<!-- Primary Action (Single Primary) -->
+<button class="px-5 py-2 text-xs font-medium text-on-primary bg-primary-container hover:bg-primary rounded transition-colors duration-150 shadow-none flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="save">save</span>
+<span>Lưu cấu hình giá</span>
+</button>
+</div>
+</section>
+<!-- Bottom Operational Note -->
+<footer class="pt-2 pb-6 text-center text-xs text-outline font-label">
+        Hệ thống Quản trị Vé Sự Kiện · Bản phát hành nội bộ Quiet Operations Sprint 2 (Khán phòng Ánh Dương · Fictional Event).
+      </footer>
+</main>
+</div>
+</body></html>

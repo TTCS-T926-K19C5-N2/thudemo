@@ -1,0 +1,36 @@
+{
+  "status": "PARTIALLY DONE",
+  "pending": [
+    "PO temporary K01 recommendation approval",
+    "8 product hold tasks and 6 Stitch hold states",
+    "T31 authenticated HTTP200/100 x10",
+    "hold p95 <300ms",
+    "CI of current revision",
+    "Render account, provisioning/build/HTTPS/rollout",
+    "worker cadence and review baseline decisions/acceptance"
+  ],
+  "approvedHoldStore": false,
+  "remoteWrite": false,
+  "partialReady": "Local independent work and reviewable Render Free profile, not full Sprint2 Done",
+  "local": {
+    "unitTests": 17,
+    "frozen": "PASS",
+    "valkeyIntegrationTests": 10,
+    "stitchCaptured": 23,
+    "seedUsers": 2,
+    "seedTargetTests": 2,
+    "stitchIdsVerified": 29,
+    "browserChecks": 106,
+    "freshCycleHistory": 10,
+    "appliedMigrationChecksums": 8,
+    "lint": "PASS (14 baseline warnings)",
+    "typecheck": "PASS",
+    "profileNegativeTests": 5,
+    "stitchHoldGated": 6,
+    "captures": 33,
+    "jsErrors": 0,
+    "redisIntegrationTests": 10,
+    "finalImageProxyChecks": 7,
+    "restoredMigrationHistory": 8
+  }
+}

@@ -3,32 +3,55 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ArrowRight, MapPin, RotateCw } from "@/components/ui/material-icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { WorkspaceHeader } from "@/components/workspace-header";
+import { OrganizerLayout } from "@/components/layout/product-layout";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { loadCurrentUser } from "@/lib/api";
 
-type EventRow = { id: string; name: string; location: string; status: string; updatedAt: string; showtimes: { id: string }[] };
+type EventRow = {
+  id: string;
+  name: string;
+  location: string;
+  status: string;
+  updatedAt: string;
+  showtimes: { id: string; startTime?: string }[];
+};
 
 export default function EventsPage() {
   const router = useRouter();
   const [events, setEvents] = useState<EventRow[]>([]);
   const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [viewMode, setViewMode] = useState<"grid" | "table">("table");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [forbidden, setForbidden] = useState(false);
 
   const reload = useCallback(async () => {
     try {
+      setError("");
       const user = await loadCurrentUser();
-      if (!user) { router.replace("/login"); return; }
-      if (!user.roles.includes("ORGANIZER")) { setForbidden(true); return; }
+      if (!user) {
+        router.replace("/login");
+        return;
+      } else if (!user.roles.includes("ORGANIZER")) {
+        setForbidden(true);
+        return;
+      }
+
       const response = await fetch("/api/events/mine", { cache: "no-store" });
-      if (response.status === 403) { setForbidden(true); return; }
+      if (response.status === 403) {
+        setForbidden(true);
+        return;
+      }
       if (!response.ok) throw new Error();
-      setEvents(await response.json() as EventRow[]);
+      const data = (await response.json()) as EventRow[];
+      setEvents(data);
     } catch {
-      setError("Không tải được sự kiện. Kiểm tra kết nối rồi thử lại.");
+      setError("Không tải được sự kiện. Hãy thử lại.");
     } finally {
       setLoading(false);
     }
@@ -38,24 +61,260 @@ export default function EventsPage() {
     const timer = window.setTimeout(() => void reload(), 0);
     return () => window.clearTimeout(timer);
   }, [reload]);
-  const visible = events.filter((event) => event.name.toLocaleLowerCase("vi").includes(query.toLocaleLowerCase("vi")));
+
+  const filteredEvents = events.filter((event) => {
+    const matchesQuery =
+      event.name
+        .toLocaleLowerCase("vi")
+        .includes(query.toLocaleLowerCase("vi")) ||
+      event.location
+        .toLocaleLowerCase("vi")
+        .includes(query.toLocaleLowerCase("vi"));
+    const matchesStatus =
+      statusFilter === "ALL" ? true : event.status === statusFilter;
+    return matchesQuery && matchesStatus;
+  });
+
+  const totalShowtimes = events.reduce(
+    (acc, ev) => acc + (ev.showtimes?.length || 0),
+    0,
+  );
+  const totalDrafts = events.filter((ev) => ev.status === "DRAFT").length;
+  const totalPublished = events.filter(
+    (ev) => ev.status === "PUBLISHED",
+  ).length;
 
   return (
-    <>
-      <WorkspaceHeader />
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ban tổ chức</p><h1 className="mt-1 text-2xl font-semibold">Sự kiện</h1></div>
-          {!forbidden && <Button asChild className="h-11"><Link href="/events/new">Tạo sự kiện</Link></Button>}
+    <OrganizerLayout title="Quản lý sự kiện" mode="events">
+      <div className="operations-page">
+        <div className="page-heading">
+          <div>
+            <h1>Sự kiện & suất diễn</h1>
+            <p>Quản lý thông tin sự kiện và các suất diễn của bạn.</p>
+          </div>
+          {!forbidden && (
+            <div className="operations-actions">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setLoading(true);
+                  void reload();
+                }}
+                disabled={loading}
+              >
+                <RotateCw />
+                Làm mới
+              </Button>
+              <Button asChild>
+                <Link href="/events/new">Tạo sự kiện mới</Link>
+              </Button>
+            </div>
+          )}
         </div>
-        {forbidden ? <div className="mt-10 border-t border-border pt-6"><h2 className="font-semibold">Không có quyền quản lý sự kiện</h2><p className="mt-2 text-sm text-muted-foreground">Tài khoản này chưa có vai trò ban tổ chức.</p><Link href="/account" className="mt-4 inline-block text-sm text-primary underline">Về tài khoản</Link></div> : <>
-          <div className="mt-8 max-w-sm"><label htmlFor="event-search" className="mb-2 block text-sm font-medium">Tìm sự kiện</label><Input id="event-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Nhập tên sự kiện" className="h-10" /></div>
-          {loading && <p role="status" className="mt-8 text-sm text-muted-foreground">Đang tải danh sách sự kiện…</p>}
-          {error && <div role="alert" className="mt-8 border-l-2 border-destructive bg-red-50 px-3 py-3 text-sm"><p>{error}</p><Button type="button" variant="outline" onClick={() => { setLoading(true); setError(""); void reload(); }} className="mt-3 h-10">Thử lại</Button></div>}
-          {!loading && !error && visible.length === 0 && <div className="mt-8 border-t border-border py-10 text-sm text-muted-foreground">{events.length === 0 ? "Chưa có sự kiện. Tạo sự kiện đầu tiên để bắt đầu." : "Không có sự kiện khớp tên tìm kiếm."}</div>}
-          {!loading && !error && visible.length > 0 && <div className="mt-6 overflow-x-auto border-t border-border"><table className="w-full min-w-[620px] text-left text-sm"><caption className="sr-only">Danh sách sự kiện của ban tổ chức</caption><thead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"><tr><th scope="col" className="py-3 pr-4">Sự kiện</th><th scope="col" className="py-3 pr-4">Trạng thái</th><th scope="col" className="py-3 pr-4">Suất diễn</th><th scope="col" className="py-3 pr-4">Cập nhật</th><th scope="col" className="py-3 text-right">Thao tác</th></tr></thead><tbody>{visible.map((event) => <tr key={event.id} className="border-t border-border"><td className="py-4 pr-4"><span className="font-medium">{event.name}</span><span className="block text-xs text-muted-foreground">{event.location}</span></td><td className="py-4 pr-4">{event.status === "DRAFT" ? "Nháp" : event.status}</td><td className="py-4 pr-4">{event.showtimes.length}</td><td className="py-4 pr-4">{new Intl.DateTimeFormat("vi-VN", { dateStyle: "short" }).format(new Date(event.updatedAt))}</td><td className="py-4 text-right"><Link href={`/events/${event.id}`} className="font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-primary">Quản lý</Link></td></tr>)}</tbody></table></div>}
-        </>}
-      </main>
-    </>
+        {forbidden ? (
+          <section className="operations-panel" role="alert">
+            <h2>Bạn không có quyền quản lý sự kiện</h2>
+            <p>Chức năng này dành cho ban tổ chức.</p>
+            <Button variant="outline" asChild>
+              <Link href="/account">Về tài khoản</Link>
+            </Button>
+          </section>
+        ) : (
+          <>
+            <dl className="operations-metrics">
+              <div>
+                <dt>Sự kiện</dt>
+                <dd>{events.length}</dd>
+              </div>
+              <div>
+                <dt>Suất diễn</dt>
+                <dd>{totalShowtimes}</dd>
+              </div>
+              <div>
+                <dt>Bản nháp</dt>
+                <dd>{totalDrafts}</dd>
+              </div>
+              <div>
+                <dt>Đã công bố</dt>
+                <dd>{totalPublished}</dd>
+              </div>
+            </dl>
+            <div className="operations-filters">
+              <div>
+                <label htmlFor="event-search">Tìm sự kiện</label>
+                <Input
+                  id="event-search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Tên sự kiện hoặc địa điểm"
+                />
+              </div>
+              <div>
+                <label htmlFor="event-status">Trạng thái</label>
+                <select
+                  id="event-status"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="ALL">Tất cả</option>
+                  <option value="DRAFT">Bản nháp</option>
+                  <option value="PUBLISHED">Đã công bố</option>
+                </select>
+              </div>
+              <div
+                className="operations-actions"
+                role="group"
+                aria-label="Cách hiển thị"
+              >
+                <Button
+                  variant="outline"
+                  aria-pressed={viewMode === "table"}
+                  onClick={() => setViewMode("table")}
+                >
+                  Bảng
+                </Button>
+                <Button
+                  variant="outline"
+                  aria-pressed={viewMode === "grid"}
+                  onClick={() => setViewMode("grid")}
+                >
+                  Lưới
+                </Button>
+              </div>
+            </div>
+            {loading && (
+              <div role="status" aria-label="Đang tải sự kiện">
+                <Skeleton className="h-48 w-full" />
+              </div>
+            )}
+            {error && (
+              <section className="operations-panel" role="alert">
+                <p>{error}</p>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setLoading(true);
+                    void reload();
+                  }}
+                >
+                  Thử lại
+                </Button>
+              </section>
+            )}
+            {!loading && !error && filteredEvents.length === 0 && (
+              <section className="operations-panel operations-empty">
+                <h2>
+                  {events.length ? "Không tìm thấy sự kiện" : "Chưa có sự kiện"}
+                </h2>
+                <p>
+                  {events.length
+                    ? "Thử tên hoặc trạng thái khác."
+                    : "Tạo sự kiện đầu tiên để bắt đầu."}
+                </p>
+                {events.length ? (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setQuery("");
+                      setStatusFilter("ALL");
+                    }}
+                  >
+                    Xóa bộ lọc
+                  </Button>
+                ) : (
+                  <Button asChild>
+                    <Link href="/events/new">Tạo sự kiện mới</Link>
+                  </Button>
+                )}
+              </section>
+            )}
+            {!loading &&
+              !error &&
+              filteredEvents.length > 0 &&
+              (viewMode === "table" ? (
+                <div className="operations-panel operations-table-wrap">
+                  <table className="operations-table">
+                    <caption className="sr-only">
+                      Danh sách sự kiện của bạn
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th>Sự kiện</th>
+                        <th>Trạng thái</th>
+                        <th>Suất diễn</th>
+                        <th>Cập nhật</th>
+                        <th>
+                          <span className="sr-only">Thao tác</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredEvents.map((event) => (
+                        <tr key={event.id}>
+                          <td>
+                            <strong>{event.name}</strong>
+                            <p>{event.location}</p>
+                          </td>
+                          <td>
+                            <Badge variant="outline">
+                              {event.status === "DRAFT" ? "Nháp" : "Đã công bố"}
+                            </Badge>
+                          </td>
+                          <td>{event.showtimes.length}</td>
+                          <td>
+                            <time dateTime={event.updatedAt}>
+                              {new Intl.DateTimeFormat("vi-VN", {
+                                dateStyle: "short",
+                              }).format(new Date(event.updatedAt))}
+                            </time>
+                          </td>
+                          <td>
+                            <Link
+                              href={`/events/${event.id}`}
+                              aria-label={`Quản lý ${event.name}`}
+                            >
+                              Quản lý →
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="operations-event-grid">
+                  {filteredEvents.map((event) => (
+                    <article className="operations-panel" key={event.id}>
+                      <Badge variant="outline">
+                        {event.status === "DRAFT" ? "Nháp" : "Đã công bố"}
+                      </Badge>
+                      <h2>{event.name}</h2>
+                      <p>
+                        <MapPin />
+                        {event.location}
+                      </p>
+                      <p>
+                        {event.showtimes.length} suất diễn · Cập nhật{" "}
+                        {new Intl.DateTimeFormat("vi-VN", {
+                          dateStyle: "short",
+                        }).format(new Date(event.updatedAt))}
+                      </p>
+                      <Button variant="outline" asChild>
+                        <Link
+                          href={`/events/${event.id}`}
+                          aria-label={`Quản lý ${event.name}`}
+                        >
+                          Quản lý sự kiện
+                          <ArrowRight />
+                        </Link>
+                      </Button>
+                    </article>
+                  ))}
+                </div>
+              ))}
+          </>
+        )}
+      </div>
+    </OrganizerLayout>
   );
 }

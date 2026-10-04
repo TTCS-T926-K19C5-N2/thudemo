@@ -1,0 +1,61 @@
+[
+  {
+    "path": "apps/web/src/components/event-editor.tsx",
+    "beforeHash": "2e907768ad62c390ae1169d6716a09e4e36279f253e3cbce900637a01d929e34",
+    "currentHash": "2e907768ad62c390ae1169d6716a09e4e36279f253e3cbce900637a01d929e34",
+    "byteIdentical": true
+  },
+  {
+    "path": "apps/web/src/components/workspace-header.tsx",
+    "beforeHash": "4bfa49cdbe008eaf53aec82ae58a24e5e8f946672cb73ef588bbe8414f17f9f1",
+    "currentHash": "4bfa49cdbe008eaf53aec82ae58a24e5e8f946672cb73ef588bbe8414f17f9f1",
+    "byteIdentical": true
+  },
+  {
+    "path": "apps/web/src/components/brand-mark.tsx",
+    "beforeHash": "e1836c805d812661d7bf070428e55f2b623f0a61e1bb0a0ceed933dc2902c684",
+    "currentHash": "e1836c805d812661d7bf070428e55f2b623f0a61e1bb0a0ceed933dc2902c684",
+    "byteIdentical": true
+  },
+  {
+    "path": "apps/web/src/app/events/new/page.tsx",
+    "beforeHash": "6931ef3a6f94daa8839a7ed49a5b32d78ecd6483bbd3237e5f2ef500bb660117",
+    "currentHash": "6931ef3a6f94daa8839a7ed49a5b32d78ecd6483bbd3237e5f2ef500bb660117",
+    "byteIdentical": true
+  },
+  {
+    "path": "apps/web/src/app/events/[id]/page.tsx",
+    "beforeHash": "1f98bf3059571b1c4bea276247f366b6d24b3ef56790187036e1fa293b11f2dd",
+    "currentHash": "1f98bf3059571b1c4bea276247f366b6d24b3ef56790187036e1fa293b11f2dd",
+    "byteIdentical": true
+  },
+  {
+    "path": "apps/web/src/app/globals.css",
+    "beforeHash": "d1588fc27ce388d10f7e58726b4a24f0cd222a2829cabaefb8805ea694916a08",
+    "currentHash": "d1588fc27ce388d10f7e58726b4a24f0cd222a2829cabaefb8805ea694916a08",
+    "byteIdentical": true
+  },
+  {
+    "path": "apps/api/src/app.module.ts",
+    "beforeHash": null,
+    "currentHash": "4ad9450022c2cc831f994bc97ff03c5bce922bc88aa9008b0b1ff58318a4ff9f",
+    "byteIdentical": null,
+    "snapshotAvailable": false,
+    "wipDiffUnchanged": true
+  },
+  {
+    "path": "apps/api/src/main.ts",
+    "beforeHash": null,
+    "currentHash": "cacc44c9473d4e372622c68eb9254d1a67e96c9b091c7b2ebe4463ad52f4a1ef",
+    "byteIdentical": null,
+    "snapshotAvailable": false,
+    "wipDiffUnchanged": true
+  },
+  {
+    "path": "apps/api/prisma/migrations/202610040001_sprint2_seats/migration.sql",
+    "beforeHash": null,
+    "currentHash": "3add07c7a62e1b74c9500cf34a4d3da211348a76755390a37a933385b6917c95",
+    "byteIdentical": null,
+    "snapshotAvailable": false
+  }
+]

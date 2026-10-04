@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Chọn vị trí ghế - Đêm nhạc Tháng Mười</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Geist Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with custom config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-container": "#d7e0ff",
+            "surface-container": "#ededf7",
+            "on-secondary-container": "#415381",
+            "on-primary-fixed": "#001847",
+            "secondary": "#4c5d8b",
+            "inverse-on-surface": "#f0f0fa",
+            "tertiary": "#853000",
+            "surface-bright": "#faf8ff",
+            "surface-container-lowest": "#ffffff",
+            "on-surface-variant": "#424654",
+            "on-error": "#ffffff",
+            "background": "#faf8ff",
+            "surface-dim": "#d9d9e3",
+            "surface-container-low": "#f3f3fd",
+            "surface-container-highest": "#e1e2ec",
+            "on-secondary-fixed-variant": "#344572",
+            "surface-container-high": "#e7e7f2",
+            "primary-fixed-dim": "#b1c5ff",
+            "on-tertiary-fixed": "#360f00",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "inverse-primary": "#b1c5ff",
+            "on-primary": "#ffffff",
+            "on-surface": "#191b23",
+            "secondary-container": "#b6c8fd",
+            "error": "#ba1a1a",
+            "surface": "#faf8ff",
+            "outline": "#737785",
+            "on-tertiary-container": "#ffd8c9",
+            "outline-variant": "#c3c6d6",
+            "surface-tint": "#0957ce",
+            "on-secondary": "#ffffff",
+            "on-background": "#191b23",
+            "secondary-fixed-dim": "#b4c5fa",
+            "on-secondary-fixed": "#031944",
+            "inverse-surface": "#2e3038",
+            "primary-fixed": "#dae2ff",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-error-container": "#93000a",
+            "secondary-fixed": "#dae2ff",
+            "tertiary-fixed-dim": "#ffb597",
+            "tertiary-fixed": "#ffdbcd",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "tertiary-container": "#ac4100",
+            "primary": "#0045a9",
+            "surface-variant": "#e1e2ec",
+            "primary-container": "#175cd3"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        },
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    /* Touch optimization */
+    .touch-pan {
+      touch-action: pan-x pan-y;
+    }
+    /* Custom scrollbar for subtle seat preview */
+    ::-webkit-scrollbar {
+      height: 4px;
+      width: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c3c6d6;
+      border-radius: 4px;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface antialiased flex justify-center selection:bg-primary selection:text-on-primary min-h-screen">
+<!-- Mobile Viewport Container (Fixed width 390px simulation frame with natural responsiveness) -->
+<main class="w-full max-w-[390px] bg-background min-h-screen flex flex-col shadow-sm relative pb-36">
+<!-- TopAppBar (Transactional focused header with back & event context) -->
+<header class="sticky top-0 z-40 bg-surface/95 backdrop-blur-md px-4 h-14 flex items-center justify-between border-b border-outline-variant/60">
+<div class="flex items-center space-x-3">
+<button aria-label="Quay lại" class="w-9 h-9 rounded-md flex items-center justify-center text-on-surface hover:bg-surface-container active:scale-95 transition-transform duration-100" type="button">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<h1 class="font-headline text-sm font-bold text-on-surface tracking-tight leading-snug">Chọn vị trí ghế</h1>
+<p class="font-label text-[11px] text-on-surface-variant line-clamp-1">Đêm nhạc Tháng Mười · 16/10/2026</p>
+</div>
+</div>
+<div class="flex items-center space-x-1">
+<button aria-label="Thông tin địa điểm" class="w-8 h-8 rounded-md flex items-center justify-center text-on-surface-variant hover:bg-surface-container" type="button">
+<span class="material-symbols-outlined text-[20px]">theater_comedy</span>
+</button>
+</div>
+</header>
+<!-- Sub-info & Venue Location Meta -->
+<section class="px-4 py-2 bg-surface-container-low border-b border-outline-variant/40 flex items-center justify-between text-xs text-on-surface-variant">
+<div class="flex items-center gap-1.5 truncate">
+<span class="material-symbols-outlined text-[15px] text-primary">location_on</span>
+<span class="truncate font-medium">Nhà hát Ánh Dương (địa điểm giả)</span>
+</div>
+<span class="text-[11px] text-outline font-medium shrink-0">19:30</span>
+</section>
+<!-- Pricing Categories Reference Table -->
+<section class="px-4 pt-3 pb-2">
+<div class="bg-surface-container-lowest rounded-lg p-2.5 border border-outline-variant/60 grid grid-cols-3 gap-2 text-center">
+<div class="flex flex-col items-center border-r border-outline-variant/40 pr-1">
+<div class="flex items-center gap-1">
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary"></span>
+<span class="font-label text-[11px] font-semibold text-on-surface">VIP</span>
+</div>
+<span class="font-label text-[11px] font-bold text-primary mt-0.5">1.200.000 ₫</span>
+</div>
+<div class="flex flex-col items-center border-r border-outline-variant/40 pr-1">
+<div class="flex items-center gap-1">
+<span class="w-2.5 h-2.5 rounded-[2px] border border-secondary text-secondary"></span>
+<span class="font-label text-[11px] font-medium text-on-surface">Tiêu chuẩn</span>
+</div>
+<span class="font-label text-[11px] font-semibold text-on-surface mt-0.5">650.000 ₫</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="flex items-center gap-1">
+<span class="w-2.5 h-2.5 rounded-[2px] border border-outline text-outline"></span>
+<span class="font-label text-[11px] font-medium text-on-surface">Ban công</span>
+</div>
+<span class="font-label text-[11px] font-semibold text-on-surface-variant mt-0.5">350.000 ₫</span>
+</div>
+</div>
+</section>
+<!-- State Legend Section -->
+<section class="px-4 py-2 border-b border-outline-variant/40">
+<div class="flex flex-wrap items-center justify-between gap-y-1 text-[11px] text-on-surface-variant font-label">
+<!-- Còn trống -->
+<div class="flex items-center gap-1.5">
+<div class="w-4 h-4 rounded-[2px] border border-outline bg-surface-container-lowest flex items-center justify-center">
+</div>
+<span>Còn trống</span>
+</div>
+<!-- Đang chọn nháp -->
+<div class="flex items-center gap-1.5">
+<div class="w-4 h-4 rounded-[2px] bg-primary text-on-primary flex items-center justify-center font-bold text-[10px] ring-2 ring-primary/30">
+<span class="material-symbols-outlined text-[12px] font-bold" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="font-semibold text-primary">Đang chọn</span>
+</div>
+<!-- Đang được giữ -->
+<div class="flex items-center gap-1.5">
+<div class="w-4 h-4 rounded-[2px] bg-surface-container-high border border-outline-variant text-outline flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px]">lock</span>
+</div>
+<span>Đang giữ</span>
+</div>
+<!-- Đã bán -->
+<div class="flex items-center gap-1.5">
+<div class="w-4 h-4 rounded-[2px] bg-inverse-surface text-surface-dim flex items-center justify-center">
+<span class="material-symbols-outlined text-[11px]">close</span>
+</div>
+<span>Đã bán</span>
+</div>
+</div>
+</section>
+<!-- Stage and Interactive Seat Map Canvas -->
+<section class="px-3 pt-3 flex flex-col items-center">
+<!-- Curved Stage Graphic -->
+<div class="w-full max-w-[320px] mb-4 flex flex-col items-center">
+<div class="w-3/4 h-2 bg-gradient-to-r from-outline-variant via-primary to-outline-variant rounded-full opacity-80"></div>
+<div class="py-1 px-4 bg-surface-container text-on-surface-variant font-label text-[10px] uppercase tracking-wider font-semibold rounded-b-md">
+          SÂN KHẤU CHÍNH
+        </div>
+</div>
+<!-- Interactive Seat Matrix Map -->
+<div class="w-full overflow-x-auto touch-pan pb-3 pt-1 flex justify-center">
+<div class="inline-block bg-surface-container-lowest border border-outline-variant/60 rounded-lg p-3 shadow-xs min-w-[330px]">
+<!-- VIP Rows (Rows A & B) -->
+<div class="space-y-1.5 mb-3">
+<div class="flex items-center justify-between text-[10px] text-outline px-1 font-semibold">
+<span class="text-primary font-bold">KHU VỰC VIP</span>
+<span class="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-mono">1.200.000 ₫</span>
+</div>
+<!-- Row A -->
+<div class="flex items-center justify-center gap-1 text-[10px]">
+<span class="w-4 text-center font-bold text-on-surface-variant">A</span>
+<!-- Seat A10 (Sold) -->
+<button aria-label="Ghế A10 Đã bán" class="w-6 h-6 rounded-[2px] bg-inverse-surface text-surface-dim flex items-center justify-center cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[12px]">close</span>
+</button>
+<!-- Seat A11 (Locked by another) -->
+<button aria-label="Ghế A11 Đang được giữ bởi người khác" class="w-6 h-6 rounded-[2px] bg-surface-container-high border border-outline-variant text-outline flex items-center justify-center cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[12px]">lock</span>
+</button>
+<!-- Seat A12 (Selected Draft - Active) -->
+<button aria-label="Ghế A12 VIP Đang chọn" class="w-6 h-6 rounded-[2px] bg-primary text-on-primary ring-2 ring-primary ring-offset-1 flex items-center justify-center active:scale-90 transition-all font-semibold">
+<span class="material-symbols-outlined text-[13px] font-bold" style="font-variation-settings: 'FILL' 1;">check</span>
+</button>
+<!-- Seat A13 (Selected Draft - Active) -->
+<button aria-label="Ghế A13 VIP Đang chọn" class="w-6 h-6 rounded-[2px] bg-primary text-on-primary ring-2 ring-primary ring-offset-1 flex items-center justify-center active:scale-90 transition-all font-semibold">
+<span class="material-symbols-outlined text-[13px] font-bold" style="font-variation-settings: 'FILL' 1;">check</span>
+</button>
+<!-- Seat A14 (Available) -->
+<button aria-label="Ghế A14 Còn trống" class="w-6 h-6 rounded-[2px] border border-primary/50 text-primary bg-surface-container-lowest hover:bg-primary-fixed flex items-center justify-center active:scale-90 transition-all">
+<span class="text-[9px] font-mono">14</span>
+</button>
+<!-- Seat A15 (Available) -->
+<button aria-label="Ghế A15 Còn trống" class="w-6 h-6 rounded-[2px] border border-primary/50 text-primary bg-surface-container-lowest hover:bg-primary-fixed flex items-center justify-center active:scale-90 transition-all">
+<span class="text-[9px] font-mono">15</span>
+</button>
+<!-- Seat A16 (Sold) -->
+<button aria-label="Ghế A16 Đã bán" class="w-6 h-6 rounded-[2px] bg-inverse-surface text-surface-dim flex items-center justify-center cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[12px]">close</span>
+</button>
+</div>
+<!-- Row B -->
+<div class="flex items-center justify-center gap-1 text-[10px]">
+<span class="w-4 text-center font-bold text-on-surface-variant">B</span>
+<!-- Seat B10 -->
+<button aria-label="Ghế B10 Đã bán" class="w-6 h-6 rounded-[2px] bg-inverse-surface text-surface-dim flex items-center justify-center cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[12px]">close</span>
+</button>
+<!-- Seat B11 -->
+<button aria-label="Ghế B11 Đã bán" class="w-6 h-6 rounded-[2px] bg-inverse-surface text-surface-dim flex items-center justify-center cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[12px]">close</span>
+</button>
+<!-- Seat B12 -->
+<button aria-label="Ghế B12 Còn trống" class="w-6 h-6 rounded-[2px] border border-primary/50 text-primary bg-surface-container-lowest hover:bg-primary-fixed flex items-center justify-center active:scale-90 transition-all">
+<span class="text-[9px] font-mono">12</span>
+</button>
+<!-- Seat B13 -->
+<button aria-label="Ghế B13 Còn trống" class="w-6 h-6 rounded-[2px] border border-primary/50 text-primary bg-surface-container-lowest hover:bg-primary-fixed flex items-center justify-center active:scale-90 transition-all">
+<span class="text-[9px] font-mono">13</span>
+</button>
+<!-- Seat B14 -->
+<button aria-label="Ghế B14 Đang giữ" class="w-6 h-6 rounded-[2px] bg-surface-container-high border border-outline-variant text-outline flex items-center justify-center cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[12px]">lock</span>
+</button>
+<!-- Seat B15 -->
+<button aria-label="Ghế B15 Còn trống" class="w-6 h-6 rounded-[2px] border border-primary/50 text-primary bg-surface-container-lowest hover:bg-primary-fixed flex items-center justify-center active:scale-90 transition-all">
+<span class="text-[9px] font-mono">15</span>
+</button>
+<!-- Seat B16 -->
+<button aria-label="Ghế B16 Còn trống" class="w-6 h-6 rounded-[2px] border border-primary/50 text-primary bg-surface-container-lowest hover:bg-primary-fixed flex items-center justify-center active:scale-90 transition-all">
+<span class="text-[9px] font-mono">16</span>
+</button>
+</div>
+</div>
+<div class="h-px bg-outline-variant/60 my-2"></div>
+<!-- Standard Rows (Rows C & D) -->
+<div class="space-y-1.5 mb-3">
+<div class="flex items-center justify-between text-[10px] text-outline px-1 font-semibold">
+<span class="text-on-surface">KHU TIÊU CHUẨN</span>
+<span class="text-[9px] bg-surface-container text-on-surface px-1.5 py-0.5 rounded font-mono">650.000 ₫</span>
+</div>
+<!-- Row C -->
+<div class="flex items-center justify-center gap-1 text-[10px]">
+<span class="w-4 text-center font-bold text-on-surface-variant">C</span>
+<button aria-label="Ghế C10" class="w-6 h-6 rounded-[2px] border border-outline bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">10</button>
+<button aria-label="Ghế C11" class="w-6 h-6 rounded-[2px] border border-outline bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">11</button>
+<button aria-label="Ghế C12" class="w-6 h-6 rounded-[2px] border border-outline bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">12</button>
+<button aria-label="Ghế C13 Đang giữ" class="w-6 h-6 rounded-[2px] bg-surface-container-high border border-outline-variant text-outline flex items-center justify-center cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[12px]">lock</span>
+</button>
+<button aria-label="Ghế C14 Đã bán" class="w-6 h-6 rounded-[2px] bg-inverse-surface text-surface-dim flex items-center justify-center cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[12px]">close</span>
+</button>
+<button aria-label="Ghế C15" class="w-6 h-6 rounded-[2px] border border-outline bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">15</button>
+<button aria-label="Ghế C16" class="w-6 h-6 rounded-[2px] border border-outline bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">16</button>
+</div>
+<!-- Row D -->
+<div class="flex items-center justify-center gap-1 text-[10px]">
+<span class="w-4 text-center font-bold text-on-surface-variant">D</span>
+<button aria-label="Ghế D10" class="w-6 h-6 rounded-[2px] bg-inverse-surface text-surface-dim flex items-center justify-center cursor-not-allowed" disabled=""><span class="material-symbols-outlined text-[12px]">close</span></button>
+<button aria-label="Ghế D11" class="w-6 h-6 rounded-[2px] border border-outline bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">11</button>
+<button aria-label="Ghế D12" class="w-6 h-6 rounded-[2px] border border-outline bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">12</button>
+<button aria-label="Ghế D13" class="w-6 h-6 rounded-[2px] border border-outline bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">13</button>
+<button aria-label="Ghế D14" class="w-6 h-6 rounded-[2px] border border-outline bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">14</button>
+<button aria-label="Ghế D15" class="w-6 h-6 rounded-[2px] border border-outline bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">15</button>
+<button aria-label="Ghế D16" class="w-6 h-6 rounded-[2px] bg-inverse-surface text-surface-dim flex items-center justify-center cursor-not-allowed" disabled=""><span class="material-symbols-outlined text-[12px]">close</span></button>
+</div>
+</div>
+<div class="h-px bg-outline-variant/60 my-2"></div>
+<!-- Balcony Row (Row E) -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between text-[10px] text-outline px-1 font-semibold">
+<span class="text-on-surface-variant">KHU BAN CÔNG</span>
+<span class="text-[9px] bg-surface-container text-on-surface-variant px-1.5 py-0.5 rounded font-mono">350.000 ₫</span>
+</div>
+<div class="flex items-center justify-center gap-1 text-[10px]">
+<span class="w-4 text-center font-bold text-on-surface-variant">E</span>
+<button aria-label="Ghế E10" class="w-6 h-6 rounded-[2px] border border-outline-variant bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">10</button>
+<button aria-label="Ghế E11" class="w-6 h-6 rounded-[2px] border border-outline-variant bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">11</button>
+<button aria-label="Ghế E12" class="w-6 h-6 rounded-[2px] border border-outline-variant bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">12</button>
+<button aria-label="Ghế E13" class="w-6 h-6 rounded-[2px] border border-outline-variant bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">13</button>
+<button aria-label="Ghế E14" class="w-6 h-6 rounded-[2px] border border-outline-variant bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">14</button>
+<button aria-label="Ghế E15" class="w-6 h-6 rounded-[2px] border border-outline-variant bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">15</button>
+<button aria-label="Ghế E16" class="w-6 h-6 rounded-[2px] border border-outline-variant bg-surface-container-lowest hover:bg-surface-container flex items-center justify-center text-[9px] font-mono">16</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Draft State Status Banner (Mandatory requirement: No countdown timer) -->
+<section class="px-4 py-2 mt-1">
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-3 flex items-start space-x-2.5">
+<span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">info</span>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<h2 class="font-headline text-xs font-bold text-on-surface tracking-tight">Chưa được giữ (Đang chọn nháp)</h2>
+<span class="text-[10px] bg-primary/10 text-primary font-medium px-2 py-0.5 rounded-full">02 ghế</span>
+</div>
+<p class="font-body text-[11px] text-on-surface-variant leading-relaxed mt-1">
+            Thời gian giữ chỗ 10 phút chỉ bắt đầu tính sau khi máy chủ xác nhận giữ ghế.
+          </p>
+<div class="mt-1 flex items-center gap-1 text-[10px] text-outline font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span>Chưa kích hoạt đồng hồ đếm ngược</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Selected Seats Breakdown List -->
+<section class="px-4 py-2">
+<div class="bg-surface-container-lowest border border-outline-variant/70 rounded-lg p-3">
+<div class="flex items-center justify-between border-b border-outline-variant/40 pb-2 mb-2">
+<span class="font-headline text-xs font-semibold text-on-surface">Vị trí ghế đã chọn</span>
+<span class="font-label text-[11px] text-on-surface-variant">Tối đa 4 ghế / lần</span>
+</div>
+<div class="space-y-2">
+<!-- Item A12 -->
+<div class="flex items-center justify-between py-1 border-b border-outline-variant/20 last:border-none">
+<div class="flex items-center space-x-2">
+<span class="w-6 h-6 rounded bg-primary text-on-primary font-bold text-xs flex items-center justify-center">A12</span>
+<div>
+<p class="font-headline text-xs font-medium text-on-surface">Ghế A12 (VIP)</p>
+<p class="font-label text-[10px] text-on-surface-variant">Tầng 1 · Hàng A chính diện</p>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline text-xs font-bold text-on-surface">1.200.000 ₫</span>
+</div>
+</div>
+<!-- Item A13 -->
+<div class="flex items-center justify-between py-1 border-b border-outline-variant/20 last:border-none">
+<div class="flex items-center space-x-2">
+<span class="w-6 h-6 rounded bg-primary text-on-primary font-bold text-xs flex items-center justify-center">A13</span>
+<div>
+<p class="font-headline text-xs font-medium text-on-surface">Ghế A13 (VIP)</p>
+<p class="font-label text-[10px] text-on-surface-variant">Tầng 1 · Hàng A chính diện</p>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline text-xs font-bold text-on-surface">1.200.000 ₫</span>
+</div>
+</div>
+</div>
+<!-- Total Estimation Row -->
+<div class="mt-2.5 pt-2 border-t border-outline-variant/60 flex items-center justify-between">
+<span class="font-headline text-xs font-medium text-on-surface-variant">Tạm tính (02 vé)</span>
+<span class="font-headline text-sm font-bold text-primary">2.400.000 ₫</span>
+</div>
+</div>
+</section>
+<!-- Discreet Sprint Demo Note (Mandatory branding requirement) -->
+<footer class="mt-2 mb-4 px-4 text-center">
+<p class="font-body text-[11px] text-outline leading-tight">
+        Demo Sprint 2 · dữ liệu giả
+      </p>
+<div class="flex items-center justify-center gap-3 mt-1.5 text-[11px] text-outline-variant">
+<span class="hover:underline cursor-pointer">Điều khoản</span>
+<span>•</span>
+<span class="hover:underline cursor-pointer">Bảo mật</span>
+<span>•</span>
+<span class="hover:underline cursor-pointer">Hỗ trợ kỹ thuật</span>
+</div>
+</footer>
+<!-- Sticky Bottom Bar (M11 Primary Call to Action) -->
+<div class="fixed bottom-0 left-0 right-0 z-50 flex justify-center bg-surface/95 backdrop-blur-md border-t border-outline-variant/60 px-4 py-2.5 shadow-lg">
+<div class="w-full max-w-[390px] flex items-center justify-between gap-3">
+<!-- Quick total indicator -->
+<div class="flex flex-col">
+<span class="font-label text-[10px] text-on-surface-variant leading-none">Tạm tính</span>
+<span class="font-headline text-base font-bold text-primary leading-tight mt-0.5">2.400.000 ₫</span>
+</div>
+<!-- Primary Action Button: 48px height minimum touch target -->
+<button class="flex-1 h-12 bg-primary hover:bg-primary-container text-on-primary font-headline text-sm font-semibold rounded-md flex items-center justify-center space-x-2 transition-all duration-150 active:scale-[0.98] shadow-sm" type="button">
+<span>Giữ ghế (02 vé)</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</main>
+<script>
+    // Lightweight micro-interaction for seat toggling demonstration
+    document.addEventListener('DOMContentLoaded', () => {
+      // Handles mobile click feedback on available seats
+      const availableSeats = document.querySelectorAll('button[aria-label*="Còn trống"]');
+      availableSeats.forEach(seat => {
+        seat.addEventListener('click', () => {
+          alert('Để giữ tính nhất quán theo kịch bản T20/T24, hiện tại A12 và A13 đang được chọn ở trạng thái nháp.');
+        });
+      });
+    });
+  </script>
+</body></html>

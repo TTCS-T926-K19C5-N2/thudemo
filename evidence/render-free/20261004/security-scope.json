@@ -1,0 +1,9 @@
+{
+  "productionCredentialsUsed": false,
+  "passwordsTokensInReports": false,
+  "appMigrationChecksumPass": true,
+  "githubProtectionRead": "403 Resource not accessible by integration",
+  "renderAccountAuthenticated": false,
+  "scope": "Tracked env/migration check, changed source and evidence self-review; not a whole-repo secret scanner",
+  "trackedEnvironmentFiles": []
+}

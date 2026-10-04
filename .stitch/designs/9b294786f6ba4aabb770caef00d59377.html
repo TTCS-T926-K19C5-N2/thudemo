@@ -1,0 +1,599 @@
+<!DOCTYPE html><html class="light" lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>07 Xem sơ đồ ghế (Read-only) · Vé Sự Kiện Quản Trị</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "error-container": "#ffdad6",
+            "on-error": "#ffffff",
+            "surface-container-low": "#f3f3fd",
+            "primary-container": "#175cd3",
+            "on-secondary-fixed-variant": "#344572",
+            "inverse-primary": "#b1c5ff",
+            "error": "#ba1a1a",
+            "on-primary-fixed": "#001847",
+            "primary": "#0045a9",
+            "on-tertiary-container": "#ffd8c9",
+            "surface-variant": "#e1e2ec",
+            "outline": "#737785",
+            "on-secondary-container": "#415381",
+            "tertiary": "#853000",
+            "secondary": "#4c5d8b",
+            "on-primary-container": "#d7e0ff",
+            "primary-fixed-dim": "#b1c5ff",
+            "primary-fixed": "#dae2ff",
+            "inverse-on-surface": "#f0f0fa",
+            "secondary-fixed-dim": "#b4c5fa",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "surface-container": "#ededf7",
+            "surface-tint": "#0957ce",
+            "surface": "#faf8ff",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed": "#ffdbcd",
+            "on-tertiary-fixed": "#360f00",
+            "surface-container-high": "#e7e7f2",
+            "surface-container-lowest": "#ffffff",
+            "on-surface": "#191b23",
+            "surface-bright": "#faf8ff",
+            "on-background": "#191b23",
+            "tertiary-container": "#ac4100",
+            "background": "#faf8ff",
+            "secondary-container": "#b6c8fd",
+            "surface-container-highest": "#e1e2ec",
+            "secondary-fixed": "#dae2ff",
+            "on-surface-variant": "#424654",
+            "on-primary": "#ffffff",
+            "outline-variant": "#c3c6d6",
+            "on-secondary-fixed": "#031944",
+            "tertiary-fixed-dim": "#ffb597",
+            "surface-dim": "#d9d9e3",
+            "inverse-surface": "#2e3038",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-error-container": "#93000a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .hatch-pattern {
+      background: repeating-linear-gradient(
+        45deg,
+        #f3f3fd,
+        #f3f3fd 2px,
+        #c3c6d6 2px,
+        #c3c6d6 4px
+      );
+    }
+    /* Quiet operations subtle scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #faf8ff;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c3c6d6;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #737785;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased flex h-screen overflow-hidden selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Side Navigation Bar (Anchored from Shared Components JSON) -->
+<aside class="w-60 h-screen flex flex-col justify-between p-4 border-r border-outline-variant dark:border-outline bg-surface-container-lowest dark:bg-surface fixed top-0 left-0 z-30 select-none">
+<div>
+<!-- Brand Logo / Product Info -->
+<div class="px-2 py-2 mb-5">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded bg-primary-container text-white flex items-center justify-center font-bold text-sm tracking-tight shadow-sm">
+            VK
+          </div>
+<div>
+<h1 class="text-base font-headline font-bold text-on-surface dark:text-inverse-on-surface tracking-tight leading-snug">
+              Vé Sự Kiện · Quản trị
+            </h1>
+<p class="text-xs text-on-surface-variant font-label">Vận hành sự kiện</p>
+</div>
+</div>
+</div>
+<!-- Navigation Tabs (Sơ đồ ghế & Nạp JSON is ACTIVE) -->
+<nav class="space-y-1"><!-- Tab 0: Sự kiện -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150 ease-in-out text-sm font-label" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Sự kiện</span>
+</a>
+<!-- Tab 1: Suất diễn -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150 ease-in-out text-sm font-label" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span>Suất diễn</span>
+</a>
+<!-- Tab 2: Sơ đồ ghế (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2 bg-surface-container-low text-primary font-medium rounded-lg transition-colors duration-150 ease-in-out text-sm font-label border border-outline-variant/40" href="#">
+<span class="material-symbols-outlined" data-icon="event_seat" style="font-variation-settings: 'FILL' 1;">event_seat</span>
+<span>Sơ đồ ghế</span>
+</a>
+<!-- Tab 3: Giá vé -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150 ease-in-out text-sm font-label" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Giá vé</span>
+</a>
+<!-- Tab 4: Tài khoản -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant font-normal rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors duration-150 ease-in-out text-sm font-label" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span>Tài khoản</span>
+</a></nav>
+</div>
+<!-- Footer Support Tab -->
+<div class="pt-3 border-t border-outline-variant dark:border-outline">
+<div class="px-2 py-1 mb-2">
+<span class="inline-block text-[11px] font-medium text-outline uppercase tracking-wider">Môi trường</span>
+<p class="text-xs text-on-surface-variant font-mono">Sprint 2 · Stage Ops</p>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant dark:text-surface-variant font-normal rounded-lg hover:bg-surface-container-low transition-colors duration-150 text-sm font-label" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Hỗ trợ kỹ thuật</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas Wrapper (Left margin 240px for fixed SideNav) -->
+<div class="ml-60 flex-1 flex flex-col h-screen overflow-hidden bg-background">
+<!-- Top Navigation Bar (Anchored from Shared Components JSON) -->
+<header class="h-14 fixed top-0 right-0 left-60 z-20 flex justify-between items-center px-6 bg-surface-container-lowest dark:bg-surface border-b border-outline-variant dark:border-outline">
+<!-- Left: Event Context Breadcrumb -->
+<div class="flex items-center gap-3 min-w-0">
+<span class="text-xs font-semibold text-primary px-2 py-0.5 rounded bg-surface-container-low border border-outline-variant/60 uppercase tracking-wide">
+          Sơ đồ T20/T35
+        </span>
+<span class="text-outline-variant">/</span>
+<h2 class="text-sm font-headline font-medium text-on-surface truncate">
+          Sự kiện: Đêm nhạc Tháng Mười · Nhà hát Ánh Dương (16/10/2026)
+        </h2>
+</div>
+<!-- Right: Demo Sprint 2 badge & Actions -->
+<div class="flex items-center gap-4 flex-shrink-0">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-medium text-on-surface-variant bg-surface-container rounded border border-outline-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+          Demo Sprint 2 · dữ liệu giả
+        </span>
+<div class="h-4 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-2 text-xs font-label">
+<span class="text-on-surface-variant font-normal">Ban tổ chức / Kỹ thuật</span>
+<button class="text-primary hover:underline font-medium focus:outline-none" type="button">
+            Đổi tài khoản
+          </button>
+</div>
+<div class="flex items-center gap-1 border-l border-outline-variant pl-3">
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface rounded hover:bg-surface-container transition-colors" title="Thông báo" type="button">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface rounded hover:bg-surface-container transition-colors" title="Tài khoản" type="button">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Content Workspace (Padded top 56px to avoid fixed TopNavBar) -->
+<main class="mt-14 flex-1 flex flex-col overflow-hidden">
+<!-- Header Bar (Quiet Operations: Title, Live Sync, Mode & Shortcuts) -->
+<div class="bg-surface-container-lowest border-b border-outline-variant px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 flex-shrink-0">
+<div class="flex items-center gap-3">
+<div>
+<div class="flex items-center gap-2.5">
+<h1 class="text-lg font-headline font-bold text-on-surface leading-tight">
+                Sơ đồ trạng thái ghế trực tiếp · Suất 01 (16/10/2026 19:30)
+              </h1>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-container-high text-on-surface-variant border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="visibility">visibility</span>
+                Chế độ: CHỈ XEM (Read-only) · Thao tác nhấp chuột không làm thay đổi trạng thái ghế.
+              </span>
+</div>
+<div class="flex items-center gap-3 mt-1 text-xs text-on-surface-variant"><span class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+  Dữ liệu lúc 14:32:10
+</span>
+<span>•</span>
+<span>Tổng số: 2.000 ghế</span>
+<span>•</span>
+<span class="text-outline">Tự động làm mới</span></div>
+</div>
+</div>
+<!-- Secondary Action Shortcuts (Explicitly NO Hold/Đặt vé in organizer read-only) -->
+<div class="flex items-center gap-2">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-on-surface bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-low rounded transition-colors focus:ring-2 focus:ring-primary focus:outline-none" type="button">
+<span class="material-symbols-outlined text-base" data-icon="upload_file">upload_file</span>
+            Nạp sơ đồ JSON mới
+          </button>
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-on-surface bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-low rounded transition-colors focus:ring-2 focus:ring-primary focus:outline-none" type="button">
+<span class="material-symbols-outlined text-base" data-icon="edit_note">edit_note</span>
+            Chỉnh sửa bảng giá
+          </button>
+</div>
+</div>
+<!-- Legend Bar: Phân hạng giá & Quy ước trạng thái vận hành -->
+<div class="bg-surface-container-lowest border-b border-outline-variant px-6 py-2 flex flex-wrap items-center justify-between text-xs gap-y-2 flex-shrink-0">
+<!-- Nhóm 1: Phân hạng giá -->
+<div class="flex items-center gap-4">
+<span class="font-medium text-on-surface-variant uppercase tracking-wider text-[11px]">Hạng vé:</span>
+<div class="flex items-center gap-1.5">
+<span class="w-3.5 h-3.5 rounded-sm border-2 border-primary bg-primary-fixed flex-shrink-0"></span>
+<span class="font-medium text-on-surface">VIP</span>
+<span class="text-on-surface-variant font-mono text-[11px]">(1.200.000 ₫)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3.5 h-3.5 rounded-sm border-2 border-secondary bg-surface-container-high flex-shrink-0"></span>
+<span class="font-medium text-on-surface">Tiêu chuẩn</span>
+<span class="text-on-surface-variant font-mono text-[11px]">(650.000 ₫)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3.5 h-3.5 rounded-sm border-2 border-outline bg-surface flex-shrink-0"></span>
+<span class="font-medium text-on-surface">Ban công</span>
+<span class="text-on-surface-variant font-mono text-[11px]">(350.000 ₫)</span>
+</div>
+</div>
+<div class="h-3 w-px bg-outline-variant hidden md:block"></div>
+<!-- Nhóm 2: Quy ước trạng thái vận hành (Square glyphs per Sprint 2 spec) -->
+<div class="flex items-center gap-4"><span class="font-medium text-on-surface-variant uppercase tracking-wider text-[11px]">Quy ước:</span>
+<div class="flex items-center gap-1.5" title="Ghế còn trống">
+<span class="w-3.5 h-3.5 rounded-sm border border-outline-variant bg-surface-container-lowest flex items-center justify-center"></span>
+<span class="text-on-surface">Còn trống</span>
+</div>
+<div class="flex items-center gap-1.5" title="Ghế đang được giữ">
+<span class="w-3.5 h-3.5 rounded-sm bg-primary-container text-white flex items-center justify-center font-bold text-[9px]">✓</span>
+<span class="text-on-surface font-medium">Đang được giữ</span>
+</div>
+<div class="flex items-center gap-1.5" title="Ghế đã bán">
+<span class="w-3.5 h-3.5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center font-bold text-[9px]">✕</span>
+<span class="text-on-surface-variant">Đã bán</span>
+</div></div>
+</div>
+<!-- Main Layout: Interactive Map Canvas + 340px Inspector Panel -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Seat Map Viewport (Left / Center) -->
+<section class="flex-1 flex flex-col relative bg-surface-container-low overflow-hidden border-r border-outline-variant">
+<!-- Map Toolbar: Floating Controls for Zoom / Pan / Reset -->
+<div class="absolute top-4 left-4 z-10 flex items-center gap-1 bg-surface-container-lowest/95 backdrop-blur-sm p-1 rounded-md border border-outline-variant shadow-sm text-xs">
+<button class="p-1.5 text-on-surface hover:bg-surface-container rounded" title="Phóng to" type="button">
+<span class="material-symbols-outlined" data-icon="zoom_in">zoom_in</span>
+</button>
+<button class="p-1.5 text-on-surface hover:bg-surface-container rounded" title="Thu nhỏ" type="button">
+<span class="material-symbols-outlined" data-icon="zoom_out">zoom_out</span>
+</button>
+<button class="p-1.5 text-on-surface hover:bg-surface-container rounded" title="Vừa toàn bộ màn hình" type="button">
+<span class="material-symbols-outlined" data-icon="fit_screen">fit_screen</span>
+</button>
+<div class="h-4 w-px bg-outline-variant mx-1"></div>
+<span class="px-2 font-mono text-[11px] text-on-surface-variant">Tỉ lệ 100%</span>
+<button class="p-1.5 text-on-surface hover:bg-surface-container rounded" title="Làm mới trạng thái" type="button">
+<span class="material-symbols-outlined" data-icon="refresh">refresh</span>
+</button>
+</div>
+<!-- Stage indicator tag -->
+<div class="absolute top-4 right-4 z-10 bg-surface-container-lowest/90 px-3 py-1 rounded text-xs text-on-surface-variant border border-outline-variant font-mono">
+            Phòng: Grand Hall · 2 Tầng
+          </div>
+<!-- Interactive Seating Diagram Canvas Area -->
+<div class="flex-1 overflow-auto p-8 flex flex-col items-center justify-start select-none">
+<!-- Stage Construct -->
+<div class="w-full max-w-2xl mb-8 flex flex-col items-center">
+<div class="w-full h-9 bg-surface-container-high border-2 border-outline-variant rounded-t-xl flex items-center justify-center shadow-xs">
+<span class="text-xs font-semibold tracking-widest text-on-surface font-headline uppercase flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                  [ SÂN KHẤU - HƯỚNG NHÌN BIỂU DIỄN ]
+                  <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+</span>
+</div>
+<div class="w-3/4 h-2 bg-gradient-to-b from-outline-variant/30 to-transparent"></div>
+</div>
+<!-- Seating Matrix Container -->
+<div class="w-full max-w-3xl space-y-6">
+<!-- ZONE 1: VIP (Hàng A - C) -->
+<div class="bg-surface-container-lowest p-4 rounded-lg border border-primary/30 shadow-xs relative">
+<div class="flex items-center justify-between mb-3 pb-2 border-b border-outline-variant/60">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-sm bg-primary"></span>
+<span class="text-xs font-bold text-on-surface tracking-wide uppercase">Khu vực VIP · Tầng trệt</span>
+</div>
+<span class="text-xs font-mono text-primary font-medium">1.200.000 ₫ / vé</span>
+</div>
+<!-- Row A -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-xs">
+<span class="w-6 font-bold text-on-surface-variant font-mono">A</span>
+<div class="flex gap-1.5 flex-1 justify-center px-2">
+<!-- Seats 1-10: Mix of sold, free, held -->
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold" title="Ghế A01: Đã bán">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold" title="Ghế A02: Đã bán">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold" title="Ghế A03: Đã bán">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold" title="Ghế A04: Đã bán">✕</span>
+<!-- Gap for Aisle -->
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold" title="Ghế A05: Đã bán">✕</span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest" title="Ghế A06: Trống"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest" title="Ghế A07: Trống"></span>
+<span class="w-5 h-5 rounded-sm bg-primary-container text-white flex items-center justify-center text-[10px] font-bold" title="Ghế A08: Đang được giữ">✓</span>
+<span class="w-5 h-5 rounded-sm bg-primary-container text-white flex items-center justify-center text-[10px] font-bold" title="Ghế A09: Đang được giữ">✓</span>
+<span class="w-5 h-5 rounded-sm border border-outline hatch-pattern flex items-center justify-center" title="Ghế A10: Đang xác nhận">
+<span class="material-symbols-outlined text-[9px]" data-icon="lock">lock</span>
+</span>
+<!-- Gap for Aisle -->
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold" title="Ghế A11: Đã bán">✕</span>
+<!-- ACTIVE INSPECTED SEAT: A12 (Server Hold) with ring indicator -->
+<span class="w-5 h-5 rounded-sm bg-primary-container text-white ring-2 ring-primary ring-offset-2 flex items-center justify-center text-[10px] font-bold shadow-xs cursor-pointer" title="Ghế A12 (Đang xem chi tiết inspector)">✓</span>
+<span class="w-5 h-5 rounded-sm bg-primary-container text-white flex items-center justify-center text-[10px] font-bold" title="Ghế A13: Đang được giữ">✓</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold" title="Ghế A14: Đã bán">✕</span>
+</div>
+<span class="w-6 text-right font-bold text-on-surface-variant font-mono">A</span>
+</div>
+<!-- Row B -->
+<div class="flex items-center justify-between text-xs">
+<span class="w-6 font-bold text-on-surface-variant font-mono">B</span>
+<div class="flex gap-1.5 flex-1 justify-center px-2">
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+</div>
+<span class="w-6 text-right font-bold text-on-surface-variant font-mono">B</span>
+</div>
+<!-- Row C -->
+<div class="flex items-center justify-between text-xs">
+<span class="w-6 font-bold text-on-surface-variant font-mono">C</span>
+<div class="flex gap-1.5 flex-1 justify-center px-2">
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-primary-container text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+<span class="w-5 h-5 rounded-sm bg-primary-container text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+</div>
+<span class="w-6 text-right font-bold text-on-surface-variant font-mono">C</span>
+</div>
+</div>
+</div>
+<!-- ZONE 2: TIÊU CHUẨN (Hàng D - G) -->
+<div class="bg-surface-container-lowest p-4 rounded-lg border border-outline-variant shadow-xs">
+<div class="flex items-center justify-between mb-3 pb-2 border-b border-outline-variant/60">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-sm bg-secondary"></span>
+<span class="text-xs font-bold text-on-surface tracking-wide uppercase">Khu vực Tiêu chuẩn · Grand Hall</span>
+</div>
+<span class="text-xs font-mono text-on-surface-variant font-medium">650.000 ₫ / vé</span>
+</div>
+<div class="space-y-2">
+<!-- Row D -->
+<div class="flex items-center justify-between text-xs">
+<span class="w-6 font-bold text-on-surface-variant font-mono">D</span>
+<div class="flex gap-1.5 flex-1 justify-center px-2">
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline hatch-pattern flex items-center justify-center">
+<span class="material-symbols-outlined text-[9px]" data-icon="lock">lock</span>
+</span>
+<span class="w-5 h-5 rounded-sm border border-outline hatch-pattern flex items-center justify-center">
+<span class="material-symbols-outlined text-[9px]" data-icon="lock">lock</span>
+</span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+</div>
+<span class="w-6 text-right font-bold text-on-surface-variant font-mono">D</span>
+</div>
+<!-- Row E -->
+<div class="flex items-center justify-between text-xs">
+<span class="w-6 font-bold text-on-surface-variant font-mono">E</span>
+<div class="flex gap-1.5 flex-1 justify-center px-2">
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+</div>
+<span class="w-6 text-right font-bold text-on-surface-variant font-mono">E</span>
+</div>
+<!-- Row F -->
+<div class="flex items-center justify-between text-xs">
+<span class="w-6 font-bold text-on-surface-variant font-mono">F</span>
+<div class="flex gap-1.5 flex-1 justify-center px-2">
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+</div>
+<span class="w-6 text-right font-bold text-on-surface-variant font-mono">F</span>
+</div>
+</div>
+</div>
+<!-- ZONE 3: BAN CÔNG (Hàng H - K) -->
+<div class="bg-surface-container-lowest p-4 rounded-lg border border-outline-variant shadow-xs">
+<div class="flex items-center justify-between mb-3 pb-2 border-b border-outline-variant/60">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-sm bg-outline"></span>
+<span class="text-xs font-bold text-on-surface tracking-wide uppercase">Khu vực Ban công · Tầng 2</span>
+</div>
+<span class="text-xs font-mono text-on-surface-variant font-medium">350.000 ₫ / vé</span>
+</div>
+<div class="space-y-2">
+<!-- Row H -->
+<div class="flex items-center justify-between text-xs">
+<span class="w-6 font-bold text-on-surface-variant font-mono">H</span>
+<div class="flex gap-1.5 flex-1 justify-center px-2">
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm bg-inverse-surface text-surface flex items-center justify-center text-[10px] font-bold">✕</span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<div class="w-3"></div>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+<span class="w-5 h-5 rounded-sm border border-outline-variant bg-surface-container-lowest"></span>
+</div>
+<span class="w-6 text-right font-bold text-on-surface-variant font-mono">H</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Inspector Panel (Seat Inspector - Exactly 340px desktop spec) -->
+<aside class="w-[340px] bg-surface-container-lowest flex flex-col justify-between overflow-y-auto border-l border-outline-variant flex-shrink-0">
+<div class="p-5 space-y-5"><!-- Inspector Header -->
+<div class="border-b border-outline-variant pb-3">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold uppercase tracking-wider text-outline font-label">Thông tin ghế</span>
+<span class="inline-flex items-center gap-1 text-[11px] font-mono text-primary font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+      Chế độ xem
+    </span>
+</div>
+<h3 class="text-base font-headline font-bold text-on-surface mt-1">
+    Chi tiết ghế được chọn
+  </h3>
+</div>
+<!-- Selected Seat Info Card -->
+<div class="bg-surface-container-low rounded-lg p-4 border border-outline-variant space-y-3">
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant/60">
+<div>
+<span class="text-xs text-outline block">Vị trí ghế:</span>
+<span class="text-xl font-bold font-headline text-on-surface">Ghế A12</span>
+</div>
+<div class="text-right">
+<span class="text-xs text-outline block">Hạng vé:</span>
+<span class="px-2 py-0.5 rounded text-xs font-bold bg-primary text-white inline-block">VIP</span>
+</div>
+</div>
+<div class="space-y-2 text-xs">
+<div class="flex justify-between items-center">
+<span class="text-outline">Hàng:</span>
+<span class="font-semibold font-mono text-on-surface">Hàng A</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-outline">Số ghế:</span>
+<span class="font-semibold font-mono text-on-surface">12</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-outline">Hạng vé:</span>
+<span class="font-medium text-on-surface">VIP</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-outline">Đơn giá:</span>
+<span class="font-bold font-mono text-primary text-sm">1.200.000 ₫</span>
+</div>
+<div class="flex justify-between items-center pt-2 border-t border-outline-variant/60">
+<span class="text-outline">Trạng thái:</span>
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-primary-container text-white text-xs font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+        Đang được giữ
+      </span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-outline">Thời điểm ghi nhận:</span>
+<span class="font-mono text-on-surface font-medium">14:28:10</span>
+</div>
+</div>
+</div>
+<!-- Discreet Demo Footer Note -->
+<div class="pt-4 text-center">
+<span class="text-[11px] text-outline font-mono">
+    Demo Sprint 2 · dữ liệu giả
+  </span>
+</div></div>
+<!-- Bottom: Aggregate Capacity Summary -->
+</aside>
+</div>
+</main>
+</div>
+</body></html>

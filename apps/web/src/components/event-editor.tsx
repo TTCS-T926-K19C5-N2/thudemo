@@ -3,11 +3,14 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "@/components/ui/material-icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { WorkspaceHeader } from "@/components/workspace-header";
+import { OrganizerLayout } from "@/components/layout/product-layout";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { loadCurrentUser, readApiError } from "@/lib/api";
 
 type EventDetails = {
@@ -16,12 +19,23 @@ type EventDetails = {
   description: string;
   location: string;
   status: string;
-  showtimes: { id: string; startTime: string }[];
+  showtimes: { id: string; startTime: string; status?: string }[];
 };
 
 const empty = { name: "", description: "", location: "" };
 
-export function EventEditor({ eventId }: { eventId?: string }) {
+const VENUE_PRESETS = [
+  "Nhà hát Hoà Bình (TP.HCM)",
+  "Sân vận động Quốc gia Mỹ Đình (Hà Nội)",
+  "Trung tâm Hội nghị Quốc gia (NCC)",
+  "Nhà thi đấu Phú Thọ (TP.HCM)",
+];
+
+interface EventEditorProps {
+  readonly eventId?: string;
+}
+
+export function EventEditor({ eventId }: EventEditorProps) {
   const router = useRouter();
   const [draft, setDraft] = useState(empty);
   const [details, setDetails] = useState<EventDetails | null>(null);
@@ -33,6 +47,7 @@ export function EventEditor({ eventId }: { eventId?: string }) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [forbidden, setForbidden] = useState(false);
+
   const submitting = useRef(false);
   const showtimeSubmitting = useRef(false);
 
@@ -42,24 +57,45 @@ export function EventEditor({ eventId }: { eventId?: string }) {
       try {
         const user = await loadCurrentUser();
         if (!mounted) return;
-        if (!user) { router.replace("/login"); return; }
-        if (!user.roles.includes("ORGANIZER")) { setForbidden(true); return; }
-        if (!eventId) return;
-        const response = await fetch(`/api/events/${eventId}/manage`, { cache: "no-store" });
-        if (response.status === 403) { setForbidden(true); return; }
+        if (!user) {
+          router.replace("/login");
+          return;
+        } else if (!user.roles.includes("ORGANIZER")) {
+          setForbidden(true);
+          return;
+        }
+
+        if (!eventId) {
+          if (mounted) setLoading(false);
+          return;
+        }
+
+        const response = await fetch(`/api/events/${eventId}/manage`, {
+          cache: "no-store",
+        });
+        if (response.status === 403) {
+          setForbidden(true);
+          return;
+        }
         if (!response.ok) throw new Error();
-        const result = await response.json() as EventDetails;
+        const result = (await response.json()) as EventDetails;
         if (!mounted) return;
         setDetails(result);
-        setDraft({ name: result.name, description: result.description, location: result.location });
+        setDraft({
+          name: result.name,
+          description: result.description,
+          location: result.location,
+        });
       } catch {
-        if (mounted) setError("Không tải được sự kiện. Hãy tải lại trang.");
+        if (mounted) setError("Không tải được sự kiện. Hãy thử lại.");
       } finally {
         if (mounted) setLoading(false);
       }
     }
     void load();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [eventId, router]);
 
   function update(field: keyof typeof empty, value: string) {
@@ -73,7 +109,8 @@ export function EventEditor({ eventId }: { eventId?: string }) {
     if (submitting.current) return;
     const errors: Record<string, string> = {};
     for (const field of ["name", "description", "location"] as const) {
-      if (!draft[field].trim()) errors[field] = "Trường này không được để trống.";
+      if (!draft[field].trim())
+        errors[field] = "Trường này không được để trống.";
     }
     setFieldErrors(errors);
     if (Object.keys(errors).length > 0) return;
@@ -83,23 +120,36 @@ export function EventEditor({ eventId }: { eventId?: string }) {
     setError("");
     setMessage("");
     try {
-      const response = await fetch(eventId ? `/api/events/${eventId}` : "/api/events", {
-        method: eventId ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(draft),
-      });
-      if (response.status === 403) { setForbidden(true); return; }
+      const response = await fetch(
+        eventId ? `/api/events/${eventId}` : "/api/events",
+        {
+          method: eventId ? "PATCH" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(draft),
+        },
+      );
+      if (response.status === 403) {
+        setForbidden(true);
+        return;
+      }
       if (!response.ok) {
         const detail = await readApiError(response);
         setFieldErrors(detail.errors ?? {});
-        setError(detail.message ?? "Không lưu được sự kiện. Thử lại.");
+        setError(
+          detail.message ??
+            "Không lưu được thông tin sự kiện. Vui lòng thử lại.",
+        );
         return;
       }
-      const result = await response.json() as EventDetails;
-      if (!eventId) router.replace(`/events/${result.id}`);
-      else { setDetails((current) => current ? { ...current, ...result } : result); setMessage("Đã lưu thay đổi."); }
+      const result = (await response.json()) as EventDetails;
+      if (!eventId) {
+        router.replace(`/events/${result.id}`);
+      } else {
+        setDetails((current) => (current ? { ...current, ...result } : result));
+        setMessage("Đã lưu các thay đổi của sự kiện thành công.");
+      }
     } catch {
-      setError("Không thể kết nối. Nội dung đã nhập vẫn được giữ; hãy thử lại.");
+      setError("Không lưu được dữ liệu. Kiểm tra kết nối rồi thử lại.");
     } finally {
       submitting.current = false;
       setSaving(false);
@@ -108,9 +158,12 @@ export function EventEditor({ eventId }: { eventId?: string }) {
 
   async function addShowtime(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!eventId || showtimeSubmitting.current) return;
+    if (showtimeSubmitting.current) return;
     if (!startTime || new Date(startTime) <= new Date()) {
-      setFieldErrors((current) => ({ ...current, startTime: "Chọn thời gian trong tương lai." }));
+      setFieldErrors((current) => ({
+        ...current,
+        startTime: "Vui lòng chọn thời gian bắt đầu trong tương lai.",
+      }));
       return;
     }
     showtimeSubmitting.current = true;
@@ -123,48 +176,287 @@ export function EventEditor({ eventId }: { eventId?: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ startTime: new Date(startTime).toISOString() }),
       });
-      if (response.status === 403) { setForbidden(true); return; }
+      if (response.status === 403) {
+        setForbidden(true);
+        return;
+      }
       if (!response.ok) {
         const detail = await readApiError(response);
         setFieldErrors(detail.errors ?? {});
         setError(detail.message ?? "Không lưu được suất diễn.");
         return;
       }
-      const result = await response.json() as { id: string; startTime: string; warning: string | null };
-      setDetails((current) => current ? { ...current, showtimes: [...current.showtimes, result].sort((a, b) => a.startTime.localeCompare(b.startTime)) } : current);
+      const result = (await response.json()) as {
+        id: string;
+        startTime: string;
+        warning: string | null;
+      };
+      setDetails((current) =>
+        current
+          ? {
+              ...current,
+              showtimes: [...current.showtimes, result].sort((a, b) =>
+                a.startTime.localeCompare(b.startTime),
+              ),
+            }
+          : current,
+      );
       setStartTime("");
-      setMessage(result.warning ?? "Đã thêm suất diễn.");
+      setMessage(result.warning ?? "Đã thêm suất diễn mới thành công.");
     } catch {
-      setError("Không thể kết nối. Hãy thử lại.");
+      setError("Không lưu được dữ liệu. Kiểm tra kết nối rồi thử lại.");
     } finally {
       showtimeSubmitting.current = false;
       setSavingShowtime(false);
     }
   }
 
+  function setPresetTime(hoursAhead: number) {
+    const d = new Date();
+    d.setHours(d.getHours() + hoursAhead);
+    d.setMinutes(0);
+    d.setSeconds(0);
+    const localIso = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 16);
+    setStartTime(localIso);
+  }
+
   return (
-    <>
-      <WorkspaceHeader />
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-8">
-        <Link href="/events" className="text-sm font-medium text-primary underline-offset-4 hover:underline">← Sự kiện</Link>
-        <h1 className="mt-5 text-2xl font-semibold">{eventId ? "Quản lý sự kiện" : "Tạo sự kiện"}</h1>
-        {loading && <p role="status" className="mt-8 text-sm text-muted-foreground">Đang tải sự kiện…</p>}
-        {forbidden && <div className="mt-8 border-t border-border pt-6"><h2 className="font-semibold">Không có quyền xem sự kiện này</h2><p className="mt-2 text-sm text-muted-foreground">Bạn chỉ có thể quản lý sự kiện của mình.</p></div>}
-        {error && <p role="alert" className="mt-6 border-l-2 border-destructive bg-red-50 px-3 py-2 text-sm text-destructive">{error}</p>}
-        {message && <p role="status" className="mt-6 border-l-2 border-green-700 bg-green-50 px-3 py-2 text-sm text-green-800">{message}</p>}
-        {!loading && !forbidden && <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,620px)_minmax(0,1fr)]">
-          <section aria-labelledby="event-details-title">
-            <div className="border-b border-border pb-4"><h2 id="event-details-title" className="text-lg font-semibold">Thông tin sự kiện</h2>{details && <p className="mt-1 text-sm text-muted-foreground">Trạng thái: {details.status === "DRAFT" ? "Nháp" : details.status}</p>}</div>
-            <form className="mt-6 space-y-5" onSubmit={save} noValidate>
-              <div className="space-y-2"><Label htmlFor="event-name">Tên sự kiện</Label><Input id="event-name" maxLength={120} value={draft.name} onChange={(event) => update("name", event.target.value)} aria-invalid={Boolean(fieldErrors.name)} aria-describedby={fieldErrors.name ? "event-name-error" : undefined} disabled={saving} className="h-10" />{fieldErrors.name && <p id="event-name-error" className="text-sm text-destructive">{fieldErrors.name}</p>}</div>
-              <div className="space-y-2"><Label htmlFor="event-description">Mô tả</Label><Textarea id="event-description" maxLength={2000} rows={5} value={draft.description} onChange={(event) => update("description", event.target.value)} aria-invalid={Boolean(fieldErrors.description)} aria-describedby={fieldErrors.description ? "event-description-error" : undefined} disabled={saving} />{fieldErrors.description && <p id="event-description-error" className="text-sm text-destructive">{fieldErrors.description}</p>}</div>
-              <div className="space-y-2"><Label htmlFor="event-location">Địa điểm</Label><Input id="event-location" maxLength={200} value={draft.location} onChange={(event) => update("location", event.target.value)} aria-invalid={Boolean(fieldErrors.location)} aria-describedby={fieldErrors.location ? "event-location-error" : undefined} disabled={saving} className="h-10" />{fieldErrors.location && <p id="event-location-error" className="text-sm text-destructive">{fieldErrors.location}</p>}</div>
-              <Button type="submit" disabled={saving} className="h-11">{saving ? "Đang lưu…" : eventId ? "Lưu thay đổi" : "Tạo sự kiện"}</Button>
-            </form>
+    <OrganizerLayout
+      title={eventId ? "Chi tiết sự kiện" : "Tạo sự kiện"}
+      mode="events"
+    >
+      <div className="operations-page">
+        <Link className="operations-back" href="/events">
+          <ArrowLeft />
+          Về danh sách sự kiện
+        </Link>
+        <div className="page-heading">
+          <div>
+            <h1>{eventId ? "Chi tiết sự kiện" : "Tạo sự kiện mới"}</h1>
+            <p>Thông tin sự kiện và lịch biểu diễn.</p>
+          </div>
+          {details && (
+            <Badge variant="outline">
+              {details.status === "DRAFT" ? "Nháp" : "Đã công bố"}
+            </Badge>
+          )}
+        </div>
+        {loading && (
+          <div role="status" aria-label="Đang tải sự kiện">
+            <Skeleton className="h-64 w-full" />
+          </div>
+        )}
+        {error && (
+          <p className="operations-notice operations-error" role="alert">
+            {error}
+          </p>
+        )}
+        {message && (
+          <p className="operations-notice" role="status">
+            {message}
+          </p>
+        )}
+        {forbidden && (
+          <section className="operations-panel" role="alert">
+            <h2>Bạn không có quyền sửa sự kiện này</h2>
+            <p>Quay về danh sách sự kiện thuộc quyền quản lý của bạn.</p>
+            <Button variant="outline" asChild>
+              <Link href="/events">Về danh sách sự kiện</Link>
+            </Button>
           </section>
-          {eventId && details && <section aria-labelledby="showtimes-title"><div className="border-b border-border pb-4"><h2 id="showtimes-title" className="text-lg font-semibold">Suất diễn</h2><p className="mt-1 text-sm text-muted-foreground">Thêm thời gian bắt đầu cho sự kiện này.</p></div><form onSubmit={addShowtime} className="mt-6 space-y-3" noValidate><Label htmlFor="showtime-start">Thời gian bắt đầu</Label><Input id="showtime-start" type="datetime-local" value={startTime} onChange={(event) => { setStartTime(event.target.value); setFieldErrors((current) => ({ ...current, startTime: "" })); }} aria-invalid={Boolean(fieldErrors.startTime)} aria-describedby={fieldErrors.startTime ? "showtime-error" : undefined} disabled={savingShowtime} className="h-10" />{fieldErrors.startTime && <p id="showtime-error" className="text-sm text-destructive">{fieldErrors.startTime}</p>}<Button type="submit" disabled={savingShowtime} variant="outline" className="h-11">{savingShowtime ? "Đang thêm…" : "Thêm suất diễn"}</Button></form>{details.showtimes.length === 0 ? <p className="mt-8 border-t border-border pt-5 text-sm text-muted-foreground">Chưa có suất diễn.</p> : <ul className="mt-8 border-t border-border">{details.showtimes.map((showtime) => <li key={showtime.id} className="border-b border-border py-4 text-sm"><time dateTime={showtime.startTime}>{new Intl.DateTimeFormat("vi-VN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(showtime.startTime))}</time></li>)}</ul>}</section>}
-        </div>}
-      </main>
-    </>
+        )}
+        {!loading && !forbidden && (!eventId || details) && (
+          <div className="operations-editor">
+            <form
+              onSubmit={save}
+              className="operations-panel operations-form"
+              aria-labelledby="event-form-title"
+              noValidate
+            >
+              <div>
+                <h2 id="event-form-title">Thông tin sự kiện</h2>
+                <p>Các trường có dấu * là bắt buộc.</p>
+              </div>
+              <div>
+                <Label htmlFor="event-name">Tên sự kiện *</Label>
+                <Input
+                  id="event-name"
+                  maxLength={120}
+                  value={draft.name}
+                  onChange={(e) => update("name", e.target.value)}
+                  disabled={saving}
+                  aria-invalid={!!fieldErrors.name}
+                  aria-describedby={fieldErrors.name ? "name-error" : undefined}
+                />
+                {fieldErrors.name && (
+                  <p id="name-error" className="operations-field-error">
+                    {fieldErrors.name}
+                  </p>
+                )}
+                <small>{draft.name.length}/120</small>
+              </div>
+              <div>
+                <Label htmlFor="event-location">Địa điểm *</Label>
+                <Input
+                  id="event-location"
+                  maxLength={200}
+                  value={draft.location}
+                  onChange={(e) => update("location", e.target.value)}
+                  disabled={saving}
+                  aria-invalid={!!fieldErrors.location}
+                  aria-describedby={
+                    fieldErrors.location ? "location-error" : undefined
+                  }
+                />
+                {fieldErrors.location && (
+                  <p id="location-error" className="operations-field-error">
+                    {fieldErrors.location}
+                  </p>
+                )}
+                <details className="operations-presets">
+                  <summary>Địa điểm gợi ý</summary>
+                  {VENUE_PRESETS.map((venue) => (
+                    <Button
+                      key={venue}
+                      type="button"
+                      variant="outline"
+                      disabled={saving}
+                      onClick={() => update("location", venue)}
+                    >
+                      {venue}
+                    </Button>
+                  ))}
+                </details>
+              </div>
+              <div>
+                <Label htmlFor="event-description">Mô tả chi tiết *</Label>
+                <Textarea
+                  id="event-description"
+                  rows={6}
+                  maxLength={2000}
+                  value={draft.description}
+                  onChange={(e) => update("description", e.target.value)}
+                  disabled={saving}
+                  aria-invalid={!!fieldErrors.description}
+                  aria-describedby={
+                    fieldErrors.description ? "description-error" : undefined
+                  }
+                />
+                {fieldErrors.description && (
+                  <p id="description-error" className="operations-field-error">
+                    {fieldErrors.description}
+                  </p>
+                )}
+                <small>{draft.description.length}/2000</small>
+              </div>
+              <div className="operations-actions">
+                <Button type="submit" disabled={saving}>
+                  {saving
+                    ? "Đang lưu…"
+                    : eventId
+                      ? "Lưu thay đổi"
+                      : "Tạo sự kiện"}
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link href="/events">Hủy</Link>
+                </Button>
+              </div>
+            </form>
+            {eventId && details && (
+              <section
+                className="operations-panel operations-form"
+                aria-labelledby="showtimes-title"
+              >
+                <div>
+                  <h2 id="showtimes-title">Suất diễn</h2>
+                  <p>Thêm suất diễn, sau đó cấu hình sơ đồ ghế và giá vé.</p>
+                </div>
+                <form
+                  onSubmit={addShowtime}
+                  className="operations-form"
+                  noValidate
+                >
+                  <div>
+                    <Label htmlFor="showtime-start">Thời gian bắt đầu *</Label>
+                    <Input
+                      id="showtime-start"
+                      type="datetime-local"
+                      value={startTime}
+                      onChange={(e) => {
+                        setStartTime(e.target.value);
+                        setFieldErrors((current) => ({
+                          ...current,
+                          startTime: "",
+                        }));
+                      }}
+                      disabled={savingShowtime}
+                      aria-invalid={!!fieldErrors.startTime}
+                      aria-describedby={
+                        fieldErrors.startTime ? "start-error" : undefined
+                      }
+                    />
+                    {fieldErrors.startTime && (
+                      <p id="start-error" className="operations-field-error">
+                        {fieldErrors.startTime}
+                      </p>
+                    )}
+                  </div>
+                  <div
+                    className="operations-actions"
+                    role="group"
+                    aria-label="Thời gian gợi ý"
+                  >
+                    {[24, 48, 72].map((hours) => (
+                      <Button
+                        key={hours}
+                        variant="outline"
+                        type="button"
+                        disabled={savingShowtime}
+                        onClick={() => setPresetTime(hours)}
+                      >
+                        +{hours} giờ
+                      </Button>
+                    ))}
+                  </div>
+                  <Button type="submit" disabled={savingShowtime}>
+                    {savingShowtime ? "Đang thêm…" : "Thêm suất diễn"}
+                  </Button>
+                </form>
+                {details.showtimes.length === 0 ? (
+                  <p>Chưa có suất diễn. Thêm suất đầu tiên ở trên.</p>
+                ) : (
+                  <ul className="operations-showtimes">
+                    {details.showtimes.map((st) => (
+                      <li key={st.id}>
+                        <div>
+                          <time dateTime={st.startTime}>
+                            {new Intl.DateTimeFormat("vi-VN", {
+                              dateStyle: "full",
+                              timeStyle: "short",
+                            }).format(new Date(st.startTime))}
+                          </time>
+                          <p>
+                            {st.status === "ON_SALE"
+                              ? "Đang bán"
+                              : st.status === "CLOSED"
+                                ? "Đã đóng"
+                                : "Nháp"}
+                          </p>
+                        </div>
+                        <Link href={`/showtimes/${st.id}/manage`}>
+                          Quản lý suất →
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+            )}
+          </div>
+        )}
+      </div>
+    </OrganizerLayout>
   );
 }

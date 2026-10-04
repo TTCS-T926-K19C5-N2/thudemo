@@ -73,20 +73,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      DATABASE_URL: postgresql://ci_test_user:ci_test_password@localhost:5432/ci_test_db?schema=public
-      REDIS_HOST: localhost
-      REDIS_PORT: '6379'
+      DATABASE_URL: postgresql://ci_test_user:ci_test_password@127.0.0.1:15432/sprint2_integration?schema=public
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: "6379"
+      VERIFICATION_EVIDENCE_DIR: ../../evidence/ci/integration
     services:
       postgres:
         image: postgres:15-alpine
         env:
           POSTGRES_USER: ci_test_user
           POSTGRES_PASSWORD: ci_test_password
-          POSTGRES_DB: ci_test_db
+          POSTGRES_DB: sprint2_integration
         ports:
-          - 5432:5432
+          - 15432:5432
         options: >-
-          --health-cmd "pg_isready -U ci_test_user -d ci_test_db"
+          --health-cmd "pg_isready -U ci_test_user -d sprint2_integration"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
@@ -123,5 +124,115 @@ jobs:
         run: pnpm --filter api exec prisma generate
       - name: Unit tests
         run: pnpm test
+      - name: Staging seed safety guards (no remote writes)
+        run: node --test apps/api/scripts/render-staging-target.spec.mjs
       - name: API integration test
         run: pnpm --filter api run test:e2e
+
+  candidate-research:
+    name: K-01 / candidate-research
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      DATABASE_URL: postgresql://k01:local_fixture_only@127.0.0.1:15433/k01_render_local
+      REDIS_PORT: "16380"
+      K01_DOCKER_EXE: docker
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate Prisma client
+        run: pnpm --filter api exec prisma generate
+      - name: Start isolated candidate stores (restartable, never shared DB)
+        run: |
+          docker run -d --name sang-k01-postgres-20261004 -p 127.0.0.1:15433:5432 --health-cmd='pg_isready -U k01 -d k01_render_local' --health-interval=1s --health-retries=30 -e POSTGRES_USER=k01 -e POSTGRES_PASSWORD=local_fixture_only -e POSTGRES_DB=k01_render_local postgres:15-alpine
+          docker run -d --name sang-k01-redis-20261004 -p 127.0.0.1:16380:6379 --health-cmd='redis-cli ping' --health-interval=1s --health-retries=30 redis:7-alpine redis-server --save '' --appendonly no
+          for container in sang-k01-postgres-20261004 sang-k01-redis-20261004; do
+            ready=false
+            for attempt in $(seq 1 30); do
+              if [ "$(docker inspect -f '{{.State.Health.Status}}' "$container")" = healthy ]; then ready=true; break; fi
+              if [ "$attempt" -lt 30 ]; then sleep 1; fi
+            done
+            test "$ready" = true
+          done
+      - name: Two-process candidate invariants (not T-31 application concurrency)
+        run: pnpm --filter api exec node scripts/k01/compare-candidates.mjs
+      - name: Preserve raw candidate results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: k01-candidate-research
+          path: evidence/render-free/20261004/k01-candidates.json
+          if-no-files-found: error
+
+  hold-concurrency:
+    name: T-31 / hold-concurrency
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      DATABASE_URL: postgresql://ci_test_user:ci_test_password@127.0.0.1:15432/sang_holds_local
+      REDIS_URL: redis://127.0.0.1:16382
+      HOLDS_DOCKER: docker
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: ci_test_user
+          POSTGRES_PASSWORD: ci_test_password
+          POSTGRES_DB: sang_holds_local
+        ports:
+          - 15432:5432
+        options: >-
+          --health-cmd "pg_isready -U ci_test_user -d sang_holds_local"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install frozen dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate and migrate isolated test database
+        run: |
+          pnpm --filter api exec prisma generate
+          pnpm --filter api exec prisma migrate deploy
+          pnpm --filter api build
+      - name: Start restartable isolated cache
+        run: |
+          docker run -d --name sang-holds-cache-20261004 -p 127.0.0.1:16382:6379 --health-cmd='valkey-cli ping' --health-interval=1s --health-retries=30 valkey/valkey:8-alpine valkey-server --save '' --appendonly no
+          ready=false
+          for attempt in $(seq 1 30); do
+            if [ "$(docker inspect -f '{{.State.Health.Status}}' sang-holds-cache-20261004)" = healthy ]; then ready=true; break; fi
+            if [ "$attempt" -lt 30 ]; then sleep 1; fi
+          done
+          test "$ready" = true
+      - name: Authenticated product HTTP 200 requests /100 seats x10, worker and NFR
+        run: node apps/api/scripts/verify-holds-http.mjs
+      - name: Preserve complete raw results and sanitized logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: t31-product-holds
+          path: evidence/holds/20261004
+          if-no-files-found: error
