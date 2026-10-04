@@ -155,4 +155,32 @@ describe('SeatHoldService', () => {
       expect(mockRedis.set).not.toHaveBeenCalled();
     });
   });
+
+  describe('holdSeats - T-23 response & storage methods', () => {
+    it('trả về đầy đủ holdId, seatIds, expiresAt, showtimeId', async () => {
+      mockRedis.set.mockResolvedValue('OK');
+
+      const params = {
+        showtimeId: 'st_101',
+        seatIds: ['A1', 'A2'],
+        userId: 'usr_buyer_123',
+        holdId: 'custom_hold_id',
+      };
+
+      const result = await service.holdSeats(params);
+
+      expect(result.holdId).toBe('custom_hold_id');
+      expect(result.seatIds).toEqual(['A1', 'A2']);
+      expect(result.showtimeId).toBe('st_101');
+      expect(result.expiresAt).toBeDefined();
+    });
+
+    it('releaseSeats xóa trực tiếp danh sách keys theo showtimeId và seatIds', async () => {
+      await service.releaseSeats('st_101', ['A1', 'A2']);
+      expect(mockRedis.del).toHaveBeenCalledWith(
+        'hold:showtime:st_101:seat:A1',
+        'hold:showtime:st_101:seat:A2',
+      );
+    });
+  });
 });
