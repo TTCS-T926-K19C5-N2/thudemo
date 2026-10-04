@@ -1,92 +1,127 @@
-name: CI/CD Pipeline
+name: CI
 
-on:
-  push:
-    branches:
-      - main
-      - temp/sprint-2-all
-      - develop
-  pull_request:
-    branches:
-      - main
-      - temp/sprint-2-all
-      - develop
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-test:
+  build:
+    name: T-02 / build-and-typecheck
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Verify toolchain
+        run: |
+          test "$(node --version)" = 'v24.21.0'
+          test "$(pnpm --version)" = '10.15.1'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate Prisma client
+        env:
+          DATABASE_URL: postgresql://ci_placeholder:ci_placeholder@localhost:5432/unused
+        run: pnpm --filter api exec prisma generate
+      - name: Generate Next.js route types
+        run: pnpm --filter web exec next typegen
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Build
+        run: pnpm build
 
-    # 1. Dựng Database và Redis thực sự để chạy bài test của K-01
+  lint:
+    name: T-02 / lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Verify toolchain
+        run: |
+          test "$(node --version)" = 'v24.21.0'
+          test "$(pnpm --version)" = '10.15.1'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm lint
+
+  test:
+    name: T-02 / test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      DATABASE_URL: postgresql://ci_test_user:ci_test_password@localhost:5432/ci_test_db?schema=public
+      REDIS_HOST: localhost
+      REDIS_PORT: '6379'
     services:
       postgres:
-        image: postgres:15
+        image: postgres:15-alpine
         env:
-          POSTGRES_USER: testuser
-          POSTGRES_PASSWORD: testpass
-          POSTGRES_DB: testdb
+          POSTGRES_USER: ci_test_user
+          POSTGRES_PASSWORD: ci_test_password
+          POSTGRES_DB: ci_test_db
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
+          --health-cmd "pg_isready -U ci_test_user -d ci_test_db"
+          --health-interval 5s
           --health-timeout 5s
-          --health-retries 5
+          --health-retries 10
       redis:
-        image: redis:7
+        image: redis:7-alpine
         ports:
           - 6379:6379
-
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
         with:
-          node-version: '22'
-          cache: 'pnpm'
-
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Verify toolchain
+        run: |
+          test "$(node --version)" = 'v24.21.0'
+          test "$(pnpm --version)" = '10.15.1'
       - name: Install dependencies
-        run: pnpm install
-
-      # 2. Sinh code Prisma và ép tạo bảng vào Database tạm
-      - name: Generate Prisma Client & Push Schema
-        working-directory: ./apps/api
-        env:
-          DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb?schema=public"
-        run: |
-          npx prisma generate
-          npx prisma db push
-
-      - name: Run Lint
-        run: pnpm lint
-
-      # 3. Chạy bài test bắn 200 request của K-01 (Đã có DB thật để hứng)
-      - name: Run Unit/Integration Tests
-        env:
-          DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb?schema=public"
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
-          JWT_SECRET: "ci-test-secret-12345"
+        run: pnpm install --frozen-lockfile
+      - name: Apply test migrations
+        run: pnpm --filter api exec prisma migrate deploy
+      - name: Generate Prisma client
+        run: pnpm --filter api exec prisma generate
+      - name: Unit tests
         run: pnpm test
-
-      - name: Build applications
-        run: pnpm build
-
-  deploy-staging:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Deploy to Staging (Simulated via Docker Compose)
-        run: |
-          echo "Simulating deployment to staging VPS via SSH..."
-          echo "In a real scenario, this would use appleboy/ssh-action to pull code and run docker compose up -d"
-          # docker compose up -d --build
+      - name: API integration test
+        run: pnpm --filter api run test:e2e
