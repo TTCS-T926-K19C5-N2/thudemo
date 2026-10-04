@@ -309,4 +309,39 @@ export class SeatsService {
       },
     });
   }
+
+  /**
+   * TASK T-24: Đếm ngược thời gian giữ ghế theo seatId (dựa trên schema SeatHold của T-19)
+   * Trả về: remainingSeconds, isExpired, expiresAt chuẩn UTC
+   */
+  async getSeatHoldCountdown(seatId: string) {
+    const hold = await this.prisma.seatHold.findFirst({
+      where: {
+        seatId,
+        expiresAt: { gt: new Date() },
+      },
+      orderBy: { expiresAt: 'desc' },
+    });
+
+    if (!hold) {
+      return {
+        seatId,
+        remainingSeconds: 0,
+        isExpired: true,
+        expiresAt: new Date().toISOString(),
+      };
+    }
+
+    const now = Date.now();
+    const expiryTime = new Date(hold.expiresAt).getTime();
+    const remainingSeconds = Math.max(0, Math.floor((expiryTime - now) / 1000));
+
+    return {
+      seatId,
+      holdId: hold.id,
+      remainingSeconds,
+      isExpired: remainingSeconds <= 0,
+      expiresAt: new Date(expiryTime).toISOString(),
+    };
+  }
 }

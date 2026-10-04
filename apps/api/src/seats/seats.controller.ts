@@ -107,4 +107,19 @@ export class SeatsController {
   ) {
     return this.seatsService.createTicket(seatId, request.user?.id);
   }
+
+  /**
+   * TASK T-24: Lấy thông tin đếm ngược thời gian giữ ghế theo seatId
+   */
+  @Public()
+  @Get(':seatId/hold/countdown')
+  getSeatHoldCountdown(@Param('seatId') seatId: string) {
+    return this.seatsService.getSeatHoldCountdown(seatId);
+  }
+
+  @Public()
+  @Get(':seatId/countdown')
+  getCountdown(@Param('seatId') seatId: string) {
+    return this.seatsService.getSeatHoldCountdown(seatId);
+  }
 }
