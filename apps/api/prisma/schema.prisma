@@ -44,9 +44,15 @@ model Showtime {
   id         String   @id @default(uuid())
   eventId    String
   event      Event    @relation(fields: [eventId], references: [id])
+  status ShowtimeStatus @default(nhap)
   startTime  DateTime
   seatMapId  String?  // Nullable for now as per S-04
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
 
+enum ShowtimeStatus {
+  nhap
+  dang_ban
+  da_dong
+}
