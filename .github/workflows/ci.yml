@@ -16,15 +16,20 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '18'
+        node-version: '22'
         
     - name: Install pnpm
-      uses: pnpm/action-setup@v2
+      uses: pnpm/action-setup@v3
       with:
-        version: 8
+        version: '10'
         
     - name: Install dependencies
       run: pnpm install
+
+    - name: Generate Prisma Client
+      run: pnpm --filter api exec prisma generate
+      env:
+          DATABASE_URL: "postgresql://mock:mock@localhost:5432/mock_db"
       
     - name: Run Lint
       run: pnpm lint
