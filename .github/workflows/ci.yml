@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, temp/sprint-2-all, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, temp/sprint-2-all, develop ]
 
 jobs:
   build-and-test:
@@ -27,7 +27,7 @@ jobs:
         run: pnpm install
 
       - name: Generate Prisma Client
-        run: npx prisma generate
+        run: pnpm --filter api prisma generate
 
       - name: Run Lint
         run: pnpm lint
