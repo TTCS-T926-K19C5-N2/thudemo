@@ -8,7 +8,15 @@ import { RedisModule } from './redis/redis.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { UsersModule } from './users/users.module.js';
 import { EventsModule } from './events/events.module.js';
+<<<<<<< HEAD
 import { SeatsModule } from './modules/seats/seats.module.js';
+=======
+<<<<<<< HEAD
+import { SeatsModule } from './modules/seats/seats.module.js';
+=======
+import { SeatsModule } from './seats/seats.module.js';
+>>>>>>> task/T-19-seat-status-query
+>>>>>>> task/T-19-seat-status-query
 
 @Module({
   imports: [
