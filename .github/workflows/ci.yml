@@ -28,6 +28,8 @@ jobs:
 
     - name: Generate Prisma Client
       run: pnpm --filter api exec prisma generate
+      env:
+          DATABASE_URL: "postgresql://mock:mock@localhost:5432/mock_db"
       
     - name: Run Lint
       run: pnpm lint
