@@ -33,11 +33,7 @@ jobs:
         run: pnpm install
 
       - name: Generate Prisma Client
-        run: |
-          pnpm --filter api prisma generate
-          mkdir -p node_modules/.prisma
-          cp -r apps/api/node_modules/.prisma/* node_modules/.prisma/ 2>/dev/null || true
-          find node_modules/.pnpm -type d -name "@prisma+client*" -exec cp -r apps/api/node_modules/.prisma {}/node_modules/ \; 2>/dev/null || true
+        run: pnpm --filter api prisma generate
 
       - name: Run Lint
         run: pnpm lint
