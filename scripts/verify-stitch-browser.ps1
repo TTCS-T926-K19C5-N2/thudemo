@@ -22,4 +22,3 @@ try {
   if($taskReport.errors.Count -ne 0 -or $taskReport.renderP95 -ge 2000){throw 'Browser/performance gate failed'}
   [PSCustomObject]@{checks=$taskReport.checks.Count;captures=$taskReport.screenChecks.Count;renderP95=$taskReport.renderP95;holdIntegrated=$taskReport.holdIntegrated;staging=$taskReport.staging}
 } finally { Pop-Location }
-

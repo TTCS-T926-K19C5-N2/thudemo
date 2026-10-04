@@ -16,6 +16,17 @@ Phạm vi: T-11–T-24, T-27–T-31, T-34–T-35 và kết quả nghiên cứu K
 
 Kiểm tra diff, secret, frozen lockfile, lint, typecheck, unit test, integration test và build trên revision của PR. Kết quả CI từ xa được lưu trên GitHub. Các báo cáo 04/10/2026 giữ nguyên ngày và kết quả, không đổi nhãn thành staging hoặc kết quả mới.
 
+### Kiểm tra local của bản tích hợp
+
+- Node v24.21.0 / pnpm 10.15.1; frozen install PASS (12,7 giây).
+- Generate Prisma Client và Next route types, typecheck, lint và build PASS.
+- Unit tests: API 6, web 14; tất cả PASS. Seed safety guard: 2 PASS.
+- API E2E: 5 file, 16 test PASS (7,32 giây), gồm bản sửa login/activation và Sprint 2. Database fixture riêng `sprint2_integration`; không reset dữ liệu hay migration. Raw performance: `evidence/main-integration/20261005/integration-performance.json`.
+- Lần kiểm tra đầu chưa đặt DATABASE_URL cho Prisma generate nên thiếu generated client; đã đặt URL fixture và chạy lại thành công, không sửa code để bỏ kiểm tra.
+- Review backend/auth/holds không phát hiện MUST FIX mới. Review không đọc sâu mọi ảnh/artifact lịch sử.
+- Whitespace check phần code/config PASS. HTML Stitch nguyên bản còn trailing whitespace và được giữ nguyên để đối chiếu nguồn; không ghi toàn bộ diffcheck PASS.
+- Đây là bằng chứng local, không phải staging hay kết quả NFR giữ ghế mới.
+
 ## Rollback
 
 Rollback code bằng PR revert commit tích hợp. Không reset database; migration đã áp dụng phải dùng migration bù được kiểm chứng. Không sửa hoặc xóa lịch sử migration.

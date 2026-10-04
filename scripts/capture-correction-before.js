@@ -26,4 +26,3 @@ async (page) => {
  const pattern='**/api/showtimes';await page.route(pattern,async route=>{await new Promise(r=>setTimeout(r,1500));await route.fulfill({json:{items:[],nextCursor:null}});});await page.goto(base);await page.getByLabel('Đang tải danh sách').waitFor();await shot('loading-390');await page.getByRole('heading',{name:'Không tìm thấy sự kiện'}).waitFor();await shot('empty-390');await page.unroute(pattern);await page.route(pattern,r=>r.abort());await page.goto(base);await page.locator('[data-slot=alert]').waitFor();await shot('error-390');await page.unroute(pattern);
  return {date:new Date().toISOString(),showtimeId:id,catalogRows:6,viewport:[1280,390],syntheticDatabase:'stitch_fidelity',beforeBuild:true};
 }
-

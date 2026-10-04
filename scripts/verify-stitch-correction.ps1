@@ -19,4 +19,3 @@ try {
   $taskResults | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath "evidence/$Run/local-gates.json"
   Pop-Location
 }
-

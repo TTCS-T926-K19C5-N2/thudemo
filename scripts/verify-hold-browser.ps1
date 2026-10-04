@@ -24,4 +24,3 @@ try {
   if($taskParsed.errors.Count -gt 0){throw 'Browser runtime error'}
   [PSCustomObject]@{phase=$Phase;checks=$taskParsed.checks.Count;screens=$taskParsed.screens.Count;jsErrors=$taskParsed.errors.Count}
 } finally {Pop-Location}
-
