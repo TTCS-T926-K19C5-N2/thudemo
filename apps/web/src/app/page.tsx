@@ -26,16 +26,23 @@ interface EventItem {
   organizerId: string;
 }
 
+type ApiResponse =
+  | { status: number; statusText: string; data: unknown }
+  | { error: string };
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
 export default function DemoPage() {
   const [apiUrl] = useState('http://localhost:3001');
   const [healthStatus, setHealthStatus] = useState<'checking' | 'healthy' | 'error'>('checking');
-  const [healthData, setHealthData] = useState<any>(null);
   
   const [events, setEvents] = useState<EventItem[]>([]);
-  const [selectedShowtimeId, setSelectedShowtimeId] = useState('772632d1-1eee-4c3a-8131-972529c4e937');
+  const selectedShowtimeId = '772632d1-1eee-4c3a-8131-972529c4e937';
   const [seats, setSeats] = useState<Seat[]>([]);
   const [categories, setCategories] = useState<SeatCategory[]>([]);
-  const [loadingSeats, setLoadingSeats] = useState(false);
+  const [loadingSeats, setLoadingSeats] = useState(true);
   const [selectedSeat, setSelectedSeat] = useState<Seat | null>(null);
 
   // API Tester State
@@ -43,73 +50,83 @@ export default function DemoPage() {
   const [apiEndpoint, setApiEndpoint] = useState('/health');
   const [apiMethod, setApiMethod] = useState<'GET' | 'POST'>('GET');
   const [apiRequestBody, setApiRequestBody] = useState('');
-  const [apiResponse, setApiResponse] = useState<any>(null);
+  const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
   const [apiLoading, setApiLoading] = useState(false);
   const [authToken, setAuthToken] = useState<string | null>(null);
 
-  // Check health on mount
-  useEffect(() => {
-    checkHealth();
-    loadEvents();
-  }, []);
-
-  // Load seats when showtime changes
-  useEffect(() => {
-    if (selectedShowtimeId) {
-      loadSeatsAndCategories(selectedShowtimeId);
-    }
-  }, [selectedShowtimeId]);
-
-  const checkHealth = async () => {
-    setHealthStatus('checking');
+  const checkHealth = React.useCallback(async (): Promise<'healthy' | 'error'> => {
     try {
       const res = await fetch(`${apiUrl}/health`);
-      if (res.ok) {
-        const data = await res.json();
-        setHealthStatus('healthy');
-        setHealthData(data);
-      } else {
-        setHealthStatus('error');
-      }
+      return res.ok ? 'healthy' : 'error';
     } catch {
-      setHealthStatus('error');
+      return 'error';
     }
-  };
+  }, [apiUrl]);
 
-  const loadEvents = async () => {
+  const loadEvents = React.useCallback(async (): Promise<EventItem[] | null> => {
     try {
       const res = await fetch(`${apiUrl}/events`);
       if (res.ok) {
         const data = await res.json();
-        setEvents(data);
+        return data;
       }
+      return null;
     } catch (err) {
       console.error('Failed to load events:', err);
+      return null;
     }
-  };
+  }, [apiUrl]);
 
-  const loadSeatsAndCategories = async (showtimeId: string) => {
-    setLoadingSeats(true);
+  const loadSeatsAndCategories = React.useCallback(async (
+    showtimeId: string
+  ): Promise<{ seats?: Seat[]; categories?: SeatCategory[] } | null> => {
     try {
       const [seatsRes, catsRes] = await Promise.all([
         fetch(`${apiUrl}/seats/showtime/${showtimeId}`),
         fetch(`${apiUrl}/seats/categories/showtime/${showtimeId}`),
       ]);
 
-      if (seatsRes.ok) {
-        const seatsData = await seatsRes.json();
-        setSeats(seatsData);
-      }
-      if (catsRes.ok) {
-        const catsData = await catsRes.json();
-        setCategories(catsData);
-      }
+      const [seatsData, categoriesData] = await Promise.all([
+        seatsRes.ok ? seatsRes.json() : undefined,
+        catsRes.ok ? catsRes.json() : undefined,
+      ]);
+
+      return { seats: seatsData, categories: categoriesData };
     } catch (err) {
       console.error('Failed to load seats:', err);
-    } finally {
-      setLoadingSeats(false);
+      return null;
     }
-  };
+  }, [apiUrl]);
+
+  useEffect(() => {
+    let active = true;
+
+    checkHealth().then((status) => {
+      if (active) setHealthStatus(status);
+    });
+    loadEvents().then((data) => {
+      if (active && data) setEvents(data);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [checkHealth, loadEvents]);
+
+  useEffect(() => {
+    let active = true;
+
+    loadSeatsAndCategories(selectedShowtimeId).then((data) => {
+      if (!active) return;
+      if (data?.seats) setSeats(data.seats);
+      if (data?.categories) setCategories(data.categories);
+      setLoadingSeats(false);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [loadSeatsAndCategories, selectedShowtimeId]);
 
   const executeApiCall = async () => {
     setApiLoading(true);
@@ -139,12 +156,16 @@ export default function DemoPage() {
         data,
       });
 
-      if (apiEndpoint === '/auth/login' && data?.access_token) {
+      if (
+        apiEndpoint === '/auth/login' &&
+        isRecord(data) &&
+        typeof data.access_token === 'string'
+      ) {
         setAuthToken(data.access_token);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setApiResponse({
-        error: err.message || 'Lỗi kết nối API',
+        error: err instanceof Error ? err.message : 'Lỗi kết nối API',
       });
     } finally {
       setApiLoading(false);
@@ -256,8 +277,16 @@ export default function DemoPage() {
 
           <button
             onClick={() => {
-              checkHealth();
-              if (selectedShowtimeId) loadSeatsAndCategories(selectedShowtimeId);
+              setHealthStatus('checking');
+              checkHealth().then(setHealthStatus);
+              if (selectedShowtimeId) {
+                setLoadingSeats(true);
+                loadSeatsAndCategories(selectedShowtimeId).then((data) => {
+                  if (data?.seats) setSeats(data.seats);
+                  if (data?.categories) setCategories(data.categories);
+                  setLoadingSeats(false);
+                });
+              }
             }}
             className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg hover:border-zinc-700 transition"
           >
@@ -596,7 +625,11 @@ export default function DemoPage() {
                 <div className="flex items-center gap-2">
                   <select
                     value={apiMethod}
-                    onChange={(e: any) => setApiMethod(e.target.value)}
+                    onChange={(e) => {
+                      if (e.target.value === 'GET' || e.target.value === 'POST') {
+                        setApiMethod(e.target.value);
+                      }
+                    }}
                     className="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono font-bold text-white focus:outline-none focus:border-indigo-500"
                   >
                     <option value="GET">GET</option>
@@ -635,7 +668,7 @@ export default function DemoPage() {
               <div className="p-5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 shadow-xl flex flex-col gap-2">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-bold text-zinc-300">Kết quả phản hồi (Response):</span>
-                  {apiResponse?.status && (
+                  {apiResponse && 'status' in apiResponse && (
                     <span
                       className={`font-mono font-bold px-2 py-0.5 rounded text-[11px] ${
                         apiResponse.status < 300
@@ -649,7 +682,13 @@ export default function DemoPage() {
                 </div>
 
                 <pre className="w-full bg-zinc-950 border border-zinc-800/90 rounded-xl p-4 text-xs font-mono text-emerald-400 overflow-x-auto max-h-[400px] leading-relaxed">
-                  {apiResponse ? JSON.stringify(apiResponse.data || apiResponse, null, 2) : '// Chưa gửi request. Bấm "Gửi Request" để xem kết quả.'}
+                  {apiResponse
+                    ? JSON.stringify(
+                        'data' in apiResponse ? apiResponse.data : apiResponse,
+                        null,
+                        2
+                      )
+                    : '// Chưa gửi request. Bấm "Gửi Request" để xem kết quả.'}
                 </pre>
               </div>
             </div>
