@@ -8,6 +8,7 @@ export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
   @Roles(Role.ORGANIZER)
+  @Public()
   @Post()
   create(@Request() req: any, @Body() body: any) {
     return this.eventsService.create(req.user.id, body);

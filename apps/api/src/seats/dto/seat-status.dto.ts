@@ -1,11 +1,3 @@
-export enum Role {
-  BUYER = 'BUYER',
-  ORGANIZER = 'ORGANIZER',
-  STAFF = 'STAFF',
-  ACCOUNTANT = 'ACCOUNTANT',
-  ADMIN = 'ADMIN',
-}
-
 export type SeatStatus = 'AVAILABLE' | 'HELD' | 'SOLD';
 
 export interface SeatStatusResponseDto {
