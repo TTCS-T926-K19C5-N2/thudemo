@@ -12,6 +12,14 @@ export class SeatCategoryInputDto {
   @IsString()
   @IsNotEmpty()
   name!: string;
+
+  @IsOptional()
+  @IsString()
+  color?: string;
+
+  @IsOptional()
+  @IsInt()
+  price?: number;
 }
 
 export class SeatInputDto {
