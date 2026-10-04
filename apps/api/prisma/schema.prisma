@@ -40,14 +40,21 @@ model Event {
   updatedAt   DateTime   @updatedAt
 }
 
+enum ShowtimeStatus {
+  DRAFT
+  ON_SALE
+  CLOSED
+}
+
 model Showtime {
-  id         String   @id @default(uuid())
+  id         String         @id @default(uuid())
   eventId    String
-  event      Event    @relation(fields: [eventId], references: [id])
+  event      Event          @relation(fields: [eventId], references: [id])
   startTime  DateTime
-  seatMapId  String?  // Nullable for now as per S-04
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  status     ShowtimeStatus @default(DRAFT)
+  seatMapId  String?        // Nullable for now as per S-04
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
 
   seatCategories SeatCategory[]
   seats          Seat[]
@@ -82,3 +89,4 @@ model Seat {
   @@index([showtimeId])
   @@map("seats")
 }
+
