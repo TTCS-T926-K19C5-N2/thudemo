@@ -2,25 +2,19 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
-      - temp/sprint-2-all
-      - develop
+    branches: [ main, temp/sprint-2-all, develop ]
   pull_request:
-    branches:
-      - main
-      - temp/sprint-2-all
-      - develop
+    branches: [ main, temp/sprint-2-all, develop ]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v3
 
       - name: Setup Node.js
@@ -48,11 +42,11 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-
+    
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
-
+      
       - name: Deploy to Staging (Simulated via Docker Compose)
         run: |
           echo "Simulating deployment to staging VPS via SSH..."
