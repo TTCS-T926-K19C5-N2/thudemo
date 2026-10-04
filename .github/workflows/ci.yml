@@ -1,20 +1,26 @@
-name: CI/CD Pipeline
-
-on:
-  push:
-    branches:
-      - main
-      - temp/sprint-2-all
-      - develop
-  pull_request:
-    branches:
-      - main
-      - temp/sprint-2-all
-      - develop
-
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    # 1. Dựng Database và Redis thực sự để chạy bài test của K-01
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
 
     steps:
       - name: Checkout repository
@@ -32,32 +38,26 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Generate Prisma Client
+      # 2. Sinh code Prisma và ép tạo bảng vào Database tạm
+      - name: Generate Prisma Client & Push Schema
         working-directory: ./apps/api
-        run: npx prisma generate
         env:
-          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy" 
+          DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb?schema=public"
+        run: |
+          npx prisma generate
+          npx prisma db push
 
       - name: Run Lint
         run: pnpm lint
 
+      # 3. Chạy bài test bắn 200 request của K-01 (Đã có DB thật để hứng)
       - name: Run Unit/Integration Tests
+        env:
+          DATABASE_URL: "postgresql://testuser:testpass@localhost:5432/testdb?schema=public"
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          JWT_SECRET: "ci-test-secret-12345"
         run: pnpm test
 
       - name: Build applications
         run: pnpm build
-
-  deploy-staging:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Deploy to Staging (Simulated via Docker Compose)
-        run: |
-          echo "Simulating deployment to staging VPS via SSH..."
-          echo "In a real scenario, this would use appleboy/ssh-action to pull code and run docker compose up -d"
-          # docker compose up -d --build
