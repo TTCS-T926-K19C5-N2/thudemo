@@ -32,8 +32,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Generate Prisma Client
-        run: pnpm exec prisma generate --schema=apps/api/prisma/schema.prisma
+      - name: Generate Prisma Client & Sync Store
+        run: |
+          pnpm --filter api prisma generate
+          if [ -d "apps/api/node_modules/.prisma" ]; then
+            mkdir -p node_modules/.prisma
+            cp -R apps/api/node_modules/.prisma/. node_modules/.prisma/
+            for dir in node_modules/.pnpm/@prisma+client*/node_modules; do
+              if [ -d "$dir" ]; then
+                mkdir -p "$dir/.prisma"
+                cp -R apps/api/node_modules/.prisma/. "$dir/.prisma/"
+              fi
+            done
+          fi
 
       - name: Run Lint
         run: pnpm lint
