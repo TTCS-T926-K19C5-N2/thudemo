@@ -60,7 +60,13 @@ export class AuthService {
       );
     }
 
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    // Existing accounts may retain mixed casing. Never pick an arbitrary
+    // identity when two legacy rows differ only by email casing.
+    const candidates = await this.prisma.user.findMany({
+      where: { email: { equals: email, mode: 'insensitive' } },
+      take: 2,
+    });
+    const user = candidates.length === 1 ? candidates[0] : undefined;
     const isMatch = await argon2.verify(
       user?.password ?? (await this.dummyHash),
       passwordInput,

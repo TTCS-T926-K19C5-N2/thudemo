@@ -49,29 +49,28 @@ export class UsersService {
     return { message: 'If the email is valid, you will receive instructions.' };
   }
 
-  async activate(token: string) {
-    const user = await this.prisma.user.findFirst({
-      where: { activationToken: token },
-    });
-
-    if (!user) {
+  async activate(token: unknown) {
+    if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) {
       throw new BadRequestException('Invalid activation token');
     }
-
-    if (user.activationExpires && user.activationExpires < new Date()) {
-      throw new BadRequestException(
-        'Activation link expired. Please request a new one.',
-      );
-    }
-
-    await this.prisma.user.update({
-      where: { id: user.id },
+    // Consume the token and verify its deadline in the same write. A missing
+    // token cannot omit the Prisma filter; a replay cannot verify another row.
+    const result = await this.prisma.user.updateMany({
+      where: {
+        activationToken: token,
+        activationExpires: { gt: new Date() },
+        isEmailVerified: false,
+      },
       data: {
         isEmailVerified: true,
         activationToken: null,
         activationExpires: null,
       },
     });
+
+    if (result.count !== 1) {
+      throw new BadRequestException('Invalid or expired activation token');
+    }
 
     return { message: 'Account activated successfully.' };
   }
