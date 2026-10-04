@@ -40,13 +40,53 @@ model Event {
   updatedAt   DateTime   @updatedAt
 }
 
+enum ShowtimeStatus {
+  DRAFT
+  ON_SALE
+  CLOSED
+}
+
 model Showtime {
-  id         String   @id @default(uuid())
+  id         String         @id @default(uuid())
   eventId    String
-  event      Event    @relation(fields: [eventId], references: [id])
+  event      Event          @relation(fields: [eventId], references: [id])
   startTime  DateTime
-  seatMapId  String?  // Nullable for now as per S-04
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  status     ShowtimeStatus @default(DRAFT)
+  seatMapId  String?        // Nullable for now as per S-04
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  seatCategories SeatCategory[]
+  seats          Seat[]
+}
+
+model SeatCategory {
+  id          String   @id @default(uuid())
+  showtimeId  String   @map("showtime_id")
+  name        String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  showtime    Showtime @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+  seats       Seat[]
+
+  @@map("seat_categories")
+}
+
+model Seat {
+  id             String   @id @default(uuid())
+  showtimeId     String   @map("showtime_id")
+  seatCategoryId String?  @map("seat_category_id")
+  seatRow        String   @map("seat_row")
+  seatNumber     Int      @map("seat_number")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  showtime       Showtime      @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+  seatCategory   SeatCategory? @relation(fields: [seatCategoryId], references: [id], onDelete: SetNull)
+
+  @@unique([showtimeId, seatRow, seatNumber], name: "unique_seat_per_showtime")
+  @@index([showtimeId])
+  @@map("seats")
 }
 
