@@ -3,6 +3,9 @@ import { Cron } from '@nestjs/schedule';
 import type { Redis } from 'ioredis';
 
 export interface HoldSeatMetadata {
+  holdId?: string;
+  showtimeId?: string;
+  seatIds?: string[];
   userId: string;
   heldAt: number;
   expiresAt?: string;

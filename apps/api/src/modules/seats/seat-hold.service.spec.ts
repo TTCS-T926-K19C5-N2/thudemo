@@ -10,6 +10,7 @@ describe('SeatHoldService', () => {
     set: ReturnType<typeof vi.fn>;
     del: ReturnType<typeof vi.fn>;
     get: ReturnType<typeof vi.fn>;
+    scan: ReturnType<typeof vi.fn>;
   };
   let mockValidateSeatsExist: Mock<(showtimeId: string, seatIds: string[]) => Promise<boolean>>;
   let mockValidator: ISeatValidator;
@@ -19,6 +20,7 @@ describe('SeatHoldService', () => {
       set: vi.fn(),
       del: vi.fn(),
       get: vi.fn(),
+      scan: vi.fn(),
     };
 
     mockValidateSeatsExist = vi.fn().mockResolvedValue(true) as unknown as Mock<
@@ -153,6 +155,50 @@ describe('SeatHoldService', () => {
 
       await expect(service.holdSeats(params)).rejects.toBeInstanceOf(BadRequestException);
       expect(mockRedis.set).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getHold & deleteHold & releaseSeats', () => {
+    it('lấy đúng thông tin giữ ghế theo holdId', async () => {
+      const record = {
+        holdId: 'hold_abc',
+        showtimeId: 'st_101',
+        seatIds: ['A1'],
+        userId: 'usr_1',
+        heldAt: Date.now(),
+        expiresAt: new Date().toISOString(),
+      };
+
+      mockRedis.scan.mockResolvedValueOnce(['0', ['hold:showtime:st_101:seat:A1']]);
+      mockRedis.get.mockResolvedValue(JSON.stringify(record));
+
+      const result = await service.getHold('hold_abc');
+      expect(result).toEqual(record);
+    });
+
+    it('xóa các key ghế liên quan khi gọi deleteHold', async () => {
+      const record = {
+        holdId: 'hold_xyz',
+        showtimeId: 'st_101',
+        seatIds: ['A1', 'A2'],
+        userId: 'usr_2',
+      };
+
+      mockRedis.scan.mockResolvedValueOnce(['0', ['hold:showtime:st_101:seat:A1']]);
+      mockRedis.get.mockResolvedValue(JSON.stringify(record));
+      mockRedis.del.mockResolvedValue(1);
+
+      const deleted = await service.deleteHold('hold_xyz');
+      expect(deleted).toBe(true);
+      expect(mockRedis.del).toHaveBeenCalledWith('hold:showtime:st_101:seat:A1');
+    });
+
+    it('releaseSeats xóa trực tiếp danh sách keys theo showtimeId và seatIds', async () => {
+      await service.releaseSeats('st_101', ['A1', 'A2']);
+      expect(mockRedis.del).toHaveBeenCalledWith(
+        'hold:showtime:st_101:seat:A1',
+        'hold:showtime:st_101:seat:A2',
+      );
     });
   });
 });

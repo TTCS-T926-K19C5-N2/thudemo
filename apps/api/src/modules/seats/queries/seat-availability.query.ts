@@ -11,6 +11,9 @@ export interface SeatStatusItem {
 }
 
 export interface HoldMetadata {
+  holdId?: string;
+  showtimeId?: string;
+  seatIds?: string[];
   userId: string;
   heldAt: number;
   expiresAt?: string;
