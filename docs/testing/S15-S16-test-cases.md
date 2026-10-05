@@ -4,6 +4,15 @@ Ngày chạy: 06/10/2026. Branch: `feature/S-15-S-16-pricing-orders`.
 
 ## Kiểm tra bổ sung sau CI hiệu năng
 
+Lượt mới nhất (profiling/prepared statements): **45/45 E2E, 28/28 nghiệm thu riêng,
+25/25 unit PASS**, thêm 3 helper test profiling PASS. Lint/typecheck/build PASS.
+Bốn lượt giữ ghế local đạt total p95 256,66 / 258,58 / 273,28 / 266,10 ms.
+Lượt mới nhất do người dùng chạy đủ **45 checks**, gồm cache restart thật;
+steady p95 170,49 ms, nfrPass=true. CI mới chưa chạy, **chưa merge main**.
+Chi tiết và toàn bộ lượt FAIL/PASS: `evidence/review/20261006/t31/verification.md`.
+Không cộng checks benchmark vào 45 test E2E hoặc số test browser. Cache restart
+vẫn làm mất khóa đăng nhập như giới hạn đã biết; không coi đây là nghiệm thu auth bền vững.
+
 Branch hiện tại: `test`. Sau tối ưu snapshot/round-trip S-16: **45/45 E2E, 23/23 unit PASS**;
 suite nghiệm thu riêng **28/28 PASS**. Lint, typecheck, build và health local PASS.
 Không đổi TTL 10 phút, không sửa migration cũ hoặc hạ ngưỡng NFR 300 ms.

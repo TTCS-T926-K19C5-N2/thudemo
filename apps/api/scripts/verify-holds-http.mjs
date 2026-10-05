@@ -9,6 +9,7 @@ import { resolve } from 'node:path';
 import assert from 'node:assert/strict';
 import { hash } from 'argon2';
 import { once } from 'node:events';
+import { pathToFileURL } from 'node:url';
 import { HoldsService } from '../dist/holds/holds.service.js';
 
 const target = new URL(process.env.DATABASE_URL ?? '');
@@ -75,7 +76,16 @@ const stats = (values) => ({
 function start(entry, port, name) {
   const fd = openSync(resolve(evidence, `${name}.log`), 'w');
   files.push(fd);
-  const child = spawn(process.execPath, [entry], {
+  const profileArgs =
+    process.env.HOLDS_PROFILE === '1'
+      ? [
+          '--import',
+          pathToFileURL(
+            resolve(root, 'apps/api/scripts/profile-holds-preload.mjs'),
+          ).href,
+        ]
+      : [];
+  const child = spawn(process.execPath, [...profileArgs, entry], {
     cwd: resolve(root, 'apps/api'),
     windowsHide: true,
     stdio: ['ignore', fd, fd, 'ipc'],
@@ -88,6 +98,34 @@ function start(entry, port, name) {
   });
   processes.push(child);
   return child;
+}
+async function profileSnapshot(children, label) {
+  if (process.env.HOLDS_PROFILE !== '1') return;
+  report.diagnosticProfiling = true;
+  const snapshots = await Promise.all(
+    children.map(
+      (child) =>
+        new Promise((resolveSnapshot, reject) => {
+          const timer = setTimeout(() => {
+            child.off('message', listener);
+            reject(Error('Profiling IPC timeout'));
+          }, 2000);
+          function listener(message) {
+            if (
+              message?.type !== 'holds-profile-result' ||
+              message.label !== label
+            )
+              return;
+            clearTimeout(timer);
+            child.off('message', listener);
+            resolveSnapshot(message);
+          }
+          child.on('message', listener);
+          child.send({ type: 'holds-profile-snapshot', label });
+        }),
+    ),
+  );
+  (report.profiles ??= []).push({ label, snapshots });
 }
 async function waitApi(port) {
   for (let i = 0; i < 100; i++) {
@@ -210,7 +248,7 @@ try {
   await db.seat.createMany({ data: seats });
   const startup = performance.now();
   const apiOne = start('dist/main.js', 3301, 'api-1');
-  start('dist/main.js', 3302, 'api-2');
+  const apiTwo = start('dist/main.js', 3302, 'api-2');
   await Promise.all([waitApi(3301), waitApi(3302)]);
   report.localStartupToHealthMs = performance.now() - startup;
   check((await call(null, [seats[0].id])).status === 401, 'No cookie ->401');
@@ -401,6 +439,7 @@ try {
     };
   await cache.del(cacheKey);
   await cache.quit();
+  await profileSnapshot([apiOne, apiTwo], 'before-bursts');
   // First burst is not process cold start: preceding invariant requests are disclosed.
   for (let round = 0; round < 10; round++) {
     const batch = seats.slice(round * 100, (round + 1) * 100).map((s) => s.id);
@@ -443,6 +482,7 @@ try {
       samples: results.map((r) => ({ status: r.status, ms: r.ms })),
     };
     report.rounds.push(value);
+    await profileSnapshot([apiOne, apiTwo], `round-${round + 1}`);
     writeFileSync(
       resolve(evidence, 'http-concurrency.json'),
       JSON.stringify(report, null, 2),

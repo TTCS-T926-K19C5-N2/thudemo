@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { ConfigService } from '@nestjs/config';
+import { holdStatementNames } from './hold-statement-names.js';
 
 @Injectable()
 export class PrismaService
@@ -11,10 +12,13 @@ export class PrismaService
   constructor(configService: ConfigService) {
     // Two local API instances use at most 32 connections, leaving room for worker/migrations.
     super({
-      adapter: new PrismaPg({
-        connectionString: configService.getOrThrow<string>('DATABASE_URL'),
-        max: 16,
-      }),
+      adapter: new PrismaPg(
+        {
+          connectionString: configService.getOrThrow<string>('DATABASE_URL'),
+          max: 16,
+        },
+        { statementNameGenerator: holdStatementNames() },
+      ),
     });
   }
 
