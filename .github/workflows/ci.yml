@@ -124,4 +124,6 @@ jobs:
       - name: Unit tests
         run: pnpm test
       - name: API integration test
+        env:
+          DATABASE_URL: postgresql://ci_test_user:ci_test_password@localhost:5432/sprint2_integration?schema=public
         run: pnpm --filter api run test:e2e

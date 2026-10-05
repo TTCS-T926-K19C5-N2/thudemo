@@ -58,9 +58,11 @@ describe('Sprint 2 isolated database integration', () => {
   }
   beforeAll(async () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
+    const isAllowedHost = ['127.0.0.1', 'localhost'].includes(target.hostname);
+    const isAllowedPort = ['15432', '5432', ''].includes(target.port);
     if (
-      target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
+      !isAllowedHost ||
+      !isAllowedPort ||
       target.pathname !== '/sprint2_integration'
     )
       throw new Error('Run only on the isolated sprint2_integration database');
