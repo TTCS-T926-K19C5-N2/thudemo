@@ -24,6 +24,7 @@ assert(
 );
 const root = resolve(import.meta.dirname, '../../..');
 const evidence = resolve(root, 'evidence/holds/20261004');
+const apiPoolPerInstance = 40;
 mkdirSync(evidence, { recursive: true });
 const db = new PrismaClient({
   adapter: new PrismaPg({ connectionString: target.href }),
@@ -40,7 +41,8 @@ const report = {
   authority: 'PostgreSQL',
   runtime: process.version,
   instances: 2,
-  apiPoolPerInstance: 16,
+  apiPoolPerInstance,
+  apiPoolWarmup: true,
   buyers: 200,
   generator: 'Node fetch, loopback, same host',
   authentication:
@@ -80,6 +82,8 @@ function start(entry, port, name) {
       PORT: String(port),
       HOLD_EXPIRY_MODE: 'off',
       NODE_ENV: 'test',
+      DATABASE_POOL_MAX: String(apiPoolPerInstance),
+      DATABASE_POOL_WARMUP: 'true',
     },
   });
   processes.push(child);
