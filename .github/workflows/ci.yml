@@ -119,9 +119,18 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Apply test migrations
         run: pnpm --filter api exec prisma migrate deploy
+      - name: Setup e2e database
+        env:
+          PGPASSWORD: ci_test_password
+          DATABASE_URL: postgresql://ci_test_user:ci_test_password@localhost:5432/sprint2_integration?schema=public
+        run: |
+          psql -h localhost -U ci_test_user -d ci_test_db -c "CREATE DATABASE sprint2_integration;"
+          pnpm --filter api exec prisma migrate deploy
       - name: Generate Prisma client
         run: pnpm --filter api exec prisma generate
       - name: Unit tests
         run: pnpm test
       - name: API integration test
+        env:
+          DATABASE_URL: postgresql://ci_test_user:ci_test_password@localhost:5432/sprint2_integration?schema=public
         run: pnpm --filter api run test:e2e

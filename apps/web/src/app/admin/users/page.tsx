@@ -2,24 +2,26 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+type UserItem = {
+  id: string;
+  email: string;
+  isActive: boolean;
+  roles?: string[];
+};
+
 export default function AdminUsersPage() {
   const router = useRouter();
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<UserItem[]>([]);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  const loadUsers = async () => {
     try {
       const res = await fetch('/api/admin/users');
       if (res.status === 401) {
-        // Auto-logout
         router.push('/login');
         return;
       }
       if (res.ok) {
-        const data = await res.json();
+        const data = (await res.json()) as UserItem[];
         setUsers(data);
       }
     } catch (e) {
@@ -27,14 +29,44 @@ export default function AdminUsersPage() {
     }
   };
 
+  useEffect(() => {
+    let mounted = true;
+    void fetch('/api/admin/users')
+      .then(async (res) => {
+        if (!mounted) return;
+        if (res.status === 401) {
+          router.push('/login');
+          return;
+        }
+        if (res.ok) {
+          const data = (await res.json()) as UserItem[];
+          if (mounted) {
+            setUsers(data);
+          }
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
+
   const handleToggleStatus = async (id: string, isActive: boolean) => {
     const res = await fetch(`/api/admin/users/${id}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isActive }),
     });
-    if (res.status === 401) return router.push('/login');
-    if (res.ok) fetchUsers();
+    if (res.status === 401) {
+      router.push('/login');
+      return;
+    }
+    if (res.ok) {
+      void loadUsers();
+    }
   };
 
   const handleChangeRole = async (id: string, role: string) => {
@@ -43,8 +75,13 @@ export default function AdminUsersPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ role }),
     });
-    if (res.status === 401) return router.push('/login');
-    if (res.ok) fetchUsers();
+    if (res.status === 401) {
+      router.push('/login');
+      return;
+    }
+    if (res.ok) {
+      void loadUsers();
+    }
   };
 
   return (
