@@ -152,7 +152,7 @@ describe('S-15/S-16 pending orders', () => {
         .expect(200);
     const [first, second] = await Promise.all([submit(), submit()]);
     expect(first.body.order.id).toBe(second.body.order.id);
-    expect([first.body.created, second.body.created].sort()).toEqual([
+    expect([first.body.created, second.body.created].sort((a, b) => Number(a) - Number(b))).toEqual([
       false,
       true,
     ]);
@@ -245,4 +245,3 @@ describe('S-15/S-16 pending orders', () => {
       .expect(404);
   });
 });
-
