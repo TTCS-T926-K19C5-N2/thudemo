@@ -33,11 +33,10 @@ describe('Sprint 2 isolated database integration', () => {
     })),
   };
   async function account(role: string) {
-    const r = await db.role.upsert({
-      where: { name: role },
-      create: { name: role },
-      update: {},
-    });
+    let r = await db.role.findFirst({ where: { name: role } });
+    if (!r) {
+      r = await db.role.create({ data: { name: role } });
+    }
     const user = await db.user.create({
       data: {
         email: `${randomUUID()}@demo.invalid`,
