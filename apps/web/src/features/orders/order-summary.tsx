@@ -1,38 +1,170 @@
-5s
-Run pnpm lint
+"use client";
 
-> event-ticketing-platform@1.0.0 lint /home/runner/work/thudemo/thudemo
-> pnpm -r run lint
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Banknote, Clock3, Ticket } from "@/components/ui/material-icon";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { api } from "@/lib/api/client";
+import {
+  decodeOrderResponse,
+  type OrderResponse,
+} from "@/lib/contracts/orders";
+import { formatShowtime, formatVndAmount } from "@/lib/formatting";
+import {
+  countdownLabel,
+  remainingSeconds,
+  type ServerClock,
+} from "@/features/seat-selection/server-countdown";
 
-Scope: 3 of 4 workspace projects
-apps/api lint$ oxlint --type-aware src/ test/
-apps/web lint$ eslint
-apps/api lint: ::warning file=src/app.module.ts,line=13,endLine=13,col=10,endColumn=22,title=eslint(no-unused-vars)::src/app.module.ts:13:10: Identifier 'OrdersModule' is imported but never used.
-apps/api lint: ::warning file=test/orders.e2e-spec.ts,line=155,endLine=155,col=12,endColumn=60,title=typescript(require-array-sort-compare)::test/orders.e2e-spec.ts:155:12: Require 'compare' argument.
-apps/api lint: Found 2 warnings and 0 errors.
-apps/api lint: Finished in 320ms on 42 files with 111 rules using 4 threads.
-apps/api lint: Done
-apps/web lint: /home/runner/work/thudemo/thudemo/apps/web/src/features/orders/order-summary.tsx
-apps/web lint:   50:10  error  Error: Calling setState synchronously within an effect can trigger cascading renders
-apps/web lint: Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
-apps/web lint: * Update external systems with the latest state from React.
-apps/web lint: * Subscribe for updates from some external system, calling setState in a callback function when external state changes.
-apps/web lint: Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
-apps/web lint: /home/runner/work/thudemo/thudemo/apps/web/src/features/orders/order-summary.tsx:50:10
-apps/web lint:   48 |
-apps/web lint:   49 |   useEffect(() => {
-apps/web lint: > 50 |     void load().catch((reason) =>
-apps/web lint:      |          ^^^^ Avoid calling setState() directly within an effect
-apps/web lint:   51 |       setError(
-apps/web lint:   52 |         reason instanceof Error
-apps/web lint:   53 |           ? reason.message  react-hooks/set-state-in-effect
-apps/web lint: ✖ 1 problem (1 error, 0 warnings)
-apps/web lint: Failed
-/home/runner/work/thudemo/thudemo/apps/web:
- ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web@0.1.0 lint: `eslint`
-Exit status 1
- ELIFECYCLE  Command failed with exit code 1.
-Error: Process completed with exit code 1.
-0s
-0s
-0s
+export function OrderSummary({ id }: { id: string }) {
+  const [data, setData] = useState<OrderResponse | null>(null);
+  const [clock, setClock] = useState<ServerClock | null>(null);
+  const [remaining, setRemaining] = useState(0);
+  const [error, setError] = useState("");
+
+  const load = useCallback(async () => {
+    const result = await api(`/orders/${id}`, decodeOrderResponse);
+    const anchor = {
+      serverMs: Date.parse(result.serverTime),
+      receivedAt: performance.now(),
+    };
+    setData(result);
+    setClock(anchor);
+    setRemaining(
+      result.order.status === "PENDING_PAYMENT"
+        ? remainingSeconds(
+            result.order.paymentExpiresAt,
+            anchor,
+            anchor.receivedAt,
+          )
+        : 0,
+    );
+    setError("");
+  }, [id]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial order fetch synchronizes server state on mount
+    void load().catch((reason) =>
+      setError(
+        reason instanceof Error
+          ? reason.message
+          : "Không tải được đơn hàng. Hãy thử lại.",
+      ),
+    );
+  }, [load]);
+
+  useEffect(() => {
+    if (!data || !clock || data.order.status !== "PENDING_PAYMENT") return;
+    let refreshing = false;
+    const timer = setInterval(() => {
+      const next = remainingSeconds(
+        data.order.paymentExpiresAt,
+        clock,
+        performance.now(),
+      );
+      setRemaining(next);
+      if (next === 0 && !refreshing) {
+        refreshing = true;
+        void load()
+          .catch((reason) =>
+            setError(
+              reason instanceof Error
+                ? reason.message
+                : "Không cập nhật được trạng thái đơn hàng.",
+            ),
+          )
+          .finally(() => {
+            refreshing = false;
+          });
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [clock, data, load]);
+
+  if (error)
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>
+          {error}
+          <Button variant="outline" onClick={() => void load()}>
+            Thử lại
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
+  if (!data) return <Skeleton className="h-80 w-full" />;
+
+  const { order } = data;
+  const pending = order.status === "PENDING_PAYMENT" && remaining > 0;
+  return (
+    <div className="order-page">
+      <header className="order-heading">
+        <div>
+          <p className="order-eyebrow">
+            <Ticket /> Đơn hàng của bạn
+          </p>
+          <h1>{pending ? "Đơn chờ thanh toán" : "Đơn đã hết hạn"}</h1>
+          <p>
+            {order.showtime.event.name} · {formatShowtime(order.showtime.startTime)}
+          </p>
+        </div>
+        <Badge variant={pending ? "secondary" : "outline"}>
+          {pending ? "Chờ thanh toán" : "Đã hết hạn"}
+        </Badge>
+      </header>
+
+      <div className="order-layout">
+        <section className="product-panel order-items">
+          <h2>Ghế trong đơn ({order.items.length})</h2>
+          {order.items.map((item) => (
+            <div className="order-item" key={item.seatId}>
+              <span>
+                <strong>
+                  Ghế {item.row}-{item.seatNumber}
+                </strong>
+                <small>Hạng {item.categoryName}</small>
+              </span>
+              <strong>{formatVndAmount(String(item.unitPrice))}</strong>
+            </div>
+          ))}
+        </section>
+
+        <aside className="product-panel order-payment">
+          <h2>Tóm tắt thanh toán</h2>
+          <div className={`order-deadline ${pending ? "" : "is-expired"}`}>
+            <Clock3 />
+            <span>
+              <small>Thời gian thanh toán còn lại</small>
+              <strong>{pending ? countdownLabel(remaining) : "00:00"}</strong>
+            </span>
+          </div>
+          <p>Giá trong đơn được giữ nguyên từ thời điểm đặt vé.</p>
+          <Separator />
+          <div className="order-total">
+            <span>
+              <Banknote /> Tổng tiền
+            </span>
+            <strong>{formatVndAmount(order.totalAmount)}</strong>
+          </div>
+          {!pending && (
+            <Alert variant="destructive">
+              <AlertDescription>
+                Thời hạn thanh toán đã hết; các ghế không còn được giữ cho đơn
+                này.
+              </AlertDescription>
+            </Alert>
+          )}
+          <Button disabled>Thanh toán</Button>
+          <small>Cổng thanh toán chưa nằm trong phạm vi S-16.</small>
+          <Link href={`/shows/${order.showtime.id}/seats`}>
+            Quay lại sơ đồ ghế
+          </Link>
+        </aside>
+      </div>
+    </div>
+  );
+}
