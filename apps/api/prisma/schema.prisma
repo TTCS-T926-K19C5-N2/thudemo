@@ -19,6 +19,7 @@ model User {
   sessions          Session[]
   events            Event[]    @relation("OrganizerEvents")
   holdSessions      HoldSession[]
+  orders            Order[]       @relation("BuyerOrders")
 
   @@map("users")
 }
@@ -85,6 +86,7 @@ model Showtime {
   seats Seat[]
   categories SeatCategory[]
   holdSessions HoldSession[]
+  orders Order[]
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
@@ -119,6 +121,7 @@ model Seat {
   row String
   seatNumber Int
   hold SeatHold?
+  orderItems OrderItem[]
   @@unique([id, showtimeId])
   @@unique([showtimeId, row, seatNumber])
   @@index([categoryId, showtimeId])
