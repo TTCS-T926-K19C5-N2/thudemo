@@ -48,7 +48,7 @@ try {
   ]);
 
   await prisma.$transaction(async (tx) => {
-    for (const name of ['BUYER', 'ORGANIZER', 'STAFF', 'ACCOUNTANT', 'ADMIN']) {
+    for (const name of ['BUYER', 'ORGANIZER', 'TICKET_INSPECTOR', 'ACCOUNTANT', 'ADMIN']) {
       await tx.role.upsert({ where: { name }, update: {}, create: { name } });
     }
 

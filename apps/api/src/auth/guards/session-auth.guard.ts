@@ -12,7 +12,7 @@ import { IS_PUBLIC_KEY } from '../decorators/roles.decorator.js';
 import { hashSessionToken, SESSION_COOKIE } from '../auth.service.js';
 import { Prisma } from '@prisma/client';
 
-export type AuthenticatedUser = { id: string; email: string; roles: string[] };
+export type AuthenticatedUser = { id: string; email: string; roles: string[]; isActive: boolean };
 export type AuthenticatedRequest = Request & {
   user: AuthenticatedUser;
   sessionToken: string;
@@ -60,19 +60,24 @@ export class SessionAuthGuard implements CanActivate {
     // One indexed read instead of separate session/user/role relation queries.
     // Revocation and verified status are still checked on every request.
     const [session] = await this.prisma.$queryRaw<
-      { id: string; email: string; roles: string[] }[]
+      { id: string; email: string; roles: string[]; isActive: boolean }[]
     >(Prisma.sql`
-      SELECT u.id,u.email,COALESCE((SELECT array_agg(r.name) FROM user_roles ur JOIN roles r ON r.id=ur."roleId" WHERE ur."userId"=u.id),'{}'::text[]) AS roles
+      SELECT u.id,u.email,u."isActive",COALESCE((SELECT array_agg(r.name) FROM user_roles ur JOIN roles r ON r.id=ur."roleId" WHERE ur."userId"=u.id),'{}'::text[]) AS roles
       FROM sessions s JOIN users u ON u.id=s."userId"
       WHERE s."tokenHash"=${hashSessionToken(token)} AND s."expiresAt">clock_timestamp() AND u."isEmailVerified"=true`);
     if (!session) {
       throw new UnauthorizedException('Phiên đã hết hạn. Đăng nhập lại.');
     }
 
+    if (!session.isActive) {
+      throw new UnauthorizedException('Tài khoản đã bị vô hiệu hóa');
+    }
+
     request.user = {
       id: session.id,
       email: session.email,
       roles: session.roles,
+      isActive: session.isActive,
     };
     request.sessionToken = token;
     return true;

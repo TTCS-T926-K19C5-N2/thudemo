@@ -15,6 +15,7 @@ model User {
   activationExpires DateTime?  @db.Timestamptz(3)
   createdAt         DateTime   @default(now()) @db.Timestamptz(3)
   updatedAt         DateTime   @updatedAt @db.Timestamptz(3)
+  isActive          Boolean    @default(true)
   userRoles         UserRole[]
   sessions          Session[]
   events            Event[]    @relation("OrganizerEvents")
@@ -161,3 +162,18 @@ model CatalogRevision {
   version Int @default(0)
   @@map("catalog_revision")
 }
+
+model AuditLog {
+  id            String   @id @default(uuid()) @db.Uuid
+  performedById String   @db.Uuid
+  targetUserId  String   @db.Uuid
+  action        String
+  oldValue      String?
+  newValue      String?
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([performedById])
+  @@index([targetUserId])
+  @@map("audit_logs")
+}
+
