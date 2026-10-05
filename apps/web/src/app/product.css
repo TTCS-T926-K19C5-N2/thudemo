@@ -38,6 +38,114 @@
   flex-direction: column;
 }
 
+/* S-16 order review; uses the existing product surfaces and tokens. */
+.order-page {
+  display: grid;
+  gap: 24px;
+}
+
+.order-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.order-heading p {
+  margin: 4px 0 0;
+}
+
+.order-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary) !important;
+  font-weight: 600;
+}
+
+.order-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+.order-items,
+.order-payment {
+  display: grid;
+  gap: 16px;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.order-item > span {
+  display: grid;
+  gap: 2px;
+}
+
+.order-item small {
+  color: var(--muted-foreground);
+}
+
+.order-deadline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--radius-control);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.order-deadline.is-expired {
+  background: var(--error-container);
+  color: var(--on-error-container);
+}
+
+.order-deadline > span {
+  display: grid;
+}
+
+.order-deadline strong {
+  font-size: 22px;
+}
+
+.order-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.order-total span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.order-total strong {
+  color: var(--primary);
+  font-size: 22px;
+}
+
+@media (max-width: 768px) {
+  .order-heading,
+  .order-item {
+    align-items: flex-start;
+  }
+
+  .order-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 .product h1,
 .product h2,
 .product h3 {
