@@ -86,9 +86,7 @@ describe('Buyer self-registration (e2e)', () => {
         if (response.body.message !== GENERIC_REGISTER)
           throw new Error('Existing email must get the same message');
       });
-    expect(
-      await prisma.user.count({ where: { email } }),
-    ).toBe(1);
+    expect(await prisma.user.count({ where: { email } })).toBe(1);
     // No second activation email for an existing account.
     expect(await outbox(email)).toEqual(before);
   });
@@ -109,12 +107,8 @@ describe('Buyer self-registration (e2e)', () => {
         .send(body)
         .expect(400);
     }
-    expect(
-      await prisma.user.count({ where: { email } }),
-    ).toBe(0);
-    expect(
-      await prisma.user.count({ where: { email: 'not-an-email' } }),
-    ).toBe(0);
+    expect(await prisma.user.count({ where: { email } })).toBe(0);
+    expect(await prisma.user.count({ where: { email: 'not-an-email' } })).toBe(0);
   });
 
   it('AC4: reports an expired link and accepts a re-sent link', async () => {
