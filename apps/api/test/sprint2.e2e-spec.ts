@@ -19,6 +19,7 @@ describe('Sprint 2 isolated database integration', () => {
   let buyerCookie: string;
   let eventId: string;
   let showId: string;
+  const userIds: string[] = [];
   const samples: Record<string, number[]> = {
     importMs: [],
     queryMs: [],
@@ -33,11 +34,13 @@ describe('Sprint 2 isolated database integration', () => {
     })),
   };
   async function account(role: string) {
-    const r = await db.role.upsert({
-      where: { name: role },
-      create: { name: role },
-      update: {},
+    // Empty-update upserts may degrade to a read followed by an insert and
+    // race with another Vitest worker creating the same shared role.
+    await db.role.createMany({
+      data: [{ name: role }],
+      skipDuplicates: true,
     });
+    const r = await db.role.findUniqueOrThrow({ where: { name: role } });
     const user = await db.user.create({
       data: {
         email: `${randomUUID()}@demo.invalid`,
@@ -46,6 +49,7 @@ describe('Sprint 2 isolated database integration', () => {
         userRoles: { create: { roleId: r.id } },
       },
     });
+    userIds.push(user.id);
     const token = randomBytes(32).toString('base64url');
     await db.session.create({
       data: {
@@ -98,18 +102,23 @@ describe('Sprint 2 isolated database integration', () => {
   });
   afterAll(async () => {
     if (db) {
-      const shows = await db.showtime.findMany({
-        where: { eventId },
-        select: { id: true },
-      });
-      const ids = shows.map((s) => s.id);
-      await db.seat.deleteMany({ where: { showtimeId: { in: ids } } });
-      await db.seatCategory.deleteMany({ where: { showtimeId: { in: ids } } });
-      await db.showtime.deleteMany({ where: { eventId } });
-      await db.event.delete({ where: { id: eventId } });
-      await db.user.deleteMany({
-        where: { id: { in: [owner, other, buyer] } },
-      });
+      // A failed beforeAll leaves eventId unset. Never pass an undefined
+      // fixture key to Prisma because it can omit that filter entirely.
+      if (eventId) {
+        const shows = await db.showtime.findMany({
+          where: { eventId },
+          select: { id: true },
+        });
+        const ids = shows.map((s) => s.id);
+        await db.seat.deleteMany({ where: { showtimeId: { in: ids } } });
+        await db.seatCategory.deleteMany({
+          where: { showtimeId: { in: ids } },
+        });
+        await db.showtime.deleteMany({ where: { eventId } });
+        await db.event.deleteMany({ where: { id: eventId } });
+      }
+      if (userIds.length)
+        await db.user.deleteMany({ where: { id: { in: userIds } } });
       const report = {
         date: new Date().toISOString(),
         runtime: process.version,
