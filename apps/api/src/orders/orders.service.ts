@@ -165,9 +165,11 @@ export class OrdersService {
             message: 'Một số ghế chưa có giá. Hãy tải lại trước khi đặt vé.',
           });
 
-        const [{ paymentExpiresAt }] = await tx.$queryRaw<
-          { paymentExpiresAt: Date }[]
-        >`SELECT clock_timestamp() + ${PAYMENT_TTL_MINUTES} * interval '1 minute' AS "paymentExpiresAt"`;
+        // Anchor to the same serverTime returned to the client so the
+        // payment window is exactly PAYMENT_TTL_MINUTES, not TTL + query drift.
+        const paymentExpiresAt = new Date(
+          serverTime.getTime() + PAYMENT_TTL_MINUTES * 60 * 1000,
+        );
         const totalAmount = seats.reduce(
           (sum, seat) => sum + BigInt(seat.price!),
           0n,
