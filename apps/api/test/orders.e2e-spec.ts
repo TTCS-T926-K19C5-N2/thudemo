@@ -18,10 +18,12 @@ describe('S-15/S-16 pending orders', () => {
   const seats: Record<string, string> = {};
 
   async function account(roleName: 'ORGANIZER' | 'BUYER') {
-    const role = await db.role.upsert({
+    await db.role.createMany({
+      data: [{ name: roleName }],
+      skipDuplicates: true,
+    });
+    const role = await db.role.findUniqueOrThrow({
       where: { name: roleName },
-      create: { name: roleName },
-      update: {},
     });
     const user = await db.user.create({
       data: {
@@ -123,15 +125,18 @@ describe('S-15/S-16 pending orders', () => {
 
   afterAll(async () => {
     if (db) {
-      await db.orderItem.deleteMany({ where: { order: { showtimeId } } });
-      await db.order.deleteMany({ where: { showtimeId } });
-      await db.seatHold.deleteMany({ where: { showtimeId } });
-      await db.holdSession.deleteMany({ where: { showtimeId } });
-      await db.seat.deleteMany({ where: { showtimeId } });
-      await db.seatCategory.deleteMany({ where: { showtimeId } });
-      await db.showtime.delete({ where: { id: showtimeId } });
-      await db.event.delete({ where: { id: eventId } });
-      await db.user.deleteMany({ where: { id: { in: users } } });
+      if (showtimeId) {
+        await db.orderItem.deleteMany({ where: { order: { showtimeId } } });
+        await db.order.deleteMany({ where: { showtimeId } });
+        await db.seatHold.deleteMany({ where: { showtimeId } });
+        await db.holdSession.deleteMany({ where: { showtimeId } });
+        await db.seat.deleteMany({ where: { showtimeId } });
+        await db.seatCategory.deleteMany({ where: { showtimeId } });
+        await db.showtime.deleteMany({ where: { id: showtimeId } });
+      }
+      if (eventId) await db.event.deleteMany({ where: { id: eventId } });
+      if (users.length)
+        await db.user.deleteMany({ where: { id: { in: users } } });
     }
     if (app) {
       await app.get('REDIS_CLIENT').quit();
