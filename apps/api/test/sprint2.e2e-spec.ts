@@ -132,7 +132,8 @@ describe('Sprint 2 isolated database integration', () => {
       };
       const dir = resolve(
         process.env.VERIFICATION_EVIDENCE_DIR ??
-          process.env.SPRINT2_EVIDENCE_DIR ?? '../../evidence/sprint2/20261004-local',
+          process.env.SPRINT2_EVIDENCE_DIR ??
+          '../../evidence/sprint2/20261004-local',
       );
       mkdirSync(dir, { recursive: true });
       writeFileSync(
@@ -471,12 +472,18 @@ describe('Sprint 2 isolated database integration', () => {
     expect(placedA.body.order.totalAmount).toBe(
       firstSeats.reduce((sum, seat) => sum + (seat.category.price ?? 0), 0),
     );
-    const paymentExpiresAt = Date.parse(
-      placedA.body.order.paymentExpiresAt,
+    const paymentExpiresAt = Date.parse(placedA.body.order.paymentExpiresAt);
+    // Promise.all preserves input order, not which concurrent request won the lock.
+    // Only the creator gets a new 600-second deadline; the reuser must not extend it.
+    const created = placedA.body.created ? placedA : placedB;
+    const reused = placedA.body.created ? placedB : placedA;
+    expect(paymentExpiresAt - Date.parse(created.body.serverTime)).toBe(600000);
+    expect(reused.body.order.paymentExpiresAt).toBe(
+      created.body.order.paymentExpiresAt,
     );
-    expect(
-      paymentExpiresAt - Date.parse(placedA.body.serverTime),
-    ).toBe(600000);
+    const remaining = paymentExpiresAt - Date.parse(reused.body.serverTime);
+    expect(remaining).toBeGreaterThan(0);
+    expect(remaining).toBeLessThanOrEqual(600000);
     expect(paymentExpiresAt).toBeGreaterThanOrEqual(holdExpiresAt);
     expect(
       await db.order.count({
@@ -492,9 +499,9 @@ describe('Sprint 2 isolated database integration', () => {
       where: { seatId: { in: firstSeats.map((seat) => seat.id) } },
       select: { expiresAt: true },
     });
-    expect(extended.every((seat) => seat.expiresAt.getTime() === paymentExpiresAt)).toBe(
-      true,
-    );
+    expect(
+      extended.every((seat) => seat.expiresAt.getTime() === paymentExpiresAt),
+    ).toBe(true);
 
     const newPrice = (firstCategory.price ?? 0) + 12345;
     await request(app.getHttpServer())
@@ -505,9 +512,9 @@ describe('Sprint 2 isolated database integration', () => {
     const oldItems = await db.orderItem.findMany({
       where: { orderId: placedA.body.order.id },
     });
-    expect(oldItems.every((item) => item.unitPrice === firstCategory.price)).toBe(
-      true,
-    );
+    expect(
+      oldItems.every((item) => item.unitPrice === firstCategory.price),
+    ).toBe(true);
 
     const secondBuyer = await account('BUYER');
     extraBuyerIds.push(secondBuyer.id);

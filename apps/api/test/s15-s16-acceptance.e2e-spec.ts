@@ -530,6 +530,9 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
       hold([seats[1].id]).expect(200),
     ]);
     expect(responses[0].body.hold.id).toBe(responses[1].body.hold.id);
+    expect(
+      responses.some((response) => response.body.hold.seatIds.length === 2),
+    ).toBe(true);
     expect(responses[0].body.hold.expiresAt).toBe(
       responses[1].body.hold.expiresAt,
     );
@@ -602,6 +605,107 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     expect(rejected.body.lostSeatIds).toEqual([seats[1].id]);
     await expectNoOrder();
   });
+
+  it.each(['closed', 'unpriced', 'unknown-seat'])(
+    'TC-S16-20: %s validation writes no session snapshot or claim',
+    async (invalid) => {
+      await openSale();
+      if (invalid === 'closed')
+        await db.showtime.update({
+          where: { id: showId },
+          data: { status: 'CLOSED' },
+        });
+      if (invalid === 'unpriced')
+        await db.seatCategory.update({
+          where: { id: categories[0].id },
+          data: { price: null },
+        });
+      await hold([
+        invalid === 'unknown-seat' ? randomUUID() : seats[0].id,
+      ]).expect(invalid === 'closed' ? 409 : 400);
+      expect(
+        await db.holdSession.count({ where: { showtimeId: showId } }),
+      ).toBe(0);
+      expect(await db.seatHold.count({ where: { showtimeId: showId } })).toBe(
+        0,
+      );
+      await expectNoOrder();
+    },
+  );
+
+  it('TC-S16-21: hold confirmation uses a fresh clock after a session lock wait', async () => {
+    await openSale();
+    const held = await hold([seats[0].id]).expect(200);
+    const expiresAt = new Date(Date.now() + 1500);
+    await db.holdSession.update({
+      where: { id: held.body.hold.id },
+      data: { expiresAt },
+    });
+    await db.seatHold.update({
+      where: { seatId: seats[0].id },
+      data: { expiresAt },
+    });
+    let unlock!: () => void;
+    let notify!: () => void;
+    const locked = new Promise<void>((resolve) => {
+      notify = resolve;
+    });
+    const release = new Promise<void>((resolve) => {
+      unlock = resolve;
+    });
+    const blocker = db.$transaction(
+      async (tx) => {
+        await tx.$queryRaw`SELECT id FROM hold_sessions WHERE id=${held.body.hold.id}::uuid FOR UPDATE`;
+        notify();
+        await release;
+      },
+      { timeout: 10000 },
+    );
+    let response: Awaited<ReturnType<typeof hold>>;
+    try {
+      await locked;
+      const confirmation = hold([seats[0].id]).then((result) => result);
+      let waiting = false;
+      const started = Date.now();
+      while (Date.now() - started < 3000) {
+        const [row] = await db.$queryRaw<{ waiting: boolean }[]>`
+          SELECT EXISTS(SELECT 1 FROM pg_stat_activity
+            WHERE datname=current_database() AND wait_event_type='Lock'
+              AND query LIKE '%INSERT INTO hold_sessions%') AS waiting`;
+        if (row.waiting) {
+          waiting = true;
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 25));
+      }
+      await new Promise((resolve) =>
+        setTimeout(
+          resolve,
+          Math.max(0, expiresAt.getTime() - Date.now() + 200),
+        ),
+      );
+      unlock();
+      await blocker;
+      response = await confirmation;
+      expect(
+        waiting,
+        'The hold request must actually wait for the session lock',
+      ).toBe(true);
+    } finally {
+      unlock();
+      await blocker;
+    }
+    expect(response.status).toBe(409);
+    expect(response.body.code).toBe('HOLD_EXPIRED');
+    expect(
+      (
+        await db.holdSession.findUniqueOrThrow({
+          where: { id: held.body.hold.id },
+        })
+      ).expiresAt,
+    ).toEqual(expiresAt);
+    await expectNoOrder();
+  }, 15000);
 
   it('TC-S16-04: concurrent double-click requests create one order and one copy of each item', async () => {
     await openSale();
