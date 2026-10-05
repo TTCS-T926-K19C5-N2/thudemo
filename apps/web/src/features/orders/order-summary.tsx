@@ -13,7 +13,7 @@ import {
   decodeOrderResponse,
   type OrderResponse,
 } from "@/lib/contracts/orders";
-import { formatShowtime, formatVndAmount } from "@/lib/formatting";
+import { formatShowtime, formatVnd } from "@/lib/formatting";
 import {
   countdownLabel,
   remainingSeconds,
@@ -128,7 +128,7 @@ export function OrderSummary({ id }: { id: string }) {
                 </strong>
                 <small>Hạng {item.categoryName}</small>
               </span>
-              <strong>{formatVndAmount(String(item.unitPrice))}</strong>
+              <strong>{formatVnd(item.unitPrice)}</strong>
             </div>
           ))}
         </section>
@@ -148,7 +148,7 @@ export function OrderSummary({ id }: { id: string }) {
             <span>
               <Banknote /> Tổng tiền
             </span>
-            <strong>{formatVndAmount(order.totalAmount)}</strong>
+            <strong>{formatVnd(Number(order.totalAmount))}</strong>
           </div>
           {!pending && (
             <Alert variant="destructive">
