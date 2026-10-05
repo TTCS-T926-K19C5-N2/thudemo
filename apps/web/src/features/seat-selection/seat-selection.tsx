@@ -19,6 +19,7 @@ import { MobileShowHeader } from "@/components/layout/product-layout";
 import { api, ApiError } from "@/lib/api/client";
 import { loadCurrentUser } from "@/lib/api";
 import { decodeHoldState, type HoldState } from "@/lib/contracts/holds";
+import { decodeOrderResponse } from "@/lib/contracts/orders";
 import {
   decodePublicShowtime,
   decodeSeats,
@@ -43,6 +44,7 @@ export function SeatSelection({ id }: { id: string }) {
   const [error, setError] = useState(""),
     [expired, setExpired] = useState(false),
     [pending, setPending] = useState(false),
+    [orderPending, setOrderPending] = useState(false),
     [conflict, setConflict] = useState<Seat[]>([]);
   const authority = useRef<HoldState["hold"]>(null),
     busy = useRef(false),
@@ -229,6 +231,33 @@ export function SeatSelection({ id }: { id: string }) {
     await refresh().catch(() =>
       setError("Không tải được sơ đồ. Kiểm tra kết nối rồi thử lại."),
     );
+  }
+  async function createOrder() {
+    if (!hold || orderPending) return;
+    setOrderPending(true);
+    setError("");
+    setConflict([]);
+    try {
+      const result = await api(
+        `/showtimes/${id}/orders`,
+        decodeOrderResponse,
+        {
+          method: "POST",
+          body: { holdId: hold.id, seatIds: hold.seatIds },
+        },
+      );
+      router.push(`/orders/${result.order.id}`);
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : "Không tạo được đơn hàng. Hãy thử lại.",
+      );
+      // Only the server knows which seats survived; resync the map.
+      await refresh().catch(() => {});
+    } finally {
+      setOrderPending(false);
+    }
   }
   if (!show)
     return error ? (
