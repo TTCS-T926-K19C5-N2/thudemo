@@ -10,7 +10,7 @@ import { UsersModule } from './users/users.module.js';
 import { EventsModule } from './events/events.module.js';
 import { ShowtimesModule } from './showtimes/showtimes.module.js';
 import { HoldsModule } from './holds/holds.module.js';
-import { OrdersModule } from "./orders/orders.module.js";
+import { OrdersModule } from './orders/orders.module.js';
 
 @Module({
   imports: [
@@ -25,6 +25,7 @@ import { OrdersModule } from "./orders/orders.module.js";
     EventsModule,
     ShowtimesModule,
     HoldsModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
