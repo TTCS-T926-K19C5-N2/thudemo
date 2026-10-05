@@ -428,10 +428,9 @@ export function SeatSelection({ id }: { id: string }) {
           )}
           {hold && (
             <>
-              <Button variant="outline" disabled>
-                Tiếp tục
+              <Button onClick={createOrder} disabled={orderPending || remaining === 0}>
+                {orderPending ? "Đang tạo đơn…" : "Đặt vé"}
               </Button>
-              <p>Đặt vé và thanh toán chưa khả dụng.</p>
             </>
           )}
         </aside>
