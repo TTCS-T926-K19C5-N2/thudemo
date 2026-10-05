@@ -1,203 +1,56 @@
-generator client {
-  provider = "prisma-client-js"
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { ConfigService } from '@nestjs/config';
+
+const DEFAULT_POOL_MAX = 16;
+const MAX_POOL_MAX = 40;
+
+function poolMax(configService: ConfigService): number {
+  const configured = configService.get<string>('DATABASE_POOL_MAX');
+  const value = configured === undefined ? DEFAULT_POOL_MAX : Number(configured);
+  if (!Number.isInteger(value) || value < 1 || value > MAX_POOL_MAX) {
+    throw new Error(
+      `DATABASE_POOL_MAX must be an integer from 1 to ${MAX_POOL_MAX}`,
+    );
+  }
+  return value;
 }
 
-datasource db {
-  provider = "postgresql"
-}
+@Injectable()
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
+  private readonly warmPool: boolean;
+  private readonly poolSize: number;
 
-model User {
-  id                String     @id @default(uuid()) @db.Uuid
-  email             String     @unique
-  password          String
-  isEmailVerified   Boolean    @default(false)
-  activationToken   String?
-  activationExpires DateTime?  @db.Timestamptz(3)
-  createdAt         DateTime   @default(now()) @db.Timestamptz(3)
-  updatedAt         DateTime   @updatedAt @db.Timestamptz(3)
-  userRoles         UserRole[]
-  sessions          Session[]
-  events            Event[]    @relation("OrganizerEvents")
-  holdSessions      HoldSession[]
-  orders            Order[]       @relation("BuyerOrders")
+  constructor(configService: ConfigService) {
+    const max = poolMax(configService);
+    super({
+      adapter: new PrismaPg({
+        connectionString: configService.getOrThrow<string>('DATABASE_URL'),
+        max,
+      }),
+    });
+    this.poolSize = max;
+    this.warmPool =
+      configService.get<string>('DATABASE_POOL_WARMUP') === 'true';
+  }
 
-  @@map("users")
-}
+  async onModuleInit() {
+    await this.$connect();
+    // node-postgres creates clients lazily. The opt-in load/staging profile
+    // establishes its bounded capacity before readiness instead of charging
+    // connection setup to the first customer burst.
+    if (this.warmPool) {
+      await Promise.all(
+        Array.from({ length: this.poolSize }, () => this.$queryRaw`SELECT 1`),
+      );
+    }
+  }
 
-model Role {
-  id        String     @id @default(uuid()) @db.Uuid
-  name      String     @unique
-  userRoles UserRole[]
-
-  @@map("roles")
-}
-
-model UserRole {
-  userId String @db.Uuid
-  roleId String @db.Uuid
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role   Role   @relation(fields: [roleId], references: [id], onDelete: Restrict)
-
-  @@id([userId, roleId])
-  @@index([roleId])
-  @@map("user_roles")
-}
-
-model Session {
-  tokenHash String   @id
-  userId    String   @db.Uuid
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime @db.Timestamptz(3)
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-
-  @@index([userId])
-  @@index([expiresAt])
-  @@map("sessions")
-}
-
-model Event {
-  id          String     @id @default(uuid()) @db.Uuid
-  name        String
-  description String
-  location    String
-  posterPath  String?
-  mobilePosterPath String?
-  bannerPath String?
-  categoryLabel String?
-  status      String     @default("DRAFT") // DRAFT, PUBLISHED
-  organizerId String     @db.Uuid
-  organizer   User       @relation("OrganizerEvents", fields: [organizerId], references: [id], onDelete: Restrict)
-  showtimes   Showtime[]
-  createdAt   DateTime   @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime   @updatedAt @db.Timestamptz(3)
-
-  @@index([organizerId])
-  @@map("events")
-}
-
-model Showtime {
-  id        String   @id @default(uuid()) @db.Uuid
-  eventId   String   @db.Uuid
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Restrict)
-  startTime DateTime @db.Timestamptz(3)
-  seatMapId String? // Nullable for now as per S-04
-  status ShowtimeStatus @default(DRAFT)
-  structureLocked Boolean @default(false)
-  seats Seat[]
-  categories SeatCategory[]
-  holdSessions HoldSession[]
-  orders Order[]
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
-
-  @@index([eventId])
-  @@map("showtimes")
-}
-
-enum ShowtimeStatus {
-  DRAFT
-  ON_SALE
-  CLOSED
-}
-
-model SeatCategory {
-  id String @id @default(uuid()) @db.Uuid
-  showtimeId String @db.Uuid
-  showtime Showtime @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
-  name String
-  price Int?
-  seats Seat[]
-  @@unique([showtimeId, name])
-  @@unique([id, showtimeId])
-  @@map("seat_categories")
-}
-
-model Seat {
-  id String @id @default(uuid()) @db.Uuid
-  showtimeId String @db.Uuid
-  showtime Showtime @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
-  categoryId String @db.Uuid
-  category SeatCategory @relation(fields: [categoryId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
-  row String
-  seatNumber Int
-  hold SeatHold?
-  orderItems OrderItem[]
-  @@unique([id, showtimeId])
-  @@unique([showtimeId, row, seatNumber])
-  @@index([categoryId, showtimeId])
-  @@map("seats")
-}
-
-model HoldSession {
-  id String @id @default(uuid()) @db.Uuid
-  showtimeId String @db.Uuid
-  showtime Showtime @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
-  userId String @db.Uuid
-  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
-  sessionHash String
-  token String @db.Uuid
-  expiresAt DateTime @db.Timestamptz(3)
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  seats SeatHold[]
-  @@unique([showtimeId, userId, sessionHash])
-  @@unique([id, showtimeId])
-  @@map("hold_sessions")
-}
-
-model SeatHold {
-  seatId String @id @db.Uuid
-  showtimeId String @db.Uuid
-  seat Seat @relation(fields: [seatId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
-  holdSessionId String @db.Uuid
-  holdSession HoldSession @relation(fields: [holdSessionId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
-  token String @db.Uuid
-  expiresAt DateTime @db.Timestamptz(3)
-  acquiredAt DateTime @default(now()) @db.Timestamptz(3)
-  @@unique([seatId, showtimeId])
-  @@index([expiresAt, seatId])
-  @@index([holdSessionId, token])
-  @@map("seat_holds")
-}
-
-model CatalogRevision {
-  id Int @id
-  version Int @default(0)
-  @@map("catalog_revision")
-}
-
-enum OrderStatus {
-  PENDING_PAYMENT
-  EXPIRED
-}
-
-model Order {
-  id               String      @id @default(uuid()) @db.Uuid
-  showtimeId       String      @db.Uuid
-  showtime         Showtime    @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
-  buyerId          String      @db.Uuid
-  buyer            User        @relation("BuyerOrders", fields: [buyerId], references: [id], onDelete: Restrict)
-  status           OrderStatus @default(PENDING_PAYMENT)
-  totalAmount      BigInt
-  paymentExpiresAt DateTime    @db.Timestamptz(3)
-  items            OrderItem[]
-  createdAt        DateTime    @default(now()) @db.Timestamptz(3)
-  updatedAt        DateTime    @updatedAt @db.Timestamptz(3)
-
-  @@index([buyerId, status])
-  @@index([showtimeId, status])
-  @@map("orders")
-}
-
-model OrderItem {
-  id           String @id @default(uuid()) @db.Uuid
-  orderId      String @db.Uuid
-  order        Order  @relation(fields: [orderId], references: [id], onDelete: Restrict)
-  seatId       String @db.Uuid
-  seat         Seat   @relation(fields: [seatId], references: [id], onDelete: Restrict)
-  categoryName String
-  unitPrice    Int
-
-  @@unique([orderId, seatId])
-  @@index([seatId])
-  @@map("order_items")
+  async onModuleDestroy() {
+    await this.$disconnect();
+  }
 }
