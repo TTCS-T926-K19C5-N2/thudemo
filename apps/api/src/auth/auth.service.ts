@@ -71,19 +71,22 @@ export class AuthService {
       user?.password ?? (await this.dummyHash),
       passwordInput,
     );
-    if (!user || !isMatch || !user.isEmailVerified) {
-      try {
-        const failures = await this.redis.incrementLoginFailures(email);
-        if (failures >= 5) {
-          await this.redis.lockAccount(email);
-          await this.redis.clearLoginFailures(email);
-        }
-      } catch {
-        throw new ServiceUnavailableException(
-          'Đăng nhập tạm thời không khả dụng. Thử lại sau.',
-        );
-      }
+    if (!user || !isMatch) {
+      await this.recordLoginFailure(email);
       throw new UnauthorizedException('Email hoặc mật khẩu không đúng.');
+    }
+    if (!user.isEmailVerified) {
+      await this.recordLoginFailure(email);
+      // Correct password but pending activation: refuse with guidance so
+      // the buyer can find or request a new activation link (S-03 AC5).
+      throw new HttpException(
+        {
+          message:
+            'Tài khoản chưa được kích hoạt. Hãy kiểm tra email để lấy liên kết kích hoạt, hoặc gửi lại liên kết mới.',
+          code: 'ACCOUNT_NOT_ACTIVATED',
+        },
+        403,
+      );
     }
 
     try {
@@ -103,6 +106,20 @@ export class AuthService {
       data: { tokenHash: hashSessionToken(token), userId: user.id, expiresAt },
     });
     return { token, expiresAt };
+  }
+
+  private async recordLoginFailure(email: string): Promise<void> {
+    try {
+      const failures = await this.redis.incrementLoginFailures(email);
+      if (failures >= 5) {
+        await this.redis.lockAccount(email);
+        await this.redis.clearLoginFailures(email);
+      }
+    } catch {
+      throw new ServiceUnavailableException(
+        'Đăng nhập tạm thời không khả dụng. Thử lại sau.',
+      );
+    }
   }
 
   async logout(token: string): Promise<void> {
