@@ -7,18 +7,19 @@ datasource db {
 }
 
 model User {
-  id                String     @id @default(uuid()) @db.Uuid
-  email             String     @unique
+  id                String        @id @default(uuid()) @db.Uuid
+  email             String        @unique
   password          String
-  isEmailVerified   Boolean    @default(false)
+  isEmailVerified   Boolean       @default(false)
   activationToken   String?
-  activationExpires DateTime?  @db.Timestamptz(3)
-  createdAt         DateTime   @default(now()) @db.Timestamptz(3)
-  updatedAt         DateTime   @updatedAt @db.Timestamptz(3)
+  activationExpires DateTime?     @db.Timestamptz(3)
+  createdAt         DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime      @updatedAt @db.Timestamptz(3)
   userRoles         UserRole[]
   sessions          Session[]
-  events            Event[]    @relation("OrganizerEvents")
+  events            Event[]       @relation("OrganizerEvents")
   holdSessions      HoldSession[]
+  orders            Order[]
 
   @@map("users")
 }
@@ -55,38 +56,39 @@ model Session {
 }
 
 model Event {
-  id          String     @id @default(uuid()) @db.Uuid
-  name        String
-  description String
-  location    String
-  posterPath  String?
+  id               String     @id @default(uuid()) @db.Uuid
+  name             String
+  description      String
+  location         String
+  posterPath       String?
   mobilePosterPath String?
-  bannerPath String?
-  categoryLabel String?
-  status      String     @default("DRAFT") // DRAFT, PUBLISHED
-  organizerId String     @db.Uuid
-  organizer   User       @relation("OrganizerEvents", fields: [organizerId], references: [id], onDelete: Restrict)
-  showtimes   Showtime[]
-  createdAt   DateTime   @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime   @updatedAt @db.Timestamptz(3)
+  bannerPath       String?
+  categoryLabel    String?
+  status           String     @default("DRAFT") // DRAFT, PUBLISHED
+  organizerId      String     @db.Uuid
+  organizer        User       @relation("OrganizerEvents", fields: [organizerId], references: [id], onDelete: Restrict)
+  showtimes        Showtime[]
+  createdAt        DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime   @updatedAt @db.Timestamptz(3)
 
   @@index([organizerId])
   @@map("events")
 }
 
 model Showtime {
-  id        String   @id @default(uuid()) @db.Uuid
-  eventId   String   @db.Uuid
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Restrict)
-  startTime DateTime @db.Timestamptz(3)
-  seatMapId String? // Nullable for now as per S-04
-  status ShowtimeStatus @default(DRAFT)
-  structureLocked Boolean @default(false)
-  seats Seat[]
-  categories SeatCategory[]
-  holdSessions HoldSession[]
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  id              String         @id @default(uuid()) @db.Uuid
+  eventId         String         @db.Uuid
+  event           Event          @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  startTime       DateTime       @db.Timestamptz(3)
+  seatMapId       String? // Nullable for now as per S-04
+  status          ShowtimeStatus @default(DRAFT)
+  structureLocked Boolean        @default(false)
+  seats           Seat[]
+  categories      SeatCategory[]
+  holdSessions    HoldSession[]
+  orders          Order[]
+  createdAt       DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime       @updatedAt @db.Timestamptz(3)
 
   @@index([eventId])
   @@map("showtimes")
@@ -99,26 +101,29 @@ enum ShowtimeStatus {
 }
 
 model SeatCategory {
-  id String @id @default(uuid()) @db.Uuid
-  showtimeId String @db.Uuid
-  showtime Showtime @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
-  name String
-  price Int?
-  seats Seat[]
+  id         String   @id @default(uuid()) @db.Uuid
+  showtimeId String   @db.Uuid
+  showtime   Showtime @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  name       String
+  price      Int?
+  seats      Seat[]
+
   @@unique([showtimeId, name])
   @@unique([id, showtimeId])
   @@map("seat_categories")
 }
 
 model Seat {
-  id String @id @default(uuid()) @db.Uuid
-  showtimeId String @db.Uuid
-  showtime Showtime @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
-  categoryId String @db.Uuid
-  category SeatCategory @relation(fields: [categoryId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
-  row String
+  id         String       @id @default(uuid()) @db.Uuid
+  showtimeId String       @db.Uuid
+  showtime   Showtime     @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  categoryId String       @db.Uuid
+  category   SeatCategory @relation(fields: [categoryId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
+  row        String
   seatNumber Int
-  hold SeatHold?
+  hold       SeatHold?
+  orderItems OrderItem[]
+
   @@unique([id, showtimeId])
   @@unique([showtimeId, row, seatNumber])
   @@index([categoryId, showtimeId])
@@ -126,38 +131,86 @@ model Seat {
 }
 
 model HoldSession {
-  id String @id @default(uuid()) @db.Uuid
-  showtimeId String @db.Uuid
-  showtime Showtime @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
-  userId String @db.Uuid
-  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
-  sessionHash String
-  token String @db.Uuid
-  expiresAt DateTime @db.Timestamptz(3)
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  seats SeatHold[]
+  id              String     @id @default(uuid()) @db.Uuid
+  showtimeId      String     @db.Uuid
+  showtime        Showtime   @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  userId          String     @db.Uuid
+  user            User       @relation(fields: [userId], references: [id], onDelete: Restrict)
+  sessionHash     String
+  token           String     @db.Uuid
+  expectedSeatIds String[]   @default([]) @db.Uuid
+  expiresAt       DateTime   @db.Timestamptz(3)
+  createdAt       DateTime   @default(now()) @db.Timestamptz(3)
+  seats           SeatHold[]
+  orders          Order[]
+
   @@unique([showtimeId, userId, sessionHash])
   @@unique([id, showtimeId])
   @@map("hold_sessions")
 }
 
 model SeatHold {
-  seatId String @id @db.Uuid
-  showtimeId String @db.Uuid
-  seat Seat @relation(fields: [seatId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
-  holdSessionId String @db.Uuid
-  holdSession HoldSession @relation(fields: [holdSessionId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
-  token String @db.Uuid
-  expiresAt DateTime @db.Timestamptz(3)
-  acquiredAt DateTime @default(now()) @db.Timestamptz(3)
+  seatId        String      @id @db.Uuid
+  showtimeId    String      @db.Uuid
+  seat          Seat        @relation(fields: [seatId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
+  holdSessionId String      @db.Uuid
+  holdSession   HoldSession @relation(fields: [holdSessionId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
+  token         String      @db.Uuid
+  expiresAt     DateTime    @db.Timestamptz(3)
+  acquiredAt    DateTime    @default(now()) @db.Timestamptz(3)
+
   @@unique([seatId, showtimeId])
   @@index([expiresAt, seatId])
   @@index([holdSessionId, token])
   @@map("seat_holds")
 }
 
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  EXPIRED
+  CANCELLED
+}
+
+model Order {
+  id               String      @id @default(uuid()) @db.Uuid
+  userId           String      @db.Uuid
+  user             User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  showtimeId       String      @db.Uuid
+  showtime         Showtime    @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  holdSessionId    String      @db.Uuid
+  holdToken        String      @db.Uuid
+  holdSession      HoldSession @relation(fields: [holdSessionId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
+  status           OrderStatus @default(PENDING_PAYMENT)
+  paymentExpiresAt DateTime    @db.Timestamptz(3)
+  totalAmount      BigInt
+  items            OrderItem[]
+  createdAt        DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime    @updatedAt @db.Timestamptz(3)
+
+  @@unique([holdSessionId, holdToken])
+  @@index([userId, showtimeId, status])
+  @@index([status, paymentExpiresAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id           String @id @default(uuid()) @db.Uuid
+  orderId      String @db.Uuid
+  order        Order  @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  seatId       String @db.Uuid
+  seat         Seat   @relation(fields: [seatId], references: [id], onDelete: Restrict)
+  categoryName String
+  unitPrice    Int
+
+  @@unique([orderId, seatId])
+  @@index([seatId])
+  @@map("order_items")
+}
+
 model CatalogRevision {
-  id Int @id
+  id      Int @id
   version Int @default(0)
+
   @@map("catalog_revision")
 }

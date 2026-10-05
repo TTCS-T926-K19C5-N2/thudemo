@@ -19,6 +19,7 @@ import { MobileShowHeader } from "@/components/layout/product-layout";
 import { api, ApiError } from "@/lib/api/client";
 import { loadCurrentUser } from "@/lib/api";
 import { decodeHoldState, type HoldState } from "@/lib/contracts/holds";
+import { decodePendingOrder } from "@/lib/contracts/orders";
 import {
   decodePublicShowtime,
   decodeSeats,
@@ -43,6 +44,7 @@ export function SeatSelection({ id }: { id: string }) {
   const [error, setError] = useState(""),
     [expired, setExpired] = useState(false),
     [pending, setPending] = useState(false),
+    [ordering, setOrdering] = useState(false),
     [conflict, setConflict] = useState<Seat[]>([]);
   const authority = useRef<HoldState["hold"]>(null),
     busy = useRef(false),
@@ -77,9 +79,12 @@ export function SeatSelection({ id }: { id: string }) {
     apply(state);
     setSeats(map);
     setDraft((current) =>
-      current.filter((s) =>
-        map.some((next) => next.id === s.id && next.status === "AVAILABLE"),
-      ),
+      current.flatMap((s) => {
+        const next = map.find(
+          (seat) => seat.id === s.id && seat.status === "AVAILABLE",
+        );
+        return next ? [next] : [];
+      }),
     );
     return state;
   }, [apply, id]);
@@ -230,6 +235,47 @@ export function SeatSelection({ id }: { id: string }) {
       setError("Không tải được sơ đồ. Kiểm tra kết nối rồi thử lại."),
     );
   }
+  async function placeOrder() {
+    if (busy.current || !hold || expired || remaining === 0 || draft.length)
+      return;
+    busy.current = true;
+    setPending(true);
+    setOrdering(true);
+    setError("");
+    try {
+      const result = await api(`/showtimes/${id}/orders`, decodePendingOrder, {
+        method: "POST",
+      });
+      router.push(`/orders/${result.order.id}`);
+    } catch (e) {
+      let message =
+        e instanceof Error ? e.message : "Không tạo được đơn. Hãy thử lại.";
+      if (
+        e instanceof ApiError &&
+        ["HOLD_EXPIRED", "HOLD_REQUIRED", "HOLD_CHANGED"].includes(e.code)
+      ) {
+        const reported = Array.isArray(e.details.lostSeatIds)
+          ? e.details.lostSeatIds.filter(
+              (seatId): seatId is string => typeof seatId === "string",
+            )
+          : [];
+        const lost = (reported.length ? seats : held).filter((seat) =>
+          (reported.length ? reported : ownedIds).includes(seat.id),
+        );
+        if (lost.length)
+          message += ` Ghế đã mất: ${lost
+            .map((seat) => `${seat.row}-${seat.seatNumber}`)
+            .join(", ")}.`;
+        setExpired(true);
+        setDraft([]);
+      }
+      setError(message);
+    } finally {
+      busy.current = false;
+      setPending(false);
+      setOrdering(false);
+    }
+  }
   if (!show)
     return error ? (
       <Alert variant="destructive">
@@ -252,7 +298,7 @@ export function SeatSelection({ id }: { id: string }) {
       >
         <span className="mobile-hold-time">
           <Clock3 size={14} />
-          {hold ? countdownLabel(remaining) : expired ? "00:00" : "--:--"}
+          {expired ? "--:--" : hold ? countdownLabel(remaining) : "--:--"}
         </span>
       </MobileShowHeader>
       <div className="selection-mobile-context">
@@ -294,9 +340,9 @@ export function SeatSelection({ id }: { id: string }) {
       {expired && (
         <Alert className="hold-alert hold-alert-expired" variant="destructive">
           <Clock3 />
-          <AlertTitle>Thời gian giữ ghế đã hết</AlertTitle>
+          <AlertTitle>Lượt giữ ghế không còn hợp lệ</AlertTitle>
           <AlertDescription>
-            Sơ đồ đã được cập nhật; hãy chọn lại ghế còn trống.
+            Không thể đặt vé từ lượt giữ này. Hãy tải lại sơ đồ và chọn lại ghế.
             <Button variant="outline" onClick={retry}>
               Tải lại sơ đồ
             </Button>
@@ -335,17 +381,18 @@ export function SeatSelection({ id }: { id: string }) {
         <aside className="seat-summary">
           <div className={`hold-clock ${expired ? "hold-clock-expired" : ""}`}>
             <span>
-              <Clock3 size={20} /> {expired ? "Đã hết hạn" : "Thời gian giữ vé"}
+              <Clock3 size={20} />
+              {expired ? "Cần xác nhận lại ghế" : "Thời gian giữ vé"}
             </span>
             <output aria-label="Thời gian giữ ghế">
-              {hold ? countdownLabel(remaining) : expired ? "00:00" : "--:--"}
+              {expired ? "--:--" : hold ? countdownLabel(remaining) : "--:--"}
             </output>
           </div>
           <p className="hold-rule">
             10 phút tính từ ghế đầu tiên được máy chủ xác nhận. Thêm ghế không
             gia hạn.
           </p>
-          {hold && remaining > 0 && (
+          {hold && !expired && remaining > 0 && (
             <Badge variant="secondary">
               <Check size={12} /> <span>Máy chủ đã xác nhận</span>
             </Badge>
@@ -428,10 +475,19 @@ export function SeatSelection({ id }: { id: string }) {
           )}
           {hold && (
             <>
-              <Button variant="outline" disabled>
-                Tiếp tục
+              <Button
+                disabled={
+                  pending || expired || remaining === 0 || draft.length > 0
+                }
+                onClick={placeOrder}
+              >
+                {ordering ? "Đang tạo đơn…" : "Đặt vé"}
               </Button>
-              <p>Đặt vé và thanh toán chưa khả dụng.</p>
+              <p>
+                {draft.length
+                  ? "Hãy giữ các ghế đang chọn trước khi đặt vé."
+                  : "Sau khi tạo đơn, ghế được giữ thêm 10 phút để thanh toán."}
+              </p>
             </>
           )}
         </aside>
