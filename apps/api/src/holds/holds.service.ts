@@ -76,11 +76,14 @@ export class HoldsService {
             throw new BadRequestException(
               'Ghế không thuộc suất diễn hoặc chưa có giá. Tải lại sơ đồ.',
             );
+          // Lock and merge the confirmed-seat snapshot in the session upsert.
+          // A subsequent seat conflict rolls it back with the entire batch.
           const [session] = await tx.$queryRaw<Authority[]>(Prisma.sql`
-          INSERT INTO hold_sessions (id,"showtimeId","userId","sessionHash",token,"expiresAt")
-          VALUES (${randomUUID()}::uuid,${showtimeId}::uuid,${userId}::uuid,${sessionHash},${randomUUID()}::uuid,clock_timestamp()+interval '10 minutes')
+          INSERT INTO hold_sessions (id,"showtimeId","userId","sessionHash",token,"expiresAt","expectedSeatIds")
+          VALUES (${randomUUID()}::uuid,${showtimeId}::uuid,${userId}::uuid,${sessionHash},${randomUUID()}::uuid,clock_timestamp()+interval '10 minutes',ARRAY[${Prisma.join(seatIds.map((id) => Prisma.sql`${id}::uuid`))}])
           ON CONFLICT ("showtimeId","userId","sessionHash") DO UPDATE SET
-            "expectedSeatIds"=CASE WHEN hold_sessions."expiresAt"<=EXCLUDED."expiresAt"-interval '10 minutes' THEN '{}'::uuid[] ELSE hold_sessions."expectedSeatIds" END,
+            "expectedSeatIds"=CASE WHEN hold_sessions."expiresAt"<=EXCLUDED."expiresAt"-interval '10 minutes' THEN EXCLUDED."expectedSeatIds"
+              ELSE ARRAY(SELECT DISTINCT seat_id FROM unnest(hold_sessions."expectedSeatIds" || EXCLUDED."expectedSeatIds") AS seat_id ORDER BY seat_id) END,
             token=CASE WHEN hold_sessions."expiresAt"<=EXCLUDED."expiresAt"-interval '10 minutes' THEN EXCLUDED.token ELSE hold_sessions.token END,
             "expiresAt"=CASE WHEN hold_sessions."expiresAt"<=EXCLUDED."expiresAt"-interval '10 minutes' THEN EXCLUDED."expiresAt" ELSE hold_sessions."expiresAt" END
           RETURNING id,token,"expiresAt"`);
@@ -101,14 +104,6 @@ export class HoldsService {
               requestId,
             });
           }
-          // The session row is locked by the upsert. Preserve previously confirmed
-          // seats, including missing claims, until this hold token expires.
-          await tx.$executeRaw(Prisma.sql`
-            UPDATE hold_sessions SET "expectedSeatIds"=ARRAY(
-              SELECT DISTINCT seat_id FROM unnest("expectedSeatIds" ||
-                ARRAY[${Prisma.join(seatIds.map((id) => Prisma.sql`${id}::uuid`))}]) AS seat_id
-              ORDER BY seat_id)
-            WHERE id=${session.id}::uuid AND token=${session.token}::uuid`);
           const state = await this.state(tx, showtimeId, userId, sessionHash);
           if (!state.hold)
             throw new ConflictException({

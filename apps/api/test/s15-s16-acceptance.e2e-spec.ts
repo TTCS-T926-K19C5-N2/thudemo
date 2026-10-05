@@ -523,6 +523,86 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     expect(order.body.order.items[0].seatId).toBe(seats[0].id);
   });
 
+  it('TC-S16-16: parallel first claims merge the confirmed seats without losing either snapshot', async () => {
+    await openSale();
+    const responses = await Promise.all([
+      hold([seats[0].id]).expect(200),
+      hold([seats[1].id]).expect(200),
+    ]);
+    expect(responses[0].body.hold.id).toBe(responses[1].body.hold.id);
+    expect(responses[0].body.hold.expiresAt).toBe(
+      responses[1].body.hold.expiresAt,
+    );
+    const session = await db.holdSession.findUniqueOrThrow({
+      where: { id: responses[0].body.hold.id },
+    });
+    expect(session.expectedSeatIds.sort()).toEqual(
+      seats
+        .slice(0, 2)
+        .map((seat) => seat.id)
+        .sort(),
+    );
+    const order = await place().expect(200);
+    expect(order.body.order.items).toHaveLength(2);
+  });
+
+  it('TC-S16-17: retrying a confirmed claim does not duplicate the snapshot or extend expiry', async () => {
+    await openSale();
+    const first = await hold([seats[0].id]).expect(200);
+    const retried = await hold([seats[0].id]).expect(200);
+    expect(retried.body.hold.expiresAt).toBe(first.body.hold.expiresAt);
+    const session = await db.holdSession.findUniqueOrThrow({
+      where: { id: first.body.hold.id },
+    });
+    expect(session.expectedSeatIds).toEqual([seats[0].id]);
+    const order = await place().expect(200);
+    expect(order.body.order.items).toHaveLength(1);
+  });
+
+  it('TC-S16-18: a conflicting first claim leaves no session snapshot or partial seat', async () => {
+    await openSale();
+    await hold([seats[0].id], otherBuyer).expect(200);
+    await hold([seats[0].id, seats[1].id]).expect(409);
+    expect(
+      await db.holdSession.count({
+        where: { showtimeId: showId, userId: buyer.id },
+      }),
+    ).toBe(0);
+    expect(await db.seatHold.count({ where: { seatId: seats[1].id } })).toBe(0);
+    await place().expect(409);
+    await expectNoOrder();
+  });
+
+  it('TC-S16-19: adding a new seat does not erase a lost seat from the confirmed snapshot', async () => {
+    await openSale();
+    const original = await hold(
+      seats.slice(0, 2).map((seat) => seat.id),
+    ).expect(200);
+    await db.seatHold.update({
+      where: { seatId: seats[1].id },
+      data: { expiresAt: new Date(Date.now() - 1000) },
+    });
+    const service = app.get(HoldsService);
+    await service.cleanupBatch(
+      (await service.expiredBatch()).filter(
+        (seat) => seat.seatId === seats[1].id,
+      ),
+    );
+    await hold([seats[2].id]).expect(200);
+    const session = await db.holdSession.findUniqueOrThrow({
+      where: { id: original.body.hold.id },
+    });
+    expect(session.expectedSeatIds.sort()).toEqual(
+      seats
+        .slice(0, 3)
+        .map((seat) => seat.id)
+        .sort(),
+    );
+    const rejected = await place().expect(409);
+    expect(rejected.body.lostSeatIds).toEqual([seats[1].id]);
+    await expectNoOrder();
+  });
+
   it('TC-S16-04: concurrent double-click requests create one order and one copy of each item', async () => {
     await openSale();
     await hold(seats.slice(0, 2).map((s) => s.id)).expect(200);

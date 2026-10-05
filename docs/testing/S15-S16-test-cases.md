@@ -2,6 +2,21 @@
 
 Ngày chạy: 06/10/2026. Branch: `feature/S-15-S-16-pricing-orders`.
 
+## Kiểm tra bổ sung sau CI hiệu năng
+
+Branch hiện tại: `test`. Sau tối ưu snapshot S-16: **41/41 E2E, 23/23 unit PASS**;
+suite nghiệm thu riêng **24/24 PASS**. Lint, typecheck, build và health local PASS.
+Không đổi TTL 10 phút, không sửa migration cũ hoặc hạ ngưỡng NFR 300 ms.
+Bằng chứng bổ sung: `evidence/review/20261006/performance/`.
+Kết quả browser bên dưới thuộc lượt nghiệm thu trước; đợt tối ưu này chỉ đổi backend và test, không đổi giao diện.
+
+| Test bổ sung | Mong đợi | Kết quả |
+|---|---|---|
+| TC-S16-16: hai yêu cầu giữ đầu tiên chạy đồng thời | Một phiên, cùng deadline, snapshot chứa cả hai ghế, đơn đủ hai ghế | PASS |
+| TC-S16-17: gửi lại cùng ghế | Không trùng snapshot, không gia hạn, đơn chỉ một ghế | PASS |
+| TC-S16-18: tranh chấp ngay lần giữ đầu | Rollback cả snapshot phiên và ghế không tranh chấp; không có đơn | PASS |
+| TC-S16-19: mất một ghế rồi thêm ghế mới | Snapshot vẫn giữ mã ghế bị mất; tạo đơn bị chặn và báo đúng ghế đó | PASS |
+
 ## Trạng thái sau sửa
 
 **37/37 E2E và 23/23 unit test PASS.** Suite nghiệm thu riêng có 20/20 test PASS. Ba test hồi quy TC-S16-06/07/08 đã chuyển từ FAIL sang PASS, không đổi kỳ vọng hoặc skip. Lint, typecheck và build PASS. Kết quả hiện tại: `evidence/review/20261006/fixed/`; kết quả FAIL trước sửa được giữ nguyên để đối chiếu.

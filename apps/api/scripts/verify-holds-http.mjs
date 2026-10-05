@@ -23,7 +23,11 @@ assert(
   'Dedicated local/CI cache only',
 );
 const root = resolve(import.meta.dirname, '../../..');
-const evidence = resolve(root, 'evidence/holds/20261004');
+// Keep separate measurements without overwriting historical failure evidence.
+const evidence = resolve(
+  root,
+  process.env.HOLDS_EVIDENCE_DIR ?? 'evidence/holds/20261004',
+);
 mkdirSync(evidence, { recursive: true });
 const db = new PrismaClient({
   adapter: new PrismaPg({ connectionString: target.href }),
