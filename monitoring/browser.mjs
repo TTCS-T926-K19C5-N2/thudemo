@@ -154,7 +154,8 @@ try {
     let expectedDatasourceError = false;
     page.on('pageerror', () => errors.push('pageerror'));
     page.on('console', message => {
-      if (message.type() !== 'error' || expectedDatasourceError) return;
+      if (message.type() !== 'error') return;
+      if (expectedDatasourceError && ((message.location().url.includes('/api/ds/query') && message.text().includes('503')) || message.text().includes('S43 local datasource failure fixture'))) return;
       if (message.location().url.includes('/public-dashboards') && message.text().includes('404')) privateDashboardDiscovery404++;
       else errors.push('consoleerror');
     });
@@ -170,6 +171,13 @@ try {
     await page.screenshot({ path: 'output/playwright/s43-desktop.png', fullPage: true });
     await page.getByText('Webhook rejection — unavailable until real producer', { exact: true }).scrollIntoViewIfNeeded();
     await page.screenshot({ path: 'output/playwright/s43-unavailable.png', fullPage: true });
+    // Grafana virtualizes below-fold panels. Scroll through them to exercise
+    // worker/alert queries as well as the initially rendered HTTP panels.
+    for (let i = 0; i < 4; i++) { await page.mouse.wheel(0, 650); await new Promise(r => setTimeout(r, 1500)); }
+    await page.getByText('Availability and alert lifecycle', { exact: true }).waitFor();
+    await new Promise(r => setTimeout(r, 6000));
+    if (queries.some(q => q.status !== 200 || q.errors)) throw Error('Worker/alert datasource query failed');
+    await page.screenshot({ path: 'output/playwright/s43-worker-alerts.png' });
     await page.goto('${origin}/d/s43-monitoring?var-environment=local&var-instance=api-a%3A9464');
     await page.getByText('Request RPS — completed + aborted, 5m', { exact: true }).waitFor();
     await new Promise(r => setTimeout(r, 6000));
