@@ -1,5 +1,9 @@
 # Test case S-15 và S-16
 
+## Cập nhật mới nhất: bounded pool concurrency (06/10/2026)
+
+Local v7 **52/52E2E** (35suite riêng),**83/83unit**,3helper,build/lint/typecheck/health PASS. Mọi AC giá/missing-price/snapshot đơn cũ, đủ ghế/liveexpiry/atomic rollback/idempotency/thanh toán600giây giữ nguyên. Chỉ giới hạn DBpool API4/worker1, không giảm200requestHTTP hoặc hạ gate300ms. FullHTTP45checks,totalp95199.00ms,GET2000ghếmax17.95ms. **V6 CI NFR còn FAIL; snapshot trước push, cần CI đúng SHA mới, chưa merge main**. [Báo cáo/raw v7](../../evidence/review/20261006/t31/optimization-v7/verification.md), [CI v6](../../evidence/review/20261006/t31/optimization-v6/ci-773a18e.md). Các mục dưới là lịch sử.
+
 ## Cập nhật mới nhất: structured hold outcomes (06/10/2026)
 
 Local v6 **52/52E2E** (35suite riêng),**83/83unit**,3helper,build/lint/typecheck/health PASS. Ca mới autocommitDB nhận conflict vẫn rollback toàn bộ snapshot/ghế ghi dở và không ảnh hưởng winner; expected rejection không thoát thành DBerror nhưng vẫn cảnh báoAPI. Giá đơn cũ/đủ ghế/600giây/idempotency/auth/privacy giữ nguyên. FullHTTP45checks,p95total194,33ms; seat-map2000ghếmax15,58ms. V5 CI NFR còn FAIL, **cần CI đúng SHA mới, chưa merge main**. [Báo cáo/raw v6](../../evidence/review/20261006/t31/optimization-v6/verification.md). Các mục dưới là lịch sử.

@@ -28,14 +28,15 @@ export class PrismaService
   private readonly readyConnections: number;
 
   constructor(configService: ConfigService) {
-    // Two local API instances use at most 32 connections, leaving room for worker/migrations.
+    // Bound DB parallelism instead of multiplying cold plans/lock contenders.
+    // Two API processes use at most eight connections; the worker is sequential.
     const names = holdStatementNames();
     const readyConnections =
-      configService.get<string>('HOLD_EXPIRY_MODE') === 'worker' ? 1 : 16;
+      configService.get<string>('HOLD_EXPIRY_MODE') === 'worker' ? 1 : 4;
     const adapter = new HoldPoolAdapter(
       {
         connectionString: configService.getOrThrow<string>('DATABASE_URL'),
-        max: 16,
+        max: readyConnections,
         min: readyConnections,
         connectionTimeoutMillis: 10000,
       },

@@ -1,5 +1,9 @@
 # T-31: profiling và thử prepared statements
 
+## Cập nhật mới nhất: optimization-v7 (06/10/2026)
+
+V6 CI functional PASS nhưng T-31 totalp95 PR616.51/push533.52 ms vẫn FAIL; không còn PostgreSQL ERROR do expected conflict. Giới hạn shared DB pool API4/worker1 để kiểm giảm tranh tài nguyên, giữ nguyên200HTTPrequest/firstburst/gate và mọi AC giá/đơn/600giây. Local **52/52E2E,83/83unit,3helper**,build/lint/typecheck/health PASS; fullHTTP45checks,p95total199.00 ms. Firstburst local giảm nhưng steady chậm hơn, chưa khẳng định tối ưu mọi máy. **Snapshot trước push, cần CI SHA mới, chưa merge main**. [Báo cáo v7](optimization-v7/verification.md), [CI v6 FAIL](optimization-v6/ci-773a18e.md). Các mục dưới là lịch sử.
+
 ## Cập nhật mới nhất: optimization-v6 (06/10/2026)
 
 V5 CI functional PASS nhưng totalp95 PR322,37/push588,62ms vẫn FAIL. Đã đổi expected conflict thành structured outcome **sau server subtransaction rollback**, không tắt log hoặc giảm workload; bounded pipeline/auth/price/600giây giữ nguyên. Local **52/52E2E,83/83unit,3helper**,build/lint/typecheck/health PASS; fullHTTP45checks,totalp95194,33ms. Snapshot trước push, **chưa xác nhận CI SHA mới/merge main**. [Báo cáo v6](optimization-v6/verification.md), [CI v5](optimization-v5/ci-d9367b9.md). Các mục phía dưới là lịch sử.

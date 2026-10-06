@@ -43,7 +43,7 @@ const report = {
   authority: 'PostgreSQL',
   runtime: process.version,
   instances: 2,
-  apiPoolPerInstance: 16,
+  apiPoolPerInstance: 4,
   buyers: 200,
   generator: 'Node fetch, loopback, same host',
   authentication:
