@@ -3,7 +3,11 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { ConfigService } from '@nestjs/config';
 import { holdStatementNames } from './hold-statement-names.js';
-import { holdTransaction, type HoldQueryable } from './hold-transaction.js';
+import {
+  holdTransaction,
+  type HoldConnection,
+  type HoldQueryable,
+} from './hold-transaction.js';
 import { prepareHoldPool } from './prepare-hold-pool.js';
 
 class HoldPoolAdapter extends PrismaPg {
@@ -57,11 +61,54 @@ export class PrismaService
     return holdTransaction(pool, callback, this.holdNames);
   }
 
-  async sessionQuery<T>(sql: Prisma.Sql): Promise<T> {
-    return this.seatReadQuery<T>(sql);
+  async sessionQuery<T>(
+    sql: Prisma.Sql,
+    request?: {
+      res?: { once: (event: string, listener: () => void) => void };
+      holdClient?: HoldConnection;
+      releaseHoldClient?: () => void;
+    },
+  ): Promise<T> {
+    if (!request?.res) {
+      return this.seatReadQuery<T>(sql);
+    }
+    await this.$connect();
+    const pool = this.holdAdapter.pool;
+    if (!pool) throw Error('Seat read connection pool is unavailable');
+    const client = await pool.connect();
+    request.holdClient = client;
+
+    const origRelease = client.release.bind(client);
+    let released = false;
+    const release = (destroy?: boolean) => {
+      if (!released) {
+        released = true;
+        request.holdClient = undefined;
+        origRelease(destroy);
+      }
+    };
+    client.release = release;
+    request.releaseHoldClient = release;
+    request.res.once('finish', () => release());
+    request.res.once('close', () => release());
+
+    try {
+      const result = await client.query({
+        text: sql.text,
+        values: sql.values,
+        name: this.holdNames({ sql: sql.text }),
+      });
+      return result.rows as T;
+    } catch (err) {
+      release();
+      throw err;
+    }
   }
 
-  async commitHoldRoutine<T>(sql: Prisma.Sql): Promise<T> {
+  async commitHoldRoutine<T>(
+    sql: Prisma.Sql,
+    client?: HoldConnection,
+  ): Promise<T> {
     await this.$connect();
     const pool = this.holdAdapter.pool;
     if (!pool) throw Error('Hold connection pool is unavailable');
@@ -69,6 +116,7 @@ export class PrismaService
       maxWait: 10000,
       timeout: 10000,
       validatedRoutine: true,
+      client,
     });
   }
 

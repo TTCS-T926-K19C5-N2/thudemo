@@ -7,6 +7,8 @@ import {
 } from './hold-transaction.js';
 import { holdStatementNames } from './hold-statement-names.js';
 const begin = "BEGIN; SET LOCAL statement_timeout = '10000ms'";
+const validatedBegin =
+  begin + "; SET LOCAL plan_cache_mode = 'force_generic_plan'";
 
 function fixture() {
   const events = new EventEmitter();
@@ -238,7 +240,7 @@ describe('hold transaction on the existing Prisma pool', () => {
     let finishBegin!: () => void;
     let finishClaim!: (value: { rows: unknown[] }) => void;
     f.query.mockImplementation((sql) => {
-      if (sql === begin)
+      if (sql === validatedBegin)
         return new Promise((resolve) => {
           finishBegin = () => resolve({ rows: [] });
         });
@@ -257,6 +259,7 @@ describe('hold transaction on the existing Prisma pool', () => {
       { maxWait: 10000, timeout: 10000, validatedRoutine: true },
     );
     await vi.waitFor(() => expect(f.query).toHaveBeenCalledOnce());
+    expect(f.query).toHaveBeenCalledWith(validatedBegin);
     expect(f.client.pipeline).toBe(false);
     finishBegin();
     await vi.waitFor(() => expect(f.query).toHaveBeenCalledTimes(3));
@@ -339,7 +342,10 @@ describe('hold transaction on the existing Prisma pool', () => {
         { maxWait: 10000, timeout: 10000, validatedRoutine: true },
       ),
     ).rejects.toThrow('BEGIN failed');
-    expect(f.query.mock.calls.map(([sql]) => sql)).toEqual([begin, 'ROLLBACK']);
+    expect(f.query.mock.calls.map(([sql]) => sql)).toEqual([
+      validatedBegin,
+      'ROLLBACK',
+    ]);
     expect(f.client.pipeline).toBe(false);
   });
 
@@ -354,6 +360,9 @@ describe('hold transaction on the existing Prisma pool', () => {
         { maxWait: 10000, timeout: 10000, validatedRoutine: true },
       ),
     ).rejects.toThrow('Only the validated hold routine');
-    expect(f.query.mock.calls.map(([sql]) => sql)).toEqual([begin, 'ROLLBACK']);
+    expect(f.query.mock.calls.map(([sql]) => sql)).toEqual([
+      validatedBegin,
+      'ROLLBACK',
+    ]);
   });
 });

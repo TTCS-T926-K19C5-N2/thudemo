@@ -7,10 +7,13 @@ import {
   ServiceUnavailableException,
   HttpException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
-import type { HoldQueryable } from '../prisma/hold-transaction.js';
+import type {
+  HoldConnection,
+  HoldQueryable,
+} from '../prisma/hold-transaction.js';
 
 export type ExpiredClaim = { seatId: string; token: string };
 export type HoldState = {
@@ -52,6 +55,7 @@ export class HoldsService {
     userId: string,
     sessionHash: string,
     body: unknown,
+    client?: HoldConnection,
   ): Promise<HoldState> {
     const seatIds = requestedSeats(body);
     const requestId = randomUUID();
@@ -68,16 +72,63 @@ export class HoldsService {
           failure: string | null;
           rejectedSeatIds: string[];
         }[]
-      >(Prisma.sql`
+      >(
+        Prisma.sql`
         SELECT * FROM public.claim_hold_v3(
           ${showtimeId}::uuid, ${userId}::uuid, ${sessionHash}::text,
           ${'{' + seatIds.join(',') + '}'}::uuid[], ${randomUUID()}::uuid, ${randomUUID()}::uuid
-        )`);
-      if (result.failure)
-        throw {
-          code: result.failure,
-          detail: JSON.stringify(result.rejectedSeatIds),
-        };
+        )`,
+        client,
+      );
+      if (result.failure) {
+        if (result.failure === 'H0001')
+          throw new NotFoundException('Không tìm thấy suất diễn.');
+        if (result.failure === 'H0002')
+          throw new ConflictException({
+            code: 'SHOWTIME_CLOSED',
+            message: 'Suất diễn đã đóng bán. Chọn suất khác.',
+            rejectedSeatIds: seatIds,
+          });
+        if (result.failure === 'H0003')
+          throw new BadRequestException(
+            'Ghế không thuộc suất diễn hoặc chưa có giá. Tải lại sơ đồ.',
+          );
+        if (result.failure === 'H0004') {
+          const rejected = result.rejectedSeatIds;
+          if (
+            Array.isArray(rejected) &&
+            rejected.length > 0 &&
+            rejected.every(
+              (id) => typeof id === 'string' && seatIds.includes(id),
+            )
+          ) {
+            throw new ConflictException({
+              code: 'SEAT_CONFLICT',
+              message: 'Một số ghế vừa được người khác giữ. Chọn ghế khác.',
+              rejectedSeatIds: rejected,
+              requestId,
+            });
+          }
+        }
+        if (result.failure === 'H0005')
+          throw new ConflictException({
+            code: 'HOLD_EXPIRED',
+            message: 'Lượt giữ vừa hết hạn. Tải lại sơ đồ rồi chọn lại.',
+            rejectedSeatIds: seatIds,
+            requestId,
+          });
+        if (result.failure === 'H0006')
+          throw new ServiceUnavailableException({
+            code: 'HOLD_RETRY',
+            message: 'Trạng thái ghế đang thay đổi. Tải lại sơ đồ rồi thử lại.',
+            requestId,
+          });
+        throw new ServiceUnavailableException({
+          code: 'HOLD_UNAVAILABLE',
+          message: 'Giữ ghế tạm thời không khả dụng. Tải lại sơ đồ rồi thử lại.',
+          requestId,
+        });
+      }
       return {
         serverTime: result.serverTime,
         hold: {
@@ -87,6 +138,8 @@ export class HoldsService {
         },
       };
     } catch (caught) {
+      if (caught instanceof HttpException) throw caught;
+
       let error = caught;
       if (typeof caught === 'object' && caught !== null && 'code' in caught) {
         if (caught.code === 'H0001')
@@ -182,17 +235,22 @@ export class HoldsService {
           requestId,
         });
       }
-      if (error instanceof ConflictException)
-        this.logger.warn(
-          JSON.stringify({
-            event: 'hold_conflict',
-            requestId,
-            rejectedCount:
-              (error.getResponse() as { rejectedSeatIds?: string[] })
-                .rejectedSeatIds?.length ?? 0,
-            code: (error.getResponse() as { code?: string }).code,
-          }),
-        );
+      if (error instanceof ConflictException) {
+        const resObj = error.getResponse() as {
+          code?: string;
+          rejectedSeatIds?: string[];
+        };
+        if (resObj?.code !== 'SEAT_CONFLICT') {
+          this.logger.warn(
+            JSON.stringify({
+              event: 'hold_conflict',
+              requestId,
+              rejectedCount: resObj?.rejectedSeatIds?.length ?? 0,
+              code: resObj?.code,
+            }),
+          );
+        }
+      }
       if (error instanceof HttpException) throw error;
       this.logger.error(
         JSON.stringify({

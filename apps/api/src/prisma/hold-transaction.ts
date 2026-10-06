@@ -18,11 +18,18 @@ export interface HoldPool {
   connect(): Promise<HoldConnection>;
 }
 
+export interface HoldLimits {
+  maxWait: number;
+  timeout: number;
+  validatedRoutine?: boolean;
+  client?: HoldConnection;
+}
+
 export async function holdTransaction<T>(
   pool: HoldPool,
   callback: (tx: HoldQueryable) => Promise<T>,
   statementName: (query: { sql: string }) => string,
-  limits: { maxWait: number; timeout: number; validatedRoutine?: boolean } = {
+  limits: HoldLimits = {
     maxWait: 10000,
     timeout: 10000,
   },
@@ -34,28 +41,32 @@ export async function holdTransaction<T>(
     limits.timeout <= 0
   )
     throw Error('Invalid hold transaction limits');
-  let acquireExpired = false;
-  let acquireTimer: ReturnType<typeof setTimeout> | undefined;
-  const acquiring = pool.connect().then((client) => {
-    if (acquireExpired) {
-      client.release(); // A late acquisition must not leak a pool slot.
-      throw Error('Hold connection acquisition expired');
-    }
-    return client;
-  });
   let client: HoldConnection;
-  try {
-    client = await Promise.race([
-      acquiring,
-      new Promise<never>((_, reject) => {
-        acquireTimer = setTimeout(() => {
-          acquireExpired = true;
-          reject(Error('Hold connection acquisition expired'));
-        }, limits.maxWait);
-      }),
-    ]);
-  } finally {
-    clearTimeout(acquireTimer);
+  if (limits.client) {
+    client = limits.client;
+  } else {
+    let acquireExpired = false;
+    let acquireTimer: ReturnType<typeof setTimeout> | undefined;
+    const acquiring = pool.connect().then((c) => {
+      if (acquireExpired) {
+        c.release(); // A late acquisition must not leak a pool slot.
+        throw Error('Hold connection acquisition expired');
+      }
+      return c;
+    });
+    try {
+      client = await Promise.race([
+        acquiring,
+        new Promise<never>((_, reject) => {
+          acquireTimer = setTimeout(() => {
+            acquireExpired = true;
+            reject(Error('Hold connection acquisition expired'));
+          }, limits.maxWait);
+        }),
+      ]);
+    } finally {
+      clearTimeout(acquireTimer);
+    }
   }
 
   let released = false;
@@ -132,8 +143,14 @@ export async function holdTransaction<T>(
       // One round trip, not a separate SET query. A server-side bound also
       // interrupts a lock wait/statement if the client deadline closes its socket.
       // LOCAL cannot leak this setting to the next pool borrower.
+      // Reuse the routine's parameterized plans instead of repeatedly planning
+      // its claim CTE on every backend's first calls. This caches no row data;
+      // VOLATILE clock/snapshot checks still execute for every request.
       await client.query(
-        `BEGIN; SET LOCAL statement_timeout = '${Math.ceil(limits.timeout)}ms'`,
+        `BEGIN; SET LOCAL statement_timeout = '${Math.ceil(limits.timeout)}ms'` +
+        (limits.validatedRoutine
+          ? "; SET LOCAL plan_cache_mode = 'force_generic_plan'"
+          : ''),
       );
       if (limits.validatedRoutine) client.pipeline = true;
       const value = await callback(tx);

@@ -725,6 +725,9 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
           (await client.query('SHOW statement_timeout')).rows[0]
             .statement_timeout,
         ).toBe('0');
+        expect(
+          (await client.query('SHOW plan_cache_mode')).rows[0].plan_cache_mode,
+        ).toBe('auto');
         expect((await client.query('SELECT 1 AS ok')).rows[0].ok).toBe(1);
       } finally {
         client.release();
@@ -958,6 +961,64 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
       .send({ status: 'CLOSED' })
       .expect(200);
     await request(app.getHttpServer()).get(path).expect(404);
+  });
+
+  it('Hold plan setting is LOCAL and restores after success and server-owned rollback', async () => {
+    await openSale();
+    const held = await hold([seats[0].id]).expect(200);
+    await hold([seats[1].id], otherBuyer).expect(200);
+    const original = await db.holdSession.findUniqueOrThrow({
+      where: { id: held.body.hold.id },
+    });
+    const adapter = await new PrismaPg({
+      connectionString: process.env.DATABASE_URL!,
+      max: 1,
+    }).connect();
+    const pool = adapter.underlyingDriver();
+    try {
+      for (const conflict of [false, true]) {
+        const client = await pool.connect();
+        const outcome = await holdTransaction(
+          { connect: async () => client },
+          async (tx) => {
+            expect(
+              (await client.query('SHOW plan_cache_mode')).rows[0]
+                .plan_cache_mode,
+            ).toBe('force_generic_plan');
+            return tx.$queryRaw<
+              { failure: string | null; id: string | null }[]
+            >(Prisma.sql`
+              SELECT * FROM public.claim_hold_v3(${showId}::uuid,${buyer.id}::uuid,
+                ${original.sessionHash}::text,${`{${seats[conflict ? 1 : 0].id}}`}::uuid[],
+                ${randomUUID()}::uuid,${randomUUID()}::uuid)
+            `);
+          },
+          holdStatementNames(),
+          { maxWait: 1000, timeout: 10000, validatedRoutine: true },
+        );
+        expect(outcome[0]).toMatchObject(
+          conflict
+            ? { failure: 'H0004', id: null }
+            : { failure: null, id: original.id },
+        );
+        expect(client.pipeline).toBe(false);
+        // max1 proves the next borrower uses the same backend, not a fresh one.
+        expect(
+          (await pool.query('SHOW plan_cache_mode')).rows[0].plan_cache_mode,
+        ).toBe('auto');
+        expect(
+          (await pool.query('SHOW statement_timeout')).rows[0]
+            .statement_timeout,
+        ).toBe('0');
+        expect(
+          await db.holdSession.findUniqueOrThrow({
+            where: { id: original.id },
+          }),
+        ).toEqual(original);
+      }
+    } finally {
+      await adapter.dispose();
+    }
   });
 
   it('TC-S16-04: concurrent double-click requests create one order and one copy of each item', async () => {
