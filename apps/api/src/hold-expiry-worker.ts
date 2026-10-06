@@ -4,9 +4,14 @@ import { NestFactory } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { HoldsService } from './holds/holds.service.js';
 import { HoldExpiryScheduler } from './holds/hold-expiry.scheduler.js';
+import { MonitoringModule } from './monitoring/monitoring.module.js';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
+    MonitoringModule,
+  ],
   providers: [HoldsService, HoldExpiryScheduler],
 })
 class HoldExpiryWorkerModule {}

@@ -1,0 +1,124 @@
+name: s43-local
+services:
+  postgres:
+    image: postgres:15.18-alpine
+    environment:
+      POSTGRES_USER: s43_fixture
+      POSTGRES_PASSWORD: ${S43_DB_PASSWORD:?Run monitoring/setup.mjs}
+      POSTGRES_DB: s43_monitoring
+    ports: ["127.0.0.1:15443:5432"]
+    volumes: [s43_database:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U s43_fixture -d s43_monitoring"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    mem_limit: 256m
+  redis:
+    image: redis:7.4.7-alpine
+    command: [redis-server, --save, "", --appendonly, "no"]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    mem_limit: 64m
+  migration:
+    build: {context: .., dockerfile: Dockerfile, target: migration}
+    image: s43-migration:local
+    environment:
+      DATABASE_URL: postgresql://s43_fixture:${S43_DB_PASSWORD}@postgres:5432/s43_monitoring
+    depends_on:
+      postgres: {condition: service_healthy}
+    mem_limit: 512m
+  api-a: &api
+    build: {context: .., dockerfile: Dockerfile, target: api}
+    image: s43-api:local
+    environment: &api-env
+      DATABASE_URL: postgresql://s43_fixture:${S43_DB_PASSWORD}@postgres:5432/s43_monitoring
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      PORT: "3001"
+      HOLD_EXPIRY_MODE: "off"
+      MONITORING_ENABLED: "true"
+      METRICS_HOST: "0.0.0.0"
+      METRICS_TOKEN_FILE: /run/secrets/metrics_token
+    secrets: [metrics_token]
+    ports: ["127.0.0.1:18001:3001"]
+    depends_on:
+      migration: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    mem_limit: 384m
+  api-b:
+    <<: *api
+    ports: ["127.0.0.1:18002:3001"]
+  worker:
+    <<: *api
+    command: [node, dist/hold-expiry-worker.js]
+    environment:
+      <<: *api-env
+      HOLD_EXPIRY_MODE: worker
+    ports: []
+    healthcheck: {disable: true}
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    command: [--config.file=/etc/prometheus/prometheus.json, --storage.tsdb.retention.time=7d, --storage.tsdb.retention.size=512MB, --web.enable-lifecycle]
+    volumes:
+      - ./prometheus.json:/etc/prometheus/prometheus.json:ro
+      - ./rules.json:/etc/prometheus/rules.json:ro
+      - ./.runtime/targets.json:/etc/prometheus/targets.json:ro
+      - ./.runtime/test-rules.json:/etc/prometheus/test-rules.json:ro
+      - s43_history:/prometheus
+    secrets: [metrics_token]
+    depends_on: [api-a, api-b, worker, alertmanager]
+    mem_limit: 384m
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    command: [--config.file=/etc/alertmanager/config.json, --data.retention=24h]
+    volumes:
+      - ./.runtime/alertmanager.json:/etc/alertmanager/config.json:ro
+      - s43_alerts:/alertmanager
+    secrets: [smtp_password, telegram_token]
+    depends_on: [receiver]
+    mem_limit: 128m
+  receiver:
+    image: node:24.21.0-bookworm-slim
+    command: [node, /receiver.mjs]
+    volumes: ["./receiver.mjs:/receiver.mjs:ro", "s43_deliveries:/evidence"]
+    secrets: [metrics_token]
+    mem_limit: 96m
+  grafana:
+    image: grafana/grafana:12.1.1
+    environment:
+      GF_SECURITY_ADMIN_USER: operator
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_password
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_USERS_VIEWERS_CAN_EDIT: "false"
+      GF_AUTH_DISABLE_LOGIN_FORM: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    secrets: [grafana_password]
+    ports: ["127.0.0.1:13000:3000"]
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/etc/grafana/dashboards:ro
+      - s43_grafana:/var/lib/grafana
+    depends_on: [prometheus]
+    mem_limit: 256m
+secrets:
+  metrics_token: {file: ./.runtime/metrics-token}
+  grafana_password: {file: ./.runtime/grafana-password}
+  smtp_password: {file: ./.runtime/smtp-password}
+  telegram_token: {file: ./.runtime/telegram-token}
+volumes:
+  s43_database:
+  s43_history:
+  s43_alerts:
+  s43_deliveries:
+  s43_grafana:

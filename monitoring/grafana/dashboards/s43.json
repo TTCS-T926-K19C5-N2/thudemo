@@ -1,0 +1,668 @@
+{
+  "uid": "s43-monitoring",
+  "title": "S-43 — Ticketing operations",
+  "schemaVersion": 41,
+  "version": 1,
+  "editable": false,
+  "refresh": "5s",
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "tags": [
+    "S-43"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "environment",
+        "type": "query",
+        "datasource": {
+          "uid": "s43-prometheus",
+          "type": "prometheus"
+        },
+        "query": "label_values(up{job=\"ticketing\"}, environment)",
+        "refresh": 1,
+        "includeAll": true,
+        "allValue": ".*"
+      },
+      {
+        "name": "instance",
+        "type": "query",
+        "datasource": {
+          "uid": "s43-prometheus",
+          "type": "prometheus"
+        },
+        "query": "label_values(up{job=\"ticketing\",environment=~\"$environment\"}, instance)",
+        "refresh": 1,
+        "includeAll": true,
+        "allValue": ".*"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Request RPS — completed + aborted, 5m",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(environment)(rate(ticket_http_requests_total{environment=~\"$environment\",instance=~\"$instance\",service=\"api\"}[5m])) and on(environment) (min by(environment)(up{job=\"ticketing\",service=\"api\",environment=~\"$environment\"}) == 1) and on(environment) (count by(environment)(up{job=\"ticketing\",service=\"api\",environment=~\"$environment\"}) == 2)",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Completed / aborted responses — increase 5m",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(environment)(increase(ticket_http_requests_total{environment=~\"$environment\",instance=~\"$instance\",service=\"api\"}[5m])) and on(environment) (min by(environment)(up{job=\"ticketing\",service=\"api\",environment=~\"$environment\"}) == 1) and on(environment) (count by(environment)(up{job=\"ticketing\",service=\"api\",environment=~\"$environment\"}) == 2)",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "5xx system error ratio — denominator all responses, 5m",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "((sum by(environment)(rate(ticket_http_requests_total{environment=~\"$environment\",instance=~\"$instance\",service=\"api\",status=~\"5..\"}[5m])) or on(environment) (sum by(environment)(rate(ticket_http_requests_total{environment=~\"$environment\",instance=~\"$instance\",service=\"api\"}[5m])) * 0)) / sum by(environment)(rate(ticket_http_requests_total{environment=~\"$environment\",instance=~\"$instance\",service=\"api\"}[5m]))) and (sum by(environment)(rate(ticket_http_requests_total{environment=~\"$environment\",instance=~\"$instance\",service=\"api\"}[5m]))>0) and on(environment) (min by(environment)(up{job=\"ticketing\",service=\"api\",environment=~\"$environment\"}) == 1) and on(environment) (count by(environment)(up{job=\"ticketing\",service=\"api\",environment=~\"$environment\"}) == 2)",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "4xx / business 409 / aborted 499 — 5m",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(status,environment)(rate(ticket_http_requests_total{environment=~\"$environment\",instance=~\"$instance\",service=\"api\",status=~\"4..\"}[5m])) and on(environment) (min by(environment)(up{job=\"ticketing\",service=\"api\",environment=~\"$environment\"}) == 1) and on(environment) (count by(environment)(up{job=\"ticketing\",service=\"api\",environment=~\"$environment\"}) == 2)",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Estimated p95 by route — aggregated buckets, 5m",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95,sum by(le,route,environment)(rate(ticket_http_request_duration_seconds_bucket{environment=~\"$environment\",instance=~\"$instance\",service=\"api\"}[5m]))) and on(environment) (min by(environment)(up{job=\"ticketing\",service=\"api\",environment=~\"$environment\"}) == 1) and on(environment) (count by(environment)(up{job=\"ticketing\",service=\"api\",environment=~\"$environment\"}) == 2)",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Hold conflict requests — SEAT_CONFLICT only, 5m",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(environment)(increase(ticket_hold_conflicts_total{environment=~\"$environment\",instance=~\"$instance\",service=\"api\"}[5m])) and on(environment) (min by(environment)(up{job=\"ticketing\",service=\"api\",environment=~\"$environment\"}) == 1) and on(environment) (count by(environment)(up{job=\"ticketing\",service=\"api\",environment=~\"$environment\"}) == 2)",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "title": "Webhook rejection — unavailable until real producer",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(reason,environment)(increase(ticket_webhook_rejections_total{environment=~\"$environment\",instance=~\"$instance\",service=\"api\"}[5m])) and on(environment) (max by(environment)(ticket_producer_available{environment=~\"$environment\",instance=~\"$instance\",service=\"api\",subsystem=\"webhook\"}) == 1)",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "Scrape health — 0 DOWN; absent UNKNOWN",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "up{job=\"ticketing\",environment=~\"$environment\",instance=~\"$instance\"}",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "title": "Scrape sample freshness age",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "time()-timestamp(up{job=\"ticketing\",environment=~\"$environment\",instance=~\"$instance\"})",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "title": "Alerts — Pending / Firing (Normal when scrape healthy and no alerts)",
+      "type": "state-timeline",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "ALERTS{environment=~\"$environment\"}",
+          "legendFormat": "{{alertname}} {{alertstate}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "title": "Expiry worker last success age — off/down/never successful means Unknown",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(time()-ticket_worker_last_success_timestamp_seconds{service=\"worker\",environment=~\"$environment\"}) and on(instance)(up{job=\"ticketing\",service=\"worker\"} == 1) and on(instance)(ticket_worker_enabled{service=\"worker\"} == 1) and on(instance)(ticket_worker_last_success_timestamp_seconds > 0)",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "title": "Worker sweep duration p95 / cleaned claims",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95,sum by(le)(rate(ticket_worker_run_duration_seconds_bucket{service=\"worker\",environment=~\"$environment\"}[5m]) and on(instance)(up{job=\"ticketing\",service=\"worker\"} == 1) and on(instance)(ticket_worker_enabled == 1)))",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 13,
+      "title": "Worker failures — 5m",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(ticket_worker_errors_total{service=\"worker\",environment=~\"$environment\"}[5m]) and on(instance)(up{job=\"ticketing\",service=\"worker\"} == 1) and on(instance)(ticket_worker_enabled == 1))",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "title": "Expired holds cleaned — 5m",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 48,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(ticket_worker_cleaned_holds_total{service=\"worker\",environment=~\"$environment\"}[5m]) and on(instance)(up{job=\"ticketing\",service=\"worker\"} == 1) and on(instance)(ticket_worker_enabled == 1))",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 15,
+      "title": "Notification attempts/failures by transport — provider acceptance only",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 56,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(integration)(increase(alertmanager_notifications_total[5m]))",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 16,
+      "title": "Notification failures — retry/backoff per channel",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "s43-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 56,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(integration)(increase(alertmanager_notifications_failed_total[5m]))",
+          "legendFormat": "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "No data / Unknown"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 17,
+      "title": "Availability and alert lifecycle",
+      "type": "text",
+      "gridPos": {
+        "x": 0,
+        "y": 64,
+        "w": 24,
+        "h": 4
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "**Webhook: Chưa có nguồn webhook. Email/refund jobs: chưa có producer.** Backlog/oldest job age chưa có query được nghiệm thu. No samples / denominator zero / stale scrape = Unknown. Normal chỉ khi scrape healthy và không có alert; ALERTS hiển thị Pending/Firing và lịch sử chuyển về absent khi Resolved. Receiver/provider log chứng minh Resolved. SMTP accepted/Telegram message ID không chứng minh người nhận đã đọc. Ngưỡng 50 RPS, 5%/100 samples, 100 conflicts và 20 rejections là đề xuất kỹ thuật; hold p95 300ms là NFR. Operator chưa có SLA/lịch trực đã chốt."
+      }
+    }
+  ]
+}

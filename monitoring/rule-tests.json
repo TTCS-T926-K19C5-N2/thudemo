@@ -1,0 +1,237 @@
+{
+  "rule_files": [
+    "rules.json"
+  ],
+  "evaluation_interval": "1m",
+  "tests": [
+    {
+      "name": "Error sustained threshold requires debounce",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "ticket_http_requests_total{service=\"api\",environment=\"local\",instance=\"a\",method=\"GET\",route=\"/showtimes\",status=\"200\"}",
+          "values": "0+100x15"
+        },
+        {
+          "series": "ticket_http_requests_total{service=\"api\",environment=\"local\",instance=\"a\",method=\"GET\",route=\"/showtimes\",status=\"500\"}",
+          "values": "0+10x15"
+        },
+        {
+          "series": "up{job=\"ticketing\",service=\"api\",environment=\"local\",instance=\"a\"}",
+          "values": "1+0x15"
+        },
+        {
+          "series": "up{job=\"ticketing\",service=\"api\",environment=\"local\",instance=\"b\"}",
+          "values": "1+0x15"
+        }
+      ],
+      "alert_rule_test": [
+        {
+          "eval_time": "1m",
+          "alertname": "S43SystemErrors",
+          "exp_alerts": []
+        },
+        {
+          "eval_time": "3m",
+          "alertname": "S43SystemErrors",
+          "exp_alerts": [
+            {
+              "exp_labels": {
+                "alertname": "S43SystemErrors",
+                "service": "api",
+                "environment": "local",
+                "severity": "warning"
+              },
+              "exp_annotations": {
+                "metric": "5xx ratio",
+                "threshold": "0.05 technical proposal",
+                "window": "5m; minimum 100 responses",
+                "value": "0.0909",
+                "dashboard": "http://localhost:13000/d/s43-monitoring",
+                "runbook": "https://github.com/TTCS-T926-K19C5-N2/thudemo/blob/main/docs/S43_MONITORING_RUNBOOK.md"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Exact 5 percent is not greater than threshold",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "ticket_http_requests_total{service=\"api\",environment=\"local\",instance=\"a\",method=\"GET\",route=\"/showtimes\",status=\"200\"}",
+          "values": "0+95x15"
+        },
+        {
+          "series": "ticket_http_requests_total{service=\"api\",environment=\"local\",instance=\"a\",method=\"GET\",route=\"/showtimes\",status=\"500\"}",
+          "values": "0+5x15"
+        },
+        {
+          "series": "up{job=\"ticketing\",service=\"api\",environment=\"local\",instance=\"a\"}",
+          "values": "1+0x15"
+        },
+        {
+          "series": "up{job=\"ticketing\",service=\"api\",environment=\"local\",instance=\"b\"}",
+          "values": "1+0x15"
+        }
+      ],
+      "alert_rule_test": [
+        {
+          "eval_time": "8m",
+          "alertname": "S43SystemErrors",
+          "exp_alerts": []
+        }
+      ]
+    },
+    {
+      "name": "Minimum sample count enforced",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "ticket_http_requests_total{service=\"api\",environment=\"local\",instance=\"a\",method=\"GET\",route=\"/showtimes\",status=\"200\"}",
+          "values": "0+1x15"
+        },
+        {
+          "series": "ticket_http_requests_total{service=\"api\",environment=\"local\",instance=\"a\",method=\"GET\",route=\"/showtimes\",status=\"500\"}",
+          "values": "0+1x15"
+        },
+        {
+          "series": "up{job=\"ticketing\",service=\"api\",environment=\"local\",instance=\"a\"}",
+          "values": "1+0x15"
+        },
+        {
+          "series": "up{job=\"ticketing\",service=\"api\",environment=\"local\",instance=\"b\"}",
+          "values": "1+0x15"
+        }
+      ],
+      "alert_rule_test": [
+        {
+          "eval_time": "8m",
+          "alertname": "S43SystemErrors",
+          "exp_alerts": []
+        }
+      ]
+    },
+    {
+      "name": "No samples never healthy zero",
+      "interval": "1m",
+      "input_series": [],
+      "promql_expr_test": [
+        {
+          "expr": "histogram_quantile(0.95,sum by(le)(rate(ticket_http_request_duration_seconds_bucket[5m])))",
+          "eval_time": "5m",
+          "exp_samples": []
+        },
+        {
+          "expr": "sum(rate(ticket_http_requests_total[5m])) / sum(rate(ticket_http_requests_total[5m]))",
+          "eval_time": "5m",
+          "exp_samples": []
+        }
+      ]
+    },
+    {
+      "name": "Aggregate distribution before p95, never mean p95",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "ticket_http_request_duration_seconds_bucket{instance=\"a\",le=\"0.1\"}",
+          "values": "0+90x15"
+        },
+        {
+          "series": "ticket_http_request_duration_seconds_bucket{instance=\"a\",le=\"0.3\"}",
+          "values": "0+90x15"
+        },
+        {
+          "series": "ticket_http_request_duration_seconds_bucket{instance=\"a\",le=\"0.4\"}",
+          "values": "0+90x15"
+        },
+        {
+          "series": "ticket_http_request_duration_seconds_bucket{instance=\"a\",le=\"+Inf\"}",
+          "values": "0+90x15"
+        },
+        {
+          "series": "ticket_http_request_duration_seconds_bucket{instance=\"b\",le=\"0.1\"}",
+          "values": "0+0x15"
+        },
+        {
+          "series": "ticket_http_request_duration_seconds_bucket{instance=\"b\",le=\"0.3\"}",
+          "values": "0+0x15"
+        },
+        {
+          "series": "ticket_http_request_duration_seconds_bucket{instance=\"b\",le=\"0.4\"}",
+          "values": "0+10x15"
+        },
+        {
+          "series": "ticket_http_request_duration_seconds_bucket{instance=\"b\",le=\"+Inf\"}",
+          "values": "0+10x15"
+        }
+      ],
+      "promql_expr_test": [
+        {
+          "expr": "histogram_quantile(0.95,sum by(le)(rate(ticket_http_request_duration_seconds_bucket[5m])))",
+          "eval_time": "5m",
+          "exp_samples": [
+            {
+              "labels": "{}",
+              "value": 0.35
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Webhook seam absent or unavailable suppresses alert",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "ticket_webhook_rejections_total{service=\"api\",environment=\"local\",reason=\"signature\"}",
+          "values": "0+100x15"
+        },
+        {
+          "series": "ticket_producer_available{service=\"api\",environment=\"local\",subsystem=\"webhook\"}",
+          "values": "0+0x15"
+        }
+      ],
+      "alert_rule_test": [
+        {
+          "eval_time": "8m",
+          "alertname": "S43WebhookRejectionSurge",
+          "exp_alerts": []
+        }
+      ]
+    },
+    {
+      "name": "Counter reset rate stays nonnegative",
+      "interval": "1m",
+      "input_series": [
+        {
+          "series": "ticket_http_requests_total{instance=\"a\"}",
+          "values": "0 100 200 0 100 200 300"
+        }
+      ],
+      "promql_expr_test": [
+        {
+          "expr": "resets(ticket_http_requests_total[5m])",
+          "eval_time": "5m",
+          "exp_samples": [
+            {
+              "labels": "{instance=\"a\"}",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "expr": "rate(ticket_http_requests_total[5m]) >= bool 0",
+          "eval_time": "5m",
+          "exp_samples": [
+            {
+              "labels": "{instance=\"a\"}",
+              "value": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

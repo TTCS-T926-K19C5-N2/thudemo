@@ -1,0 +1,59 @@
+name: S43 monitoring
+on: [push, pull_request]
+permissions:
+  contents: read
+concurrency:
+  group: s43-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  monitoring:
+    name: S-43 / monitoring-integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: "true"
+      DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/unused
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Frozen install and generate client
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --filter api exec prisma generate
+      - name: Provision local-only configuration
+        run: |
+          node monitoring/build-config.mjs
+          node monitoring/build-rule-tests.mjs
+          node monitoring/setup.mjs
+          docker compose --env-file monitoring/.runtime/compose.env -f monitoring/compose.yaml config --quiet
+          git diff --exit-code -- monitoring/rules.json monitoring/rule-tests.json monitoring/grafana
+      - name: Build isolated API and migration images once
+        run: docker compose --env-file monitoring/.runtime/compose.env -f monitoring/compose.yaml build api-a migration
+      - name: Start bounded monitoring stack
+        run: docker compose --env-file monitoring/.runtime/compose.env -f monitoring/compose.yaml up -d --no-build --wait --wait-timeout 180
+      - name: Official config and PromQL rule tests
+        run: |
+          docker compose --env-file monitoring/.runtime/compose.env -f monitoring/compose.yaml exec -T prometheus promtool check config /etc/prometheus/prometheus.json
+          docker compose --env-file monitoring/.runtime/compose.env -f monitoring/compose.yaml exec -T alertmanager amtool check-config /etc/alertmanager/config.json
+          docker run --rm --entrypoint promtool -v "$PWD/monitoring:/monitoring:ro" -w /monitoring prom/prometheus:v3.5.0 test rules rule-tests.json
+      - name: Real HTTP, database, collector and transport failure/recovery
+        run: node apps/api/scripts/verify-s43.mjs
+      - name: Preserve sanitized evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: s43-monitoring-evidence
+          path: evidence/s43/runtime/*.json
+          if-no-files-found: error
+      - name: Stop isolated stack without deleting volumes
+        if: always()
+        run: docker compose --env-file monitoring/.runtime/compose.env -f monitoring/compose.yaml down --timeout 10
