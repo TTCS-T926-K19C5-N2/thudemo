@@ -22,7 +22,7 @@ import { HoldsModule } from './holds/holds.module.js';
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 10,
+        limit: 1000,
       },
     ]),
     PrismaModule,
