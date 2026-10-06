@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { resolve } from 'node:path';
 import { AppController } from './app.controller.js';
@@ -12,7 +11,6 @@ import { UsersModule } from './users/users.module.js';
 import { EventsModule } from './events/events.module.js';
 import { ShowtimesModule } from './showtimes/showtimes.module.js';
 import { HoldsModule } from './holds/holds.module.js';
-import { CustomThrottlerGuard } from './common/guards/custom-throttler.guard.js';
 
 @Module({
   imports: [
@@ -20,11 +18,11 @@ import { CustomThrottlerGuard } from './common/guards/custom-throttler.guard.js'
       isGlobal: true,
       envFilePath: resolve(process.cwd(), '../../.env'),
     }),
-    // Cấu hình Throttler (Rate Limiting)
+    // Cấu hình Throttler
     ThrottlerModule.forRoot([
       {
-        ttl: 60000, // 60.000ms = 1 phút
-        limit: 60,  // Mặc định 60 request / phút cho toàn hệ thống
+        ttl: 60000,
+        limit: 10,
       },
     ]),
     PrismaModule,
@@ -36,13 +34,6 @@ import { CustomThrottlerGuard } from './common/guards/custom-throttler.guard.js'
     HoldsModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    // Đăng ký CustomThrottlerGuard làm Global Guard
-    {
-      provide: APP_GUARD,
-      useClass: CustomThrottlerGuard,
-    },
-  ],
+  providers: [AppService], // Bỏ APP_GUARD ở đây ra để tránh bị dính rate-limit cho toàn hệ thống
 })
 export class AppModule {}
