@@ -16,7 +16,7 @@ describe('hold driver error translation', () => {
       .mockImplementation(() => {});
     vi.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
     const db = {
-      holdTransaction: vi
+      commitHoldRoutine: vi
         .fn()
         .mockRejectedValue(
           Object.assign(Error('private database detail'), { code, constraint }),
@@ -79,4 +79,57 @@ describe('hold driver error translation', () => {
       }),
     ).rejects.toBeInstanceOf(ServiceUnavailableException);
   });
+
+  it.each([
+    ['H0001', 404, undefined],
+    ['H0002', 409, 'SHOWTIME_CLOSED'],
+    ['H0003', 400, undefined],
+    ['H0004', 409, 'SEAT_CONFLICT'],
+    ['H0005', 409, 'HOLD_EXPIRED'],
+  ])(
+    'maps server validation %s to the existing HTTP contract without DB details',
+    async (code, status, apiCode) => {
+      const { db, holds } = service('routine', code);
+      db.commitHoldRoutine.mockRejectedValue(
+        Object.assign(Error('private database detail'), {
+          code,
+          detail: JSON.stringify([seatId]),
+        }),
+      );
+      try {
+        await holds.claim(seatId, seatId, 'fixture-session-hash', {
+          seatIds: [seatId],
+        });
+        expect.fail('Expected server rejection');
+      } catch (error) {
+        expect(error).toMatchObject({ status });
+        expect(JSON.stringify(error)).not.toContain('private database detail');
+        if (apiCode)
+          expect(error).toMatchObject({
+            response: expect.objectContaining({ code: apiCode }),
+          });
+      }
+      expect(db.seatReadQuery).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(['not-json', '["private database detail"]', '[]'])(
+    'fails closed for an invalid conflict detail %s',
+    async (detail) => {
+      const { db, holds } = service('routine', 'H0004');
+      db.commitHoldRoutine.mockRejectedValue(
+        Object.assign(Error('private database detail'), {
+          code: 'H0004',
+          detail,
+        }),
+      );
+      await expect(
+        holds.claim(seatId, seatId, 'fixture-session-hash', {
+          seatIds: [seatId],
+        }),
+      ).rejects.toMatchObject({
+        response: expect.objectContaining({ code: 'HOLD_UNAVAILABLE' }),
+      });
+    },
+  );
 });

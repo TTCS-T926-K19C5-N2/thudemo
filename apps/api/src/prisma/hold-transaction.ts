@@ -6,9 +6,10 @@ export interface HoldQueryable {
   $queryRaw<T>(sql: Prisma.Sql): Promise<T>;
 }
 export interface HoldConnection {
+  pipeline?: boolean;
   query(
     sql: string | { text: string; values: unknown[]; name: string },
-  ): Promise<{ rows: unknown[] }>;
+  ): Promise<{ rows: unknown[]; command?: string }>;
   release(destroy?: boolean): void;
   on(event: 'error', listener: (error: Error) => void): unknown;
   removeListener(event: 'error', listener: (error: Error) => void): unknown;
@@ -21,7 +22,10 @@ export async function holdTransaction<T>(
   pool: HoldPool,
   callback: (tx: HoldQueryable) => Promise<T>,
   statementName: (query: { sql: string }) => string,
-  limits = { maxWait: 10000, timeout: 10000 },
+  limits: { maxWait: number; timeout: number; validatedRoutine?: boolean } = {
+    maxWait: 10000,
+    timeout: 10000,
+  },
 ): Promise<T> {
   if (
     !Number.isFinite(limits.maxWait) ||
@@ -55,6 +59,9 @@ export async function holdTransaction<T>(
   }
 
   let released = false;
+  const previousPipeline = client.pipeline;
+  let routineSubmitted = false;
+  let transactionEnded = false;
   let transactionTimer: ReturnType<typeof setTimeout> | undefined;
   let rejectConnection: (reason: Error) => void;
   const connectionFailure = new Promise<never>((_, reject) => {
@@ -68,6 +75,8 @@ export async function holdTransaction<T>(
     if (released) return;
     released = true;
     client.removeListener('error', onConnectionError);
+    // Restore the public pg setting before reuse (or destruction on deadline).
+    client.pipeline = previousPipeline;
     client.release(destroy);
   };
   client.on('error', onConnectionError);
@@ -83,11 +92,36 @@ export async function holdTransaction<T>(
         )
       )
         throw Error('Unsupported hold parameter type');
-      const result = await client.query({
+      if (
+        limits.validatedRoutine &&
+        (routineSubmitted ||
+          !sql.text.trim().startsWith('SELECT * FROM public.claim_hold_v2('))
+      )
+        throw Error('Only the validated hold routine can pipeline commit');
+      const querying = client.query({
         text: sql.text,
         values: sql.values,
         name: statementName({ sql: sql.text }),
       });
+      let result: { rows: unknown[] };
+      if (limits.validatedRoutine) {
+        routineSubmitted = true;
+        // BEGIN has already succeeded. v2 RAISEs on every invalid outcome;
+        // PostgreSQL then treats this COMMIT as ROLLBACK. Never pipeline v1.
+        const committing = client.query('COMMIT');
+        const [queryResult, commitResult] = await Promise.allSettled([
+          querying,
+          committing,
+        ]);
+        transactionEnded =
+          commitResult.status === 'fulfilled' &&
+          ['COMMIT', 'ROLLBACK'].includes(commitResult.value.command ?? '');
+        if (queryResult.status === 'rejected') throw queryResult.reason;
+        if (commitResult.status === 'rejected') throw commitResult.reason;
+        result = queryResult.value;
+      } else {
+        result = await querying;
+      }
       return result.rows as R;
     },
   };
@@ -99,12 +133,16 @@ export async function holdTransaction<T>(
       await client.query(
         `BEGIN; SET LOCAL statement_timeout = '${Math.ceil(limits.timeout)}ms'`,
       );
+      if (limits.validatedRoutine) client.pipeline = true;
       const value = await callback(tx);
       if (released) throw Error('Hold transaction is closed');
-      await client.query('COMMIT');
+      if (limits.validatedRoutine) {
+        if (!routineSubmitted)
+          throw Error('Validated hold routine was not submitted');
+      } else await client.query('COMMIT');
       return value;
     } catch (error) {
-      if (!released) {
+      if (!released && !transactionEnded) {
         try {
           await client.query('ROLLBACK');
         } catch {

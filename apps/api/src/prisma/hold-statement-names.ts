@@ -8,6 +8,8 @@ export function holdStatementNames() {
     if (
       !sql.includes('WITH requested AS') &&
       !sql.includes('public.claim_hold_v1(') &&
+      !sql.includes('public.claim_hold_v2(') &&
+      !sql.includes('json_agg(seat ORDER BY') &&
       !sql.includes('FROM sessions s JOIN users u') &&
       !sql.includes('FROM (SELECT 1) anchor')
     )

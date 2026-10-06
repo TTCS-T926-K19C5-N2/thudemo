@@ -1,5 +1,9 @@
 # T-31: profiling và thử prepared statements
 
+## Cập nhật mới nhất: optimization-v5 (06/10/2026)
+
+V4 CI vẫn FAIL total p95 347,07 ms (PR) và max GET2000 ghế215,21 ms (push). Đã chuyển validation vào routine v2 trước COMMIT, pipeline sau khi BEGIN/timeout thành công, drain kết quả và giữ rollback/bounds; seat-map một live JSON projection không cache. Local **51/51 E2E,77/77unit,3helper**, build/lint/typecheck PASS, maxGET2000ghế14,30ms; hai lượt trước ack-drain p95 190,02/185,83ms. Snapshot trước push, **chưa xác nhận CI bản mới**, không merge main. Chi tiết/raw: [optimization-v5/verification.md](optimization-v5/verification.md). Các mục dưới là lịch sử.
+
 ## Cập nhật mới nhất: optimization-v4 (06/10/2026)
 
 Đã triển khai routine PostgreSQL claim/state theo phê duyệt, migration mới không sửa lịch sử. Giữ transaction bounded/rollback/fresh clock và thanh toán 600 giây. Local **50/50 E2E, 64/64 unit, 3 helper**, build/lint/typecheck/health PASS; hai lượt HTTP đầy đủ p95 **187,32 / 191,43 ms**, 45 checks/lượt. Đây là snapshot trước push, **chưa xác nhận CI SHA mới hoặc merge main**. Chi tiết, raw và các lượt lỗi đã giữ: [optimization-v4/verification.md](optimization-v4/verification.md). Các cập nhật v3/v2 bên dưới là lịch sử.

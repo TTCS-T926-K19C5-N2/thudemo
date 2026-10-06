@@ -36,14 +36,13 @@ describe('live seat-map reads without detail overfetch', () => {
   it('keeps empty inventory distinct from a missing show and rereads status', async () => {
     const { db, service } = fixture();
     db.seatReadQuery
-      .mockResolvedValueOnce([{ status: 'ON_SALE' }])
-      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ status: 'ON_SALE', seats: [] }])
       .mockResolvedValueOnce([{ status: 'CLOSED' }]);
     await expect(service.publicSeats(id)).resolves.toEqual([]);
     await expect(service.publicSeats(id)).rejects.toMatchObject({
       status: 404,
     });
-    expect(db.seatReadQuery.mock.calls[0][0].values).toEqual([id]);
+    expect(db.seatReadQuery.mock.calls[0][0].values).toEqual([id, id]);
   });
 
   it('reads current prices/status with the unchanged public projection and ordering', async () => {
@@ -58,16 +57,18 @@ describe('live seat-map reads without detail overfetch', () => {
         status: 'HELD',
       },
     ];
-    db.seatReadQuery
-      .mockResolvedValueOnce([{ status: 'ON_SALE' }])
-      .mockResolvedValueOnce(rows);
+    db.seatReadQuery.mockResolvedValueOnce([
+      { status: 'ON_SALE', seats: rows },
+    ]);
     await expect(service.publicSeats(id)).resolves.toBe(rows);
-    const sql = db.seatReadQuery.mock.calls[1][0];
+    const sql = db.seatReadQuery.mock.calls[0][0];
     expect(sql.text).toContain('clock_timestamp()');
-    expect(sql.text).toContain('ORDER BY s.row, s."seatNumber"');
+    expect(sql.text).toContain('ORDER BY seat.row,seat."seatNumber"');
+    expect(sql.text).toContain("sh.status='ON_SALE'");
+    expect(db.seatReadQuery).toHaveBeenCalledOnce();
     expect(sql.text).not.toContain('holderId');
     expect(sql.text).not.toContain('sessionHash');
-    expect(sql.values).toEqual([id]);
+    expect(sql.values).toEqual([id, id]);
   });
 
   it('keeps organizer ownership enforcement for draft preview', async () => {
@@ -76,7 +77,7 @@ describe('live seat-map reads without detail overfetch', () => {
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([{ organizerId: 'other' }])
       .mockResolvedValueOnce([{ organizerId: 'owner' }])
-      .mockResolvedValueOnce([]);
+      .mockResolvedValueOnce([{ seats: [] }]);
     await expect(service.ownedSeats(id, 'owner')).rejects.toMatchObject({
       status: 404,
     });

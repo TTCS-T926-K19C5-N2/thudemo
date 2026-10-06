@@ -60,6 +60,17 @@ export class PrismaService
     return this.seatReadQuery<T>(sql);
   }
 
+  async commitHoldRoutine<T>(sql: Prisma.Sql): Promise<T> {
+    await this.$connect();
+    const pool = this.holdAdapter.pool;
+    if (!pool) throw Error('Hold connection pool is unavailable');
+    return holdTransaction(pool, (tx) => tx.$queryRaw<T>(sql), this.holdNames, {
+      maxWait: 10000,
+      timeout: 10000,
+      validatedRoutine: true,
+    });
+  }
+
   // Scoped to session/seat reads with primitive bindings and known projections;
   // not a replacement for Prisma model operations or order transactions.
   async seatReadQuery<T>(sql: Prisma.Sql): Promise<T> {

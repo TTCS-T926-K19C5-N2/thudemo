@@ -231,4 +231,129 @@ describe('hold transaction on the existing Prisma pool', () => {
     ).rejects.toThrow('Unsupported hold parameter type');
     expect(f.query.mock.calls.map(([sql]) => sql)).toEqual([begin, 'ROLLBACK']);
   });
+
+  it('awaits BEGIN, then submits only server-validated claim and commit together', async () => {
+    const f = fixture();
+    f.client.pipeline = false;
+    let finishBegin!: () => void;
+    let finishClaim!: (value: { rows: unknown[] }) => void;
+    f.query.mockImplementation((sql) => {
+      if (sql === begin)
+        return new Promise((resolve) => {
+          finishBegin = () => resolve({ rows: [] });
+        });
+      if (typeof sql !== 'string')
+        return new Promise((resolve) => {
+          finishClaim = resolve;
+        });
+      expect(f.client.pipeline).toBe(true);
+      return Promise.resolve({ rows: [] });
+    });
+    const pending = holdTransaction(
+      f.pool,
+      (tx) =>
+        tx.$queryRaw(Prisma.sql`SELECT * FROM public.claim_hold_v2(${1})`),
+      holdStatementNames(),
+      { maxWait: 10000, timeout: 10000, validatedRoutine: true },
+    );
+    await vi.waitFor(() => expect(f.query).toHaveBeenCalledOnce());
+    expect(f.client.pipeline).toBe(false);
+    finishBegin();
+    await vi.waitFor(() => expect(f.query).toHaveBeenCalledTimes(3));
+    expect(f.query).toHaveBeenLastCalledWith('COMMIT');
+    expect(f.release).not.toHaveBeenCalled();
+    const rows = [{ id: 'fixture-id' }];
+    finishClaim({ rows });
+    await expect(pending).resolves.toBe(rows);
+    expect(f.client.pipeline).toBe(false);
+    expect(f.release).toHaveBeenCalledExactlyOnceWith(false);
+  });
+
+  it('keeps the routine rejection, drains commit, then rolls back before reuse', async () => {
+    const f = fixture();
+    f.client.pipeline = false;
+    const conflict = Object.assign(Error('server rejected partial claim'), {
+      code: 'H0004',
+    });
+    let finishCommit!: () => void;
+    f.query.mockImplementation((sql) => {
+      if (typeof sql !== 'string') return Promise.reject(conflict);
+      if (sql === 'COMMIT')
+        return new Promise((resolve) => {
+          finishCommit = () => resolve({ rows: [] });
+        });
+      return Promise.resolve({ rows: [] });
+    });
+    const pending = holdTransaction(
+      f.pool,
+      (tx) =>
+        tx.$queryRaw(Prisma.sql`SELECT * FROM public.claim_hold_v2(${1})`),
+      holdStatementNames(),
+      { maxWait: 10000, timeout: 10000, validatedRoutine: true },
+    );
+    const assertion = expect(pending).rejects.toBe(conflict);
+    await vi.waitFor(() => expect(f.query).toHaveBeenCalledTimes(3));
+    expect(f.release).not.toHaveBeenCalled();
+    finishCommit();
+    await assertion;
+    expect(f.query).toHaveBeenLastCalledWith('ROLLBACK');
+    expect(f.client.pipeline).toBe(false);
+    expect(f.release).toHaveBeenCalledExactlyOnceWith(false);
+  });
+
+  it('avoids an extra rollback round trip only when PostgreSQL acknowledges ROLLBACK', async () => {
+    const f = fixture();
+    f.client.pipeline = false;
+    const conflict = Object.assign(Error('partial claim aborted'), {
+      code: 'H0004',
+    });
+    f.query.mockImplementation(async (sql) => {
+      if (typeof sql !== 'string') throw conflict;
+      return { rows: [], command: sql === 'COMMIT' ? 'ROLLBACK' : 'BEGIN' };
+    });
+    await expect(
+      holdTransaction(
+        f.pool,
+        (tx) =>
+          tx.$queryRaw(Prisma.sql`SELECT * FROM public.claim_hold_v2(${1})`),
+        holdStatementNames(),
+        { maxWait: 10000, timeout: 10000, validatedRoutine: true },
+      ),
+    ).rejects.toBe(conflict);
+    expect(f.query.mock.calls.map(([sql]) => sql)).toHaveLength(3);
+    expect(f.query).toHaveBeenLastCalledWith('COMMIT');
+    expect(f.client.pipeline).toBe(false);
+    expect(f.release).toHaveBeenCalledExactlyOnceWith(false);
+  });
+
+  it('never enables pipeline or submits a claim/commit when BEGIN fails', async () => {
+    const f = fixture();
+    f.client.pipeline = false;
+    f.query.mockRejectedValueOnce(Error('BEGIN failed'));
+    await expect(
+      holdTransaction(
+        f.pool,
+        (tx) =>
+          tx.$queryRaw(Prisma.sql`SELECT * FROM public.claim_hold_v2(${1})`),
+        holdStatementNames(),
+        { maxWait: 10000, timeout: 10000, validatedRoutine: true },
+      ),
+    ).rejects.toThrow('BEGIN failed');
+    expect(f.query.mock.calls.map(([sql]) => sql)).toEqual([begin, 'ROLLBACK']);
+    expect(f.client.pipeline).toBe(false);
+  });
+
+  it('rejects unvalidated SQL without submitting COMMIT in routine mode', async () => {
+    const f = fixture();
+    await expect(
+      holdTransaction(
+        f.pool,
+        (tx) =>
+          tx.$queryRaw(Prisma.sql`SELECT * FROM public.claim_hold_v1(${1})`),
+        holdStatementNames(),
+        { maxWait: 10000, timeout: 10000, validatedRoutine: true },
+      ),
+    ).rejects.toThrow('Only the validated hold routine');
+    expect(f.query.mock.calls.map(([sql]) => sql)).toEqual([begin, 'ROLLBACK']);
+  });
 });

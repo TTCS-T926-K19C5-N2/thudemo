@@ -1,5 +1,9 @@
 # Test case S-15 và S-16
 
+## Cập nhật mới nhất: validated routine / pipeline (06/10/2026)
+
+Snapshot local v5: **51/51 E2E** (34suite riêng), **77/77unit**,3helper,build/lint/typecheck PASS. Thêm ca DB thật routine timeout khi COMMIT đã queue: phải rollback snapshot/ghế, không leak timeout/pipeline; giữ mọi AC giá đơn cũ/đủ ghế/600giây/idempotency. v2 kiểm toàn bộ trênserver và RAISE trước COMMIT, pipeline chỉ sau BEGIN được xác nhận. Seat-map live giá/expiry/quyền/6fields không cache; max2000ghế14,30ms. V4 CI p95347,07ms còn FAIL nên **cần CI SHA mới, chưa merge main**. [Báo cáo v5/raw](../../evidence/review/20261006/t31/optimization-v5/verification.md). Mọi mục dưới là lịch sử.
+
 ## Cập nhật mới nhất: PostgreSQL routine, 06/10/2026
 
 Local bản v4 theo phê duyệt: **50/50 E2E** (suite riêng 33/33), **64/64 unit**, 3 helper; build/lint/typecheck/health PASS. Giữ toàn bộ AC giá theo hạng/snapshot giá cũ, tạo đơn đủ ghế còn hạn/idempotency/thanh toán 600 giây. Thêm test routine VOLATILE/invoker, input mảng sai không ghi dữ liệu, giữ 2000 ghế và retry không gia hạn; quan sát chờ khóa qua hạn vẫn bắt buộc. Hai lượt HTTP đầy đủ p95 187,32 / 191,43 ms, 45 correctness checks/lượt; không hạ 300 ms hoặc bỏ mẫu đầu. **Snapshot local trước commit/push, cần CI đúng SHA mới, chưa merge main**. [Báo cáo v4 và các lượt lỗi đã giữ](../../evidence/review/20261006/t31/optimization-v4/verification.md). Các mục phía dưới là lịch sử.

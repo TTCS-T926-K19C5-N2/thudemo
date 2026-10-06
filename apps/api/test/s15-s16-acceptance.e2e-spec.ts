@@ -676,12 +676,78 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     },
   );
 
+  it('Pipelined COMMIT cannot preserve a claim when the bounded routine times out', async () => {
+    await openSale();
+    const held = await hold([seats[0].id]).expect(200);
+    const original = await db.holdSession.findUniqueOrThrow({
+      where: { id: held.body.hold.id },
+    });
+    let unlock!: () => void;
+    let notify!: () => void;
+    const locked = new Promise<void>((resolve) => {
+      notify = resolve;
+    });
+    const release = new Promise<void>((resolve) => {
+      unlock = resolve;
+    });
+    const blocker = db.$transaction(
+      async (tx) => {
+        await tx.$queryRaw`SELECT id FROM hold_sessions WHERE id=${original.id}::uuid FOR UPDATE`;
+        notify();
+        await release;
+      },
+      { timeout: 10000 },
+    );
+    const adapter = new PrismaPg({
+      connectionString: process.env.DATABASE_URL,
+      max: 1,
+    });
+    const driver = await adapter.connect();
+    const pool = driver.underlyingDriver();
+    try {
+      await locked;
+      await expect(
+        holdTransaction(
+          pool,
+          (tx) =>
+            tx.$queryRaw(Prisma.sql`
+        SELECT * FROM public.claim_hold_v2(${showId}::uuid,${buyer.id}::uuid,
+          ${original.sessionHash}::text,${`{${seats[1].id}}`}::uuid[],${randomUUID()}::uuid,${randomUUID()}::uuid)
+      `),
+          holdStatementNames(),
+          { maxWait: 1000, timeout: 100, validatedRoutine: true },
+        ),
+      ).rejects.toThrow(/transaction expired|statement timeout/);
+      const client = await pool.connect();
+      try {
+        expect(client.pipeline).toBe(false);
+        expect(
+          (await client.query('SHOW statement_timeout')).rows[0]
+            .statement_timeout,
+        ).toBe('0');
+        expect((await client.query('SELECT 1 AS ok')).rows[0].ok).toBe(1);
+      } finally {
+        client.release();
+      }
+    } finally {
+      unlock();
+      await blocker;
+      await driver.dispose();
+    }
+    expect(
+      await db.holdSession.findUniqueOrThrow({ where: { id: original.id } }),
+    ).toEqual(original);
+    expect(
+      await db.seatHold.findUnique({ where: { seatId: seats[1].id } }),
+    ).toBeNull();
+  });
+
   it('Hold routine is volatile/invoker and rejects malformed arrays without writes', async () => {
     const [routine] = await db.$queryRaw<
       { volatility: string; definer: boolean }[]
     >`
       SELECT provolatile::text AS volatility,prosecdef AS definer
-      FROM pg_proc WHERE oid='public.claim_hold_v1(uuid,uuid,text,uuid[],uuid,uuid)'::regprocedure`;
+      FROM pg_proc WHERE oid='public.claim_hold_v2(uuid,uuid,text,uuid[],uuid,uuid)'::regprocedure`;
     expect(routine).toEqual({ volatility: 'v', definer: false });
     for (const value of ['{}', `{${seats[0].id},${seats[0].id}}`, '{NULL}']) {
       await expect(
@@ -764,7 +830,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
         const [row] = await db.$queryRaw<{ waiting: boolean }[]>`
           SELECT EXISTS(SELECT 1 FROM pg_stat_activity
             WHERE datname=current_database() AND wait_event_type='Lock'
-              AND query LIKE '%public.claim_hold_v1(%') AS waiting`;
+              AND query LIKE '%public.claim_hold_v2(%') AS waiting`;
         if (row.waiting) {
           waiting = true;
           break;

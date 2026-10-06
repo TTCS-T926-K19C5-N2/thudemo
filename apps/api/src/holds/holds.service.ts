@@ -56,66 +56,72 @@ export class HoldsService {
     const seatIds = requestedSeats(body);
     const requestId = randomUUID();
     try {
-      return await this.db.holdTransaction(async (tx) => {
-        // The VOLATILE routine keeps claim and fresh state as separate SQL
-        // commands on the server. This bounded transaction still validates every
-        // result before COMMIT; conflicts/expired states roll back partial writes.
-        const [result] = await tx.$queryRaw<
-          {
-            status: string;
-            valid: number;
-            claimedSeatIds: string[];
-            serverTime: Date;
-            id: string | null;
-            expiresAt: Date | null;
-            seatIds: string[];
-          }[]
-        >(Prisma.sql`
-          SELECT * FROM public.claim_hold_v1(
-            ${showtimeId}::uuid, ${userId}::uuid, ${sessionHash}::text,
-            ${'{' + seatIds.join(',') + '}'}::uuid[], ${randomUUID()}::uuid, ${randomUUID()}::uuid
-          )`);
-        if (!result) throw new NotFoundException('Không tìm thấy suất diễn.');
-        if (result.status !== 'ON_SALE')
-          throw new ConflictException({
+      // v2 validates status/count/fresh live state on the server and RAISEs
+      // before COMMIT for every rejection. BEGIN/timeout setup is awaited first.
+      const [result] = await this.db.commitHoldRoutine<
+        { serverTime: Date; id: string; expiresAt: Date; seatIds: string[] }[]
+      >(Prisma.sql`
+        SELECT * FROM public.claim_hold_v2(
+          ${showtimeId}::uuid, ${userId}::uuid, ${sessionHash}::text,
+          ${'{' + seatIds.join(',') + '}'}::uuid[], ${randomUUID()}::uuid, ${randomUUID()}::uuid
+        )`);
+      return {
+        serverTime: result.serverTime,
+        hold: {
+          id: result.id,
+          expiresAt: result.expiresAt,
+          seatIds: result.seatIds,
+        },
+      };
+    } catch (caught) {
+      let error = caught;
+      if (typeof caught === 'object' && caught !== null && 'code' in caught) {
+        if (caught.code === 'H0001')
+          error = new NotFoundException('Không tìm thấy suất diễn.');
+        if (caught.code === 'H0002')
+          error = new ConflictException({
             code: 'SHOWTIME_CLOSED',
             message: 'Suất diễn đã đóng bán. Chọn suất khác.',
             rejectedSeatIds: seatIds,
           });
-        if (result.valid !== seatIds.length)
-          throw new BadRequestException(
+        if (caught.code === 'H0003')
+          error = new BadRequestException(
             'Ghế không thuộc suất diễn hoặc chưa có giá. Tải lại sơ đồ.',
           );
-        if (result.claimedSeatIds.length !== seatIds.length) {
-          const accepted = new Set(result.claimedSeatIds);
-          throw new ConflictException({
-            code: 'SEAT_CONFLICT',
-            message: 'Một số ghế vừa được người khác giữ. Chọn ghế khác.',
-            rejectedSeatIds: seatIds.filter((id) => !accepted.has(id)),
-            requestId,
-          });
+        if (
+          caught.code === 'H0004' &&
+          'detail' in caught &&
+          typeof caught.detail === 'string'
+        ) {
+          let rejected: unknown;
+          try {
+            rejected = JSON.parse(caught.detail);
+          } catch {
+            /* fail closed below */
+          }
+          if (
+            Array.isArray(rejected) &&
+            rejected.length > 0 &&
+            rejected.every(
+              (id) => typeof id === 'string' && seatIds.includes(id),
+            )
+          ) {
+            error = new ConflictException({
+              code: 'SEAT_CONFLICT',
+              message: 'Một số ghế vừa được người khác giữ. Chọn ghế khác.',
+              rejectedSeatIds: rejected,
+              requestId,
+            });
+          }
         }
-        const state: HoldState = {
-          serverTime: result.serverTime,
-          hold:
-            result.id && result.expiresAt && result.seatIds.length
-              ? {
-                  id: result.id,
-                  expiresAt: result.expiresAt,
-                  seatIds: result.seatIds,
-                }
-              : null,
-        };
-        if (!state.hold)
-          throw new ConflictException({
+        if (caught.code === 'H0005')
+          error = new ConflictException({
             code: 'HOLD_EXPIRED',
             message: 'Lượt giữ vừa hết hạn. Tải lại sơ đồ rồi chọn lại.',
             rejectedSeatIds: seatIds,
             requestId,
           });
-        return state;
-      });
-    } catch (error) {
+      }
       // Concurrent inserts can report the secondary unique index before the PK arbiter.
       // Transaction has rolled back; translate only the known ownership constraint.
       if (

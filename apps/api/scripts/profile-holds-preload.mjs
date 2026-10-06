@@ -34,7 +34,8 @@ function category(input) {
     return sql.trim().split(/[;\s]/)[0].toUpperCase();
   if (
     sql.includes('WITH requested AS') ||
-    sql.includes('public.claim_hold_v1(')
+    sql.includes('public.claim_hold_v1(') ||
+    sql.includes('public.claim_hold_v2(')
   )
     return 'hold-claim';
   if (sql.includes('FROM sessions s JOIN users u')) return 'auth';

@@ -45,6 +45,7 @@ test(
     await new Promise((resolve) => client.query('SELECT secret_sql_canary FROM sessions s JOIN users u', ['private_bind_canary'], () => resolve()));
     await client.query({text: 'WITH requested AS (SELECT secret_sql_canary)', values: ['private_bind_canary']});
     await client.query({text: 'SELECT * FROM public.claim_hold_v1(secret_sql_canary)', values: ['private_bind_canary']});
+    await client.query({text: 'SELECT * FROM public.claim_hold_v2(secret_sql_canary)', values: ['private_bind_canary']});
     await client.query("BEGIN; SET LOCAL statement_timeout = '10000ms'");
     process.send({type: 'ready'});
   `;
@@ -72,7 +73,7 @@ test(
       });
       assert.equal(result.operations['pool-acquire'].count, 2);
       assert.equal(result.operations.auth.count, 2);
-      assert.equal(result.operations['hold-claim'].count, 2);
+      assert.equal(result.operations['hold-claim'].count, 3);
       assert.equal(result.operations.BEGIN.count, 1);
       assert.equal(result.label, 'test-round');
       assert(result.cpuMs >= 0 && result.wallMs >= 0);
