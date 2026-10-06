@@ -221,6 +221,7 @@ async function instrumentation(enabled) {
       '-d',
       '--no-build',
       '--no-deps',
+      '--force-recreate',
       'api-a',
       'api-b',
     ],
@@ -241,41 +242,70 @@ async function instrumentation(enabled) {
 const percentile = (values, p) =>
   [...values].sort((a, b) => a - b)[Math.ceil(values.length * p) - 1];
 async function benchmark(a, b) {
+  const batch = async () => {
+    await db.seatHold.deleteMany({ where: { showtimeId: showId } });
+    await db.holdSession.deleteMany({ where: { showtimeId: showId } });
+    const tasks = seatIds.flatMap((id, i) => [
+      call(
+        i % 2 ? 18002 : 18001,
+        `/showtimes/${showId}/holds`,
+        'POST',
+        { seatIds: [id] },
+        a,
+      ),
+      call(
+        i % 2 ? 18001 : 18002,
+        `/showtimes/${showId}/holds`,
+        'POST',
+        { seatIds: [id] },
+        b,
+      ),
+    ]);
+    const results = await Promise.all(tasks);
+    return {
+      rawMs: results.map((r) => r.ms),
+      statuses: results.reduce(
+        (v, r) => ((v[r.status] = (v[r.status] ?? 0) + 1), v),
+        {},
+      ),
+    };
+  };
+  report.benchmarkWarmup = [];
   try {
-    for (const enabled of [false, true]) {
-      await instrumentation(enabled);
-      for (let round = 0; round < 3; round++) {
-        await db.seatHold.deleteMany({ where: { showtimeId: showId } });
-        await db.holdSession.deleteMany({ where: { showtimeId: showId } });
-        const tasks = seatIds.flatMap((id, i) => [
-          call(
-            i % 2 ? 18002 : 18001,
-            `/showtimes/${showId}/holds`,
-            'POST',
-            { seatIds: [id] },
-            a,
-          ),
-          call(
-            i % 2 ? 18001 : 18002,
-            `/showtimes/${showId}/holds`,
-            'POST',
-            { seatIds: [id] },
-            b,
-          ),
-        ]);
-        const results = await Promise.all(tasks);
-        const ms = results.map((r) => r.ms),
-          statuses = results.reduce(
-            (v, r) => ((v[r.status] = (v[r.status] ?? 0) + 1), v),
-            {},
-          );
+    // Balanced crossover, rather than all off then all on. Each measured batch
+    // follows a fresh process and identical unmeasured claim warm-up, so cold
+    // startup/JIT/connection pool cost is not attributed to instrumentation.
+    const orders = [
+      [true, false],
+      [false, true],
+      [true, false],
+      [false, true],
+    ];
+    for (const [pair, order] of orders.entries()) {
+      for (const [position, enabled] of order.entries()) {
+        await instrumentation(enabled);
+        const warmup = await batch();
+        check(
+          warmup.statuses[200] === 100 && warmup.statuses[409] === 100,
+          'benchmark warmup atomic hold invariant 100 successes / 100 conflicts',
+        );
+        report.benchmarkWarmup.push({
+          instrumentation: enabled,
+          pair,
+          position,
+          ...warmup,
+          excludedFromPooledSamples: true,
+        });
+        const { rawMs: ms, statuses } = await batch();
         check(
           statuses[200] === 100 && statuses[409] === 100,
           'benchmark atomic hold invariant 100 successes / 100 conflicts',
         );
         report.benchmark.push({
           instrumentation: enabled,
-          round,
+          round: pair,
+          pair,
+          position,
           concurrency: 200,
           requests: 200,
           seats: 100,
@@ -285,7 +315,7 @@ async function benchmark(a, b) {
           p95Ms: percentile(ms, 0.95),
         });
         console.log(
-          `Benchmark ${enabled ? 'metrics' : 'baseline'} round ${round + 1}: p95 ${percentile(ms, 0.95).toFixed(2)} ms`,
+          `Benchmark ${enabled ? 'metrics' : 'baseline'} pair ${pair + 1}: p95 ${percentile(ms, 0.95).toFixed(2)} ms`,
         );
       }
     }
@@ -304,8 +334,23 @@ async function benchmark(a, b) {
       before: summary(false),
       after: summary(true),
       method:
-        'Same image/build, dedicated dataset, 200 concurrency, two instances, 3 rounds per mode; pooled samples, no average of p95; sequential modes are not a statistically controlled capacity estimate',
+        'Same image/build/dataset, 200 concurrency, two instances, four balanced off/on crossover pairs; fresh API processes and identical unmeasured 200-claim warmup per batch; pooled measured samples, no average of p95; finite CI pairs are not production capacity or statistical causality proof',
     };
+    report.overhead.pairs = [0, 1, 2, 3].map((pair) => {
+      const before = report.benchmark.find(
+        (v) => v.pair === pair && !v.instrumentation,
+      );
+      const after = report.benchmark.find(
+        (v) => v.pair === pair && v.instrumentation,
+      );
+      return {
+        pair,
+        order: orders[pair],
+        beforeP95Ms: before.p95Ms,
+        afterP95Ms: after.p95Ms,
+        p95DeltaPercent: 100 * (after.p95Ms / before.p95Ms - 1),
+      };
+    });
     report.overhead.p95DeltaMs =
       report.overhead.after.p95Ms - report.overhead.before.p95Ms;
     report.overhead.p95DeltaPercent =
