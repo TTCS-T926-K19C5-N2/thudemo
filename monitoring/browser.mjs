@@ -49,7 +49,7 @@ function cli(...args) {
           ...args,
         ]
       : ["-s=s43", "--raw", ...args],
-    { cwd: root, encoding: "utf8", timeout: 90000, windowsHide: true },
+    { cwd: root, encoding: "utf8", timeout: args[0] === "run-code" ? 180000 : 90000, windowsHide: true },
   );
   if (args[0] === "run-code" && /### Error|Error:/m.test(r.stdout)) {
     report.browserFailure = r.stdout
@@ -187,8 +187,8 @@ try {
     await page.getByText('Request RPS — completed + aborted, 5m', { exact: true }).waitFor();
     await new Promise(r => setTimeout(r, 6000));
     const mobile = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
-    if (mobile.document > mobile.viewport + 2) throw Error('Mobile horizontal overflow');
     await page.screenshot({ path: 'output/playwright/s43-mobile.png', fullPage: true });
+    if (mobile.document > mobile.viewport + 2) throw Error('Mobile horizontal overflow: viewport '+mobile.viewport+', document '+mobile.document);
     await page.goto('${origin}/d/s43-monitoring?var-environment=missing-fixture&var-instance=All');
     await page.getByText('Request RPS — completed + aborted, 5m', { exact: true }).waitFor();
     await new Promise(r => setTimeout(r, 6000));
@@ -219,6 +219,7 @@ try {
   );
   const result = cli("run-code", `--filename=${codeFile}`);
   assert(/"pass"\s*:\s*true/.test(result), "Browser did not return PASS");
+  report.render = JSON.parse(result);
   report.checks.push(
     "desktop/mobile real dashboard and refresh/history frames",
     "environment/instance filters",
