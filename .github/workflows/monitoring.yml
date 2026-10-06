@@ -47,6 +47,10 @@ jobs:
           docker run --rm --entrypoint promtool -v "$PWD/monitoring:/monitoring:ro" -w /monitoring prom/prometheus:v3.5.0 test rules rule-tests.json
       - name: Real HTTP, database, collector and transport failure/recovery
         run: node apps/api/scripts/verify-s43.mjs
+      - name: Grafana browser desktop/mobile and Viewer permissions
+        run: |
+          npm install --global @playwright/cli@0.1.22
+          node monitoring/browser.mjs
       - name: Preserve sanitized evidence
         if: failure()
         run: node monitoring/diagnose.mjs
@@ -55,7 +59,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: s43-monitoring-evidence
-          path: evidence/s43/runtime/*.json
+          path: |
+            evidence/s43/runtime/*.json
+            output/playwright/s43-*.png
           if-no-files-found: error
       - name: Stop isolated stack without deleting volumes
         if: always()

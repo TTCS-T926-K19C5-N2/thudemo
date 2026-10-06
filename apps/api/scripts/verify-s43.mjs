@@ -572,6 +572,18 @@ try {
   );
   const snapshots = query('ticket_http_requests_total{service="api"}');
   report.series = snapshots;
+  // A real dependency exception must also pass through completion instrumentation.
+  // Stop only this stack's dedicated database, preserve its volume, then recover.
+  compose('stop', 'postgres');
+  try {
+    const failed = await call(18001, `/showtimes/${showId}/holds`, 'GET', undefined, a);
+    check(failed.status === 500, 'real database exception returns instrumented HTTP 500');
+    check(exported('api-a').includes('status="500"'), 'guard/dependency exception counted');
+    report.rawSamples.push({ status: failed.status, ms: failed.ms, case: 'dedicated DB unavailable' });
+  } finally {
+    compose('start', 'postgres');
+    await wait(() => db.$queryRaw`SELECT 1`.then(() => true), 'dedicated database recovery');
+  }
   // Counter reset: restart one exporter process, then re-observe real requests.
   for (let i = 0; i < 3; i++) await call(18001, '/showtimes');
   await wait(
@@ -612,6 +624,20 @@ try {
     () => query('up{instance="api-b:9464"}')[0]?.value[1] === '1',
     'scrape recover',
   );
+  const discoveryFile = resolve(runtime, 'targets.json');
+  const discovery = readFileSync(discoveryFile, 'utf8');
+  try {
+    const removed = JSON.parse(discovery);
+    removed[0].targets = ['api-a:9464'];
+    writeFileSync(discoveryFile, JSON.stringify(removed));
+    await wait(() => query('up{instance="api-b:9464"}').length === 0, 'removed discovery target becomes absent');
+    check(query('(sum(rate(ticket_http_requests_total{service="api"}[5m]))) and on() (count(up{service="api"}) == 2)').length === 0, 'removed target masks incomplete aggregate as Unknown');
+    await wait(() => query('ALERTS{alertname="S43TargetMissing",alertstate="pending"}').length > 0, 'missing target alert Pending');
+    check(true, 'removed target detected independently of up=0');
+  } finally {
+    writeFileSync(discoveryFile, discovery);
+    await wait(() => query('up{instance="api-b:9464"}')[0]?.value[1] === '1', 'discovery target recovery');
+  }
   // Real worker uses original TTL; expiry fixture modifies only this run-owned claim.
   await db.seatHold.updateMany({
     where: { showtimeId: showId },
