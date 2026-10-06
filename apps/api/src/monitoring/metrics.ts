@@ -90,7 +90,7 @@ export class Metrics {
   // This seam does not assert that a webhook subsystem exists.
   rejectWebhook(reason: WebhookRejectionReason) {
     if (!reasons.includes(reason)) return;
-    this.webhookRejections.inc({ reason });
+    this.safe(() => this.webhookRejections.inc({ reason }));
   }
   middleware = (req: Request, res: Response, next: NextFunction) => {
     if (process.env.MONITORING_ENABLED !== 'true') return next();

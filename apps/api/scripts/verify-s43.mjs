@@ -298,7 +298,9 @@ async function benchmark(a, b) {
 }
 async function lifecycle(name, failChannel) {
   const before = deliveries().at(-1)?.id ?? 0;
+  const ownDeliveries = () => deliveries().filter((v) => v.id > before && v.alertName === name);
   control({
+    testName: name,
     emailFail: failChannel === 'email',
     telegramFail: failChannel === 'telegram',
   });
@@ -322,7 +324,7 @@ async function lifecycle(name, failChannel) {
     );
     const successChannel = failChannel === 'email' ? 'telegram' : 'email';
     await wait(() => {
-      const d = deliveries().filter((v) => v.id > before);
+      const d = ownDeliveries();
       return failChannel
         ? d.some((v) => v.channel === failChannel && v.state === 'failed') &&
             d.some((v) => v.channel === successChannel && v.state === 'firing')
@@ -332,7 +334,7 @@ async function lifecycle(name, failChannel) {
     }, 'Independent channel fanout');
     if (failChannel) {
       check(
-        !deliveries().some(
+        !ownDeliveries().some(
           (v) =>
             v.id > before && v.channel === failChannel && v.state === 'firing',
         ),
@@ -341,7 +343,7 @@ async function lifecycle(name, failChannel) {
       control({ emailFail: false, telegramFail: false });
       await wait(
         () =>
-          deliveries().some(
+          ownDeliveries().some(
             (v) =>
               v.id > before &&
               v.channel === failChannel &&
@@ -352,7 +354,7 @@ async function lifecycle(name, failChannel) {
       );
     }
     await sleep(12000);
-    const firing = deliveries().filter(
+    const firing = ownDeliveries().filter(
       (v) => v.id > before && v.state === 'firing',
     );
     check(
@@ -369,7 +371,7 @@ async function lifecycle(name, failChannel) {
   await wait(
     () =>
       ['email', 'telegram'].every((c) =>
-        deliveries().some(
+        ownDeliveries().some(
           (v) => v.id > before && v.channel === c && v.state === 'resolved',
         ),
       ),
@@ -386,7 +388,7 @@ async function lifecycle(name, failChannel) {
     firing: true,
     resolved: true,
     failChannel: failChannel ?? null,
-    deliveries: deliveries().filter((v) => v.id > before),
+    deliveries: ownDeliveries(),
   });
 }
 try {

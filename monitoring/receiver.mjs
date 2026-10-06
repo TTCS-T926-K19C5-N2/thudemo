@@ -14,6 +14,8 @@ const events = existsSync(path)
   : [];
 let emailFail = false,
   telegramFail = false;
+const testNames = ["S43IntegrationBoth", "S43IntegrationEmailFailure", "S43IntegrationTelegramFailure"];
+let currentTest = null;
 const record = (channel, state, payload) => {
   const event = {
     id: events.length + 1,
@@ -22,6 +24,7 @@ const record = (channel, state, payload) => {
     at: new Date().toISOString(),
     digest: createHash("sha256").update(payload).digest("hex"),
     test: true,
+    alertName: state === "failed" ? currentTest : testNames.find((name) => payload.includes(name)) ?? null,
   };
   events.push(event);
   appendFileSync(path, JSON.stringify(event) + "\n");
@@ -87,6 +90,10 @@ const http = createServer((req, res) => {
     req.on("end", () => {
       try {
         const v = JSON.parse(body);
+        if (Object.hasOwn(v, "testName")) {
+          if (v.testName !== null && !testNames.includes(v.testName)) return json(400, {});
+          currentTest = v.testName;
+        }
         emailFail = v.emailFail === true;
         telegramFail = v.telegramFail === true;
         json(200, { emailFail, telegramFail });
