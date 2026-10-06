@@ -6,16 +6,16 @@ Status: **PARTIALLY DONE / implementation qua [PR #49](https://github.com/TTCS-T
 
 | AC/định nghĩa | Implementation | Test/evidence chạy lại | Trạng thái |
 |---|---|---|---|
-| Số requests/rate | Middleware trước parser/guard, finish/abort once, bounded labels | Unit completion/close/privacy; `verify-s43` known HTTP counts + Prometheus series | Unit PASS; CI Docker integration PASS tại 8c21fef |
-| Tỉ lệ lỗi | 5xx/all responses, 4xx/409/499 riêng, zero denominator Unknown | Unit statuses; official promtool sustained/equality/min samples/no data | Unit + official promtool PASS; CI integration PASS tại 8c21fef |
+| Số requests/rate | Middleware trước parser/guard, finish/abort once, bounded labels | Unit completion/close/privacy; `verify-s43` known HTTP counts + Prometheus series | Unit PASS; CI Docker integration PASS tại dc29e4e |
+| Tỉ lệ lỗi | 5xx/all responses, 4xx/409/499 riêng, zero denominator Unknown | Unit statuses; official promtool sustained/equality/min samples/no data | Unit + official promtool PASS; CI integration PASS tại dc29e4e |
 | p95 response | Monotonic seconds histogram, sum buckets before quantile, 5m, resolution documented | Unit histogram; promtool two-instance known distribution; raw same-build benchmark | Unit + known two-instance histogram fixtures PASS; CI raw benchmark ghi riêng NFR FAIL |
 | Tranh chấp ghế | 409 + SEAT_CONFLICT only, failed request count | Unit other 409 excluded; two buyers/product API/real DB fixture | CI two buyers/real API/DB PASS; 100 successes + 100 conflicts mỗi round |
 | Webhook bị từ chối | Bounded seam + availability=0 + unavailable dashboard | Unit reason bound, promtool unavailable; no fake payment endpoint | **Pending AC: main chưa có handler producer thật** |
-| Vượt ngưỡng gửi cảnh báo | Prometheus for/min sample → Alertmanager independent Email+Telegram routes → receiver | `verify-s43` traffic + Pending/Firing/Resolved, both PASS, each fail/recover/dedup | CI local lifecycle PASS tại 8c21fef; external Pending |
-| Health/freshness/no data/reset | Private credential exporter, up/expected target count and panel masks | Unit off/fail open; runtime restart/down/recovery; rule no-data/reset | Unit PASS; CI Docker integration PASS tại 8c21fef |
-| Worker hiện có | duration/error/cleaned/last-success, fail open, no cadence/TTL changes | Unit collector throw/sweep retry/off; real expired run fixture | Unit PASS; CI Docker integration PASS tại 8c21fef |
+| Vượt ngưỡng gửi cảnh báo | Prometheus for/min sample → Alertmanager independent Email+Telegram routes → receiver | `verify-s43` traffic + Pending/Firing/Resolved, both PASS, each fail/recover/dedup | CI local lifecycle PASS tại dc29e4e; external Pending |
+| Health/freshness/no data/reset | Private credential exporter, up/expected target count and panel masks | Unit off/fail open; runtime restart/down/recovery; rule no-data/reset | Unit PASS; CI Docker integration PASS tại dc29e4e |
+| Worker hiện có | duration/error/cleaned/last-success, fail open, no cadence/TTL changes | Unit collector throw/sweep retry/off; real expired run fixture | Unit PASS; CI Docker integration PASS tại dc29e4e |
 | Job backlog/age, email/refund failure | Inventory unavailable, không tạo subsystems mới | Source main inventory | N/A/chưa có producer/query nghiệm thu; không healthy 0 |
-| Dashboard history/filter/mobile/viewer | Provisioned Grafana, auth required, code dashboard | Actual browser desktop/mobile + role/API checks | Browser auth/Viewer + desktop/mobile/data/No data đã chạy; full error/recovery browser gate đang sửa/rerun |
+| Dashboard history/filter/mobile/viewer | Provisioned Grafana, auth required, code dashboard | Actual browser desktop/mobile + role/API checks | CI browser 6 checks PASS tại dc29e4e; fixture cleaned, 390px không overflow; No data/error/recovery PASS |
 | S-01/DoD staging | Existing local/code/CI base integrated | S43 CI head SHA separate from baseline CI; no deployment in scope | Staging Pending, S-01 không fully Done |
 
 ## Local checks đã chạy
@@ -26,9 +26,11 @@ Unit regression bao phủ metric không làm worker dừng khi inc/set/observe t
 
 Docker Desktop 29.5.3 ban đầu kết nối được, image pull/build đang thực hiện thì engine mất kết nối; host log báo WSL unmount disk `Operation not permitted`. CLI engine/status bị treo. Không reset/prune/delete DB/volume để xử lý. Cần runtime hồi phục hoặc CI Linux để chạy full evidence; không tuyên bố Docker/config/promtool/integration đã PASS khi chưa có exit 0. Request PO khởi động lại Desktop không reset dữ liệu trong lúc tiếp tục phần độc lập.
 
+Sau PO khởi động lại, `docker info` kết nối lại 29.5.3; setup và Compose config --quiet PASS. Build tiếp tục sau DNS/package retry, API image build thành công nhưng migration image export thất bại `input/output error` tại Docker containerd tmpmount. Full stack/browser trên máy Windows vẫn Pending; không reset/prune/xóa volume hay coi CI Linux PASS là Windows local PASS.
+
 ## CI, runtime và delivery
 
-Workflow `S43 monitoring / S-43 / monitoring-integration` có frozen install, reproducible config diff, isolated image/DB/network/ports, official promtool/amtool, HTTP/collector/transport verifier, bounded waits/nonzero assertions và sanitized artifact. External mode forbidden in CI. PR #49 đã có CI remote: ba required checks T-02 PASS ở head 7feda20; job S43 đang chạy integration, chưa thay kết quả runtime bằng local PASS. T31 giữ nguyên và FAIL NFR p95 baseline; không tắt test.
+Workflow `S43 monitoring / S-43 / monitoring-integration` có frozen install, reproducible config diff, isolated image/DB/network/ports, official promtool/amtool, HTTP/collector/transport verifier, bounded waits/nonzero assertions và sanitized artifact. External mode forbidden in CI. PR #49: ba required checks T-02 và toàn bộ S43 PASS ở head dc29e4e. Mọi head sửa tiếp theo phải có CI cùng SHA trước approval/merge; kết quả lịch sử không thay gate final head. T31 giữ nguyên và FAIL NFR p95 baseline; không tắt test.
 
 Raw runtime sẽ ở gitignored `evidence/s43/runtime/integration.json`, hoặc CI artifact `s43-monitoring-evidence`. Report source SHA, status/latency samples, bounded series, benchmark before/after và local receiver IDs/digests. Không raw messages hoặc PII. Local SMTP accepted/Telegram emulator message ID chỉ chứng minh local transport, không provider/người thật.
 
@@ -39,6 +41,12 @@ Retention/resource limits và Render Free boundaries xem [runbook](S43_MONITORIN
 Codex Security diff scan 52e7089d-aba1-4973-88a2-429903a376b3 hoàn tất tại immutable 2fd86f793a5667d8b38b3dcfc077989fa77fabc5: 22/22 changed source-like files reviewed, 0 reportable findings trong static offline scope. Không advisory lookup/runtime security probes; không áp kết quả scan cũ cho SHA sửa tiếp theo. Review delta/final SHA riêng trước approval. Daybreak access chưa được cấp; protected result visibility có giới hạn.
 
 ## Evidence CI đã quan sát (chưa phải approval final head)
+
+[Run 37434773639](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/37434773639), PR head dc29e4e5fc08f5566a30d8e5ae0679817b128a2c, checkout merge tạm 394fddda460ea31a4a1879db3d3e43ce2f8a6655: **whole S43 CI PASS**, official config/rules PASS, integration 41 checks PASS và browser 6 checks PASS. Integration cleanupErrors=[]; Viewer fixture cleaned=true; desktop/filter/history/No data/datasource failure+recovery PASS; runtimeErrors=0. Mobile viewport/document đều 390px. Sáu private-dashboard discovery 404 là request Grafana khi dashboard private, được ghi riêng; không bỏ qua console errors khác. Ảnh desktop/mobile/worker-alerts/query-error đã inspect thực tế. Các panel bên dưới được scroll để Grafana render/query, không dùng full-page screenshot có khoảng trống virtualization làm bằng chứng tất cả panel.
+
+Raw benchmark của run này: off 600 samples p95 931.783ms; on 600 samples p95 919.252ms; delta -12.532ms (-1.345%). Cả hai NFR FAIL; biến thiên so với run trước cho thấy không thể suy ra speedup/causal regression từ modes tuần tự. Mỗi round 100 success + 100 conflict; ba alert cases đều Pending/Firing/Resolved, failure từng kênh + retry/recover/dedup PASS. Receiver lọc alertName từ payload thực, không gán nhầm alert khác theo control flag.
+
+Source bàn giao bổ sung legend environment cho worker aggregates, legend Email/Telegram và environment filter cho notification panels sau khi ảnh cho thấy legend trống; external routing chỉ tên+nonce của lượt controlled mới. Các delta này cần rerun final head và review riêng. Receipt external/staging/owner-SLA vẫn Pending.
 
 [Run 37432913608](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/37432913608), PR head 8c21fefd8d06d479cbcca48f77e6bdf8a4d32550, checkout merge tạm af2ce94cd10e50dbf61ed251764f02b21c4771da: official config/rule validation PASS; integration **41 checks PASS**, cleanupErrors=[]; ba alert test Pending/Firing/Resolved, exact one accepted Firing per channel, failure/retry/recovery independently PASS. Local receiver delivery IDs/digests nằm trong artifact integration.json, không provider external. Whole run vẫn **FAIL ở browser error-tooltip assertion**; không dùng integration PASS để ghi whole CI PASS. Source sửa tooltip theo Grafana 12.1.1 PanelStatus và mobile reload/overflow đang rerun.
 

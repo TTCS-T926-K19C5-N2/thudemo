@@ -223,25 +223,25 @@ const panels = [
     "s",
   ),
   panel(
-    "Worker sweep duration p95 / cleaned claims",
-    'histogram_quantile(0.95,sum by(le)(rate(ticket_worker_run_duration_seconds_bucket{service="worker",environment=~"$environment"}[5m]) and on(instance)(up{job="ticketing",service="worker"} == 1) and on(instance)(ticket_worker_enabled == 1)))',
+    "Worker sweep duration p95 — 5m",
+    'histogram_quantile(0.95,sum by(le,environment)(rate(ticket_worker_run_duration_seconds_bucket{service="worker",environment=~"$environment"}[5m]) and on(instance)(up{job="ticketing",service="worker"} == 1) and on(instance)(ticket_worker_enabled == 1)))',
     "s",
   ),
   panel(
     "Worker failures — 5m",
-    'sum(increase(ticket_worker_errors_total{service="worker",environment=~"$environment"}[5m]) and on(instance)(up{job="ticketing",service="worker"} == 1) and on(instance)(ticket_worker_enabled == 1))',
+    'sum by(environment)(increase(ticket_worker_errors_total{service="worker",environment=~"$environment"}[5m]) and on(instance)(up{job="ticketing",service="worker"} == 1) and on(instance)(ticket_worker_enabled == 1))',
   ),
   panel(
     "Expired holds cleaned — 5m",
-    'sum(increase(ticket_worker_cleaned_holds_total{service="worker",environment=~"$environment"}[5m]) and on(instance)(up{job="ticketing",service="worker"} == 1) and on(instance)(ticket_worker_enabled == 1))',
+    'sum by(environment)(increase(ticket_worker_cleaned_holds_total{service="worker",environment=~"$environment"}[5m]) and on(instance)(up{job="ticketing",service="worker"} == 1) and on(instance)(ticket_worker_enabled == 1))',
   ),
   panel(
     "Notification attempts/failures by transport — provider acceptance only",
-    "sum by(integration)(increase(alertmanager_notifications_total[5m]))",
+    'sum by(environment,integration)(increase(alertmanager_notifications_total{environment=~"$environment",integration=~"email|telegram"}[5m]))',
   ),
   panel(
     "Notification failures — retry/backoff per channel",
-    "sum by(integration)(increase(alertmanager_notifications_failed_total[5m]))",
+    'sum by(environment,integration)(increase(alertmanager_notifications_failed_total{environment=~"$environment",integration=~"email|telegram"}[5m]))',
   ),
 ];
 // percentunit uses fractions (1 = 100%); Grafana's generic percent range can
@@ -250,6 +250,8 @@ panels.find((p) => p.title.startsWith("5xx")).fieldConfig.defaults.min = 0;
 panels.find((p) => p.title.startsWith("5xx")).fieldConfig.defaults.max = 1;
 panels.find((p) => p.title.startsWith("Alerts")).targets[0].legendFormat =
   "{{alertname}} {{alertstate}}";
+for (const p of panels.filter((p) => p.title.startsWith("Notification")))
+  p.targets[0].legendFormat = "{{environment}} {{integration}}";
 panels.push({
   id: ++id,
   title: "Availability and alert lifecycle",

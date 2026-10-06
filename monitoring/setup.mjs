@@ -184,6 +184,21 @@ if (process.argv.includes("--external")) {
     chat_id: Number(chat),
     bot_token_file: "/run/secrets/external_telegram_token",
   });
+  // Only this newly provisioned controlled test may reach real recipients.
+  // Existing product/test alerts and any previous external test are discarded.
+  const testRun = randomBytes(16).toString("hex");
+  const matchers = [
+    'alertname="S43ControlledExternalTest"',
+    `s43_test_run="${testRun}"`,
+  ];
+  config.route.routes = [
+    { receiver: "email", matchers, continue: true },
+    { receiver: "telegram", matchers },
+  ];
+  privateWrite(
+    "external-test.json",
+    JSON.stringify({ alertname: "S43ControlledExternalTest", testRun }),
+  );
 }
 privateWrite("alertmanager.json", JSON.stringify(config, null, 2), 0o444);
 // Compose file-backed secrets are bind mounts: container UIDs differ from host UID.

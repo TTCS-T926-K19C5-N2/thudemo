@@ -49,7 +49,12 @@ function cli(...args) {
           ...args,
         ]
       : ["-s=s43", "--raw", ...args],
-    { cwd: root, encoding: "utf8", timeout: args[0] === "run-code" ? 180000 : 90000, windowsHide: true },
+    {
+      cwd: root,
+      encoding: "utf8",
+      timeout: args[0] === "run-code" ? 180000 : 90000,
+      windowsHide: true,
+    },
   );
   if (args[0] === "run-code" && /### Error|Error:/m.test(r.stdout)) {
     report.browserFailure = r.stdout

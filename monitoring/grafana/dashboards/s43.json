@@ -463,7 +463,7 @@
     },
     {
       "id": 12,
-      "title": "Worker sweep duration p95 / cleaned claims",
+      "title": "Worker sweep duration p95 — 5m",
       "type": "timeseries",
       "datasource": {
         "type": "prometheus",
@@ -478,7 +478,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "histogram_quantile(0.95,sum by(le)(rate(ticket_worker_run_duration_seconds_bucket{service=\"worker\",environment=~\"$environment\"}[5m]) and on(instance)(up{job=\"ticketing\",service=\"worker\"} == 1) and on(instance)(ticket_worker_enabled == 1)))",
+          "expr": "histogram_quantile(0.95,sum by(le,environment)(rate(ticket_worker_run_duration_seconds_bucket{service=\"worker\",environment=~\"$environment\"}[5m]) and on(instance)(up{job=\"ticketing\",service=\"worker\"} == 1) and on(instance)(ticket_worker_enabled == 1)))",
           "legendFormat": "{{environment}} {{service}} {{instance}} {{route}} {{status}} {{reason}}"
         }
       ],
@@ -516,7 +516,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(increase(ticket_worker_errors_total{service=\"worker\",environment=~\"$environment\"}[5m]) and on(instance)(up{job=\"ticketing\",service=\"worker\"} == 1) and on(instance)(ticket_worker_enabled == 1))",
+          "expr": "sum by(environment)(increase(ticket_worker_errors_total{service=\"worker\",environment=~\"$environment\"}[5m]) and on(instance)(up{job=\"ticketing\",service=\"worker\"} == 1) and on(instance)(ticket_worker_enabled == 1))",
           "legendFormat": "{{environment}} {{service}} {{instance}} {{route}} {{status}} {{reason}}"
         }
       ],
@@ -554,7 +554,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(increase(ticket_worker_cleaned_holds_total{service=\"worker\",environment=~\"$environment\"}[5m]) and on(instance)(up{job=\"ticketing\",service=\"worker\"} == 1) and on(instance)(ticket_worker_enabled == 1))",
+          "expr": "sum by(environment)(increase(ticket_worker_cleaned_holds_total{service=\"worker\",environment=~\"$environment\"}[5m]) and on(instance)(up{job=\"ticketing\",service=\"worker\"} == 1) and on(instance)(ticket_worker_enabled == 1))",
           "legendFormat": "{{environment}} {{service}} {{instance}} {{route}} {{status}} {{reason}}"
         }
       ],
@@ -592,8 +592,8 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by(integration)(increase(alertmanager_notifications_total[5m]))",
-          "legendFormat": "{{environment}} {{service}} {{instance}} {{route}} {{status}} {{reason}}"
+          "expr": "sum by(environment,integration)(increase(alertmanager_notifications_total{environment=~\"$environment\",integration=~\"email|telegram\"}[5m]))",
+          "legendFormat": "{{environment}} {{integration}}"
         }
       ],
       "fieldConfig": {
@@ -630,8 +630,8 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by(integration)(increase(alertmanager_notifications_failed_total[5m]))",
-          "legendFormat": "{{environment}} {{service}} {{instance}} {{route}} {{status}} {{reason}}"
+          "expr": "sum by(environment,integration)(increase(alertmanager_notifications_failed_total{environment=~\"$environment\",integration=~\"email|telegram\"}[5m]))",
+          "legendFormat": "{{environment}} {{integration}}"
         }
       ],
       "fieldConfig": {
