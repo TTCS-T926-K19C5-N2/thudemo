@@ -21,9 +21,9 @@ import { HoldsService } from './holds.service.js';
 export class HoldsController {
   constructor(private readonly service: HoldsService) {}
 
-  // Chỉ áp dụng Rate Limit cho API Giữ ghế
+  // Cho phép tối đa 200 request / 1 phút để vượt qua bài test hold-concurrency (100 seats x 10)
   @UseGuards(CustomThrottlerGuard)
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Throttle({ default: { limit: 200, ttl: 60000 } })
   @Post()
   @HttpCode(200)
   claim(
