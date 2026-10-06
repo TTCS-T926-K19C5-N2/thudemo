@@ -34,7 +34,8 @@ function inside(code, service = 'receiver') {
 }
 function http(url, method = 'GET', body) {
   const code = `const fs=require('node:fs');fetch(${JSON.stringify(url)},{method:${JSON.stringify(method)},headers:{'Content-Type':'application/json',Authorization:'Bearer '+fs.readFileSync('/run/secrets/metrics_token','utf8').trim()},${body ? `body:JSON.stringify(${JSON.stringify(body)}),` : ''}signal:AbortSignal.timeout(5000)}).then(async r=>{if(!r.ok)throw Error('internal HTTP failed');console.log(await r.text())}).catch(()=>process.exit(1));`;
-  return JSON.parse(inside(code));
+  const text = inside(code);
+  return text ? JSON.parse(text) : null;
 }
 const query = (expr) =>
   http(`http://prometheus:9090/api/v1/query?query=${encodeURIComponent(expr)}`)
@@ -570,6 +571,11 @@ try {
   const snapshots = query('ticket_http_requests_total{service="api"}');
   report.series = snapshots;
   // Counter reset: restart one exporter process, then re-observe real requests.
+  for (let i = 0; i < 3; i++) await call(18001, '/showtimes');
+  await wait(
+    () => query('ticket_http_requests_total{instance="api-a:9464",route="/showtimes",status="200"}').some((v) => Number(v.value[1]) >= 4),
+    'collector observes pre-restart counter above new value',
+  );
   compose('restart', 'api-a');
   await wait(
     async () => (await fetch('http://127.0.0.1:18001/health')).ok,

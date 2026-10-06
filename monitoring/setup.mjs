@@ -16,6 +16,13 @@ const secret = (name, value = randomBytes(32).toString("hex")) => {
   if (!existsSync(path)) writeFileSync(path, value, { mode: 0o600 });
   return readFileSync(path, "utf8").trim();
 };
+// Preserve the inode of bind-mounted files when updating generated configuration.
+const privateWrite = (name, value, mode = 0o600) => {
+  const path = resolve(dir, name);
+  if (existsSync(path)) chmodSync(path, 0o600);
+  writeFileSync(path, value, { mode: 0o600 });
+  chmodSync(path, mode);
+};
 const password = secret("db-password");
 secret("metrics-token");
 secret("grafana-password");
@@ -136,16 +143,8 @@ if (process.argv.includes("--external")) {
       lookup.result.type === "private",
     "Start the bot with /start and verify the approved private chat",
   );
-  writeFileSync(resolve(dir, "external-telegram-token"), token, {
-    mode: 0o600,
-  });
-  writeFileSync(
-    resolve(dir, "external-smtp-password"),
-    process.env.S43_SMTP_PASSWORD,
-    {
-      mode: 0o600,
-    },
-  );
+  privateWrite("external-telegram-token", token, 0o444);
+  privateWrite("external-smtp-password", process.env.S43_SMTP_PASSWORD, 0o444);
   Object.assign(config.receivers[1].email_configs[0], {
     to: process.env.S43_EMAIL_TO,
     from: process.env.S43_SMTP_FROM,
@@ -160,11 +159,7 @@ if (process.argv.includes("--external")) {
     bot_token_file: "/run/secrets/external_telegram_token",
   });
 }
-writeFileSync(
-  resolve(dir, "alertmanager.json"),
-  JSON.stringify(config, null, 2),
-  { mode: 0o600 },
-);
+privateWrite("alertmanager.json", JSON.stringify(config, null, 2), 0o444);
 // Compose file-backed secrets are bind mounts: container UIDs differ from host UID.
 // Search/read is denied to other host users by the 0700 parent; mount files must
 // be readable by non-root node, Grafana, Prometheus and Alertmanager inside containers.
