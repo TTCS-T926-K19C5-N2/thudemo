@@ -7,10 +7,14 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 const root = resolve(import.meta.dirname, '../../..');
 const runtime = resolve(root, 'monitoring/.runtime');
-const routing = JSON.parse(readFileSync(resolve(runtime, 'alertmanager.json'), 'utf8'));
+const routing = JSON.parse(
+  readFileSync(resolve(runtime, 'alertmanager.json'), 'utf8'),
+);
 assert(
-  routing.receivers?.find((r) => r.name === 'email')?.email_configs?.[0]?.smarthost === 'receiver:2525' &&
-  routing.receivers?.find((r) => r.name === 'telegram')?.telegram_configs?.[0]?.api_url === 'http://receiver:8080',
+  routing.receivers?.find((r) => r.name === 'email')?.email_configs?.[0]
+    ?.smarthost === 'receiver:2525' &&
+    routing.receivers?.find((r) => r.name === 'telegram')?.telegram_configs?.[0]
+      ?.api_url === 'http://receiver:8080',
   'Full integration verifier is local-only; restore default setup before running',
 );
 const evidence = resolve(root, 'evidence/s43/runtime');
@@ -43,6 +47,22 @@ function http(url, method = 'GET', body) {
   const text = inside(code);
   return text ? JSON.parse(text) : null;
 }
+// The mounted file may have been restored without restarting Alertmanager.
+// Inspect the active receiver configuration before any load or alert side effect.
+const activeRouting = http('http://alertmanager:9093/api/v2/status').config
+  .original;
+assert(
+  /^\s+smarthost:\s*receiver:2525\s*$/m.test(activeRouting) &&
+    /^\s+api_url:\s*http:\/\/receiver:8080\/?\s*$/m.test(activeRouting) &&
+    /^\s+bot_token_file:\s*\/run\/secrets\/telegram_token\s*$/m.test(
+      activeRouting,
+    ) &&
+    [...activeRouting.matchAll(/^\s*-\s*name:\s*(\S+)\s*$/gm)]
+      .map((m) => m[1])
+      .sort()
+      .join(',') === 'discard,email,telegram',
+  'Active Alertmanager routing must be local; restore default setup and restart Alertmanager first',
+);
 const query = (expr) =>
   http(`http://prometheus:9090/api/v1/query?query=${encodeURIComponent(expr)}`)
     .data.result;
@@ -305,7 +325,8 @@ async function benchmark(a, b) {
 }
 async function lifecycle(name, failChannel) {
   const before = deliveries().at(-1)?.id ?? 0;
-  const ownDeliveries = () => deliveries().filter((v) => v.id > before && v.alertName === name);
+  const ownDeliveries = () =>
+    deliveries().filter((v) => v.id > before && v.alertName === name);
   control({
     testName: name,
     emailFail: failChannel === 'email',
@@ -372,9 +393,11 @@ async function lifecycle(name, failChannel) {
     );
   } finally {
     clearInterval(timer);
-    testRule(name, false);
     control({ emailFail: false, telegramFail: false });
   }
+  // Keep the rule loaded while traffic falls below its threshold. Removing a
+  // firing rule stops updates and waits for EndsAt expiry instead of exercising
+  // Prometheus' real false-condition -> Resolved notification path.
   await wait(
     () =>
       ['email', 'telegram'].every((c) =>
@@ -397,6 +420,7 @@ async function lifecycle(name, failChannel) {
     failChannel: failChannel ?? null,
     deliveries: ownDeliveries(),
   });
+  testRule(name, false);
 }
 try {
   await wait(
@@ -583,18 +607,40 @@ try {
   // Stop only this stack's dedicated database, preserve its volume, then recover.
   compose('stop', 'postgres');
   try {
-    const failed = await call(18001, `/showtimes/${showId}/holds`, 'GET', undefined, a);
-    check(failed.status === 500, 'real database exception returns instrumented HTTP 500');
-    check(exported('api-a').includes('status="500"'), 'guard/dependency exception counted');
-    report.rawSamples.push({ status: failed.status, ms: failed.ms, case: 'dedicated DB unavailable' });
+    const failed = await call(
+      18001,
+      `/showtimes/${showId}/holds`,
+      'GET',
+      undefined,
+      a,
+    );
+    check(
+      failed.status === 500,
+      'real database exception returns instrumented HTTP 500',
+    );
+    check(
+      exported('api-a').includes('status="500"'),
+      'guard/dependency exception counted',
+    );
+    report.rawSamples.push({
+      status: failed.status,
+      ms: failed.ms,
+      case: 'dedicated DB unavailable',
+    });
   } finally {
     compose('start', 'postgres');
-    await wait(() => db.$queryRaw`SELECT 1`.then(() => true), 'dedicated database recovery');
+    await wait(
+      () => db.$queryRaw`SELECT 1`.then(() => true),
+      'dedicated database recovery',
+    );
   }
   // Counter reset: restart one exporter process, then re-observe real requests.
   for (let i = 0; i < 3; i++) await call(18001, '/showtimes');
   await wait(
-    () => query('ticket_http_requests_total{instance="api-a:9464",route="/showtimes",status="200"}').some((v) => Number(v.value[1]) >= 4),
+    () =>
+      query(
+        'ticket_http_requests_total{instance="api-a:9464",route="/showtimes",status="200"}',
+      ).some((v) => Number(v.value[1]) >= 4),
     'collector observes pre-restart counter above new value',
   );
   compose('restart', 'api-a');
@@ -637,13 +683,29 @@ try {
     const removed = JSON.parse(discovery);
     removed[0].targets = ['api-a:9464'];
     writeFileSync(discoveryFile, JSON.stringify(removed));
-    await wait(() => query('up{instance="api-b:9464"}').length === 0, 'removed discovery target becomes absent');
-    check(query('(sum(rate(ticket_http_requests_total{service="api"}[5m]))) and on() (count(up{service="api"}) == 2)').length === 0, 'removed target masks incomplete aggregate as Unknown');
-    await wait(() => query('ALERTS{alertname="S43TargetMissing",alertstate="pending"}').length > 0, 'missing target alert Pending');
+    await wait(
+      () => query('up{instance="api-b:9464"}').length === 0,
+      'removed discovery target becomes absent',
+    );
+    check(
+      query(
+        '(sum(rate(ticket_http_requests_total{service="api"}[5m]))) and on() (count(up{service="api"}) == 2)',
+      ).length === 0,
+      'removed target masks incomplete aggregate as Unknown',
+    );
+    await wait(
+      () =>
+        query('ALERTS{alertname="S43TargetMissing",alertstate="pending"}')
+          .length > 0,
+      'missing target alert Pending',
+    );
     check(true, 'removed target detected independently of up=0');
   } finally {
     writeFileSync(discoveryFile, discovery);
-    await wait(() => query('up{instance="api-b:9464"}')[0]?.value[1] === '1', 'discovery target recovery');
+    await wait(
+      () => query('up{instance="api-b:9464"}')[0]?.value[1] === '1',
+      'discovery target recovery',
+    );
   }
   // Real worker uses original TTL; expiry fixture modifies only this run-owned claim.
   await db.seatHold.updateMany({
@@ -684,24 +746,53 @@ try {
   report.pass = true;
 } catch (error) {
   report.pass = false;
-  report.failure = { type: error.name, lastWait: report.lastWait, lastPassedCheck: report.checks.at(-1) };
-  throw Error('S43 integration failed; inspect sanitized integration.json and lastWait');
+  report.failure = {
+    type: error.name,
+    lastWait: report.lastWait,
+    lastPassedCheck: report.checks.at(-1),
+  };
+  throw Error(
+    'S43 integration failed; inspect sanitized integration.json and lastWait',
+  );
 } finally {
   report.cleanupErrors = [];
   const cleanup = async (name, action) => {
-    try { await action(); } catch { report.cleanupErrors.push(name); process.exitCode = 1; }
+    try {
+      await action();
+    } catch {
+      report.cleanupErrors.push(name);
+      process.exitCode = 1;
+    }
   };
-  await cleanup('receiver controls', () => control({ emailFail: false, telegramFail: false, testName: null }));
+  await cleanup('receiver controls', () =>
+    control({ emailFail: false, telegramFail: false, testName: null }),
+  );
   await cleanup('integration-only rules', () => testRule('unused', false));
   if (showId) {
-    await cleanup('fixture holds', () => db.seatHold.deleteMany({ where: { showtimeId: showId } }));
-    await cleanup('fixture hold sessions', () => db.holdSession.deleteMany({ where: { showtimeId: showId } }));
-    await cleanup('fixture seats', () => db.seat.deleteMany({ where: { showtimeId: showId } }));
-    await cleanup('fixture categories', () => db.seatCategory.deleteMany({ where: { showtimeId: showId } }));
-    await cleanup('fixture showtime', () => db.showtime.deleteMany({ where: { id: showId } }));
+    await cleanup('fixture holds', () =>
+      db.seatHold.deleteMany({ where: { showtimeId: showId } }),
+    );
+    await cleanup('fixture hold sessions', () =>
+      db.holdSession.deleteMany({ where: { showtimeId: showId } }),
+    );
+    await cleanup('fixture seats', () =>
+      db.seat.deleteMany({ where: { showtimeId: showId } }),
+    );
+    await cleanup('fixture categories', () =>
+      db.seatCategory.deleteMany({ where: { showtimeId: showId } }),
+    );
+    await cleanup('fixture showtime', () =>
+      db.showtime.deleteMany({ where: { id: showId } }),
+    );
   }
-  if (eventId) await cleanup('fixture event', () => db.event.deleteMany({ where: { id: eventId } }));
-  if (users.length) await cleanup('fixture users', () => db.user.deleteMany({ where: { id: { in: users } } }));
+  if (eventId)
+    await cleanup('fixture event', () =>
+      db.event.deleteMany({ where: { id: eventId } }),
+    );
+  if (users.length)
+    await cleanup('fixture users', () =>
+      db.user.deleteMany({ where: { id: { in: users } } }),
+    );
   await cleanup('database disconnect', () => db.$disconnect());
   report.finished ??= new Date().toISOString();
   writeFileSync(

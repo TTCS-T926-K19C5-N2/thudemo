@@ -17,9 +17,14 @@ class MetricsExporter implements OnModuleInit, OnModuleDestroy {
   onModuleInit() {
     if (process.env.MONITORING_ENABLED !== 'true') return;
     try {
-      metrics.safe(() => metrics.workerEnabled.set(
-        process.env.HOLD_EXPIRY_MODE === 'off' || !process.env.HOLD_EXPIRY_MODE ? 0 : 1,
-      ));
+      metrics.safe(() =>
+        metrics.workerEnabled.set(
+          process.env.HOLD_EXPIRY_MODE === 'off' ||
+            !process.env.HOLD_EXPIRY_MODE
+            ? 0
+            : 1,
+        ),
+      );
       const token = process.env.METRICS_TOKEN_FILE
         ? readFileSync(process.env.METRICS_TOKEN_FILE, 'utf8').trim()
         : process.env.METRICS_TOKEN;

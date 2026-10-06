@@ -13,11 +13,29 @@ const dir = resolve(import.meta.dirname, ".runtime");
 mkdirSync(dir, { recursive: true, mode: 0o700 });
 chmodSync(dir, 0o700);
 if (process.platform === "win32") {
-  const owner = execFileSync("whoami", ["/user", "/fo", "csv", "/nh"], { encoding: "utf8", windowsHide: true }).match(/S-1-[0-9-]+/)?.[0];
+  const owner = execFileSync("whoami", ["/user", "/fo", "csv", "/nh"], {
+    encoding: "utf8",
+    windowsHide: true,
+  }).match(/S-1-[0-9-]+/)?.[0];
   assert(owner, "Cannot resolve current Windows account SID");
   try {
-    execFileSync("icacls", [dir, "/inheritance:r", "/grant:r", `*${owner}:(OI)(CI)F`, "*S-1-5-18:(OI)(CI)F", "*S-1-5-32-544:(OI)(CI)F"], { stdio: "ignore", windowsHide: true });
-  } catch { throw Error("Cannot protect private runtime directory ACL; stop before writing credentials"); }
+    execFileSync(
+      "icacls",
+      [
+        dir,
+        "/inheritance:r",
+        "/grant:r",
+        `*${owner}:(OI)(CI)F`,
+        "*S-1-5-18:(OI)(CI)F",
+        "*S-1-5-32-544:(OI)(CI)F",
+      ],
+      { stdio: "ignore", windowsHide: true },
+    );
+  } catch {
+    throw Error(
+      "Cannot protect private runtime directory ACL; stop before writing credentials",
+    );
+  }
 }
 const secret = (name, value = randomBytes(32).toString("hex")) => {
   const path = resolve(dir, name);
