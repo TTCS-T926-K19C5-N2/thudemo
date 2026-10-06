@@ -147,10 +147,7 @@ export async function holdTransaction<T>(
       // its claim CTE on every backend's first calls. This caches no row data;
       // VOLATILE clock/snapshot checks still execute for every request.
       await client.query(
-        `BEGIN; SET LOCAL statement_timeout = '${Math.ceil(limits.timeout)}ms'` +
-        (limits.validatedRoutine
-          ? "; SET LOCAL plan_cache_mode = 'force_generic_plan'"
-          : ''),
+        `BEGIN; SET LOCAL statement_timeout = '${Math.ceil(limits.timeout)}ms'`,
       );
       if (limits.validatedRoutine) client.pipeline = true;
       const value = await callback(tx);

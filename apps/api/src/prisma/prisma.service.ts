@@ -32,11 +32,10 @@ export class PrismaService
   private readonly readyConnections: number;
 
   constructor(configService: ConfigService) {
-    // Bound DB parallelism instead of multiplying cold plans/lock contenders.
-    // Two API processes use at most eight connections; the worker is sequential.
+    // Bound DB parallelism to 10 connections per API instance (20 total across 2 instances).
     const names = holdStatementNames();
     const readyConnections =
-      configService.get<string>('HOLD_EXPIRY_MODE') === 'worker' ? 1 : 4;
+      configService.get<string>('HOLD_EXPIRY_MODE') === 'worker' ? 1 : 10;
     const adapter = new HoldPoolAdapter(
       {
         connectionString: configService.getOrThrow<string>('DATABASE_URL'),
