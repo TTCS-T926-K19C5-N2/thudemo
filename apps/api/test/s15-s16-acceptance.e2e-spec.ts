@@ -6,6 +6,10 @@ import { AppModule } from '../src/app.module.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 import { HoldsService } from '../src/holds/holds.service.js';
 import { hashSessionToken, SESSION_COOKIE } from '../src/auth/auth.service.js';
+import { Prisma } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { holdTransaction } from '../src/prisma/hold-transaction.js';
+import { holdStatementNames } from '../src/prisma/hold-statement-names.js';
 
 type Account = { id: string; cookie: string };
 type Category = { id: string; name: string; price: number | null };
@@ -441,6 +445,45 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
       .soft(await db.order.count({ where: { showtimeId: showId } }))
       .toBe(0);
   }, 15000);
+
+  it('driver timeout cancels SQL, rolls back partial writes and leaves no pool setting behind', async () => {
+    await openSale();
+    const held = await hold([seats[0].id]).expect(200);
+    const session = await db.holdSession.findUniqueOrThrow({
+      where: { id: held.body.hold.id },
+    });
+    // A one-connection test pool in the already-guarded, isolated integration DB.
+    const adapter = await new PrismaPg({
+      connectionString: process.env.DATABASE_URL,
+      max: 1,
+    }).connect();
+    const pool = adapter.underlyingDriver();
+    try {
+      await expect(
+        holdTransaction(
+          pool,
+          async (tx) => {
+            await tx.$queryRaw(
+              Prisma.sql`UPDATE hold_sessions SET token=${randomUUID()}::uuid WHERE id=${session.id}::uuid RETURNING id`,
+            );
+            await tx.$queryRaw(Prisma.sql`SELECT pg_sleep(2)`);
+          },
+          holdStatementNames(),
+          { maxWait: 1000, timeout: 100 },
+        ),
+      ).rejects.toThrow();
+      // FOR UPDATE must be available after the server cancels the timed-out SQL.
+      const [fresh] = await db.$queryRaw<{ token: string }[]>(
+        Prisma.sql`SELECT token FROM hold_sessions WHERE id=${session.id}::uuid FOR UPDATE`,
+      );
+      expect(fresh.token).toBe(session.token);
+      const setting = await pool.query('SHOW statement_timeout');
+      expect(setting.rows[0].statement_timeout).toBe('0');
+      await place().expect(200);
+    } finally {
+      await adapter.dispose();
+    }
+  }, 10000);
 
   it('TC-S16-03: returns the existing pending order without adding another ten minutes', async () => {
     await openSale();

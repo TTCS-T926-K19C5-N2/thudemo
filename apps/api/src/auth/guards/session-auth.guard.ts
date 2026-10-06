@@ -59,7 +59,7 @@ export class SessionAuthGuard implements CanActivate {
 
     // One indexed read instead of separate session/user/role relation queries.
     // Revocation and verified status are still checked on every request.
-    const [session] = await this.prisma.$queryRaw<
+    const [session] = await this.prisma.sessionQuery<
       { id: string; email: string; roles: string[] }[]
     >(Prisma.sql`
       SELECT u.id,u.email,COALESCE((SELECT array_agg(r.name) FROM user_roles ur JOIN roles r ON r.id=ur."roleId" WHERE ur."userId"=u.id),'{}'::text[]) AS roles

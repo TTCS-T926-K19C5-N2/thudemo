@@ -1,5 +1,13 @@
 # Test case S-15 và S-16
 
+## Cập nhật mới nhất: tối ưu shared-pool SQL, 06/10/2026
+
+Working tree nhánh `test`, base `bd62011`: **46/46 E2E, 48/48 unit, 3 helper test PASS**. Suite riêng có 29 test = 28 AC S-15/S-16 cũ + một test driver timeout/rollback mới; không cộng benchmark checks vào số E2E. Build/lint/typecheck toàn workspace và health local PASS. Hai lượt benchmark cuối đạt total p95 **209,23 / 204,10 ms**, steady **133,28 / 120,75 ms**, đủ 45 checks/lượt, exit 0, nfrPass=true.
+
+Giá, snapshot giá đơn, chống tạo trùng và hạn thanh toán 600 giây không đổi. Đọc phiên vẫn kiểm DB mỗi request, không cache auth; dùng cùng pool/SQL nghiệp vụ, thêm server-side statement timeout trong transaction. Đây là **snapshot trước commit/push**; người dùng đã yêu cầu push `test` để CI kiểm bản mới. Chưa xác nhận CI PASS hoặc merge main từ các kết quả local này. Báo cáo và mọi lượt trước/sau: [verification.md](../../evidence/review/20261006/t31/optimization-v2/verification.md).
+
+Các mục bên dưới là kết quả lịch sử của những lần nghiệm thu trước, không phải số test hoặc trạng thái CI mới nhất.
+
 Ngày chạy: 06/10/2026. Branch: `feature/S-15-S-16-pricing-orders`.
 
 ## Kiểm tra bổ sung sau CI hiệu năng

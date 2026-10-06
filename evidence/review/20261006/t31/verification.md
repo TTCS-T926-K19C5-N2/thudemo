@@ -1,5 +1,15 @@
 # T-31: profiling và thử prepared statements
 
+## Cập nhật mới nhất: optimization-v2 (06/10/2026)
+
+Bản ghi kiểm chứng trước commit/push của tối ưu shared-pool SQL trên nhánh `test`, base `bd62011`, **chưa merge**. Người dùng đã yêu cầu gửi bản này lên `test` để chạy CI mới; xem commit/Actions để xác nhận trạng thái push sau khi báo cáo được ghi. Hai lượt cuối local đạt total p95 **209,23 / 204,10 ms**, steady **133,28 / 120,75 ms**; mỗi lượt đủ 45 checks, nfrPass=true, exit 0. Toàn workspace build/lint/typecheck PASS, 48 unit PASS, 3 helper PASS, 46/46 E2E PASS (28 AC cũ + một test driver mới trong suite 29 test), health port 3001 trả 200.
+
+Không đổi giá/hạn thanh toán 10 phút hoặc ngưỡng 300 ms. Session guard vẫn đọc DB ở từng request; transaction giữ ghế dùng lại pool Prisma và giữ SQL/lock/fresh-state/rollback. Vì có thay đổi đường SQL dùng chung, vẫn cần CI xác nhận trên SHA mới; không suy ra CI PASS từ local. Run attempt 2 của base `bd62011` đã FAIL T-31 với total p95 483,30 ms; đó không phải kết quả bản tối ưu này.
+
+Chi tiết, phạm vi ảnh hưởng, mọi lượt đo và rủi ro: [optimization-v2/verification.md](optimization-v2/verification.md). Các mục phía dưới là **bản ghi lịch sử trước commit bd62011**, không phải trạng thái mới nhất.
+
+## Bản ghi chuẩn bị prepared statements (lịch sử)
+
 Ngày local: 06/10/2026. Branch `test`, base `7653170`. Trạng thái khi chuẩn bị commit: các thay đổi chưa commit/push; `main` không đổi. Các kết quả CI dưới đây thuộc base, không phải bằng chứng của commit prepared statements sắp push.
 
 ## Kết luận

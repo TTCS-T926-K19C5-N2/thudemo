@@ -31,7 +31,7 @@ const record = (kind, started) =>
 function category(input) {
   const sql = typeof input === 'string' ? input : (input?.text ?? '');
   if (/^\s*(BEGIN|COMMIT|ROLLBACK)/i.test(sql))
-    return sql.trim().split(/\s/)[0].toUpperCase();
+    return sql.trim().split(/[;\s]/)[0].toUpperCase();
   if (sql.includes('WITH requested AS')) return 'hold-claim';
   if (sql.includes('FROM sessions s JOIN users u')) return 'auth';
   if (sql.includes('FROM (SELECT 1) anchor')) return 'hold-state';

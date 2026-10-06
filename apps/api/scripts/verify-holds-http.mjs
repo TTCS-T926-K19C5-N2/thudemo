@@ -1,6 +1,5 @@
 // Authenticated product HTTP, two actual Nest processes, real PostgreSQL.
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
+import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
@@ -11,6 +10,7 @@ import { hash } from 'argon2';
 import { once } from 'node:events';
 import { pathToFileURL } from 'node:url';
 import { HoldsService } from '../dist/holds/holds.service.js';
+import { PrismaService } from '../dist/prisma/prisma.service.js';
 
 const target = new URL(process.env.DATABASE_URL ?? '');
 assert(
@@ -30,9 +30,7 @@ const evidence = resolve(
   process.env.HOLDS_EVIDENCE_DIR ?? 'evidence/holds/20261004',
 );
 mkdirSync(evidence, { recursive: true });
-const db = new PrismaClient({
-  adapter: new PrismaPg({ connectionString: target.href }),
-});
+const db = new PrismaService(new ConfigService({ DATABASE_URL: target.href }));
 const service = new HoldsService(db);
 const processes = [],
   files = [],
