@@ -3,6 +3,7 @@
     "rules.json"
   ],
   "evaluation_interval": "1m",
+  "fuzzy_compare": true,
   "tests": [
     {
       "name": "Error sustained threshold requires debounce",

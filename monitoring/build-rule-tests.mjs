@@ -154,7 +154,7 @@ const tests = [
 writeFileSync(
   resolve(import.meta.dirname, "rule-tests.json"),
   JSON.stringify(
-    { rule_files: ["rules.json"], evaluation_interval: "1m", tests },
+    { rule_files: ["rules.json"], evaluation_interval: "1m", fuzzy_compare: true, tests },
     null,
     2,
   ) + "\n",
