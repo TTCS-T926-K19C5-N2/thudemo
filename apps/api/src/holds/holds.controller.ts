@@ -7,9 +7,7 @@ import {
   ParseUUIDPipe,
   Post,
   Req,
-  UseGuards,
 } from '@nestjs/common';
-import { CustomThrottlerGuard } from '../common/guards/custom-throttler.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { hashSessionToken } from '../auth/auth.service.js';
 import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js';
@@ -20,8 +18,6 @@ import { HoldsService } from './holds.service.js';
 export class HoldsController {
   constructor(private readonly service: HoldsService) {}
 
-  // Sử dụng CustomThrottlerGuard để kiểm tra Rate Limit tối ưu và nhanh nhất
-  @UseGuards(CustomThrottlerGuard)
   @Post()
   @HttpCode(200)
   claim(
