@@ -4,15 +4,8 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 @Injectable()
 export class CustomThrottlerGuard extends ThrottlerGuard {
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest();
-
-    // Bỏ qua rate limiting khi chạy các script test benchmark/concurrency (verify-holds-http)
-    if (
-      process.env.NODE_ENV === 'test' ||
-      process.env.CI ||
-      req.headers['user-agent']?.includes('node') ||
-      req.headers['x-verify-holds']
-    ) {
+    // Bỏ qua hoàn toàn logic kiểm tra Throttler trên CI/Environment Test để tránh latency khởi động (cold-start)
+    if (process.env.CI || process.env.NODE_ENV === 'test') {
       return true;
     }
 
