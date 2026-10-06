@@ -57,43 +57,24 @@ export class HoldsService {
     const requestId = randomUUID();
     try {
       return await this.db.holdTransaction(async (tx) => {
-        // RETURNING dependencies preserve show -> session -> sorted seat locks
-        // without three separate round trips. Invalid shows never write a session.
-        // Keep state() in a separate statement: it needs a fresh snapshot/clock
-        // after any session or seat lock wait, not this CTE's original snapshot.
+        // The VOLATILE routine keeps claim and fresh state as separate SQL
+        // commands on the server. This bounded transaction still validates every
+        // result before COMMIT; conflicts/expired states roll back partial writes.
         const [result] = await tx.$queryRaw<
-          { status: string; valid: number; claimedSeatIds: string[] }[]
+          {
+            status: string;
+            valid: number;
+            claimedSeatIds: string[];
+            serverTime: Date;
+            id: string | null;
+            expiresAt: Date | null;
+            seatIds: string[];
+          }[]
         >(Prisma.sql`
-          WITH requested AS (SELECT ARRAY[${Prisma.join(seatIds.map((id) => Prisma.sql`${id}::uuid`))}] AS ids),
-          available_show AS MATERIALIZED (
-            SELECT id,status,
-              (SELECT count(*)::int FROM seats s JOIN seat_categories c ON c.id=s."categoryId"
-                WHERE s."showtimeId"=showtimes.id AND s.id IN (SELECT unnest(ids) FROM requested)
-                  AND c.price IS NOT NULL) AS valid
-            FROM showtimes WHERE id=${showtimeId}::uuid FOR SHARE
-          ), authority AS (
-            INSERT INTO hold_sessions (id,"showtimeId","userId","sessionHash",token,"expiresAt","expectedSeatIds")
-            SELECT ${randomUUID()}::uuid,available_show.id,${userId}::uuid,${sessionHash},${randomUUID()}::uuid,
-              clock_timestamp()+interval '10 minutes',requested.ids
-            FROM available_show CROSS JOIN requested
-            WHERE available_show.status='ON_SALE' AND available_show.valid=${seatIds.length}
-            ON CONFLICT ("showtimeId","userId","sessionHash") DO UPDATE SET
-              "expectedSeatIds"=CASE WHEN hold_sessions."expiresAt"<=EXCLUDED."expiresAt"-interval '10 minutes' THEN EXCLUDED."expectedSeatIds"
-                ELSE ARRAY(SELECT DISTINCT seat_id FROM unnest(hold_sessions."expectedSeatIds" || EXCLUDED."expectedSeatIds") AS seat_id ORDER BY seat_id) END,
-              token=CASE WHEN hold_sessions."expiresAt"<=EXCLUDED."expiresAt"-interval '10 minutes' THEN EXCLUDED.token ELSE hold_sessions.token END,
-              "expiresAt"=CASE WHEN hold_sessions."expiresAt"<=EXCLUDED."expiresAt"-interval '10 minutes' THEN EXCLUDED."expiresAt" ELSE hold_sessions."expiresAt" END
-            RETURNING id,token,"expiresAt","showtimeId"
-          ), claimed AS (
-            INSERT INTO seat_holds ("seatId","showtimeId","holdSessionId",token,"expiresAt")
-            SELECT seat_id,authority."showtimeId",authority.id,authority.token,authority."expiresAt"
-            FROM authority CROSS JOIN requested CROSS JOIN unnest(requested.ids) AS seat_id ORDER BY seat_id
-            ON CONFLICT ("seatId") DO UPDATE SET "holdSessionId"=EXCLUDED."holdSessionId",token=EXCLUDED.token,"expiresAt"=EXCLUDED."expiresAt",
-              "acquiredAt"=CASE WHEN seat_holds.token=EXCLUDED.token THEN seat_holds."acquiredAt" ELSE clock_timestamp() END
-            WHERE seat_holds."expiresAt"<=clock_timestamp() OR (seat_holds."holdSessionId"=EXCLUDED."holdSessionId" AND seat_holds.token=EXCLUDED.token)
-            RETURNING "seatId"
-          )
-          SELECT status,valid,COALESCE((SELECT array_agg("seatId" ORDER BY "seatId") FROM claimed),'{}'::uuid[]) AS "claimedSeatIds"
-          FROM available_show`);
+          SELECT * FROM public.claim_hold_v1(
+            ${showtimeId}::uuid, ${userId}::uuid, ${sessionHash}::text,
+            ${'{' + seatIds.join(',') + '}'}::uuid[], ${randomUUID()}::uuid, ${randomUUID()}::uuid
+          )`);
         if (!result) throw new NotFoundException('Không tìm thấy suất diễn.');
         if (result.status !== 'ON_SALE')
           throw new ConflictException({
@@ -114,7 +95,17 @@ export class HoldsService {
             requestId,
           });
         }
-        const state = await this.state(tx, showtimeId, userId, sessionHash);
+        const state: HoldState = {
+          serverTime: result.serverTime,
+          hold:
+            result.id && result.expiresAt && result.seatIds.length
+              ? {
+                  id: result.id,
+                  expiresAt: result.expiresAt,
+                  seatIds: result.seatIds,
+                }
+              : null,
+        };
         if (!state.hold)
           throw new ConflictException({
             code: 'HOLD_EXPIRED',

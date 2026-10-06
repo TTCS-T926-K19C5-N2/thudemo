@@ -7,6 +7,7 @@ export function holdStatementNames() {
   return ({ sql }: { sql: string }): string => {
     if (
       !sql.includes('WITH requested AS') &&
+      !sql.includes('public.claim_hold_v1(') &&
       !sql.includes('FROM sessions s JOIN users u') &&
       !sql.includes('FROM (SELECT 1) anchor')
     )

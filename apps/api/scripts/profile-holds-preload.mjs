@@ -32,7 +32,11 @@ function category(input) {
   const sql = typeof input === 'string' ? input : (input?.text ?? '');
   if (/^\s*(BEGIN|COMMIT|ROLLBACK)/i.test(sql))
     return sql.trim().split(/[;\s]/)[0].toUpperCase();
-  if (sql.includes('WITH requested AS')) return 'hold-claim';
+  if (
+    sql.includes('WITH requested AS') ||
+    sql.includes('public.claim_hold_v1(')
+  )
+    return 'hold-claim';
   if (sql.includes('FROM sessions s JOIN users u')) return 'auth';
   if (sql.includes('FROM (SELECT 1) anchor')) return 'hold-state';
   return 'other';

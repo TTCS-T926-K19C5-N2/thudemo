@@ -1,6 +1,12 @@
 # T-31: profiling và thử prepared statements
 
+## Cập nhật mới nhất: optimization-v4 (06/10/2026)
+
+Đã triển khai routine PostgreSQL claim/state theo phê duyệt, migration mới không sửa lịch sử. Giữ transaction bounded/rollback/fresh clock và thanh toán 600 giây. Local **50/50 E2E, 64/64 unit, 3 helper**, build/lint/typecheck/health PASS; hai lượt HTTP đầy đủ p95 **187,32 / 191,43 ms**, 45 checks/lượt. Đây là snapshot trước push, **chưa xác nhận CI SHA mới hoặc merge main**. Chi tiết, raw và các lượt lỗi đã giữ: [optimization-v4/verification.md](optimization-v4/verification.md). Các cập nhật v3/v2 bên dưới là lịch sử.
+
 ## Cập nhật mới nhất: optimization-v3 (06/10/2026)
+
+**CI follow-up của 48afbf1:** PR 37404313213 PASS cả 5 job, T-31 total p95 298,57 ms; push 37404309847 vẫn FAIL T-31 463,35 ms. Cùng code ứng dụng có kết quả dao động, nên **chưa coi NFR 300 ms ổn định**, chưa merge main. Test chức năng S-15/S-16 và lỗi seat-map đã PASS. Chi tiết/diagnostic/phương án cần chốt: [ci-48afbf1.md](optimization-v3/ci-48afbf1.md). Phần follow-up này được cập nhật local sau push, chưa nằm trong 48afbf1.
 
 Bản chuẩn bị commit trên `test`, base `6a60b9b`: hai lượt benchmark thường local đạt total p95 **214,11 / 195,38 ms**, đủ 45 checks/lượt; sơ đồ 2000 ghế max **15,67 ms** qua 30 GET. **48/48 E2E, 63 unit, 3 helper PASS**; build/lint/typecheck và health port 3001 PASS. Chuẩn bị pool API trước listen (max vẫn 16, min nay 16; worker reserve 1), bỏ overfetch ở GET seats và dùng scoped shared-driver read. Không đổi chức năng S-15/S-16, TTL 600 giây, schema/migration/UI/CI hoặc ngưỡng 200/300 ms.
 

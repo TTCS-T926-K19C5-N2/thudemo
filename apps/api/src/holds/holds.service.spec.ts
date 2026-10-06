@@ -54,6 +54,7 @@ describe('hold driver error translation', () => {
   it.each([
     ['different_constraint', '23505'],
     ['seat_holds_seatId_showtimeId_key', '08006'],
+    ['missing_routine', '42883'],
   ])(
     'fails closed for unexpected constraint/code %s/%s',
     async (constraint, code) => {

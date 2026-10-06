@@ -1,5 +1,9 @@
 # Test case S-15 và S-16
 
+## Cập nhật mới nhất: PostgreSQL routine, 06/10/2026
+
+Local bản v4 theo phê duyệt: **50/50 E2E** (suite riêng 33/33), **64/64 unit**, 3 helper; build/lint/typecheck/health PASS. Giữ toàn bộ AC giá theo hạng/snapshot giá cũ, tạo đơn đủ ghế còn hạn/idempotency/thanh toán 600 giây. Thêm test routine VOLATILE/invoker, input mảng sai không ghi dữ liệu, giữ 2000 ghế và retry không gia hạn; quan sát chờ khóa qua hạn vẫn bắt buộc. Hai lượt HTTP đầy đủ p95 187,32 / 191,43 ms, 45 correctness checks/lượt; không hạ 300 ms hoặc bỏ mẫu đầu. **Snapshot local trước commit/push, cần CI đúng SHA mới, chưa merge main**. [Báo cáo v4 và các lượt lỗi đã giữ](../../evidence/review/20261006/t31/optimization-v4/verification.md). Các mục phía dưới là lịch sử.
+
 ## Cập nhật mới nhất: pool readiness và seat reads, 06/10/2026
 
 Nhánh `test`, base `6a60b9b`, snapshot trước commit/push: **48/48 E2E, 63/63 unit, 3 helper PASS**; build/lint/typecheck và health local PASS. Suite riêng 31 test gồm 28 AC cũ + driver timeout đã có + hai test seat-read mới. Hai lượt benchmark thường p95 **214,11 / 195,38 ms**, đủ 45 checks/lượt; sơ đồ 2000 ghế max **15,67 ms**, 30 mẫu. Không cộng benchmark checks vào E2E.

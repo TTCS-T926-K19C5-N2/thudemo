@@ -676,6 +676,56 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     },
   );
 
+  it('Hold routine is volatile/invoker and rejects malformed arrays without writes', async () => {
+    const [routine] = await db.$queryRaw<
+      { volatility: string; definer: boolean }[]
+    >`
+      SELECT provolatile::text AS volatility,prosecdef AS definer
+      FROM pg_proc WHERE oid='public.claim_hold_v1(uuid,uuid,text,uuid[],uuid,uuid)'::regprocedure`;
+    expect(routine).toEqual({ volatility: 'v', definer: false });
+    for (const value of ['{}', `{${seats[0].id},${seats[0].id}}`, '{NULL}']) {
+      await expect(
+        db.holdTransaction((tx) =>
+          tx.$queryRaw(Prisma.sql`
+        SELECT * FROM public.claim_hold_v1(${showId}::uuid,${buyer.id}::uuid,
+          ${'fixture-hash'}::text,${value}::uuid[],${randomUUID()}::uuid,${randomUUID()}::uuid)
+      `),
+        ),
+      ).rejects.toMatchObject({ code: '22023' });
+    }
+    expect(await db.holdSession.count({ where: { showtimeId: showId } })).toBe(
+      0,
+    );
+    expect(await db.seatHold.count({ where: { showtimeId: showId } })).toBe(0);
+  });
+
+  it('Hold routine binds all 2000 seats and preserves the original deadline on retry', async () => {
+    const extra = await db.seat.createManyAndReturn({
+      data: Array.from({ length: 1994 }, (_, i) => ({
+        showtimeId: showId,
+        categoryId: categories[0].id,
+        row: 'L',
+        seatNumber: i + 1,
+      })),
+    });
+    await openSale();
+    const ids = [...seats, ...extra].map((seat) => seat.id).sort();
+    const first = await hold(ids).expect(200);
+    expect(first.body.hold.seatIds).toEqual(ids);
+    const retry = await hold([...ids].reverse()).expect(200);
+    expect(retry.body.hold).toEqual(first.body.hold);
+    expect(await db.seatHold.count({ where: { showtimeId: showId } })).toBe(
+      2000,
+    );
+    expect(
+      (
+        await db.holdSession.findUniqueOrThrow({
+          where: { id: first.body.hold.id },
+        })
+      ).expectedSeatIds,
+    ).toEqual(ids);
+  });
+
   it('TC-S16-21: hold confirmation uses a fresh clock after a session lock wait', async () => {
     await openSale();
     const held = await hold([seats[0].id]).expect(200);
@@ -714,7 +764,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
         const [row] = await db.$queryRaw<{ waiting: boolean }[]>`
           SELECT EXISTS(SELECT 1 FROM pg_stat_activity
             WHERE datname=current_database() AND wait_event_type='Lock'
-              AND query LIKE '%INSERT INTO hold_sessions%') AS waiting`;
+              AND query LIKE '%public.claim_hold_v1(%') AS waiting`;
         if (row.waiting) {
           waiting = true;
           break;
