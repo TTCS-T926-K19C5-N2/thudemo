@@ -8,6 +8,7 @@ import {
   Post,
   Req,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { hashSessionToken } from '../auth/auth.service.js';
 import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js';
@@ -17,6 +18,9 @@ import { HoldsService } from './holds.service.js';
 @Roles('BUYER')
 export class HoldsController {
   constructor(private readonly service: HoldsService) {}
+
+  // Giới hạn API Giữ ghế: Tối đa 10 yêu cầu trong 60.000 ms (1 phút)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post()
   @HttpCode(200)
   claim(
@@ -31,6 +35,7 @@ export class HoldsController {
       body,
     );
   }
+
   @Get()
   current(
     @Param('id', ParseUUIDPipe) id: string,
