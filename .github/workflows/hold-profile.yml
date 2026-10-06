@@ -1,0 +1,74 @@
+name: Hold profiling (diagnostic, not acceptance)
+
+on:
+  push:
+    branches: [test]
+    paths: [.github/workflows/hold-profile.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  profile:
+    name: T-31 / diagnostic-profile
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      DATABASE_URL: postgresql://ci_test_user:ci_test_password@127.0.0.1:15432/sang_holds_local
+      REDIS_URL: redis://127.0.0.1:16382
+      HOLDS_DOCKER: docker
+      HOLDS_PROFILE: "1"
+      HOLDS_CPU_PROFILE: "1"
+      HOLDS_EVIDENCE_DIR: evidence/holds/diagnostic
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: ci_test_user
+          POSTGRES_PASSWORD: ci_test_password
+          POSTGRES_DB: sang_holds_local
+        ports: [15432:5432]
+        options: >-
+          --health-cmd "pg_isready -U ci_test_user -d sang_holds_local"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install, generate, migrate and build
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --filter api exec prisma generate
+          pnpm --filter api exec prisma migrate deploy
+          pnpm --filter api build
+      - name: Start isolated restartable cache
+        run: |
+          docker run -d --name sang-holds-cache-20261004 -p 127.0.0.1:16382:6379 --health-cmd='valkey-cli ping' --health-interval=1s --health-retries=30 valkey/valkey:8-alpine valkey-server --save '' --appendonly no
+          ready=false
+          for attempt in $(seq 1 30); do
+            if [ "$(docker inspect -f '{{.State.Health.Status}}' sang-holds-cache-20261004)" = healthy ]; then ready=true; break; fi
+            if [ "$attempt" -lt 30 ]; then sleep 1; fi
+          done
+          test "$ready" = true
+      - name: Product HTTP profile (instrumented, no threshold changes)
+        run: node apps/api/scripts/verify-holds-http.mjs
+      - name: Print timing and CPU categories only (never query parameters)
+        if: always()
+        run: node apps/api/scripts/summarize-holds-profile.mjs evidence/holds/diagnostic
+      - name: Preserve diagnostic raw results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: t31-diagnostic-profile
+          path: evidence/holds/diagnostic
+          if-no-files-found: error

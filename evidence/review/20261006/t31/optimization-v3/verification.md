@@ -55,4 +55,10 @@ Raw final E2E/performance ở [regression-final/e2e-results.json](regression-fin
 
 ## Tiếp theo
 
+### CI sau push 75edc2a (bổ sung, không phải snapshot local bên trên)
+
+[Push 37403700500](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/37403700500) và [PR 37403704546](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/37403704546): build/lint/test/K-01 đều PASS; T-31 vẫn FAIL total p95 **367,94 / 472,38 ms**, steady **213,41 / 268,26 ms**, mỗi run đủ 45 correctness checks. Không kết luận readiness đạt NFR CI; lỗi sơ đồ ghế không còn lặp ở test nhưng hiệu năng giữ chỗ còn thiếu. Người dùng đã được báo trước khi tiếp tục.
+
+Thêm workflow chẩn đoán độc lập `hold-profile.yml` chỉ chạy khi chính file đó được push trên `test`, cùng runtime/stores/verifier/gates, bật CPU + metrics. Không sửa `ci.yml` hoặc required checks; số đo có instrumentation không thay bằng chứng acceptance. Summary chỉ in các timing categories/call frames của diagnostic, không đọc/in SQL, cookies hoặc parameters. Đây là bước tìm nguyên nhân trên runner thật; chưa phải bản sửa giữ chỗ mới hoặc lý do merge.
+
 Người dùng đã cho phép commit/push `test` và kiểm CI. Chỉ kết luận đạt CI khi job của SHA mới thực sự PASS; không tự merge `main`, hạ threshold hoặc bỏ case chậm. Nếu còn lỗi, báo cụ thể số đo và giữ bằng chứng trước khi tiếp tục xử lý.
