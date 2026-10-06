@@ -7,6 +7,12 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 const root = resolve(import.meta.dirname, '../../..');
 const runtime = resolve(root, 'monitoring/.runtime');
+const routing = JSON.parse(readFileSync(resolve(runtime, 'alertmanager.json'), 'utf8'));
+assert(
+  routing.receivers?.find((r) => r.name === 'email')?.email_configs?.[0]?.smarthost === 'receiver:2525' &&
+  routing.receivers?.find((r) => r.name === 'telegram')?.telegram_configs?.[0]?.api_url === 'http://receiver:8080',
+  'Full integration verifier is local-only; restore default setup before running',
+);
 const evidence = resolve(root, 'evidence/s43/runtime');
 mkdirSync(evidence, { recursive: true });
 const composeArgs = [
@@ -44,6 +50,7 @@ const deliveries = () => http('http://receiver:8080/deliveries');
 const control = (value) => http('http://receiver:8080/control', 'POST', value);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function wait(check, name, timeout = 90000) {
+  report.lastWait = name;
   const start = Date.now();
   while (Date.now() - start < timeout) {
     try {
@@ -675,19 +682,28 @@ try {
   report.deliverySummary = deliveries();
   report.finished = new Date().toISOString();
   report.pass = true;
+} catch (error) {
+  report.pass = false;
+  report.failure = { type: error.name, lastWait: report.lastWait, lastPassedCheck: report.checks.at(-1) };
+  throw Error('S43 integration failed; inspect sanitized integration.json and lastWait');
 } finally {
-  control({ emailFail: false, telegramFail: false });
-  testRule('unused', false);
+  report.cleanupErrors = [];
+  const cleanup = async (name, action) => {
+    try { await action(); } catch { report.cleanupErrors.push(name); process.exitCode = 1; }
+  };
+  await cleanup('receiver controls', () => control({ emailFail: false, telegramFail: false, testName: null }));
+  await cleanup('integration-only rules', () => testRule('unused', false));
   if (showId) {
-    await db.seatHold.deleteMany({ where: { showtimeId: showId } });
-    await db.holdSession.deleteMany({ where: { showtimeId: showId } });
-    await db.seat.deleteMany({ where: { showtimeId: showId } });
-    await db.seatCategory.deleteMany({ where: { showtimeId: showId } });
-    await db.showtime.delete({ where: { id: showId } });
+    await cleanup('fixture holds', () => db.seatHold.deleteMany({ where: { showtimeId: showId } }));
+    await cleanup('fixture hold sessions', () => db.holdSession.deleteMany({ where: { showtimeId: showId } }));
+    await cleanup('fixture seats', () => db.seat.deleteMany({ where: { showtimeId: showId } }));
+    await cleanup('fixture categories', () => db.seatCategory.deleteMany({ where: { showtimeId: showId } }));
+    await cleanup('fixture showtime', () => db.showtime.deleteMany({ where: { id: showId } }));
   }
-  if (eventId) await db.event.delete({ where: { id: eventId } });
-  if (users.length) await db.user.deleteMany({ where: { id: { in: users } } });
-  await db.$disconnect();
+  if (eventId) await cleanup('fixture event', () => db.event.deleteMany({ where: { id: eventId } }));
+  if (users.length) await cleanup('fixture users', () => db.user.deleteMany({ where: { id: { in: users } } }));
+  await cleanup('database disconnect', () => db.$disconnect());
+  report.finished ??= new Date().toISOString();
   writeFileSync(
     resolve(evidence, 'integration.json'),
     JSON.stringify(report, null, 2),

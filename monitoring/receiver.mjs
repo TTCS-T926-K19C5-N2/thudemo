@@ -24,7 +24,7 @@ const record = (channel, state, payload) => {
     at: new Date().toISOString(),
     digest: createHash("sha256").update(payload).digest("hex"),
     test: true,
-    alertName: state === "failed" ? currentTest : testNames.find((name) => payload.includes(name)) ?? null,
+    alertName: state === "failed" ? currentTest : testNames.find((name) => payload.replace(/=\r?\n/g, "").includes(name)) ?? null,
   };
   events.push(event);
   appendFileSync(path, JSON.stringify(event) + "\n");

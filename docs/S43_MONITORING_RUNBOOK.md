@@ -16,7 +16,7 @@ docker compose --env-file monitoring/.runtime/compose.env -f monitoring/compose.
 docker compose --env-file monitoring/.runtime/compose.env -f monitoring/compose.yaml up -d --no-build --wait --wait-timeout 180
 ```
 
-`setup.mjs` tạo credentials ngẫu nhiên trong `monitoring/.runtime/` đã gitignore; không xoay password đã tồn tại. Trên POSIX thư mục cha có mode 0700, chặn tài khoản host khác truy cập; file secret/config bind-mounted có mode 0444 để UID riêng của Grafana/Prometheus/Alertmanager/Node đọc được trong container. DB password và Compose env giữ mode 0600. Trên Windows, giữ thư mục trong tài khoản riêng và giới hạn ACL phù hợp. Credentials external dùng file riêng, chạy setup mặc định khôi phục local routing mà không ghi đè bot fixture. Không sao chép `.runtime`, `.env.monitoring.local` hoặc dữ liệu Grafana vào Git/evidence/chat. Không dùng `docker compose config` không có `--quiet` trong evidence vì output chứa DB credential.
+`setup.mjs` tạo credentials ngẫu nhiên trong `monitoring/.runtime/` đã gitignore; không xoay password đã tồn tại. Trên POSIX thư mục cha có mode 0700, chặn tài khoản host khác truy cập; file secret/config bind-mounted có mode 0444 để UID riêng của Grafana/Prometheus/Alertmanager/Node đọc được trong container. DB password và Compose env giữ mode 0600. Trên Windows, setup bỏ ACL kế thừa và cấp riêng tài khoản hiện tại/SYSTEM/Administrators cho thư mục runtime; env private ngoài thư mục này cần cùng mức bảo vệ. Credentials external dùng file riêng, chạy setup mặc định khôi phục local routing mà không ghi đè bot fixture. Không sao chép `.runtime`, `.env.monitoring.local` hoặc dữ liệu Grafana vào Git/evidence/chat. Không dùng `docker compose config` không có `--quiet` trong evidence vì output chứa DB credential.
 
 Mở [dashboard](http://localhost:13000/d/s43-monitoring) và đăng nhập `operator`; password ở file `monitoring/.runtime/grafana-password`, đọc riêng tại máy. Không anonymous hoặc token Grafana admin trong frontend. Operator có thể quản lý datasource/user/silence; cấp user **Viewer** để chỉ xem và query, không sửa dashboard/config/silence. Dashboard provisioned-as-code không cho sửa qua UI. Role hệ thống này độc lập với ORGANIZER trong app.
 
@@ -59,6 +59,15 @@ node apps/api/scripts/verify-s43.mjs
 Verifier chỉ kết nối DB s43 fixture loopback:15443, tạo users/event/show/seats run-scoped, request qua buyer sessions thật, và dọn đúng các ID của run trong finally. Không reset volume/schema, không sửa migration hay giữ ghế người khác. Script kiểm HTTP success/401/403/validation/unknown/parse và conflict; inspect exporter/series, restart một API để kiểm reset, stop/start một API để kiểm down; worker cleanup chỉ expiry fixture riêng; load test before/after cùng image/dataset/concurrency; collector→rule Pending/Firing→native fanout→SMTP/Telegram local→Resolved; failure từng kênh và recover/dedup. Config rule **test riêng** ở `.runtime/test-rules.json`, không đổi TTL/ngưỡng sản phẩm. Evidence JSON chỉ status/latency/series labels hữu hạn/delivery ID/digest; không sessions/user IDs/raw payload. CI gọi same local verifier, **cấm external mode**.
 
 Benchmark dùng 200 requests/100 seats, 2 buyers fixture, hai API và 3 rounds mỗi mode; ghi raw samples và pooled p95, không trung bình p95. Đây là phép đo overhead cục bộ có nhiễu do sequential modes, không S-13/T-31 full DoD hoặc capacity production. Nếu baseline >=300ms, NFR giữ ghế vẫn FAIL; monitoring không sửa atomic/SQL để che kết quả. Toàn bộ scripts repo `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, API E2E trên các DB fixture có guard riêng vẫn là gates riêng.
+
+Kiểm browser thật sau verifier, với Chrome cài sẵn:
+
+```sh
+npm install --global @playwright/cli@0.1.22
+node monitoring/browser.mjs
+```
+
+Browser script chỉ dùng Grafana loopback của stack này: tạo Viewer fixture riêng, xác minh anonymous bị chặn/Viewer đọc được nhưng không sửa hay quản trị, tải dashboard history/refresh/filter ở desktop và mobile, kiểm No data và lỗi datasource có kiểm soát rồi recovery. Session state private nằm trong `.runtime`, không in credentials, xóa state và Viewer fixture khi xong. Report sanitized `browser.json`; ảnh ở gitignored `output/playwright/`. Full verifier từ chối routing ngoài receiver local. Cleanup độc lập giữ evidence cả khi bước khác lỗi.
 
 ## Email + Telegram external
 
