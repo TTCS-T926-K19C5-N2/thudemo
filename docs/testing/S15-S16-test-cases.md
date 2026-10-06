@@ -1,5 +1,9 @@
 # Test case S-15 và S-16
 
+## Cập nhật mới nhất: structured hold outcomes (06/10/2026)
+
+Local v6 **52/52E2E** (35suite riêng),**83/83unit**,3helper,build/lint/typecheck/health PASS. Ca mới autocommitDB nhận conflict vẫn rollback toàn bộ snapshot/ghế ghi dở và không ảnh hưởng winner; expected rejection không thoát thành DBerror nhưng vẫn cảnh báoAPI. Giá đơn cũ/đủ ghế/600giây/idempotency/auth/privacy giữ nguyên. FullHTTP45checks,p95total194,33ms; seat-map2000ghếmax15,58ms. V5 CI NFR còn FAIL, **cần CI đúng SHA mới, chưa merge main**. [Báo cáo/raw v6](../../evidence/review/20261006/t31/optimization-v6/verification.md). Các mục dưới là lịch sử.
+
 ## Cập nhật mới nhất: validated routine / pipeline (06/10/2026)
 
 Snapshot local v5: **51/51 E2E** (34suite riêng), **77/77unit**,3helper,build/lint/typecheck PASS. Thêm ca DB thật routine timeout khi COMMIT đã queue: phải rollback snapshot/ghế, không leak timeout/pipeline; giữ mọi AC giá đơn cũ/đủ ghế/600giây/idempotency. v2 kiểm toàn bộ trênserver và RAISE trước COMMIT, pipeline chỉ sau BEGIN được xác nhận. Seat-map live giá/expiry/quyền/6fields không cache; max2000ghế14,30ms. V4 CI p95347,07ms còn FAIL nên **cần CI SHA mới, chưa merge main**. [Báo cáo v5/raw](../../evidence/review/20261006/t31/optimization-v5/verification.md). Mọi mục dưới là lịch sử.

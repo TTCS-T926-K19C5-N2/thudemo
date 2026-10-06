@@ -711,7 +711,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
           pool,
           (tx) =>
             tx.$queryRaw(Prisma.sql`
-        SELECT * FROM public.claim_hold_v2(${showId}::uuid,${buyer.id}::uuid,
+        SELECT * FROM public.claim_hold_v3(${showId}::uuid,${buyer.id}::uuid,
           ${original.sessionHash}::text,${`{${seats[1].id}}`}::uuid[],${randomUUID()}::uuid,${randomUUID()}::uuid)
       `),
           holdStatementNames(),
@@ -742,12 +742,47 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     ).toBeNull();
   });
 
+  it('Structured conflict in an autocommit call rolls back every partial write before returning', async () => {
+    await openSale();
+    const held = await hold([seats[0].id]).expect(200);
+    const original = await db.holdSession.findUniqueOrThrow({
+      where: { id: held.body.hold.id },
+    });
+    const ids = [seats[0].id, seats[1].id].sort();
+    const [result] = await db.seatReadQuery<
+      {
+        failure: string;
+        rejectedSeatIds: string[];
+        id: string | null;
+        seatIds: string[];
+      }[]
+    >(Prisma.sql`SELECT * FROM public.claim_hold_v3(${showId}::uuid,${otherBuyer.id}::uuid,
+      ${'standalone-fixture-hash'}::text,${`{${ids.join(',')}}`}::uuid[],${randomUUID()}::uuid,${randomUUID()}::uuid)`);
+    expect(result).toMatchObject({
+      failure: 'H0004',
+      rejectedSeatIds: [seats[0].id],
+      id: null,
+      seatIds: [],
+    });
+    expect(
+      await db.holdSession.count({
+        where: { showtimeId: showId, userId: otherBuyer.id },
+      }),
+    ).toBe(0);
+    expect(
+      await db.seatHold.findUnique({ where: { seatId: seats[1].id } }),
+    ).toBeNull();
+    expect(
+      await db.holdSession.findUniqueOrThrow({ where: { id: original.id } }),
+    ).toEqual(original);
+  });
+
   it('Hold routine is volatile/invoker and rejects malformed arrays without writes', async () => {
     const [routine] = await db.$queryRaw<
       { volatility: string; definer: boolean }[]
     >`
       SELECT provolatile::text AS volatility,prosecdef AS definer
-      FROM pg_proc WHERE oid='public.claim_hold_v2(uuid,uuid,text,uuid[],uuid,uuid)'::regprocedure`;
+      FROM pg_proc WHERE oid='public.claim_hold_v3(uuid,uuid,text,uuid[],uuid,uuid)'::regprocedure`;
     expect(routine).toEqual({ volatility: 'v', definer: false });
     for (const value of ['{}', `{${seats[0].id},${seats[0].id}}`, '{NULL}']) {
       await expect(
@@ -830,7 +865,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
         const [row] = await db.$queryRaw<{ waiting: boolean }[]>`
           SELECT EXISTS(SELECT 1 FROM pg_stat_activity
             WHERE datname=current_database() AND wait_event_type='Lock'
-              AND query LIKE '%public.claim_hold_v2(%') AS waiting`;
+              AND query LIKE '%public.claim_hold_v3(%') AS waiting`;
         if (row.waiting) {
           waiting = true;
           break;

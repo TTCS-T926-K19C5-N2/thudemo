@@ -1,5 +1,9 @@
 # T-31: profiling và thử prepared statements
 
+## Cập nhật mới nhất: optimization-v6 (06/10/2026)
+
+V5 CI functional PASS nhưng totalp95 PR322,37/push588,62ms vẫn FAIL. Đã đổi expected conflict thành structured outcome **sau server subtransaction rollback**, không tắt log hoặc giảm workload; bounded pipeline/auth/price/600giây giữ nguyên. Local **52/52E2E,83/83unit,3helper**,build/lint/typecheck/health PASS; fullHTTP45checks,totalp95194,33ms. Snapshot trước push, **chưa xác nhận CI SHA mới/merge main**. [Báo cáo v6](optimization-v6/verification.md), [CI v5](optimization-v5/ci-d9367b9.md). Các mục phía dưới là lịch sử.
+
 ## Cập nhật mới nhất: optimization-v5 (06/10/2026)
 
 V4 CI vẫn FAIL total p95 347,07 ms (PR) và max GET2000 ghế215,21 ms (push). Đã chuyển validation vào routine v2 trước COMMIT, pipeline sau khi BEGIN/timeout thành công, drain kết quả và giữ rollback/bounds; seat-map một live JSON projection không cache. Local **51/51 E2E,77/77unit,3helper**, build/lint/typecheck PASS, maxGET2000ghế14,30ms; hai lượt trước ack-drain p95 190,02/185,83ms. Snapshot trước push, **chưa xác nhận CI bản mới**, không merge main. Chi tiết/raw: [optimization-v5/verification.md](optimization-v5/verification.md). Các mục dưới là lịch sử.

@@ -35,7 +35,8 @@ function category(input) {
   if (
     sql.includes('WITH requested AS') ||
     sql.includes('public.claim_hold_v1(') ||
-    sql.includes('public.claim_hold_v2(')
+    sql.includes('public.claim_hold_v2(') ||
+    sql.includes('public.claim_hold_v3(')
   )
     return 'hold-claim';
   if (sql.includes('FROM sessions s JOIN users u')) return 'auth';

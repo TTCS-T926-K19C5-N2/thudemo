@@ -95,7 +95,8 @@ export async function holdTransaction<T>(
       if (
         limits.validatedRoutine &&
         (routineSubmitted ||
-          !sql.text.trim().startsWith('SELECT * FROM public.claim_hold_v2('))
+          (!sql.text.trim().startsWith('SELECT * FROM public.claim_hold_v2(') &&
+            !sql.text.trim().startsWith('SELECT * FROM public.claim_hold_v3(')))
       )
         throw Error('Only the validated hold routine can pipeline commit');
       const querying = client.query({
@@ -106,8 +107,9 @@ export async function holdTransaction<T>(
       let result: { rows: unknown[] };
       if (limits.validatedRoutine) {
         routineSubmitted = true;
-        // BEGIN has already succeeded. v2 RAISEs on every invalid outcome;
-        // PostgreSQL then treats this COMMIT as ROLLBACK. Never pipeline v1.
+        // BEGIN has already succeeded. v2 aborts invalid outcomes; v3 rolls
+        // their writes back inside a subtransaction before returning a failure.
+        // Only these validated routines may pipeline COMMIT, never v1.
         const committing = client.query('COMMIT');
         const [queryResult, commitResult] = await Promise.allSettled([
           querying,

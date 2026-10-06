@@ -132,4 +132,37 @@ describe('hold driver error translation', () => {
       });
     },
   );
+
+  it.each([
+    ['H0001', 404, undefined],
+    ['H0002', 409, 'SHOWTIME_CLOSED'],
+    ['H0003', 400, undefined],
+    ['H0004', 409, 'SEAT_CONFLICT'],
+    ['H0005', 409, 'HOLD_EXPIRED'],
+    ['H0006', 503, 'HOLD_RETRY'],
+  ])(
+    'maps rolled-back routine outcome %s without a native database exception',
+    async (failure, status, code) => {
+      const { db, holds } = service('unused');
+      db.commitHoldRoutine.mockResolvedValue([
+        {
+          failure,
+          rejectedSeatIds: [seatId],
+          id: null,
+          expiresAt: null,
+          seatIds: [],
+          serverTime: new Date(),
+        },
+      ]);
+      const expected = code
+        ? { status, response: expect.objectContaining({ code }) }
+        : { status };
+      await expect(
+        holds.claim(seatId, seatId, 'fixture-session-hash', {
+          seatIds: [seatId],
+        }),
+      ).rejects.toMatchObject(expected);
+      expect(db.seatReadQuery).not.toHaveBeenCalled();
+    },
+  );
 });

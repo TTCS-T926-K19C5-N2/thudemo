@@ -56,15 +56,28 @@ export class HoldsService {
     const seatIds = requestedSeats(body);
     const requestId = randomUUID();
     try {
-      // v2 validates status/count/fresh live state on the server and RAISEs
-      // before COMMIT for every rejection. BEGIN/timeout setup is awaited first.
+      // v3 rolls rejected writes back inside its subtransaction; expected
+      // conflicts are outcomes, not PostgreSQL error/log storms. Await BEGIN
+      // and timeout setup before pipelining this validated routine.
       const [result] = await this.db.commitHoldRoutine<
-        { serverTime: Date; id: string; expiresAt: Date; seatIds: string[] }[]
+        {
+          serverTime: Date;
+          id: string;
+          expiresAt: Date;
+          seatIds: string[];
+          failure: string | null;
+          rejectedSeatIds: string[];
+        }[]
       >(Prisma.sql`
-        SELECT * FROM public.claim_hold_v2(
+        SELECT * FROM public.claim_hold_v3(
           ${showtimeId}::uuid, ${userId}::uuid, ${sessionHash}::text,
           ${'{' + seatIds.join(',') + '}'}::uuid[], ${randomUUID()}::uuid, ${randomUUID()}::uuid
         )`);
+      if (result.failure)
+        throw {
+          code: result.failure,
+          detail: JSON.stringify(result.rejectedSeatIds),
+        };
       return {
         serverTime: result.serverTime,
         hold: {
@@ -122,6 +135,17 @@ export class HoldsService {
             requestId,
           });
       }
+      if (
+        typeof caught === 'object' &&
+        caught !== null &&
+        'code' in caught &&
+        caught.code === 'H0006'
+      )
+        error = new ServiceUnavailableException({
+          code: 'HOLD_RETRY',
+          message: 'Trạng thái ghế đang thay đổi. Tải lại sơ đồ rồi thử lại.',
+          requestId,
+        });
       // Concurrent inserts can report the secondary unique index before the PK arbiter.
       // Transaction has rolled back; translate only the known ownership constraint.
       if (

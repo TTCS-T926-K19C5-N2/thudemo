@@ -13,6 +13,9 @@ describe('hold statement names', () => {
     expect(name({ sql: 'SELECT * FROM orders' })).toBe('');
     expect(name({ sql: 'BEGIN' })).toBe('');
     expect(
+      name({ sql: 'SELECT * FROM public.claim_hold_v3($1,$2,$3,$4,$5,$6)' }),
+    ).toMatch(/^holds_[a-f0-9]{48}$/);
+    expect(
       name({ sql: 'SELECT * FROM public.claim_hold_v2($1,$2,$3,$4,$5,$6)' }),
     ).toMatch(/^holds_[a-f0-9]{48}$/);
     expect(name({ sql: 'SELECT json_agg(seat ORDER BY seat.row)' })).toMatch(
