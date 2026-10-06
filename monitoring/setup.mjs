@@ -1,9 +1,16 @@
-import { mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
+import {
+  mkdirSync,
+  writeFileSync,
+  existsSync,
+  readFileSync,
+  chmodSync,
+} from "node:fs";
 import { randomBytes } from "node:crypto";
 import { resolve } from "node:path";
 import assert from "node:assert/strict";
 const dir = resolve(import.meta.dirname, ".runtime");
-mkdirSync(dir, { recursive: true });
+mkdirSync(dir, { recursive: true, mode: 0o700 });
+chmodSync(dir, 0o700);
 const secret = (name, value = randomBytes(32).toString("hex")) => {
   const path = resolve(dir, name);
   if (!existsSync(path)) writeFileSync(path, value, { mode: 0o600 });
@@ -14,6 +21,8 @@ secret("metrics-token");
 secret("grafana-password");
 secret("smtp-password", "local-unused");
 secret("telegram-token", "1000:local_fixture_only");
+secret("external-smtp-password", "external-not-configured");
+secret("external-telegram-token", "external-not-configured");
 writeFileSync(resolve(dir, "compose.env"), `S43_DB_PASSWORD=${password}\n`, {
   mode: 0o600,
 });
@@ -127,21 +136,28 @@ if (process.argv.includes("--external")) {
       lookup.result.type === "private",
     "Start the bot with /start and verify the approved private chat",
   );
-  writeFileSync(resolve(dir, "telegram-token"), token, { mode: 0o600 });
-  writeFileSync(resolve(dir, "smtp-password"), process.env.S43_SMTP_PASSWORD, {
+  writeFileSync(resolve(dir, "external-telegram-token"), token, {
     mode: 0o600,
   });
+  writeFileSync(
+    resolve(dir, "external-smtp-password"),
+    process.env.S43_SMTP_PASSWORD,
+    {
+      mode: 0o600,
+    },
+  );
   Object.assign(config.receivers[1].email_configs[0], {
     to: process.env.S43_EMAIL_TO,
     from: process.env.S43_SMTP_FROM,
     smarthost: `${process.env.S43_SMTP_HOST}:${process.env.S43_SMTP_PORT}`,
     auth_username: process.env.S43_SMTP_USER,
-    auth_password_file: "/run/secrets/smtp_password",
+    auth_password_file: "/run/secrets/external_smtp_password",
     require_tls: true,
   });
   Object.assign(config.receivers[2].telegram_configs[0], {
     api_url: "https://api.telegram.org",
     chat_id: Number(chat),
+    bot_token_file: "/run/secrets/external_telegram_token",
   });
 }
 writeFileSync(
@@ -149,6 +165,18 @@ writeFileSync(
   JSON.stringify(config, null, 2),
   { mode: 0o600 },
 );
+// Compose file-backed secrets are bind mounts: container UIDs differ from host UID.
+// Search/read is denied to other host users by the 0700 parent; mount files must
+// be readable by non-root node, Grafana, Prometheus and Alertmanager inside containers.
+for (const name of [
+  "metrics-token",
+  "grafana-password",
+  "smtp-password",
+  "telegram-token",
+  "external-smtp-password",
+  "external-telegram-token",
+])
+  chmodSync(resolve(dir, name), 0o444);
 console.log(
   process.argv.includes("--external")
     ? "External config prepared; recipient masked, not delivery evidence"

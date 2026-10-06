@@ -48,6 +48,9 @@ jobs:
       - name: Real HTTP, database, collector and transport failure/recovery
         run: node apps/api/scripts/verify-s43.mjs
       - name: Preserve sanitized evidence
+        if: failure()
+        run: node monitoring/diagnose.mjs
+      - name: Preserve sanitized evidence artifact
         if: always()
         uses: actions/upload-artifact@v7
         with:

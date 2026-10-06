@@ -83,7 +83,7 @@ services:
     volumes:
       - ./.runtime/alertmanager.json:/etc/alertmanager/config.json:ro
       - s43_alerts:/alertmanager
-    secrets: [smtp_password, telegram_token]
+    secrets: [smtp_password, telegram_token, external_smtp_password, external_telegram_token]
     depends_on: [receiver]
     mem_limit: 128m
   receiver:
@@ -116,6 +116,8 @@ secrets:
   grafana_password: {file: ./.runtime/grafana-password}
   smtp_password: {file: ./.runtime/smtp-password}
   telegram_token: {file: ./.runtime/telegram-token}
+  external_smtp_password: {file: ./.runtime/external-smtp-password}
+  external_telegram_token: {file: ./.runtime/external-telegram-token}
 volumes:
   s43_database:
   s43_history:
