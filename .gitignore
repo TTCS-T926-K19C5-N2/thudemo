@@ -78,6 +78,9 @@ web_modules/
 .env.test.local
 .env.production.local
 .env.local
+.env.monitoring.local
+monitoring/.runtime/
+evidence/s43/runtime/
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -129,5 +132,6 @@ dist
 
 # Prisma
 .playwright-cli/
+output/playwright/
 apps/api/prisma/*.db
 apps/api/prisma/*.db-journal
