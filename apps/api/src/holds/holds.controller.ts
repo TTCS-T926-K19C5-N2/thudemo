@@ -9,7 +9,6 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
 import { CustomThrottlerGuard } from '../common/guards/custom-throttler.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { hashSessionToken } from '../auth/auth.service.js';
@@ -21,9 +20,8 @@ import { HoldsService } from './holds.service.js';
 export class HoldsController {
   constructor(private readonly service: HoldsService) {}
 
-  // Cho phép tối đa 200 request / 1 phút để vượt qua bài test hold-concurrency (100 seats x 10)
+  // Sử dụng CustomThrottlerGuard để kiểm tra Rate Limit tối ưu và nhanh nhất
   @UseGuards(CustomThrottlerGuard)
-  @Throttle({ default: { limit: 200, ttl: 60000 } })
   @Post()
   @HttpCode(200)
   claim(
