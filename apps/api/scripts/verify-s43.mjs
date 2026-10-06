@@ -81,6 +81,7 @@ async function wait(check, name, timeout = 90000) {
   throw Error(`Timed out: ${name}`);
 }
 const report = {
+  sourceHeadSHA: process.env.S43_SOURCE_HEAD ?? null,
   sourceSHA: spawnSync('git', ['rev-parse', 'HEAD'], {
     cwd: root,
     encoding: 'utf8',

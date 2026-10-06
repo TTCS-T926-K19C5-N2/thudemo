@@ -159,7 +159,7 @@ const panel = (title, expr, unit = "short", type = "timeseries") => ({
       refId: "A",
       expr,
       legendFormat:
-        "{{service}} {{instance}} {{route}} {{status}} {{reason}} {{state}}",
+        "{{environment}} {{service}} {{instance}} {{route}} {{status}} {{reason}}",
     },
   ],
   fieldConfig: {
@@ -244,6 +244,10 @@ const panels = [
     "sum by(integration)(increase(alertmanager_notifications_failed_total[5m]))",
   ),
 ];
+// percentunit uses fractions (1 = 100%); Grafana's generic percent range can
+// otherwise show a misleading 10000% axis when every sample is zero.
+panels.find((p) => p.title.startsWith("5xx")).fieldConfig.defaults.min = 0;
+panels.find((p) => p.title.startsWith("5xx")).fieldConfig.defaults.max = 1;
 panels.find((p) => p.title.startsWith("Alerts")).targets[0].legendFormat =
   "{{alertname}} {{alertstate}}";
 panels.push({

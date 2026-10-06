@@ -22,6 +22,7 @@ const adminHeaders = {
   "Content-Type": "application/json",
 };
 const report = {
+  sourceHeadSHA: process.env.S43_SOURCE_HEAD ?? null,
   sourceSHA: spawnSync("git", ["rev-parse", "HEAD"], {
     cwd: root,
     encoding: "utf8",
@@ -33,6 +34,7 @@ let userId;
 const stateFile = resolve(runtime, "browser-state.json");
 const codeFile = resolve(runtime, "browser-code.js");
 function cli(...args) {
+  report.lastBrowserCommand = args[0];
   const windows = process.platform === "win32";
   const r = spawnSync(
     windows ? process.execPath : "playwright-cli",
@@ -49,6 +51,11 @@ function cli(...args) {
       : ["-s=s43", "--raw", ...args],
     { cwd: root, encoding: "utf8", timeout: 90000, windowsHide: true },
   );
+  if (args[0] === "run-code" && /### Error|Error:/m.test(r.stdout)) {
+    report.browserFailure = r.stdout
+      .match(/(?:### Error|Error:)([\s\S]*?)(?:###|$)/)?.[1]
+      ?.slice(0, 800);
+  }
   assert(
     r.status === 0 && !/### Error|^Error:/m.test(r.stdout),
     "Browser command failed; private CLI state must not be printed",
@@ -143,7 +150,14 @@ try {
     codeFile,
     `async page => {
     const errors = [], queries = [];
+    let privateDashboardDiscovery404 = 0;
+    let expectedDatasourceError = false;
     page.on('pageerror', () => errors.push('pageerror'));
+    page.on('console', message => {
+      if (message.type() !== 'error' || expectedDatasourceError) return;
+      if (message.location().url.includes('/public-dashboards') && message.text().includes('404')) privateDashboardDiscovery404++;
+      else errors.push('consoleerror');
+    });
     page.on('response', async r => {
       if (!r.url().includes('/api/ds/query')) return;
       try { const data = await r.json(); queries.push({ status: r.status(), errors: Object.values(data.results ?? {}).filter(v => v.error).length, frames: Object.values(data.results ?? {}).reduce((n,v) => n + (v.frames?.length ?? 0), 0) }); } catch { queries.push({ status: r.status(), errors: 1, frames: 0 }); }
@@ -154,11 +168,18 @@ try {
     await new Promise(r => setTimeout(r, 12000));
     if (!queries.length || queries.some(q => q.status !== 200 || q.errors) || !queries.some(q => q.frames > 0)) throw Error('Live datasource query/history validation failed');
     await page.screenshot({ path: 'output/playwright/s43-desktop.png', fullPage: true });
+    await page.getByText('Webhook rejection — unavailable until real producer', { exact: true }).scrollIntoViewIfNeeded();
+    await page.screenshot({ path: 'output/playwright/s43-unavailable.png', fullPage: true });
     await page.goto('${origin}/d/s43-monitoring?var-environment=local&var-instance=api-a%3A9464');
     await page.getByText('Request RPS — completed + aborted, 5m', { exact: true }).waitFor();
     await new Promise(r => setTimeout(r, 6000));
     if (!(await page.locator('body').innerText()).includes('api-a:9464')) throw Error('Instance filter missing');
     await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('${origin}/d/s43-monitoring?var-environment=local&var-instance=api-a%3A9464');
+    await page.getByText('Request RPS — completed + aborted, 5m', { exact: true }).waitFor();
+    await new Promise(r => setTimeout(r, 6000));
+    const mobile = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
+    if (mobile.document > mobile.viewport + 2) throw Error('Mobile horizontal overflow');
     await page.screenshot({ path: 'output/playwright/s43-mobile.png', fullPage: true });
     await page.goto('${origin}/d/s43-monitoring?var-environment=missing-fixture&var-instance=All');
     await page.getByText('Request RPS — completed + aborted, 5m', { exact: true }).waitFor();
@@ -166,19 +187,25 @@ try {
     const requestPanel = page.getByRole('region', { name: 'Request RPS — completed + aborted, 5m' });
     if (!(await requestPanel.innerText()).includes('No data')) throw Error('Request panel No-data state missing');
     await page.screenshot({ path: 'output/playwright/s43-no-data.png', fullPage: true });
+    expectedDatasourceError = true;
     await page.route('**/api/ds/query*', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ message: 'S43 local datasource failure fixture' }) }));
     await page.goto('${origin}/d/s43-monitoring?var-environment=local&var-instance=All');
     await page.getByText('Request RPS — completed + aborted, 5m', { exact: true }).waitFor();
     await new Promise(r => setTimeout(r, 6000));
-    if (!(await page.locator('body').innerText()).includes('S43 local datasource failure fixture')) throw Error('Datasource error state missing');
+    const errorPanel = page.getByRole('region', { name: 'Request RPS — completed + aborted, 5m' });
+    const errorStatus = errorPanel.getByTestId('data-testid Panel status error');
+    await errorStatus.waitFor();
+    await errorStatus.hover();
+    await page.getByText('S43 local datasource failure fixture', { exact: false }).waitFor();
     await page.screenshot({ path: 'output/playwright/s43-query-error.png', fullPage: true });
     await page.unroute('**/api/ds/query*');
+    expectedDatasourceError = false;
     queries.length = 0;
     await page.reload();
     await new Promise(r => setTimeout(r, 6000));
     if (!queries.length || queries.some(q => q.status !== 200 || q.errors) || !queries.some(q => q.frames > 0)) throw Error('Datasource recovery not confirmed');
     if (errors.length) throw Error('Browser runtime errors');
-    return { pass: true, queries: queries.length, frames: queries.reduce((n,q) => n + q.frames, 0), runtimeErrors: errors.length };
+    return { pass: true, queries: queries.length, frames: queries.reduce((n,q) => n + q.frames, 0), runtimeErrors: errors.length, privateDashboardDiscovery404, mobile };
   }`,
     { mode: 0o600 },
   );

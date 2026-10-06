@@ -19,7 +19,6 @@ const testNames = [
   "S43IntegrationEmailFailure",
   "S43IntegrationTelegramFailure",
 ];
-let currentTest = null;
 const record = (channel, state, payload) => {
   const event = {
     id: events.length + 1,
@@ -29,11 +28,8 @@ const record = (channel, state, payload) => {
     digest: createHash("sha256").update(payload).digest("hex"),
     test: true,
     alertName:
-      state === "failed"
-        ? currentTest
-        : (testNames.find((name) =>
-            payload.replace(/=\r?\n/g, "").includes(name),
-          ) ?? null),
+      testNames.find((name) => payload.replace(/=\r?\n/g, "").includes(name)) ??
+      null,
   };
   events.push(event);
   appendFileSync(path, JSON.stringify(event) + "\n");
@@ -58,19 +54,25 @@ const smtp = tcpServer((socket) => {
       if (data) {
         if (line === ".") {
           data = false;
-          const state = /\bresolved\b/i.test(body) ? "resolved" : "firing";
+          const state = emailFail
+            ? "failed"
+            : /\bresolved\b/i.test(body)
+              ? "resolved"
+              : "firing";
           const id = record("email", state, body);
-          socket.write(`250 2.0.0 accepted local-${id}\r\n`);
+          // Reject after DATA so the failure digest/name belongs to this actual
+          // alert, rather than borrowing the currently running test's name.
+          socket.write(
+            emailFail
+              ? "451 4.3.0 test unavailable\r\n"
+              : `250 2.0.0 accepted local-${id}\r\n`,
+          );
           body = "";
         } else body += line + "\n";
       } else if (/^EHLO|^HELO/i.test(line))
         socket.write("250-s43-local\r\n250 8BITMIME\r\n");
-      else if (/^MAIL FROM/i.test(line)) {
-        if (emailFail) {
-          record("email", "failed", "transient SMTP 451");
-          socket.write("451 4.3.0 test unavailable\r\n");
-        } else socket.write("250 OK\r\n");
-      } else if (/^RCPT TO/i.test(line)) socket.write("250 OK\r\n");
+      else if (/^MAIL FROM/i.test(line)) socket.write("250 OK\r\n");
+      else if (/^RCPT TO/i.test(line)) socket.write("250 OK\r\n");
       else if (/^DATA/i.test(line)) {
         data = true;
         socket.write("354 End with dot\r\n");
@@ -102,7 +104,6 @@ const http = createServer((req, res) => {
         if (Object.hasOwn(v, "testName")) {
           if (v.testName !== null && !testNames.includes(v.testName))
             return json(400, {});
-          currentTest = v.testName;
         }
         emailFail = v.emailFail === true;
         telegramFail = v.telegramFail === true;
@@ -134,7 +135,7 @@ const http = createServer((req, res) => {
       )
         return json(400, { ok: false });
       if (telegramFail) {
-        record("telegram", "failed", "transient API 503");
+        record("telegram", "failed", String(v.text));
         return json(503, {
           ok: false,
           error_code: 503,
