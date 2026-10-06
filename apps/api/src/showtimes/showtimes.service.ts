@@ -295,21 +295,32 @@ export class ShowtimesService {
     return result;
   }
   async publicSeats(id: string) {
-    await this.detail(id);
+    // This endpoint returns seats only. Do not load event/categories/siblings
+    // just to check visibility; still check the live DB status on every read.
+    const [show] = await this.db.seatReadQuery<{ status: string }[]>(
+      Prisma.sql`SELECT status FROM showtimes WHERE id = ${id}::uuid`,
+    );
+    if (!show || show.status !== 'ON_SALE')
+      throw new NotFoundException('Suất diễn chưa mở bán hoặc đã đóng.');
     return this.querySeats(id);
   }
   async ownedSeats(id: string, owner: string) {
-    await this.owned(this.db, id, owner);
+    const [show] = await this.db.seatReadQuery<{ organizerId: string }[]>(
+      Prisma.sql`SELECT e."organizerId" FROM showtimes s JOIN events e ON e.id=s."eventId" WHERE s.id=${id}::uuid`,
+    );
+    if (!show) throw new NotFoundException('Không tìm thấy suất diễn.');
+    if (show.organizerId !== owner)
+      throw new ForbiddenException('Bạn không có quyền sửa suất diễn này.');
     return this.querySeats(id);
   }
   private querySeats(id: string) {
     // DEC-12: held uses the same PostgreSQL authority and DB clock as claims.
     // Sold remains a future ticket seam; Sprint 3 has no ticket model yet.
     return this.db
-      .$queryRaw`SELECT s.id, s.row, s."seatNumber", c.name AS category, c.price, ${SEAT_STATUS_SQL} AS status
+      .seatReadQuery(Prisma.sql`SELECT s.id, s.row, s."seatNumber", c.name AS category, c.price, ${SEAT_STATUS_SQL} AS status
       FROM seats s JOIN seat_categories c ON c.id = s."categoryId" AND c."showtimeId" = s."showtimeId"
       LEFT JOIN seat_holds h ON h."seatId"=s.id
       LEFT JOIN LATERAL (SELECT false AS sold, h."expiresAt") inventory ON true
-      WHERE s."showtimeId" = ${id}::uuid ORDER BY s.row, s."seatNumber"`;
+      WHERE s."showtimeId" = ${id}::uuid ORDER BY s.row, s."seatNumber"`);
   }
 }

@@ -4,6 +4,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { ConfigService } from '@nestjs/config';
 import { holdStatementNames } from './hold-statement-names.js';
 import { holdTransaction, type HoldQueryable } from './hold-transaction.js';
+import { prepareHoldPool } from './prepare-hold-pool.js';
 
 class HoldPoolAdapter extends PrismaPg {
   pool?: ReturnType<
@@ -24,14 +25,19 @@ export class PrismaService
 {
   private readonly holdAdapter: HoldPoolAdapter;
   private readonly holdNames: ReturnType<typeof holdStatementNames>;
+  private readonly readyConnections: number;
 
   constructor(configService: ConfigService) {
     // Two local API instances use at most 32 connections, leaving room for worker/migrations.
     const names = holdStatementNames();
+    const readyConnections =
+      configService.get<string>('HOLD_EXPIRY_MODE') === 'worker' ? 1 : 16;
     const adapter = new HoldPoolAdapter(
       {
         connectionString: configService.getOrThrow<string>('DATABASE_URL'),
         max: 16,
+        min: readyConnections,
+        connectionTimeoutMillis: 10000,
       },
       { statementNameGenerator: names },
     );
@@ -40,6 +46,7 @@ export class PrismaService
     });
     this.holdAdapter = adapter;
     this.holdNames = names;
+    this.readyConnections = readyConnections;
   }
 
   async holdTransaction<T>(callback: (tx: HoldQueryable) => Promise<T>) {
@@ -50,10 +57,23 @@ export class PrismaService
   }
 
   async sessionQuery<T>(sql: Prisma.Sql): Promise<T> {
+    return this.seatReadQuery<T>(sql);
+  }
+
+  // Scoped to session/seat reads with primitive bindings and known projections;
+  // not a replacement for Prisma model operations or order transactions.
+  async seatReadQuery<T>(sql: Prisma.Sql): Promise<T> {
+    if (
+      sql.values.some(
+        (v) =>
+          v !== null && !['string', 'number', 'boolean'].includes(typeof v),
+      )
+    )
+      throw Error('Unsupported seat read parameter type');
     await this.$connect();
     const pool = this.holdAdapter.pool;
-    if (!pool) throw Error('Session connection pool is unavailable');
-    // Only the existing session guard read; never cache a session/user/role result.
+    if (!pool) throw Error('Seat read connection pool is unavailable');
+    // Never cache session/role, seat price or inventory results.
     // Pool.query owns and releases its client, including query errors.
     const result = await pool.query({
       text: sql.text,
@@ -65,6 +85,9 @@ export class PrismaService
 
   async onModuleInit() {
     await this.$connect();
+    const pool = this.holdAdapter.pool;
+    if (!pool) throw Error('Hold connection pool is unavailable');
+    await prepareHoldPool(pool, this.readyConnections);
   }
 
   async onModuleDestroy() {

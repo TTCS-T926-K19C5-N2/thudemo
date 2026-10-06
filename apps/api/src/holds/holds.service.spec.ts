@@ -11,7 +11,9 @@ describe('hold driver error translation', () => {
   afterEach(() => vi.restoreAllMocks());
 
   function service(constraint: string, code = '23505') {
-    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => {});
+    const warn = vi
+      .spyOn(Logger.prototype, 'warn')
+      .mockImplementation(() => {});
     vi.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
     const db = {
       holdTransaction: vi
@@ -19,9 +21,13 @@ describe('hold driver error translation', () => {
         .mockRejectedValue(
           Object.assign(Error('private database detail'), { code, constraint }),
         ),
-      $queryRaw: vi.fn().mockResolvedValue([{ seatId }]),
+      seatReadQuery: vi.fn().mockResolvedValue([{ seatId }]),
     };
-    return { db, warn, holds: new HoldsService(db as unknown as PrismaService) };
+    return {
+      db,
+      warn,
+      holds: new HoldsService(db as unknown as PrismaService),
+    };
   }
 
   it('translates only the known ownership unique constraint after rollback', async () => {
@@ -41,7 +47,7 @@ describe('hold driver error translation', () => {
         JSON.stringify((error as ConflictException).getResponse()),
       ).not.toContain('private database detail');
     }
-    expect(db.$queryRaw).toHaveBeenCalledOnce();
+    expect(db.seatReadQuery).toHaveBeenCalledOnce();
     expect(warn).toHaveBeenCalledOnce();
   });
 
@@ -59,13 +65,13 @@ describe('hold driver error translation', () => {
       ).rejects.toMatchObject({
         response: expect.objectContaining({ code: 'HOLD_UNAVAILABLE' }),
       });
-      expect(db.$queryRaw).not.toHaveBeenCalled();
+      expect(db.seatReadQuery).not.toHaveBeenCalled();
     },
   );
 
   it('requests retry rather than falsely reporting a conflict when ownership already changed', async () => {
     const { db, holds } = service('seat_holds_seatId_showtimeId_key');
-    db.$queryRaw.mockResolvedValue([]);
+    db.seatReadQuery.mockResolvedValue([]);
     await expect(
       holds.claim(seatId, seatId, 'fixture-session-hash', {
         seatIds: [seatId],

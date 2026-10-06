@@ -1,6 +1,12 @@
 # T-31: profiling và thử prepared statements
 
-## Cập nhật mới nhất: optimization-v2 (06/10/2026)
+## Cập nhật mới nhất: optimization-v3 (06/10/2026)
+
+Bản chuẩn bị commit trên `test`, base `6a60b9b`: hai lượt benchmark thường local đạt total p95 **214,11 / 195,38 ms**, đủ 45 checks/lượt; sơ đồ 2000 ghế max **15,67 ms** qua 30 GET. **48/48 E2E, 63 unit, 3 helper PASS**; build/lint/typecheck và health port 3001 PASS. Chuẩn bị pool API trước listen (max vẫn 16, min nay 16; worker reserve 1), bỏ overfetch ở GET seats và dùng scoped shared-driver read. Không đổi chức năng S-15/S-16, TTL 600 giây, schema/migration/UI/CI hoặc ngưỡng 200/300 ms.
+
+CI của base `6a60b9b` thực sự FAIL: push T-31 p95 363,07 ms; PR seat-map max 225,62 ms. Bản mới chỉ được xác nhận **local** khi ghi báo cáo; người dùng đã đồng ý commit/push để kiểm CI, chưa merge main. Xem toàn bộ lượt PASS/FAIL, tradeoff tăng idle sockets và phạm vi: [optimization-v3/verification.md](optimization-v3/verification.md).
+
+## Bản ghi optimization-v2 (lịch sử, 06/10/2026)
 
 Bản ghi kiểm chứng trước commit/push của tối ưu shared-pool SQL trên nhánh `test`, base `bd62011`, **chưa merge**. Người dùng đã yêu cầu gửi bản này lên `test` để chạy CI mới; xem commit/Actions để xác nhận trạng thái push sau khi báo cáo được ghi. Hai lượt cuối local đạt total p95 **209,23 / 204,10 ms**, steady **133,28 / 120,75 ms**; mỗi lượt đủ 45 checks, nfrPass=true, exit 0. Toàn workspace build/lint/typecheck PASS, 48 unit PASS, 3 helper PASS, 46/46 E2E PASS (28 AC cũ + một test driver mới trong suite 29 test), health port 3001 trả 200.
 

@@ -750,6 +750,65 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     await expectNoOrder();
   }, 15000);
 
+  it('Seat-read regression: draft preview still requires the organizer owning the event', async () => {
+    const path = `/showtimes/${showId}/manage/seats`;
+    await request(app.getHttpServer()).get(path).expect(401);
+    await request(app.getHttpServer())
+      .get(path)
+      .set('Cookie', buyer.cookie)
+      .expect(403);
+    const foreignOwner = await account('ORGANIZER');
+    await request(app.getHttpServer())
+      .get(path)
+      .set('Cookie', foreignOwner.cookie)
+      .expect(403);
+    const preview = await request(app.getHttpServer())
+      .get(path)
+      .set('Cookie', owner.cookie)
+      .expect(200);
+    expect(preview.body).toHaveLength(6);
+    expect(
+      preview.body.every(
+        (seat: { price: number | null }) => seat.price === null,
+      ),
+    ).toBe(true);
+    await request(app.getHttpServer())
+      .get(`/showtimes/${showId}/seats`)
+      .expect(404);
+    await request(app.getHttpServer())
+      .get(`/showtimes/${randomUUID()}/seats`)
+      .expect(404);
+  });
+
+  it('Seat-read regression: price, expiry and visibility are read live without owner/token fields', async () => {
+    await openSale();
+    const seat = seats.find((s) => s.categoryId === categories[0].id)!;
+    await hold([seat.id]).expect(200);
+    const path = `/showtimes/${showId}/seats`;
+    const held = await request(app.getHttpServer()).get(path).expect(200);
+    expect(
+      held.body.find((s: { id: string }) => s.id === seat.id),
+    ).toMatchObject({ price: 1200000, status: 'HELD' });
+    expect(Object.keys(held.body[0]).sort()).toEqual(
+      ['id', 'row', 'seatNumber', 'category', 'price', 'status'].sort(),
+    );
+    await db.seatHold.update({
+      where: { seatId: seat.id },
+      data: { expiresAt: new Date(Date.now() - 1000) },
+    });
+    await patchPrices([{ id: categories[0].id, price: 1500000 }]).expect(200);
+    const refreshed = await request(app.getHttpServer()).get(path).expect(200);
+    expect(
+      refreshed.body.find((s: { id: string }) => s.id === seat.id),
+    ).toMatchObject({ price: 1500000, status: 'AVAILABLE' });
+    await request(app.getHttpServer())
+      .patch(`/showtimes/${showId}/status`)
+      .set('Cookie', owner.cookie)
+      .send({ status: 'CLOSED' })
+      .expect(200);
+    await request(app.getHttpServer()).get(path).expect(404);
+  });
+
   it('TC-S16-04: concurrent double-click requests create one order and one copy of each item', async () => {
     await openSale();
     await hold(seats.slice(0, 2).map((s) => s.id)).expect(200);

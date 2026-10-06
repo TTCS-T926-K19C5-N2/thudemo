@@ -135,7 +135,7 @@ export class HoldsService {
         'constraint' in error &&
         error.constraint === 'seat_holds_seatId_showtimeId_key'
       ) {
-        const rejected = await this.db.$queryRaw<{ seatId: string }[]>(
+        const rejected = await this.db.seatReadQuery<{ seatId: string }[]>(
           Prisma.sql`SELECT h."seatId" FROM seat_holds h JOIN hold_sessions hs ON hs.id=h."holdSessionId"
             WHERE h."seatId" IN (${Prisma.join(seatIds.map((id) => Prisma.sql`${id}::uuid`))}) AND h."expiresAt">clock_timestamp()
             AND NOT (hs."userId"=${userId}::uuid AND hs."sessionHash"=${sessionHash})`,

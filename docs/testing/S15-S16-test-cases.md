@@ -1,6 +1,12 @@
 # Test case S-15 và S-16
 
-## Cập nhật mới nhất: tối ưu shared-pool SQL, 06/10/2026
+## Cập nhật mới nhất: pool readiness và seat reads, 06/10/2026
+
+Nhánh `test`, base `6a60b9b`, snapshot trước commit/push: **48/48 E2E, 63/63 unit, 3 helper PASS**; build/lint/typecheck và health local PASS. Suite riêng 31 test gồm 28 AC cũ + driver timeout đã có + hai test seat-read mới. Hai lượt benchmark thường p95 **214,11 / 195,38 ms**, đủ 45 checks/lượt; sơ đồ 2000 ghế max **15,67 ms**, 30 mẫu. Không cộng benchmark checks vào E2E.
+
+Thêm test bảo vệ preview draft chỉ cho đúng organizer, từ chối anonymous/buyer/organizer khác, public draft/missing/closed 404; đọc live giá mới và expiry (HELD→AVAILABLE không cần cleanup), đúng sáu public fields, không lộ owner/token. Không sửa kỳ vọng test cũ hoặc nghiệp vụ/TTL 600 giây. Pool cap vẫn 16 nhưng chuẩn bị/giữ 16 idle sockets/API; worker reserve 1. CI base còn FAIL, nên chỉ nghiệm thu local và chờ CI SHA mới; người dùng đồng ý commit/push, chưa merge main. [Báo cáo và toàn bộ raw](../../evidence/review/20261006/t31/optimization-v3/verification.md).
+
+## Bản ghi tối ưu shared-pool SQL (lịch sử)
 
 Working tree nhánh `test`, base `bd62011`: **46/46 E2E, 48/48 unit, 3 helper test PASS**. Suite riêng có 29 test = 28 AC S-15/S-16 cũ + một test driver timeout/rollback mới; không cộng benchmark checks vào số E2E. Build/lint/typecheck toàn workspace và health local PASS. Hai lượt benchmark cuối đạt total p95 **209,23 / 204,10 ms**, steady **133,28 / 120,75 ms**, đủ 45 checks/lượt, exit 0, nfrPass=true.
 
