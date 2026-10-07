@@ -27,6 +27,7 @@ describe('PaymentsService Unit Tests', () => {
       order: {
         findUnique: vi.fn(),
         update: vi.fn(),
+        updateMany: vi.fn().mockResolvedValue({ count: 1 }),
       },
       seat: {
         updateMany: vi.fn(),
@@ -39,6 +40,7 @@ describe('PaymentsService Unit Tests', () => {
         findFirst: vi.fn(),
         update: vi.fn(),
       },
+      $executeRaw: vi.fn().mockResolvedValue(1),
       $transaction: vi.fn((fnOrArray: any) => {
         if (typeof fnOrArray === 'function') {
           return fnOrArray(mockPrisma);
@@ -59,6 +61,7 @@ describe('PaymentsService Unit Tests', () => {
 
     mockNotifier = {
       notifyAmountMismatch: vi.fn().mockResolvedValue(undefined),
+      notifyLatePayment: vi.fn().mockResolvedValue(undefined),
     };
 
     mockConfig = {
@@ -180,6 +183,8 @@ describe('PaymentsService Unit Tests', () => {
 
       mockPrisma.order.findUnique.mockResolvedValue({
         id: orderId,
+        status: OrderStatus.PENDING,
+        expiresAt: new Date(Date.now() + 600000),
         items: [
           {
             seatId,
@@ -223,6 +228,8 @@ describe('PaymentsService Unit Tests', () => {
 
       mockPrisma.order.findUnique.mockResolvedValue({
         id: orderId,
+        status: OrderStatus.PENDING,
+        expiresAt: new Date(Date.now() + 600000),
         items: [
           {
             seatId,
@@ -238,8 +245,11 @@ describe('PaymentsService Unit Tests', () => {
 
       expect(res.status).toBe('PAID');
       expect(mockPrisma.$transaction).toHaveBeenCalled();
-      expect(mockPrisma.order.update).toHaveBeenCalledWith({
-        where: { id: orderId },
+      expect(mockPrisma.order.updateMany).toHaveBeenCalledWith({
+        where: {
+          id: orderId,
+          status: { in: [OrderStatus.PENDING, OrderStatus.PENDING_PAYMENT] },
+        },
         data: { status: OrderStatus.PAID },
       });
       expect(mockPrisma.seat.updateMany).toHaveBeenCalledWith({
@@ -258,7 +268,95 @@ describe('PaymentsService Unit Tests', () => {
       });
     });
 
-    it('rolls back all steps if any step in transaction throws', async () => {
+    it('handles 5 sequential duplicate webhooks idempotently (only 1 state change, returns 200 for all)', async () => {
+      (mockGateway.verifyWebhook as any).mockResolvedValue(true);
+      (mockGateway.parseWebhook as any).mockResolvedValue({
+        orderId,
+        gatewayRef: `${orderId}_123`,
+        transactionId: 'momo_tx_99',
+        amount: 100000,
+        status: 'SUCCESS',
+      });
+
+      let currentOrderStatus: OrderStatus = OrderStatus.PENDING;
+      mockPrisma.order.findUnique.mockImplementation(async () => ({
+        id: orderId,
+        status: currentOrderStatus,
+        expiresAt: new Date(Date.now() + 600000),
+        items: [{ seatId, seat: { category: { price: 100000 } } }],
+      }));
+      mockPrisma.payment.findFirst.mockImplementation(async () => {
+        if (currentOrderStatus === OrderStatus.PAID) {
+          return { id: 'pay_init', status: PaymentStatus.SUCCEEDED };
+        }
+        return { id: 'pay_init', status: PaymentStatus.INITIATED };
+      });
+      mockPrisma.order.updateMany.mockImplementation(async () => {
+        currentOrderStatus = OrderStatus.PAID;
+        return { count: 1 };
+      });
+
+      // 1st call: order transitions PENDING -> PAID
+      const res1 = await service.handleWebhook({}, {});
+      expect(res1.status).toBe('PAID');
+      expect(mockPrisma.seat.updateMany).toHaveBeenCalledTimes(1);
+
+      // Calls 2 through 5: order is already PAID
+      for (let i = 2; i <= 5; i++) {
+        const resN = await service.handleWebhook({}, {});
+        expect(resN.received).toBe(true);
+        expect(resN.status).toBe('PAID');
+      }
+
+      // Seat update must NOT have been called again!
+      expect(mockPrisma.seat.updateMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('handles webhook for expired order: does not mark PAID, does not touch seats, marks LATE and alerts accountant', async () => {
+      (mockGateway.verifyWebhook as any).mockResolvedValue(true);
+      (mockGateway.parseWebhook as any).mockResolvedValue({
+        orderId,
+        gatewayRef: `${orderId}_123`,
+        transactionId: 'momo_tx_late',
+        amount: 100000,
+        status: 'SUCCESS',
+      });
+
+      mockPrisma.order.findUnique.mockResolvedValue({
+        id: orderId,
+        status: OrderStatus.PENDING,
+        expiresAt: new Date(Date.now() - 60000), // Expired 1 minute ago
+        items: [{ seatId, seat: { category: { price: 100000 } } }],
+      });
+      mockPrisma.payment.findFirst.mockResolvedValue({
+        id: 'pay_init',
+      });
+
+      const res = await service.handleWebhook({}, {});
+
+      expect(res.status).toBe('LATE');
+      expect(mockPrisma.order.update).toHaveBeenCalledWith({
+        where: { id: orderId },
+        data: { status: OrderStatus.NEEDS_REVIEW },
+      });
+      expect(mockPrisma.seat.updateMany).not.toHaveBeenCalled();
+      expect(mockPrisma.payment.update).toHaveBeenCalledWith({
+        where: { id: 'pay_init' },
+        data: {
+          status: PaymentStatus.LATE,
+          transactionId: 'momo_tx_late',
+        },
+      });
+      expect(mockNotifier.notifyLatePayment).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orderId,
+          amount: 100000,
+          transactionId: 'momo_tx_late',
+        }),
+      );
+    });
+
+    it('catches unique constraint error (P2002) and returns idempotent success instead of 500', async () => {
       (mockGateway.verifyWebhook as any).mockResolvedValue(true);
       (mockGateway.parseWebhook as any).mockResolvedValue({
         orderId,
@@ -270,10 +368,40 @@ describe('PaymentsService Unit Tests', () => {
 
       mockPrisma.order.findUnique.mockResolvedValue({
         id: orderId,
+        status: OrderStatus.PENDING,
+        expiresAt: new Date(Date.now() + 600000),
         items: [{ seatId, seat: { category: { price: 100000 } } }],
       });
 
-      // Simulate a failure in seat update step inside transaction
+      // Simulate concurrent transaction throwing P2002 Unique constraint failed
+      const p2002Error: any = new Error('Unique constraint failed on the fields: (`gatewayRef`)');
+      p2002Error.code = 'P2002';
+      mockPrisma.$transaction = vi.fn().mockRejectedValue(p2002Error);
+
+      const res = await service.handleWebhook({}, {});
+
+      expect(res.received).toBe(true);
+      expect(res.status).toBe('PAID');
+    });
+
+    it('rolls back all steps if any step in transaction throws a non-unique error', async () => {
+      (mockGateway.verifyWebhook as any).mockResolvedValue(true);
+      (mockGateway.parseWebhook as any).mockResolvedValue({
+        orderId,
+        gatewayRef: `${orderId}_123`,
+        transactionId: 'momo_tx_99',
+        amount: 100000,
+        status: 'SUCCESS',
+      });
+
+      mockPrisma.order.findUnique.mockResolvedValue({
+        id: orderId,
+        status: OrderStatus.PENDING,
+        expiresAt: new Date(Date.now() + 600000),
+        items: [{ seatId, seat: { category: { price: 100000 } } }],
+      });
+
+      // Simulate a failure in DB connection inside transaction
       mockPrisma.$transaction = vi.fn().mockRejectedValue(new Error('DB connection failure'));
 
       await expect(service.handleWebhook({}, {})).rejects.toThrow('DB connection failure');
@@ -291,6 +419,8 @@ describe('PaymentsService Unit Tests', () => {
 
       mockPrisma.order.findUnique.mockResolvedValue({
         id: orderId,
+        status: OrderStatus.PENDING,
+        expiresAt: new Date(Date.now() + 600000),
         items: [{ seatId, seat: { category: { price: 100000 } } }],
       });
       mockPrisma.payment.findFirst.mockResolvedValue({
