@@ -24,18 +24,18 @@ export class MomoGateway implements PaymentGateway {
   constructor(private readonly config: ConfigService) {}
 
   private get partnerCode(): string {
-    return this.config.get<string>('MOMO_PARTNER_CODE') ?? 'MOMO_TEST';
+    return this.config.get<string>('MOMO_PARTNER_CODE') ?? 'MOMO';
   }
 
   private get accessKey(): string {
-    return this.config.get<string>('MOMO_ACCESS_KEY') ?? 'MOMO_ACCESS_TEST';
+    return this.config.get<string>('MOMO_ACCESS_KEY') ?? 'F8BBA842ECF85';
   }
 
   private get secretKey(): string {
     return (
       this.config.get<string>('MOMO_SECRET_KEY') ??
       this.config.get<string>('PAYMENT_WEBHOOK_SECRET') ??
-      'MOMO_SECRET_TEST'
+      'K951B6PE1waDMi640xX08PD3vg6EkVlz'
     );
   }
 
@@ -97,7 +97,7 @@ export class MomoGateway implements PaymentGateway {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),
-        signal: AbortSignal.timeout(3000),
+        signal: AbortSignal.timeout(10000),
       });
 
       if (response.ok) {
@@ -120,6 +120,11 @@ export class MomoGateway implements PaymentGateway {
             redirectUrl: data.shortLink,
             gatewayRef,
           };
+        }
+        if (data.resultCode !== undefined && data.resultCode !== 0) {
+          this.logger.warn(
+            `MoMo payment API returned resultCode=${data.resultCode}: ${data.message}`,
+          );
         }
       }
     } catch (err) {
