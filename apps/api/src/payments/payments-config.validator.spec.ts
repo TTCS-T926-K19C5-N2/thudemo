@@ -84,4 +84,9 @@ describe('validatePaymentGatewayConfig', () => {
       /Thiếu biến môi trường PAYMENT_WEBHOOK_SECRET/,
     );
   });
+
+  it('allows startup without error when PAYMENT_GATEWAY is not configured', () => {
+    expect(() => validatePaymentGatewayConfig({})).not.toThrow();
+    expect(() => validatePaymentGatewayConfig({ PAYMENT_GATEWAY: '' })).not.toThrow();
+  });
 });

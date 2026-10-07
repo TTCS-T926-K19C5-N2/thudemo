@@ -4,7 +4,13 @@ export function validatePaymentGatewayConfig(
   const nodeEnv = (env.NODE_ENV ?? '').toLowerCase();
   const appEnv = (env.APP_ENV ?? '').toLowerCase();
   const isProduction = nodeEnv === 'production' || appEnv === 'production';
-  const gateway = (env.PAYMENT_GATEWAY ?? 'momo').toLowerCase();
+  const gatewayRaw = env.PAYMENT_GATEWAY?.trim();
+
+  if (!gatewayRaw) {
+    return;
+  }
+
+  const gateway = gatewayRaw.toLowerCase();
 
   if (isProduction && gateway === 'mock') {
     throw new Error(

@@ -1,16 +1,16 @@
 import {
-  ExceptionFilter,
   Catch,
   ArgumentsHost,
   HttpException,
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { BaseExceptionFilter } from '@nestjs/core';
 import type { Request, Response } from 'express';
 
 @Catch()
-export class WebhookSecurityFilter implements ExceptionFilter {
-  private readonly logger = new Logger(WebhookSecurityFilter.name);
+export class WebhookSecurityFilter extends BaseExceptionFilter {
+  private readonly filterLogger = new Logger(WebhookSecurityFilter.name);
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -39,7 +39,7 @@ export class WebhookSecurityFilter implements ExceptionFilter {
           req.ip ||
           req.socket?.remoteAddress;
 
-        this.logger.warn(
+        this.filterLogger.warn(
           `Webhook signature verification failed from IP: ${clientIp ?? 'unknown'}`,
         );
 
@@ -50,20 +50,6 @@ export class WebhookSecurityFilter implements ExceptionFilter {
       }
     }
 
-    // Default handling for other routes and exceptions
-    if (exception instanceof HttpException) {
-      return res.status(exception.getStatus()).json(exception.getResponse());
-    }
-
-    const statusCode =
-      (exception as any)?.status ??
-      (exception as any)?.statusCode ??
-      HttpStatus.INTERNAL_SERVER_ERROR;
-    const message = (exception as any)?.message ?? 'Internal server error';
-
-    return res.status(statusCode).json({
-      statusCode,
-      message,
-    });
+    super.catch(exception, host);
   }
 }
