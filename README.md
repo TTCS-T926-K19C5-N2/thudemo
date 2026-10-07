@@ -59,6 +59,15 @@ Mở [web](http://localhost:3000) và [API health](http://localhost:3001/health)
 
 Để dừng API hoặc web, nhấn `Ctrl+C` trong từng cửa sổ. Có thể dừng hai dịch vụ dữ liệu bằng `docker compose stop postgres redis`; lệnh này giữ nguyên volume PostgreSQL.
 
+### Chạy thử nghiệm luồng thanh toán bằng cổng giả lập (Story S-19)
+
+Khi chưa có tài khoản MoMo Sandbox, có thể bật cổng thanh toán giả lập nội bộ trong `.env`:
+```powershell
+PAYMENT_GATEWAY=mock
+PAYMENT_WEBHOOK_SECRET=mock_webhook_secret_dev
+```
+Khi bấm "Thanh toán ngay" ở trang chi tiết đơn hàng, hệ thống sẽ chuyển hướng tới trang `/mock-gateway/pay`. Tại đây có hai nút **"Thanh toán thành công"** và **"Thanh toán thất bại"**. Server giả lập sẽ phát một IPN webhook chuẩn MoMo có chữ ký số hợp lệ tới endpoint `/payments/webhook`, cập nhật đơn hàng tức thì và chuyển người dùng về trang kết quả `/payment/result`. *Lưu ý: Cổng mock chỉ dùng cho dev/test và bị nghiêm cấm trên môi trường production.*
+
 ## 5. Kiểm tra thay đổi local
 
 Sau khi dữ liệu đã healthy và migration đã chạy, từ `thudemo/`:

@@ -3,34 +3,52 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaModule } from '../prisma/prisma.module.js';
 import { PAYMENT_GATEWAY } from './gateways/payment-gateway.interface.js';
 import { MomoGateway } from './gateways/momo.gateway.js';
+import { MockPaymentGateway } from './gateways/mock.gateway.js';
 import { AccountantNotifier } from './accountant-notifier.js';
 import { PaymentsService } from './payments.service.js';
 import { PaymentsController } from './payments.controller.js';
+import {
+  MockGatewayController,
+  MockGatewayEnabledGuard,
+} from './mock-gateway.controller.js';
+import { MockGatewayService } from './mock-gateway.service.js';
 
 export const paymentGatewayProvider: Provider = {
   provide: PAYMENT_GATEWAY,
-  useFactory: (config: ConfigService, momoGateway: MomoGateway) => {
+  useFactory: (
+    config: ConfigService,
+    momoGateway: MomoGateway,
+    mockGateway: MockPaymentGateway,
+  ) => {
     const gatewayType = config
       .get<string>('PAYMENT_GATEWAY', 'momo')
       .toLowerCase();
-    if (gatewayType === 'momo') {
-      return momoGateway;
+    if (gatewayType === 'mock') {
+      return mockGateway;
     }
-    // Default fallback to MomoGateway for S-18; S-19 plugs MockGateway here
     return momoGateway;
   },
-  inject: [ConfigService, MomoGateway],
+  inject: [ConfigService, MomoGateway, MockPaymentGateway],
 };
 
 @Module({
   imports: [PrismaModule, ConfigModule],
-  controllers: [PaymentsController],
+  controllers: [PaymentsController, MockGatewayController],
   providers: [
     MomoGateway,
+    MockPaymentGateway,
     paymentGatewayProvider,
     AccountantNotifier,
     PaymentsService,
+    MockGatewayService,
+    MockGatewayEnabledGuard,
   ],
-  exports: [PaymentsService, PAYMENT_GATEWAY, AccountantNotifier],
+  exports: [
+    PaymentsService,
+    PAYMENT_GATEWAY,
+    AccountantNotifier,
+    MockPaymentGateway,
+    MockGatewayService,
+  ],
 })
 export class PaymentsModule {}
