@@ -19,6 +19,7 @@ model User {
   sessions          Session[]
   events            Event[]    @relation("OrganizerEvents")
   holdSessions      HoldSession[]
+  orders            Order[]
 
   @@map("users")
 }
@@ -67,6 +68,7 @@ model Event {
   organizerId String     @db.Uuid
   organizer   User       @relation("OrganizerEvents", fields: [organizerId], references: [id], onDelete: Restrict)
   showtimes   Showtime[]
+  orders      Order[]
   createdAt   DateTime   @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime   @updatedAt @db.Timestamptz(3)
 
@@ -85,6 +87,7 @@ model Showtime {
   seats Seat[]
   categories SeatCategory[]
   holdSessions HoldSession[]
+  orders Order[]
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
@@ -119,6 +122,7 @@ model Seat {
   row String
   seatNumber Int
   hold SeatHold?
+  orderItems OrderItem[]
   @@unique([id, showtimeId])
   @@unique([showtimeId, row, seatNumber])
   @@index([categoryId, showtimeId])
@@ -160,4 +164,47 @@ model CatalogRevision {
   id Int @id
   version Int @default(0)
   @@map("catalog_revision")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  EXPIRED
+  NEEDS_REVIEW
+}
+
+model Order {
+  id          String      @id @default(uuid()) @db.Uuid
+  userId      String      @db.Uuid
+  user        User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  eventId     String      @db.Uuid
+  event       Event       @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  showtimeId  String      @db.Uuid
+  showtime    Showtime    @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  status      OrderStatus @default(PENDING)
+  totalAmount Int
+  expiresAt   DateTime    @db.Timestamptz(3)
+  createdAt   DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime    @updatedAt @db.Timestamptz(3)
+  items       OrderItem[]
+
+  @@index([userId])
+  @@index([showtimeId])
+  @@index([status])
+  @@index([expiresAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String   @id @default(uuid()) @db.Uuid
+  orderId   String   @db.Uuid
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  seatId    String   @db.Uuid
+  seat      Seat     @relation(fields: [seatId], references: [id], onDelete: Restrict)
+  tierName  String
+  unitPrice Int
+
+  @@unique([orderId, seatId])
+  @@index([seatId])
+  @@map("order_items")
 }
