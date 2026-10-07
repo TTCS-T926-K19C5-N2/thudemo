@@ -52,7 +52,10 @@ export class PaymentsService {
     }
 
     const now = new Date();
-    if (order.status !== OrderStatus.PENDING || isOrderExpired(order, now)) {
+    const isPending =
+      order.status === OrderStatus.PENDING ||
+      order.status === OrderStatus.PENDING_PAYMENT;
+    if (!isPending || isOrderExpired(order, now)) {
       throw new BadRequestException(
         'Đơn hàng đã hết hạn hoặc không ở trạng thái chờ thanh toán.',
       );
