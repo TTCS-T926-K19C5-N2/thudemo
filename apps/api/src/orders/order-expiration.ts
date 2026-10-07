@@ -10,7 +10,7 @@ export function isOrderExpired(
   if (order.status !== 'PENDING' && order.status !== 'PENDING_PAYMENT') {
     return false;
   }
-  const expiryRaw = order.expiresAt ?? order.paymentExpiresAt;
+  const expiryRaw = order.paymentExpiresAt ?? order.expiresAt;
   if (!expiryRaw) return false;
   const expiry =
     typeof expiryRaw === 'string'

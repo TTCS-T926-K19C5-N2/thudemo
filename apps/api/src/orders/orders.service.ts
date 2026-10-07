@@ -501,11 +501,11 @@ export class OrdersService {
       throw new NotFoundException('Không tìm thấy đơn hàng.');
     }
 
+    // Prices are the snapshots captured server-side when the order was created
+    // (S-16); a later category price change must not alter a pending order.
     let recalculatedTotal = 0;
     for (const item of order.items) {
-      const currentCategoryPrice =
-        item.seat?.category?.price ?? item.unitPrice;
-      recalculatedTotal += currentCategoryPrice;
+      recalculatedTotal += item.unitPrice;
     }
 
     if (recalculatedTotal !== order.totalAmount) {
@@ -517,7 +517,7 @@ export class OrdersService {
     const serverNow = new Date();
     const expired = isOrderExpired(order, serverNow);
     const effectiveExpiresAt =
-      order.expiresAt ?? order.paymentExpiresAt ?? serverNow;
+      order.paymentExpiresAt ?? order.expiresAt ?? serverNow;
     const remainingSeconds = Math.max(
       0,
       Math.ceil((effectiveExpiresAt.getTime() - serverNow.getTime()) / 1000),
@@ -552,7 +552,7 @@ export class OrdersService {
       label: `${item.seat.row}-${item.seat.seatNumber}`,
       tierName: item.tierName ?? item.categoryName ?? '',
       categoryName: item.categoryName ?? item.tierName ?? '',
-      unitPrice: item.seat?.category?.price ?? item.unitPrice,
+      unitPrice: item.unitPrice,
       seat: { row: item.seat.row, seatNumber: item.seat.seatNumber },
     }));
 

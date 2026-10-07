@@ -189,7 +189,7 @@ model Order {
   holdToken        String?      @db.Uuid
   holdSession      HoldSession? @relation(fields: [holdSessionId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
   status           OrderStatus  @default(PENDING_PAYMENT)
-  paymentExpiresAt DateTime?    @db.Timestamptz(3)
+  paymentExpiresAt DateTime     @db.Timestamptz(3)
   expiresAt        DateTime?    @db.Timestamptz(3)
   totalAmount      Int
   items            OrderItem[]
@@ -212,7 +212,7 @@ model OrderItem {
   order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   seatId       String  @db.Uuid
   seat         Seat    @relation(fields: [seatId], references: [id], onDelete: Restrict)
-  categoryName String?
+  categoryName String
   tierName     String?
   unitPrice    Int
 

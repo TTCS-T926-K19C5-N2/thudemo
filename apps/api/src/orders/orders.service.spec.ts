@@ -301,7 +301,7 @@ describe('OrdersService & isOrderExpired', () => {
         expect(result.remainingSeconds).toBe(0);
       });
 
-      it('recalculates total amount from DB category prices and logs warning if mismatch', async () => {
+      it('recalculates total amount from stored item price snapshots and logs warning if mismatch', async () => {
         const future = new Date(Date.now() + 60000);
         mockPrisma.order.findUnique.mockResolvedValue({
           id: mockOrderId,
@@ -331,7 +331,7 @@ describe('OrdersService & isOrderExpired', () => {
               seat: {
                 row: 'A',
                 seatNumber: 1,
-                category: { price: 500000 }, // updated DB price
+                category: { price: 700000 }, // later live price must not change a pending order
               },
             },
           ],

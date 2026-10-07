@@ -206,8 +206,9 @@ describe('Orders S-17 E2E Integration', () => {
         status: OrderStatus.PENDING,
         totalAmount: 500000,
         expiresAt: new Date(Date.now() + 600000),
+        paymentExpiresAt: new Date(Date.now() + 600000),
         items: {
-          create: [{ seatId: seat1Id, tierName: 'VIP', unitPrice: 500000 }],
+          create: [{ seatId: seat1Id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
         },
       },
     });
@@ -234,8 +235,9 @@ describe('Orders S-17 E2E Integration', () => {
         status: OrderStatus.PENDING,
         totalAmount: 300000,
         expiresAt: new Date(Date.now() - 5000), // expired 5 seconds ago
+        paymentExpiresAt: new Date(Date.now() - 5000),
         items: {
-          create: [{ seatId: seat2Id, tierName: 'Standard', unitPrice: 300000 }],
+          create: [{ seatId: seat2Id, tierName: 'Standard', categoryName: 'Standard', unitPrice: 300000 }],
         },
       },
     });

@@ -20,11 +20,11 @@ describe('Payments S-18 E2E Integration', () => {
   let showtimeId: string;
   let seat1Id: string;
   let seat2Id: string;
-  const momoAccessKey = process.env.MOMO_ACCESS_KEY ?? 'MOMO_ACCESS_TEST';
+  const momoAccessKey = process.env.MOMO_ACCESS_KEY ?? 'F8BBA842ECF85';
   const momoSecretKey =
     process.env.MOMO_SECRET_KEY ??
     process.env.PAYMENT_WEBHOOK_SECRET ??
-    'MOMO_SECRET_TEST';
+    'K951B6PE1waDMi640xX08PD3vg6EkVlz';
 
   async function createAccount(role: string) {
     await db.role.createMany({ data: [{ name: role }], skipDuplicates: true });
@@ -157,8 +157,9 @@ describe('Payments S-18 E2E Integration', () => {
         status: OrderStatus.PENDING,
         totalAmount: 300000,
         expiresAt: new Date(Date.now() + 600000), // 10 minutes from now
+        paymentExpiresAt: new Date(Date.now() + 600000),
         items: {
-          create: [{ seatId: seat1Id, tierName: 'VIP', unitPrice: 300000 }],
+          create: [{ seatId: seat1Id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 300000 }],
         },
       },
     });
@@ -196,8 +197,9 @@ describe('Payments S-18 E2E Integration', () => {
         status: OrderStatus.PENDING,
         totalAmount: 300000,
         expiresAt: new Date(Date.now() - 5000), // Expired
+        paymentExpiresAt: new Date(Date.now() - 5000),
         items: {
-          create: [{ seatId: seat1Id, tierName: 'VIP', unitPrice: 300000 }],
+          create: [{ seatId: seat1Id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 300000 }],
         },
       },
     });
@@ -240,8 +242,9 @@ describe('Payments S-18 E2E Integration', () => {
         status: OrderStatus.PENDING,
         totalAmount: 300000,
         expiresAt: new Date(Date.now() + 600000),
+        paymentExpiresAt: new Date(Date.now() + 600000),
         items: {
-          create: [{ seatId: seat2Id, tierName: 'VIP', unitPrice: 300000 }],
+          create: [{ seatId: seat2Id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 300000 }],
         },
       },
     });
@@ -342,8 +345,9 @@ describe('Payments S-18 E2E Integration', () => {
         status: OrderStatus.PENDING,
         totalAmount: 300000,
         expiresAt: new Date(Date.now() + 600000),
+        paymentExpiresAt: new Date(Date.now() + 600000),
         items: {
-          create: [{ seatId: seat.id, tierName: 'VIP', unitPrice: 300000 }],
+          create: [{ seatId: seat.id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 300000 }],
         },
       },
     });
@@ -409,8 +413,9 @@ describe('Payments S-18 E2E Integration', () => {
         status: OrderStatus.PENDING,
         totalAmount: 300000,
         expiresAt: new Date(Date.now() + 600000),
+        paymentExpiresAt: new Date(Date.now() + 600000),
         items: {
-          create: [{ seatId: seat.id, tierName: 'VIP', unitPrice: 300000 }],
+          create: [{ seatId: seat.id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 300000 }],
         },
       },
     });
