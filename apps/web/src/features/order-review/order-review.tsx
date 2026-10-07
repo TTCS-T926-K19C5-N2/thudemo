@@ -29,7 +29,11 @@ import {
 import { PublicLayout } from "@/components/layout/product-layout";
 import { api, ApiError } from "@/lib/api/client";
 import { loadCurrentUser } from "@/lib/api";
-import { decodeOrderDetail, type OrderDetail } from "@/lib/contracts/orders";
+import {
+  decodeOrderDetail,
+  decodePayResponse,
+  type OrderDetail,
+} from "@/lib/contracts/orders";
 import { formatVnd, formatShowtime } from "@/lib/formatting";
 import {
   countdownLabel,
@@ -52,6 +56,8 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
   const [error, setError] = useState<string>("");
   const [unauthorized, setUnauthorized] = useState<boolean>(false);
   const [notFound, setNotFound] = useState<boolean>(false);
+  const [paying, setPaying] = useState<boolean>(false);
+  const [payError, setPayError] = useState<string>("");
   const alive = useRef(true);
 
   const refresh = useCallback(async () => {
@@ -161,11 +167,28 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
     return () => clearInterval(interval);
   }, [order, expired, clock]);
 
-  const defaultPayHandler = () => {
+  const defaultPayHandler = async () => {
     if (onPay) {
       onPay();
-    } else {
-      alert("Cổng thanh toán sẽ được kích hoạt ở bước tiếp theo (Story S-18).");
+      return;
+    }
+    if (paying) return;
+    setPaying(true);
+    setPayError("");
+    try {
+      const result = await api(`/orders/${id}/pay`, decodePayResponse, {
+        method: "POST",
+      });
+      if (result.redirectUrl) {
+        window.location.href = result.redirectUrl;
+      }
+    } catch (err) {
+      setPayError(
+        err instanceof Error
+          ? err.message
+          : "Không thể khởi tạo thanh toán. Vui lòng thử lại.",
+      );
+      setPaying(false);
     }
   };
 
@@ -423,12 +446,22 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
               </div>
             </div>
 
+            {/* Pay Error Alert */}
+            {payError && (
+              <Alert variant="destructive" className="mt-4" data-testid="pay-error-alert">
+                <CircleAlert className="h-4 w-4" />
+                <AlertTitle>Lỗi thanh toán</AlertTitle>
+                <AlertDescription>{payError}</AlertDescription>
+              </Alert>
+            )}
+
             {/* Actions */}
             <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 pt-4 border-t">
               <Button
                 variant="outline"
                 asChild
                 className="w-full sm:w-auto"
+                disabled={paying}
               >
                 <Link href={`/shows/${order.showtime.id}/seats`}>
                   <RotateCw className="mr-2 h-4 w-4" />
@@ -442,9 +475,17 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
                   size="lg"
                   className="w-full sm:w-auto min-w-[200px] text-base font-semibold shadow-md"
                   onClick={defaultPayHandler}
+                  disabled={paying}
                   data-testid="pay-button"
                 >
-                  Thanh toán ngay
+                  {paying ? (
+                    <>
+                      <RotateCw className="mr-2 h-4 w-4 animate-spin" />
+                      Đang kết nối cổng thanh toán...
+                    </>
+                  ) : (
+                    "Thanh toán ngay"
+                  )}
                 </Button>
               )}
             </div>

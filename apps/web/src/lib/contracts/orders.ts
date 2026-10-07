@@ -128,3 +128,29 @@ export function decodeOrderDetail(value: unknown): OrderDetail {
     items,
   };
 }
+
+export type PayResponse = {
+  redirectUrl: string;
+  gatewayRef: string;
+  paymentId: string;
+};
+
+export function decodePayResponse(value: unknown): PayResponse {
+  const o = object(value);
+  if (
+    typeof o.redirectUrl !== "string" ||
+    typeof o.gatewayRef !== "string" ||
+    typeof o.paymentId !== "string"
+  ) {
+    throw new ApiError(
+      "Không đọc được thông tin khởi tạo thanh toán.",
+      502,
+      "INVALID_RESPONSE",
+    );
+  }
+  return {
+    redirectUrl: o.redirectUrl,
+    gatewayRef: o.gatewayRef,
+    paymentId: o.paymentId,
+  };
+}

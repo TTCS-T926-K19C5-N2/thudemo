@@ -35,6 +35,12 @@ export class SessionAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) return true;
+
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
       const origin = request.headers.origin;
@@ -47,12 +53,6 @@ export class SessionAuthGuard implements CanActivate {
         throw new ForbiddenException('Nguồn yêu cầu không được phép.');
       }
     }
-
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (isPublic) return true;
 
     const token = sessionTokenFromCookie(request.headers.cookie);
     if (!token) throw new UnauthorizedException('Cần đăng nhập lại.');
