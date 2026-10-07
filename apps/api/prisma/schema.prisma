@@ -68,6 +68,7 @@ model Event {
   organizerId      String     @db.Uuid
   organizer        User       @relation("OrganizerEvents", fields: [organizerId], references: [id], onDelete: Restrict)
   showtimes        Showtime[]
+  orders           Order[]
   createdAt        DateTime   @default(now()) @db.Timestamptz(3)
   updatedAt        DateTime   @updatedAt @db.Timestamptz(3)
 
@@ -121,12 +122,14 @@ model Seat {
   category   SeatCategory @relation(fields: [categoryId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
   row        String
   seatNumber Int
+  isSold     Boolean      @default(false)
   hold       SeatHold?
   orderItems OrderItem[]
 
   @@unique([id, showtimeId])
   @@unique([showtimeId, row, seatNumber])
   @@index([categoryId, showtimeId])
+  @@index([isSold])
   @@map("seats")
 }
 
@@ -166,41 +169,51 @@ model SeatHold {
 }
 
 enum OrderStatus {
+  PENDING
   PENDING_PAYMENT
   PAID
   EXPIRED
   CANCELLED
+  NEEDS_REVIEW
 }
 
 model Order {
-  id               String      @id @default(uuid()) @db.Uuid
-  userId           String      @db.Uuid
-  user             User        @relation(fields: [userId], references: [id], onDelete: Restrict)
-  showtimeId       String      @db.Uuid
-  showtime         Showtime    @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
-  holdSessionId    String      @db.Uuid
-  holdToken        String      @db.Uuid
-  holdSession      HoldSession @relation(fields: [holdSessionId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
-  status           OrderStatus @default(PENDING_PAYMENT)
-  paymentExpiresAt DateTime    @db.Timestamptz(3)
-  totalAmount      BigInt
+  id               String       @id @default(uuid()) @db.Uuid
+  userId           String       @db.Uuid
+  user             User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  eventId          String?      @db.Uuid
+  event            Event?       @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  showtimeId       String       @db.Uuid
+  showtime         Showtime     @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  holdSessionId    String?      @db.Uuid
+  holdToken        String?      @db.Uuid
+  holdSession      HoldSession? @relation(fields: [holdSessionId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
+  status           OrderStatus  @default(PENDING_PAYMENT)
+  paymentExpiresAt DateTime     @db.Timestamptz(3)
+  expiresAt        DateTime?    @db.Timestamptz(3)
+  totalAmount      Int
   items            OrderItem[]
-  createdAt        DateTime    @default(now()) @db.Timestamptz(3)
-  updatedAt        DateTime    @updatedAt @db.Timestamptz(3)
+  payments         Payment[]
+  createdAt        DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime     @updatedAt @db.Timestamptz(3)
 
   @@unique([holdSessionId, holdToken])
+  @@index([userId])
+  @@index([showtimeId])
   @@index([userId, showtimeId, status])
   @@index([status, paymentExpiresAt])
+  @@index([expiresAt])
   @@map("orders")
 }
 
 model OrderItem {
-  id           String @id @default(uuid()) @db.Uuid
-  orderId      String @db.Uuid
-  order        Order  @relation(fields: [orderId], references: [id], onDelete: Restrict)
-  seatId       String @db.Uuid
-  seat         Seat   @relation(fields: [seatId], references: [id], onDelete: Restrict)
+  id           String  @id @default(uuid()) @db.Uuid
+  orderId      String  @db.Uuid
+  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  seatId       String  @db.Uuid
+  seat         Seat    @relation(fields: [seatId], references: [id], onDelete: Restrict)
   categoryName String
+  tierName     String?
   unitPrice    Int
 
   @@unique([orderId, seatId])
@@ -213,4 +226,31 @@ model CatalogRevision {
   version Int @default(0)
 
   @@map("catalog_revision")
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCEEDED
+  FAILED
+  AMOUNT_MISMATCH
+  LATE
+}
+
+model Payment {
+  id            String        @id @default(uuid()) @db.Uuid
+  orderId       String        @db.Uuid
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  amount        Int
+  status        PaymentStatus @default(INITIATED)
+  gateway       String
+  gatewayRef    String
+  transactionId String?
+  createdAt     DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime      @updatedAt @db.Timestamptz(3)
+
+  @@index([orderId])
+  @@index([gatewayRef])
+  @@index([transactionId])
+  @@index([status])
+  @@map("payments")
 }
