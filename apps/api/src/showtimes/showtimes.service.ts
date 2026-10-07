@@ -337,7 +337,7 @@ export class ShowtimesService {
       FROM (SELECT s.id, s.row, s."seatNumber", c.name AS category, c.price, ${SEAT_STATUS_SQL} AS status
       FROM seats s JOIN seat_categories c ON c.id = s."categoryId" AND c."showtimeId" = s."showtimeId"
       LEFT JOIN seat_holds h ON h."seatId"=s.id
-      LEFT JOIN LATERAL (SELECT false AS sold, h."expiresAt") inventory ON true
+      LEFT JOIN LATERAL (SELECT s."isSold" AS sold, h."expiresAt") inventory ON true
       WHERE s."showtimeId" = ${id}::uuid) seat`;
   }
 }

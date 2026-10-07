@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -14,7 +15,7 @@ import { OrdersService } from './orders.service.js';
 
 @Controller('showtimes/:id/orders')
 @Roles('BUYER')
-export class OrdersController {
+export class ShowtimeOrdersController {
   constructor(private readonly service: OrdersService) {}
 
   @Post()
@@ -32,15 +33,26 @@ export class OrdersController {
 }
 
 @Controller('orders')
-@Roles('BUYER')
-export class BuyerOrdersController {
+export class OrdersController {
   constructor(private readonly service: OrdersService) {}
 
+  @Post()
+  @Roles('BUYER')
+  @HttpCode(201)
+  create(@Req() req: AuthenticatedRequest, @Body() body: unknown) {
+    return this.service.createOrder(
+      req.user.id,
+      hashSessionToken(req.sessionToken),
+      body,
+    );
+  }
+
   @Get(':id')
-  current(
+  @Roles('BUYER')
+  getOrder(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.service.current(id, req.user.id);
+    return this.service.getOrderById(id, req.user.id);
   }
 }

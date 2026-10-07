@@ -306,7 +306,15 @@ export class HoldsService {
 
   expiredBatch(): Promise<ExpiredClaim[]> {
     return this.db.$queryRaw(
-      Prisma.sql`SELECT "seatId",token FROM seat_holds WHERE "expiresAt"<=clock_timestamp() ORDER BY "expiresAt","seatId" LIMIT 1000`,
+      Prisma.sql`SELECT h."seatId", h.token FROM seat_holds h
+        WHERE h."expiresAt" <= clock_timestamp()
+        AND NOT EXISTS (
+          SELECT 1 FROM order_items oi
+          JOIN orders o ON o.id = oi."orderId"
+          WHERE oi."seatId" = h."seatId"
+          AND o.status = 'NEEDS_REVIEW'
+        )
+        ORDER BY h."expiresAt", h."seatId" LIMIT 1000`,
     );
   }
 
