@@ -243,13 +243,13 @@ model Payment {
   amount        Int
   status        PaymentStatus @default(INITIATED)
   gateway       String
-  gatewayRef    String
+  gatewayRef    String        @unique
   transactionId String?
   createdAt     DateTime      @default(now()) @db.Timestamptz(3)
   updatedAt     DateTime      @updatedAt @db.Timestamptz(3)
 
+  @@unique([gateway, transactionId])
   @@index([orderId])
-  @@index([gatewayRef])
   @@index([transactionId])
   @@index([status])
   @@map("payments")

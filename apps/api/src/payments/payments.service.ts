@@ -145,30 +145,139 @@ export class PaymentsService {
       throw new NotFoundException('Không tìm thấy đơn hàng.');
     }
 
-    // Calculate authoritative order total from DB
+    // Fast check: If order is already PAID, return success immediately without side effects
+    if (order.status === OrderStatus.PAID) {
+      this.logger.log(
+        `Order ${order.id} is already PAID. Duplicate webhook received, returning success.`,
+      );
+      return { received: true, status: 'PAID' };
+    }
+
+    // Check if payment with this gatewayRef was already processed successfully
+    const existingPaymentCheck = await this.db.payment.findFirst({
+      where: { gatewayRef: event.gatewayRef },
+    });
+    if (existingPaymentCheck?.status === PaymentStatus.SUCCEEDED) {
+      return { received: true, status: 'PAID' };
+    }
+    if (existingPaymentCheck?.status === PaymentStatus.LATE) {
+      return { received: true, status: 'LATE' };
+    }
+
+    // 3. Check expired order
+    const isExpired = isOrderExpired(order, new Date());
+    if (isExpired) {
+      if (event.status === 'SUCCESS') {
+        await this.db.$transaction(async (tx) => {
+          await tx.order.update({
+            where: { id: order.id },
+            data: { status: OrderStatus.NEEDS_REVIEW },
+          });
+
+          const payment = await tx.payment.findFirst({
+            where: { gatewayRef: event.gatewayRef },
+          });
+
+          if (payment) {
+            await tx.payment.update({
+              where: { id: payment.id },
+              data: {
+                status: PaymentStatus.LATE,
+                transactionId: event.transactionId,
+              },
+            });
+          } else {
+            await tx.payment.create({
+              data: {
+                orderId: order.id,
+                amount: event.amount,
+                status: PaymentStatus.LATE,
+                gateway: this.gateway.name,
+                gatewayRef: event.gatewayRef,
+                transactionId: event.transactionId,
+              },
+            });
+          }
+        });
+
+        await this.accountantNotifier.notifyLatePayment({
+          orderId: order.id,
+          amount: event.amount,
+          transactionId: event.transactionId,
+          gatewayRef: event.gatewayRef,
+          reason: 'Thanh toán sau khi đơn hết hạn, cần hoàn tiền',
+        });
+
+        return { received: true, status: 'LATE' };
+      } else {
+        const payment = await this.db.payment.findFirst({
+          where: { gatewayRef: event.gatewayRef },
+        });
+
+        if (payment) {
+          await this.db.payment.update({
+            where: { id: payment.id },
+            data: {
+              status: PaymentStatus.FAILED,
+              transactionId: event.transactionId,
+            },
+          });
+        } else {
+          await this.db.payment.create({
+            data: {
+              orderId: order.id,
+              amount: event.amount,
+              status: PaymentStatus.FAILED,
+              gateway: this.gateway.name,
+              gatewayRef: event.gatewayRef,
+              transactionId: event.transactionId,
+            },
+          });
+        }
+
+        return { received: true, status: 'FAILED' };
+      }
+    }
+
+    // 4. Calculate authoritative order total from DB
     let orderTotal = 0;
     for (const item of order.items) {
       orderTotal += item.seat?.category?.price ?? item.unitPrice;
     }
 
-    // 3. Amount mismatch check
+    // 5. Amount mismatch check
     if (event.status === 'SUCCESS' && event.amount !== orderTotal) {
-      await this.db.$transaction([
-        this.db.order.update({
+      await this.db.$transaction(async (tx) => {
+        await tx.order.update({
           where: { id: order.id },
           data: { status: OrderStatus.NEEDS_REVIEW },
-        }),
-        this.db.payment.create({
-          data: {
-            orderId: order.id,
-            amount: event.amount,
-            status: PaymentStatus.AMOUNT_MISMATCH,
-            gateway: this.gateway.name,
-            gatewayRef: event.gatewayRef,
-            transactionId: event.transactionId,
-          },
-        }),
-      ]);
+        });
+
+        const payment = await tx.payment.findFirst({
+          where: { gatewayRef: event.gatewayRef },
+        });
+
+        if (payment) {
+          await tx.payment.update({
+            where: { id: payment.id },
+            data: {
+              status: PaymentStatus.AMOUNT_MISMATCH,
+              transactionId: event.transactionId,
+            },
+          });
+        } else {
+          await tx.payment.create({
+            data: {
+              orderId: order.id,
+              amount: event.amount,
+              status: PaymentStatus.AMOUNT_MISMATCH,
+              gateway: this.gateway.name,
+              gatewayRef: event.gatewayRef,
+              transactionId: event.transactionId,
+            },
+          });
+        }
+      });
 
       await this.accountantNotifier.notifyAmountMismatch({
         orderId: order.id,
@@ -183,60 +292,100 @@ export class PaymentsService {
       return { received: true, status: 'AMOUNT_MISMATCH' };
     }
 
-    // 4. Successful event with matched amount in a SINGLE TRANSACTION
+    // 6. Successful event with matched amount in a SINGLE TRANSACTION
     if (event.status === 'SUCCESS') {
-      await this.db.$transaction(async (tx) => {
-        // (a) Order -> PAID
-        await tx.order.update({
-          where: { id: order.id },
-          data: { status: OrderStatus.PAID },
-        });
+      try {
+        return await this.db.$transaction(async (tx) => {
+          // Advisory lock using gatewayRef to prevent race conditions
+          if (typeof (tx as any).$executeRaw === 'function') {
+            await (tx as any).$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${event.gatewayRef}))`;
+          }
 
-        // (b) Seats -> SOLD (isSold = true)
-        const seatIds = order.items.map((item) => item.seatId);
-        if (seatIds.length > 0) {
-          await tx.seat.updateMany({
-            where: { id: { in: seatIds } },
-            data: { isSold: true },
+          // Check if order was already updated to PAID while waiting for lock
+          const freshOrder = await tx.order.findUnique({
+            where: { id: order.id },
           });
+          if (!freshOrder || freshOrder.status === OrderStatus.PAID) {
+            return { received: true, status: 'PAID' };
+          }
 
-          // (c) Delete holds on these seats
-          await tx.seatHold.deleteMany({
-            where: { seatId: { in: seatIds } },
-          });
-        }
-
-        // (d) Payment -> SUCCEEDED with gateway transaction ID
-        const existingPayment = await tx.payment.findFirst({
-          where: { gatewayRef: event.gatewayRef },
-        });
-
-        if (existingPayment) {
-          await tx.payment.update({
-            where: { id: existingPayment.id },
-            data: {
-              status: PaymentStatus.SUCCEEDED,
-              transactionId: event.transactionId,
+          // (a) Conditional atomic update: only update if order is still PENDING / PENDING_PAYMENT
+          const updateResult = await tx.order.updateMany({
+            where: {
+              id: order.id,
+              status: { in: [OrderStatus.PENDING, OrderStatus.PENDING_PAYMENT] },
             },
+            data: { status: OrderStatus.PAID },
           });
-        } else {
-          await tx.payment.create({
-            data: {
-              orderId: order.id,
-              amount: event.amount,
-              status: PaymentStatus.SUCCEEDED,
-              gateway: this.gateway.name,
-              gatewayRef: event.gatewayRef,
-              transactionId: event.transactionId,
-            },
-          });
-        }
-      });
 
-      return { received: true, status: 'PAID' };
+          if (updateResult.count === 0) {
+            const postCheck = await tx.order.findUnique({
+              where: { id: order.id },
+            });
+            if (postCheck?.status === OrderStatus.PAID) {
+              return { received: true, status: 'PAID' };
+            }
+            return { received: true, status: postCheck?.status ?? 'UNKNOWN' };
+          }
+
+          // (b) Seats -> SOLD (isSold = true) & release holds (executed strictly ONCE)
+          const seatIds = order.items.map((item) => item.seatId);
+          if (seatIds.length > 0) {
+            await tx.seat.updateMany({
+              where: { id: { in: seatIds } },
+              data: { isSold: true },
+            });
+
+            await tx.seatHold.deleteMany({
+              where: { seatId: { in: seatIds } },
+            });
+          }
+
+          // (c) Payment -> SUCCEEDED with gateway transaction ID
+          const existingPayment = await tx.payment.findFirst({
+            where: { gatewayRef: event.gatewayRef },
+          });
+
+          if (existingPayment) {
+            await tx.payment.update({
+              where: { id: existingPayment.id },
+              data: {
+                status: PaymentStatus.SUCCEEDED,
+                transactionId: event.transactionId,
+              },
+            });
+          } else {
+            await tx.payment.create({
+              data: {
+                orderId: order.id,
+                amount: event.amount,
+                status: PaymentStatus.SUCCEEDED,
+                gateway: this.gateway.name,
+                gatewayRef: event.gatewayRef,
+                transactionId: event.transactionId,
+              },
+            });
+          }
+
+          return { received: true, status: 'PAID' };
+        });
+      } catch (error: any) {
+        // Catch duplicate key / concurrency errors (Prisma P2002) and treat as idempotent success
+        if (
+          error?.code === 'P2002' ||
+          error?.message?.includes('Unique constraint failed') ||
+          error?.message?.includes('duplicate key value')
+        ) {
+          this.logger.warn(
+            `Duplicate webhook caught by unique constraint for order ${event.orderId}: ${error.message}`,
+          );
+          return { received: true, status: 'PAID' };
+        }
+        throw error;
+      }
     }
 
-    // 5. Failed event: Payment -> FAILED, order remains PENDING
+    // 7. Failed event: Payment -> FAILED, order remains PENDING
     const existingPayment = await this.db.payment.findFirst({
       where: { gatewayRef: event.gatewayRef },
     });
