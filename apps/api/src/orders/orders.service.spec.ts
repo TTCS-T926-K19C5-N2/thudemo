@@ -60,6 +60,7 @@ describe('OrdersService & isOrderExpired', () => {
         order: {
           create: vi.fn(),
           findUnique: vi.fn(),
+          update: vi.fn(),
         },
       };
       service = new OrdersService(mockPrisma as unknown as PrismaService);

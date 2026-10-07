@@ -32,11 +32,11 @@ type HeldSeat = {
 type OrderView = {
   id: string;
   status: OrderStatus;
-  paymentExpiresAt: Date;
+  paymentExpiresAt: Date | null;
   totalAmount: number;
   items: {
     seatId: string;
-    categoryName: string;
+    categoryName: string | null;
     unitPrice: number;
     seat: { row: string; seatNumber: number };
   }[];
@@ -415,12 +415,13 @@ export class OrdersService {
       });
 
       const serverNow = new Date();
+      const effectiveExpiry = order.expiresAt ?? order.paymentExpiresAt ?? serverNow;
       const remainingSeconds = Math.max(
         0,
-        Math.ceil((order.expiresAt.getTime() - serverNow.getTime()) / 1000),
+        Math.ceil((effectiveExpiry.getTime() - serverNow.getTime()) / 1000),
       );
 
-      const expiresIso = order.expiresAt.toISOString();
+      const expiresIso = effectiveExpiry.toISOString();
       const serverTimeIso = serverNow.toISOString();
 
       const items = order.items.map((item) => ({
@@ -447,12 +448,16 @@ export class OrdersService {
         isExpired: isOrderExpired(order, serverNow),
         createdAt: order.createdAt.toISOString(),
         event: {
-          id: order.event.id,
-          name: order.event.name,
-          description: order.event.description,
-          location: order.event.location,
-          posterPath: order.event.posterPath,
-          bannerPath: order.event.bannerPath,
+          id: order.event?.id ?? holdSession.showtime.eventId,
+          name: order.event?.name ?? holdSession.showtime.event.name,
+          description:
+            order.event?.description ?? holdSession.showtime.event.description,
+          location:
+            order.event?.location ?? holdSession.showtime.event.location,
+          posterPath:
+            order.event?.posterPath ?? holdSession.showtime.event.posterPath,
+          bannerPath:
+            order.event?.bannerPath ?? holdSession.showtime.event.bannerPath,
         },
         showtime: {
           id: order.showtime.id,
@@ -511,7 +516,8 @@ export class OrdersService {
 
     const serverNow = new Date();
     const expired = isOrderExpired(order, serverNow);
-    const effectiveExpiresAt = order.expiresAt ?? order.paymentExpiresAt;
+    const effectiveExpiresAt =
+      order.expiresAt ?? order.paymentExpiresAt ?? serverNow;
     const remainingSeconds = Math.max(
       0,
       Math.ceil((effectiveExpiresAt.getTime() - serverNow.getTime()) / 1000),
@@ -596,6 +602,11 @@ export class OrdersService {
       order: {
         ...order,
         totalAmount: Number(order.totalAmount),
+        paymentExpiresAt: (order.paymentExpiresAt ?? serverTime).toISOString(),
+        items: order.items.map((i) => ({
+          ...i,
+          categoryName: i.categoryName ?? '',
+        })),
       },
     };
   }
