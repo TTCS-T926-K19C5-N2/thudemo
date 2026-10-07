@@ -1,0 +1,153 @@
+{
+  "groups": [
+    {
+      "name": "s43",
+      "rules": [
+        {
+          "alert": "S43ScrapeUnavailable",
+          "expr": "up{job=\"ticketing\"} == 0",
+          "for": "1m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "metric": "up",
+            "threshold": "1",
+            "window": "1m",
+            "value": "{{ printf \"%.4f\" $value }}",
+            "dashboard": "http://localhost:13000/d/s43-monitoring",
+            "runbook": "https://github.com/TTCS-T926-K19C5-N2/thudemo/blob/main/docs/S43_MONITORING_RUNBOOK.md"
+          }
+        },
+        {
+          "alert": "S43TargetMissing",
+          "expr": "(count by(service,environment)(up{job=\"ticketing\",service=\"api\"}) < 2) or absent(up{job=\"ticketing\",service=\"api\"}) or absent(up{job=\"ticketing\",service=\"worker\"})",
+          "for": "1m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "metric": "up",
+            "threshold": "expected two API instances and one worker; configure when topology changes",
+            "window": "1m",
+            "value": "{{ printf \"%.4f\" $value }}",
+            "dashboard": "http://localhost:13000/d/s43-monitoring",
+            "runbook": "https://github.com/TTCS-T926-K19C5-N2/thudemo/blob/main/docs/S43_MONITORING_RUNBOOK.md"
+          }
+        },
+        {
+          "alert": "S43SystemErrors",
+          "expr": "((sum by(service,environment)(rate(ticket_http_requests_total{service=\"api\",status=~\"5..\"}[5m])) or on(service,environment) (sum by(service,environment)(rate(ticket_http_requests_total{service=\"api\"}[5m])) * 0)) / sum by(service,environment)(rate(ticket_http_requests_total{service=\"api\"}[5m])) > 0.05) and (sum by(service,environment)(increase(ticket_http_requests_total{service=\"api\"}[5m])) >= 100) and on (service,environment) (min by(service,environment)(up{job=\"ticketing\",service=\"api\"}) == 1) and on (service,environment) (count by(service,environment)(up{job=\"ticketing\",service=\"api\"}) == 2)",
+          "for": "2m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "metric": "5xx ratio",
+            "threshold": "0.05 technical proposal",
+            "window": "5m; minimum 100 responses",
+            "value": "{{ printf \"%.4f\" $value }}",
+            "dashboard": "http://localhost:13000/d/s43-monitoring",
+            "runbook": "https://github.com/TTCS-T926-K19C5-N2/thudemo/blob/main/docs/S43_MONITORING_RUNBOOK.md"
+          }
+        },
+        {
+          "alert": "S43RequestVolume",
+          "expr": "(sum by(service,environment)(rate(ticket_http_requests_total{service=\"api\"}[5m])) > 50) and on (service,environment) (min by(service,environment)(up{job=\"ticketing\",service=\"api\"}) == 1) and on (service,environment) (count by(service,environment)(up{job=\"ticketing\",service=\"api\"}) == 2)",
+          "for": "2m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "metric": "RPS",
+            "threshold": "50 technical proposal, baseline calibration pending",
+            "window": "5m",
+            "value": "{{ printf \"%.4f\" $value }}",
+            "dashboard": "http://localhost:13000/d/s43-monitoring",
+            "runbook": "https://github.com/TTCS-T926-K19C5-N2/thudemo/blob/main/docs/S43_MONITORING_RUNBOOK.md"
+          }
+        },
+        {
+          "alert": "S43HoldP95",
+          "expr": "(histogram_quantile(0.95,sum by(le,service,environment,route)(rate(ticket_http_request_duration_seconds_bucket{service=\"api\",method=\"POST\",route=\"/showtimes/:id/holds\"}[5m]))) > 0.3) and on(service,environment) (sum by(service,environment)(increase(ticket_http_request_duration_seconds_count{service=\"api\",method=\"POST\",route=\"/showtimes/:id/holds\"}[5m])) >= 100) and on (service,environment) (min by(service,environment)(up{job=\"ticketing\",service=\"api\"}) == 1) and on (service,environment) (count by(service,environment)(up{job=\"ticketing\",service=\"api\"}) == 2)",
+          "for": "2m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "metric": "hold p95 seconds",
+            "threshold": "0.3 approved NFR; estimated histogram",
+            "window": "5m; minimum 100 hold responses",
+            "value": "{{ printf \"%.4f\" $value }}",
+            "dashboard": "http://localhost:13000/d/s43-monitoring",
+            "runbook": "https://github.com/TTCS-T926-K19C5-N2/thudemo/blob/main/docs/S43_MONITORING_RUNBOOK.md"
+          }
+        },
+        {
+          "alert": "S43HoldConflictSurge",
+          "expr": "(sum by(service,environment)(increase(ticket_hold_conflicts_total{service=\"api\"}[5m])) > 100) and on (service,environment) (min by(service,environment)(up{job=\"ticketing\",service=\"api\"}) == 1) and on (service,environment) (count by(service,environment)(up{job=\"ticketing\",service=\"api\"}) == 2)",
+          "for": "2m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "metric": "conflicted requests",
+            "threshold": "100 technical proposal",
+            "window": "5m",
+            "value": "{{ printf \"%.4f\" $value }}",
+            "dashboard": "http://localhost:13000/d/s43-monitoring",
+            "runbook": "https://github.com/TTCS-T926-K19C5-N2/thudemo/blob/main/docs/S43_MONITORING_RUNBOOK.md"
+          }
+        },
+        {
+          "alert": "S43WebhookRejectionSurge",
+          "expr": "(sum by(service,environment)(increase(ticket_webhook_rejections_total[5m])) > 20) and on(service,environment) (max by(service,environment)(ticket_producer_available{subsystem=\"webhook\"}) == 1)",
+          "for": "2m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "metric": "webhook rejections",
+            "threshold": "20 technical proposal",
+            "window": "5m; real producer required",
+            "value": "{{ printf \"%.4f\" $value }}",
+            "dashboard": "http://localhost:13000/d/s43-monitoring",
+            "runbook": "https://github.com/TTCS-T926-K19C5-N2/thudemo/blob/main/docs/S43_MONITORING_RUNBOOK.md"
+          }
+        },
+        {
+          "alert": "S43WorkerStale",
+          "expr": "(ticket_worker_enabled{service=\"worker\"} == 1) unless on(instance) (time()-ticket_worker_last_success_timestamp_seconds{service=\"worker\"} < 180)",
+          "for": "1m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "metric": "worker last success age seconds",
+            "threshold": "180 technical proposal",
+            "window": "1m; cadence unchanged at 60s",
+            "value": "{{ printf \"%.4f\" $value }}",
+            "dashboard": "http://localhost:13000/d/s43-monitoring",
+            "runbook": "https://github.com/TTCS-T926-K19C5-N2/thudemo/blob/main/docs/S43_MONITORING_RUNBOOK.md"
+          }
+        },
+        {
+          "alert": "S43NotificationDeliveryFailed",
+          "expr": "increase(alertmanager_notifications_failed_total[5m]) > 0",
+          "for": "1m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "metric": "notification failures",
+            "threshold": "0",
+            "window": "5m; per integration",
+            "value": "{{ printf \"%.4f\" $value }}",
+            "dashboard": "http://localhost:13000/d/s43-monitoring",
+            "runbook": "https://github.com/TTCS-T926-K19C5-N2/thudemo/blob/main/docs/S43_MONITORING_RUNBOOK.md"
+          }
+        }
+      ]
+    }
+  ]
+}

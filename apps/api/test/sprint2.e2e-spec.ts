@@ -34,11 +34,10 @@ describe('Sprint 2 isolated database integration', () => {
     })),
   };
   async function account(role: string) {
-    const r = await db.role.upsert({
-      where: { name: role },
-      create: { name: role },
-      update: {},
-    });
+    // Parallel E2E files share role names. Insert atomically, matching the
+    // auth/events fixtures, rather than a read-then-create empty-update upsert.
+    await db.role.createMany({ data: [{ name: role }], skipDuplicates: true });
+    const r = await db.role.findUniqueOrThrow({ where: { name: role } });
     const user = await db.user.create({
       data: {
         email: `${randomUUID()}@demo.invalid`,
