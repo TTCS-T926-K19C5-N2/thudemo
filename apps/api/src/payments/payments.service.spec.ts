@@ -149,12 +149,14 @@ describe('PaymentsService Unit Tests', () => {
   });
 
   describe('handleWebhook', () => {
-    it('throws UnauthorizedException when signature is invalid', async () => {
+    it('throws UnauthorizedException and does not parse payload or touch DB when signature is invalid', async () => {
       (mockGateway.verifyWebhook as any).mockResolvedValue(false);
 
-      await expect(service.handleWebhook({}, {})).rejects.toThrow(
+      await expect(service.handleWebhook({}, {}, '127.0.0.1')).rejects.toThrow(
         UnauthorizedException,
       );
+      expect(mockGateway.parseWebhook).not.toHaveBeenCalled();
+      expect(mockPrisma.order.findUnique).not.toHaveBeenCalled();
     });
 
     it('throws NotFoundException when webhook orderId is not found', async () => {
