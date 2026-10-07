@@ -202,8 +202,8 @@ export function decodeOrderDetail(value: unknown): OrderDetail {
 
   return {
     id: o.id,
-    status: o.status as OrderStatus,
-    rawStatus: typeof o.rawStatus === "string" ? o.rawStatus : o.status,
+    status: (o.status === "PENDING_PAYMENT" ? "PENDING" : o.status) as OrderStatus,
+    rawStatus: typeof o.rawStatus === "string" ? o.rawStatus : (o.status as string),
     totalAmount: o.totalAmount,
     expiresAt,
     serverTime: o.serverTime,

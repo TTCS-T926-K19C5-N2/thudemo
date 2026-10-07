@@ -470,7 +470,9 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
               </Button>
 
               {/* Pay button is rendered ONLY when pending and not expired */}
-              {!expired && order.status === "PENDING" && (
+              {!expired &&
+                (order.status === "PENDING" ||
+                  order.status === "PENDING_PAYMENT") && (
                 <Button
                   size="lg"
                   className="w-full sm:w-auto min-w-[200px] text-base font-semibold shadow-md"
