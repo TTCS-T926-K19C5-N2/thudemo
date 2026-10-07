@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module.js';
 import { EventsModule } from './events/events.module.js';
 import { ShowtimesModule } from './showtimes/showtimes.module.js';
 import { HoldsModule } from './holds/holds.module.js';
+import { OrdersModule } from './orders/orders.module.js';
 import { MonitoringModule } from './monitoring/monitoring.module.js';
 
 @Module({
@@ -25,6 +26,7 @@ import { MonitoringModule } from './monitoring/monitoring.module.js';
     EventsModule,
     ShowtimesModule,
     HoldsModule,
+    OrdersModule,
     MonitoringModule,
   ],
   controllers: [AppController],

@@ -19,6 +19,7 @@ import { MobileShowHeader } from "@/components/layout/product-layout";
 import { api, ApiError } from "@/lib/api/client";
 import { loadCurrentUser } from "@/lib/api";
 import { decodeHoldState, type HoldState } from "@/lib/contracts/holds";
+import { decodeOrderDetail } from "@/lib/contracts/orders";
 import {
   decodePublicShowtime,
   decodeSeats,
@@ -43,6 +44,7 @@ export function SeatSelection({ id }: { id: string }) {
   const [error, setError] = useState(""),
     [expired, setExpired] = useState(false),
     [pending, setPending] = useState(false),
+    [creatingOrder, setCreatingOrder] = useState(false),
     [conflict, setConflict] = useState<Seat[]>([]);
   const authority = useRef<HoldState["hold"]>(null),
     busy = useRef(false),
@@ -229,6 +231,26 @@ export function SeatSelection({ id }: { id: string }) {
     await refresh().catch(() =>
       setError("Không tải được sơ đồ. Kiểm tra kết nối rồi thử lại."),
     );
+  }
+  async function continueToOrder() {
+    if (!hold || pending || creatingOrder) return;
+    setCreatingOrder(true);
+    setError("");
+    try {
+      const order = await api("/orders", decodeOrderDetail, {
+        method: "POST",
+        body: { showtimeId: id, seatIds: hold.seatIds },
+      });
+      router.push(`/orders/${order.id}`);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError("Không thể tạo đơn hàng. Hãy thử lại.");
+      }
+    } finally {
+      setCreatingOrder(false);
+    }
   }
   if (!show)
     return error ? (
@@ -427,12 +449,13 @@ export function SeatSelection({ id }: { id: string }) {
             <p role="status">Đang kiểm tra thời hạn trên máy chủ…</p>
           )}
           {hold && (
-            <>
-              <Button variant="outline" disabled>
-                Tiếp tục
-              </Button>
-              <p>Đặt vé và thanh toán chưa khả dụng.</p>
-            </>
+            <Button
+              className="w-full mt-2"
+              disabled={pending || creatingOrder || remaining === 0}
+              onClick={continueToOrder}
+            >
+              {creatingOrder ? "Đang tạo đơn…" : "Tiếp tục thanh toán"}
+            </Button>
           )}
         </aside>
       </div>
