@@ -105,7 +105,7 @@ export function decodeOrderDetail(value: unknown): OrderDetail {
 
   return {
     id: o.id,
-    status: o.status as OrderDetail["status"],
+    status: (o.status === "PENDING_PAYMENT" ? "PENDING" : o.status) as OrderDetail["status"],
     rawStatus: typeof o.rawStatus === "string" ? o.rawStatus : o.status,
     totalAmount: o.totalAmount,
     expiresAt: o.expiresAt,
