@@ -27,8 +27,9 @@ export class HoldsController {
     return this.service.claim(
       id,
       req.user.id,
-      hashSessionToken(req.sessionToken),
+      req.sessionHash ?? hashSessionToken(req.sessionToken),
       body,
+      req.holdClient,
     );
   }
   @Get()
@@ -39,7 +40,7 @@ export class HoldsController {
     return this.service.current(
       id,
       req.user.id,
-      hashSessionToken(req.sessionToken),
+      req.sessionHash ?? hashSessionToken(req.sessionToken),
     );
   }
 }

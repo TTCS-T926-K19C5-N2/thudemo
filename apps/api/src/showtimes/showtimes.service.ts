@@ -14,6 +14,14 @@ import { SEAT_STATUS_SQL } from './seat-status.sql.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { validateSeatMap, type ImportedSeat } from './seat-map.js';
 type Tx = Prisma.TransactionClient;
+type SeatRow = {
+  id: string;
+  row: string;
+  seatNumber: number;
+  category: string;
+  price: number | null;
+  status: 'AVAILABLE' | 'HELD' | 'SOLD';
+};
 type PublicRow = {
   id: string;
   eventId: string;
@@ -295,21 +303,41 @@ export class ShowtimesService {
     return result;
   }
   async publicSeats(id: string) {
-    await this.detail(id);
-    return this.querySeats(id);
+    // One live snapshot for visibility and inventory, not two network queries.
+    // A single JSON column avoids parsing six driver fields for each of 2000 rows.
+    const [show] = await this.db.seatReadQuery<
+      { status: string; seats: SeatRow[] }[]
+    >(
+      Prisma.sql`SELECT sh.status, (${this.seatProjection(id)}) AS seats
+        FROM showtimes sh WHERE sh.id=${id}::uuid AND sh.status='ON_SALE'`,
+    );
+    if (!show || show.status !== 'ON_SALE')
+      throw new NotFoundException('Suất diễn chưa mở bán hoặc đã đóng.');
+    return show.seats;
   }
   async ownedSeats(id: string, owner: string) {
-    await this.owned(this.db, id, owner);
+    const [show] = await this.db.seatReadQuery<{ organizerId: string }[]>(
+      Prisma.sql`SELECT e."organizerId" FROM showtimes s JOIN events e ON e.id=s."eventId" WHERE s.id=${id}::uuid`,
+    );
+    if (!show) throw new NotFoundException('Không tìm thấy suất diễn.');
+    if (show.organizerId !== owner)
+      throw new ForbiddenException('Bạn không có quyền sửa suất diễn này.');
     return this.querySeats(id);
   }
-  private querySeats(id: string) {
+  private async querySeats(id: string) {
+    const [result] = await this.db.seatReadQuery<{ seats: SeatRow[] }[]>(
+      Prisma.sql`SELECT (${this.seatProjection(id)}) AS seats`,
+    );
+    return result.seats;
+  }
+  private seatProjection(id: string) {
     // DEC-12: held uses the same PostgreSQL authority and DB clock as claims.
     // Sold remains a future ticket seam; Sprint 3 has no ticket model yet.
-    return this.db
-      .$queryRaw`SELECT s.id, s.row, s."seatNumber", c.name AS category, c.price, ${SEAT_STATUS_SQL} AS status
+    return Prisma.sql`SELECT COALESCE(json_agg(seat ORDER BY seat.row,seat."seatNumber"),'[]'::json)
+      FROM (SELECT s.id, s.row, s."seatNumber", c.name AS category, c.price, ${SEAT_STATUS_SQL} AS status
       FROM seats s JOIN seat_categories c ON c.id = s."categoryId" AND c."showtimeId" = s."showtimeId"
       LEFT JOIN seat_holds h ON h."seatId"=s.id
-      LEFT JOIN LATERAL (SELECT false AS sold, h."expiresAt") inventory ON true
-      WHERE s."showtimeId" = ${id}::uuid ORDER BY s.row, s."seatNumber"`;
+      LEFT JOIN LATERAL (SELECT s."isSold" AS sold, h."expiresAt") inventory ON true
+      WHERE s."showtimeId" = ${id}::uuid) seat`;
   }
 }

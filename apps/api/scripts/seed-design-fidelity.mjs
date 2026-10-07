@@ -108,7 +108,7 @@ try {
             seatMapId: 'managed-json',
           },
         });
-      });
+      }, { timeout: 60000, maxWait: 10000 });
     }
   }
   await db.catalogRevision.update({
