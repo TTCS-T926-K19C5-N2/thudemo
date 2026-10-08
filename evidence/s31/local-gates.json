@@ -1,0 +1,42 @@
+{
+  "status": "PASS_LOCAL_WITH_ACCEPTANCE_BLOCKER",
+  "apiSourceSha": "285c9afe5b56483118b2b655750e9ab2ae8ccd9e",
+  "browserSourceSha": "59314d16710a38152c1b23e98aef289aea792bb8",
+  "format": "PASS",
+  "lint": "PASS; four inherited API warnings",
+  "typecheck": "PASS",
+  "build": "PASS API and web; web rebuilt after stale-result fix",
+  "unit": {
+    "api": 151,
+    "web": 43,
+    "status": "PASS"
+  },
+  "s30Integration": {
+    "tests": 4,
+    "status": "PASS",
+    "database": "private s31_admission_integration port15438"
+  },
+  "http": {
+    "checks": 29,
+    "races": 50,
+    "osApiProcesses": 2,
+    "status": "PASS",
+    "evidence": "http-proof.json"
+  },
+  "browser": {
+    "checks": 26,
+    "status": "PASS",
+    "evidence": "browser-proof.json"
+  },
+  "wip": {
+    "originalFiles": 1819,
+    "changed": 0,
+    "missing": 0
+  },
+  "fullRepoIntegrationLocal": "NOT RUN: reserved port15432/database belongs to another task; use CI isolated services",
+  "signedQr": "NOT VERIFIED: S30 unsigned UUID",
+  "staging": "NOT RUN",
+  "realDeviceCamera": "NOT RUN",
+  "merged": false,
+  "deployed": false
+}

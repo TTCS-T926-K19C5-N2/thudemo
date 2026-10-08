@@ -1,66 +1,58 @@
-# S-31 — Ma trận bằng chứng
+# S-31 — Bằng chứng kiểm chứng
 
-Ngày: 08/10/2026, Asia/Saigon. **S-31 chưa đạt nghiệm thu; candidate storage proof đã kiểm local.** Revision triển khai được ghi trong `S31_GITHUB_HANDOFF.md`; SHA-256 của SQL được ghi trong `evidence/s31/storage-proof.json` để gắn bằng chứng đúng nội dung.
+**PASS local cho ba hành vi AC trên contract UUID hiện tại của S-30; nghiệm thu toàn bộ vẫn BLOCKED vì dependency chưa merge và chưa có signed QR verifier.** Camera thiết bị thật/staging chưa kiểm. Không ghi Done.
 
-## Kết quả local
+API tested SHA: `285c9afe5b56483118b2b655750e9ab2ae8ccd9e`. Browser tested SHA: `59314d16710a38152c1b23e98aef289aea792bb8`; driver SHA256 được lưu riêng trong browser-proof.json. Report JSON lưu sourceSha, thời gian và kết quả thật. Commit chứa evidence/documentation sau đó không thay logic đã kiểm; exact final head/CI/review được cập nhật ở PR #64. Không dùng candidate storage proof làm acceptance.
 
-Node 24.21.0, pnpm 10.15.1, Prisma 7.10.0, PostgreSQL 15. Database cách ly `s31_storage_verification`, container riêng `thudemo-s31-storage-verification-20261008`, host loopback port 15436. Không đọc/reset dữ liệu database các task khác. Deploy đầy đủ 18 migration repository thành công, sau đó tạo schema fixture `s31_verification` (không phải migration sản phẩm).
+## Ma trận AC/NFR → implementation → test → kết quả → evidence → SHA
 
-`node apps/api/scripts/verify-s31-storage.mjs`: **11 checks PASS**, 50 race rounds, hai OS process Node với PID khác nhau và hai kết nối PostgreSQL thật. Kiểm số dòng trực tiếp sau từng vé: mỗi race đúng một NORMAL. Đây không phải hai API instance hoặc hai phiên nhân viên thật. Worker restart là restart client dữ liệu, không phải API restart.
+| AC/NFR                                         | Implementation                                             | Test thực                                                                                          | Kết quả local                              | File/link                                                                                                                            | SHA     |
+| ---------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | ------- |
+| AC1: vào A 19:02, scan B từ chối, metadata đầu | service lock/read NORMAL, 409 firstAdmission; scanner USED | HTTP first response/time DB, history fixture 19:02 Việt Nam, scan session B; browser               | PASS                                       | [HTTP JSON](../evidence/s31/http-proof.json), [desktop](../evidence/s31/desktop-used.png), [mobile](../evidence/s31/mobile-used.png) | 285c9af |
+| AC2: một máy hợp lệ                            | FOR UPDATE oi/o + partial unique NORMAL                    | 50 vé mới ×2 HTTP request, hai tiến trình Nest/sessions/cửa; đọc ledger/state từng vé              | PASS                                       | [HTTP JSON](../evidence/s31/http-proof.json), verify-s31-http.mjs                                                                    | 285c9af |
+| AC3: ngoại lệ có reason/name                   | capability theo Gate, endpoint riêng, DB snapshot          | 2 request cùng action qua hai API; đúng1 EXCEPTION, first giữ nguyên; dialog thực                  | PASS local, PO đã chốt                     | [decision](S31_PERMISSION_DECISION.md), [exception](../evidence/s31/desktop-exception.png), HTTP JSON                                | 285c9af |
+| Atomic DB, restart, rollback                   | constraint + transaction                                   | restart API, direct duplicate insert, trigger lỗi sau insert trước cập nhật checkedInAt            | PASS                                       | HTTP JSON, migration SQL                                                                                                             | 285c9af |
+| Scan/exception retry                           | unique actor/request, canonical fingerprint                | scan và exception double submit → SUCCESS/RECORDED; changed reason409; UUID case retry             | PASS                                       | HTTP JSON; browser JSON                                                                                                              | 285c9af |
+| Session/quyền/metadata tối thiểu               | guard, TX session + grant check trước vé                   | no-session, expired, BUYER, STAFF sai cửa, ADMIN unassigned, quyền ngoại lệ bị thu hồi             | PASS                                       | HTTP JSON                                                                                                                            | 285c9af |
+| Vé không đủ điều kiện                          | order PAID, seat/showtime checks                           | malformed/unknown/unpaid/cancelled/wrong showtime; exception không bypass                          | PASS cho contract hiện tại                 | HTTP JSON                                                                                                                            | 285c9af |
+| Chữ ký QR                                      | S-30 chỉ UUID, không verifier                              | Không có protocol/key/vé ký để kiểm                                                                | CHƯA KIỂM / BLOCKER                        | [S-30 #68](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/68)                                                                    | 3dc6b5c |
+| Lý do/giả danh                                 | command validator + actor từ session                       | whitespace,501 ký tự, no attestation, forged staff/time, quyền sai                                 | PASS                                       | contract specs + HTTP JSON                                                                                                           | 285c9af |
+| Sau ngoại lệ vẫn used                          | first NORMAL không reset                                   | quét thường409, metadata19:02A, 1NORMAL+1EXCEPTION                                                 | PASS                                       | HTTP JSON                                                                                                                            | 285c9af |
+| Legacy S-30                                    | giữ checkedInAt, không tạo lịch sử giả                     | used thiếu ledger →409/không override, cửa chưa biết                                               | PASS, hạn chế được nêu rõ                  | HTTP JSON                                                                                                                            | 285c9af |
+| Migration/rollback giữ lịch sử                 | additive migration; compensation guard                     | 21 migration deploy thật; guard từ chối populated DB                                               | PASS deploy/guard; rollback rỗng chưa chạy | HTTP JSON + template                                                                                                                 | 285c9af |
+| V1/browser/a11y/timeout                        | scanner S-30 + Dialog/Field/Button, live region            | desktop1440×1000/mobile390×844, focus/trap/Escape, validation, >3s, lỗi mạng/retry, touch/contrast | PASS, 26 checks                            | [browser JSON](../evidence/s31/browser-proof.json), screenshots bên dưới                                                             | 59314d1 |
+| Camera thật                                    | html5-qrcode S-30 giữ nguyên                               | Chỉ nhập mã vé thật từ fixture trong browser; không quay camera thiết bị                           | CHƯA KIỂM                                  | browser JSON camera=false                                                                                                            | —       |
+| Staging/production                             | Không deploy                                               | Không chạy                                                                                         | CHƯA KIỂM                                  | —                                                                                                                                    | —       |
 
-Hồ sơ máy đọc: [`storage-proof.json`](../evidence/s31/storage-proof.json). Kết quả p95 trong JSON chỉ là thời gian một vòng cạnh tranh candidate ở local; không phải NFR API scanner dưới 500 ms, không phải T-31 giữ ghế.
+## Môi trường và tái chạy
 
-Kiểm dữ liệu thêm: retry cùng request key → một ADMITTED và một ALREADY_RECORDED; key bị tái sử dụng khác ticket/cửa → REQUEST_CONFLICT; vé thiếu/hủy/sai suất không trả metadata; duplicate direct insert vi phạm partial unique index; lỗi sau insert trong transaction → rollback không còn admission; reason NULL/rỗng/spaces/tab/newline/dài quá 500 bị constraint từ chối; direct EXCEPTION fixture giữ NORMAL và scan thường tiếp theo vẫn bị từ chối. Test exception là insert fixture, **không chứng minh permission, owner verification hoặc endpoint**.
+Node24.21.0/pnpm10.15.1; PostgreSQL15/Redis7, riêng container S-31, DB s31_admission_integration ở 127.0.0.1:15438, Redis16386. Không reset/touch database đang chạy của task khác. 21 migration từ repo được deploy thật. Hai API OS process3041/3042 (restart thêm process3041) và hai phiên cookie staff thật từ DB. Fixture session chỉ lưu ngoài repository, không log/commit cookie.
 
-Chạy harness lại trên cùng database: từ chối có chủ đích vì schema/lịch sử đã tồn tại; dữ liệu không bị xóa. Để chạy lần tiếp theo, cấp database/container kiểm thử mới theo runbook, hoặc dùng môi trường CI mới. Không tự drop/reset bản đang chạy.
+- `pnpm --filter api exec prisma migrate deploy`, generate, build trên DB riêng nêu trên.
+- `node apps/api/scripts/verify-s31-http.mjs`: 29 checks + 50 races PASS; 134 HTTP measurements, p95≈27.98ms/max≈79.15ms loopback local. Đây không là staging/NFR tải T-31 hoặc benchmark thiết bị.
+- `pnpm --filter api exec vitest run --config ./vitest.config.e2e.ts test/ticket-check-in.e2e-spec.ts`: 4 S-30 regression PASS, thực DB S-31 riêng. Thêm gate/grant fixture và cleanup ledger, không hạ assertion.
+- Format, lint, typecheck, build PASS; unit API151 + web43 =194 PASS. Có 4 lint warning cũ ở payment/mock test, không thuộc S-31. Full integration của repo chờ/đối chiếu CI exact final SHA; không chạy suite đó vào DB15432 đang thuộc task khác.
+- Browser plugin không có trong session; fallback Playwright bundled1.62.1 Chromium. Chạy Web production build localhost3040, API riêng localhost3001 dùng DB S-31. Proxy same-origin thật, hai cookie contexts độc lập. Delay/abort response là fault injection có nhãn; response nghiệp vụ thực từ API, không mock admission.
+- Fixture lịch sử 19:02 được ghi trực tiếp nhất quán ở database kiểm thử SAU khi đã kiểm first response bằng thời gian DB hiện tại; không giả thời gian client/máy chủ hoặc thay test concurrency bằng mock. Điều này kiểm text/metadata ví dụ AC1.
+- Hướng dẫn browser: sinh fixture vào path private ngoài Git bằng S31_PRIVATE_FIXTURE_FILE khi chạy HTTP harness; đặt S31_PLAYWRIGHT_MODULE tới Playwright có sẵn và chạy verifier browser. Không commit fixture cookie. Xem script để đọc exact assertions.
+- Candidate `storage-proof.json` cũ vẫn là nghiên cứu schema fixture khác, không gộp vào 29 product checks.
 
-| Kiểm tra                                                                       | Kết quả local       | Giới hạn                                                                                         |
-| ------------------------------------------------------------------------------ | ------------------- | ------------------------------------------------------------------------------------------------ |
-| Install frozen lockfile                                                        | PASS                | Đúng pnpm 10.15.1                                                                                |
-| Prisma migrate deploy / generate                                               | PASS                | 18 migration gốc trên database riêng                                                             |
-| Format scripts mới                                                             | PASS                | Prettier --check; SQL chưa có formatter trong repo                                               |
-| Lint toàn repo                                                                 | PASS                | Bốn warning sẵn có ở API trên main; không chỉnh ngoài S-31                                       |
-| Oxlint scripts mới                                                             | PASS                | Không lỗi                                                                                        |
-| Typecheck API/web                                                              | PASS                | next typegen trước check                                                                         |
-| Build API/web                                                                  | PASS                | Không đổi UI/runtime sản phẩm                                                                    |
-| Unit tests                                                                     | PASS                | API 147, web 35 (182 tổng)                                                                       |
-| Candidate PostgreSQL integration                                               | PASS                | 11 checks; 50 race rounds                                                                        |
-| API E2E local có sẵn                                                           | Chưa chạy           | Harness cố định 127.0.0.1:15432/sprint2_integration; cổng đang thuộc task khác, không dùng DB đó |
-| API E2E CI có sẵn                                                              | Xem handoff/Actions | Chạy môi trường CI cách ly, không chứng minh S-30 chưa tồn tại                                   |
-| S-30 regression / scanner API / QR                                             | BLOCKED             | Không có implementation dependency                                                               |
-| Browser desktop/mobile, two sessions, focus/dialog/live region/timeout/console | Chưa kiểm           | Không có màn hình scanner để render                                                              |
-| Camera thiết bị thật, QR ảnh/video fixture                                     | Chưa kiểm           | Không suy storage proof thành bằng chứng camera                                                  |
-| Staging / production                                                           | Chưa kiểm           | Chưa merge, chưa deploy                                                                          |
+## Visual QA
 
-## AC/NFR → implementation → test → kết quả → artifact → revision
+PublicLayout, font/tokens V1 và scanner S-30 được giữ; không đổi CSS toàn dự án. Thêm gate/context và cảnh báo/dialog đúng chức năng. Dialog dùng shadcn Radix đã tra [docs](https://ui.shadcn.com/docs/components/radix/dialog), title/description/focus trap; React review bằng skill khả dụng. Lỗi kết quả cũ khi sửa ô mã vé đã được sửa và kiểm trên browser; kết quả hợp lệ/đã dùng bị xóa ngay khi mã thay đổi. Có kiểm mất phản hồi SAU commit, giữ cùng key cho scan/exception và hiển thị replay riêng.
 
-| Yêu cầu                               | Implementation trong PR                                | Test                                                     | Kết quả nghiệm thu                            | File/link                        | SHA                            |
-| ------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------- | --------------------------------------------- | -------------------------------- | ------------------------------ |
-| AC1: lần thứ hai ở B trả 19:02/cửa A  | Candidate NORMAL ledger + lookup original              | Check 2, DB fixture thời gian 12:02 UTC = 19:02 Việt Nam | **Chưa kiểm trên sản phẩm**; candidate PASS   | SQL/harness + storage-proof.json | implementation SHA tại handoff |
-| AC2: hai scanner chỉ một hợp lệ       | Candidate lock + unique partial index                  | Check 3/8: 50 races hai process, đếm DB                  | **Chưa kiểm qua API/session**; candidate PASS | SQL/harness + JSON               | implementation SHA tại handoff |
-| AC3: ngoại lệ đúng quyền, reason, tên | Thiết kế RBAC/endpoint/UI; candidate ledger constraint | Check 10/11 chỉ insert trực tiếp                         | **BLOCKED**: policy và S-30 chưa có           | S31_IMPLEMENTATION.md + JSON     | implementation SHA tại handoff |
-| NFR atomic DB                         | PostgreSQL row lock + partial unique index             | Check 3/8/9                                              | Candidate PASS; chưa tích hợp production      | SQL/harness                      | implementation SHA tại handoff |
-| Retry không thêm entry                | Candidate actor/request unique + replay code           | Check 4/5                                                | Candidate PASS, contract S-30 chưa đối chiếu  | SQL/harness                      | implementation SHA tại handoff |
-| Restart giữ used                      | Ledger persisted                                       | Check 6                                                  | Worker DB restart PASS; API restart chưa kiểm | JSON                             | implementation SHA tại handoff |
-| Rollback không dở dang                | Used state suy từ NORMAL                               | Check 9, DB lỗi giữa transaction                         | Candidate PASS; production chưa kiểm          | JSON                             | implementation SHA tại handoff |
-| Giữ V1                                | Không sửa file apps/web                                | Diff                                                     | Không đổi UI; render S-31 chưa kiểm           | PR diff                          | PR head                        |
+Skills vercel:nextjs/agent-browser-verify được AGENTS nhắc nhưng không có trong catalog; dùng skill frontend-testing-debugging/React thực sự khả dụng, không đoán plugin hoặc đổi stack.
 
-## 13 kịch bản API bắt buộc và khoảng trống
+Các ảnh được đọc trực tiếp để đối chiếu header, nền, font và controls V1; reset scroll khi chụp mobile để tránh ảnh fullpage làm sticky header xuất hiện giữa trang. Chỉ button scanner/dialog có minimum touch height44px; không đổi primitive dùng chung cũ.
 
-| #   | Kịch bản                             | Bằng chứng có                            | Trạng thái API                     |
-| --- | ------------------------------------ | ---------------------------------------- | ---------------------------------- |
-| 1   | Lần đầu đúng actor/cửa/time          | Candidate check 1                        | BLOCKED S-30                       |
-| 2   | Quét lại khác cửa, metadata đầu      | Candidate check 2                        | BLOCKED S-30                       |
-| 3   | Hai session/cửa đồng thời            | Hai DB process check 3                   | BLOCKED: chưa có hai session       |
-| 4   | Nhiều lượt, đếm DB                   | 50 races check 3                         | DB candidate PASS; API BLOCKED     |
-| 5   | Hai API instance                     | Hai DB worker, không API                 | Chưa kiểm                          |
-| 6   | Restart API                          | Restart DB worker check 6                | Chưa kiểm                          |
-| 7   | QR sai/sai suất/vé không hợp lệ      | Status/suất candidate check 7            | QR BLOCKED                         |
-| 8   | Sai quyền, không lộ metadata         | Chỉ eligibility candidate                | RBAC BLOCKED                       |
-| 9   | Ngoại lệ có quyền và lý do           | Direct EXCEPTION fixture check 11        | Policy/endpoint BLOCKED            |
-| 10  | Thiếu reason/sai quyền/danh tính giả | Constraint reason check 10               | Identity/RBAC BLOCKED              |
-| 11  | Retry scan/ngoại lệ                  | Check 4/5, unique EXCEPTION key check 11 | HTTP/idempotency exception BLOCKED |
-| 12  | Scan thường sau ngoại lệ             | Check 11                                 | Candidate PASS; API BLOCKED        |
-| 13  | Transaction rollback                 | Check 9                                  | Candidate PASS; API BLOCKED        |
+![Desktop vé đã dùng](../evidence/s31/desktop-used.png)
+![Mobile vé đã dùng](../evidence/s31/mobile-used.png)
+![Mobile thao tác tiếp tục](../evidence/s31/mobile-actions.png)
+![Dialog validation](../evidence/s31/desktop-dialog-validation.png)
+![Mobile dialog](../evidence/s31/mobile-dialog.png)
+![Ngoại lệ được ghi nhận](../evidence/s31/desktop-exception.png)
+![Lỗi mạng](../evidence/s31/desktop-network-error.png)
 
-Không AC nào được đánh Done/PASS đầy đủ chỉ nhờ CI xanh. Issue phải mở và PR Draft cho đến khi dependency, policy, API/browser và DoD staging có đủ bằng chứng. Screenshot desktop/mobile chưa có vì chưa có scanner S-30; không dùng ảnh thiết kế/demo thay render thật.
+## Gate nghiệm thu còn lại
+
+S-30 #68 chưa merge/review đầy đủ; unsigned UUID có thể bị dùng lại như mã thật nếu biết ID. Chưa thể chứng minh QR sai chữ ký bị chặn. Cần contract signed QR/S-26 được duyệt để tích hợp verifier S-30 rồi re-run S-31, không tự xây hệ QR thứ hai. Giữ Draft/Changes requested dù local AC và CI xanh. Camera thật và staging chưa PASS. Không merge/deploy/đóng issue.
