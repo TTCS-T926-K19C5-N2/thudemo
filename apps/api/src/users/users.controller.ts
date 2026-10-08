@@ -1,10 +1,22 @@
-import { Controller, Post, Body, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, Patch, Param } from '@nestjs/common';
 import { UsersService } from './users.service.js';
-import { Public } from '../auth/decorators/roles.decorator.js';
+import { Public, Roles } from '../auth/decorators/roles.decorator.js';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Roles('ADMIN', 'ORGANIZER')
+  @Post('staff')
+  createStaff(@Body() body: any) {
+    return this.usersService.createStaff(body.email, body.password);
+  }
+
+  @Roles('ADMIN', 'ORGANIZER')
+  @Patch(':id/disable')
+  disableAccount(@Param('id') id: string) {
+    return this.usersService.disableAccount(id);
+  }
 
   @Public()
   @Post('register')

@@ -1,5 +1,6 @@
 import { EventEmitter } from 'node:events';
 import type { Request, Response } from 'express';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Metrics } from './metrics.js';
 
 describe('S-43 HTTP completion, privacy and business semantics', () => {
