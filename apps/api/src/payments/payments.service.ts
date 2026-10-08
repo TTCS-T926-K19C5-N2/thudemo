@@ -64,12 +64,9 @@ export class PaymentsService {
       );
     }
 
-    // Authoritative calculation strictly from DB prices
-    let authoritativeTotal = 0;
-    for (const item of order.items) {
-      const price = item.seat?.category?.price ?? item.unitPrice;
-      authoritativeTotal += price;
-    }
+    // S-16 stores the authoritative amount at booking time. A later tier price
+    // change must not charge a different amount from the order being reviewed.
+    const authoritativeTotal = order.totalAmount;
 
     if (authoritativeTotal <= 0) {
       throw new BadRequestException('Tổng tiền đơn hàng không hợp lệ.');
@@ -267,10 +264,7 @@ export class PaymentsService {
     }
 
     // 4. Calculate authoritative order total from DB
-    let orderTotal = 0;
-    for (const item of order.items) {
-      orderTotal += item.seat?.category?.price ?? item.unitPrice;
-    }
+    const orderTotal = order.totalAmount;
 
     // 5. Amount mismatch check
     if (event.status === 'SUCCESS' && event.amount !== orderTotal) {
@@ -325,7 +319,8 @@ export class PaymentsService {
         return await this.db.$transaction(async (tx) => {
           // Advisory lock using gatewayRef to prevent race conditions
           if (typeof (tx as any).$executeRaw === 'function') {
-            await (tx as any).$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${event.gatewayRef}))`;
+            await (tx as any)
+              .$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${event.gatewayRef}))`;
           }
 
           // Check if order was already updated to PAID while waiting for lock
@@ -342,7 +337,9 @@ export class PaymentsService {
           const updateResult = await tx.order.updateMany({
             where: {
               id: order.id,
-              status: { in: [OrderStatus.PENDING, OrderStatus.PENDING_PAYMENT] },
+              status: {
+                in: [OrderStatus.PENDING, OrderStatus.PENDING_PAYMENT],
+              },
               ...(order.paymentExpiresAt
                 ? { paymentExpiresAt: { gt: serverNow } }
                 : order.expiresAt

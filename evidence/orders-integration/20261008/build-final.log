@@ -1,0 +1,42 @@
+
+> event-ticketing-platform@1.0.0 build D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008
+> pnpm -r run build
+
+Scope: 3 of 4 workspace projects
+apps/api build$ nest build
+apps/web build$ next build
+apps/web build: ▲ Next.js 16.3.6 (Turbopack)
+apps/web build: - Environments: .env.local
+apps/web build: ✓ Running next.config.ts took 135ms
+apps/web build:   Creating an optimized production build ...
+apps/api build: Done
+apps/web build: ✓ Compiled successfully in 8.6s
+apps/web build:   Running TypeScript ...
+apps/web build:   Finished TypeScript in 4.4s ...
+apps/web build:   Collecting page data using 15 workers ...
+apps/web build:   Generating static pages using 15 workers (0/10) ...
+apps/web build:   Generating static pages using 15 workers (2/10) 
+apps/web build:   Generating static pages using 15 workers (4/10) 
+apps/web build:   Generating static pages using 15 workers (7/10) 
+apps/web build: ✓ Generating static pages using 15 workers (10/10) in 370ms
+apps/web build:   Finalizing page optimization ...
+apps/web build: Route (app)
+apps/web build: ┌ ○ /
+apps/web build: ├ ○ /_not-found
+apps/web build: ├ ○ /account
+apps/web build: ├ ƒ /api/[...path]
+apps/web build: ├ ○ /events
+apps/web build: ├ ƒ /events/[id]
+apps/web build: ├ ○ /events/new
+apps/web build: ├ ƒ /login
+apps/web build: ├ ƒ /mock-gateway/pay
+apps/web build: ├ ƒ /orders
+apps/web build: ├ ƒ /orders/[id]
+apps/web build: ├ ƒ /payment/result
+apps/web build: ├ ƒ /payment/result/[orderId]
+apps/web build: ├ ƒ /shows/[id]
+apps/web build: ├ ƒ /shows/[id]/seats
+apps/web build: └ ƒ /showtimes/[id]/[mode]
+apps/web build: ○  (Static)   prerendered as static content
+apps/web build: ƒ  (Dynamic)  server-rendered on demand
+apps/web build: Done

@@ -1,0 +1,203 @@
+{
+  "origin": "http://localhost:3300",
+  "browser": "Playwright Chromium (bundled runtime)",
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "results": [
+    {
+      "name": "desktop: real login returns to order history",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: stable own-order sequence, all fields and terminal status labels",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: keyboard focus and next-page action",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: detail, actual seats and back preserve the page",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: authenticated cross-account request receives real HTTP 403",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: cancelled and expired detail remain readable",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: legacy pending keeps S-17 payment/countdown and terminal orders hide payment",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: delayed real request renders a skeleton before content",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: network error and retry keep page 2",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: direct out-of-range and malformed URLs render safe recovery",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: expired session guides login and restores the exact detail URL",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: logout/back and account switch never show A's orders",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: switching account in another tab revalidates private history",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: real empty buyer has discovery action",
+      "status": "passed"
+    },
+    {
+      "name": "desktop: catalog and orders share V1 palette/fonts at the same viewport",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: real login returns to order history",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: stable own-order sequence, all fields and terminal status labels",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: keyboard focus and next-page action",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: detail, actual seats and back preserve the page",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: authenticated cross-account request receives real HTTP 403",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: cancelled and expired detail remain readable",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: legacy pending keeps S-17 payment/countdown and terminal orders hide payment",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: delayed real request renders a skeleton before content",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: network error and retry keep page 2",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: direct out-of-range and malformed URLs render safe recovery",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: expired session guides login and restores the exact detail URL",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: logout/back and account switch never show A's orders",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: switching account in another tab revalidates private history",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: real empty buyer has discovery action",
+      "status": "passed"
+    },
+    {
+      "name": "mobile: catalog and orders share V1 palette/fonts at the same viewport",
+      "status": "passed"
+    },
+    {
+      "name": "Opening history/detail does not mutate orders, hold ownership or deadlines",
+      "status": "passed"
+    },
+    {
+      "name": "No page runtime exceptions",
+      "status": "passed"
+    },
+    {
+      "name": "No unexpected console errors",
+      "status": "passed"
+    }
+  ],
+  "runtimeErrors": [],
+  "consoleErrors": [
+    {
+      "mode": "desktop",
+      "message": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "faultInjection": false
+    },
+    {
+      "mode": "desktop",
+      "message": "Failed to load resource: net::ERR_FAILED",
+      "faultInjection": true
+    },
+    {
+      "mode": "desktop",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "faultInjection": false
+    },
+    {
+      "mode": "desktop",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "faultInjection": false
+    },
+    {
+      "mode": "desktop",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "faultInjection": false
+    },
+    {
+      "mode": "mobile",
+      "message": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "faultInjection": false
+    },
+    {
+      "mode": "mobile",
+      "message": "Failed to load resource: net::ERR_FAILED",
+      "faultInjection": true
+    },
+    {
+      "mode": "mobile",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "faultInjection": false
+    },
+    {
+      "mode": "mobile",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "faultInjection": false
+    },
+    {
+      "mode": "mobile",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "faultInjection": false
+    }
+  ],
+  "passed": 33,
+  "failed": 0
+}

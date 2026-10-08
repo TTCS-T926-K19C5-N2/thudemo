@@ -1,0 +1,78 @@
+◇ injected env (11) from ..\..\.env
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "sprint2_integration", schema "public" at "127.0.0.1:15434"
+
+18 migrations found in prisma/migrations
+
+Applying migration `202609290001_t01_probe_apply`
+Applying migration `202609290002_t01_probe_compensate`
+Applying migration `202609290003_t01_probe_reapply`
+Applying migration `202610010001_t04_users_roles`
+Applying migration `202610010002_t09_events_showtimes`
+Applying migration `202610010003_t05_sessions`
+Applying migration `202610040001_sprint2_seats`
+Applying migration `202610040004_event_presentation`
+Applying migration `202610040005_seat_holds`
+Applying migration `202610050001_pending_orders`
+Applying migration `202610060001_claim_hold_function`
+Applying migration `202610060001_hold_expected_seats`
+Applying migration `202610060002_validated_hold_routine`
+Applying migration `202610060003_hold_outcomes`
+Applying migration `202610070001_s17_orders`
+Applying migration `202610070002_s18_payments`
+Applying migration `202610070003_s20_idempotent_payments`
+Applying migration `202610080001_order_history_index`
+
+┌─────────────────────────────────────────────────────────┐
+│  Update available 7.10.0 -> 8.0.0-rc.21                 │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+The following migration(s) have been applied:
+
+migrations/
+  └─ 202609290001_t01_probe_apply/
+    └─ migration.sql
+  └─ 202609290002_t01_probe_compensate/
+    └─ migration.sql
+  └─ 202609290003_t01_probe_reapply/
+    └─ migration.sql
+  └─ 202610010001_t04_users_roles/
+    └─ migration.sql
+  └─ 202610010002_t09_events_showtimes/
+    └─ migration.sql
+  └─ 202610010003_t05_sessions/
+    └─ migration.sql
+  └─ 202610040001_sprint2_seats/
+    └─ migration.sql
+  └─ 202610040004_event_presentation/
+    └─ migration.sql
+  └─ 202610040005_seat_holds/
+    └─ migration.sql
+  └─ 202610050001_pending_orders/
+    └─ migration.sql
+  └─ 202610060001_claim_hold_function/
+    └─ migration.sql
+  └─ 202610060001_hold_expected_seats/
+    └─ migration.sql
+  └─ 202610060002_validated_hold_routine/
+    └─ migration.sql
+  └─ 202610060003_hold_outcomes/
+    └─ migration.sql
+  └─ 202610070001_s17_orders/
+    └─ migration.sql
+  └─ 202610070002_s18_payments/
+    └─ migration.sql
+  └─ 202610070003_s20_idempotent_payments/
+    └─ migration.sql
+  └─ 202610080001_order_history_index/
+    └─ migration.sql
+
+All migrations have been successfully applied.

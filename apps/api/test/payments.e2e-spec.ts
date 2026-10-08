@@ -54,7 +54,9 @@ describe('Payments S-18 E2E Integration', () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
       target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
+      (target.port !== '15432' &&
+        (target.port !== '15434' ||
+          process.env.S32_ISOLATED_TEST !== 'true')) ||
       target.pathname !== '/sprint2_integration'
     ) {
       throw new Error('Run only on the isolated sprint2_integration database');
@@ -163,14 +165,23 @@ describe('Payments S-18 E2E Integration', () => {
     const order = await db.order.create({
       data: {
         userId: buyer1Id,
-        eventId: (await db.showtime.findUniqueOrThrow({ where: { id: showtimeId } })).eventId,
+        eventId: (
+          await db.showtime.findUniqueOrThrow({ where: { id: showtimeId } })
+        ).eventId,
         showtimeId,
         status: OrderStatus.PENDING,
         totalAmount: 300000,
         expiresAt: new Date(Date.now() + 600000), // 10 minutes from now
         paymentExpiresAt: new Date(Date.now() + 600000),
         items: {
-          create: [{ seatId: seat1Id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 300000 }],
+          create: [
+            {
+              seatId: seat1Id,
+              tierName: 'VIP',
+              categoryName: 'VIP',
+              unitPrice: 300000,
+            },
+          ],
         },
       },
     });
@@ -203,14 +214,23 @@ describe('Payments S-18 E2E Integration', () => {
     const expiredOrder = await db.order.create({
       data: {
         userId: buyer1Id,
-        eventId: (await db.showtime.findUniqueOrThrow({ where: { id: showtimeId } })).eventId,
+        eventId: (
+          await db.showtime.findUniqueOrThrow({ where: { id: showtimeId } })
+        ).eventId,
         showtimeId,
         status: OrderStatus.PENDING,
         totalAmount: 300000,
         expiresAt: new Date(Date.now() - 5000), // Expired
         paymentExpiresAt: new Date(Date.now() - 5000),
         items: {
-          create: [{ seatId: seat1Id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 300000 }],
+          create: [
+            {
+              seatId: seat1Id,
+              tierName: 'VIP',
+              categoryName: 'VIP',
+              unitPrice: 300000,
+            },
+          ],
         },
       },
     });
@@ -248,14 +268,23 @@ describe('Payments S-18 E2E Integration', () => {
     const order = await db.order.create({
       data: {
         userId: buyer1Id,
-        eventId: (await db.showtime.findUniqueOrThrow({ where: { id: showtimeId } })).eventId,
+        eventId: (
+          await db.showtime.findUniqueOrThrow({ where: { id: showtimeId } })
+        ).eventId,
         showtimeId,
         status: OrderStatus.PENDING,
         totalAmount: 300000,
         expiresAt: new Date(Date.now() + 600000),
         paymentExpiresAt: new Date(Date.now() + 600000),
         items: {
-          create: [{ seatId: seat2Id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 300000 }],
+          create: [
+            {
+              seatId: seat2Id,
+              tierName: 'VIP',
+              categoryName: 'VIP',
+              unitPrice: 300000,
+            },
+          ],
         },
       },
     });
@@ -269,7 +298,9 @@ describe('Payments S-18 E2E Integration', () => {
     const gatewayRef = initRes.body.gatewayRef;
 
     // Simulate MoMo IPN webhook payload
-    const extraData = Buffer.from(JSON.stringify({ orderId: order.id })).toString('base64');
+    const extraData = Buffer.from(
+      JSON.stringify({ orderId: order.id }),
+    ).toString('base64');
     const webhookPayload: Record<string, unknown> = {
       partnerCode: 'MOMO',
       orderId: gatewayRef,
@@ -285,7 +316,11 @@ describe('Payments S-18 E2E Integration', () => {
       extraData,
     };
 
-    const signature = buildMomoSignature(webhookPayload, momoAccessKey, momoSecretKey);
+    const signature = buildMomoSignature(
+      webhookPayload,
+      momoAccessKey,
+      momoSecretKey,
+    );
     webhookPayload.signature = signature;
 
     // Send Webhook (public endpoint, buyer didn't return to browser yet - AC 4)
@@ -298,26 +333,36 @@ describe('Payments S-18 E2E Integration', () => {
 
     // Verify all 4 changes committed in DB:
     // (a) Order -> PAID
-    const updatedOrder = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+    const updatedOrder = await db.order.findUniqueOrThrow({
+      where: { id: order.id },
+    });
     expect(updatedOrder.status).toBe(OrderStatus.PAID);
 
     // (b) Seat -> isSold = true
-    const updatedSeat = await db.seat.findUniqueOrThrow({ where: { id: seat2Id } });
+    const updatedSeat = await db.seat.findUniqueOrThrow({
+      where: { id: seat2Id },
+    });
     expect(updatedSeat.isSold).toBe(true);
 
     // (c) SeatHold deleted
-    const remainingHold = await db.seatHold.findUnique({ where: { seatId: seat2Id } });
+    const remainingHold = await db.seatHold.findUnique({
+      where: { seatId: seat2Id },
+    });
     expect(remainingHold).toBeNull();
 
     // (d) Payment -> SUCCEEDED with transactionId
-    const updatedPayment = await db.payment.findFirst({ where: { orderId: order.id } });
+    const updatedPayment = await db.payment.findFirst({
+      where: { orderId: order.id },
+    });
     expect(updatedPayment?.status).toBe(PaymentStatus.SUCCEEDED);
     expect(updatedPayment?.transactionId).toBe('987654321');
   });
 
   it('AC 5 & AC 7: Webhook with mismatched amount marks order NEEDS_REVIEW, payment AMOUNT_MISMATCH, and seat is excluded from expiry sweep', async () => {
     // Create new seat and hold
-    const cat = await db.seatCategory.findFirstOrThrow({ where: { showtimeId } });
+    const cat = await db.seatCategory.findFirstOrThrow({
+      where: { showtimeId },
+    });
     const seat = await db.seat.create({
       data: {
         showtimeId,
@@ -351,20 +396,31 @@ describe('Payments S-18 E2E Integration', () => {
     const order = await db.order.create({
       data: {
         userId: buyer1Id,
-        eventId: (await db.showtime.findUniqueOrThrow({ where: { id: showtimeId } })).eventId,
+        eventId: (
+          await db.showtime.findUniqueOrThrow({ where: { id: showtimeId } })
+        ).eventId,
         showtimeId,
         status: OrderStatus.PENDING,
         totalAmount: 300000,
         expiresAt: new Date(Date.now() + 600000),
         paymentExpiresAt: new Date(Date.now() + 600000),
         items: {
-          create: [{ seatId: seat.id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 300000 }],
+          create: [
+            {
+              seatId: seat.id,
+              tierName: 'VIP',
+              categoryName: 'VIP',
+              unitPrice: 300000,
+            },
+          ],
         },
       },
     });
 
     const gatewayRef = `${order.id}_mismatch_test`;
-    const extraData = Buffer.from(JSON.stringify({ orderId: order.id })).toString('base64');
+    const extraData = Buffer.from(
+      JSON.stringify({ orderId: order.id }),
+    ).toString('base64');
     const webhookPayload: Record<string, unknown> = {
       partnerCode: 'MOMO',
       orderId: gatewayRef,
@@ -380,7 +436,11 @@ describe('Payments S-18 E2E Integration', () => {
       extraData,
     };
 
-    const signature = buildMomoSignature(webhookPayload, momoAccessKey, momoSecretKey);
+    const signature = buildMomoSignature(
+      webhookPayload,
+      momoAccessKey,
+      momoSecretKey,
+    );
     webhookPayload.signature = signature;
 
     const res = await request(app.getHttpServer())
@@ -391,22 +451,30 @@ describe('Payments S-18 E2E Integration', () => {
     expect(res.body.status).toBe('AMOUNT_MISMATCH');
 
     // Verify order is marked NEEDS_REVIEW, NOT PAID
-    const updatedOrder = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+    const updatedOrder = await db.order.findUniqueOrThrow({
+      where: { id: order.id },
+    });
     expect(updatedOrder.status).toBe(OrderStatus.NEEDS_REVIEW);
 
     // Verify payment is AMOUNT_MISMATCH
-    const payment = await db.payment.findFirst({ where: { orderId: order.id } });
+    const payment = await db.payment.findFirst({
+      where: { orderId: order.id },
+    });
     expect(payment?.status).toBe(PaymentStatus.AMOUNT_MISMATCH);
     expect(payment?.amount).toBe(150000);
 
     // AC 7: Seat belonging to NEEDS_REVIEW order must be excluded from expiredBatch sweep!
     const expiredBatches = await holdsService.expiredBatch();
-    const foundInExpiredBatch = expiredBatches.some((b) => b.seatId === seat.id);
+    const foundInExpiredBatch = expiredBatches.some(
+      (b) => b.seatId === seat.id,
+    );
     expect(foundInExpiredBatch).toBe(false);
   });
 
   it('AC 6: Webhook with FAILED result marks payment FAILED and leaves order PENDING', async () => {
-    const cat = await db.seatCategory.findFirstOrThrow({ where: { showtimeId } });
+    const cat = await db.seatCategory.findFirstOrThrow({
+      where: { showtimeId },
+    });
     const seat = await db.seat.create({
       data: {
         showtimeId,
@@ -419,20 +487,31 @@ describe('Payments S-18 E2E Integration', () => {
     const order = await db.order.create({
       data: {
         userId: buyer1Id,
-        eventId: (await db.showtime.findUniqueOrThrow({ where: { id: showtimeId } })).eventId,
+        eventId: (
+          await db.showtime.findUniqueOrThrow({ where: { id: showtimeId } })
+        ).eventId,
         showtimeId,
         status: OrderStatus.PENDING,
         totalAmount: 300000,
         expiresAt: new Date(Date.now() + 600000),
         paymentExpiresAt: new Date(Date.now() + 600000),
         items: {
-          create: [{ seatId: seat.id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 300000 }],
+          create: [
+            {
+              seatId: seat.id,
+              tierName: 'VIP',
+              categoryName: 'VIP',
+              unitPrice: 300000,
+            },
+          ],
         },
       },
     });
 
     const gatewayRef = `${order.id}_failed_test`;
-    const extraData = Buffer.from(JSON.stringify({ orderId: order.id })).toString('base64');
+    const extraData = Buffer.from(
+      JSON.stringify({ orderId: order.id }),
+    ).toString('base64');
     const webhookPayload: Record<string, unknown> = {
       partnerCode: 'MOMO',
       orderId: gatewayRef,
@@ -448,7 +527,11 @@ describe('Payments S-18 E2E Integration', () => {
       extraData,
     };
 
-    const signature = buildMomoSignature(webhookPayload, momoAccessKey, momoSecretKey);
+    const signature = buildMomoSignature(
+      webhookPayload,
+      momoAccessKey,
+      momoSecretKey,
+    );
     webhookPayload.signature = signature;
 
     const res = await request(app.getHttpServer())
@@ -459,11 +542,15 @@ describe('Payments S-18 E2E Integration', () => {
     expect(res.body.status).toBe('FAILED');
 
     // Order remains PENDING so user can retry
-    const currentOrder = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+    const currentOrder = await db.order.findUniqueOrThrow({
+      where: { id: order.id },
+    });
     expect(currentOrder.status).toBe(OrderStatus.PENDING);
 
     // Payment is marked FAILED
-    const payment = await db.payment.findFirst({ where: { orderId: order.id } });
+    const payment = await db.payment.findFirst({
+      where: { orderId: order.id },
+    });
     expect(payment?.status).toBe(PaymentStatus.FAILED);
   });
 

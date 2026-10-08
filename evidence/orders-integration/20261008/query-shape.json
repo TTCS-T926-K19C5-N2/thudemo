@@ -1,0 +1,41 @@
+[
+  {
+    "pageSize": 1,
+    "resultCount": 1,
+    "statementCount": 6,
+    "statements": [
+      "SELECT clock_timestamp() AS \"serverTime\"",
+      "SELECT COUNT(*) AS \"_count$_all\" FROM (SELECT \"public\".\"orders\".\"id\" FROM \"public\".\"orders\" WHERE \"public\".\"orders\".\"userId\" = $1 OFFSET $2) AS \"sub\"",
+      "SELECT \"public\".\"orders\".\"id\", \"public\".\"orders\".\"createdAt\", \"public\".\"orders\".\"status\"::text, \"public\".\"orders\".\"paymentExpiresAt\", \"public\".\"orders\".\"totalAmount\", \"public\".\"orders\".\"showtimeId\", COALESCE(\"aggr_selection_0_OrderItem\".\"_aggr_count_items\", 0) AS \"_aggr_count_items\" FROM \"public\".\"orders\" LEFT JOIN (SELECT \"public\".\"order_items\".\"orderId\", COUNT(*) AS \"_aggr_count_items\" FROM \"public\".\"order_items\" WHERE 1=1 GROUP BY \"public\".\"order_items\".\"orderId\") AS \"aggr_selection_0_OrderItem\" ON (\"public\".\"orders\".\"id\" = \"aggr_selection_0_OrderItem\".\"orderId\") WHERE \"public\".\"orders\".\"userId\" = $1 ORDER BY \"public\".\"orders\".\"createdAt\" DESC, \"public\".\"orders\".\"id\" DESC LIMIT $2 OFFSET $3",
+      "SELECT \"public\".\"showtimes\".\"id\", \"public\".\"showtimes\".\"startTime\", \"public\".\"showtimes\".\"eventId\" FROM \"public\".\"showtimes\" WHERE \"public\".\"showtimes\".\"id\" IN ($1) OFFSET $2",
+      "SELECT \"public\".\"events\".\"id\", \"public\".\"events\".\"name\", \"public\".\"events\".\"location\" FROM \"public\".\"events\" WHERE \"public\".\"events\".\"id\" IN ($1) OFFSET $2",
+      "COMMIT"
+    ]
+  },
+  {
+    "pageSize": 10,
+    "resultCount": 10,
+    "statementCount": 6,
+    "statements": [
+      "SELECT clock_timestamp() AS \"serverTime\"",
+      "SELECT COUNT(*) AS \"_count$_all\" FROM (SELECT \"public\".\"orders\".\"id\" FROM \"public\".\"orders\" WHERE \"public\".\"orders\".\"userId\" = $1 OFFSET $2) AS \"sub\"",
+      "SELECT \"public\".\"orders\".\"id\", \"public\".\"orders\".\"createdAt\", \"public\".\"orders\".\"status\"::text, \"public\".\"orders\".\"paymentExpiresAt\", \"public\".\"orders\".\"totalAmount\", \"public\".\"orders\".\"showtimeId\", COALESCE(\"aggr_selection_0_OrderItem\".\"_aggr_count_items\", 0) AS \"_aggr_count_items\" FROM \"public\".\"orders\" LEFT JOIN (SELECT \"public\".\"order_items\".\"orderId\", COUNT(*) AS \"_aggr_count_items\" FROM \"public\".\"order_items\" WHERE 1=1 GROUP BY \"public\".\"order_items\".\"orderId\") AS \"aggr_selection_0_OrderItem\" ON (\"public\".\"orders\".\"id\" = \"aggr_selection_0_OrderItem\".\"orderId\") WHERE \"public\".\"orders\".\"userId\" = $1 ORDER BY \"public\".\"orders\".\"createdAt\" DESC, \"public\".\"orders\".\"id\" DESC LIMIT $2 OFFSET $3",
+      "SELECT \"public\".\"showtimes\".\"id\", \"public\".\"showtimes\".\"startTime\", \"public\".\"showtimes\".\"eventId\" FROM \"public\".\"showtimes\" WHERE \"public\".\"showtimes\".\"id\" IN ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) OFFSET $11",
+      "SELECT \"public\".\"events\".\"id\", \"public\".\"events\".\"name\", \"public\".\"events\".\"location\" FROM \"public\".\"events\" WHERE \"public\".\"events\".\"id\" IN ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) OFFSET $11",
+      "COMMIT"
+    ]
+  },
+  {
+    "pageSize": 50,
+    "resultCount": 14,
+    "statementCount": 6,
+    "statements": [
+      "SELECT clock_timestamp() AS \"serverTime\"",
+      "SELECT COUNT(*) AS \"_count$_all\" FROM (SELECT \"public\".\"orders\".\"id\" FROM \"public\".\"orders\" WHERE \"public\".\"orders\".\"userId\" = $1 OFFSET $2) AS \"sub\"",
+      "SELECT \"public\".\"orders\".\"id\", \"public\".\"orders\".\"createdAt\", \"public\".\"orders\".\"status\"::text, \"public\".\"orders\".\"paymentExpiresAt\", \"public\".\"orders\".\"totalAmount\", \"public\".\"orders\".\"showtimeId\", COALESCE(\"aggr_selection_0_OrderItem\".\"_aggr_count_items\", 0) AS \"_aggr_count_items\" FROM \"public\".\"orders\" LEFT JOIN (SELECT \"public\".\"order_items\".\"orderId\", COUNT(*) AS \"_aggr_count_items\" FROM \"public\".\"order_items\" WHERE 1=1 GROUP BY \"public\".\"order_items\".\"orderId\") AS \"aggr_selection_0_OrderItem\" ON (\"public\".\"orders\".\"id\" = \"aggr_selection_0_OrderItem\".\"orderId\") WHERE \"public\".\"orders\".\"userId\" = $1 ORDER BY \"public\".\"orders\".\"createdAt\" DESC, \"public\".\"orders\".\"id\" DESC LIMIT $2 OFFSET $3",
+      "SELECT \"public\".\"showtimes\".\"id\", \"public\".\"showtimes\".\"startTime\", \"public\".\"showtimes\".\"eventId\" FROM \"public\".\"showtimes\" WHERE \"public\".\"showtimes\".\"id\" IN ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) OFFSET $15",
+      "SELECT \"public\".\"events\".\"id\", \"public\".\"events\".\"name\", \"public\".\"events\".\"location\" FROM \"public\".\"events\" WHERE \"public\".\"events\".\"id\" IN ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) OFFSET $15",
+      "COMMIT"
+    ]
+  }
+]

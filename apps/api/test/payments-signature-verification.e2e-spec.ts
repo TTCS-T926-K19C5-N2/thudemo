@@ -51,7 +51,10 @@ describe('Payments S-21 Signature Verification E2E Integration', () => {
     return { id: user.id, cookie: `${SESSION_COOKIE}=${token}` };
   }
 
-  function signPayload(payload: Record<string, unknown>, secret = momoSecretKey) {
+  function signPayload(
+    payload: Record<string, unknown>,
+    secret = momoSecretKey,
+  ) {
     const signed = { ...payload };
     signed.signature = buildMomoSignature(signed, momoAccessKey, secret);
     return signed;
@@ -61,7 +64,9 @@ describe('Payments S-21 Signature Verification E2E Integration', () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
       target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
+      (target.port !== '15432' &&
+        (target.port !== '15434' ||
+          process.env.S32_ISOLATED_TEST !== 'true')) ||
       target.pathname !== '/sprint2_integration'
     ) {
       throw new Error('Run only on the isolated sprint2_integration database');
@@ -197,7 +202,9 @@ describe('Payments S-21 Signature Verification E2E Integration', () => {
     const seat = await db.seat.findUniqueOrThrow({ where: { id: seatId } });
     expect(seat.isSold).toBe(false);
 
-    const payment = await db.payment.findFirstOrThrow({ where: { gatewayRef } });
+    const payment = await db.payment.findFirstOrThrow({
+      where: { gatewayRef },
+    });
     expect(payment.status).toBe(PaymentStatus.INITIATED);
 
     // Assert log contains client IP and does NOT leak signature or secret
@@ -207,7 +214,9 @@ describe('Payments S-21 Signature Verification E2E Integration', () => {
     for (const call of logWarnSpy.mock.calls) {
       const logMessage = String(call[0]);
       expect(logMessage).not.toContain(momoSecretKey);
-      expect(logMessage).not.toContain('this_is_a_completely_fake_invalid_signature_hex_value');
+      expect(logMessage).not.toContain(
+        'this_is_a_completely_fake_invalid_signature_hex_value',
+      );
     }
   });
 
@@ -245,7 +254,9 @@ describe('Payments S-21 Signature Verification E2E Integration', () => {
   it('AC 3: Webhook with valid signature but non-existent orderId returns 404 and logs orderId and IP', async () => {
     const nonExistentOrderId = randomUUID();
     const fakeGatewayRef = `${nonExistentOrderId}_${Date.now()}`;
-    const extraData = Buffer.from(JSON.stringify({ orderId: nonExistentOrderId })).toString('base64');
+    const extraData = Buffer.from(
+      JSON.stringify({ orderId: nonExistentOrderId }),
+    ).toString('base64');
 
     const validSignedPayload = signPayload({
       partnerCode: 'MOMO',
@@ -280,7 +291,9 @@ describe('Payments S-21 Signature Verification E2E Integration', () => {
   });
 
   it('AC 4: Webhook with valid signature and existing order proceeds to normal processing (order PAID, seat SOLD, payment SUCCEEDED)', async () => {
-    const extraData = Buffer.from(JSON.stringify({ orderId })).toString('base64');
+    const extraData = Buffer.from(JSON.stringify({ orderId })).toString(
+      'base64',
+    );
     const validTransId = `momo_trans_s21_valid_${Date.now()}`;
 
     const validSignedPayload = signPayload({
@@ -306,13 +319,19 @@ describe('Payments S-21 Signature Verification E2E Integration', () => {
     expect(res.body).toEqual({ received: true, status: 'PAID' });
 
     // Verify DB updates
-    const updatedOrder = await db.order.findUniqueOrThrow({ where: { id: orderId } });
+    const updatedOrder = await db.order.findUniqueOrThrow({
+      where: { id: orderId },
+    });
     expect(updatedOrder.status).toBe(OrderStatus.PAID);
 
-    const updatedSeat = await db.seat.findUniqueOrThrow({ where: { id: seatId } });
+    const updatedSeat = await db.seat.findUniqueOrThrow({
+      where: { id: seatId },
+    });
     expect(updatedSeat.isSold).toBe(true);
 
-    const updatedPayment = await db.payment.findFirstOrThrow({ where: { gatewayRef } });
+    const updatedPayment = await db.payment.findFirstOrThrow({
+      where: { gatewayRef },
+    });
     expect(updatedPayment.status).toBe(PaymentStatus.SUCCEEDED);
     expect(updatedPayment.transactionId).toBe(validTransId);
   });
