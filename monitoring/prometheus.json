@@ -1,0 +1,9 @@
+{
+  "global": {"scrape_interval": "5s", "evaluation_interval": "5s", "external_labels": {"environment": "local"}},
+  "rule_files": ["/etc/prometheus/rules.json", "/etc/prometheus/test-rules.json"],
+  "alerting": {"alertmanagers": [{"static_configs": [{"targets": ["alertmanager:9093"]}]}]},
+  "scrape_configs": [
+    {"job_name": "ticketing", "authorization": {"type": "Bearer", "credentials_file": "/run/secrets/metrics_token"}, "file_sd_configs": [{"files": ["/etc/prometheus/targets.json"], "refresh_interval": "5s"}]},
+    {"job_name": "alertmanager", "static_configs": [{"targets": ["alertmanager:9093"], "labels": {"environment": "local", "service": "alertmanager"}}]}
+  ]
+}

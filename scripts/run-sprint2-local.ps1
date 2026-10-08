@@ -9,8 +9,8 @@ try {
   $env:REDIS_URL='redis://127.0.0.1:16379'; $env:HOLD_EXPIRY_MODE='off'
   Push-Location $taskRoot
   switch($Mode) {
-    'Worker' { npx --yes pnpm@10.15.1 --filter api exec node dist/hold-expiry-worker.js }
-    'Api' { $env:PORT='3001'; npx --yes pnpm@10.15.1 --filter api run start:prod }
+    'Worker' { pnpm --filter api exec node dist/hold-expiry-worker.js }
+    'Api' { $env:PORT='3001'; pnpm --filter api run start:prod }
     'Web' {
       $taskStandalone="$taskRoot/apps/web/.next/standalone/apps/web"
       if (!(Test-Path -LiteralPath "$taskStandalone/server.js")) { throw 'Run the production build first' }
@@ -20,15 +20,15 @@ try {
       Copy-Item -Path "$taskRoot/apps/web/.next/static/*" -Destination "$taskStandalone/.next/static" -Recurse -Force
       $env:HOSTNAME='127.0.0.1'; $env:PORT='3000'; node "$taskStandalone/server.js"
     }
-    'Seed' { if (!$env:SPRINT2_DEMO_PASSWORD) { throw 'Set SPRINT2_DEMO_PASSWORD to a local fake password with at least 12 characters' }; if($Database -eq 'stitch_fidelity'){ npx --yes pnpm@10.15.1 --filter api exec node scripts/seed-design-fidelity.mjs } else { npx --yes pnpm@10.15.1 --filter api exec node scripts/seed-sprint2.mjs } }
+    'Seed' { if (!$env:SPRINT2_DEMO_PASSWORD) { throw 'Set SPRINT2_DEMO_PASSWORD to a local fake password with at least 12 characters' }; if($Database -eq 'stitch_fidelity'){ pnpm --filter api exec node scripts/seed-design-fidelity.mjs } else { pnpm --filter api exec node scripts/seed-sprint2.mjs } }
     'Test' {
       $env:DATABASE_URL='postgresql://sprint2:local_fixture_only@127.0.0.1:15432/sprint2_integration'
-      npx --yes pnpm@10.15.1 --filter api exec prisma migrate deploy
+      pnpm --filter api exec prisma migrate deploy
       if ($LASTEXITCODE -ne 0) { throw 'Test migration failed' }
-      npx --yes pnpm@10.15.1 --filter api run test:e2e
+      pnpm --filter api run test:e2e
     }
-    'Spike' { npx --yes pnpm@10.15.1 --filter api exec node scripts/k01-spike.mjs }
-    'Migrate' { npx --yes pnpm@10.15.1 --filter api exec prisma migrate deploy }
+    'Spike' { pnpm --filter api exec node scripts/k01-spike.mjs }
+    'Migrate' { pnpm --filter api exec prisma migrate deploy }
   }
   if ($LASTEXITCODE -ne 0) { throw "Sprint2 $Mode failed" }
 } finally {

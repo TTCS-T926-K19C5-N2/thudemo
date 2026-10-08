@@ -20,6 +20,7 @@ describe('Sprint 2 isolated database integration', () => {
   let buyerCookie: string;
   let eventId: string | undefined;
   let showId: string;
+  const extraBuyerIds: string[] = [];
   const samples: Record<string, number[]> = {
     importMs: [],
     queryMs: [],
@@ -35,14 +36,10 @@ describe('Sprint 2 isolated database integration', () => {
   };
 
   async function account(role: string) {
-    // Sửa lỗi 1: Đảm bảo lấy Role an toàn không bị dính Unique Constraint Race Condition
-    let r = await db.role.findFirst({ where: { name: role } });
-    if (!r) {
-      r = await db.role.create({ data: { name: role } }).catch(async () => {
-        return (await db.role.findFirst({ where: { name: role } }))!;
-      });
-    }
-
+    // Parallel E2E files share role names. Insert atomically, matching the
+    // auth/events fixtures, rather than a read-then-create empty-update upsert.
+    await db.role.createMany({ data: [{ name: role }], skipDuplicates: true });
+    const r = await db.role.findUniqueOrThrow({ where: { name: role } });
     const user = await db.user.create({
       data: {
         email: `${randomUUID()}@demo.invalid`,
@@ -110,15 +107,18 @@ describe('Sprint 2 isolated database integration', () => {
         select: { id: true },
       });
       const ids = shows.map((s) => s.id);
+      await db.orderItem.deleteMany({
+        where: { order: { showtimeId: { in: ids } } },
+      });
+      await db.order.deleteMany({ where: { showtimeId: { in: ids } } });
+      await db.seatHold.deleteMany({ where: { showtimeId: { in: ids } } });
+      await db.holdSession.deleteMany({ where: { showtimeId: { in: ids } } });
       await db.seat.deleteMany({ where: { showtimeId: { in: ids } } });
       await db.seatCategory.deleteMany({ where: { showtimeId: { in: ids } } });
       await db.showtime.deleteMany({ where: { eventId } });
-      
-      // Sửa lỗi 2: Bọc kiểm tra eventId tránh bị lỗi undefined khi cleanup
       await db.event.delete({ where: { id: eventId } });
-      
       await db.user.deleteMany({
-        where: { id: { in: [owner, other, buyer].filter(Boolean) } },
+        where: { id: { in: [owner, other, buyer, ...extraBuyerIds] } },
       });
       const report = {
         date: new Date().toISOString(),
@@ -135,7 +135,8 @@ describe('Sprint 2 isolated database integration', () => {
       };
       const dir = resolve(
         process.env.VERIFICATION_EVIDENCE_DIR ??
-          process.env.SPRINT2_EVIDENCE_DIR ?? '../../evidence/sprint2/20261004-local',
+          process.env.SPRINT2_EVIDENCE_DIR ??
+          '../../evidence/sprint2/20261004-local',
       );
       mkdirSync(dir, { recursive: true });
       writeFileSync(
@@ -438,5 +439,151 @@ describe('Sprint 2 isolated database integration', () => {
       page.body.items.some((s: { id: string }) => s.id === target.id),
     ).toBe(false);
     await request(app.getHttpServer()).get('/showtimes?cursor=bad').expect(400);
+  }, 30000);
+  it('creates one pending order from live holds, snapshots prices, extends ten minutes and rejects expired seats', async () => {
+    const available = await db.seat.findMany({
+      where: { showtimeId: showId },
+      orderBy: [{ categoryId: 'asc' }, { row: 'asc' }, { seatNumber: 'asc' }],
+      include: { category: true },
+    });
+    const firstCategory = available[0].category;
+    const firstSeats = available
+      .filter((seat) => seat.categoryId === firstCategory.id)
+      .slice(0, 2);
+
+    const held = await request(app.getHttpServer())
+      .post(`/showtimes/${showId}/holds`)
+      .set('Cookie', buyerCookie)
+      .send({ seatIds: firstSeats.map((seat) => seat.id) })
+      .expect(200);
+    const holdExpiresAt = Date.parse(held.body.hold.expiresAt);
+
+    const [placedA, placedB] = await Promise.all([
+      request(app.getHttpServer())
+        .post(`/showtimes/${showId}/orders`)
+        .set('Cookie', buyerCookie)
+        .send({ totalAmount: 0, unitPrice: 0, userId: other })
+        .expect(200),
+      request(app.getHttpServer())
+        .post(`/showtimes/${showId}/orders`)
+        .set('Cookie', buyerCookie)
+        .send({})
+        .expect(200),
+    ]);
+    expect(placedA.body.order.id).toBe(placedB.body.order.id);
+    expect(
+      [placedA.body.created, placedB.body.created].sort(
+        (a, b) => Number(a) - Number(b),
+      ),
+    ).toEqual([false, true]);
+    expect(placedA.body.order.items).toHaveLength(2);
+    expect(placedA.body.order.totalAmount).toBe(
+      firstSeats.reduce((sum, seat) => sum + (seat.category.price ?? 0), 0),
+    );
+    const paymentExpiresAt = Date.parse(placedA.body.order.paymentExpiresAt);
+    // Promise.all preserves input order, not which concurrent request won the lock.
+    // Only the creator gets a new 600-second deadline; the reuser must not extend it.
+    const created = placedA.body.created ? placedA : placedB;
+    const reused = placedA.body.created ? placedB : placedA;
+    expect(paymentExpiresAt - Date.parse(created.body.serverTime)).toBe(600000);
+    expect(reused.body.order.paymentExpiresAt).toBe(
+      created.body.order.paymentExpiresAt,
+    );
+    const remaining = paymentExpiresAt - Date.parse(reused.body.serverTime);
+    expect(remaining).toBeGreaterThan(0);
+    expect(remaining).toBeLessThanOrEqual(600000);
+    expect(paymentExpiresAt).toBeGreaterThanOrEqual(holdExpiresAt);
+    expect(
+      await db.order.count({
+        where: { userId: buyer, showtimeId: showId },
+      }),
+    ).toBe(1);
+    const currentOrder = await request(app.getHttpServer())
+      .get(`/orders/${placedA.body.order.id}`)
+      .set('Cookie', buyerCookie)
+      .expect(200);
+    expect(currentOrder.body.order.status).toBe('PENDING_PAYMENT');
+    const extended = await db.seatHold.findMany({
+      where: { seatId: { in: firstSeats.map((seat) => seat.id) } },
+      select: { expiresAt: true },
+    });
+    expect(
+      extended.every((seat) => seat.expiresAt.getTime() === paymentExpiresAt),
+    ).toBe(true);
+
+    const newPrice = (firstCategory.price ?? 0) + 12345;
+    await request(app.getHttpServer())
+      .patch(`/showtimes/${showId}/prices`)
+      .set('Cookie', cookie)
+      .send({ prices: [{ id: firstCategory.id, price: newPrice }] })
+      .expect(200);
+    const oldItems = await db.orderItem.findMany({
+      where: { orderId: placedA.body.order.id },
+    });
+    expect(
+      oldItems.every((item) => item.unitPrice === firstCategory.price),
+    ).toBe(true);
+
+    const secondBuyer = await account('BUYER');
+    extraBuyerIds.push(secondBuyer.id);
+    await request(app.getHttpServer())
+      .get(`/orders/${placedA.body.order.id}`)
+      .set('Cookie', secondBuyer.cookie)
+      .expect(404);
+    const freshSeat = available.find(
+      (seat) =>
+        seat.categoryId === firstCategory.id &&
+        !firstSeats.some((heldSeat) => heldSeat.id === seat.id),
+    )!;
+    await request(app.getHttpServer())
+      .post(`/showtimes/${showId}/holds`)
+      .set('Cookie', secondBuyer.cookie)
+      .send({ seatIds: [freshSeat.id] })
+      .expect(200);
+    const newOrder = await request(app.getHttpServer())
+      .post(`/showtimes/${showId}/orders`)
+      .set('Cookie', secondBuyer.cookie)
+      .send({})
+      .expect(200);
+    expect(newOrder.body.order.items[0].unitPrice).toBe(newPrice);
+
+    const expiredBuyer = await account('BUYER');
+    extraBuyerIds.push(expiredBuyer.id);
+    const expiringSeat = available.find(
+      (seat) =>
+        seat.categoryId !== firstCategory.id &&
+        !firstSeats.some((heldSeat) => heldSeat.id === seat.id),
+    )!;
+    const expiringHold = await request(app.getHttpServer())
+      .post(`/showtimes/${showId}/holds`)
+      .set('Cookie', expiredBuyer.cookie)
+      .send({ seatIds: [expiringSeat.id] })
+      .expect(200);
+    await db.seatHold.update({
+      where: { seatId: expiringSeat.id },
+      data: { expiresAt: new Date(Date.now() - 1000) },
+    });
+    const expired = await request(app.getHttpServer())
+      .post(`/showtimes/${showId}/orders`)
+      .set('Cookie', expiredBuyer.cookie)
+      .send({})
+      .expect(409);
+    expect(expired.body.code).toBe('HOLD_EXPIRED');
+    expect(expired.body.lostSeatIds).toContain(expiringSeat.id);
+    expect(
+      await db.order.count({
+        where: { userId: expiredBuyer.id, showtimeId: showId },
+      }),
+    ).toBe(0);
+    expect(expiringHold.body.hold.seatIds).toContain(expiringSeat.id);
+    await db.order.update({
+      where: { id: placedA.body.order.id },
+      data: { paymentExpiresAt: new Date(Date.now() - 1000) },
+    });
+    const elapsed = await request(app.getHttpServer())
+      .get(`/orders/${placedA.body.order.id}`)
+      .set('Cookie', buyerCookie)
+      .expect(200);
+    expect(elapsed.body.order.status).toBe('EXPIRED');
   }, 30000);
 });

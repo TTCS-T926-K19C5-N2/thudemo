@@ -42,7 +42,7 @@ function Stop-OwnedTree($entry) {
 function Get-DemoListener($port) {
   return @(Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue).Count -gt 0
 }
-function Wait-DemoHttp($url, $seconds = 60) {
+function Wait-DemoHttp($url, $seconds = 90) {
   $taskDeadline = [DateTime]::UtcNow.AddSeconds($seconds)
   do {
     try { return Invoke-RestMethod -Uri $url -TimeoutSec 3 } catch { Start-Sleep -Milliseconds 500 }
@@ -82,7 +82,12 @@ try {
   $taskNpx = (Get-Command npx.cmd -ErrorAction Stop).Source
   $taskDockerCommand = Get-Command docker.exe -ErrorAction SilentlyContinue
   $taskDocker = if ($taskDockerCommand) { $taskDockerCommand.Source } else { 'C:/Program Files/Docker/Docker/resources/bin/docker.exe' }
+  if (!(Test-Path -LiteralPath $taskDocker) -and (Test-Path -LiteralPath "$env:LOCALAPPDATA/Programs/DockerDesktop/resources/bin/docker.exe")) {
+    $taskDocker = "$env:LOCALAPPDATA/Programs/DockerDesktop/resources/bin/docker.exe"
+  }
   if (!(Test-Path -LiteralPath $taskDocker)) { throw 'Docker Desktop executable not found. Install/start Docker Desktop with Linux engine.' }
+  $taskDockerBin = Split-Path -Parent $taskDocker
+  if ($env:Path -notlike "*$taskDockerBin*") { $env:Path = "$taskDockerBin;$env:Path" }
   $taskEngine = & $taskDocker info --format '{{.OSType}}' 2>$null
   if ($LASTEXITCODE -ne 0 -or "$taskEngine".Trim() -ne 'linux') { throw 'Open Docker Desktop and wait for Linux Engine running, then retry.' }
   foreach ($taskService in @(
