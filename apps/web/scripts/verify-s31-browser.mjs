@@ -2,6 +2,7 @@ import { createRequire } from "node:module";
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.S31_PLAYWRIGHT_MODULE ?? "playwright");
 assert(
@@ -20,6 +21,9 @@ const report = {
   viewports: ["1440x1000", "390x844"],
   camera: false,
   sourceSha: process.env.S31_SOURCE_SHA ?? "working-tree",
+  driverSha256: createHash("sha256")
+    .update(readFileSync(import.meta.filename))
+    .digest("hex"),
   checks: [],
   consoleErrors: [],
   screenshots: [],
@@ -76,6 +80,7 @@ async function screenshot(page, name) {
   await page.screenshot({
     path: resolve(evidence, name),
     fullPage: !name.startsWith("mobile"),
+    animations: "disabled",
   });
   report.screenshots.push(name);
 }
@@ -212,6 +217,12 @@ try {
   await status(desktop).filter({ hasText: "Vé đã sử dụng" }).waitFor();
   await scan(ordinary, fixture.freshTicket);
   await status(ordinary).filter({ hasText: "Check-in thành công" }).waitFor();
+  await ordinary.getByLabel("Hoặc nhập mã vé").fill("unverified-ticket");
+  check(
+    (await status(ordinary).getAttribute("data-state")) === "SCANNING" &&
+      !(await status(ordinary).innerText()).includes("Vé hợp lệ"),
+    "Editing ticket code clears stale valid result before server verification",
+  );
   await scan(ordinary, fixture.freshTicket);
   await status(ordinary)
     .filter({ hasText: "Đây không phải lần vào mới" })
@@ -381,6 +392,11 @@ try {
   });
   await dialogMobileTrigger.click();
   await mobile.getByRole("dialog").waitFor();
+  await mobile.waitForFunction(
+    () =>
+      getComputedStyle(document.querySelector('[role="dialog"]')).opacity ===
+      "1",
+  );
   await screenshot(mobile, "mobile-dialog.png");
   check(
     await mobile.evaluate(

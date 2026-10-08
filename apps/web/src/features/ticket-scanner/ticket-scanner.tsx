@@ -533,7 +533,13 @@ export function TicketScanner({
                   ref={inputRef}
                   disabled={requestPending || !gateId}
                   value={ticketId}
-                  onChange={(event) => setTicketId(event.target.value)}
+                  onChange={(event) => {
+                    setTicketId(event.target.value);
+                    setUsed(null);
+                    setResult(null);
+                    setStatus("SCANNING");
+                    setMessage("Kiểm tra mã vé để xác thực.");
+                  }}
                   className="min-w-0 flex-1 rounded-md border bg-background px-3 py-2 font-mono"
                   autoComplete="off"
                 />
