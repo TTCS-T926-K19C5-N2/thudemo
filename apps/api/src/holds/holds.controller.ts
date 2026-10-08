@@ -43,5 +43,6 @@ export class HoldsController {
       req.user.id,
       hashSessionToken(req.sessionToken),
     );
+    
   }
 }

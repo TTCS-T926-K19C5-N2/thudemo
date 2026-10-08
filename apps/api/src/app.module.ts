@@ -11,6 +11,7 @@ import { UsersModule } from './users/users.module.js';
 import { EventsModule } from './events/events.module.js';
 import { ShowtimesModule } from './showtimes/showtimes.module.js';
 import { HoldsModule } from './holds/holds.module.js';
+import { SeatsModule } from './seats/seats.module.js';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { HoldsModule } from './holds/holds.module.js';
     EventsModule,
     ShowtimesModule,
     HoldsModule,
+    SeatsModule,
   ],
   controllers: [AppController],
   providers: [AppService], // Bỏ APP_GUARD ở đây ra để tránh bị dính rate-limit cho toàn hệ thống

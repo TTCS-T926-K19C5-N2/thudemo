@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+<<<<<<< HEAD
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
@@ -42,6 +43,28 @@ jobs:
         run: pnpm typecheck
       - name: Build
         run: pnpm build
+=======
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+        
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+        
+    - name: Install dependencies
+      run: pnpm install
+      
+    - name: Run Lint
+      run: pnpm lint
+      
+    - name: Run Unit/Integration Tests
+      run: pnpm test
+>>>>>>> origin/main
 
   lint:
     name: T-02 / lint
