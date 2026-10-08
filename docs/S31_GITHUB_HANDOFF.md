@@ -5,10 +5,13 @@ Trạng thái: **candidate storage proof, BLOCKED S-30 và PO policy; PR phải 
 - Issue: [#63](https://github.com/TTCS-T926-K19C5-N2/thudemo/issues/63), giữ mở, chưa gán Owner.
 - Branch: `story/S-31-prevent-ticket-reuse`, base `main`.
 - Base SHA: `4be30370b3007b9b9b58e4aa3598b666df64f3f3`.
-- Implementation/test commit: `921e842` (full SHA xem GitHub commit trên branch); bằng chứng SQL gắn content SHA-256 trong `evidence/s31/storage-proof.json`.
+- Implementation/test commit: [`921e842113b383ecc2a5c1cd837054b8fd1f08d6`](https://github.com/TTCS-T926-K19C5-N2/thudemo/commit/921e842113b383ecc2a5c1cd837054b8fd1f08d6); bằng chứng SQL gắn content SHA-256 trong `evidence/s31/storage-proof.json`.
 - Tài khoản vận hành commit/push/PR: `sangnguyencoder`. Author/committer: `sangnguyencoder <sangnguyencoder@gmail.com>`. Email được GitHub map về tài khoản này ở commit `e6dacdeed4e3e4d2f423e29019991d8d73cbbb1a`; endpoint user/emails không đủ scope, không đoán email khác hoặc đổi tác giả sang Owner.
 - Tài khoản review được ủy quyền: `tovanquyenh-blip`. Review phải được gửi với commit_id đúng PR head đã đọc, sau khi recheck head. Không approve khi dependency/policy/AC thiếu.
-- PR URL, reviewed SHA, review URL và Actions cuối sẽ được bổ sung từ thao tác thật; chưa có ở revision hồ sơ trước publish.
+- PR: [Draft #64](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/64), được mở thật bằng sangnguyencoder sau push đầu.
+- Push đầu đã thực hiện sau preflight: `82303d2d4e36699e29036b4db47a553f8fc32c94`; output thật: `[new branch] story/S-31-prevent-ticket-reuse -> story/S-31-prevent-ticket-reuse`. Log local được giữ trong checkpoint; không dựng lại pull/push history.
+- Review exact final head sẽ được gửi sau commit hồ sơ này. Nguồn chính thức cho account/state/commit_id và URL review cuối: [PR reviews](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/64#pullrequestreview) và [reviews API](https://api.github.com/repos/TTCS-T926-K19C5-N2/thudemo/pulls/64/reviews). Không gắn review revision trước vào revision sau.
+- CI lần đầu đã chạy thực tế: [CI 37752658641](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/37752658641), [candidate storage 37752658679](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/37752658679) tại SHA push đầu. Kết quả này không thay CI của commit hồ sơ mới. [Checks của PR](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/64/checks) hiển thị checks trên head mới; báo cáo cuối trong PR/review ghi đúng SHA và run URL cuối sau khi hoàn tất.
 
 ## Bằng chứng hiện có và còn thiếu
 
@@ -30,4 +33,4 @@ Review body phải ghi nguyên văn:
 
 ## Bảo toàn WIP và phạm vi
 
-Checkpoint local 1.819 file WIP, status và binary patch. Chỉ stage file SQL candidate, scripts, workflow/evidence S-31 và ba tài liệu; không `git add .`. Không thay payment/QR/V1 hoặc merge nhánh dependency. Migration đã áp dụng giữ nguyên; rollback sản phẩm phải thiết kế lại khi có Ticket/S-30. Container DB S-31 vẫn giữ lại evidence, không reset database task khác.
+Checkpoint local 1.819 file WIP, status và binary patch. Đối chiếu sau push đầu: checked 1819, changed 0, missing 0. Chỉ stage file SQL candidate, scripts, workflow/evidence S-31 và ba tài liệu; không `git add .`. Không thay payment/QR/V1 hoặc merge nhánh dependency. Migration đã áp dụng giữ nguyên; rollback sản phẩm phải thiết kế lại khi có Ticket/S-30. Container DB S-31 vẫn giữ lại evidence, không reset database task khác.
