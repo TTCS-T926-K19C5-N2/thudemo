@@ -17,6 +17,7 @@ describe('PaymentsService Unit Tests', () => {
   let mockGateway: Partial<PaymentGateway>;
   let mockNotifier: Partial<AccountantNotifier>;
   let mockConfig: Partial<ConfigService>;
+  let mockOrdersService: any;
 
   const userId = '11111111-1111-4111-8111-111111111111';
   const orderId = '22222222-2222-4222-8222-222222222222';
@@ -70,11 +71,16 @@ describe('PaymentsService Unit Tests', () => {
       ) as any,
     };
 
+    mockOrdersService = {
+      expireOrder: vi.fn().mockResolvedValue({ status: 'expired', releasedSeatsCount: 1 }),
+    };
+
     service = new PaymentsService(
       mockPrisma as PrismaService,
       mockGateway as PaymentGateway,
       mockNotifier as AccountantNotifier,
       mockConfig as ConfigService,
+      mockOrdersService,
     );
   });
 
@@ -247,13 +253,15 @@ describe('PaymentsService Unit Tests', () => {
 
       expect(res.status).toBe('PAID');
       expect(mockPrisma.$transaction).toHaveBeenCalled();
-      expect(mockPrisma.order.updateMany).toHaveBeenCalledWith({
-        where: {
-          id: orderId,
-          status: { in: [OrderStatus.PENDING, OrderStatus.PENDING_PAYMENT] },
-        },
-        data: { status: OrderStatus.PAID },
-      });
+      expect(mockPrisma.order.updateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            id: orderId,
+            status: { in: [OrderStatus.PENDING, OrderStatus.PENDING_PAYMENT] },
+          }),
+          data: { status: OrderStatus.PAID },
+        }),
+      );
       expect(mockPrisma.seat.updateMany).toHaveBeenCalledWith({
         where: { id: { in: [seatId] } },
         data: { isSold: true },
@@ -442,5 +450,123 @@ describe('PaymentsService Unit Tests', () => {
       // Order status is NOT changed to FAILED or EXPIRED, remains PENDING
       expect(mockPrisma.order.update).not.toHaveBeenCalled();
     });
+
+    describe('S-23 Webhook & Expiration Collisions', () => {
+      it('AC 8: when webhook SUCCESS arrives for PENDING order that has expired, releases seats and marks NEEDS_REVIEW + LATE', async () => {
+        (mockGateway.verifyWebhook as any).mockResolvedValue(true);
+        (mockGateway.parseWebhook as any).mockResolvedValue({
+          orderId,
+          gatewayRef: `${orderId}_late`,
+          transactionId: 'momo_tx_late',
+          amount: 100000,
+          status: 'SUCCESS',
+        });
+
+        // Order is PENDING but expired in past
+        mockPrisma.order.findUnique.mockResolvedValue({
+          id: orderId,
+          status: OrderStatus.PENDING,
+          expiresAt: new Date(Date.now() - 60000), // 1 min ago
+          items: [{ seatId, seat: { category: { price: 100000 } } }],
+        });
+
+        const res = await service.handleWebhook({}, {});
+
+        expect(res.status).toBe('LATE');
+        // Calls expireOrder to release seats
+        expect(mockOrdersService.expireOrder).toHaveBeenCalledWith(orderId);
+        // Deletes remaining seat holds via raw SQL
+        expect(mockPrisma.$executeRaw).toHaveBeenCalled();
+        // Marks order as NEEDS_REVIEW
+        expect(mockPrisma.order.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { id: orderId },
+            data: { status: OrderStatus.NEEDS_REVIEW },
+          }),
+        );
+        // Notifies accountant
+        expect(mockNotifier.notifyLatePayment).toHaveBeenCalledWith(
+          expect.objectContaining({
+            orderId,
+            reason: expect.stringContaining('hết hạn'),
+          }),
+        );
+      });
+
+      it('AC 7: when atomic update for PAID matches 0 rows due to collision (order expired), enters late payment path safely', async () => {
+        (mockGateway.verifyWebhook as any).mockResolvedValue(true);
+        (mockGateway.parseWebhook as any).mockResolvedValue({
+          orderId,
+          gatewayRef: `${orderId}_race`,
+          transactionId: 'momo_tx_race',
+          amount: 100000,
+          status: 'SUCCESS',
+        });
+
+        mockPrisma.order.findUnique.mockResolvedValueOnce({
+          id: orderId,
+          status: OrderStatus.PENDING,
+          expiresAt: new Date(Date.now() + 1000), // looks valid initially
+          items: [{ seatId, seat: { category: { price: 100000 } } }],
+        });
+
+        // In transaction: advisory lock succeeds ($executeRaw), but atomic updateMany returns 0 rows (job expired it right before)
+        mockPrisma.$executeRaw
+          .mockResolvedValueOnce(1) // advisory lock
+          .mockResolvedValueOnce(1); // DELETE FROM seat_holds
+        mockPrisma.order.updateMany.mockResolvedValueOnce({ count: 0 });
+
+        // postCheck shows order is now EXPIRED
+        mockPrisma.order.findUnique.mockResolvedValueOnce({
+          id: orderId,
+          status: OrderStatus.EXPIRED,
+        });
+
+        const res = await service.handleWebhook({}, {});
+
+        expect(res.status).toBe('LATE');
+        expect(mockPrisma.order.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { id: orderId },
+            data: { status: OrderStatus.NEEDS_REVIEW },
+          }),
+        );
+      });
+
+      it('AC 7: when atomic update matches 0 rows because order was already PAID (duplicate), returns PAID without re-processing', async () => {
+        (mockGateway.verifyWebhook as any).mockResolvedValue(true);
+        (mockGateway.parseWebhook as any).mockResolvedValue({
+          orderId,
+          gatewayRef: `${orderId}_dup`,
+          transactionId: 'momo_tx_dup',
+          amount: 100000,
+          status: 'SUCCESS',
+        });
+
+        mockPrisma.order.findUnique.mockResolvedValueOnce({
+          id: orderId,
+          status: OrderStatus.PENDING,
+          expiresAt: new Date(Date.now() + 10000),
+          items: [{ seatId, seat: { category: { price: 100000 } } }],
+        });
+
+        // In transaction: advisory lock succeeds, but atomic update returns 0
+        mockPrisma.$executeRaw.mockResolvedValueOnce(1); // advisory lock
+        mockPrisma.order.updateMany.mockResolvedValueOnce({ count: 0 });
+
+        // postCheck reveals order is already PAID
+        mockPrisma.order.findUnique.mockResolvedValueOnce({
+          id: orderId,
+          status: OrderStatus.PAID,
+        });
+
+        const res = await service.handleWebhook({}, {});
+
+        expect(res.status).toBe('PAID');
+        // Does NOT update order or delete seats
+        expect(mockPrisma.order.update).not.toHaveBeenCalled();
+      });
+    });
   });
 });
+

@@ -7,6 +7,7 @@ import { AppModule } from '../src/app.module.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 import { hashSessionToken, SESSION_COOKIE } from '../src/auth/auth.service.js';
 import { OrderStatus } from '@prisma/client';
+import { OrdersService } from '../src/orders/orders.service.js';
 
 describe('Orders S-17 E2E Integration', () => {
   let app: INestApplication;
@@ -251,4 +252,239 @@ describe('Orders S-17 E2E Integration', () => {
     expect(res.body.status).toBe(OrderStatus.EXPIRED);
     expect(res.body.remainingSeconds).toBe(0);
   });
+
+  describe('S-22 Lightweight Order Status API', () => {
+    it('returns status, latestPayment, and Cache-Control: no-store without side effects', async () => {
+      const order = await db.order.create({
+        data: {
+          userId: buyer1Id,
+          eventId,
+          showtimeId,
+          status: OrderStatus.PENDING,
+          totalAmount: 500000,
+          expiresAt: new Date(Date.now() + 600000),
+          paymentExpiresAt: new Date(Date.now() + 600000),
+          items: {
+            create: [{ seatId: seat1Id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
+          },
+          payments: {
+            create: [
+              {
+                amount: 500000,
+                status: 'INITIATED',
+                gateway: 'mock',
+                gatewayRef: `mock_ref_${Date.now()}`,
+              },
+            ],
+          },
+        },
+      });
+
+      const res = await request(app.getHttpServer())
+        .get(`/orders/${order.id}/status`)
+        .set('Cookie', buyer1Cookie)
+        .expect(200);
+
+      expect(res.headers['cache-control']).toBe('no-store');
+      expect(res.body.orderId).toBe(order.id);
+      expect(res.body.status).toBe(OrderStatus.PENDING);
+      expect(res.body.expiresAt).toBeTruthy();
+      expect(res.body.serverTime).toBeTruthy();
+      expect(res.body.latestPayment).not.toBeNull();
+      expect(res.body.latestPayment.status).toBe('INITIATED');
+      expect(res.body.latestPayment.attemptNo).toBe(1);
+
+      // Verify no side effects: DB order status remains unchanged
+      const freshOrder = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+      expect(freshOrder.status).toBe(OrderStatus.PENDING);
+
+      // Verify detail API also exposes latestPayment (S-22 requirement for S-24 compatibility)
+      const detailRes = await request(app.getHttpServer())
+        .get(`/orders/${order.id}`)
+        .set('Cookie', buyer1Cookie)
+        .expect(200);
+      expect(detailRes.body.latestPayment).not.toBeNull();
+      expect(detailRes.body.latestPayment.status).toBe('INITIATED');
+      expect(detailRes.body.latestPayment.attemptNo).toBe(1);
+    });
+
+    it('rejects unauthenticated user (401) and different user (404) on status endpoint', async () => {
+      const order = await db.order.create({
+        data: {
+          userId: buyer1Id,
+          eventId,
+          showtimeId,
+          status: OrderStatus.PENDING,
+          totalAmount: 500000,
+          expiresAt: new Date(Date.now() + 600000),
+          paymentExpiresAt: new Date(Date.now() + 600000),
+          items: {
+            create: [{ seatId: seat1Id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
+          },
+        },
+      });
+
+      // 401 unauthenticated
+      await request(app.getHttpServer())
+        .get(`/orders/${order.id}/status`)
+        .expect(401);
+
+      // 404 different buyer
+      await request(app.getHttpServer())
+        .get(`/orders/${order.id}/status`)
+        .set('Cookie', buyer2Cookie)
+        .expect(404);
+    });
+  });
+
+  describe('S-23 Order Expiry & Seat Release E2E', () => {
+    it('AC 1 & AC 4: expires overdue order, deletes seat holds, leaves seat unsold, and is idempotent', async () => {
+      const ordersService = app.get(OrdersService);
+      const pastTime = new Date(Date.now() - 60000);
+
+      // Create a seat for this test
+      const testSeat = await db.seat.create({
+        data: {
+          showtimeId,
+          categoryId: (await db.seatCategory.findFirstOrThrow({ where: { showtimeId } })).id,
+          row: 'X',
+          seatNumber: 99,
+          isSold: false,
+        },
+      });
+
+      // Create a hold session and seat_hold
+      const holdSession = await db.holdSession.create({
+        data: {
+          showtimeId,
+          userId: buyer1Id,
+          sessionHash: `hash-${randomUUID()}`,
+          token: randomUUID(),
+          expiresAt: pastTime,
+          expectedSeatIds: [testSeat.id],
+        },
+      });
+
+      await db.seatHold.create({
+        data: {
+          seatId: testSeat.id,
+          showtimeId,
+          holdSessionId: holdSession.id,
+          token: holdSession.token,
+          expiresAt: pastTime,
+        },
+      });
+
+      // Create an overdue order referencing this hold
+      const order = await db.order.create({
+        data: {
+          userId: buyer1Id,
+          eventId,
+          showtimeId,
+          holdSessionId: holdSession.id,
+          holdToken: holdSession.token,
+          status: OrderStatus.PENDING,
+          totalAmount: 500000,
+          expiresAt: pastTime,
+          paymentExpiresAt: pastTime,
+          items: {
+            create: [{ seatId: testSeat.id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
+          },
+        },
+      });
+
+      // Verify hold exists before expiry
+      const holdBefore = await db.seatHold.findUnique({ where: { seatId: testSeat.id } });
+      expect(holdBefore).not.toBeNull();
+
+      // Run expireOrder
+      const result1 = await ordersService.expireOrder(order.id);
+      expect(result1.status).toBe('expired');
+      expect((result1 as any).releasedSeatsCount).toBe(1);
+
+      // Verify DB state: order is EXPIRED
+      const updatedOrder = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+      expect(updatedOrder.status).toBe(OrderStatus.EXPIRED);
+
+      // Verify seatHold is DELETED (seat is released to available)
+      const holdAfter = await db.seatHold.findUnique({ where: { seatId: testSeat.id } });
+      expect(holdAfter).toBeNull();
+
+      // Verify seat is NOT sold
+      const seatAfter = await db.seat.findUniqueOrThrow({ where: { id: testSeat.id } });
+      expect(seatAfter.isSold).toBe(false);
+
+      // AC 4: Run 2nd and 3rd time: idempotent, skipped
+      const result2 = await ordersService.expireOrder(order.id);
+      expect(result2.status).toBe('skipped');
+
+      const result3 = await ordersService.expireOrder(order.id);
+      expect(result3.status).toBe('skipped');
+    });
+
+    it('AC 2: skips unexpired pending order and preserves seat holds', async () => {
+      const ordersService = app.get(OrdersService);
+      const futureTime = new Date(Date.now() + 600000);
+
+      const testSeat = await db.seat.create({
+        data: {
+          showtimeId,
+          categoryId: (await db.seatCategory.findFirstOrThrow({ where: { showtimeId } })).id,
+          row: 'Y',
+          seatNumber: 88,
+          isSold: false,
+        },
+      });
+
+      const holdSession = await db.holdSession.create({
+        data: {
+          showtimeId,
+          userId: buyer1Id,
+          sessionHash: `hash-${randomUUID()}`,
+          token: randomUUID(),
+          expiresAt: futureTime,
+          expectedSeatIds: [testSeat.id],
+        },
+      });
+
+      await db.seatHold.create({
+        data: {
+          seatId: testSeat.id,
+          showtimeId,
+          holdSessionId: holdSession.id,
+          token: holdSession.token,
+          expiresAt: futureTime,
+        },
+      });
+
+      const order = await db.order.create({
+        data: {
+          userId: buyer1Id,
+          eventId,
+          showtimeId,
+          holdSessionId: holdSession.id,
+          holdToken: holdSession.token,
+          status: OrderStatus.PENDING,
+          totalAmount: 500000,
+          expiresAt: futureTime,
+          paymentExpiresAt: futureTime,
+          items: {
+            create: [{ seatId: testSeat.id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
+          },
+        },
+      });
+
+      const result = await ordersService.expireOrder(order.id);
+      expect(result.status).toBe('skipped');
+
+      // Order remains PENDING
+      const orderDb = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+      expect(orderDb.status).toBe(OrderStatus.PENDING);
+
+      // Hold is preserved
+      const holdDb = await db.seatHold.findUnique({ where: { seatId: testSeat.id } });
+      expect(holdDb).not.toBeNull();
+    });
+  });
 });
+
