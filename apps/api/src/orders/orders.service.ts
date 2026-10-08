@@ -9,12 +9,12 @@ import {
 } from '@nestjs/common';
 import { OrderStatus, PaymentStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { isOrderExpired } from './order-expiration.js';
+import { OrderHistoryService } from './order-history.service.js';
 
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-type Clock = { serverTime: Date; paymentExpiresAt: Date };
+type Clock = { serverTime: Date };
 type HoldAuthority = {
   id: string;
   token: string;
@@ -66,55 +66,9 @@ export type ExpireOrderResult =
   | { status: 'expired'; orderId: string; releasedSeatsCount: number }
   | { status: 'skipped'; orderId: string; reason: string };
 
-export type OrderDetailResponse = {
-  id: string;
-  status: OrderStatus;
-  rawStatus: OrderStatus;
-  totalAmount: number;
-  expiresAt: string;
-  paymentExpiresAt: string;
-  serverTime: string;
-  remainingSeconds: number;
-  isExpired: boolean;
-  createdAt: string;
-  event: {
-    id: string;
-    name: string;
-    description: string;
-    location: string;
-    posterPath: string | null;
-    bannerPath: string | null;
-  };
-  showtime: {
-    id: string;
-    startTime: string;
-  };
-  items: {
-    id: string;
-    seatId: string;
-    row: string;
-    seatNumber: number;
-    label: string;
-    tierName: string;
-    categoryName: string;
-    unitPrice: number;
-    seat: { row: string; seatNumber: number };
-  }[];
-  order: {
-    id: string;
-    status: OrderStatus;
-    paymentExpiresAt: string;
-    totalAmount: number;
-    items: {
-      seatId: string;
-      categoryName: string;
-      unitPrice: number;
-      seat: { row: string; seatNumber: number };
-    }[];
-  };
-  created: boolean;
-  latestPayment?: LatestPaymentInfo | null;
-};
+export type OrderDetailResponse = Awaited<
+  ReturnType<OrderHistoryService['current']>
+>;
 
 const orderProjection = {
   id: true,
@@ -136,12 +90,16 @@ const orderProjection = {
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
 
-  constructor(private readonly db: PrismaService) {}
+  constructor(
+    private readonly db: PrismaService,
+    private readonly history: OrderHistoryService,
+  ) {}
 
   async createFromHold(
     showtimeId: string,
     userId: string,
     sessionHash: string,
+    requestedSeatIds: string[] | null = null,
   ) {
     try {
       return await this.db.$transaction(
@@ -175,8 +133,13 @@ export class OrdersService {
             },
             select: orderProjection,
           });
-          if (existing)
+          if (existing) {
+            this.assertRequestedSeats(
+              requestedSeatIds,
+              existing.items.map((item) => item.seatId),
+            );
             return this.response(existing, lookupClock.serverTime, false);
+          }
 
           const shows = await tx.$queryRaw<
             { status: string; eventId: string }[]
@@ -212,9 +175,7 @@ export class OrdersService {
             ORDER BY h."seatId" FOR UPDATE OF h`);
 
           const [clock] = await tx.$queryRaw<Clock[]>(Prisma.sql`
-            WITH current_clock AS (SELECT clock_timestamp() AS now)
-            SELECT now AS "serverTime", now + interval '10 minutes' AS "paymentExpiresAt"
-            FROM current_clock`);
+            SELECT clock_timestamp() AS "serverTime"`);
           const heldById = new Map(seats.map((seat) => [seat.seatId, seat]));
           const lostSeatIds = hold.expectedSeatIds.filter((seatId) => {
             const seat = heldById.get(seatId);
@@ -245,10 +206,18 @@ export class OrdersService {
               message: 'Một hoặc nhiều ghế chưa có giá. Hãy tải lại sơ đồ.',
             });
 
-          const totalAmount = seats.reduce(
-            (sum, seat) => sum + seat.price!,
-            0,
-          );
+          this.assertRequestedSeats(requestedSeatIds, hold.expectedSeatIds);
+          if (
+            seats.some(
+              (seat) => seat.expiresAt.getTime() !== hold.expiresAt.getTime(),
+            )
+          )
+            throw new ConflictException({
+              code: 'HOLD_CHANGED',
+              message: 'Thời hạn giữ ghế không đồng nhất. Hãy chọn lại ghế.',
+            });
+
+          const totalAmount = seats.reduce((sum, seat) => sum + seat.price!, 0);
           const order = await tx.order.create({
             data: {
               userId,
@@ -257,8 +226,8 @@ export class OrdersService {
               holdSessionId: hold.id,
               holdToken: hold.token,
               status: OrderStatus.PENDING_PAYMENT,
-              paymentExpiresAt: clock.paymentExpiresAt,
-              expiresAt: clock.paymentExpiresAt,
+              paymentExpiresAt: hold.expiresAt,
+              expiresAt: hold.expiresAt,
               totalAmount,
               items: {
                 create: seats.map((seat) => ({
@@ -271,20 +240,6 @@ export class OrdersService {
             },
             select: orderProjection,
           });
-
-          await tx.holdSession.update({
-            where: { id: hold.id },
-            data: { expiresAt: clock.paymentExpiresAt },
-          });
-          const extended = await tx.seatHold.updateMany({
-            where: { holdSessionId: hold.id, token: hold.token },
-            data: { expiresAt: clock.paymentExpiresAt },
-          });
-          if (extended.count !== seats.length)
-            throw new ConflictException({
-              code: 'HOLD_CHANGED',
-              message: 'Trạng thái giữ ghế vừa thay đổi. Hãy thử lại.',
-            });
 
           this.logger.log(
             JSON.stringify({
@@ -341,357 +296,43 @@ export class OrdersService {
       ];
     }
 
-    return this.db.$transaction(async (tx) => {
-      const now = new Date();
-      const holdSession = await tx.holdSession.findFirst({
-        where: {
-          showtimeId,
-          userId,
-          sessionHash,
-          expiresAt: { gt: now },
-        },
-        include: {
-          seats: {
-            where: {
-              expiresAt: { gt: now },
-            },
-          },
-          showtime: {
-            include: {
-              event: true,
-            },
-          },
-        },
-      });
-
-      if (!holdSession || holdSession.seats.length === 0) {
-        throw new BadRequestException(
-          'Không tìm thấy ghế đang giữ hoặc phiên giữ chỗ đã hết hạn.',
-        );
-      }
-
-      const heldSeatIds = holdSession.seats.map((s) => s.seatId.toLowerCase());
-      const heldSet = new Set(heldSeatIds);
-
-      const targetSeatIds = requestedSeatIds ?? heldSeatIds;
-      const allHeldByBuyer = targetSeatIds.every((id) => heldSet.has(id));
-      if (!allHeldByBuyer) {
-        throw new BadRequestException(
-          'Một số ghế không còn được giữ bởi bạn hoặc đã hết hạn.',
-        );
-      }
-
-      const seats = await tx.seat.findMany({
-        where: {
-          id: { in: targetSeatIds },
-          showtimeId,
-        },
-        include: {
-          category: true,
-        },
-      });
-
-      if (seats.length !== targetSeatIds.length) {
-        throw new BadRequestException('Không tìm thấy thông tin một số ghế.');
-      }
-
-      for (const seat of seats) {
-        if (seat.category.price === null || seat.category.price === undefined) {
-          throw new BadRequestException(
-            `Ghế ${seat.row}-${seat.seatNumber} chưa được định giá.`,
-          );
-        }
-      }
-
-      const totalAmount = seats.reduce(
-        (sum, seat) => sum + (seat.category.price ?? 0),
-        0,
-      );
-
-      const order = await tx.order.create({
-        data: {
-          userId,
-          eventId: holdSession.showtime.eventId,
-          showtimeId,
-          holdSessionId: holdSession.id,
-          holdToken: holdSession.token,
-          status: OrderStatus.PENDING,
-          totalAmount,
-          paymentExpiresAt: holdSession.expiresAt,
-          expiresAt: holdSession.expiresAt,
-          items: {
-            create: seats.map((seat) => ({
-              seatId: seat.id,
-              categoryName: seat.category.name,
-              tierName: seat.category.name,
-              unitPrice: seat.category.price!,
-            })),
-          },
-        },
-        include: {
-          event: true,
-          showtime: true,
-          items: {
-            include: {
-              seat: true,
-            },
-          },
-        },
-      });
-
-      const serverNow = new Date();
-      const effectiveExpiry = order.expiresAt ?? order.paymentExpiresAt ?? serverNow;
-      const remainingSeconds = Math.max(
-        0,
-        Math.ceil((effectiveExpiry.getTime() - serverNow.getTime()) / 1000),
-      );
-
-      const expiresIso = effectiveExpiry.toISOString();
-      const serverTimeIso = serverNow.toISOString();
-
-      const items = order.items.map((item) => ({
-        id: item.id,
-        seatId: item.seatId,
-        row: item.seat.row,
-        seatNumber: item.seat.seatNumber,
-        label: `${item.seat.row}-${item.seat.seatNumber}`,
-        tierName: item.tierName ?? item.categoryName ?? '',
-        categoryName: item.categoryName ?? item.tierName ?? '',
-        unitPrice: item.unitPrice,
-        seat: { row: item.seat.row, seatNumber: item.seat.seatNumber },
-      }));
-
-      return {
-        id: order.id,
-        status: order.status,
-        rawStatus: order.status,
-        totalAmount: order.totalAmount,
-        expiresAt: expiresIso,
-        paymentExpiresAt: expiresIso,
-        serverTime: serverTimeIso,
-        remainingSeconds,
-        isExpired: isOrderExpired(order, serverNow),
-        createdAt: order.createdAt.toISOString(),
-        event: {
-          id: order.event?.id ?? holdSession.showtime.eventId,
-          name: order.event?.name ?? holdSession.showtime.event.name,
-          description:
-            order.event?.description ?? holdSession.showtime.event.description,
-          location:
-            order.event?.location ?? holdSession.showtime.event.location,
-          posterPath:
-            order.event?.posterPath ?? holdSession.showtime.event.posterPath,
-          bannerPath:
-            order.event?.bannerPath ?? holdSession.showtime.event.bannerPath,
-        },
-        showtime: {
-          id: order.showtime.id,
-          startTime: order.showtime.startTime.toISOString(),
-        },
-        items,
-        order: {
-          id: order.id,
-          status: order.status,
-          paymentExpiresAt: expiresIso,
-          totalAmount: order.totalAmount,
-          items,
-        },
-        created: true,
-      };
-    });
+    const result = await this.createFromHold(
+      showtimeId,
+      userId,
+      sessionHash,
+      requestedSeatIds,
+    );
+    const detail = await this.history.current(result.order.id, userId);
+    return { ...detail, created: result.created };
   }
 
   async getOrderById(
     orderId: string,
     userId: string,
   ): Promise<OrderDetailResponse> {
-    const order = await this.db.order.findUnique({
-      where: { id: orderId },
-      include: {
-        event: true,
-        showtime: true,
-        items: {
-          include: {
-            seat: {
-              include: {
-                category: true,
-              },
-            },
-          },
-        },
-        payments: {
-          orderBy: { createdAt: 'asc' },
-        },
-      },
-    });
-
-    if (!order || order.userId !== userId) {
-      throw new NotFoundException('Không tìm thấy đơn hàng.');
-    }
-
-    // Prices are the snapshots captured server-side when the order was created
-    // (S-16); a later category price change must not alter a pending order.
-    let recalculatedTotal = 0;
-    for (const item of order.items) {
-      recalculatedTotal += item.unitPrice;
-    }
-
-    if (recalculatedTotal !== order.totalAmount) {
-      this.logger.warn(
-        `Order ${order.id} total amount mismatch: recorded=${order.totalAmount}, recalculated=${recalculatedTotal}`,
-      );
-    }
-
-    const serverNow = new Date();
-    const expired = isOrderExpired(order, serverNow);
-    const effectiveExpiresAt =
-      order.paymentExpiresAt ?? order.expiresAt ?? serverNow;
-    const remainingSeconds = Math.max(
-      0,
-      Math.ceil((effectiveExpiresAt.getTime() - serverNow.getTime()) / 1000),
-    );
-
-    if (
-      expired &&
-      (order.status === OrderStatus.PENDING ||
-        order.status === OrderStatus.PENDING_PAYMENT)
-    ) {
-      await this.db.order.update({
-        where: { id: order.id },
-        data: { status: OrderStatus.EXPIRED },
-      });
-    }
-
-    const resolvedStatus =
-      expired &&
-      (order.status === OrderStatus.PENDING ||
-        order.status === OrderStatus.PENDING_PAYMENT)
-        ? OrderStatus.EXPIRED
-        : order.status;
-
-    const expiresIso = effectiveExpiresAt.toISOString();
-    const serverTimeIso = serverNow.toISOString();
-
-    const items = order.items.map((item) => ({
-      id: item.id,
-      seatId: item.seatId,
-      row: item.seat.row,
-      seatNumber: item.seat.seatNumber,
-      label: `${item.seat.row}-${item.seat.seatNumber}`,
-      tierName: item.tierName ?? item.categoryName ?? '',
-      categoryName: item.categoryName ?? item.tierName ?? '',
-      unitPrice: item.unitPrice,
-      seat: { row: item.seat.row, seatNumber: item.seat.seatNumber },
-    }));
-
-    let latestPayment: LatestPaymentInfo | null = null;
-    if (order.payments && order.payments.length > 0) {
-      const count = order.payments.length;
-      const latest = order.payments[count - 1];
-      latestPayment = {
-        id: latest.id,
-        status: latest.status,
-        attemptNo: count,
-        amount: latest.amount,
-        gateway: latest.gateway,
-        transactionId: latest.transactionId,
-        createdAt: latest.createdAt.toISOString(),
-      };
-    }
-
-    return {
-      id: order.id,
-      status: resolvedStatus,
-      rawStatus: order.status,
-      totalAmount: recalculatedTotal,
-      expiresAt: expiresIso,
-      paymentExpiresAt: expiresIso,
-      serverTime: serverTimeIso,
-      remainingSeconds,
-      isExpired: expired,
-      createdAt: order.createdAt.toISOString(),
-      event: {
-        id: order.event?.id ?? order.showtime?.eventId ?? '',
-        name: order.event?.name ?? '',
-        description: order.event?.description ?? '',
-        location: order.event?.location ?? '',
-        posterPath: order.event?.posterPath ?? null,
-        bannerPath: order.event?.bannerPath ?? null,
-      },
-      showtime: {
-        id: order.showtime.id,
-        startTime: order.showtime.startTime.toISOString(),
-      },
-      items,
-      order: {
-        id: order.id,
-        status: resolvedStatus,
-        paymentExpiresAt: expiresIso,
-        totalAmount: recalculatedTotal,
-        items,
-      },
-      created: false,
-      latestPayment,
-    };
+    return this.history.current(orderId, userId);
   }
 
   async getOrderStatus(
     orderId: string,
     userId: string,
   ): Promise<OrderStatusResponse> {
-    const order = await this.db.order.findUnique({
-      where: { id: orderId },
-      include: {
-        payments: {
-          orderBy: { createdAt: 'asc' },
-        },
-      },
-    });
-
-    if (!order || order.userId !== userId) {
-      throw new NotFoundException('Không tìm thấy đơn hàng.');
-    }
-
-    const serverNow = new Date();
-    const expired = isOrderExpired(order, serverNow);
-    const effectiveExpiresAt =
-      order.paymentExpiresAt ?? order.expiresAt ?? serverNow;
-
-    const resolvedStatus =
-      expired &&
-      (order.status === OrderStatus.PENDING ||
-        order.status === OrderStatus.PENDING_PAYMENT)
-        ? OrderStatus.EXPIRED
-        : order.status;
-
-    let latestPayment: LatestPaymentInfo | null = null;
-    if (order.payments && order.payments.length > 0) {
-      const count = order.payments.length;
-      const latest = order.payments[count - 1];
-      latestPayment = {
-        id: latest.id,
-        status: latest.status,
-        attemptNo: count,
-        amount: latest.amount,
-        gateway: latest.gateway,
-        transactionId: latest.transactionId,
-        createdAt: latest.createdAt.toISOString(),
-      };
-    }
-
-    return {
-      id: order.id,
-      orderId: order.id,
-      status: resolvedStatus,
-      expiresAt: effectiveExpiresAt.toISOString(),
-      paymentExpiresAt: effectiveExpiresAt.toISOString(),
-      serverTime: serverNow.toISOString(),
-      latestPayment,
-    };
+    return this.history.status(orderId, userId);
   }
 
   async current(orderId: string, userId: string) {
     return this.getOrderById(orderId, userId);
+  }
+
+  private assertRequestedSeats(requested: string[] | null, held: string[]) {
+    if (
+      requested &&
+      (requested.length !== held.length ||
+        requested.some((id) => !held.includes(id)))
+    )
+      throw new BadRequestException(
+        'Danh sách ghế phải khớp lượt giữ hiện tại.',
+      );
   }
 
   private response(order: OrderView, serverTime: Date, created: boolean) {

@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { OrdersService } from './orders.service.js';
 import { OrderExpiryScheduler } from './order-expiry.scheduler.js';
 import { ConfigService } from '@nestjs/config';
+import type { OrderHistoryService } from './order-history.service.js';
 
 describe('S-23 Order Expiry & Seat Release', () => {
   let ordersService: OrdersService;
@@ -24,7 +25,7 @@ describe('S-23 Order Expiry & Seat Release', () => {
         deleteMany: vi.fn(),
       },
     };
-    ordersService = new OrdersService(mockPrisma);
+    ordersService = new OrdersService(mockPrisma, {} as OrderHistoryService);
   });
 
   describe('expireOrder (Unit & Acceptance Criteria)', () => {

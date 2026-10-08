@@ -96,9 +96,7 @@ export function PublicLayout({
             </div>
           )}
           <nav className="public-links">
-            <Link href="/" aria-current="page">
-              Sự kiện
-            </Link>
+            <Link href="/">Sự kiện</Link>
             <button disabled title="Chưa khả dụng">
               Nhà hát
             </button>
@@ -138,10 +136,10 @@ export function PublicLayout({
           <Armchair />
           Sơ đồ vé
         </button>
-        <button disabled title="Chưa khả dụng">
+        <Link href="/orders" aria-label="Đơn hàng của tôi">
           <Ticket />
-          Vé của tôi
-        </button>
+          Đơn hàng
+        </Link>
         <Link href="/events">
           <Admin />
           Quản trị

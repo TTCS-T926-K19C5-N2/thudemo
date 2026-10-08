@@ -7,12 +7,15 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   Req,
 } from '@nestjs/common';
 import { hashSessionToken } from '../auth/auth.service.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js';
 import { OrdersService } from './orders.service.js';
+import { OrderHistoryService } from './order-history.service.js';
+import { orderPagination } from './order-pagination.js';
 
 @Controller('showtimes/:id/orders')
 @Roles('BUYER')
@@ -35,7 +38,10 @@ export class ShowtimeOrdersController {
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly service: OrdersService) {}
+  constructor(
+    private readonly service: OrdersService,
+    private readonly history: OrderHistoryService,
+  ) {}
 
   @Post()
   @Roles('BUYER')
@@ -48,8 +54,22 @@ export class OrdersController {
     );
   }
 
+  @Get('me')
+  @Roles('BUYER')
+  @Header('Cache-Control', 'private, no-store')
+  @Header('Vary', 'Cookie')
+  list(
+    @Req() req: AuthenticatedRequest,
+    @Query('page') page?: unknown,
+    @Query('pageSize') pageSize?: unknown,
+  ) {
+    return this.history.list(req.user.id, orderPagination({ page, pageSize }));
+  }
+
   @Get(':id')
   @Roles('BUYER')
+  @Header('Cache-Control', 'private, no-store')
+  @Header('Vary', 'Cookie')
   getOrder(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() req: AuthenticatedRequest,
@@ -59,7 +79,8 @@ export class OrdersController {
 
   @Get(':id/status')
   @Roles('BUYER')
-  @Header('Cache-Control', 'no-store')
+  @Header('Cache-Control', 'private, no-store')
+  @Header('Vary', 'Cookie')
   getOrderStatus(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() req: AuthenticatedRequest,

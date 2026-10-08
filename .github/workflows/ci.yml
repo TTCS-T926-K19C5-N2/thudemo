@@ -77,6 +77,9 @@ jobs:
       REDIS_HOST: 127.0.0.1
       REDIS_PORT: "6379"
       VERIFICATION_EVIDENCE_DIR: ../../evidence/ci/integration
+      S32_ISOLATED_TEST: "true"
+      HOLD_EXPIRY_MODE: "off"
+      ORDER_EXPIRY_MODE: "off"
     services:
       postgres:
         image: postgres:15-alpine

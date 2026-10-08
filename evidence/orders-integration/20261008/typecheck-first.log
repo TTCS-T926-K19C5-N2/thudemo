@@ -1,0 +1,13 @@
+
+> event-ticketing-platform@1.0.0 typecheck D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008
+> pnpm --filter api run typecheck && pnpm --filter web run typecheck
+
+
+> api@0.0.1 typecheck D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008\apps\api
+> tsc --noEmit
+
+src/orders/order-expiry.spec.ts(27,21): error TS2554: Expected 2 arguments, but got 1.
+D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008\apps\api:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  api@0.0.1 typecheck: `tsc --noEmit`
+Exit status 2
+ ELIFECYCLE  Command failed with exit code 2.

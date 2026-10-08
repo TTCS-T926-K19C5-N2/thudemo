@@ -1,0 +1,31 @@
+warning: in the working copy of '.github/workflows/ci.yml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/src/orders/order-expiry.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/src/orders/orders.controller.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/src/orders/orders.module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/src/orders/orders.service.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/src/orders/orders.service.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/src/payments/payments.service.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/src/payments/payments.service.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/test/mock-gateway.e2e-spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/test/orders.e2e-spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/test/payments-idempotency.e2e-spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/test/payments-signature-verification.e2e-spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/test/payments.e2e-spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/test/s15-s16-acceptance.e2e-spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/test/sprint2.e2e-spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/account/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/login/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/mock-gateway/pay/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/orders/[id]/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/product.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/components/layout/product-layout.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/components/layout/session-actions.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/components/login-form.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/features/order-review/order-review.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/lib/api.ts', LF will be replaced by CRLF the next time Git touches it
+
+exitCode=0
+
+Including new files via isolated review index:
+
+exitCode=0

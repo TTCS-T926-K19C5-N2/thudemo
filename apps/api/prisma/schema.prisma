@@ -199,6 +199,7 @@ model Order {
 
   @@unique([holdSessionId, holdToken])
   @@index([userId])
+  @@index([userId, createdAt(sort: Desc), id(sort: Desc)])
   @@index([showtimeId])
   @@index([userId, showtimeId, status])
   @@index([status, paymentExpiresAt])

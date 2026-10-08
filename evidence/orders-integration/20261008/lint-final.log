@@ -1,0 +1,13 @@
+
+> event-ticketing-platform@1.0.0 lint D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008
+> pnpm -r run lint
+
+Scope: 3 of 4 workspace projects
+apps/api lint$ oxlint --type-aware src/ test/
+apps/web lint$ eslint
+apps/api lint: test/mock-gateway.e2e-spec.ts:10:10: warning eslint(no-unused-vars): Identifier 'HoldsService' is imported but never used. help: Consider removing this import.
+apps/api lint: src/payments/gateways/momo-signature.ts:26:26: warning typescript(no-base-to-string): 'accessKey ?? payload.accessKey ?? ''' will use Object's default stringification format ('[object Object]') when stringified. help: Consider picking a property (e.g. `user.name`), using a formatter (or `JSON.stringify`), or implementing a custom `toString()`/`toLocaleString()` on the type.
+apps/api lint: src/payments/gateways/momo.gateway.ts:210:18: warning typescript(no-base-to-string): 'payload.orderId ?? ''' will use Object's default stringification format ('[object Object]') when stringified. help: Consider picking a property (e.g. `user.name`), using a formatter (or `JSON.stringify`), or implementing a custom `toString()`/`toLocaleString()` on the type.
+apps/api lint: src/payments/gateways/mock.gateway.ts:120:18: warning typescript(no-base-to-string): 'payload.orderId ?? ''' will use Object's default stringification format ('[object Object]') when stringified. help: Consider picking a property (e.g. `user.name`), using a formatter (or `JSON.stringify`), or implementing a custom `toString()`/`toLocaleString()` on the type.
+apps/api lint: Done
+apps/web lint: Done

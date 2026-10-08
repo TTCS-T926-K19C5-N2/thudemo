@@ -1,4 +1,138 @@
 /* Product theme and domain layouts derived from the accepted Stitch HTML. */
+.product .order-page .order-status-badge[data-variant="default"] {
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+.product .order-page .order-status-badge[data-variant="secondary"] {
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+}
+.product .order-page .order-status-badge[data-variant="destructive"] {
+  color: var(--on-error-container);
+  background: var(--error-container);
+}
+.order-page {
+  min-width: 0;
+}
+.order-code {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.order-table .order-code {
+  display: block;
+  max-width: 220px;
+  white-space: normal;
+}
+.order-table [data-slot="table-cell"] {
+  white-space: normal;
+  vertical-align: top;
+  padding: 16px 12px;
+}
+.order-table [data-slot="table-head"] {
+  padding: 12px;
+}
+.order-table p {
+  margin-top: 4px;
+  font-size: 12px;
+}
+.order-table [data-slot="table"] {
+  min-width: 0;
+}
+.order-money {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.order-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+}
+.order-mobile-list {
+  display: none;
+}
+.order-card-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.order-facts {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0;
+}
+.order-facts > div {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 12px;
+}
+.order-facts dt {
+  color: var(--muted-foreground);
+}
+.order-facts dd {
+  overflow-wrap: anywhere;
+}
+.order-loading {
+  display: grid;
+  gap: 20px;
+}
+.order-loading-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+.order-seat-panel {
+  margin-top: 24px;
+}
+.order-seat-panel [data-slot="table-cell"] {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 767px) {
+  .public-header .session-orders-link {
+    display: none;
+  }
+  .order-table {
+    display: none;
+  }
+  .order-mobile-list {
+    display: grid;
+    gap: 16px;
+    list-style: none;
+    padding: 0;
+  }
+  .order-mobile-list h2 {
+    margin-bottom: 12px;
+  }
+  .order-card-heading {
+    flex-wrap: wrap;
+  }
+  .order-facts > div {
+    grid-template-columns: 100px minmax(0, 1fr);
+  }
+  .order-pagination {
+    flex-wrap: wrap;
+  }
+  .order-pagination p {
+    width: 100%;
+    text-align: center;
+    order: -1;
+  }
+  .order-mobile-list [data-slot="button"] {
+    width: 100%;
+  }
+  .order-page [data-slot="button"] {
+    min-height: 44px;
+  }
+}
 .product {
   --primary-container: #175cd3;
   --error-container: #ffdad6;
@@ -4168,4 +4302,17 @@
   .public-header .session-actions [data-slot="button"] {
     display: none;
   }
+}
+
+.order-payment-action {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  margin-top: 16px;
+}
+.order-payment-action p {
+  margin: 0;
+}
+.order-payment-action [role="timer"] {
+  font-family: var(--font-geist-mono), monospace;
 }

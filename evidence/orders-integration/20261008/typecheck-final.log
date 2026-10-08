@@ -1,0 +1,12 @@
+
+> event-ticketing-platform@1.0.0 typecheck D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008
+> pnpm --filter api run typecheck && pnpm --filter web run typecheck
+
+
+> api@0.0.1 typecheck D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008\apps\api
+> tsc --noEmit
+
+
+> web@0.1.0 typecheck D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008\apps\web
+> tsc --noEmit
+
