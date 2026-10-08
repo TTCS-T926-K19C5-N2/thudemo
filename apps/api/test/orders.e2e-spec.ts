@@ -19,6 +19,7 @@ describe('Orders S-17 E2E Integration', () => {
   let eventId: string;
   let seat1Id: string;
   let seat2Id: string;
+  const userIds: string[] = [];
 
   async function createAccount(role: string) {
     await db.role.createMany({ data: [{ name: role }], skipDuplicates: true });
@@ -31,6 +32,7 @@ describe('Orders S-17 E2E Integration', () => {
         userRoles: { create: { roleId: r.id } },
       },
     });
+    userIds.push(user.id);
     const token = randomBytes(32).toString('base64url');
     await db.session.create({
       data: {
@@ -130,6 +132,58 @@ describe('Orders S-17 E2E Integration', () => {
   }, 30000);
 
   afterAll(async () => {
+    if (db) {
+      if (eventId) {
+        const shows = await db.showtime.findMany({
+          where: { eventId },
+          select: { id: true },
+        });
+        const showIds = shows.map((s) => s.id);
+        await db.orderItem.deleteMany({
+          where: { order: { showtimeId: { in: showIds } } },
+        });
+        if (db.orderLog) {
+          await db.orderLog.deleteMany({
+            where: { order: { showtimeId: { in: showIds } } },
+          });
+        }
+        await db.payment.deleteMany({
+          where: { order: { showtimeId: { in: showIds } } },
+        });
+        await db.order.deleteMany({
+          where: { showtimeId: { in: showIds } },
+        });
+        await db.seatHold.deleteMany({
+          where: { showtimeId: { in: showIds } },
+        });
+        await db.holdSession.deleteMany({
+          where: { showtimeId: { in: showIds } },
+        });
+        await db.seat.deleteMany({
+          where: { showtimeId: { in: showIds } },
+        });
+        await db.seatCategory.deleteMany({
+          where: { showtimeId: { in: showIds } },
+        });
+        await db.showtime.deleteMany({
+          where: { eventId },
+        });
+        await db.event.deleteMany({
+          where: { id: eventId },
+        });
+      }
+      if (userIds.length > 0) {
+        await db.session.deleteMany({
+          where: { userId: { in: userIds } },
+        });
+        await db.userRole.deleteMany({
+          where: { userId: { in: userIds } },
+        });
+        await db.user.deleteMany({
+          where: { id: { in: userIds } },
+        });
+      }
+    }
     if (app) await app.close();
   });
 
@@ -484,6 +538,177 @@ describe('Orders S-17 E2E Integration', () => {
       // Hold is preserved
       const holdDb = await db.seatHold.findUnique({ where: { seatId: testSeat.id } });
       expect(holdDb).not.toBeNull();
+    });
+  });
+
+  describe('S-24 Failed Payment & Retry E2E', () => {
+    it('AC 1 & AC 2: failed payment preserves order and holds, retry reuses orderId and creates attempt 2', async () => {
+      const futureTime = new Date(Date.now() + 600000);
+
+      const testSeat = await db.seat.create({
+        data: {
+          showtimeId,
+          categoryId: (await db.seatCategory.findFirstOrThrow({ where: { showtimeId } })).id,
+          row: 'Z',
+          seatNumber: 11,
+          isSold: false,
+        },
+      });
+
+      const holdSession = await db.holdSession.create({
+        data: {
+          showtimeId,
+          userId: buyer1Id,
+          sessionHash: `hash-${randomUUID()}`,
+          token: randomUUID(),
+          expiresAt: futureTime,
+          expectedSeatIds: [testSeat.id],
+        },
+      });
+
+      await db.seatHold.create({
+        data: {
+          seatId: testSeat.id,
+          showtimeId,
+          holdSessionId: holdSession.id,
+          token: holdSession.token,
+          expiresAt: futureTime,
+        },
+      });
+
+      const order = await db.order.create({
+        data: {
+          userId: buyer1Id,
+          eventId,
+          showtimeId,
+          holdSessionId: holdSession.id,
+          holdToken: holdSession.token,
+          status: OrderStatus.PENDING,
+          totalAmount: 500000,
+          expiresAt: futureTime,
+          paymentExpiresAt: futureTime,
+          items: {
+            create: [{ seatId: testSeat.id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
+          },
+        },
+      });
+
+      // 1. Initial payment attempt (Attempt 1)
+      const pay1Res = await request(app.getHttpServer())
+        .post(`/orders/${order.id}/pay`)
+        .set('Cookie', buyer1Cookie)
+        .expect(200);
+
+      expect(pay1Res.body.redirectUrl).toBeDefined();
+
+      // Simulate payment failure for attempt 1
+      const payRecord1 = await db.payment.findUniqueOrThrow({
+        where: { id: pay1Res.body.paymentId },
+      });
+      expect(payRecord1.attemptNo).toBe(1);
+
+      await db.payment.update({
+        where: { id: payRecord1.id },
+        data: { status: 'FAILED' },
+      });
+      await db.orderLog.create({
+        data: {
+          orderId: order.id,
+          type: 'PAYMENT_FAILED',
+          attemptNo: 1,
+          detail: { reason: 'User cancelled on gateway' },
+        },
+      });
+
+      // Verify order is still PENDING and seat is still HELD
+      const orderAfterFail = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+      expect(orderAfterFail.status).toBe(OrderStatus.PENDING);
+      const holdAfterFail = await db.seatHold.findUnique({ where: { seatId: testSeat.id } });
+      expect(holdAfterFail).not.toBeNull();
+
+      // Check order details endpoint
+      const detailRes1 = await request(app.getHttpServer())
+        .get(`/orders/${order.id}`)
+        .set('Cookie', buyer1Cookie)
+        .expect(200);
+
+      expect(detailRes1.body.status).toBe(OrderStatus.PENDING);
+      expect(detailRes1.body.latestPayment?.status).toBe('FAILED');
+      expect(detailRes1.body.latestPayment?.attemptNo).toBe(1);
+      expect(detailRes1.body.paymentAttempts).toBe(1);
+
+      // 2. Retry payment (Attempt 2)
+      const orderCountBefore = await db.order.count();
+
+      const pay2Res = await request(app.getHttpServer())
+        .post(`/orders/${order.id}/pay`)
+        .set('Cookie', buyer1Cookie)
+        .expect(200);
+
+      const orderCountAfter = await db.order.count();
+      expect(orderCountAfter).toBe(orderCountBefore); // NO new Order created!
+
+      const payRecord2 = await db.payment.findUniqueOrThrow({
+        where: { id: pay2Res.body.paymentId },
+      });
+      expect(payRecord2.attemptNo).toBe(2);
+      expect(payRecord2.orderId).toBe(order.id);
+
+      // Check order details again
+      const detailRes2 = await request(app.getHttpServer())
+        .get(`/orders/${order.id}`)
+        .set('Cookie', buyer1Cookie)
+        .expect(200);
+
+      expect(detailRes2.body.latestPayment?.status).toBe('INITIATED');
+      expect(detailRes2.body.latestPayment?.attemptNo).toBe(2);
+      expect(detailRes2.body.paymentAttempts).toBe(2);
+    });
+
+    it('AC 3: retry on expired order is rejected with ORDER_EXPIRED and logs RETRY_REJECTED_EXPIRED', async () => {
+      const pastTime = new Date(Date.now() - 5000);
+
+      const testSeat = await db.seat.create({
+        data: {
+          showtimeId,
+          categoryId: (await db.seatCategory.findFirstOrThrow({ where: { showtimeId } })).id,
+          row: 'Z',
+          seatNumber: 12,
+          isSold: false,
+        },
+      });
+
+      const order = await db.order.create({
+        data: {
+          userId: buyer1Id,
+          eventId,
+          showtimeId,
+          status: OrderStatus.PENDING,
+          totalAmount: 500000,
+          expiresAt: pastTime,
+          paymentExpiresAt: pastTime,
+          items: {
+            create: [{ seatId: testSeat.id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
+          },
+        },
+      });
+
+      const payCountBefore = await db.payment.count({ where: { orderId: order.id } });
+
+      const res = await request(app.getHttpServer())
+        .post(`/orders/${order.id}/pay`)
+        .set('Cookie', buyer1Cookie)
+        .expect(400);
+
+      expect(res.body.code ?? res.body.message).toMatch(/ORDER_EXPIRED|hết hạn/);
+
+      const payCountAfter = await db.payment.count({ where: { orderId: order.id } });
+      expect(payCountAfter).toBe(payCountBefore); // NO payment created
+
+      const expiredLogs = await db.orderLog.findMany({
+        where: { orderId: order.id, type: 'RETRY_REJECTED_EXPIRED' },
+      });
+      expect(expiredLogs.length).toBeGreaterThanOrEqual(1);
     });
   });
 });

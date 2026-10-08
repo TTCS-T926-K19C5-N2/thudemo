@@ -114,6 +114,7 @@ export type OrderDetailResponse = {
   };
   created: boolean;
   latestPayment?: LatestPaymentInfo | null;
+  paymentAttempts?: number;
 };
 
 const orderProjection = {
@@ -497,6 +498,8 @@ export class OrdersService {
           items,
         },
         created: true,
+        latestPayment: null,
+        paymentAttempts: 0,
       };
     });
   }
@@ -591,13 +594,26 @@ export class OrdersService {
       latestPayment = {
         id: latest.id,
         status: latest.status,
-        attemptNo: count,
+        attemptNo: latest.attemptNo ?? count,
         amount: latest.amount,
         gateway: latest.gateway,
         transactionId: latest.transactionId,
         createdAt: latest.createdAt.toISOString(),
       };
     }
+
+    const paymentAttemptsCount = this.db.orderLog
+      ? await this.db.orderLog.count({
+          where: {
+            orderId: order.id,
+            type: 'PAYMENT_ATTEMPT',
+          },
+        })
+      : 0;
+    const paymentAttempts =
+      paymentAttemptsCount > 0
+        ? paymentAttemptsCount
+        : (order.payments?.length ?? 0);
 
     return {
       id: order.id,
@@ -632,6 +648,7 @@ export class OrdersService {
       },
       created: false,
       latestPayment,
+      paymentAttempts,
     };
   }
 
@@ -671,7 +688,7 @@ export class OrdersService {
       latestPayment = {
         id: latest.id,
         status: latest.status,
-        attemptNo: count,
+        attemptNo: latest.attemptNo ?? count,
         amount: latest.amount,
         gateway: latest.gateway,
         transactionId: latest.transactionId,

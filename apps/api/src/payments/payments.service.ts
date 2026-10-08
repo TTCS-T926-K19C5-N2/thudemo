@@ -59,9 +59,25 @@ export class PaymentsService {
       order.status === OrderStatus.PENDING ||
       order.status === OrderStatus.PENDING_PAYMENT;
     if (!isPending || isOrderExpired(order, now)) {
-      throw new BadRequestException(
-        'Đơn hàng đã hết hạn hoặc không ở trạng thái chờ thanh toán.',
-      );
+      // Record RETRY_REJECTED_EXPIRED event if rejected due to expiration / non-pending status
+      await this.db.orderLog.create({
+        data: {
+          orderId: order.id,
+          type: 'RETRY_REJECTED_EXPIRED',
+          attemptNo: null,
+          detail: {
+            status: order.status,
+            reason: isOrderExpired(order, now)
+              ? 'ORDER_EXPIRED'
+              : 'ORDER_NOT_PENDING',
+          },
+        },
+      });
+
+      throw new BadRequestException({
+        code: 'ORDER_EXPIRED',
+        message: 'Đơn hàng đã hết hạn hoặc không ở trạng thái chờ thanh toán.',
+      });
     }
 
     // Authoritative calculation strictly from DB prices
@@ -86,14 +102,50 @@ export class PaymentsService {
       returnUrl: finalReturnUrl,
     });
 
-    const payment = await this.db.payment.create({
-      data: {
-        orderId: order.id,
-        amount: authoritativeTotal,
-        status: PaymentStatus.INITIATED,
-        gateway: this.gateway.name,
-        gatewayRef: gatewayResult.gatewayRef,
-      },
+    const payment = await this.db.$transaction(async (tx) => {
+      // Lock order to serialize concurrent attempt creations
+      if (typeof (tx as any).$executeRaw === 'function') {
+        await (tx as any).$executeRaw`SELECT id FROM orders WHERE id = ${order.id}::uuid FOR UPDATE`;
+      }
+
+      const previousPayment = await tx.payment.findFirst({
+        where: { orderId: order.id },
+        orderBy: { attemptNo: 'desc' },
+      });
+
+      const attemptNo = (previousPayment?.attemptNo ?? 0) + 1;
+
+      const createdPayment = await tx.payment.create({
+        data: {
+          orderId: order.id,
+          amount: authoritativeTotal,
+          status: PaymentStatus.INITIATED,
+          gateway: this.gateway.name,
+          gatewayRef: gatewayResult.gatewayRef,
+          attemptNo,
+        },
+      });
+
+      await tx.orderLog.create({
+        data: {
+          orderId: order.id,
+          type: 'PAYMENT_ATTEMPT',
+          attemptNo,
+          detail:
+            attemptNo > 1
+              ? {
+                  previousPaymentId: previousPayment?.id,
+                  previousStatus: previousPayment?.status,
+                  previousGatewayRef: previousPayment?.gatewayRef,
+                }
+              : {
+                  gateway: this.gateway.name,
+                  gatewayRef: gatewayResult.gatewayRef,
+                },
+        },
+      });
+
+      return createdPayment;
     });
 
     return {
@@ -148,12 +200,81 @@ export class PaymentsService {
       throw new NotFoundException('Không tìm thấy đơn hàng.');
     }
 
-    // Fast check: If order is already PAID, return success immediately without side effects
+    // Fast check: If order is already PAID
     if (order.status === OrderStatus.PAID) {
-      this.logger.log(
-        `Order ${order.id} is already PAID. Duplicate webhook received, returning success.`,
-      );
-      return { received: true, status: 'PAID' };
+      const existingPaymentCheck = await this.db.payment.findFirst({
+        where: { gatewayRef: event.gatewayRef },
+      });
+
+      if (
+        existingPaymentCheck?.status === PaymentStatus.SUCCEEDED ||
+        (existingPaymentCheck?.transactionId &&
+          existingPaymentCheck.transactionId === event.transactionId)
+      ) {
+        this.logger.log(
+          `Order ${order.id} is already PAID. Duplicate webhook received, returning success.`,
+        );
+        return { received: true, status: 'PAID' };
+      }
+
+      if (existingPaymentCheck?.status === PaymentStatus.LATE) {
+        return { received: true, status: 'LATE' };
+      }
+
+      if (event.status === 'SUCCESS') {
+        // S-24 Mục 5: Second attempt succeeded after order was already PAID by another attempt
+        // Mark this payment as LATE, do NOT touch order or seats, notify accountant
+        await this.db.$transaction(async (tx) => {
+          if (existingPaymentCheck) {
+            await tx.payment.update({
+              where: { id: existingPaymentCheck.id },
+              data: {
+                status: PaymentStatus.LATE,
+                transactionId: event.transactionId,
+              },
+            });
+          } else {
+            const previousPayment = await tx.payment.findFirst({
+              where: { orderId: order.id },
+              orderBy: { attemptNo: 'desc' },
+            });
+            const attemptNo = (previousPayment?.attemptNo ?? 0) + 1;
+            await tx.payment.create({
+              data: {
+                orderId: order.id,
+                amount: event.amount,
+                status: PaymentStatus.LATE,
+                gateway: this.gateway.name,
+                gatewayRef: event.gatewayRef,
+                transactionId: event.transactionId,
+                attemptNo,
+              },
+            });
+          }
+        });
+
+        await this.accountantNotifier.notifyLatePayment({
+          orderId: order.id,
+          amount: event.amount,
+          transactionId: event.transactionId,
+          gatewayRef: event.gatewayRef,
+          reason: 'Trả trùng khi đơn đã được thanh toán, cần hoàn tiền',
+        });
+
+        return { received: true, status: 'LATE' };
+      } else {
+        // FAILED event for already PAID order: record FAILED payment, do not touch order or seats
+        if (existingPaymentCheck) {
+          await this.db.payment.update({
+            where: { id: existingPaymentCheck.id },
+            data: {
+              status: PaymentStatus.FAILED,
+              transactionId: event.transactionId,
+            },
+          });
+        }
+        return { received: true, status: 'FAILED' };
+      }
     }
 
     // Check if payment with this gatewayRef was already processed successfully
@@ -165,6 +286,12 @@ export class PaymentsService {
     }
     if (existingPaymentCheck?.status === PaymentStatus.LATE) {
       return { received: true, status: 'LATE' };
+    }
+    if (
+      existingPaymentCheck?.status === PaymentStatus.FAILED &&
+      event.status !== 'SUCCESS'
+    ) {
+      return { received: true, status: 'FAILED' };
     }
 
     // 3. Check expired order
@@ -214,6 +341,11 @@ export class PaymentsService {
               },
             });
           } else {
+            const previousPayment = await tx.payment.findFirst({
+              where: { orderId: order.id },
+              orderBy: { attemptNo: 'desc' },
+            });
+            const attemptNo = (previousPayment?.attemptNo ?? 0) + 1;
             await tx.payment.create({
               data: {
                 orderId: order.id,
@@ -222,6 +354,7 @@ export class PaymentsService {
                 gateway: this.gateway.name,
                 gatewayRef: event.gatewayRef,
                 transactionId: event.transactionId,
+                attemptNo,
               },
             });
           }
@@ -241,26 +374,52 @@ export class PaymentsService {
           where: { gatewayRef: event.gatewayRef },
         });
 
-        if (payment) {
-          await this.db.payment.update({
-            where: { id: payment.id },
-            data: {
-              status: PaymentStatus.FAILED,
-              transactionId: event.transactionId,
-            },
-          });
-        } else {
-          await this.db.payment.create({
+        if (payment?.status === PaymentStatus.FAILED) {
+          return { received: true, status: 'FAILED' };
+        }
+
+        await this.db.$transaction(async (tx) => {
+          let currentPayment = payment;
+          if (payment) {
+            currentPayment = await tx.payment.update({
+              where: { id: payment.id },
+              data: {
+                status: PaymentStatus.FAILED,
+                transactionId: event.transactionId,
+              },
+            });
+          } else {
+            const previousPayment = await tx.payment.findFirst({
+              where: { orderId: order.id },
+              orderBy: { attemptNo: 'desc' },
+            });
+            const attemptNo = (previousPayment?.attemptNo ?? 0) + 1;
+            currentPayment = await tx.payment.create({
+              data: {
+                orderId: order.id,
+                amount: event.amount,
+                status: PaymentStatus.FAILED,
+                gateway: this.gateway.name,
+                gatewayRef: event.gatewayRef,
+                transactionId: event.transactionId,
+                attemptNo,
+              },
+            });
+          }
+
+          await tx.orderLog.create({
             data: {
               orderId: order.id,
-              amount: event.amount,
-              status: PaymentStatus.FAILED,
-              gateway: this.gateway.name,
-              gatewayRef: event.gatewayRef,
-              transactionId: event.transactionId,
+              type: 'PAYMENT_FAILED',
+              attemptNo: currentPayment.attemptNo,
+              detail: {
+                gatewayRef: event.gatewayRef,
+                transactionId: event.transactionId,
+                reason: (event as any).message ?? 'Payment failed',
+              },
             },
           });
-        }
+        });
 
         return { received: true, status: 'FAILED' };
       }
@@ -481,26 +640,52 @@ export class PaymentsService {
       where: { gatewayRef: event.gatewayRef },
     });
 
-    if (existingPayment) {
-      await this.db.payment.update({
-        where: { id: existingPayment.id },
-        data: {
-          status: PaymentStatus.FAILED,
-          transactionId: event.transactionId,
-        },
-      });
-    } else {
-      await this.db.payment.create({
+    if (existingPayment?.status === PaymentStatus.FAILED) {
+      return { received: true, status: 'FAILED' };
+    }
+
+    await this.db.$transaction(async (tx) => {
+      let currentPayment = existingPayment;
+      if (existingPayment) {
+        currentPayment = await tx.payment.update({
+          where: { id: existingPayment.id },
+          data: {
+            status: PaymentStatus.FAILED,
+            transactionId: event.transactionId,
+          },
+        });
+      } else {
+        const previousPayment = await tx.payment.findFirst({
+          where: { orderId: order.id },
+          orderBy: { attemptNo: 'desc' },
+        });
+        const attemptNo = (previousPayment?.attemptNo ?? 0) + 1;
+        currentPayment = await tx.payment.create({
+          data: {
+            orderId: order.id,
+            amount: event.amount,
+            status: PaymentStatus.FAILED,
+            gateway: this.gateway.name,
+            gatewayRef: event.gatewayRef,
+            transactionId: event.transactionId,
+            attemptNo,
+          },
+        });
+      }
+
+      await tx.orderLog.create({
         data: {
           orderId: order.id,
-          amount: event.amount,
-          status: PaymentStatus.FAILED,
-          gateway: this.gateway.name,
-          gatewayRef: event.gatewayRef,
-          transactionId: event.transactionId,
+          type: 'PAYMENT_FAILED',
+          attemptNo: currentPayment.attemptNo,
+          detail: {
+            gatewayRef: event.gatewayRef,
+            transactionId: event.transactionId,
+            reason: (event as any).message ?? 'Payment failed',
+          },
         },
       });
-    }
+    });
 
     return { received: true, status: 'FAILED' };
   }
