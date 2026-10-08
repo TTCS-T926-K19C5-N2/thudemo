@@ -75,7 +75,7 @@ export class PaymentsService {
     const webOrigin =
       this.config.get<string>('WEB_ORIGIN') ?? 'http://localhost:3000';
     const finalReturnUrl =
-      returnUrl || `${webOrigin}/payment/result?orderId=${order.id}`;
+      returnUrl || `${webOrigin}/payment/result/${order.id}`;
 
     const gatewayResult = await this.gateway.createPayment({
       orderId: order.id,

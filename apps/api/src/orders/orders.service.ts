@@ -7,7 +7,7 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { OrderStatus, Prisma } from '@prisma/client';
+import { OrderStatus, PaymentStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { isOrderExpired } from './order-expiration.js';
 
@@ -40,6 +40,26 @@ type OrderView = {
     unitPrice: number;
     seat: { row: string; seatNumber: number };
   }[];
+};
+
+export type LatestPaymentInfo = {
+  id: string;
+  status: PaymentStatus;
+  attemptNo: number;
+  amount?: number;
+  gateway?: string;
+  transactionId?: string | null;
+  createdAt?: string;
+};
+
+export type OrderStatusResponse = {
+  id: string;
+  orderId: string;
+  status: OrderStatus;
+  expiresAt: string;
+  paymentExpiresAt: string;
+  serverTime: string;
+  latestPayment: LatestPaymentInfo | null;
 };
 
 export type OrderDetailResponse = {
@@ -89,6 +109,7 @@ export type OrderDetailResponse = {
     }[];
   };
   created: boolean;
+  latestPayment?: LatestPaymentInfo | null;
 };
 
 const orderProjection = {
@@ -494,6 +515,9 @@ export class OrdersService {
             },
           },
         },
+        payments: {
+          orderBy: { createdAt: 'asc' },
+        },
       },
     });
 
@@ -556,6 +580,21 @@ export class OrdersService {
       seat: { row: item.seat.row, seatNumber: item.seat.seatNumber },
     }));
 
+    let latestPayment: LatestPaymentInfo | null = null;
+    if (order.payments && order.payments.length > 0) {
+      const count = order.payments.length;
+      const latest = order.payments[count - 1];
+      latestPayment = {
+        id: latest.id,
+        status: latest.status,
+        attemptNo: count,
+        amount: latest.amount,
+        gateway: latest.gateway,
+        transactionId: latest.transactionId,
+        createdAt: latest.createdAt.toISOString(),
+      };
+    }
+
     return {
       id: order.id,
       status: resolvedStatus,
@@ -588,6 +627,62 @@ export class OrdersService {
         items,
       },
       created: false,
+      latestPayment,
+    };
+  }
+
+  async getOrderStatus(
+    orderId: string,
+    userId: string,
+  ): Promise<OrderStatusResponse> {
+    const order = await this.db.order.findUnique({
+      where: { id: orderId },
+      include: {
+        payments: {
+          orderBy: { createdAt: 'asc' },
+        },
+      },
+    });
+
+    if (!order || order.userId !== userId) {
+      throw new NotFoundException('Không tìm thấy đơn hàng.');
+    }
+
+    const serverNow = new Date();
+    const expired = isOrderExpired(order, serverNow);
+    const effectiveExpiresAt =
+      order.paymentExpiresAt ?? order.expiresAt ?? serverNow;
+
+    const resolvedStatus =
+      expired &&
+      (order.status === OrderStatus.PENDING ||
+        order.status === OrderStatus.PENDING_PAYMENT)
+        ? OrderStatus.EXPIRED
+        : order.status;
+
+    let latestPayment: LatestPaymentInfo | null = null;
+    if (order.payments && order.payments.length > 0) {
+      const count = order.payments.length;
+      const latest = order.payments[count - 1];
+      latestPayment = {
+        id: latest.id,
+        status: latest.status,
+        attemptNo: count,
+        amount: latest.amount,
+        gateway: latest.gateway,
+        transactionId: latest.transactionId,
+        createdAt: latest.createdAt.toISOString(),
+      };
+    }
+
+    return {
+      id: order.id,
+      orderId: order.id,
+      status: resolvedStatus,
+      expiresAt: effectiveExpiresAt.toISOString(),
+      paymentExpiresAt: effectiveExpiresAt.toISOString(),
+      serverTime: serverNow.toISOString(),
+      latestPayment,
     };
   }
 
