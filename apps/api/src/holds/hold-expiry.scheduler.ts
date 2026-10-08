@@ -5,6 +5,7 @@ import {
   OnModuleDestroy,
 } from '@nestjs/common';
 import { HoldsService } from './holds.service.js';
+import { metrics } from '../monitoring/metrics.js';
 
 @Injectable()
 export class HoldExpiryScheduler implements OnModuleInit, OnModuleDestroy {
@@ -22,10 +23,17 @@ export class HoldExpiryScheduler implements OnModuleInit, OnModuleDestroy {
   }
   private tick() {
     if (this.running) return;
+    const started = process.hrtime.bigint();
     this.running = this.service
       .sweep()
-      .then(() => undefined)
+      .then((deleted) => {
+        metrics.safe(() => {
+          metrics.cleaned.inc(deleted);
+          metrics.workerLastSuccess.set(Date.now() / 1000);
+        });
+      })
       .catch(() => {
+        metrics.safe(() => metrics.workerErrors.inc());
         this.logger.error(
           JSON.stringify({
             event: 'hold_expiry_failed',
@@ -34,6 +42,11 @@ export class HoldExpiryScheduler implements OnModuleInit, OnModuleDestroy {
         );
       })
       .finally(() => {
+        metrics.safe(() =>
+          metrics.workerDuration.observe(
+            Number(process.hrtime.bigint() - started) / 1e9,
+          ),
+        );
         this.running = undefined;
       });
   }

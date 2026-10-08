@@ -7,11 +7,14 @@ import {
   ServiceUnavailableException,
   HttpException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
+import type {
+  HoldConnection,
+  HoldQueryable,
+} from '../prisma/hold-transaction.js';
 
-type Authority = { id: string; token: string; expiresAt: Date };
 export type ExpiredClaim = { seatId: string; token: string };
 export type HoldState = {
   serverTime: Date;
@@ -52,126 +55,202 @@ export class HoldsService {
     userId: string,
     sessionHash: string,
     body: unknown,
+    client?: HoldConnection,
   ): Promise<HoldState> {
     const seatIds = requestedSeats(body);
     const requestId = randomUUID();
     try {
-      return await this.db.$transaction(
-        async (tx) => {
-          // SHARE allows concurrent buyers; status/import/pricing use FOR UPDATE.
-          const shows = await tx.$queryRaw<
-            { status: string; valid: number }[]
-          >(Prisma.sql`SELECT status,
-          (SELECT count(*)::int FROM seats s JOIN seat_categories c ON c.id=s."categoryId" WHERE s."showtimeId"=showtimes.id AND s.id IN (${Prisma.join(seatIds.map((id) => Prisma.sql`${id}::uuid`))}) AND c.price IS NOT NULL) AS valid
-          FROM showtimes WHERE id=${showtimeId}::uuid FOR SHARE`);
-          if (!shows.length)
-            throw new NotFoundException('Không tìm thấy suất diễn.');
-          if (shows[0].status !== 'ON_SALE')
-            throw new ConflictException({
-              code: 'SHOWTIME_CLOSED',
-              message: 'Suất diễn đã đóng bán. Chọn suất khác.',
-              rejectedSeatIds: seatIds,
-            });
-          if (shows[0].valid !== seatIds.length)
-            throw new BadRequestException(
-              'Ghế không thuộc suất diễn hoặc chưa có giá. Tải lại sơ đồ.',
-            );
-          const [session] = await tx.$queryRaw<Authority[]>(Prisma.sql`
-          INSERT INTO hold_sessions (id,"showtimeId","userId","sessionHash",token,"expiresAt")
-          VALUES (${randomUUID()}::uuid,${showtimeId}::uuid,${userId}::uuid,${sessionHash},${randomUUID()}::uuid,clock_timestamp()+interval '10 minutes')
-          ON CONFLICT ("showtimeId","userId","sessionHash") DO UPDATE SET
-            token=CASE WHEN hold_sessions."expiresAt"<=EXCLUDED."expiresAt"-interval '10 minutes' THEN EXCLUDED.token ELSE hold_sessions.token END,
-            "expiresAt"=CASE WHEN hold_sessions."expiresAt"<=EXCLUDED."expiresAt"-interval '10 minutes' THEN EXCLUDED."expiresAt" ELSE hold_sessions."expiresAt" END
-          RETURNING id,token,"expiresAt"`);
-          const claimed = await tx.$queryRaw<{ seatId: string }[]>(Prisma.sql`
-          INSERT INTO seat_holds ("seatId","showtimeId","holdSessionId",token,"expiresAt")
-          SELECT seat_id,${showtimeId}::uuid,${session.id}::uuid,${session.token}::uuid,${session.expiresAt}
-          FROM unnest(ARRAY[${Prisma.join(seatIds.map((id) => Prisma.sql`${id}::uuid`))}]) AS seat_id ORDER BY seat_id
-          ON CONFLICT ("seatId") DO UPDATE SET "holdSessionId"=EXCLUDED."holdSessionId",token=EXCLUDED.token,"expiresAt"=EXCLUDED."expiresAt",
-            "acquiredAt"=CASE WHEN seat_holds.token=EXCLUDED.token THEN seat_holds."acquiredAt" ELSE clock_timestamp() END
-          WHERE seat_holds."expiresAt"<=clock_timestamp() OR (seat_holds."holdSessionId"=EXCLUDED."holdSessionId" AND seat_holds.token=EXCLUDED.token)
-          RETURNING "seatId"`);
-          if (claimed.length !== seatIds.length) {
-            const accepted = new Set(claimed.map((s) => s.seatId));
+      // v3 rolls rejected writes back inside its subtransaction; expected
+      // conflicts are outcomes, not PostgreSQL error/log storms. Await BEGIN
+      // and timeout setup before pipelining this validated routine.
+      const [result] = await this.db.commitHoldRoutine<
+        {
+          serverTime: Date;
+          id: string;
+          expiresAt: Date;
+          seatIds: string[];
+          failure: string | null;
+          rejectedSeatIds: string[];
+        }[]
+      >(
+        Prisma.sql`
+        SELECT * FROM public.claim_hold_v3(
+          ${showtimeId}::uuid, ${userId}::uuid, ${sessionHash}::text,
+          ${'{' + seatIds.join(',') + '}'}::uuid[], ${randomUUID()}::uuid, ${randomUUID()}::uuid
+        )`,
+        client,
+      );
+      if (result.failure) {
+        if (result.failure === 'H0001')
+          throw new NotFoundException('Không tìm thấy suất diễn.');
+        if (result.failure === 'H0002')
+          throw new ConflictException({
+            code: 'SHOWTIME_CLOSED',
+            message: 'Suất diễn đã đóng bán. Chọn suất khác.',
+            rejectedSeatIds: seatIds,
+          });
+        if (result.failure === 'H0003')
+          throw new BadRequestException(
+            'Ghế không thuộc suất diễn hoặc chưa có giá. Tải lại sơ đồ.',
+          );
+        if (result.failure === 'H0004') {
+          const rejected = result.rejectedSeatIds;
+          if (
+            Array.isArray(rejected) &&
+            rejected.length > 0 &&
+            rejected.every(
+              (id) => typeof id === 'string' && seatIds.includes(id),
+            )
+          ) {
             throw new ConflictException({
               code: 'SEAT_CONFLICT',
               message: 'Một số ghế vừa được người khác giữ. Chọn ghế khác.',
-              rejectedSeatIds: seatIds.filter((id) => !accepted.has(id)),
+              rejectedSeatIds: rejected,
               requestId,
             });
           }
-          const state = await this.state(tx, showtimeId, userId, sessionHash);
-          if (!state.hold)
-            throw new ConflictException({
-              code: 'HOLD_EXPIRED',
-              message: 'Lượt giữ vừa hết hạn. Tải lại sơ đồ rồi chọn lại.',
-              rejectedSeatIds: seatIds,
-              requestId,
-            });
-          return state;
-        },
-        { timeout: 10000, maxWait: 10000 },
-      );
-    } catch (error) {
-      // Concurrent inserts can report the secondary unique index before the PK arbiter.
-      // Transaction has rolled back; translate only the known ownership constraint.
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2010'
-      ) {
-        const meta = error.meta as
-          | {
-              driverAdapterError?: {
-                cause?: {
-                  originalCode?: string;
-                  constraint?: { index?: string };
-                };
-              };
-            }
-          | undefined;
-        const cause = meta?.driverAdapterError?.cause;
-        if (
-          cause?.originalCode === '23505' &&
-          cause.constraint?.index === 'seat_holds_seatId_showtimeId_key'
-        ) {
-          const rejected = await this.db.$queryRaw<
-            { seatId: string }[]
-          >(Prisma.sql`SELECT h."seatId" FROM seat_holds h JOIN hold_sessions hs ON hs.id=h."holdSessionId"
-            WHERE h."seatId" IN (${Prisma.join(seatIds.map((id) => Prisma.sql`${id}::uuid`))}) AND h."expiresAt">clock_timestamp()
-            AND NOT (hs."userId"=${userId}::uuid AND hs."sessionHash"=${sessionHash})`);
-          this.logger.warn(
-            JSON.stringify({
-              event: 'hold_conflict',
-              requestId,
-              rejectedCount: rejected.length,
-              code: 'SEAT_CONFLICT',
-            }),
-          );
-          if (rejected.length)
-            throw new ConflictException({
-              code: 'SEAT_CONFLICT',
-              message: 'Một số ghế vừa được người khác giữ. Chọn ghế khác.',
-              rejectedSeatIds: rejected.map((s) => s.seatId),
-              requestId,
-            });
+        }
+        if (result.failure === 'H0005')
+          throw new ConflictException({
+            code: 'HOLD_EXPIRED',
+            message: 'Lượt giữ vừa hết hạn. Tải lại sơ đồ rồi chọn lại.',
+            rejectedSeatIds: seatIds,
+            requestId,
+          });
+        if (result.failure === 'H0006')
           throw new ServiceUnavailableException({
             code: 'HOLD_RETRY',
             message: 'Trạng thái ghế đang thay đổi. Tải lại sơ đồ rồi thử lại.',
             requestId,
           });
-        }
+        throw new ServiceUnavailableException({
+          code: 'HOLD_UNAVAILABLE',
+          message: 'Giữ ghế tạm thời không khả dụng. Tải lại sơ đồ rồi thử lại.',
+          requestId,
+        });
       }
-      if (error instanceof ConflictException)
+      return {
+        serverTime: result.serverTime,
+        hold: {
+          id: result.id,
+          expiresAt: result.expiresAt,
+          seatIds: result.seatIds,
+        },
+      };
+    } catch (caught) {
+      if (caught instanceof HttpException) throw caught;
+
+      let error = caught;
+      if (typeof caught === 'object' && caught !== null && 'code' in caught) {
+        if (caught.code === 'H0001')
+          error = new NotFoundException('Không tìm thấy suất diễn.');
+        if (caught.code === 'H0002')
+          error = new ConflictException({
+            code: 'SHOWTIME_CLOSED',
+            message: 'Suất diễn đã đóng bán. Chọn suất khác.',
+            rejectedSeatIds: seatIds,
+          });
+        if (caught.code === 'H0003')
+          error = new BadRequestException(
+            'Ghế không thuộc suất diễn hoặc chưa có giá. Tải lại sơ đồ.',
+          );
+        if (
+          caught.code === 'H0004' &&
+          'detail' in caught &&
+          typeof caught.detail === 'string'
+        ) {
+          let rejected: unknown;
+          try {
+            rejected = JSON.parse(caught.detail);
+          } catch {
+            /* fail closed below */
+          }
+          if (
+            Array.isArray(rejected) &&
+            rejected.length > 0 &&
+            rejected.every(
+              (id) => typeof id === 'string' && seatIds.includes(id),
+            )
+          ) {
+            error = new ConflictException({
+              code: 'SEAT_CONFLICT',
+              message: 'Một số ghế vừa được người khác giữ. Chọn ghế khác.',
+              rejectedSeatIds: rejected,
+              requestId,
+            });
+          }
+        }
+        if (caught.code === 'H0005')
+          error = new ConflictException({
+            code: 'HOLD_EXPIRED',
+            message: 'Lượt giữ vừa hết hạn. Tải lại sơ đồ rồi chọn lại.',
+            rejectedSeatIds: seatIds,
+            requestId,
+          });
+      }
+      if (
+        typeof caught === 'object' &&
+        caught !== null &&
+        'code' in caught &&
+        caught.code === 'H0006'
+      )
+        error = new ServiceUnavailableException({
+          code: 'HOLD_RETRY',
+          message: 'Trạng thái ghế đang thay đổi. Tải lại sơ đồ rồi thử lại.',
+          requestId,
+        });
+      // Concurrent inserts can report the secondary unique index before the PK arbiter.
+      // Transaction has rolled back; translate only the known ownership constraint.
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        error.code === '23505' &&
+        'constraint' in error &&
+        error.constraint === 'seat_holds_seatId_showtimeId_key'
+      ) {
+        const rejected = await this.db.seatReadQuery<{ seatId: string }[]>(
+          Prisma.sql`SELECT h."seatId" FROM seat_holds h JOIN hold_sessions hs ON hs.id=h."holdSessionId"
+            WHERE h."seatId" IN (${Prisma.join(seatIds.map((id) => Prisma.sql`${id}::uuid`))}) AND h."expiresAt">clock_timestamp()
+            AND NOT (hs."userId"=${userId}::uuid AND hs."sessionHash"=${sessionHash})`,
+        );
         this.logger.warn(
           JSON.stringify({
             event: 'hold_conflict',
             requestId,
-            rejectedCount:
-              (error.getResponse() as { rejectedSeatIds?: string[] })
-                .rejectedSeatIds?.length ?? 0,
-            code: (error.getResponse() as { code?: string }).code,
+            rejectedCount: rejected.length,
+            code: 'SEAT_CONFLICT',
           }),
         );
+        if (rejected.length)
+          throw new ConflictException({
+            code: 'SEAT_CONFLICT',
+            message: 'Một số ghế vừa được người khác giữ. Chọn ghế khác.',
+            rejectedSeatIds: rejected.map((s) => s.seatId),
+            requestId,
+          });
+        throw new ServiceUnavailableException({
+          code: 'HOLD_RETRY',
+          message: 'Trạng thái ghế đang thay đổi. Tải lại sơ đồ rồi thử lại.',
+          requestId,
+        });
+      }
+      if (error instanceof ConflictException) {
+        const resObj = error.getResponse() as {
+          code?: string;
+          rejectedSeatIds?: string[];
+        };
+        if (resObj?.code !== 'SEAT_CONFLICT') {
+          this.logger.warn(
+            JSON.stringify({
+              event: 'hold_conflict',
+              requestId,
+              rejectedCount: resObj?.rejectedSeatIds?.length ?? 0,
+              code: resObj?.code,
+            }),
+          );
+        }
+      }
       if (error instanceof HttpException) throw error;
       this.logger.error(
         JSON.stringify({
@@ -193,7 +272,7 @@ export class HoldsService {
   }
 
   private async state(
-    tx: Prisma.TransactionClient,
+    tx: HoldQueryable,
     showtimeId: string,
     userId: string,
     sessionHash: string,
@@ -227,7 +306,15 @@ export class HoldsService {
 
   expiredBatch(): Promise<ExpiredClaim[]> {
     return this.db.$queryRaw(
-      Prisma.sql`SELECT "seatId",token FROM seat_holds WHERE "expiresAt"<=clock_timestamp() ORDER BY "expiresAt","seatId" LIMIT 1000`,
+      Prisma.sql`SELECT h."seatId", h.token FROM seat_holds h
+        WHERE h."expiresAt" <= clock_timestamp()
+        AND NOT EXISTS (
+          SELECT 1 FROM order_items oi
+          JOIN orders o ON o.id = oi."orderId"
+          WHERE oi."seatId" = h."seatId"
+          AND o.status = 'NEEDS_REVIEW'
+        )
+        ORDER BY h."expiresAt", h."seatId" LIMIT 1000`,
     );
   }
 

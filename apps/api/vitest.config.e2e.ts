@@ -7,5 +7,7 @@ export default defineConfig({
     globals: true,
     root: './',
     include: ['**/*.e2e-spec.ts'],
+    // Suites share one database; catalog assertions must not see another suite's fixtures.
+    fileParallelism: false,
   },
 });

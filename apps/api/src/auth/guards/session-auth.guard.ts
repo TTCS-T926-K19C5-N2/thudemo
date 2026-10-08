@@ -16,6 +16,9 @@ export type AuthenticatedUser = { id: string; email: string; roles: string[] };
 export type AuthenticatedRequest = Request & {
   user: AuthenticatedUser;
   sessionToken: string;
+  sessionHash?: string;
+  holdClient?: import('../../prisma/hold-transaction.js').HoldConnection;
+  releaseHoldClient?: () => void;
 };
 
 function sessionTokenFromCookie(header: string | undefined): string | null {
@@ -35,6 +38,12 @@ export class SessionAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) return true;
+
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
       const origin = request.headers.origin;
@@ -48,24 +57,28 @@ export class SessionAuthGuard implements CanActivate {
       }
     }
 
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (isPublic) return true;
-
     const token = sessionTokenFromCookie(request.headers.cookie);
     if (!token) throw new UnauthorizedException('Cần đăng nhập lại.');
 
+    const tokenHash = hashSessionToken(token);
+    request.sessionToken = token;
+    request.sessionHash = tokenHash;
+
+    const isHoldClaim = context.getHandler()?.name === 'claim';
+
     // One indexed read instead of separate session/user/role relation queries.
     // Revocation and verified status are still checked on every request.
-    const [session] = await this.prisma.$queryRaw<
+    const [session] = await this.prisma.sessionQuery<
       { id: string; email: string; roles: string[] }[]
-    >(Prisma.sql`
+    >(
+      Prisma.sql`
       SELECT u.id,u.email,COALESCE((SELECT array_agg(r.name) FROM user_roles ur JOIN roles r ON r.id=ur."roleId" WHERE ur."userId"=u.id),'{}'::text[]) AS roles
       FROM sessions s JOIN users u ON u.id=s."userId"
-      WHERE s."tokenHash"=${hashSessionToken(token)} AND s."expiresAt">clock_timestamp() AND u."isEmailVerified"=true`);
+      WHERE s."tokenHash"=${tokenHash} AND s."expiresAt">clock_timestamp() AND u."isEmailVerified"=true`,
+      isHoldClaim ? request : undefined,
+    );
     if (!session) {
+      request.releaseHoldClient?.();
       throw new UnauthorizedException('Phiên đã hết hạn. Đăng nhập lại.');
     }
 
@@ -74,7 +87,6 @@ export class SessionAuthGuard implements CanActivate {
       email: session.email,
       roles: session.roles,
     };
-    request.sessionToken = token;
     return true;
   }
 }

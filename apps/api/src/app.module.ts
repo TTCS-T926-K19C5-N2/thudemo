@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { resolve } from 'node:path';
@@ -12,6 +13,10 @@ import { EventsModule } from './events/events.module.js';
 import { ShowtimesModule } from './showtimes/showtimes.module.js';
 import { HoldsModule } from './holds/holds.module.js';
 import { SeatsModule } from './seats/seats.module.js';
+import { OrdersModule } from './orders/orders.module.js';
+import { PaymentsModule } from './payments/payments.module.js';
+import { MonitoringModule } from './monitoring/monitoring.module.js';
+import { WebhookSecurityFilter } from './payments/webhook-security.filter.js';
 
 @Module({
   imports: [
@@ -37,5 +42,17 @@ import { SeatsModule } from './seats/seats.module.js';
   ],
   controllers: [AppController],
   providers: [AppService], // Bỏ APP_GUARD ở đây ra để tránh bị dính rate-limit cho toàn hệ thống
+    OrdersModule,
+    PaymentsModule,
+    MonitoringModule,
+  ],
+  controllers: [AppController],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: WebhookSecurityFilter,
+    },
+  ],
 })
 export class AppModule {}
