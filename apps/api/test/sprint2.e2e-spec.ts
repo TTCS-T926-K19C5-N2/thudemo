@@ -98,24 +98,29 @@ describe('Sprint 2 isolated database integration', () => {
   });
   afterAll(async () => {
     if (db) {
-      const shows = await db.showtime.findMany({
-        where: { eventId },
-        select: { id: true },
-      });
-      const ids = shows.map((s) => s.id);
-      await db.orderItem.deleteMany({
-        where: { order: { showtimeId: { in: ids } } },
-      });
-      await db.order.deleteMany({ where: { showtimeId: { in: ids } } });
-      await db.seatHold.deleteMany({ where: { showtimeId: { in: ids } } });
-      await db.holdSession.deleteMany({ where: { showtimeId: { in: ids } } });
-      await db.seat.deleteMany({ where: { showtimeId: { in: ids } } });
-      await db.seatCategory.deleteMany({ where: { showtimeId: { in: ids } } });
-      await db.showtime.deleteMany({ where: { eventId } });
-      await db.event.delete({ where: { id: eventId } });
-      await db.user.deleteMany({
-        where: { id: { in: [owner, other, buyer, ...extraBuyerIds] } },
-      });
+      if (eventId) {
+        const shows = await db.showtime.findMany({
+          where: { eventId },
+          select: { id: true },
+        });
+        const ids = shows.map((s) => s.id);
+        await db.orderItem.deleteMany({
+          where: { order: { showtimeId: { in: ids } } },
+        });
+        await db.order.deleteMany({ where: { showtimeId: { in: ids } } });
+        await db.seatHold.deleteMany({ where: { showtimeId: { in: ids } } });
+        await db.holdSession.deleteMany({ where: { showtimeId: { in: ids } } });
+        await db.seat.deleteMany({ where: { showtimeId: { in: ids } } });
+        await db.seatCategory.deleteMany({ where: { showtimeId: { in: ids } } });
+        await db.showtime.deleteMany({ where: { eventId } });
+        await db.event.delete({ where: { id: eventId } });
+      }
+      const userIds = [owner, other, buyer, ...extraBuyerIds].filter(Boolean);
+      if (userIds.length > 0) {
+        await db.user.deleteMany({
+          where: { id: { in: userIds } },
+        });
+      }
       const report = {
         date: new Date().toISOString(),
         runtime: process.version,
