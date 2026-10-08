@@ -8,7 +8,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { OrderStatus, PaymentStatus, Prisma } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
+import { OrderStatus, PaymentStatus, Prisma, TicketStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { isOrderExpired } from '../orders/order-expiration.js';
 import { OrdersService } from '../orders/orders.service.js';
@@ -615,6 +616,33 @@ export class PaymentsService {
                 transactionId: event.transactionId,
               },
             });
+          }
+
+          // (d) Issue tickets for paid order items
+          if (tx.ticket) {
+            for (const item of order.items) {
+              const existingTicket = await tx.ticket.findFirst({
+                where: { orderId: order.id, seatId: item.seatId },
+              });
+              if (!existingTicket) {
+                const code = `TK-${randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
+                const seatLabel = item.seat
+                  ? `${item.seat.row}-${item.seat.seatNumber}`
+                  : item.categoryName;
+                await tx.ticket.create({
+                  data: {
+                    orderId: order.id,
+                    showtimeId: order.showtimeId,
+                    seatId: item.seatId,
+                    code,
+                    seatLabel,
+                    ticketType: item.categoryName,
+                    status: TicketStatus.VALID,
+                    price: item.seat?.category?.price ?? item.unitPrice,
+                  },
+                });
+              }
+            }
           }
 
           return { received: true, status: 'PAID' };
