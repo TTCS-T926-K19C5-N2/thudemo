@@ -4,12 +4,14 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  Optional,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { OrderStatus, PaymentStatus } from '@prisma/client';
+import { OrderStatus, PaymentStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { isOrderExpired } from '../orders/order-expiration.js';
+import { OrdersService } from '../orders/orders.service.js';
 import {
   PAYMENT_GATEWAY,
   type PaymentGateway,
@@ -25,6 +27,7 @@ export class PaymentsService {
     @Inject(PAYMENT_GATEWAY) private readonly gateway: PaymentGateway,
     private readonly accountantNotifier: AccountantNotifier,
     private readonly config: ConfigService,
+    @Optional() private readonly ordersService?: OrdersService,
   ) {}
 
   async initiatePayment(
@@ -168,7 +171,31 @@ export class PaymentsService {
     const isExpired = isOrderExpired(order, new Date());
     if (isExpired) {
       if (event.status === 'SUCCESS') {
+        // S-23: Late payment path when webhook arrives for an expired order.
+        // If order is still PENDING / PENDING_PAYMENT, expire the order first to release seats.
+        if (
+          order.status === OrderStatus.PENDING ||
+          order.status === OrderStatus.PENDING_PAYMENT
+        ) {
+          if (this.ordersService) {
+            await this.ordersService.expireOrder(order.id);
+          }
+        }
+
         await this.db.$transaction(async (tx) => {
+          // Release any holds remaining for this order if not already released
+          await tx.$executeRaw(Prisma.sql`
+            DELETE FROM seat_holds
+            WHERE "seatId" IN (
+              SELECT oi."seatId"
+              FROM order_items oi
+              JOIN seats s ON s.id = oi."seatId"
+              WHERE oi."orderId" = ${order.id}::uuid
+                AND s."isSold" = false
+            )
+            ${order.holdSessionId ? Prisma.sql`AND "holdSessionId" = ${order.holdSessionId}::uuid` : Prisma.empty}
+          `);
+
           await tx.order.update({
             where: { id: order.id },
             data: { status: OrderStatus.NEEDS_REVIEW },
@@ -310,10 +337,17 @@ export class PaymentsService {
           }
 
           // (a) Conditional atomic update: only update if order is still PENDING / PENDING_PAYMENT
+          // AND expiration time has NOT yet passed (S-23 mutual exclusion)
+          const serverNow = new Date();
           const updateResult = await tx.order.updateMany({
             where: {
               id: order.id,
               status: { in: [OrderStatus.PENDING, OrderStatus.PENDING_PAYMENT] },
+              ...(order.paymentExpiresAt
+                ? { paymentExpiresAt: { gt: serverNow } }
+                : order.expiresAt
+                  ? { expiresAt: { gt: serverNow } }
+                  : {}),
             },
             data: { status: OrderStatus.PAID },
           });
@@ -325,7 +359,64 @@ export class PaymentsService {
             if (postCheck?.status === OrderStatus.PAID) {
               return { received: true, status: 'PAID' };
             }
-            return { received: true, status: postCheck?.status ?? 'UNKNOWN' };
+
+            // S-23: Order expired or collided with expiry job. Enter late payment path:
+            // Release holds for this order
+            await tx.$executeRaw(Prisma.sql`
+              DELETE FROM seat_holds
+              WHERE "seatId" IN (
+                SELECT oi."seatId"
+                FROM order_items oi
+                JOIN seats s ON s.id = oi."seatId"
+                WHERE oi."orderId" = ${order.id}::uuid
+                  AND s."isSold" = false
+              )
+              ${order.holdSessionId ? Prisma.sql`AND "holdSessionId" = ${order.holdSessionId}::uuid` : Prisma.empty}
+            `);
+
+            // Mark order as NEEDS_REVIEW
+            await tx.order.update({
+              where: { id: order.id },
+              data: { status: OrderStatus.NEEDS_REVIEW },
+            });
+
+            // Mark payment as LATE
+            const existingPayment = await tx.payment.findFirst({
+              where: { gatewayRef: event.gatewayRef },
+            });
+
+            if (existingPayment) {
+              await tx.payment.update({
+                where: { id: existingPayment.id },
+                data: {
+                  status: PaymentStatus.LATE,
+                  transactionId: event.transactionId,
+                },
+              });
+            } else {
+              await tx.payment.create({
+                data: {
+                  orderId: order.id,
+                  amount: event.amount,
+                  status: PaymentStatus.LATE,
+                  gateway: this.gateway.name,
+                  gatewayRef: event.gatewayRef,
+                  transactionId: event.transactionId,
+                },
+              });
+            }
+
+            setTimeout(() => {
+              void this.accountantNotifier.notifyLatePayment({
+                orderId: order.id,
+                amount: event.amount,
+                transactionId: event.transactionId,
+                gatewayRef: event.gatewayRef,
+                reason: 'Thanh toán sau khi đơn hết hạn, cần hoàn tiền',
+              });
+            }, 0);
+
+            return { received: true, status: 'LATE' };
           }
 
           // (b) Seats -> SOLD (isSold = true) & release holds (executed strictly ONCE)
