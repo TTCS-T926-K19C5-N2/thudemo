@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { QRCodeSVG } from "qrcode.react";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -445,6 +446,42 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
                 </div>
               </div>
             </div>
+
+            {order.status === "PAID" && (
+              <section
+                aria-labelledby="ticket-qr-title"
+                className="mt-6 rounded-xl border bg-card p-5 shadow-sm"
+                data-testid="paid-ticket-qrs"
+              >
+                <h2 id="ticket-qr-title" className="text-lg font-semibold">
+                  Mã QR vé vào cửa
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Mỗi mã QR chỉ được sử dụng để check-in một lần.
+                </p>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  {order.items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-4 rounded-lg border p-4"
+                    >
+                      <QRCodeSVG
+                        value={item.id}
+                        size={112}
+                        level="M"
+                        aria-label={`Mã QR vé ghế ${item.label}`}
+                      />
+                      <div>
+                        <p className="font-semibold">{item.label}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Hạng {item.tierName}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* S-24: Failed previous payment notice */}
             {!expired &&

@@ -165,6 +165,11 @@ export function OrganizerLayout({
             name: "Suất diễn",
             Icon: Schedule,
           },
+          {
+            href: `/scanner?showtimeId=${id}`,
+            name: "Soát vé",
+            Icon: Ticket,
+          },
           { href: `/showtimes/${id}/import`, name: "Sơ đồ ghế", Icon: Map },
           { href: `/showtimes/${id}/prices`, name: "Giá vé", Icon: Sell },
         ]
