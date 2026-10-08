@@ -14,6 +14,7 @@ import { HoldsModule } from './holds/holds.module.js';
 import { OrdersModule } from './orders/orders.module.js';
 import { PaymentsModule } from './payments/payments.module.js';
 import { MonitoringModule } from './monitoring/monitoring.module.js';
+import { CheckInModuleS29 } from './check-in/check-in-s29.module.js';
 import { WebhookSecurityFilter } from './payments/webhook-security.filter.js';
 
 @Module({
@@ -32,6 +33,7 @@ import { WebhookSecurityFilter } from './payments/webhook-security.filter.js';
     OrdersModule,
     PaymentsModule,
     MonitoringModule,
+    CheckInModuleS29,
   ],
   controllers: [AppController],
   providers: [
