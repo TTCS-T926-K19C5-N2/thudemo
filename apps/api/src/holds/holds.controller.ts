@@ -17,6 +17,7 @@ import { HoldsService } from './holds.service.js';
 @Roles('BUYER')
 export class HoldsController {
   constructor(private readonly service: HoldsService) {}
+
   @Post()
   @HttpCode(200)
   claim(
@@ -32,6 +33,7 @@ export class HoldsController {
       req.holdClient,
     );
   }
+
   @Get()
   current(
     @Param('id', ParseUUIDPipe) id: string,
@@ -42,5 +44,6 @@ export class HoldsController {
       req.user.id,
       req.sessionHash ?? hashSessionToken(req.sessionToken),
     );
+    
   }
 }

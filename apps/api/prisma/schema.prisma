@@ -208,14 +208,15 @@ model Order {
 }
 
 model OrderItem {
-  id           String  @id @default(uuid()) @db.Uuid
-  orderId      String  @db.Uuid
-  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  seatId       String  @db.Uuid
-  seat         Seat    @relation(fields: [seatId], references: [id], onDelete: Restrict)
+  id           String    @id @default(uuid()) @db.Uuid
+  orderId      String    @db.Uuid
+  order        Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  seatId       String    @db.Uuid
+  seat         Seat      @relation(fields: [seatId], references: [id], onDelete: Restrict)
   categoryName String
   tierName     String?
   unitPrice    Int
+  checkedInAt  DateTime? @db.Timestamptz(3)
 
   @@unique([orderId, seatId])
   @@index([seatId])

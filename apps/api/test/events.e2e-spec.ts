@@ -59,6 +59,11 @@ describe('Organizer events (e2e)', () => {
     };
 
     try {
+      await request(app.getHttpServer())
+        .post('/events')
+        .send(eventInput)
+        .expect(401);
+
       const invalid = await request(app.getHttpServer())
         .post('/events')
         .set('Cookie', owner.cookie)

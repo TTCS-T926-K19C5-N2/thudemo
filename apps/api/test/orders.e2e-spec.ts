@@ -390,7 +390,6 @@ describe('Orders S-17 E2E Integration', () => {
         .expect(404);
     });
   });
-
   describe('S-23 Order Expiry & Seat Release E2E', () => {
     it('AC 1 & AC 4: expires overdue order, deletes seat holds, leaves seat unsold, and is idempotent', async () => {
       const ordersService = app.get(OrdersService);
@@ -712,4 +711,3 @@ describe('Orders S-17 E2E Integration', () => {
     });
   });
 });
-
