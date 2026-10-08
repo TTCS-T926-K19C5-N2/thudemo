@@ -310,7 +310,8 @@ export function decodeOrderStatus(value: unknown): OrderStatusResult {
         ? o.orderId
         : invalid("id");
   const orderId = typeof o.orderId === "string" ? o.orderId : id;
-  const status = orderStatus(o.status);
+  const rawStatus = orderStatus(o.status);
+  const status = (rawStatus === "PENDING_PAYMENT" ? "PENDING" : rawStatus) as OrderStatus;
   const expiresAt =
     typeof o.expiresAt === "string"
       ? o.expiresAt
