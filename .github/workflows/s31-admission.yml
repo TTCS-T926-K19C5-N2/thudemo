@@ -1,0 +1,60 @@
+name: S31 product admission proof
+on:
+  push:
+    branches: [story/S-31-prevent-ticket-reuse]
+  pull_request:
+    paths:
+      - apps/api/src/orders/**
+      - apps/api/prisma/**
+      - apps/api/scripts/verify-s31-http.mjs
+      - apps/web/src/features/ticket-scanner/**
+      - .github/workflows/s31-admission.yml
+permissions:
+  contents: read
+jobs:
+  two-api-processes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      DATABASE_URL: postgresql://s31_fixture:s31_fixture@127.0.0.1:15438/s31_admission_integration
+      REDIS_URL: redis://127.0.0.1:16386
+      S31_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: s31_fixture
+          POSTGRES_PASSWORD: s31_fixture
+          POSTGRES_DB: s31_admission_integration
+        ports: [15438:5432]
+        options: >-
+          --health-cmd "pg_isready -U s31_fixture -d s31_admission_integration"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: [16386:6379]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter api exec prisma migrate deploy
+      - run: pnpm --filter api exec prisma generate
+      - run: pnpm --filter api build
+      - run: node apps/api/scripts/verify-s31-http.mjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: s31-product-http-proof
+          path: evidence/s31/http-proof.json
+          if-no-files-found: error

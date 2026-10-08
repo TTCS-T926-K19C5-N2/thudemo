@@ -7,19 +7,21 @@ datasource db {
 }
 
 model User {
-  id                String        @id @default(uuid()) @db.Uuid
-  email             String        @unique
-  password          String
-  isEmailVerified   Boolean       @default(false)
-  activationToken   String?
-  activationExpires DateTime?     @db.Timestamptz(3)
-  createdAt         DateTime      @default(now()) @db.Timestamptz(3)
-  updatedAt         DateTime      @updatedAt @db.Timestamptz(3)
-  userRoles         UserRole[]
-  sessions          Session[]
-  events            Event[]       @relation("OrganizerEvents")
-  holdSessions      HoldSession[]
-  orders            Order[]
+  id                 String              @id @default(uuid()) @db.Uuid
+  email              String              @unique
+  password           String
+  isEmailVerified    Boolean             @default(false)
+  activationToken    String?
+  activationExpires  DateTime?           @db.Timestamptz(3)
+  createdAt          DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime            @updatedAt @db.Timestamptz(3)
+  userRoles          UserRole[]
+  sessions           Session[]
+  events             Event[]             @relation("OrganizerEvents")
+  holdSessions       HoldSession[]
+  orders             Order[]
+  checkInPermissions CheckInPermission[]
+  admissions         TicketAdmission[]
 
   @@map("users")
 }
@@ -77,19 +79,21 @@ model Event {
 }
 
 model Showtime {
-  id              String         @id @default(uuid()) @db.Uuid
-  eventId         String         @db.Uuid
-  event           Event          @relation(fields: [eventId], references: [id], onDelete: Restrict)
-  startTime       DateTime       @db.Timestamptz(3)
+  id              String            @id @default(uuid()) @db.Uuid
+  eventId         String            @db.Uuid
+  event           Event             @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  startTime       DateTime          @db.Timestamptz(3)
   seatMapId       String? // Nullable for now as per S-04
-  status          ShowtimeStatus @default(DRAFT)
-  structureLocked Boolean        @default(false)
+  status          ShowtimeStatus    @default(DRAFT)
+  structureLocked Boolean           @default(false)
   seats           Seat[]
   categories      SeatCategory[]
   holdSessions    HoldSession[]
   orders          Order[]
-  createdAt       DateTime       @default(now()) @db.Timestamptz(3)
-  updatedAt       DateTime       @updatedAt @db.Timestamptz(3)
+  checkInGates    CheckInGate[]
+  admissions      TicketAdmission[]
+  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime          @updatedAt @db.Timestamptz(3)
 
   @@index([eventId])
   @@map("showtimes")
@@ -208,19 +212,69 @@ model Order {
 }
 
 model OrderItem {
-  id           String    @id @default(uuid()) @db.Uuid
-  orderId      String    @db.Uuid
-  order        Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  seatId       String    @db.Uuid
-  seat         Seat      @relation(fields: [seatId], references: [id], onDelete: Restrict)
+  id           String            @id @default(uuid()) @db.Uuid
+  orderId      String            @db.Uuid
+  order        Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  seatId       String            @db.Uuid
+  seat         Seat              @relation(fields: [seatId], references: [id], onDelete: Restrict)
   categoryName String
   tierName     String?
   unitPrice    Int
-  checkedInAt  DateTime? @db.Timestamptz(3)
+  checkedInAt  DateTime?         @db.Timestamptz(3)
+  admissions   TicketAdmission[]
 
   @@unique([orderId, seatId])
   @@index([seatId])
   @@map("order_items")
+}
+
+model CheckInGate {
+  id          String              @id @default(uuid()) @db.Uuid
+  showtimeId  String              @db.Uuid
+  showtime    Showtime            @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  name        String
+  permissions CheckInPermission[]
+  admissions  TicketAdmission[]
+
+  @@unique([showtimeId, name])
+  @@unique([id, showtimeId])
+  @@map("check_in_gates")
+}
+
+model CheckInPermission {
+  userId      String      @db.Uuid
+  gateId      String      @db.Uuid
+  user        User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  gate        CheckInGate @relation(fields: [gateId], references: [id], onDelete: Restrict)
+  staffName   String
+  canOverride Boolean     @default(false)
+
+  @@id([userId, gateId])
+  @@map("check_in_permissions")
+}
+
+model TicketAdmission {
+  id             String      @id @default(uuid()) @db.Uuid
+  ticketId       String      @db.Uuid
+  ticket         OrderItem   @relation(fields: [ticketId], references: [id], onDelete: Restrict)
+  showtimeId     String      @db.Uuid
+  showtime       Showtime    @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  gateId         String      @db.Uuid
+  gate           CheckInGate @relation(fields: [gateId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
+  gateName       String
+  staffId        String      @db.Uuid
+  staff          User        @relation(fields: [staffId], references: [id], onDelete: Restrict)
+  staffName      String
+  requestId      String      @db.Uuid
+  kind           String
+  reason         String?
+  ownerConfirmed Boolean     @default(false)
+  enteredAt      DateTime    @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+
+  @@unique([staffId, requestId])
+  // Partial unique NORMAL ticket and CHECK constraints are maintained by migration SQL.
+  @@index([ticketId, enteredAt], map: "ticket_admissions_ticket_time")
+  @@map("ticket_admissions")
 }
 
 model CatalogRevision {
