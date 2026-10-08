@@ -70,6 +70,7 @@ export type OrderDetail = {
   };
   items: OrderItem[];
   latestPayment?: LatestPaymentInfo | null;
+  paymentAttempts?: number;
 };
 
 const invalid = (field?: string): never => {
@@ -238,6 +239,7 @@ export function decodeOrderDetail(value: unknown): OrderDetail {
     },
     items,
     latestPayment: decodeLatestPayment(o.latestPayment),
+    paymentAttempts: typeof o.paymentAttempts === "number" ? o.paymentAttempts : 0,
   };
 }
 
