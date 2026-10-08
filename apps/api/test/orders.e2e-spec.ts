@@ -19,6 +19,7 @@ describe('Orders S-17 E2E Integration', () => {
   let eventId: string;
   let seat1Id: string;
   let seat2Id: string;
+  const userIds: string[] = [];
 
   async function createAccount(role: string) {
     await db.role.createMany({ data: [{ name: role }], skipDuplicates: true });
@@ -31,6 +32,7 @@ describe('Orders S-17 E2E Integration', () => {
         userRoles: { create: { roleId: r.id } },
       },
     });
+    userIds.push(user.id);
     const token = randomBytes(32).toString('base64url');
     await db.session.create({
       data: {
@@ -130,6 +132,58 @@ describe('Orders S-17 E2E Integration', () => {
   }, 30000);
 
   afterAll(async () => {
+    if (db) {
+      if (eventId) {
+        const shows = await db.showtime.findMany({
+          where: { eventId },
+          select: { id: true },
+        });
+        const showIds = shows.map((s) => s.id);
+        await db.orderItem.deleteMany({
+          where: { order: { showtimeId: { in: showIds } } },
+        });
+        if (db.orderLog) {
+          await db.orderLog.deleteMany({
+            where: { order: { showtimeId: { in: showIds } } },
+          });
+        }
+        await db.payment.deleteMany({
+          where: { order: { showtimeId: { in: showIds } } },
+        });
+        await db.order.deleteMany({
+          where: { showtimeId: { in: showIds } },
+        });
+        await db.seatHold.deleteMany({
+          where: { showtimeId: { in: showIds } },
+        });
+        await db.holdSession.deleteMany({
+          where: { showtimeId: { in: showIds } },
+        });
+        await db.seat.deleteMany({
+          where: { showtimeId: { in: showIds } },
+        });
+        await db.seatCategory.deleteMany({
+          where: { showtimeId: { in: showIds } },
+        });
+        await db.showtime.deleteMany({
+          where: { eventId },
+        });
+        await db.event.deleteMany({
+          where: { id: eventId },
+        });
+      }
+      if (userIds.length > 0) {
+        await db.session.deleteMany({
+          where: { userId: { in: userIds } },
+        });
+        await db.userRole.deleteMany({
+          where: { userId: { in: userIds } },
+        });
+        await db.user.deleteMany({
+          where: { id: { in: userIds } },
+        });
+      }
+    }
     if (app) await app.close();
   });
 
