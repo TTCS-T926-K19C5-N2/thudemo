@@ -10,6 +10,14 @@ export interface MismatchAlertPayload {
   reason?: string;
 }
 
+export interface LatePaymentAlertPayload {
+  orderId: string;
+  amount: number;
+  transactionId?: string;
+  gatewayRef?: string;
+  reason?: string;
+}
+
 @Injectable()
 export class AccountantNotifier {
   private readonly logger = new Logger(AccountantNotifier.name);
@@ -34,6 +42,27 @@ export class AccountantNotifier {
       // In production/staging with an email transport, dispatch alert email here.
       this.logger.warn(
         `[AccountantAlert] Sent email alert to ${accountantEmail} for order ${payload.orderId}`,
+      );
+    }
+  }
+
+  async notifyLatePayment(payload: LatePaymentAlertPayload): Promise<void> {
+    const accountantEmail = this.config.get<string>('ACCOUNTANT_EMAIL');
+
+    this.logger.error(
+      JSON.stringify({
+        event: 'payment_late_received',
+        alert: 'ACCOUNTANT_ALERT',
+        message: 'Khách hàng thanh toán sau khi đơn hàng đã hết hạn!',
+        ...payload,
+        notifiedEmail: accountantEmail ?? null,
+        timestamp: new Date().toISOString(),
+      }),
+    );
+
+    if (accountantEmail) {
+      this.logger.warn(
+        `[AccountantAlert] Sent late payment alert to ${accountantEmail} for order ${payload.orderId}`,
       );
     }
   }

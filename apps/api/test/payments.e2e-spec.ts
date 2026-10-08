@@ -144,6 +144,17 @@ describe('Payments S-18 E2E Integration', () => {
 
   afterAll(async () => {
     globalThis.fetch = originalFetch;
+    if (db) {
+      await db.payment.deleteMany();
+      await db.orderItem.deleteMany();
+      await db.order.deleteMany();
+      await db.seatHold.deleteMany();
+      await db.holdSession.deleteMany();
+      await db.seat.deleteMany();
+      await db.seatCategory.deleteMany();
+      await db.showtime.deleteMany();
+      await db.event.deleteMany();
+    }
     await app.close();
   });
 
