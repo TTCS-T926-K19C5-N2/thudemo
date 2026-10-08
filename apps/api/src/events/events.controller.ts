@@ -7,7 +7,7 @@ import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js'
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
-  @Roles(Role.ORGANIZER)
+  @Roles('ORGANIZER')
   @Public()
   @Post()
   create(@Req() request: AuthenticatedRequest, @Body() body: unknown) {

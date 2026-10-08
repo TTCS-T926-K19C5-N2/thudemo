@@ -47,11 +47,11 @@ export class SeatsService {
       }
 
       const seatsToCreate = seats.map((s) => {
-        const seatCategoryId = s.categoryName
+        const categoryId = s.categoryName
           ? categoryMap.get(s.categoryName)
           : null;
 
-        if (s.categoryName && !seatCategoryId) {
+        if (s.categoryName && !categoryId) {
           throw new BadRequestException(
             `Hạng ghế "${s.categoryName}" không có trong danh sách categories khai báo`,
           );
@@ -59,8 +59,8 @@ export class SeatsService {
 
         return {
           showtimeId,
-          seatCategoryId: seatCategoryId || null,
-          seatRow: s.seatRow,
+          categoryId: categoryId || null,
+          row: s.seatRow,
           seatNumber: s.seatNumber,
         };
       });
@@ -90,9 +90,10 @@ export class SeatsService {
     return this.prisma.seat.findMany({
       where: { showtimeId },
       include: {
-        seatCategory: true,
+        category: true,
       },
-      orderBy: [{ seatRow: 'asc' }, { seatNumber: 'asc' }],
+      // Đổi từ seatRow thành row:
+orderBy: [{ row: 'asc' }, { seatNumber: 'asc' }],
     });
   }
 
