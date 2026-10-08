@@ -590,6 +590,7 @@ try {
   };
   fixture.browserTicket = firstTicket;
   fixture.freshTicket = await ticket();
+  fixture.retryTicket = await ticket();
   if (process.env.S31_PRIVATE_FIXTURE_FILE)
     writeFileSync(
       process.env.S31_PRIVATE_FIXTURE_FILE,
