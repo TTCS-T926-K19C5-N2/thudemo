@@ -1,0 +1,340 @@
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { ScannerCryptoService } from './scanner-crypto.service.js';
+import { TicketStatus } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
+
+export interface ScannerTicketItem {
+  code: string;
+  status: 'valid' | 'checked_in' | 'cancelled';
+  checkedInAt: string | null;
+  seatLabel: string;
+  ticketType: string;
+}
+
+export interface ShowtimeTicketsResponse {
+  showtimeId: string;
+  showtimeName: string;
+  generatedAt: string;
+  cursor: string;
+  publicKey: {
+    keyId: string;
+    key: string;
+  };
+  tickets: ScannerTicketItem[];
+}
+
+export interface AssignedShowtimeItem {
+  id: string;
+  name: string;
+  eventName: string;
+  startTime: string;
+  location: string;
+  status: string;
+  totalTickets: number;
+  checkedInTickets: number;
+}
+
+@Injectable()
+export class ScannerService {
+  private readonly logger = new Logger(ScannerService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly crypto: ScannerCryptoService,
+  ) {}
+
+  publicKeys() {
+    return { keys: this.crypto.getPublicKeys() };
+  }
+
+  async getAssignedShowtimes(
+    userId: string,
+    roles: string[],
+  ): Promise<AssignedShowtimeItem[]> {
+    const isAdmin = roles.includes('ADMIN');
+    const isOrganizer = roles.includes('ORGANIZER');
+    const isStaff = roles.includes('STAFF');
+
+    let whereClause: any = {};
+
+    if (isAdmin) {
+      whereClause = {};
+    } else if (isOrganizer) {
+      whereClause = {
+        event: { organizerId: userId },
+      };
+    } else if (isStaff) {
+      whereClause = {
+        staffAssignments: {
+          some: { userId },
+        },
+      };
+    } else {
+      return [];
+    }
+
+    const showtimes = await this.prisma.showtime.findMany({
+      where: whereClause,
+      include: {
+        event: true,
+        _count: {
+          select: {
+            tickets: true,
+          },
+        },
+      },
+      orderBy: {
+        startTime: 'asc',
+      },
+    });
+
+    const results: AssignedShowtimeItem[] = [];
+    for (const st of showtimes) {
+      const checkedInCount = await this.prisma.ticket.count({
+        where: {
+          showtimeId: st.id,
+          status: TicketStatus.CHECKED_IN,
+        },
+      });
+
+      results.push({
+        id: st.id,
+        name: `${st.event.name} (${new Date(st.startTime).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })})`,
+        eventName: st.event.name,
+        startTime: st.startTime.toISOString(),
+        location: st.event.location,
+        status: st.status,
+        totalTickets: st._count.tickets,
+        checkedInTickets: checkedInCount,
+      });
+    }
+
+    return results;
+  }
+
+  async verifyStaffAccess(
+    showtimeId: string,
+    userId: string,
+    roles: string[],
+  ): Promise<void> {
+    if (roles.includes('ADMIN')) {
+      return;
+    }
+
+    const showtime = await this.prisma.showtime.findUnique({
+      where: { id: showtimeId },
+      include: { event: true },
+    });
+
+    if (!showtime) {
+      throw new NotFoundException('Không tìm thấy suất diễn.');
+    }
+
+    if (roles.includes('ORGANIZER') && showtime.event.organizerId === userId) {
+      return;
+    }
+
+    if (roles.includes('STAFF')) {
+      const assignment = await this.prisma.showtimeStaff.findUnique({
+        where: {
+          showtimeId_userId: {
+            showtimeId,
+            userId,
+          },
+        },
+      });
+
+      if (assignment) {
+        return;
+      }
+    }
+
+    throw new ForbiddenException(
+      'Nhân viên chưa được phân công cho suất diễn này.',
+    );
+  }
+
+  async getShowtimeTickets(
+    showtimeId: string,
+    since?: string,
+    user?: { id: string; roles: string[] },
+  ): Promise<ShowtimeTicketsResponse> {
+    const showtime = await this.prisma.showtime.findUnique({
+      where: { id: showtimeId },
+      include: { event: true },
+    });
+
+    if (!showtime) {
+      throw new NotFoundException('Không tìm thấy suất diễn.');
+    }
+
+    if (user) {
+      await this.verifyStaffAccess(showtimeId, user.id, user.roles);
+    }
+
+    const now = new Date();
+    const isIncremental = Boolean(since && since.trim().length > 0);
+
+    let ticketsRaw;
+    if (isIncremental) {
+      const sinceDate = new Date(since!);
+      ticketsRaw = await this.prisma.ticket.findMany({
+        where: {
+          showtimeId,
+          updatedAt: { gt: sinceDate },
+        },
+        select: {
+          code: true,
+          status: true,
+          checkedInAt: true,
+          seatLabel: true,
+          ticketType: true,
+        },
+        orderBy: { updatedAt: 'asc' },
+      });
+    } else {
+      ticketsRaw = await this.prisma.ticket.findMany({
+        where: {
+          showtimeId,
+          status: {
+            in: [TicketStatus.VALID, TicketStatus.CHECKED_IN],
+          },
+        },
+        select: {
+          code: true,
+          status: true,
+          checkedInAt: true,
+          seatLabel: true,
+          ticketType: true,
+        },
+        orderBy: { code: 'asc' },
+      });
+    }
+
+    const canonical = await this.prisma.$queryRaw<
+      {
+        code: string;
+        status: string;
+        checkedInAt: Date | null;
+        seatLabel: string;
+        ticketType: string;
+        legacyCodes: string[] | null;
+      }[]
+    >(Prisma.sql`
+      SELECT oi.id::text AS code,
+        CASE WHEN o.status<>'PAID' OR EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CANCELLED') THEN 'cancelled'
+          WHEN oi."checkedInAt" IS NOT NULL OR EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CHECKED_IN') THEN 'checked_in' ELSE 'valid' END AS status,
+        COALESCE(oi."checkedInAt",(SELECT min(t."checkedInAt") FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CHECKED_IN')) AS "checkedInAt",s.row||'-'||s."seatNumber" AS "seatLabel",oi."categoryName" AS "ticketType",
+        (SELECT array_agg(t.code) FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId") AS "legacyCodes"
+      FROM order_items oi JOIN orders o ON o.id=oi."orderId" JOIN seats s ON s.id=oi."seatId"
+      WHERE o."showtimeId"=${showtimeId}::uuid AND s."showtimeId"=o."showtimeId"
+        AND (${isIncremental} OR o.status='PAID')
+        AND (NOT ${isIncremental} OR o."updatedAt">${isIncremental ? new Date(since!) : new Date(0)} OR oi."checkedInAt">${isIncremental ? new Date(since!) : new Date(0)}
+          OR EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t."updatedAt">${isIncremental ? new Date(since!) : new Date(0)}))`);
+    const coveredCodes = new Set(
+      canonical.flatMap((item) => item.legacyCodes ?? []),
+    );
+    const tickets: ScannerTicketItem[] = ticketsRaw
+      .filter((ticket) => !coveredCodes.has(ticket.code))
+      .map((t) => ({
+        code: t.code,
+        status:
+          t.status === TicketStatus.CHECKED_IN
+            ? 'checked_in'
+            : t.status === TicketStatus.CANCELLED
+              ? 'cancelled'
+              : 'valid',
+        checkedInAt: t.checkedInAt ? t.checkedInAt.toISOString() : null,
+        seatLabel: t.seatLabel,
+        ticketType: t.ticketType,
+      }));
+
+    const codes = new Set(tickets.map((ticket) => ticket.code));
+    for (const item of canonical) {
+      if (
+        !codes.has(item.code) &&
+        (isIncremental || item.status !== 'cancelled')
+      ) {
+        tickets.push({
+          code: item.code,
+          seatLabel: item.seatLabel,
+          ticketType: item.ticketType,
+          status: item.status as ScannerTicketItem['status'],
+          checkedInAt: item.checkedInAt?.toISOString() ?? null,
+        });
+      }
+    }
+    return {
+      showtimeId: showtime.id,
+      showtimeName: showtime.event.name,
+      generatedAt: now.toISOString(),
+      cursor: now.toISOString(),
+      publicKey: this.crypto.getPublicKeyInfo(),
+      tickets,
+    };
+  }
+
+  async assignStaffToShowtime(
+    showtimeId: string,
+    userId: string,
+  ): Promise<void> {
+    await this.prisma.showtimeStaff.upsert({
+      where: {
+        showtimeId_userId: { showtimeId, userId },
+      },
+      update: {},
+      create: { showtimeId, userId },
+    });
+  }
+
+  async createTicketsForPaidOrder(orderId: string): Promise<void> {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: {
+          include: {
+            seat: true,
+          },
+        },
+      },
+    });
+
+    if (!order) return;
+
+    for (const item of order.items) {
+      const existing = await this.prisma.ticket.findFirst({
+        where: {
+          orderId: order.id,
+          seatId: item.seatId,
+        },
+      });
+
+      if (!existing) {
+        const code = `TK-${randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
+        const seatLabel = item.seat
+          ? `${item.seat.row}-${item.seat.seatNumber}`
+          : item.categoryName;
+
+        await this.prisma.ticket.create({
+          data: {
+            orderId: order.id,
+            showtimeId: order.showtimeId,
+            seatId: item.seatId,
+            code,
+            seatLabel,
+            ticketType: item.categoryName,
+            status: TicketStatus.VALID,
+            price: item.unitPrice,
+          },
+        });
+      }
+    }
+  }
+}

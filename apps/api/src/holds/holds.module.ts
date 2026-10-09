@@ -1,26 +1,10 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { HoldsController } from './holds.controller.js';
 import { HoldsService } from './holds.service.js';
-import { CustomThrottlerGuard } from '../common/guards/custom-throttler.guard.js';
-
+import { HoldsController } from './holds.controller.js';
+import { HoldExpiryScheduler } from './hold-expiry.scheduler.js';
 @Module({
-  imports: [
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60000,
-        limit: 1000,
-      },
-    ]),
-  ],
   controllers: [HoldsController],
-  providers: [
-    HoldsService,
-    {
-      provide: APP_GUARD,
-      useClass: CustomThrottlerGuard,
-    },
-  ],
+  providers: [HoldsService, HoldExpiryScheduler],
+  exports: [HoldsService],
 })
 export class HoldsModule {}

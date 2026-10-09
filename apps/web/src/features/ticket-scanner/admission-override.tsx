@@ -18,12 +18,12 @@ import { decodeCheckIn, type CheckInResult } from "./admission-response";
 export function AdmissionOverride({
   showtimeId,
   gateId,
-  ticketId,
+  qrPayload,
   onRecorded,
 }: {
   showtimeId: string;
   gateId: string;
-  ticketId: string;
+  qrPayload: string;
   onRecorded: (result: CheckInResult) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -64,7 +64,7 @@ export function AdmissionOverride({
             {
               method: "POST",
               body: {
-                ticketId,
+                qrPayload,
                 gateId,
                 requestId: command.requestId,
                 reason: command.reason,

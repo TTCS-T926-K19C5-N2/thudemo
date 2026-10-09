@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -11,6 +12,7 @@ import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js'
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { ScanCommand } from './admission-contract.js';
 import { ADMISSION_OVERRIDE_POLICY as admissionOverridePolicy } from './admission-policy.js';
+import { ScannerCryptoService } from '../scanner/scanner-crypto.service.js';
 
 type Permission = { gateName: string; staffName: string; canOverride: boolean };
 type Admission = {
@@ -24,6 +26,8 @@ type Admission = {
 };
 type Ticket = {
   checkedInAt: Date | null;
+  orderId: string;
+  seatId: string;
   categoryName: string;
   row: string;
   seatNumber: number;
@@ -31,7 +35,10 @@ type Ticket = {
 
 @Injectable()
 export class TicketCheckInService {
-  constructor(private readonly db: PrismaService) {}
+  constructor(
+    private readonly db: PrismaService,
+    private readonly crypto: ScannerCryptoService,
+  ) {}
 
   async gates(showtimeId: string, request: AuthenticatedRequest) {
     const gates = await this.db.$queryRaw<
@@ -77,23 +84,41 @@ export class TicketCheckInService {
             'Bạn chưa được cấp quyền cho vào có ghi chú tại suất/cửa này.',
         });
       }
-      // S-30 QR is an OrderItem UUID. Do not invent a second QR protocol; signed-QR acceptance remains blocked on S-26/S-30.
+      // NORMAL and EXCEPTION both resolve identity only from the same signed QR verifier.
+      const claims = this.crypto.verifyQr(command.qrPayload);
+      if (claims.showtimeId !== showtimeId.toLowerCase())
+        throw new BadRequestException({
+          code: 'WRONG_SHOWTIME',
+          message: 'Vé không thuộc suất đang soát.',
+        });
+      const ticketId = claims.ticketId;
       const [ticket] = await tx.$queryRaw<Ticket[]>(Prisma.sql`
-        SELECT oi."checkedInAt", oi."categoryName", s.row, s."seatNumber"
+        SELECT oi."checkedInAt", oi."orderId", oi."seatId", oi."categoryName", s.row, s."seatNumber"
         FROM order_items oi JOIN orders o ON o.id = oi."orderId" JOIN seats s ON s.id = oi."seatId"
-        WHERE oi.id = ${command.ticketId}::uuid AND o."showtimeId" = ${showtimeId}::uuid
+        WHERE oi.id = ${ticketId}::uuid AND o."showtimeId" = ${showtimeId}::uuid
           AND s."showtimeId" = ${showtimeId}::uuid AND o.status = 'PAID'::"OrderStatus" FOR UPDATE OF oi,o`);
       if (!ticket)
         throw new NotFoundException({
           code: 'INVALID_TICKET',
           message: 'Vé không hợp lệ hoặc không thuộc suất diễn này.',
         });
+      const legacy = await tx.$queryRaw<
+        { status: string; checkedInAt: Date | null }[]
+      >(Prisma.sql`
+        SELECT status, "checkedInAt" FROM tickets WHERE "orderId"=${ticket.orderId}::uuid AND "seatId"=${ticket.seatId}::uuid FOR UPDATE`);
+      if (legacy.some((t) => t.status === 'CANCELLED'))
+        throw new NotFoundException({
+          code: 'INVALID_TICKET',
+          message: 'Vé không đủ điều kiện vào.',
+        });
+      ticket.checkedInAt ??=
+        legacy.find((t) => t.status === 'CHECKED_IN')?.checkedInAt ?? null;
       const kind = exception ? 'EXCEPTION' : 'NORMAL';
       const [replay] = await tx.$queryRaw<Admission[]>(Prisma.sql`
         SELECT * FROM ticket_admissions WHERE "staffId" = ${request.user.id}::uuid AND "requestId" = ${command.requestId}::uuid`);
       if (replay) {
         if (
-          replay.ticketId !== command.ticketId ||
+          replay.ticketId !== ticketId ||
           replay.showtimeId !== showtimeId ||
           replay.gateId !== command.gateId ||
           replay.kind !== kind ||
@@ -104,22 +129,22 @@ export class TicketCheckInService {
             message: 'Mã yêu cầu đã được sử dụng cho hành động khác.',
           });
         }
-        return this.result(
-          'ALREADY_RECORDED',
-          command.ticketId,
-          ticket,
-          replay,
-        );
+        return this.result('ALREADY_RECORDED', ticketId, ticket, replay);
       }
       const [first] = await tx.$queryRaw<Admission[]>(Prisma.sql`
-        SELECT * FROM ticket_admissions WHERE "ticketId" = ${command.ticketId}::uuid AND kind = 'NORMAL'`);
-      if (!exception && (first || ticket.checkedInAt)) {
+        SELECT * FROM ticket_admissions WHERE "ticketId" = ${ticketId}::uuid AND kind = 'NORMAL'`);
+      if (
+        !exception &&
+        (first ||
+          ticket.checkedInAt ||
+          legacy.some((t) => t.status === 'CHECKED_IN'))
+      ) {
         throw new ConflictException({
           code: 'TICKET_ALREADY_CHECKED_IN',
           message: 'Vé đã sử dụng.',
           firstAdmission: {
-            checkedInAt: (first?.enteredAt ??
-              ticket.checkedInAt)!.toISOString(),
+            checkedInAt:
+              (first?.enteredAt ?? ticket.checkedInAt)?.toISOString() ?? null,
             gateName:
               first?.gateName ?? 'Chưa lưu thông tin cửa (vé soát trước S-31)',
           },
@@ -128,15 +153,16 @@ export class TicketCheckInService {
           ),
         });
       }
-      if (exception && !first)
+      if (exception && !first) {
         throw new ConflictException({
           code: 'EXCEPTION_REQUIRES_FIRST_ADMISSION',
           message:
             'Chỉ cho vào lại theo ngoại lệ khi đã có lần vào thông thường được ghi nhận đầy đủ.',
         });
+      }
       const [admission] = await tx.$queryRaw<Admission[]>(Prisma.sql`
         INSERT INTO ticket_admissions (id, "ticketId", "showtimeId", "gateId", "gateName", "staffId", "staffName", "requestId", kind, reason, "ownerConfirmed")
-        VALUES (${randomUUID()}::uuid, ${command.ticketId}::uuid, ${showtimeId}::uuid, ${command.gateId}::uuid,
+        VALUES (${randomUUID()}::uuid, ${ticketId}::uuid, ${showtimeId}::uuid, ${command.gateId}::uuid,
           ${permission.gateName}, ${request.user.id}::uuid, ${permission.staffName}, ${command.requestId}::uuid,
           ${kind}, ${command.reason ?? null}, ${exception})
         ON CONFLICT DO NOTHING RETURNING *`);
@@ -146,13 +172,17 @@ export class TicketCheckInService {
           message:
             'Yêu cầu đã được ghi nhận hoặc mã yêu cầu đang dùng cho hành động khác. Kiểm tra lại kết quả.',
         });
-      if (!exception)
+      if (!exception) {
         await tx.$executeRaw(
-          Prisma.sql`UPDATE order_items SET "checkedInAt" = ${admission.enteredAt} WHERE id = ${command.ticketId}::uuid`,
+          Prisma.sql`UPDATE order_items SET "checkedInAt" = ${admission.enteredAt} WHERE id = ${ticketId}::uuid`,
         );
+        await tx.$executeRaw(
+          Prisma.sql`UPDATE tickets SET status='CHECKED_IN', "checkedInAt"=${admission.enteredAt}, "updatedAt"=clock_timestamp() WHERE "orderId"=${ticket.orderId}::uuid AND "seatId"=${ticket.seatId}::uuid`,
+        );
+      }
       return this.result(
         exception ? 'EXCEPTION_RECORDED' : 'SUCCESS',
-        command.ticketId,
+        ticketId,
         ticket,
         admission,
       );

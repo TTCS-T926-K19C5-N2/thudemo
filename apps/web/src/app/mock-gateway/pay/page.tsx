@@ -16,7 +16,7 @@ export default async function MockGatewayPayPage({
 }: MockGatewayPayPageProps) {
   const isMockEnv =
     (process.env.PAYMENT_GATEWAY ?? "").toLowerCase() === "mock";
-
+  
   if (!isMockEnv) {
     try {
       const apiOrigin =

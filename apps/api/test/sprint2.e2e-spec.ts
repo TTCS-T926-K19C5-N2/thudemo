@@ -8,7 +8,6 @@ import { AppModule } from '../src/app.module.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 import { hashSessionToken, SESSION_COOKIE } from '../src/auth/auth.service.js';
 import { SEAT_STATUS_SQL } from '../src/showtimes/seat-status.sql.js';
-
 describe('Sprint 2 isolated database integration', () => {
   let app: INestApplication;
   let db: PrismaService;
@@ -18,7 +17,7 @@ describe('Sprint 2 isolated database integration', () => {
   let cookie: string;
   let otherCookie: string;
   let buyerCookie: string;
-  let eventId: string | undefined;
+  let eventId: string;
   let showId: string;
   const extraBuyerIds: string[] = [];
   const samples: Record<string, number[]> = {
@@ -34,7 +33,6 @@ describe('Sprint 2 isolated database integration', () => {
       category: i < 400 ? 'VIP' : 'Standard',
     })),
   };
-
   async function account(role: string) {
     // Parallel E2E files share role names. Insert atomically, matching the
     // auth/events fixtures, rather than a read-then-create empty-update upsert.
@@ -58,7 +56,6 @@ describe('Sprint 2 isolated database integration', () => {
     });
     return { id: user.id, cookie: `${SESSION_COOKIE}=${token}` };
   }
-
   beforeAll(async () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
@@ -99,9 +96,8 @@ describe('Sprint 2 isolated database integration', () => {
       })
     ).id;
   });
-
   afterAll(async () => {
-    if (db && eventId) {
+    if (db) {
       const shows = await db.showtime.findMany({
         where: { eventId },
         select: { id: true },
@@ -149,7 +145,6 @@ describe('Sprint 2 isolated database integration', () => {
       await app.close();
     }
   });
-
   it('projects sold/held/expired inventory fixtures in the production SQL expression using DB time', async () => {
     const rows = await db.$queryRaw<
       { id: string; status: string }[]
@@ -166,7 +161,6 @@ describe('Sprint 2 isolated database integration', () => {
       sold: 'SOLD',
     });
   });
-
   it('enforces authentication, role, owner, input and open conditions', async () => {
     await request(app.getHttpServer())
       .post(`/showtimes/${showId}/seat-map`)
@@ -211,7 +205,6 @@ describe('Sprint 2 isolated database integration', () => {
     expect(preview.body.errors).toEqual([]);
     expect(await db.seat.count({ where: { showtimeId: showId } })).toBe(0);
   }, 15000);
-
   it('batch imports 2000; failure preserves existing data; DB constraints rollback categories', async () => {
     for (let i = 0; i < 10; i++) {
       const start = performance.now();
@@ -259,7 +252,6 @@ describe('Sprint 2 isolated database integration', () => {
       }),
     ).toBe(0);
   }, 30000);
-
   it('distinguishes null from free, validates price and locks structure through close/reopen', async () => {
     const categories = await db.seatCategory.findMany({
       where: { showtimeId: showId },
@@ -316,11 +308,11 @@ describe('Sprint 2 isolated database integration', () => {
       .send({ status: 'ON_SALE' })
       .expect(200);
     const privateDraft = await db.showtime.create({
-      data: { eventId: eventId!, startTime: new Date('2026-10-17T12:30:00Z') },
+      data: { eventId, startTime: new Date('2026-10-17T12:30:00Z') },
     });
     const publishedClosed = await db.showtime.create({
       data: {
-        eventId: eventId!,
+        eventId,
         startTime: new Date('2026-10-18T12:30:00Z'),
         status: 'CLOSED',
         structureLocked: true,
@@ -356,11 +348,10 @@ describe('Sprint 2 isolated database integration', () => {
     }
     expect(Math.max(...samples.queryMs)).toBeLessThan(200);
   }, 30000);
-
   it('paginates 200 shows at tied dates, cache revision changes on price/close, omits internal fields', async () => {
     const created = await db.showtime.createManyAndReturn({
       data: Array.from({ length: 199 }, () => ({
-        eventId: eventId!,
+        eventId,
         startTime: new Date('2026-10-16T12:00:00Z'),
         status: 'ON_SALE' as const,
       })),

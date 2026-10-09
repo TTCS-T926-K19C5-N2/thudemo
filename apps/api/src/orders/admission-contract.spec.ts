@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { scanCommand } from './admission-contract.js';
 const valid = () => ({
-  ticketId: randomUUID(),
+  qrPayload: 'ET1.Ed25519.fixture-k1.signed-payload-verified-in-service',
   gateId: randomUUID(),
   requestId: randomUUID(),
 });
@@ -11,7 +11,7 @@ describe('Admission command validation', () => {
     const value = valid();
     expect(
       scanCommand({
-        ticketId: value.ticketId.toUpperCase(),
+        qrPayload: value.qrPayload,
         gateId: value.gateId.toUpperCase(),
         requestId: value.requestId.toUpperCase(),
       }),
@@ -21,7 +21,9 @@ describe('Admission command validation', () => {
     for (const body of [
       null,
       [],
-      { ...valid(), ticketId: 'bad' },
+      { ...valid(), qrPayload: null },
+      { ...valid(), qrPayload: 'x'.repeat(257) },
+      { ...valid(), ticketId: randomUUID() },
       { ...valid(), gateId: 'bad' },
       { ...valid(), requestId: 'bad' },
     ])

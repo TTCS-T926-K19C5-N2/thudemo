@@ -6,6 +6,7 @@ import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { hashSessionToken, SESSION_COOKIE } from '../src/auth/auth.service.js';
 import { AppModule } from '../src/app.module.js';
+import { ScannerCryptoService } from '../src/scanner/scanner-crypto.service.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 
 describe('Ticket check-in integration', () => {
@@ -97,7 +98,9 @@ describe('Ticket check-in integration', () => {
         (target.port === '15432' &&
           target.pathname === '/sprint2_integration') ||
         (target.port === '15438' &&
-          target.pathname === '/s31_admission_integration')
+          target.pathname === '/s31_admission_integration') ||
+        (target.port === '15440' &&
+          target.pathname === '/signed_qr_integration')
       )
     ) {
       throw new Error('Run only on the isolated sprint2_integration database');
@@ -220,7 +223,12 @@ describe('Ticket check-in integration', () => {
     const response = await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
       .set('Cookie', staffCookie)
-      .send({ gateId, ticketId: paidTicketId })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(paidTicketId, showtimeId),
+      })
       .expect(200);
 
     expect(response.body).toMatchObject({
@@ -239,19 +247,34 @@ describe('Ticket check-in integration', () => {
     await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
       .set('Cookie', staffCookie)
-      .send({ gateId, ticketId: randomUUID() })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(randomUUID(), showtimeId),
+      })
       .expect(404);
 
     await request(app.getHttpServer())
       .post(`/showtimes/${otherShowtimeId}/check-in`)
       .set('Cookie', staffCookie)
-      .send({ gateId: otherGateId, ticketId: concurrentTicketId })
-      .expect(404);
+      .send({
+        gateId: otherGateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(concurrentTicketId, showtimeId),
+      })
+      .expect(400);
 
     await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
       .set('Cookie', staffCookie)
-      .send({ gateId, ticketId: unpaidTicketId })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(unpaidTicketId, showtimeId),
+      })
       .expect(404);
   });
 
@@ -259,14 +282,24 @@ describe('Ticket check-in integration', () => {
     await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
       .set('Cookie', staffCookie)
-      .send({ gateId, ticketId: paidTicketId })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(paidTicketId, showtimeId),
+      })
       .expect(409);
 
     const scan = () =>
       request(app.getHttpServer())
         .post(`/showtimes/${showtimeId}/check-in`)
         .set('Cookie', staffCookie)
-        .send({ gateId, ticketId: concurrentTicketId });
+        .send({
+          gateId,
+          qrPayload: app
+            .get(ScannerCryptoService)
+            .issueQr(concurrentTicketId, showtimeId),
+        });
     const responses = await Promise.all([scan(), scan()]);
 
     expect(
@@ -292,20 +325,35 @@ describe('Ticket check-in integration', () => {
 
     await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
-      .send({ gateId, ticketId: paidTicketId })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(paidTicketId, showtimeId),
+      })
       .expect(401);
 
     const organizerTicketId = await createOrderItem(4, OrderStatus.PAID);
     await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
       .set('Cookie', otherOrganizerCookie)
-      .send({ gateId, ticketId: organizerTicketId })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(organizerTicketId, showtimeId),
+      })
       .expect(403);
 
     await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
       .set('Cookie', `${SESSION_COOKIE}=${organizerToken}`)
-      .send({ gateId, ticketId: organizerTicketId })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(organizerTicketId, showtimeId),
+      })
       .expect(200);
   });
 });

@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 const uuid =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export type ScanCommand = {
-  ticketId: string;
+  qrPayload: string;
   gateId: string;
   requestId: string;
   reason?: string;
@@ -18,15 +18,20 @@ export function scanCommand(body: unknown, exception = false): ScanCommand {
       message: 'Yêu cầu quét vé không hợp lệ.',
     });
   const value = body as Record<string, unknown>;
-  // Preserve S-30's UUID contract. Signed QR is still a dependency gate.
-  for (const key of ['ticketId', 'gateId']) {
+  if (
+    typeof value.qrPayload !== 'string' ||
+    value.qrPayload.length > 256 ||
+    'ticketId' in value
+  )
+    throw new BadRequestException({
+      code: 'INVALID_QR_SIGNATURE',
+      message: 'Cần mã QR có chữ ký; mã vé trần không được chấp nhận.',
+    });
+  for (const key of ['gateId']) {
     if (typeof value[key] !== 'string' || !uuid.test(value[key]))
       throw new BadRequestException({
-        code: key === 'ticketId' ? 'INVALID_TICKET' : 'INVALID_GATE',
-        message:
-          key === 'ticketId'
-            ? 'Mã QR không hợp lệ.'
-            : 'Chọn cửa được cấp quyền trước khi quét vé.',
+        code: 'INVALID_GATE',
+        message: 'Chọn cửa được cấp quyền trước khi quét vé.',
       });
   }
   const requestId = value.requestId ?? randomUUID();
@@ -65,7 +70,7 @@ export function scanCommand(body: unknown, exception = false): ScanCommand {
       message: 'Xác nhận đã kiểm tra chủ vé và nhập lý do từ 1 đến 500 ký tự.',
     });
   return {
-    ticketId: (value.ticketId as string).toLowerCase(),
+    qrPayload: value.qrPayload as string,
     gateId: (value.gateId as string).toLowerCase(),
     requestId: requestId.toLowerCase(),
     ...(exception

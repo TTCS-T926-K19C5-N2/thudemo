@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { QRCodeSVG } from "qrcode.react";
+import { SignedTickets } from "./signed-tickets";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -78,9 +78,12 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
         serverAnchor.receivedAt,
       );
       setRemaining(rem);
-      setExpired(data.isExpired || rem <= 0);
+      setExpired(data.status !== "PAID" && (data.isExpired || rem <= 0));
     } catch (err) {
-      if (err instanceof ApiError && (err.status === 404 || err.status === 403)) {
+      if (
+        err instanceof ApiError &&
+        (err.status === 404 || err.status === 403)
+      ) {
         setNotFound(true);
       } else {
         setError(
@@ -125,7 +128,7 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
         serverAnchor.receivedAt,
       );
       setRemaining(rem);
-      setExpired(data.isExpired || rem <= 0);
+      setExpired(data.status !== "PAID" && (data.isExpired || rem <= 0));
       setLoading(false);
     }
 
@@ -156,7 +159,7 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
 
   // Live countdown timer based on server clock synchronization
   useEffect(() => {
-    if (!order || expired || !clock) return;
+    if (!order || order.status === "PAID" || expired || !clock) return;
     const interval = setInterval(() => {
       const rem = remainingSeconds(order.expiresAt, clock, performance.now());
       setRemaining(rem);
@@ -210,7 +213,8 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
               <CircleAlert className="h-4 w-4" />
               <AlertTitle>Cần đăng nhập</AlertTitle>
               <AlertDescription>
-                Bạn cần đăng nhập tài khoản người mua để xem chi tiết đơn hàng này.
+                Bạn cần đăng nhập tài khoản người mua để xem chi tiết đơn hàng
+                này.
               </AlertDescription>
             </Alert>
             <Button
@@ -314,11 +318,11 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
                   Đơn đã hết hạn thanh toán
                 </AlertTitle>
                 <AlertDescription className="text-sm mt-1">
-                  Thời gian giữ chỗ cho đơn hàng này đã kết thúc. Các ghế đã được
-                  giải phóng. Vui lòng quay lại sơ đồ ghế để chọn lại.
+                  Thời gian giữ chỗ cho đơn hàng này đã kết thúc. Các ghế đã
+                  được giải phóng. Vui lòng quay lại sơ đồ ghế để chọn lại.
                 </AlertDescription>
               </Alert>
-            ) : (
+            ) : order.status !== "PAID" ? (
               <div
                 className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 border border-secondary text-secondary-foreground"
                 data-testid="countdown-banner"
@@ -341,7 +345,7 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
                   {countdownLabel(remaining)}
                 </div>
               </div>
-            )}
+            ) : null}
 
             {/* Event & Showtime Summary */}
             <div className="rounded-xl border bg-card p-5 shadow-sm space-y-4">
@@ -401,7 +405,10 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
                 </TableHeader>
                 <TableBody>
                   {order.items.map((item, idx) => (
-                    <TableRow key={item.id} data-testid={`order-seat-${item.seatId}`}>
+                    <TableRow
+                      key={item.id}
+                      data-testid={`order-seat-${item.seatId}`}
+                    >
                       <TableCell className="text-center text-muted-foreground font-mono text-xs">
                         {idx + 1}
                       </TableCell>
@@ -414,7 +421,10 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="font-normal text-xs">
+                        <Badge
+                          variant="outline"
+                          className="font-normal text-xs"
+                        >
                           {item.tierName}
                         </Badge>
                       </TableCell>
@@ -448,39 +458,7 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
             </div>
 
             {order.status === "PAID" && (
-              <section
-                aria-labelledby="ticket-qr-title"
-                className="mt-6 rounded-xl border bg-card p-5 shadow-sm"
-                data-testid="paid-ticket-qrs"
-              >
-                <h2 id="ticket-qr-title" className="text-lg font-semibold">
-                  Mã QR vé vào cửa
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Mỗi mã QR chỉ được sử dụng để check-in một lần.
-                </p>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                  {order.items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center gap-4 rounded-lg border p-4"
-                    >
-                      <QRCodeSVG
-                        value={item.id}
-                        size={112}
-                        level="M"
-                        aria-label={`Mã QR vé ghế ${item.label}`}
-                      />
-                      <div>
-                        <p className="font-semibold">{item.label}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Hạng {item.tierName}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
+              <SignedTickets key={order.id} orderId={order.id} />
             )}
 
             {/* S-24: Failed previous payment notice */}
@@ -495,7 +473,8 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
                   <CircleAlert className="h-4 w-4 text-amber-600" />
                   <AlertTitle>Thanh toán lần trước không thành công</AlertTitle>
                   <AlertDescription>
-                    Thanh toán lần trước không thành công, ghế của bạn vẫn được giữ.
+                    Thanh toán lần trước không thành công, ghế của bạn vẫn được
+                    giữ.
                   </AlertDescription>
                 </Alert>
               )}
@@ -512,14 +491,19 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
                   <CircleAlert className="h-4 w-4 text-blue-600" />
                   <AlertTitle>Giao dịch đang chờ xác nhận</AlertTitle>
                   <AlertDescription>
-                    Bạn có một giao dịch đang chờ xác nhận, thanh toán lại có thể bị trừ tiền hai lần.
+                    Bạn có một giao dịch đang chờ xác nhận, thanh toán lại có
+                    thể bị trừ tiền hai lần.
                   </AlertDescription>
                 </Alert>
               )}
 
             {/* Pay Error Alert */}
             {payError && (
-              <Alert variant="destructive" className="mt-4" data-testid="pay-error-alert">
+              <Alert
+                variant="destructive"
+                className="mt-4"
+                data-testid="pay-error-alert"
+              >
                 <CircleAlert className="h-4 w-4" />
                 <AlertTitle>Lỗi thanh toán</AlertTitle>
                 <AlertDescription>{payError}</AlertDescription>
@@ -544,26 +528,26 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
               {!expired &&
                 (order.status === "PENDING" ||
                   order.status === "PENDING_PAYMENT") && (
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto min-w-[200px] text-base font-semibold shadow-md"
-                  onClick={defaultPayHandler}
-                  disabled={paying}
-                  data-testid="pay-button"
-                >
-                  {paying ? (
-                    <>
-                      <RotateCw className="mr-2 h-4 w-4 animate-spin" />
-                      Đang kết nối cổng thanh toán...
-                    </>
-                  ) : order.latestPayment?.status === "FAILED" ||
-                    order.latestPayment?.status === "INITIATED" ? (
-                    "Thanh toán lại"
-                  ) : (
-                    "Thanh toán ngay"
-                  )}
-                </Button>
-              )}
+                  <Button
+                    size="lg"
+                    className="w-full sm:w-auto min-w-[200px] text-base font-semibold shadow-md"
+                    onClick={defaultPayHandler}
+                    disabled={paying}
+                    data-testid="pay-button"
+                  >
+                    {paying ? (
+                      <>
+                        <RotateCw className="mr-2 h-4 w-4 animate-spin" />
+                        Đang kết nối cổng thanh toán...
+                      </>
+                    ) : order.latestPayment?.status === "FAILED" ||
+                      order.latestPayment?.status === "INITIATED" ? (
+                      "Thanh toán lại"
+                    ) : (
+                      "Thanh toán ngay"
+                    )}
+                  </Button>
+                )}
             </div>
           </div>
         )}

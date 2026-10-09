@@ -16,7 +16,7 @@ const root = resolve(import.meta.dirname, "../../..");
 const evidence = resolve(root, "evidence/s31");
 const report = {
   environment:
-    "http://localhost:3040/scanner -> real same-origin proxy -> own API localhost:3001 -> private PostgreSQL 15438",
+    "http://localhost:3060/scanner -> real same-origin proxy -> own API localhost:3061 -> private PostgreSQL 15442",
   browser: "Playwright Chromium 1.62.1; Browser plugin not available",
   viewports: ["1440x1000", "390x844"],
   camera: false,
@@ -43,7 +43,7 @@ async function session(actor, viewport) {
     {
       name: "event_session",
       value: token,
-      url: "http://localhost:3040",
+      url: "http://localhost:3060",
       httpOnly: true,
       sameSite: "Lax",
     },
@@ -59,7 +59,7 @@ async function session(actor, viewport) {
       report.consoleErrors.push(message.text());
   });
   await page.goto(
-    `http://localhost:3040/scanner?showtimeId=${fixture.showtimeId}`,
+    `http://localhost:3060/scanner?showtimeId=${fixture.showtimeId}`,
   );
   await page.getByRole("button", { name: "Tải cửa được phân công" }).click();
   await page
@@ -224,12 +224,10 @@ try {
     "Editing ticket code clears stale valid result before server verification",
   );
   await scan(ordinary, fixture.freshTicket);
-  await status(ordinary)
-    .filter({ hasText: "Đây không phải lần vào mới" })
-    .waitFor();
+  await status(ordinary).filter({ hasText: "Vé đã sử dụng" }).waitFor();
   check(
-    (await status(ordinary).getAttribute("data-state")) === "RECORDED",
-    "Retry result never displayed as new green admission",
+    (await status(ordinary).getAttribute("data-state")) === "USED",
+    "New scan after editing never displayed as new green admission",
   );
   await ordinary.getByRole("button", { name: "Quét vé tiếp theo" }).click();
   await ordinary.route(

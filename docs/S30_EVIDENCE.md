@@ -1,0 +1,29 @@
+# S-30/S-26 acceptance evidence
+
+DB/Redis riêng PostgreSQL15440/signed_qr_integration+Redis16388; hồi quy riêng15432/sprint2_integration+Redis16390. Không reset dữ liệu task khác.
+
+| AC/NFR                                                               | Implementation                                       | Test/file                                                                                | Kết quả                                      | Source SHA                               |
+| -------------------------------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------- | ---------------------------------------- |
+| S-26 ký canonical, no PII, tamper/unsigned/key/algorithm/version sai | shared parser + ScannerCryptoService                 | 13crypto unit + [HTTP](../evidence/s30/ci-ed76c9a/http-proof.json), invalid zero history | PASS local/CI                                | ed76c9a005029707719279b05170695b011e5395 |
+| Rotation giữ khóa cũ, restart                                        | persistent private file/public ring                  | two OS API processes, old/new signed QR                                                  | PASS local/CI                                | ed76c9a005029707719279b05170695b011e5395 |
+| S-30 hợp lệ, seat/cửa/database time sau commit                       | locked paid OrderItem+ledger+legacy Ticket           | 78HTTPchecks,50realraces/direct DB counts                                                | PASS local/CI                                | ed76c9a005029707719279b05170695b011e5395 |
+| Sai suất/quyền/status                                                | assignment trước metadata + paid/cancelled/used veto | 136requests                                                                              | PASS local/CI                                | ed76c9a005029707719279b05170695b011e5395 |
+| Quá3s chờ, network error không xanh                                  | scanner V1                                           | [19browser checks](../evidence/s30/ci-ed76c9a/browser-proof.json)                        | PASS CI; local final render cần user restart | ed76c9a005029707719279b05170695b011e5395 |
+| Orders/payment/scanner/S-33 regression                               | modules/consumers                                    | 224unit+84integration,real snapshot IndexedDB+rotation ring                              | PASS local/CI                                | ed76c9a005029707719279b05170695b011e5395 |
+| <500ms                                                               | actual loopback HTTP                                 | [136local requests](../evidence/s30/local-http-proof.json):p95 34.45ms/max61.48ms        | PASS local; không staging/network proof      | 9afefc79099e77c7a6ed729a8197602e3f08ddc6 |
+| V1 desktop/mobile,render QR image decode                             | SignedTickets+scanner                                | PNG+Html5Qrcode decoded image→real API                                                   | PASS CI; không camera thật                   | ed76c9a005029707719279b05170695b011e5395 |
+| Compensation giữ history                                             | guarded SQL template                                 | populated DB refused;276admissions retained                                              | PASS local,no reset/drop data                | code9afefc7/currentDB                    |
+| Camera thật, ngoài trời                                              | camera scanner                                       | chưa có người thực hiện trên revision mới                                                | CHƯA KIỂM,gate merge mở                      | pending                                  |
+| Staging                                                              | chưa deploy                                          | không evidence revision này                                                              | CHƯA KIỂM                                    | pending                                  |
+
+Build/lint/typecheck PASS;4warning baseline. [Signed QR CI](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/37899116067) và [T-02 CI](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/37899116057) PASS ở ed76. S-43 còn chạy tại lần ghi. Head mới phải chạy lại CI; không dùng PASS ed76 cho head sau.
+
+Ảnh [desktop](../evidence/s30/ci-ed76c9a/desktop-used.png),[mobile](../evidence/s30/ci-ed76c9a/mobile-used.png),[owner QR fixture](../evidence/s30/ci-ed76c9a/desktop-owner-qr-fixture.png). Đã xem render V1: layout/font/màu giữ nguyên; QR256px/quiet zone sửa global SVG bị thu về icon. Key/cookie/fixture files ngoài Git; chỉ sanitized proof/PNG upload. QR ảnh là vé giả, không khách. CI artifact tải nguyên bytes, không đổi sourceSha hoặc dựng local proof.
+
+Security diff scan143bbba3-11e0-4f3b-8cf6-130f832460de hoàn tất immutable main79704a2→9afefc7,39sourcefiles,0candidate có cơ sở. CIed76 và functional stale-context fixes cần final-head delta review. Không phải review độc lập của chủ tài khoản; canonical report/model lưu qua plugin.
+
+## Gate camera/ngoài trời
+
+Thiết bị camera vật lý, secure context, staff có suất/cửa trong DB test; quét QR ký từ trang đơn owner. Xác nhận ghế/cửa/time sau server commit; quét lại cửa khác từ chối; QR sửa/unsigned từ chối; quá3s chờ; ngắt mạng không hợp lệ. Kiểm ánh sáng ngoài trời,text/icon/nút chạm. Ghi thiết bị/OS/browser,revision,ánh sáng,kết quả và ảnh không QR/session thật. Viewport mobile,ảnh/video fixture,camera giả không thay camera thật.
+
+Không KYC/upload giấy tờ/endpoint tự cấp quyền. S-31 xác nhận chủ vé sau kiểm thực tế; không coi click là bằng chứng độc lập.

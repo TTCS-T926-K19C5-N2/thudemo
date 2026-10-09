@@ -1,0 +1,92 @@
+name: S-30 signed QR
+
+on:
+  pull_request:
+  push:
+    branches:
+      [main, feature/SCRUM-30-qr-ticket-check, story/S-31-prevent-ticket-reuse]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: signed-qr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  signed-qr:
+    name: S-30 / signed QR HTTP and browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DATABASE_URL: postgresql://qr_fixture:qr_fixture@127.0.0.1:15440/signed_qr_integration?schema=public
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: "16388"
+      API_INTERNAL_URL: http://127.0.0.1:3051
+      QR_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HOLD_EXPIRY_MODE: "off"
+      NODE_ENV: test
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: qr_fixture
+          POSTGRES_PASSWORD: qr_fixture
+          POSTGRES_DB: signed_qr_integration
+        ports: [15440:5432]
+        options: >-
+          --health-cmd "pg_isready -U qr_fixture -d signed_qr_integration"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: [16388:6379]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter api exec prisma generate
+      - run: pnpm --filter api exec prisma migrate deploy
+      - run: pnpm build
+      - name: Configure private test fixture paths on the runner
+        run: |
+          echo "QR_FIXTURE_KEY_DIR=$RUNNER_TEMP/qr-keys" >> "$GITHUB_ENV"
+          echo "QR_PRIVATE_FIXTURE_FILE=$RUNNER_TEMP/qr-browser.json" >> "$GITHUB_ENV"
+      - name: Signed QR, two API processes, 50 real database races, rotation and restart
+        run: node apps/api/scripts/verify-s30-signed-qr.mjs
+      - run: pnpm --filter web exec playwright install --with-deps chromium
+      - name: Real browser and S-33 compatibility
+        shell: bash
+        run: |
+          export SCANNER_KEY_ID=fixture-k2
+          export SCANNER_SIGNING_PRIVATE_KEY_FILE="$QR_FIXTURE_KEY_DIR/fixture-k2.private.pem"
+          export SCANNER_PUBLIC_KEYS="$(node --input-type=module -e 'import{readFileSync}from"node:fs";console.log(JSON.stringify(Object.fromEntries(["fixture-k1","fixture-k2"].map(k=>[k,readFileSync(process.env.QR_FIXTURE_KEY_DIR+"/"+k+".public.pem","utf8")]))))')"
+          PORT=3051 WEB_ORIGIN=http://localhost:3050 node apps/api/dist/main.js > "$RUNNER_TEMP/qr-api.log" 2>&1 &
+          API_PID=$!
+          pnpm --filter web exec next start --hostname 127.0.0.1 --port 3050 > "$RUNNER_TEMP/qr-web.log" 2>&1 &
+          WEB_PID=$!
+          trap 'kill "$API_PID" "$WEB_PID" 2>/dev/null || true' EXIT
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3051/health >/dev/null && curl -fsS http://127.0.0.1:3050 >/dev/null; then break; fi
+            sleep 1
+          done
+          node apps/web/scripts/verify-s30-signed-browser.mjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: signed-qr-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            evidence/s30/*proof.json
+            evidence/s30/*.png
+          if-no-files-found: error
+          retention-days: 14

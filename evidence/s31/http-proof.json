@@ -3,14 +3,16 @@
   "ci": false,
   "staging": false,
   "camera": false,
-  "sourceSha": "285c9afe5b56483118b2b655750e9ab2ae8ccd9e",
+  "sourceSha": "working-tree",
   "instances": 2,
   "processIds": [
-    15400,
-    23492,
-    5676
+    27368,
+    12572,
+    24532,
+    22880
   ],
   "checks": [
+    "Real owner endpoint issues the same signed QR for the existing paid ticket",
     "First admission succeeds only after commit",
     "Database staff/gate/time snapshot matches response and ticket state",
     "AC1: gate B rejects with first 19:02/gate A, no extra entry",
@@ -20,8 +22,22 @@
     "No session cannot scan",
     "AC2: 50 races across two API OS processes/sessions/gates, exactly one committed normal admission each",
     "Simultaneous same scan request inserts once",
-    "Malformed QR/unknown/unpaid/cancelled tickets never enter; cryptographic signature remains unverified",
-    "Assigned gate in wrong showtime rejects ticket",
+    "Malformed QR/unknown/unpaid/cancelled tickets never enter; signed QR is required",
+    "Assigned gate in wrong showtime rejects signed ticket",
+    "Invalid QR rejected by shared server verifier for NORMAL; no history",
+    "Invalid QR rejected by shared server verifier for EXCEPTION; no history",
+    "Invalid QR rejected by shared server verifier for NORMAL; no history",
+    "Invalid QR rejected by shared server verifier for EXCEPTION; no history",
+    "Invalid QR rejected by shared server verifier for NORMAL; no history",
+    "Invalid QR rejected by shared server verifier for EXCEPTION; no history",
+    "Invalid QR rejected by shared server verifier for NORMAL; no history",
+    "Invalid QR rejected by shared server verifier for EXCEPTION; no history",
+    "Invalid QR rejected by shared server verifier for NORMAL; no history",
+    "Invalid QR rejected by shared server verifier for EXCEPTION; no history",
+    "Invalid QR rejected by shared server verifier for NORMAL; no history",
+    "Invalid QR rejected by shared server verifier for EXCEPTION; no history",
+    "Exception rejects a client ticket UUID alongside a signed QR",
+    "Exception cannot bypass signed showtime context",
     "Exception requires nonblank bounded reason and explicit owner attestation",
     "STAFF/ADMIN roles never imply exception permission",
     "Client identity/time injection rejected",
@@ -39,14 +55,16 @@
     "Expired session denied before ticket metadata",
     "UUID case normalization preserves request replay fingerprint",
     "BUYER role cannot use scanner endpoint",
-    "Revoked exception capability rejected on next request"
+    "Revoked exception capability rejected on next request",
+    "Rotated key verifies new QR for NORMAL and EXCEPTION on the second API",
+    "Old signed QR remains verified and consumed after key rotation and API restart"
   ],
   "races": [
     {
       "round": 1,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
@@ -61,16 +79,16 @@
     {
       "round": 3,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
     {
       "round": 4,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
@@ -93,8 +111,8 @@
     {
       "round": 7,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
@@ -109,8 +127,8 @@
     {
       "round": 9,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
@@ -125,8 +143,8 @@
     {
       "round": 11,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
@@ -149,8 +167,8 @@
     {
       "round": 14,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
@@ -173,16 +191,16 @@
     {
       "round": 17,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
     {
       "round": 18,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
@@ -197,16 +215,16 @@
     {
       "round": 20,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
     {
       "round": 21,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
@@ -269,16 +287,16 @@
     {
       "round": 29,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
     {
       "round": 30,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
@@ -301,8 +319,8 @@
     {
       "round": 33,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
@@ -325,16 +343,16 @@
     {
       "round": 36,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
     {
       "round": 37,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
@@ -373,8 +391,8 @@
     {
       "round": 42,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
@@ -413,8 +431,8 @@
     {
       "round": 47,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
@@ -429,27 +447,28 @@
     {
       "round": 49,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
     {
       "round": 50,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     }
   ],
-  "startedAt": "2026-10-08T15:00:17.270Z",
-  "signature": "NOT VERIFIED: S-30 uses unsigned ticket UUID",
+  "startedAt": "2026-10-09T08:57:12.848Z",
+  "signature": "ET1.Ed25519: same verifier for NORMAL and EXCEPTION",
+  "driverSha256": "cd92398aa8c7f40fb2aa0edf9469e480f0c2a8d882329d24f8187a6053be996f",
   "responseMs": {
-    "count": 134,
-    "p95": 27.978599999999915,
-    "max": 79.15440000000035
+    "count": 151,
+    "p95": 34.111199999999826,
+    "max": 52.115600000000086
   },
   "status": "PASS",
-  "finishedAt": "2026-10-08T15:00:22.725Z"
+  "finishedAt": "2026-10-09T08:57:19.745Z"
 }

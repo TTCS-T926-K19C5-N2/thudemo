@@ -6,7 +6,10 @@ import { PublicLayout } from "@/components/layout/product-layout";
 import { ApiError, api, object } from "@/lib/api/client";
 import { loadCurrentUser } from "@/lib/api";
 import { checkInFailureState, checkInWithWaiting } from "./check-in-request";
+import Link from "next/link";
 import { AdmissionOverride } from "./admission-override";
+import { verifyTicketQr, decodeQrKeys } from "./verify-ticket-qr";
+import type { TicketQrPublicKey } from "shared/ticket-qr";
 import {
   admissionTime,
   decodeCheckIn,
@@ -37,6 +40,7 @@ export function TicketScanner({
   const [userError, setUserError] = useState("");
   const [showtimeId, setShowtimeId] = useState(initialShowtimeId);
   const [ticketId, setTicketId] = useState("");
+  const [qrKeys, setQrKeys] = useState<TicketQrPublicKey[]>([]);
   const [gates, setGates] = useState<Gate[]>([]);
   const [gateId, setGateId] = useState("");
   const [gatesLoading, setGatesLoading] = useState(false);
@@ -149,6 +153,7 @@ export function TicketScanner({
       setMessage("Đang xác thực vé...");
 
       try {
+        await verifyTicketQr(scannedTicketId, qrKeys, showtimeId.trim());
         const checkedIn = await checkInWithWaiting(
           (signal) =>
             api(
@@ -171,7 +176,14 @@ export function TicketScanner({
                       requestId: crypto.randomUUID(),
                     };
                   }
-                  return scanAction.current;
+                  const action = scanAction.current;
+                  if (!action)
+                    throw new Error("Không thể tạo lượt quét. Hãy thử lại.");
+                  return {
+                    qrPayload: action.ticketId,
+                    gateId: action.gateId,
+                    requestId: action.requestId,
+                  };
                 })(),
                 signal,
               },
@@ -218,7 +230,7 @@ export function TicketScanner({
         }
       }
     },
-    [showtimeId, gateId, stopCamera],
+    [showtimeId, gateId, qrKeys, stopCamera],
   );
 
   const startCamera = useCallback(async () => {
@@ -308,6 +320,12 @@ export function TicketScanner({
     <PublicLayout signedIn={authorized}>
       <div className="mx-auto w-full max-w-3xl space-y-6 px-4 py-8 [&_button]:min-h-11">
         <header>
+          <Link
+            href="/scanner/snapshot"
+            className="text-sm text-primary underline"
+          >
+            Chuẩn bị danh sách vé
+          </Link>
           <h1 className="text-2xl font-bold">Soát vé bằng mã QR</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Chọn đúng suất diễn trước khi quét. Mỗi vé chỉ được check-in một
@@ -340,6 +358,11 @@ export function TicketScanner({
                 value={showtimeId}
                 onChange={(event) => {
                   setShowtimeId(event.target.value);
+                  setTicketId("");
+                  setQrKeys([]);
+                  setMessage(
+                    "Chọn suất diễn và tải cửa được phân công để bắt đầu.",
+                  );
                   setGates([]);
                   setGateId("");
                   scanAction.current = null;
@@ -392,7 +415,9 @@ export function TicketScanner({
                     });
                   },
                 )
-                  .then((available) => {
+                  .then(async (available) => {
+                    const keys = await api("/scanner/qr-keys", decodeQrKeys);
+                    setQrKeys(keys);
                     setGates(available);
                     setGateId(available[0]?.gateId ?? "");
                     setMessage(
@@ -423,6 +448,8 @@ export function TicketScanner({
                 className="w-full rounded-md border bg-background px-3 py-3"
                 onChange={(event) => {
                   setGateId(event.target.value);
+                  setTicketId("");
+                  setMessage("Quét vé tại cửa hiện tại để xác thực.");
                   scanAction.current = null;
                   setUsed(null);
                   setResult(null);
@@ -559,7 +586,7 @@ export function TicketScanner({
                   key={`${ticketId}:${gateId}:${showtimeId}`}
                   showtimeId={showtimeId.trim()}
                   gateId={gateId}
-                  ticketId={ticketId}
+                  qrPayload={ticketId}
                   onRecorded={(recorded) => {
                     setUsed(null);
                     setResult(recorded);

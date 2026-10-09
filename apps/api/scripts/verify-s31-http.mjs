@@ -2,33 +2,81 @@
 import assert from 'node:assert/strict';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
-import { randomBytes, randomUUID, createHash } from 'node:crypto';
+import {
+  randomBytes,
+  randomUUID,
+  createHash,
+  generateKeyPairSync,
+} from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import {
   mkdirSync,
+  mkdtempSync,
+  existsSync,
   readFileSync,
   writeFileSync,
   openSync,
   closeSync,
 } from 'node:fs';
-import { resolve } from 'node:path';
+import { resolve, relative, isAbsolute, sep } from 'node:path';
+import { tmpdir } from 'node:os';
+import { ScannerCryptoService } from '../dist/scanner/scanner-crypto.service.js';
 import { PrismaService } from '../dist/prisma/prisma.service.js';
 
 const target = new URL(process.env.DATABASE_URL ?? '');
 assert(
   target.hostname === '127.0.0.1' &&
-    target.port === '15438' &&
-    target.pathname === '/s31_admission_integration',
+    target.port === '15442' &&
+    target.pathname === '/s31_signed_qr',
   'S-31 private database only',
 );
 assert(
-  process.env.REDIS_URL === 'redis://127.0.0.1:16386',
+  process.env.REDIS_URL === 'redis://127.0.0.1:16392',
   'S-31 private cache only',
 );
 const root = resolve(import.meta.dirname, '../../..');
 const evidence = resolve(root, 'evidence/s31');
 mkdirSync(evidence, { recursive: true });
+const keyDir = process.env.S31_FIXTURE_KEY_DIR
+  ? resolve(process.env.S31_FIXTURE_KEY_DIR)
+  : mkdtempSync(resolve(tmpdir(), 'thudemo-qr-fixture-'));
+const rel = relative(root, keyDir);
+assert(
+  rel === '..' || rel.startsWith('..' + sep) || isAbsolute(rel),
+  'Fixture keys outside repository',
+);
+mkdirSync(keyDir, { recursive: true, mode: 0o700 });
+const keys = {};
+for (const kid of ['fixture-k1', 'fixture-k2']) {
+  const privatePath = resolve(keyDir, kid + '.private.pem'),
+    publicPath = resolve(keyDir, kid + '.public.pem');
+  if (!existsSync(privatePath)) {
+    const pair = generateKeyPairSync('ed25519');
+    writeFileSync(
+      privatePath,
+      pair.privateKey.export({ type: 'pkcs8', format: 'pem' }),
+      { mode: 0o600, flag: 'wx' },
+    );
+    writeFileSync(
+      publicPath,
+      pair.publicKey.export({ type: 'spki', format: 'pem' }),
+      { flag: 'wx' },
+    );
+  }
+  keys[kid] = { privatePath, public: readFileSync(publicPath, 'utf8') };
+}
+const cfg = (
+  kid = 'fixture-k1',
+  ring = { 'fixture-k1': keys['fixture-k1'].public },
+) => ({
+  SCANNER_KEY_ID: kid,
+  SCANNER_SIGNING_PRIVATE_KEY_FILE: keys[kid].privatePath,
+  SCANNER_PUBLIC_KEYS: JSON.stringify(ring),
+  SCANNER_SIGNING_PRIVATE_KEY: '',
+  SCANNER_PUBLIC_KEY: '',
+});
+let signer = new ScannerCryptoService(new ConfigService(cfg()));
 const db = new PrismaService(new ConfigService({ DATABASE_URL: target.href }));
 const report = {
   local: !process.env.CI,
@@ -41,12 +89,15 @@ const report = {
   checks: [],
   races: [],
   startedAt: new Date().toISOString(),
-  signature: 'NOT VERIFIED: S-30 uses unsigned ticket UUID',
+  signature: 'ET1.Ed25519: same verifier for NORMAL and EXCEPTION',
+  driverSha256: createHash('sha256')
+    .update(readFileSync(import.meta.filename))
+    .digest('hex'),
 };
 const children = [];
 const fds = [];
 const timings = [];
-function start(port) {
+function start(port, config = cfg()) {
   const fd = openSync(resolve(evidence, `api-${port}.log`), 'w');
   fds.push(fd);
   const child = spawn(process.execPath, ['dist/main.js'], {
@@ -55,10 +106,13 @@ function start(port) {
     stdio: ['ignore', fd, fd],
     env: {
       ...process.env,
+      ...config,
+      REDIS_HOST: '127.0.0.1',
+      REDIS_PORT: '16392',
       PORT: String(port),
       HOLD_EXPIRY_MODE: 'off',
       NODE_ENV: 'test',
-      WEB_ORIGIN: 'http://localhost:3040',
+      WEB_ORIGIN: 'http://localhost:3060',
       PAYMENT_GATEWAY: '',
       PAYMENT_WEBHOOK_SECRET: '',
     },
@@ -141,7 +195,7 @@ async function ticket(status = 'PAID') {
   return order.items[0].id;
 }
 async function send(ticketId, actor, gateId, options = {}) {
-  const port = options.port ?? 3041;
+  const port = options.port ?? 3061;
   const startAt = performance.now();
   const res = await fetch(
     `http://127.0.0.1:${port}/showtimes/${options.showtimeId ?? fixture.showtimeId}/check-in${options.exception ? '/exception' : ''}`,
@@ -150,10 +204,14 @@ async function send(ticketId, actor, gateId, options = {}) {
       headers: {
         'Content-Type': 'application/json',
         Cookie: actor?.cookie ?? '',
-        Origin: 'http://localhost:3040',
+        Origin: 'http://localhost:3060',
       },
       body: JSON.stringify({
-        ticketId,
+        qrPayload:
+          options.qrPayload ??
+          (ticketId === 'tampered-signature.payload'
+            ? ticketId
+            : signer.issueQr(ticketId.toLowerCase(), fixture.showtimeId)),
         gateId,
         requestId: options.requestId ?? randomUUID(),
         ...(options.exception
@@ -218,7 +276,12 @@ try {
     data: [
       { userId: a.id, gateId: gateA.id, staffName: a.name },
       { userId: b.id, gateId: gateB.id, staffName: b.name, canOverride: true },
-      { userId: b.id, gateId: otherGate.id, staffName: b.name },
+      {
+        userId: b.id,
+        gateId: otherGate.id,
+        staffName: b.name,
+        canOverride: true,
+      },
     ],
   });
   fixture = {
@@ -233,11 +296,28 @@ try {
     gateB: gateB.id,
     otherShowtimeId: otherShowtime.id,
   };
-  let apiA = start(3041);
-  start(3042);
-  await Promise.all([ready(3041), ready(3042)]);
+  let apiA = start(3061);
+  let apiB = start(3062);
+  await Promise.all([ready(3061), ready(3062)]);
   const firstTicket = await ticket();
   const requestId = randomUUID();
+  const ownedItem = await db.orderItem.findUniqueOrThrow({
+    where: { id: firstTicket },
+  });
+  const issued = await fetch(
+    `http://127.0.0.1:3061/orders/${ownedItem.orderId}/tickets`,
+    { headers: { Cookie: buyer.cookie } },
+  );
+  const issuedBody = await issued.json();
+  check(
+    issued.status === 200 &&
+      issuedBody.tickets.some(
+        (t) =>
+          t.ticketId === firstTicket &&
+          t.qrPayload === signer.issueQr(firstTicket, fixture.showtimeId),
+      ),
+    'Real owner endpoint issues the same signed QR for the existing paid ticket',
+  );
   const first = await send(firstTicket, a, gateA.id, { requestId });
   check(
     first.status === 200 && first.body.status === 'SUCCESS',
@@ -269,7 +349,7 @@ try {
       data: { checkedInAt: historicalTime },
     }),
   ]);
-  const duplicate = await send(firstTicket, b, gateB.id, { port: 3042 });
+  const duplicate = await send(firstTicket, b, gateB.id, { port: 3062 });
   check(
     duplicate.status === 409 &&
       duplicate.body.code === 'TICKET_ALREADY_CHECKED_IN' &&
@@ -304,7 +384,7 @@ try {
     const id = await ticket();
     const results = await Promise.all([
       send(id, a, gateA.id),
-      send(id, b, gateB.id, { port: 3042 }),
+      send(id, b, gateB.id, { port: 3062 }),
     ]);
     assert.deepEqual(results.map((x) => x.status).sort(), [200, 409]);
     const entries = await db.ticketAdmission.findMany({
@@ -331,7 +411,7 @@ try {
   const sameKey = randomUUID();
   const same = await Promise.all([
     send(sameActionTicket, a, gateA.id, { requestId: sameKey }),
-    send(sameActionTicket, a, gateA.id, { port: 3042, requestId: sameKey }),
+    send(sameActionTicket, a, gateA.id, { port: 3062, requestId: sameKey }),
   ]);
   check(
     same.every((x) => x.status === 200) &&
@@ -352,12 +432,65 @@ try {
       (await send(cancelled, a, gateA.id)).status === 404 &&
       (await count(unpaid)) === 0 &&
       (await count(cancelled)) === 0,
-    'Malformed QR/unknown/unpaid/cancelled tickets never enter; cryptographic signature remains unverified',
+    'Malformed QR/unknown/unpaid/cancelled tickets never enter; signed QR is required',
   );
   check(
     (await send(firstTicket, b, otherGate.id, { showtimeId: otherShowtime.id }))
-      .status === 404,
-    'Assigned gate in wrong showtime rejects ticket',
+      .status === 400,
+    'Assigned gate in wrong showtime rejects signed ticket',
+  );
+  const signedPayload = signer.issueQr(firstTicket, fixture.showtimeId);
+  const fragments = signedPayload.split('.');
+  const invalidQr = [
+    firstTicket,
+    signedPayload.replace('ET1.', 'ET2.'),
+    signedPayload.replace('.Ed25519.', '.HS256.'),
+    signedPayload.replace('.fixture-k1.', '.unknown.'),
+    [
+      ...fragments.slice(0, 5),
+      (fragments[5][0] === 'A' ? 'B' : 'A') + fragments[5].slice(1),
+    ].join('.'),
+    signer
+      .issueQr(randomUUID(), fixture.showtimeId)
+      .split('.')
+      .slice(0, 5)
+      .join('.') +
+      '.' +
+      fragments[5],
+  ];
+  for (const qrPayload of invalidQr) {
+    for (const exception of [false, true]) {
+      const invalid = await send(firstTicket, b, gateB.id, {
+        qrPayload,
+        exception,
+      });
+      check(
+        invalid.status === 400 &&
+          invalid.body.code === 'INVALID_QR_SIGNATURE' &&
+          (await count(firstTicket)) === 1,
+        'Invalid QR rejected by shared server verifier for ' +
+          (exception ? 'EXCEPTION' : 'NORMAL') +
+          '; no history',
+      );
+    }
+  }
+  check(
+    (
+      await send(firstTicket, b, gateB.id, {
+        exception: true,
+        extra: { ticketId: firstTicket },
+      })
+    ).status === 400,
+    'Exception rejects a client ticket UUID alongside a signed QR',
+  );
+  check(
+    (
+      await send(firstTicket, b, otherGate.id, {
+        exception: true,
+        showtimeId: otherShowtime.id,
+      })
+    ).status === 400,
+    'Exception cannot bypass signed showtime context',
   );
   const noReason = await send(firstTicket, b, gateB.id, {
     exception: true,
@@ -414,7 +547,7 @@ try {
       reason,
     }),
     send(firstTicket, b, gateB.id, {
-      port: 3042,
+      port: 3062,
       exception: true,
       requestId: exceptionKey,
       reason,
@@ -462,8 +595,8 @@ try {
     'Reusing request ID with different action is a conflict',
   );
   await stop(apiA);
-  apiA = start(3041);
-  await ready(3041);
+  apiA = start(3061);
+  await ready(3061);
   check(
     (await send(firstTicket, a, gateA.id)).status === 409,
     'Restarted API cannot reuse consumed ticket',
@@ -581,6 +714,41 @@ try {
     where: { userId_gateId: { userId: b.id, gateId: gateB.id } },
     data: { canOverride: true },
   });
+  await stop(apiB);
+  const ring = {
+    'fixture-k1': keys['fixture-k1'].public,
+    'fixture-k2': keys['fixture-k2'].public,
+  };
+  apiB = start(3062, cfg('fixture-k2', ring));
+  await ready(3062);
+  const rotatedSigner = new ScannerCryptoService(
+    new ConfigService(cfg('fixture-k2', ring)),
+  );
+  const rotatedId = await ticket();
+  const newQr = rotatedSigner.issueQr(rotatedId, fixture.showtimeId);
+  check(
+    (await send(rotatedId, b, gateB.id, { port: 3062, qrPayload: newQr })).body
+      .status === 'SUCCESS' &&
+      (
+        await send(rotatedId, b, gateB.id, {
+          port: 3062,
+          exception: true,
+          qrPayload: newQr,
+        })
+      ).body.status === 'EXCEPTION_RECORDED' &&
+      (await count(rotatedId, 'NORMAL')) === 1 &&
+      (await count(rotatedId, 'EXCEPTION')) === 1,
+    'Rotated key verifies new QR for NORMAL and EXCEPTION on the second API',
+  );
+  check(
+    (
+      await send(firstTicket, b, gateB.id, {
+        port: 3062,
+        qrPayload: signedPayload,
+      })
+    ).status === 409,
+    'Old signed QR remains verified and consumed after key rotation and API restart',
+  );
   report.responseMs = {
     count: timings.length,
     p95: [...timings].sort((a, b) => a - b)[
@@ -591,12 +759,29 @@ try {
   fixture.browserTicket = firstTicket;
   fixture.freshTicket = await ticket();
   fixture.retryTicket = await ticket();
-  if (process.env.S31_PRIVATE_FIXTURE_FILE)
+  fixture.browserTicket = signer.issueQr(
+    fixture.browserTicket,
+    fixture.showtimeId,
+  );
+  fixture.freshTicket = signer.issueQr(fixture.freshTicket, fixture.showtimeId);
+  fixture.retryTicket = signer.issueQr(fixture.retryTicket, fixture.showtimeId);
+  if (process.env.S31_PRIVATE_FIXTURE_FILE) {
+    const fixtureRel = relative(
+      root,
+      resolve(process.env.S31_PRIVATE_FIXTURE_FILE),
+    );
+    assert(
+      fixtureRel === '..' ||
+        fixtureRel.startsWith('..' + sep) ||
+        isAbsolute(fixtureRel),
+      'Session fixture outside repository',
+    );
     writeFileSync(
       process.env.S31_PRIVATE_FIXTURE_FILE,
       JSON.stringify(fixture),
       { mode: 0o600 },
     );
+  }
   report.status = 'PASS';
   report.finishedAt = new Date().toISOString();
 } catch (error) {
