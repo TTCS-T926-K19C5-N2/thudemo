@@ -20,6 +20,7 @@ model User {
   events            Event[]       @relation("OrganizerEvents")
   holdSessions      HoldSession[]
   orders            Order[]
+  showtimeStaff     ShowtimeStaff[]
 
   @@map("users")
 }
@@ -88,6 +89,8 @@ model Showtime {
   categories      SeatCategory[]
   holdSessions    HoldSession[]
   orders          Order[]
+  tickets         Ticket[]
+  staffAssignments ShowtimeStaff[]
   createdAt       DateTime       @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime       @updatedAt @db.Timestamptz(3)
 
@@ -125,6 +128,7 @@ model Seat {
   isSold     Boolean      @default(false)
   hold       SeatHold?
   orderItems OrderItem[]
+  tickets    Ticket[]
 
   @@unique([id, showtimeId])
   @@unique([showtimeId, row, seatNumber])
@@ -195,6 +199,7 @@ model Order {
   items            OrderItem[]
   payments         Payment[]
   logs             OrderLog[]
+  tickets          Ticket[]
   createdAt        DateTime     @default(now()) @db.Timestamptz(3)
   updatedAt        DateTime     @updatedAt @db.Timestamptz(3)
 
@@ -270,4 +275,47 @@ model OrderLog {
 
   @@index([orderId])
   @@map("order_logs")
+}
+
+enum TicketStatus {
+  VALID
+  CHECKED_IN
+  CANCELLED
+}
+
+model Ticket {
+  id          String       @id @default(uuid()) @db.Uuid
+  orderId     String?      @db.Uuid
+  order       Order?       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  showtimeId  String       @db.Uuid
+  showtime    Showtime     @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+  seatId      String?      @db.Uuid
+  seat        Seat?        @relation(fields: [seatId], references: [id], onDelete: SetNull)
+  code        String       @unique
+  seatLabel   String
+  ticketType  String
+  status      TicketStatus @default(VALID)
+  checkedInAt DateTime?    @db.Timestamptz(3)
+  cancelledAt DateTime?    @db.Timestamptz(3)
+  price       Int          @default(0)
+  createdAt   DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime     @default(now()) @updatedAt @db.Timestamptz(3)
+
+  @@index([showtimeId, updatedAt])
+  @@index([showtimeId, status])
+  @@index([orderId])
+  @@map("tickets")
+}
+
+model ShowtimeStaff {
+  id         String   @id @default(uuid()) @db.Uuid
+  showtimeId String   @db.Uuid
+  showtime   Showtime @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+  userId     String   @db.Uuid
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@unique([showtimeId, userId])
+  @@index([userId])
+  @@map("showtime_staff")
 }
