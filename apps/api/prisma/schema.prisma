@@ -297,9 +297,14 @@ model Ticket {
   checkedInAt DateTime?    @db.Timestamptz(3)
   cancelledAt DateTime?    @db.Timestamptz(3)
   price       Int          @default(0)
+  // S-26: QR signature made once at issue time. keyId names the signing key
+  // so tickets stay verifiable after the active key is rotated.
+  keyId       String?
+  signature   String?
   createdAt   DateTime     @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime     @default(now()) @updatedAt @db.Timestamptz(3)
 
+  @@unique([orderId, seatId])
   @@index([showtimeId, updatedAt])
   @@index([showtimeId, status])
   @@index([orderId])
