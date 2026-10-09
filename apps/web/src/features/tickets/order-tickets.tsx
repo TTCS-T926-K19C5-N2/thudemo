@@ -9,9 +9,11 @@ import { CircleAlert, RotateCw, Ticket } from "@/components/ui/material-icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   fetchOrderTickets,
+  transferTicket,
   type OrderTicket,
   type OrderTicketStatus,
 } from "./order-tickets-api";
+import { Input } from "@/components/ui/input";
 
 const STATUS_LABEL: Record<OrderTicketStatus, string> = {
   VALID: "Còn hiệu lực",
@@ -55,6 +57,29 @@ export function OrderTickets({ orderId }: { orderId: string }) {
   const [tickets, setTickets] = useState<OrderTicket[] | null>(null);
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
+  const [transferringId, setTransferringId] = useState<string | null>(null);
+  const [toEmail, setToEmail] = useState("");
+  const [transferError, setTransferError] = useState("");
+  const [isTransferring, setIsTransferring] = useState(false);
+
+  const handleTransfer = async (ticketId: string) => {
+    if (!toEmail) {
+      setTransferError("Vui lòng nhập email người nhận.");
+      return;
+    }
+    setTransferError("");
+    setIsTransferring(true);
+    try {
+      await transferTicket(orderId, ticketId, toEmail);
+      setTransferringId(null);
+      setToEmail("");
+      setRetry((n) => n + 1); // reload tickets
+    } catch (e: unknown) {
+      setTransferError(e instanceof Error ? e.message : "Lỗi khi chuyển vé");
+    } finally {
+      setIsTransferring(false);
+    }
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -140,6 +165,55 @@ export function OrderTickets({ orderId }: { orderId: string }) {
                   {ticket.ticketType} · Mã vé{" "}
                   <span className="font-mono break-all">{ticket.code}</span>
                 </div>
+                {ticket.status === "VALID" && (
+                  <div className="mt-4 w-full border-t pt-4">
+                    {transferringId === ticket.id ? (
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Email người nhận:</label>
+                        <Input
+                          type="email"
+                          placeholder="nguoinhan@example.com"
+                          value={toEmail}
+                          onChange={(e) => setToEmail(e.target.value)}
+                        />
+                        {transferError && <p className="text-sm text-red-500">{transferError}</p>}
+                        <div className="flex gap-2 justify-end">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setTransferringId(null);
+                              setTransferError("");
+                            }}
+                            disabled={isTransferring}
+                          >
+                            Huỷ
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => handleTransfer(ticket.id)}
+                            disabled={isTransferring}
+                          >
+                            Xác nhận chuyển
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => {
+                          setTransferringId(ticket.id);
+                          setToEmail("");
+                          setTransferError("");
+                        }}
+                      >
+                        Chuyển nhượng vé
+                      </Button>
+                    )}
+                  </div>
+                )}
               </li>
             ))}
           </ul>

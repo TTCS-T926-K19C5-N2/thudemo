@@ -39,3 +39,14 @@ export function decodeOrderTickets(value: unknown): OrderTicket[] {
 export function fetchOrderTickets(orderId: string, signal?: AbortSignal) {
   return api(`/orders/${orderId}/tickets`, decodeOrderTickets, { signal });
 }
+
+export async function transferTicket(orderId: string, ticketId: string, toEmail: string) {
+  return api(
+    `/orders/${orderId}/tickets/${ticketId}/transfer`,
+    () => ({ success: true }),
+    {
+      method: "POST",
+      body: { toEmail },
+    }
+  );
+}

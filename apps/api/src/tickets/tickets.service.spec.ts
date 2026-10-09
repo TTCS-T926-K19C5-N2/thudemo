@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { OrderStatus, TicketStatus } from '@prisma/client';
 import { TicketSigningService } from './ticket-signing.service.js';
 import { TicketsService } from './tickets.service.js';
@@ -20,10 +20,18 @@ describe('TicketsService', () => {
   let service: TicketsService;
 
   beforeEach(() => {
-    tx = { ticket: { createMany: vi.fn().mockResolvedValue({ count: 0 }) } };
+    tx = {
+      ticket: {
+        createMany: vi.fn().mockResolvedValue({ count: 0 }),
+        update: vi.fn(),
+        create: vi.fn().mockResolvedValue({ id: 'new-ticket-1' }),
+      },
+      ticketLog: { create: vi.fn() },
+    };
     db = {
       order: { findUnique: vi.fn() },
-      ticket: { findMany: vi.fn() },
+      ticket: { findMany: vi.fn(), findUnique: vi.fn() },
+      $transaction: vi.fn((cb) => cb(tx)),
     };
     signing = signingService();
     service = new TicketsService(db, signing);
@@ -118,6 +126,63 @@ describe('TicketsService', () => {
       expect(tickets[0]).toMatchObject({ id: 'ticket-1', code: stored.code, seatLabel: 'A-1' });
       expect(signing.verify(tickets[0].qrPayload!)).toMatchObject({ valid: true });
       expect(tickets[1].qrPayload).toBeNull();
+    });
+  });
+
+  describe('transferTicket', () => {
+    const TICKET_ID = 'ticket-123';
+    const EMAIL = 'newowner@example.com';
+
+    it('throws NotFound if order not found or user is not owner', async () => {
+      db.order.findUnique.mockResolvedValue(null);
+      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(NotFoundException);
+
+      db.order.findUnique.mockResolvedValue({ userId: 'other' });
+      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(NotFoundException);
+    });
+
+    it('throws NotFound if ticket not found or does not belong to order', async () => {
+      db.order.findUnique.mockResolvedValue({ userId: OWNER_ID });
+      db.ticket.findUnique.mockResolvedValue(null);
+      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(NotFoundException);
+
+      db.ticket.findUnique.mockResolvedValue({ orderId: 'other' });
+      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(NotFoundException);
+    });
+
+    it('throws BadRequest if ticket is not VALID', async () => {
+      db.order.findUnique.mockResolvedValue({ userId: OWNER_ID });
+      db.ticket.findUnique.mockResolvedValue({ orderId: ORDER_ID, status: TicketStatus.CANCELLED });
+      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(BadRequestException);
+    });
+
+    it('cancels old ticket and issues a new one', async () => {
+      db.order.findUnique.mockResolvedValue({ userId: OWNER_ID });
+      db.ticket.findUnique.mockResolvedValue({
+        id: TICKET_ID,
+        orderId: ORDER_ID,
+        status: TicketStatus.VALID,
+        showtimeId: SHOWTIME_ID,
+        seatId: 'seat-1',
+        seatLabel: 'A-1',
+        ticketType: 'VIP',
+        price: 100,
+      });
+
+      await service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL);
+
+      expect(tx.ticket.update).toHaveBeenCalledWith({
+        where: { id: TICKET_ID },
+        data: { status: TicketStatus.CANCELLED, transferredToEmail: EMAIL },
+      });
+
+      expect(tx.ticket.create).toHaveBeenCalledTimes(1);
+      const newTicketData = tx.ticket.create.mock.calls[0][0].data;
+      expect(newTicketData.ownerEmail).toBe(EMAIL);
+      expect(newTicketData.status).toBe(TicketStatus.VALID);
+      expect(newTicketData.seatLabel).toBe('A-1');
+
+      expect(tx.ticketLog.create).toHaveBeenCalledTimes(2);
     });
   });
 });

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { OrderStatus, TicketStatus, type Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { generateTicketCode } from './ticket-code.js';
@@ -99,5 +99,78 @@ export class TicketsService {
             })
           : null,
     }));
+  }
+
+  async transferTicket(
+    orderId: string,
+    ticketId: string,
+    userId: string,
+    toEmail: string,
+  ): Promise<void> {
+    const order = await this.db.order.findUnique({
+      where: { id: orderId },
+      select: { userId: true },
+    });
+    if (!order || order.userId !== userId) {
+      throw new NotFoundException('Không tìm thấy đơn hàng.');
+    }
+
+    const ticket = await this.db.ticket.findUnique({
+      where: { id: ticketId },
+    });
+    if (!ticket || ticket.orderId !== orderId) {
+      throw new NotFoundException('Không tìm thấy vé.');
+    }
+    if (ticket.status !== TicketStatus.VALID) {
+      throw new BadRequestException('Chỉ có thể chuyển nhượng vé hợp lệ.');
+    }
+
+    await this.db.$transaction(async (tx) => {
+      await tx.ticket.update({
+        where: { id: ticketId },
+        data: {
+          status: TicketStatus.CANCELLED,
+          transferredToEmail: toEmail,
+        },
+      });
+
+      const code = generateTicketCode();
+      const { keyId, signature } = this.signing.sign({
+        code,
+        showtimeId: ticket.showtimeId,
+      });
+
+      const newTicket = await tx.ticket.create({
+        data: {
+          showtimeId: ticket.showtimeId,
+          seatId: ticket.seatId,
+          code,
+          seatLabel: ticket.seatLabel,
+          ticketType: ticket.ticketType,
+          status: TicketStatus.VALID,
+          price: ticket.price,
+          keyId,
+          signature,
+          ownerEmail: toEmail,
+        },
+      });
+
+      await tx.ticketLog.create({
+        data: {
+          ticketId: ticket.id,
+          action: 'TRANSFERRED',
+          actorId: userId,
+          detail: { toEmail, newTicketId: newTicket.id },
+        },
+      });
+      await tx.ticketLog.create({
+        data: {
+          ticketId: newTicket.id,
+          action: 'ISSUED_FROM_TRANSFER',
+          actorId: userId,
+          detail: { fromTicketId: ticket.id },
+        },
+      });
+    });
   }
 }
