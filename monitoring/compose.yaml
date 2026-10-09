@@ -43,6 +43,8 @@ services:
       MONITORING_ENABLED: "true"
       METRICS_HOST: "0.0.0.0"
       METRICS_TOKEN_FILE: /run/secrets/metrics_token
+      TICKET_SIGNING_ACTIVE_KEY_ID: s43-local
+      TICKET_SIGNING_PRIVATE_KEY: ${S43_TICKET_SIGNING_PRIVATE_KEY:?Run monitoring/setup.mjs}
     secrets: [metrics_token]
     ports: ["127.0.0.1:18001:3001"]
     depends_on:
