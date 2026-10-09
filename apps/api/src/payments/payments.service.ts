@@ -17,6 +17,7 @@ import {
   type PaymentGateway,
 } from './gateways/payment-gateway.interface.js';
 import { AccountantNotifier } from './accountant-notifier.js';
+import { TicketsService } from '../tickets/tickets.service.js';
 
 @Injectable()
 export class PaymentsService {
@@ -27,6 +28,7 @@ export class PaymentsService {
     @Inject(PAYMENT_GATEWAY) private readonly gateway: PaymentGateway,
     private readonly accountantNotifier: AccountantNotifier,
     private readonly config: ConfigService,
+    private readonly tickets: TicketsService,
     @Optional() private readonly ordersService?: OrdersService,
   ) {}
 
@@ -590,6 +592,9 @@ export class PaymentsService {
               where: { seatId: { in: seatIds } },
             });
           }
+
+          // (b2) S-25: issue signed tickets in the same transaction as PAID
+          await this.tickets.issueForPaidOrder(tx, order);
 
           // (c) Payment -> SUCCEEDED with gateway transaction ID
           const existingPayment = await tx.payment.findFirst({
