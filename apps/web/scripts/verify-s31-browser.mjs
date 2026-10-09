@@ -224,10 +224,19 @@ try {
     "Editing ticket code clears stale valid result before server verification",
   );
   await scan(ordinary, fixture.freshTicket);
+  await status(ordinary)
+    .filter({ hasText: "Đây không phải lần vào mới" })
+    .waitFor();
+  check(
+    (await status(ordinary).getAttribute("data-state")) === "RECORDED",
+    "Resubmitting the same action after editing displays recorded replay, never a new green admission",
+  );
+  await ordinary.getByRole("button", { name: "Quét vé tiếp theo" }).click();
+  await scan(ordinary, fixture.freshTicket);
   await status(ordinary).filter({ hasText: "Vé đã sử dụng" }).waitFor();
   check(
     (await status(ordinary).getAttribute("data-state")) === "USED",
-    "New scan after editing never displayed as new green admission",
+    "Explicit next scan creates a new request and rejects the consumed ticket",
   );
   await ordinary.getByRole("button", { name: "Quét vé tiếp theo" }).click();
   await ordinary.route(
