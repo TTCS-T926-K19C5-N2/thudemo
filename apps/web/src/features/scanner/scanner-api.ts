@@ -1,4 +1,5 @@
 import { api, object } from '@/lib/api/client';
+import type { TicketPublicKey } from '@/features/tickets/ticket-qr';
 
 export interface AssignedShowtime {
   id: string;
@@ -24,10 +25,8 @@ export interface ShowtimeTicketsPayload {
   showtimeName: string;
   generatedAt: string;
   cursor: string;
-  publicKey: {
-    keyId: string;
-    key: string;
-  };
+  // Active + retired keys; the QR's keyId picks one (see features/tickets/ticket-qr).
+  publicKeys: TicketPublicKey[];
   tickets: ScannerTicketPayload[];
 }
 
@@ -61,17 +60,20 @@ export async function fetchShowtimeTickets(
     (value: unknown) => {
       const data = object(value);
       const ticketsRaw = Array.isArray(data.tickets) ? data.tickets : [];
-      const pubKey = object(data.publicKey);
+      const keysRaw = Array.isArray(data.publicKeys) ? data.publicKeys : [];
 
       return {
         showtimeId: String(data.showtimeId),
         showtimeName: String(data.showtimeName ?? ''),
         generatedAt: String(data.generatedAt),
         cursor: String(data.cursor),
-        publicKey: {
-          keyId: String(pubKey.keyId),
-          key: String(pubKey.key),
-        },
+        publicKeys: keysRaw.map((k) => {
+          const key = object(k);
+          return {
+            keyId: String(key.keyId),
+            publicKey: String(key.publicKey),
+          };
+        }),
         tickets: ticketsRaw.map((t) => {
           const item = object(t);
           return {

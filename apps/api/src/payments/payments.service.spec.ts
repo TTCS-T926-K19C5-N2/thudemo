@@ -18,6 +18,7 @@ describe('PaymentsService Unit Tests', () => {
   let mockNotifier: Partial<AccountantNotifier>;
   let mockConfig: Partial<ConfigService>;
   let mockOrdersService: any;
+  let mockTickets: any;
 
   const userId = '11111111-1111-4111-8111-111111111111';
   const orderId = '22222222-2222-4222-8222-222222222222';
@@ -92,11 +93,16 @@ describe('PaymentsService Unit Tests', () => {
       expireOrder: vi.fn().mockResolvedValue({ status: 'expired', releasedSeatsCount: 1 }),
     };
 
+    mockTickets = {
+      issueForPaidOrder: vi.fn().mockResolvedValue(undefined),
+    };
+
     service = new PaymentsService(
       mockPrisma as PrismaService,
       mockGateway as PaymentGateway,
       mockNotifier as AccountantNotifier,
       mockConfig as ConfigService,
+      mockTickets,
       mockOrdersService,
     );
   });
@@ -293,6 +299,12 @@ describe('PaymentsService Unit Tests', () => {
           transactionId: 'momo_tx_99',
         },
       });
+      // S-25: tickets are issued with the same transaction client as PAID.
+      expect(mockTickets.issueForPaidOrder).toHaveBeenCalledTimes(1);
+      expect(mockTickets.issueForPaidOrder).toHaveBeenCalledWith(
+        mockPrisma,
+        expect.objectContaining({ id: orderId }),
+      );
     });
 
     it('handles 5 sequential duplicate webhooks idempotently (only 1 state change, returns 200 for all)', async () => {
@@ -337,6 +349,7 @@ describe('PaymentsService Unit Tests', () => {
 
       // Seat update must NOT have been called again!
       expect(mockPrisma.seat.updateMany).toHaveBeenCalledTimes(1);
+      expect(mockTickets.issueForPaidOrder).toHaveBeenCalledTimes(1);
     });
 
     it('handles webhook for expired order: does not mark PAID, does not touch seats, marks LATE and alerts accountant', async () => {
