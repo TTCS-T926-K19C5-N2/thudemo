@@ -6,12 +6,15 @@ import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { hashSessionToken, SESSION_COOKIE } from '../src/auth/auth.service.js';
 import { AppModule } from '../src/app.module.js';
+import { ScannerCryptoService } from '../src/scanner/scanner-crypto.service.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 
 describe('Ticket check-in integration', () => {
   let app: INestApplication;
   let db: PrismaService;
   let staffCookie: string;
+  let gateId: string;
+  let otherGateId: string;
   let otherOrganizerCookie: string;
   let buyerId: string;
   let organizerId: string;
@@ -91,8 +94,14 @@ describe('Ticket check-in integration', () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
       target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
-      target.pathname !== '/sprint2_integration'
+      !(
+        (target.port === '15432' &&
+          target.pathname === '/sprint2_integration') ||
+        (target.port === '15438' &&
+          target.pathname === '/s31_admission_integration') ||
+        (target.port === '15440' &&
+          target.pathname === '/signed_qr_integration')
+      )
     ) {
       throw new Error('Run only on the isolated sprint2_integration database');
     }
@@ -146,6 +155,29 @@ describe('Ticket check-in integration', () => {
       data: { showtimeId, name: 'VIP', price: 500000 },
     });
     categoryId = category.id;
+    const gate = await db.checkInGate.create({
+      data: { showtimeId, name: 'Cửa A' },
+    });
+    gateId = gate.id;
+    const otherGate = await db.checkInGate.create({
+      data: { showtimeId: otherShowtimeId, name: 'Cửa A' },
+    });
+    otherGateId = otherGate.id;
+    await db.checkInPermission.createMany({
+      data: [
+        { userId: staff.id, gateId, staffName: 'Nhân viên thử nghiệm' },
+        {
+          userId: staff.id,
+          gateId: otherGateId,
+          staffName: 'Nhân viên thử nghiệm',
+        },
+        {
+          userId: organizerId,
+          gateId,
+          staffName: 'Ban tổ chức được phân công',
+        },
+      ],
+    });
     paidTicketId = await createOrderItem(1, OrderStatus.PAID);
     concurrentTicketId = await createOrderItem(2, OrderStatus.PAID);
     unpaidTicketId = await createOrderItem(3, OrderStatus.PENDING_PAYMENT);
@@ -154,6 +186,15 @@ describe('Ticket check-in integration', () => {
   afterAll(async () => {
     if (db && eventId) {
       const showtimeIds = [showtimeId, otherShowtimeId].filter(Boolean);
+      await db.ticketAdmission.deleteMany({
+        where: { showtimeId: { in: showtimeIds } },
+      });
+      await db.checkInPermission.deleteMany({
+        where: { gate: { showtimeId: { in: showtimeIds } } },
+      });
+      await db.checkInGate.deleteMany({
+        where: { showtimeId: { in: showtimeIds } },
+      });
       await db.orderItem.deleteMany({
         where: { order: { showtimeId: { in: showtimeIds } } },
       });
@@ -182,7 +223,12 @@ describe('Ticket check-in integration', () => {
     const response = await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
       .set('Cookie', staffCookie)
-      .send({ ticketId: paidTicketId })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(paidTicketId, showtimeId),
+      })
       .expect(200);
 
     expect(response.body).toMatchObject({
@@ -201,19 +247,34 @@ describe('Ticket check-in integration', () => {
     await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
       .set('Cookie', staffCookie)
-      .send({ ticketId: randomUUID() })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(randomUUID(), showtimeId),
+      })
       .expect(404);
 
     await request(app.getHttpServer())
       .post(`/showtimes/${otherShowtimeId}/check-in`)
       .set('Cookie', staffCookie)
-      .send({ ticketId: concurrentTicketId })
-      .expect(404);
+      .send({
+        gateId: otherGateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(concurrentTicketId, showtimeId),
+      })
+      .expect(400);
 
     await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
       .set('Cookie', staffCookie)
-      .send({ ticketId: unpaidTicketId })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(unpaidTicketId, showtimeId),
+      })
       .expect(404);
   });
 
@@ -221,14 +282,24 @@ describe('Ticket check-in integration', () => {
     await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
       .set('Cookie', staffCookie)
-      .send({ ticketId: paidTicketId })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(paidTicketId, showtimeId),
+      })
       .expect(409);
 
     const scan = () =>
       request(app.getHttpServer())
         .post(`/showtimes/${showtimeId}/check-in`)
         .set('Cookie', staffCookie)
-        .send({ ticketId: concurrentTicketId });
+        .send({
+          gateId,
+          qrPayload: app
+            .get(ScannerCryptoService)
+            .issueQr(concurrentTicketId, showtimeId),
+        });
     const responses = await Promise.all([scan(), scan()]);
 
     expect(
@@ -242,7 +313,7 @@ describe('Ticket check-in integration', () => {
     expect(stored.checkedInAt).toBeInstanceOf(Date);
   });
 
-  it('requires staff privileges and limits organizers to their own showtime', async () => {
+  it('requires staff roles plus explicit showtime/gate grants, including organizers', async () => {
     const organizerToken = randomBytes(32).toString('base64url');
     await db.session.create({
       data: {
@@ -254,20 +325,35 @@ describe('Ticket check-in integration', () => {
 
     await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
-      .send({ ticketId: paidTicketId })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(paidTicketId, showtimeId),
+      })
       .expect(401);
 
     const organizerTicketId = await createOrderItem(4, OrderStatus.PAID);
     await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
       .set('Cookie', otherOrganizerCookie)
-      .send({ ticketId: organizerTicketId })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(organizerTicketId, showtimeId),
+      })
       .expect(403);
 
     await request(app.getHttpServer())
       .post(`/showtimes/${showtimeId}/check-in`)
       .set('Cookie', `${SESSION_COOKIE}=${organizerToken}`)
-      .send({ ticketId: organizerTicketId })
+      .send({
+        gateId,
+        qrPayload: app
+          .get(ScannerCryptoService)
+          .issueQr(organizerTicketId, showtimeId),
+      })
       .expect(200);
   });
 });

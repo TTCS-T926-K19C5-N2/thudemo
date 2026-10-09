@@ -6,53 +6,28 @@ import { PublicLayout } from "@/components/layout/product-layout";
 import { ApiError, api, object } from "@/lib/api/client";
 import { loadCurrentUser } from "@/lib/api";
 import { checkInFailureState, checkInWithWaiting } from "./check-in-request";
+import Link from "next/link";
+import { verifyTicketQr, decodeQrKeys } from "./verify-ticket-qr";
+import type { TicketQrPublicKey } from "shared/ticket-qr";
+import {
+  admissionTime,
+  decodeCheckIn,
+  usedTicket,
+  type CheckInResult,
+  type UsedTicket,
+} from "./admission-response";
+import { AlertTriangle, CheckCircle } from "lucide-react";
 
-type CheckInResult = {
-  status: "SUCCESS";
-  ticketId: string;
-  seat: {
-    category: string;
-    row: string;
-    number: number;
-    label: string;
-  };
-  checkedInAt: string;
-};
-
-type ScanStatus = "SCANNING" | "WAITING" | "SUCCESS" | "INVALID" | "ERROR";
-
-function decodeCheckIn(value: unknown): CheckInResult {
-  const response = object(value);
-  const seat = object(response.seat);
-  if (
-    response.status !== "SUCCESS" ||
-    typeof response.ticketId !== "string" ||
-    typeof seat.category !== "string" ||
-    typeof seat.row !== "string" ||
-    typeof seat.number !== "number" ||
-    typeof seat.label !== "string" ||
-    typeof response.checkedInAt !== "string" ||
-    !Number.isFinite(Date.parse(response.checkedInAt))
-  ) {
-    throw new ApiError(
-      "Phản hồi check-in không hợp lệ. Vui lòng thử lại.",
-      502,
-      "INVALID_RESPONSE",
-    );
-  }
-
-  return {
-    status: "SUCCESS",
-    ticketId: response.ticketId,
-    seat: {
-      category: seat.category,
-      row: seat.row,
-      number: seat.number,
-      label: seat.label,
-    },
-    checkedInAt: response.checkedInAt,
-  };
-}
+type ScanStatus =
+  | "SCANNING"
+  | "WAITING"
+  | "SUCCESS"
+  | "USED"
+  | "RECORDED"
+  | "EXCEPTION"
+  | "INVALID"
+  | "ERROR";
+type Gate = { gateId: string; gateName: string; canOverride: boolean };
 
 export function TicketScanner({
   initialShowtimeId,
@@ -64,6 +39,18 @@ export function TicketScanner({
   const [userError, setUserError] = useState("");
   const [showtimeId, setShowtimeId] = useState(initialShowtimeId);
   const [ticketId, setTicketId] = useState("");
+  const [qrKeys, setQrKeys] = useState<TicketQrPublicKey[]>([]);
+  const [gates, setGates] = useState<Gate[]>([]);
+  const [gateId, setGateId] = useState("");
+  const [gatesLoading, setGatesLoading] = useState(false);
+  const [used, setUsed] = useState<UsedTicket | null>(null);
+  const scanAction = useRef<{
+    ticketId: string;
+    gateId: string;
+    showtimeId: string;
+    requestId: string;
+  } | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<ScanStatus>("SCANNING");
   const [message, setMessage] = useState("Nhập mã suất diễn để bắt đầu.");
   const [result, setResult] = useState<CheckInResult | null>(null);
@@ -128,9 +115,9 @@ export function TicketScanner({
     async (rawTicketId: string) => {
       if (scanInProgress.current) return;
       const scannedTicketId = rawTicketId.trim();
-      if (!showtimeId.trim()) {
+      if (!showtimeId.trim() || !gateId) {
         setStatus("ERROR");
-        setMessage("Vui lòng nhập mã suất diễn trước khi quét vé.");
+        setMessage("Chọn suất diễn và cửa được cấp quyền trước khi quét vé.");
         return;
       }
       if (!scannedTicketId) {
@@ -160,16 +147,45 @@ export function TicketScanner({
       setRequestPending(true);
       setTicketId(scannedTicketId);
       setResult(null);
+      setUsed(null);
       setStatus("SCANNING");
       setMessage("Đang xác thực vé...");
 
       try {
+        await verifyTicketQr(scannedTicketId, qrKeys, showtimeId.trim());
         const checkedIn = await checkInWithWaiting(
           (signal) =>
             api(
               `/showtimes/${encodeURIComponent(showtimeId.trim())}/check-in`,
               decodeCheckIn,
-              { method: "POST", body: { ticketId: scannedTicketId }, signal },
+              {
+                method: "POST",
+                body: (() => {
+                  const previous = scanAction.current;
+                  if (
+                    !previous ||
+                    previous.ticketId !== scannedTicketId ||
+                    previous.gateId !== gateId ||
+                    previous.showtimeId !== showtimeId.trim()
+                  ) {
+                    scanAction.current = {
+                      ticketId: scannedTicketId,
+                      gateId,
+                      showtimeId: showtimeId.trim(),
+                      requestId: crypto.randomUUID(),
+                    };
+                  }
+                  const action = scanAction.current;
+                  if (!action)
+                    throw new Error("Không thể tạo lượt quét. Hãy thử lại.");
+                  return {
+                    qrPayload: action.ticketId,
+                    gateId: action.gateId,
+                    requestId: action.requestId,
+                  };
+                })(),
+                signal,
+              },
             ),
           () => {
             if (mounted.current && sequence === requestSequence.current) {
@@ -181,8 +197,14 @@ export function TicketScanner({
         );
         if (!mounted.current || sequence !== requestSequence.current) return;
         setResult(checkedIn);
-        setStatus("SUCCESS");
-        setMessage("Vé hợp lệ. Check-in thành công.");
+        setStatus(
+          checkedIn.status === "ALREADY_RECORDED" ? "RECORDED" : "SUCCESS",
+        );
+        setMessage(
+          checkedIn.status === "ALREADY_RECORDED"
+            ? "Yêu cầu này đã được ghi nhận. Đây không phải lần vào mới."
+            : "Vé hợp lệ. Check-in thành công.",
+        );
       } catch (error) {
         if (
           !mounted.current ||
@@ -191,7 +213,9 @@ export function TicketScanner({
         ) {
           return;
         }
-        setStatus(checkInFailureState(error));
+        const duplicate = usedTicket(error);
+        setUsed(duplicate);
+        setStatus(duplicate ? "USED" : checkInFailureState(error));
         setMessage(
           error instanceof Error
             ? error.message
@@ -205,14 +229,14 @@ export function TicketScanner({
         }
       }
     },
-    [showtimeId, stopCamera],
+    [showtimeId, gateId, qrKeys, stopCamera],
   );
 
   const startCamera = useCallback(async () => {
     if (scanInProgress.current) return;
-    if (!showtimeId.trim()) {
+    if (!showtimeId.trim() || !gateId) {
       setStatus("ERROR");
-      setMessage("Vui lòng nhập mã suất diễn trước khi bật camera.");
+      setMessage("Chọn suất diễn và cửa được cấp quyền trước khi bật camera.");
       return;
     }
     const sequenceBeforeStart = requestSequence.current;
@@ -261,9 +285,13 @@ export function TicketScanner({
           : "Không thể bật camera. Hãy kiểm tra quyền truy cập camera.",
       );
     }
-  }, [showtimeId, validateTicket]);
+  }, [showtimeId, gateId, validateTicket]);
 
   const scanNext = useCallback(() => {
+    if (scanInProgress.current) return;
+    scanAction.current = null;
+    setUsed(null);
+    setTicketId("");
     requestSequence.current += 1;
     activeRequest.current?.abort();
     activeRequest.current = null;
@@ -272,15 +300,16 @@ export function TicketScanner({
     setResult(null);
     setStatus("SCANNING");
     setMessage("Sẵn sàng quét vé tiếp theo.");
-    void startCamera();
+    inputRef.current?.focus();
+    if (scanner.current) void startCamera();
   }, [startCamera]);
 
   const statusClass =
-    status === "SUCCESS"
+    status === "SUCCESS" || status === "EXCEPTION"
       ? "border-emerald-300 bg-emerald-50 text-emerald-950"
       : status === "INVALID"
         ? "border-red-300 bg-red-50 text-red-950"
-        : status === "WAITING"
+        : status === "WAITING" || status === "USED" || status === "RECORDED"
           ? "border-amber-300 bg-amber-50 text-amber-950"
           : status === "ERROR"
             ? "border-orange-300 bg-orange-50 text-orange-950"
@@ -288,8 +317,14 @@ export function TicketScanner({
 
   return (
     <PublicLayout signedIn={authorized}>
-      <main className="mx-auto w-full max-w-3xl space-y-6 px-4 py-8">
+      <div className="mx-auto w-full max-w-3xl space-y-6 px-4 py-8 [&_button]:min-h-11">
         <header>
+          <Link
+            href="/scanner/snapshot"
+            className="text-sm text-primary underline"
+          >
+            Chuẩn bị danh sách vé
+          </Link>
           <h1 className="text-2xl font-bold">Soát vé bằng mã QR</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Chọn đúng suất diễn trước khi quét. Mỗi vé chỉ được check-in một
@@ -320,14 +355,114 @@ export function TicketScanner({
               <span className="font-medium">Mã suất diễn</span>
               <input
                 value={showtimeId}
-                onChange={(event) => setShowtimeId(event.target.value)}
+                onChange={(event) => {
+                  setShowtimeId(event.target.value);
+                  setGates([]);
+                  setGateId("");
+                  scanAction.current = null;
+                  setUsed(null);
+                  setResult(null);
+                  setStatus("SCANNING");
+                }}
                 className="w-full rounded-md border bg-background px-3 py-2 font-mono"
                 autoComplete="off"
                 aria-label="Mã suất diễn"
-                disabled={cameraActive || requestPending}
+                disabled={cameraActive || requestPending || gatesLoading}
               />
             </label>
 
+            <button
+              type="button"
+              disabled={
+                cameraActive ||
+                requestPending ||
+                gatesLoading ||
+                !showtimeId.trim()
+              }
+              className="rounded-md border px-4 py-2 font-semibold"
+              onClick={() => {
+                if (gatesLoading) return;
+                setGatesLoading(true);
+                void api(
+                  `/showtimes/${encodeURIComponent(showtimeId.trim())}/check-in/gates`,
+                  (value) => {
+                    const data = object(value);
+                    if (!Array.isArray(data.gates))
+                      throw new ApiError(
+                        "Không đọc được danh sách cửa.",
+                        502,
+                        "INVALID_RESPONSE",
+                      );
+                    return data.gates.map((value) => {
+                      const gate = object(value);
+                      if (
+                        typeof gate.gateId !== "string" ||
+                        typeof gate.gateName !== "string" ||
+                        typeof gate.canOverride !== "boolean"
+                      )
+                        throw new ApiError(
+                          "Không đọc được cửa.",
+                          502,
+                          "INVALID_RESPONSE",
+                        );
+                      return gate as Gate;
+                    });
+                  },
+                )
+                  .then(async (available) => {
+                    const keys = await api("/scanner/qr-keys", decodeQrKeys);
+                    setQrKeys(keys);
+                    setGates(available);
+                    setGateId(available[0]?.gateId ?? "");
+                    setMessage(
+                      available.length
+                        ? "Sẵn sàng quét vé."
+                        : "Bạn chưa được cấp quyền tại suất/cửa này.",
+                    );
+                  })
+                  .catch((error: unknown) => {
+                    setStatus("ERROR");
+                    setMessage(
+                      error instanceof Error
+                        ? error.message
+                        : "Không thể tải cửa. Hãy thử lại.",
+                    );
+                  })
+                  .finally(() => setGatesLoading(false));
+              }}
+            >
+              {gatesLoading ? "Đang tải cửa..." : "Tải cửa được phân công"}
+            </button>
+            <label className="block space-y-2">
+              <span className="font-medium">Cửa hiện tại</span>
+              <select
+                aria-label="Cửa hiện tại"
+                value={gateId}
+                disabled={cameraActive || requestPending || !gates.length}
+                className="w-full rounded-md border bg-background px-3 py-3"
+                onChange={(event) => {
+                  setGateId(event.target.value);
+                  scanAction.current = null;
+                  setUsed(null);
+                  setResult(null);
+                  setStatus("SCANNING");
+                }}
+              >
+                {!gates.length && (
+                  <option value="">Chọn suất và tải cửa trước</option>
+                )}
+                {gates.map((gate) => (
+                  <option key={gate.gateId} value={gate.gateId}>
+                    {gate.gateName}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p className="break-all text-sm">
+              Suất: {showtimeId || "Chưa chọn"} · Cửa:{" "}
+              {gates.find((gate) => gate.gateId === gateId)?.gateName ??
+                "Chưa chọn"}
+            </p>
             <div
               id="ticket-qr-reader"
               className="mx-auto min-h-16 w-full max-w-lg overflow-hidden rounded-lg border bg-card"
@@ -340,17 +475,36 @@ export function TicketScanner({
               data-state={status}
               className={`rounded-lg border p-4 ${statusClass}`}
             >
-              <p className="font-semibold">
-                {status === "WAITING" ? "Đang chờ..." : message}
+              <p className="flex items-center gap-2 font-semibold">
+                {status === "USED" ||
+                status === "RECORDED" ||
+                status === "ERROR" ||
+                status === "INVALID" ? (
+                  <AlertTriangle
+                    aria-hidden="true"
+                    className="size-5 shrink-0"
+                  />
+                ) : result ? (
+                  <CheckCircle aria-hidden="true" className="size-5 shrink-0" />
+                ) : null}
+                {status === "WAITING"
+                  ? "Đang chờ phản hồi từ máy chủ..."
+                  : status === "USED"
+                    ? "Vé đã sử dụng"
+                    : message}
               </p>
+              {used && (
+                <p className="mt-2">
+                  Đã vào lúc {admissionTime(used.checkedInAt)} tại cửa{" "}
+                  {used.gateName}.
+                </p>
+              )}
               {result && (
                 <div className="mt-3 space-y-1">
+                  <p>Cửa: {result.gateName}</p>
                   <p>Hạng ghế: {result.seat.category}</p>
                   <p>Số ghế: {result.seat.label}</p>
-                  <p>
-                    Thời điểm check-in:{" "}
-                    {new Date(result.checkedInAt).toLocaleString("vi-VN")}
-                  </p>
+                  <p>Thời điểm check-in: {admissionTime(result.checkedInAt)}</p>
                 </div>
               )}
             </div>
@@ -375,6 +529,7 @@ export function TicketScanner({
               <button
                 type="button"
                 onClick={() => void startCamera()}
+                disabled={!gateId || gatesLoading}
                 className="rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground"
               >
                 Bật camera
@@ -394,14 +549,22 @@ export function TicketScanner({
               <div className="flex flex-col gap-2 sm:flex-row">
                 <input
                   id="ticket-code"
+                  ref={inputRef}
+                  disabled={requestPending || !gateId}
                   value={ticketId}
-                  onChange={(event) => setTicketId(event.target.value)}
+                  onChange={(event) => {
+                    setTicketId(event.target.value);
+                    setUsed(null);
+                    setResult(null);
+                    setStatus("SCANNING");
+                    setMessage("Kiểm tra mã vé để xác thực.");
+                  }}
                   className="min-w-0 flex-1 rounded-md border bg-background px-3 py-2 font-mono"
                   autoComplete="off"
                 />
                 <button
                   type="submit"
-                  disabled={requestPending}
+                  disabled={requestPending || !gateId}
                   className="rounded-md border px-4 py-2 font-semibold"
                 >
                   Kiểm tra vé
@@ -409,21 +572,28 @@ export function TicketScanner({
               </div>
             </form>
 
-            {(status === "SUCCESS" ||
-              status === "INVALID" ||
-              status === "ERROR" ||
-              status === "WAITING") && (
-              <button
-                type="button"
-                onClick={scanNext}
-                className="rounded-md border px-4 py-2 font-semibold"
-              >
-                Quét vé tiếp theo
-              </button>
-            )}
+            <div className="flex flex-wrap gap-2">
+              {(status === "USED" ||
+                status === "EXCEPTION" ||
+                status === "RECORDED" ||
+                status === "SUCCESS" ||
+                status === "INVALID" ||
+                status === "ERROR" ||
+                status === "WAITING") && (
+                <button
+                  type="button"
+                  onClick={scanNext}
+                  id="scan-next"
+                  disabled={requestPending}
+                  className="rounded-md border px-4 py-2 font-semibold"
+                >
+                  Quét vé tiếp theo
+                </button>
+              )}
+            </div>
           </>
         )}
-      </main>
+      </div>
     </PublicLayout>
   );
 }
