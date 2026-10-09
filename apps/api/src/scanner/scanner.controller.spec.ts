@@ -14,7 +14,7 @@ describe('ScannerController', () => {
         showtimeName: 'Show 1',
         generatedAt: '2026-10-08T00:00:00Z',
         cursor: '2026-10-08T00:00:00Z',
-        publicKey: { keyId: 'k1', key: 'pub-key' },
+        publicKeys: [{ keyId: 'k1', publicKey: 'pub-key', active: true }],
         tickets: [],
       }),
     };

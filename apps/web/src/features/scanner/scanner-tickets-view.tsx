@@ -385,7 +385,14 @@ export function ScannerTicketsView({
 
         {meta && (
           <div className="pt-4 border-t flex flex-col sm:flex-row items-center justify-between text-xs text-muted-foreground gap-2">
-            <span>Khoá công khai QR: <strong>{meta.keyId}</strong></span>
+            <span>
+              Khoá công khai QR:{' '}
+              <strong>
+                {meta.publicKeys?.length
+                  ? meta.publicKeys.map((k) => k.keyId).join(', ')
+                  : 'chưa có, hãy tải lại danh sách'}
+              </strong>
+            </span>
             <span>Mốc đồng bộ (cursor): <strong>{meta.cursor.slice(0, 19).replace('T', ' ')}</strong></span>
           </div>
         )}
