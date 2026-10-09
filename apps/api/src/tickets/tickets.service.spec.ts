@@ -24,11 +24,13 @@ describe('TicketsService', () => {
       ticket: {
         createMany: vi.fn().mockResolvedValue({ count: 0 }),
         update: vi.fn(),
+        updateMany: vi.fn().mockResolvedValue({ count: 1 }),
         create: vi.fn().mockResolvedValue({ id: 'new-ticket-1' }),
       },
       ticketLog: { create: vi.fn() },
     };
     db = {
+      user: { findUnique: vi.fn().mockResolvedValue({ email: 'owner@example.com' }) },
       order: { findUnique: vi.fn() },
       ticket: { findMany: vi.fn(), findUnique: vi.fn() },
       $transaction: vi.fn((cb) => cb(tx)),
@@ -133,6 +135,16 @@ describe('TicketsService', () => {
     const TICKET_ID = 'ticket-123';
     const EMAIL = 'newowner@example.com';
 
+    it('throws BadRequest on invalid email format', async () => {
+      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, '')).rejects.toThrow(BadRequestException);
+      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, 'invalid-email')).rejects.toThrow(BadRequestException);
+    });
+
+    it('throws BadRequest if transferring to own email', async () => {
+      db.user.findUnique.mockResolvedValue({ email: 'owner@example.com' });
+      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, 'owner@example.com')).rejects.toThrow(BadRequestException);
+    });
+
     it('throws NotFound if order not found or user is not owner', async () => {
       db.order.findUnique.mockResolvedValue(null);
       await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(NotFoundException);
@@ -156,7 +168,25 @@ describe('TicketsService', () => {
       await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(BadRequestException);
     });
 
-    it('cancels old ticket and issues a new one', async () => {
+    it('throws BadRequest if concurrent request already invalidated the ticket', async () => {
+      db.order.findUnique.mockResolvedValue({ userId: OWNER_ID });
+      db.ticket.findUnique.mockResolvedValue({
+        id: TICKET_ID,
+        orderId: ORDER_ID,
+        status: TicketStatus.VALID,
+        showtimeId: SHOWTIME_ID,
+        seatId: 'seat-1',
+        seatLabel: 'A-1',
+        ticketType: 'VIP',
+        price: 100,
+      });
+      // Simulate race condition: updateMany returns count 0
+      tx.ticket.updateMany.mockResolvedValue({ count: 0 });
+
+      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(BadRequestException);
+    });
+
+    it('cancels old ticket and issues a new one with atomic update and audit logs', async () => {
       db.order.findUnique.mockResolvedValue({ userId: OWNER_ID });
       db.ticket.findUnique.mockResolvedValue({
         id: TICKET_ID,
@@ -171,9 +201,12 @@ describe('TicketsService', () => {
 
       await service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL);
 
-      expect(tx.ticket.update).toHaveBeenCalledWith({
-        where: { id: TICKET_ID },
-        data: { status: TicketStatus.CANCELLED, transferredToEmail: EMAIL },
+      expect(tx.ticket.updateMany).toHaveBeenCalledWith({
+        where: { id: TICKET_ID, status: TicketStatus.VALID },
+        data: expect.objectContaining({
+          status: TicketStatus.CANCELLED,
+          transferredToEmail: EMAIL,
+        }),
       });
 
       expect(tx.ticket.create).toHaveBeenCalledTimes(1);
@@ -183,6 +216,20 @@ describe('TicketsService', () => {
       expect(newTicketData.seatLabel).toBe('A-1');
 
       expect(tx.ticketLog.create).toHaveBeenCalledTimes(2);
+      expect(tx.ticketLog.create).toHaveBeenNthCalledWith(1, {
+        data: expect.objectContaining({
+          ticketId: TICKET_ID,
+          action: 'TRANSFERRED',
+          actorId: OWNER_ID,
+        }),
+      });
+      expect(tx.ticketLog.create).toHaveBeenNthCalledWith(2, {
+        data: expect.objectContaining({
+          ticketId: 'new-ticket-1',
+          action: 'ISSUED_FROM_TRANSFER',
+          actorId: OWNER_ID,
+        }),
+      });
     });
   });
 });

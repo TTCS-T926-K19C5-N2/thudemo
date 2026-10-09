@@ -149,7 +149,9 @@ export function OrderTickets({ orderId }: { orderId: string }) {
                   <Badge
                     variant={ticket.status === "VALID" ? "secondary" : "outline"}
                   >
-                    {STATUS_LABEL[ticket.status]}
+                    {ticket.status === "CANCELLED" && ticket.transferredToEmail
+                      ? "Đã chuyển nhượng"
+                      : STATUS_LABEL[ticket.status]}
                   </Badge>
                 </div>
                 {ticket.qrPayload && ticket.status !== "CANCELLED" ? (
@@ -157,7 +159,9 @@ export function OrderTickets({ orderId }: { orderId: string }) {
                 ) : (
                   <p className="text-sm text-muted-foreground py-8">
                     {ticket.status === "CANCELLED"
-                      ? "Vé đã huỷ, mã QR không còn hiệu lực."
+                      ? ticket.transferredToEmail
+                        ? `Vé đã chuyển nhượng tới ${ticket.transferredToEmail}.`
+                        : "Vé đã huỷ, mã QR không còn hiệu lực."
                       : "Vé này chưa có mã QR. Vui lòng liên hệ ban tổ chức."}
                   </p>
                 )}

@@ -8,6 +8,7 @@ export type OrderTicket = {
   seatLabel: string;
   ticketType: string;
   status: OrderTicketStatus;
+  transferredToEmail?: string | null;
   // Signed QR content (see ./ticket-qr). Null for tickets issued without a signature.
   qrPayload: string | null;
 };
@@ -31,6 +32,7 @@ export function decodeOrderTickets(value: unknown): OrderTicket[] {
       seatLabel: String(t.seatLabel ?? ""),
       ticketType: String(t.ticketType ?? ""),
       status,
+      transferredToEmail: typeof t.transferredToEmail === "string" ? t.transferredToEmail : null,
       qrPayload: typeof t.qrPayload === "string" ? t.qrPayload : null,
     };
   });
