@@ -5,9 +5,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { ScannerCryptoService } from './scanner-crypto.service.js';
+import {
+  TicketSigningService,
+  type TicketPublicKeyInfo,
+} from '../tickets/ticket-signing.service.js';
 import { TicketStatus } from '@prisma/client';
-import { randomUUID } from 'node:crypto';
 
 export interface ScannerTicketItem {
   code: string;
@@ -22,10 +24,9 @@ export interface ShowtimeTicketsResponse {
   showtimeName: string;
   generatedAt: string;
   cursor: string;
-  publicKey: {
-    keyId: string;
-    key: string;
-  };
+  // Every key a QR may be signed with (active + retired), so the scanner can
+  // verify offline by the keyId in the QR.
+  publicKeys: TicketPublicKeyInfo[];
   tickets: ScannerTicketItem[];
 }
 
@@ -46,7 +47,7 @@ export class ScannerService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly crypto: ScannerCryptoService,
+    private readonly signing: TicketSigningService,
   ) {}
 
   async getAssignedShowtimes(
@@ -231,7 +232,7 @@ export class ScannerService {
       showtimeName: showtime.event.name,
       generatedAt: now.toISOString(),
       cursor: now.toISOString(),
-      publicKey: this.crypto.getPublicKeyInfo(),
+      publicKeys: this.signing.getPublicKeys(),
       tickets,
     };
   }
@@ -247,49 +248,5 @@ export class ScannerService {
       update: {},
       create: { showtimeId, userId },
     });
-  }
-
-  async createTicketsForPaidOrder(orderId: string): Promise<void> {
-    const order = await this.prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        items: {
-          include: {
-            seat: true,
-          },
-        },
-      },
-    });
-
-    if (!order) return;
-
-    for (const item of order.items) {
-      const existing = await this.prisma.ticket.findFirst({
-        where: {
-          orderId: order.id,
-          seatId: item.seatId,
-        },
-      });
-
-      if (!existing) {
-        const code = `TK-${randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
-        const seatLabel = item.seat
-          ? `${item.seat.row}-${item.seat.seatNumber}`
-          : item.categoryName;
-
-        await this.prisma.ticket.create({
-          data: {
-            orderId: order.id,
-            showtimeId: order.showtimeId,
-            seatId: item.seatId,
-            code,
-            seatLabel,
-            ticketType: item.categoryName,
-            status: TicketStatus.VALID,
-            price: item.unitPrice,
-          },
-        });
-      }
-    }
   }
 }

@@ -1,27 +1,24 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ScannerService } from './scanner.service.js';
-import { ScannerCryptoService } from './scanner-crypto.service.js';
+import { TicketSigningService } from '../tickets/ticket-signing.service.js';
 import { TicketStatus } from '@prisma/client';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
 describe('ScannerService', () => {
   let service: ScannerService;
   let mockPrisma: any;
-  let mockCrypto: any;
+  let mockSigning: any;
 
   const mockShowtimeId = 'showtime-1111-1111-1111-111111111111';
   const mockStaffUserId = 'staff-2222-2222-2222-222222222222';
   const mockOrganizerId = 'organizer-3333-3333-3333-333333333333';
 
   beforeEach(() => {
-    mockCrypto = {
-      getKeyId: vi.fn().mockReturnValue('k1'),
-      getPublicKeyInfo: vi.fn().mockReturnValue({
-        keyId: 'k1',
-        key: '-----BEGIN PUBLIC KEY-----\nMOCK_KEY\n-----END PUBLIC KEY-----',
-      }),
-      signTicket: vi.fn().mockReturnValue('mock-sig'),
-      verifyTicket: vi.fn().mockReturnValue(true),
+    mockSigning = {
+      getPublicKeys: vi.fn().mockReturnValue([
+        { keyId: 'k1', publicKey: 'MOCK_RETIRED_KEY', active: false },
+        { keyId: 'k2', publicKey: 'MOCK_ACTIVE_KEY', active: true },
+      ]),
     };
 
     mockPrisma = {
@@ -44,7 +41,7 @@ describe('ScannerService', () => {
       },
     };
 
-    service = new ScannerService(mockPrisma, mockCrypto as unknown as ScannerCryptoService);
+    service = new ScannerService(mockPrisma, mockSigning as unknown as TicketSigningService);
   });
 
   describe('Authorization: verifyStaffAccess', () => {
@@ -113,7 +110,7 @@ describe('ScannerService', () => {
   });
 
   describe('Full Download: getShowtimeTickets (since omitted)', () => {
-    it('returns full ticket list, generatedAt, cursor, publicKey, and no PII', async () => {
+    it('returns full ticket list, generatedAt, cursor, public keys, and no PII', async () => {
       mockPrisma.showtime.findUnique.mockResolvedValue({
         id: mockShowtimeId,
         event: { name: 'Concert Đêm Nhạc Mùa Thu', organizerId: mockOrganizerId },
@@ -144,8 +141,8 @@ describe('ScannerService', () => {
 
       expect(result.showtimeId).toBe(mockShowtimeId);
       expect(result.showtimeName).toBe('Concert Đêm Nhạc Mùa Thu');
-      expect(result.publicKey.keyId).toBe('k1');
-      expect(result.publicKey.key).toContain('MOCK_KEY');
+      // Retired keys are included so tickets issued before a rotation verify.
+      expect(result.publicKeys.map((k) => k.keyId)).toEqual(['k1', 'k2']);
       expect(result.cursor).toBeDefined();
       expect(result.tickets).toHaveLength(2);
 

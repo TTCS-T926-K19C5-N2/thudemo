@@ -40,6 +40,13 @@ import {
   remainingSeconds,
   type ServerClock,
 } from "@/features/seat-selection/server-countdown";
+import { OrderTickets } from "@/features/tickets/order-tickets";
+
+// The hold countdown only applies while the order still awaits payment;
+// a PAID order past its hold deadline is not expired.
+function awaitingPayment(order: Pick<OrderDetail, "status">): boolean {
+  return order.status === "PENDING" || order.status === "PENDING_PAYMENT";
+}
 
 export interface OrderReviewProps {
   id: string;
@@ -77,7 +84,7 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
         serverAnchor.receivedAt,
       );
       setRemaining(rem);
-      setExpired(data.isExpired || rem <= 0);
+      setExpired(data.isExpired || (awaitingPayment(data) && rem <= 0));
     } catch (err) {
       if (err instanceof ApiError && (err.status === 404 || err.status === 403)) {
         setNotFound(true);
@@ -124,7 +131,7 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
         serverAnchor.receivedAt,
       );
       setRemaining(rem);
-      setExpired(data.isExpired || rem <= 0);
+      setExpired(data.isExpired || (awaitingPayment(data) && rem <= 0));
       setLoading(false);
     }
 
@@ -155,7 +162,7 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
 
   // Live countdown timer based on server clock synchronization
   useEffect(() => {
-    if (!order || expired || !clock) return;
+    if (!order || expired || !clock || !awaitingPayment(order)) return;
     const interval = setInterval(() => {
       const rem = remainingSeconds(order.expiresAt, clock, performance.now());
       setRemaining(rem);
@@ -317,7 +324,7 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
                   giải phóng. Vui lòng quay lại sơ đồ ghế để chọn lại.
                 </AlertDescription>
               </Alert>
-            ) : (
+            ) : awaitingPayment(order) ? (
               <div
                 className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 border border-secondary text-secondary-foreground"
                 data-testid="countdown-banner"
@@ -340,7 +347,10 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
                   {countdownLabel(remaining)}
                 </div>
               </div>
-            )}
+            ) : null}
+
+            {/* S-25: tickets with signed QR once the order is PAID */}
+            {order.status === "PAID" && <OrderTickets orderId={order.id} />}
 
             {/* Event & Showtime Summary */}
             <div className="rounded-xl border bg-card p-5 shadow-sm space-y-4">

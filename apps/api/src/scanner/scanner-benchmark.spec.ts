@@ -35,10 +35,7 @@ describe('S-33 Performance Benchmark: 5000 and 20000 tickets (AC #3)', () => {
       showtimeName: 'Hòa Nhạc Giao Hưởng Quốc Gia 5000 Khách',
       generatedAt: new Date().toISOString(),
       cursor: new Date().toISOString(),
-      publicKey: {
-        keyId: 'k1',
-        key: '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA0123456789abcdef0123456789abcdef0123456789abcdef\n-----END PUBLIC KEY-----',
-      },
+      publicKeys: [{ keyId: 'k1', publicKey: 'MCowBQYDK2VwAyEAGX9rI+FshTLGq8g4+s1ep4m+DHaykgM0A5v6iz02jWE=', active: true }],
       tickets,
     };
 
@@ -79,10 +76,7 @@ describe('S-33 Performance Benchmark: 5000 and 20000 tickets (AC #3)', () => {
       showtimeName: 'Đại Nhạc Hội Sân Vận Động 20,000 Khách',
       generatedAt: new Date().toISOString(),
       cursor: new Date().toISOString(),
-      publicKey: {
-        keyId: 'k1',
-        key: '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA0123456789abcdef0123456789abcdef0123456789abcdef\n-----END PUBLIC KEY-----',
-      },
+      publicKeys: [{ keyId: 'k1', publicKey: 'MCowBQYDK2VwAyEAGX9rI+FshTLGq8g4+s1ep4m+DHaykgM0A5v6iz02jWE=', active: true }],
       tickets,
     };
 
