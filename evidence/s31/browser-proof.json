@@ -1,13 +1,13 @@
 {
-  "environment": "http://localhost:3040/scanner -> real same-origin proxy -> own API localhost:3001 -> private PostgreSQL 15438",
+  "environment": "http://localhost:3060/scanner -> real same-origin proxy -> own API localhost:3061 -> private PostgreSQL 15442",
   "browser": "Playwright Chromium 1.62.1; Browser plugin not available",
   "viewports": [
     "1440x1000",
     "390x844"
   ],
   "camera": false,
-  "sourceSha": "59314d16710a38152c1b23e98aef289aea792bb8",
-  "driverSha256": "dabd92e9fe9c6b9e9407be9041bfdf95fca162b8f7255388fd5d40c3648aca15",
+  "sourceSha": "8e6374d45574ab06ed08e1d81619aa0030401526",
+  "driverSha256": "3307f2e6345b4366182c7991d5a25994e313faa899b192fb788ea32271880e82",
   "checks": [
     "Page identity / meaningful nonblank scanner / no framework overlay",
     "AC1: used ticket shows 19:02 and first gate A while context is gate B",
@@ -23,7 +23,8 @@
     "Completed exception moves focus to next scan",
     "Next scan clears result and focuses input without requiring camera",
     "Editing ticket code clears stale valid result before server verification",
-    "Retry result never displayed as new green admission",
+    "Resubmitting the same action after editing displays recorded replay, never a new green admission",
+    "Explicit next scan creates a new request and rejects the consumed ticket",
     "S-30 >3s waiting/no premature green/cannot cancel to resubmit while pending",
     "Network failure shows retry guidance, never valid/offline",
     "Text/icon/live region provides status beyond color",
@@ -46,12 +47,12 @@
     "desktop-network-error.png",
     "mobile-dialog.png"
   ],
-  "startedAt": "2026-10-08T15:07:40.306Z",
+  "startedAt": "2026-10-09T09:08:47.645Z",
   "usedColors": {
     "foreground": "lab(15.8111 20.9107 23.3752)",
-    "background": "lab(98.6252 -0.635982 8.42309)"
+    "background": "lab(98.6252 -0.635922 8.42309)"
   },
   "usedContrastRatio": 14.465587811642001,
   "status": "PASS",
-  "finishedAt": "2026-10-08T15:07:53.341Z"
+  "finishedAt": "2026-10-09T09:08:59.567Z"
 }

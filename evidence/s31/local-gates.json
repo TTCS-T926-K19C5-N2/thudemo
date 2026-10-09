@@ -1,42 +1,47 @@
 {
-  "status": "PASS_LOCAL_WITH_ACCEPTANCE_BLOCKER",
-  "apiSourceSha": "285c9afe5b56483118b2b655750e9ab2ae8ccd9e",
-  "browserSourceSha": "59314d16710a38152c1b23e98aef289aea792bb8",
-  "format": "PASS",
-  "lint": "PASS; four inherited API warnings",
+  "status": "PASS_TECHNICAL_WITH_DEVICE_AND_DEPENDENCY_BLOCKER",
+  "applicationRevision": "5cd1e2dc03293cb191ac6a0eec7f8ee3fe15ed96",
+  "ciEvidenceSha": "8e6374d45574ab06ed08e1d81619aa0030401526",
+  "ciEvidenceRun": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/37909249448",
+  "format": "PASS changed source/docs/workflow",
+  "lint": "PASS; four inherited warnings",
   "typecheck": "PASS",
-  "build": "PASS API and web; web rebuilt after stale-result fix",
+  "build": "PASS API/web",
   "unit": {
-    "api": 151,
-    "web": 43,
-    "status": "PASS"
+    "api": 178,
+    "web": 50,
+    "status": "PASS local candidate matching application revision"
   },
-  "s30Integration": {
-    "tests": 4,
+  "fullIntegration": {
+    "tests": 84,
     "status": "PASS",
-    "database": "private s31_admission_integration port15438"
+    "database": "task-owned private sprint2_integration port15432"
   },
   "http": {
-    "checks": 29,
+    "checks": 46,
     "races": 50,
-    "osApiProcesses": 2,
-    "status": "PASS",
-    "evidence": "http-proof.json"
+    "instances": 2,
+    "status": "PASS local and CI signed QR"
   },
   "browser": {
-    "checks": 26,
-    "status": "PASS",
-    "evidence": "browser-proof.json"
+    "checks": 27,
+    "status": "PASS CI",
+    "camera": false,
+    "staging": false
   },
   "wip": {
-    "originalFiles": 1819,
+    "files": 1881,
     "changed": 0,
-    "missing": 0
+    "missing": 0,
+    "statusEqual": true
   },
-  "fullRepoIntegrationLocal": "NOT RUN: reserved port15432/database belongs to another task; use CI isolated services",
-  "signedQr": "NOT VERIFIED: S30 unsigned UUID",
-  "staging": "NOT RUN",
+  "signedQr": "PASS NORMAL and EXCEPTION; no UUID bypass; rotation and restart",
+  "poOverride": "Explicit staff/showtime/gate capability; default false; approved decision preserved",
+  "rollback": "PASS populated compensation guard / transaction fault injection; empty compensation/reapply not run",
   "realDeviceCamera": "NOT RUN",
+  "outdoorReadability": "NOT RUN",
+  "staging": "NOT RUN",
+  "dependencyMerged": false,
   "merged": false,
   "deployed": false
 }

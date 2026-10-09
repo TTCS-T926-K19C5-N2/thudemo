@@ -15,3 +15,5 @@ Exact merge/head SHA, actual push log, final CI runs và technical review URL đ
 Required main checks T-02 build/typecheck/lint/test; không sửa protection/assertion/workflow để làm xanh. Thêm workflow S31 signed admission: migration22/2API/50races/QRsignature/exception/real browserV1; artifact sanitized JSON+PNG. Review cũ f636 và26browser UUID không thay bằng chứng contract mới.
 
 WIP checkout chính được giữ bằng binary diff+SHA256 manifest1881files ở checkpoint ngoài Git. Mọi sửa trong worktree riêng; không reset/clean/database khác. Các container mới15442/16392 chỉ cho kiểm S-31 ký. [Implementation](S31_IMPLEMENTATION.md), [evidence](S31_EVIDENCE.md), [PO decision](S31_PERMISSION_DECISION.md) là nguồn bàn giao trong repo.
+
+Thao tác remote thật09/10/2026: Sang push snapshot d423fa8→dependency/S-30-pr68-d423fa8; push f63616b..5cd1e2d rồi5cd1e2d..8e6374d vào đúng story branch; retargetPR64 base mới, API xác nhận baseSHA=d423/head=8e. Log timestamp nằm ngoài Git để không chứa credential; các range ở đây lấy từ output push thật, không dựng lại lịch sử. Không retargetmain/chưa có mergeSHA S-30.

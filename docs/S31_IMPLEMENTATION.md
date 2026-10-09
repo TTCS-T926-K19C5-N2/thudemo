@@ -30,4 +30,4 @@ Rollback application về S-30 signed head vẫn giữ ledger/grant/check first 
 
 ## REVIEW → VERIFY → PUBLISH
 
-[Ma trận](S31_EVIDENCE.md), [handoff](S31_GITHUB_HANDOFF.md). Local mới: 46 HTTP checks +50 real races/2processes, rotation/restart/rollback; build/lint/typecheck/unit228 PASS. CI browser phải thuộc head mới, không dùng26check UUID cũ. Camera/ngoài trời vẫn chờ, staging chưa kiểm. Không đóng issue, chuyển Ready hoặc gọi Done khi gate còn mở.
+[Ma trận](S31_EVIDENCE.md), [handoff](S31_GITHUB_HANDOFF.md). Local mới: 46 HTTP checks +50 real races/2processes, rotation/restart/rollback; build/lint/typecheck/unit228 PASS. CI signed8e6374d:46HTTP/50races/27browser PASS,84integration hồi quy local PASS. Final-head checks/review tham chiếu PR64, không dùng26check UUID cũ. Camera/ngoài trời vẫn chờ, staging chưa kiểm. Không đóng issue, chuyển Ready hoặc gọi Done khi gate còn mở.

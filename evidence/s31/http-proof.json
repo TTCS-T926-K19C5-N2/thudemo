@@ -1,15 +1,15 @@
 {
-  "local": true,
-  "ci": false,
+  "local": false,
+  "ci": true,
   "staging": false,
   "camera": false,
-  "sourceSha": "working-tree",
+  "sourceSha": "8e6374d45574ab06ed08e1d81619aa0030401526",
   "instances": 2,
   "processIds": [
-    27368,
-    12572,
-    24532,
-    22880
+    3426,
+    3427,
+    3568,
+    3640
   ],
   "checks": [
     "Real owner endpoint issues the same signed QR for the existing paid ticket",
@@ -63,32 +63,32 @@
     {
       "round": 1,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
     {
       "round": 2,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
     {
       "round": 3,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
     {
       "round": 4,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
@@ -103,8 +103,8 @@
     {
       "round": 6,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
@@ -127,8 +127,8 @@
     {
       "round": 9,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
@@ -191,8 +191,8 @@
     {
       "round": 17,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
@@ -223,16 +223,16 @@
     {
       "round": 21,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
     {
       "round": 22,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
@@ -255,24 +255,24 @@
     {
       "round": 25,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
     {
       "round": 26,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
     {
       "round": 27,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
@@ -287,16 +287,16 @@
     {
       "round": 29,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
     {
       "round": 30,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
@@ -311,24 +311,24 @@
     {
       "round": 32,
       "statuses": [
-        409,
-        200
-      ],
-      "admissionCount": 1
-    },
-    {
-      "round": 33,
-      "statuses": [
         200,
         409
       ],
       "admissionCount": 1
     },
     {
-      "round": 34,
+      "round": 33,
       "statuses": [
         409,
         200
+      ],
+      "admissionCount": 1
+    },
+    {
+      "round": 34,
+      "statuses": [
+        200,
+        409
       ],
       "admissionCount": 1
     },
@@ -343,24 +343,24 @@
     {
       "round": 36,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
     {
       "round": 37,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
     {
       "round": 38,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
@@ -399,32 +399,32 @@
     {
       "round": 43,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     },
     {
       "round": 44,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
     {
       "round": 45,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
     {
       "round": 46,
       "statuses": [
-        200,
-        409
+        409,
+        200
       ],
       "admissionCount": 1
     },
@@ -455,20 +455,20 @@
     {
       "round": 50,
       "statuses": [
-        409,
-        200
+        200,
+        409
       ],
       "admissionCount": 1
     }
   ],
-  "startedAt": "2026-10-09T08:57:12.848Z",
+  "startedAt": "2026-10-09T09:08:22.788Z",
   "signature": "ET1.Ed25519: same verifier for NORMAL and EXCEPTION",
   "driverSha256": "cd92398aa8c7f40fb2aa0edf9469e480f0c2a8d882329d24f8187a6053be996f",
   "responseMs": {
     "count": 151,
-    "p95": 34.111199999999826,
-    "max": 52.115600000000086
+    "p95": 11.99349600000005,
+    "max": 29.065686999999798
   },
   "status": "PASS",
-  "finishedAt": "2026-10-09T08:57:19.745Z"
+  "finishedAt": "2026-10-09T09:08:25.993Z"
 }
