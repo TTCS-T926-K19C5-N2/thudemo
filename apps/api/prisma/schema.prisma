@@ -298,6 +298,7 @@ model Ticket {
   cancelledAt DateTime?    @db.Timestamptz(3)
   price       Int          @default(0)
   reminderSentAt DateTime? @db.Timestamptz(3)
+  remindedStartTime DateTime? @db.Timestamptz(3)
   // S-26: QR signature made once at issue time. keyId names the signing key
   // so tickets stay verifiable after the active key is rotated.
   keyId       String?
