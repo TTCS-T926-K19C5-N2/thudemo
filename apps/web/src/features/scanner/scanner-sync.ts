@@ -46,8 +46,7 @@ export async function downloadTicketsFull(
       lastSyncAt: payload.generatedAt,
       cursor: payload.cursor,
       ticketCount: payload.tickets.length,
-      keyId: payload.publicKey.keyId,
-      publicKey: payload.publicKey.key,
+      publicKeys: payload.publicKeys,
       status: 'ready',
     };
 
@@ -81,6 +80,7 @@ export async function syncTicketsIncremental(
       showtimeId,
       payload.cursor,
       payload.tickets,
+      payload.publicKeys,
     );
 
     return updatedMeta;

@@ -1,3 +1,5 @@
+import type { TicketPublicKey } from '@/features/tickets/ticket-qr';
+
 export interface ShowtimeLocalMeta {
   showtimeId: string;
   showtimeName: string;
@@ -5,8 +7,8 @@ export interface ShowtimeLocalMeta {
   lastSyncAt: string;
   cursor: string;
   ticketCount: number;
-  keyId: string;
-  publicKey: string;
+  // Absent on lists saved before S-26; re-download to get them.
+  publicKeys?: TicketPublicKey[];
   status: 'ready' | 'stale' | 'syncing' | 'error';
 }
 
@@ -119,6 +121,7 @@ export async function mergeTicketsIncremental(
   showtimeId: string,
   newCursor: string,
   updatedTickets: Array<Omit<LocalTicket, 'showtimeId'>>,
+  publicKeys?: TicketPublicKey[],
 ): Promise<ShowtimeLocalMeta> {
   const db = await openScannerDb();
   return new Promise((resolve, reject) => {
@@ -140,6 +143,8 @@ export async function mergeTicketsIncremental(
         reject(new Error('Không tìm thấy thông tin suất để hợp nhất dữ liệu'));
         return;
       }
+      // Pick up a key rotation without a full re-download.
+      if (publicKeys) meta.publicKeys = publicKeys;
 
       let pendingReads = updatedTickets.length;
       if (pendingReads === 0) {

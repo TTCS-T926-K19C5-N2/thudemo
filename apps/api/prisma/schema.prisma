@@ -297,9 +297,17 @@ model Ticket {
   checkedInAt DateTime?    @db.Timestamptz(3)
   cancelledAt DateTime?    @db.Timestamptz(3)
   price       Int          @default(0)
+  // S-26: QR signature made once at issue time. keyId names the signing key
+  // so tickets stay verifiable after the active key is rotated.
+  keyId       String?
+  signature   String?
+  ownerEmail  String?
+  transferredToEmail String?
   createdAt   DateTime     @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime     @default(now()) @updatedAt @db.Timestamptz(3)
+  logs        TicketLog[]
 
+  @@unique([orderId, seatId])
   @@index([showtimeId, updatedAt])
   @@index([showtimeId, status])
   @@index([orderId])
@@ -317,4 +325,17 @@ model ShowtimeStaff {
   @@unique([showtimeId, userId])
   @@index([userId])
   @@map("showtime_staff")
+}
+
+model TicketLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  ticketId  String   @db.Uuid
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  action    String
+  actorId   String?  @db.Uuid
+  detail    Json?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([ticketId])
+  @@map("ticket_logs")
 }
