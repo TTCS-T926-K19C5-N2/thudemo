@@ -357,6 +357,11 @@ export function TicketScanner({
                 value={showtimeId}
                 onChange={(event) => {
                   setShowtimeId(event.target.value);
+                  setTicketId("");
+                  setQrKeys([]);
+                  setMessage(
+                    "Chọn suất diễn và tải cửa được phân công để bắt đầu.",
+                  );
                   setGates([]);
                   setGateId("");
                   scanAction.current = null;
@@ -442,6 +447,8 @@ export function TicketScanner({
                 className="w-full rounded-md border bg-background px-3 py-3"
                 onChange={(event) => {
                   setGateId(event.target.value);
+                  setTicketId("");
+                  setMessage("Quét vé tại cửa hiện tại để xác thực.");
                   scanAction.current = null;
                   setUsed(null);
                   setResult(null);

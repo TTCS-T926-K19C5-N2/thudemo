@@ -22,7 +22,7 @@ import {
   existsSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { resolve, relative, isAbsolute } from 'node:path';
+import { resolve, relative, isAbsolute, sep } from 'node:path';
 const target = new URL(process.env.DATABASE_URL ?? '');
 assert(
   target.hostname === '127.0.0.1' &&
@@ -42,7 +42,7 @@ const keyDir = process.env.QR_FIXTURE_KEY_DIR
   : mkdtempSync(resolve(tmpdir(), 'thudemo-qr-fixture-'));
 const rel = relative(root, keyDir);
 assert(
-  rel.startsWith('..') || isAbsolute(rel),
+  rel === '..' || rel.startsWith('..' + sep) || isAbsolute(rel),
   'Fixture keys outside repository',
 );
 mkdirSync(keyDir, { recursive: true, mode: 0o700 });
@@ -586,7 +586,9 @@ try {
   if (process.env.QR_PRIVATE_FIXTURE_FILE) {
     const out = resolve(process.env.QR_PRIVATE_FIXTURE_FILE);
     assert(
-      relative(root, out).startsWith('..') || isAbsolute(relative(root, out)),
+      relative(root, out) === '..' ||
+        relative(root, out).startsWith('..' + sep) ||
+        isAbsolute(relative(root, out)),
       'Private fixture outside repository',
     );
     writeFileSync(out, JSON.stringify(fixture), { mode: 0o600 });

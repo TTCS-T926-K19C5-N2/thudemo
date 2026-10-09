@@ -268,6 +268,13 @@ try {
     report.consoleErrors.length === 0,
     "No unexpected browser console/runtime errors",
   );
+  await a.getByLabel("Mã suất diễn").fill(fixture.otherShowtimeId);
+  check(
+    !(await status(a).innerText()).includes(
+      "Vé hợp lệ. Check-in thành công.",
+    ) && (await a.getByLabel("Hoặc nhập mã vé").inputValue()) === "",
+    "Changing showtime clears previous admission message and QR input",
+  );
   report.status = "PASS";
 } catch (error) {
   report.status = "FAIL";

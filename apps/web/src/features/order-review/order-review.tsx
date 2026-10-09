@@ -457,7 +457,9 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
               </div>
             </div>
 
-            {order.status === "PAID" && <SignedTickets orderId={order.id} />}
+            {order.status === "PAID" && (
+              <SignedTickets key={order.id} orderId={order.id} />
+            )}
 
             {/* S-24: Failed previous payment notice */}
             {!expired &&

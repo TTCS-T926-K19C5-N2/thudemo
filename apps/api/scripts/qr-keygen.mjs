@@ -1,6 +1,6 @@
 import { generateKeyPairSync } from 'node:crypto';
 import { mkdirSync, existsSync, writeFileSync } from 'node:fs';
-import { resolve, relative, isAbsolute } from 'node:path';
+import { resolve, relative, isAbsolute, sep } from 'node:path';
 const dir = process.argv[2] && resolve(process.argv[2]);
 const kid = process.argv[3];
 const repo = resolve(import.meta.dirname, '../../..');
@@ -9,7 +9,7 @@ if (!dir || !kid || !/^[A-Za-z0-9_-]{1,32}$/.test(kid))
     'Usage: node qr-keygen.mjs <private-directory-outside-repository> <key-id>',
   );
 const rel = relative(repo, dir);
-if (!rel || (!rel.startsWith('..') && !isAbsolute(rel)))
+if (!rel || (!(rel === '..' || rel.startsWith('..' + sep)) && !isAbsolute(rel)))
   throw Error('Keys must be outside repository/build context');
 const privatePath = resolve(dir, kid + '.private.pem'),
   publicPath = resolve(dir, kid + '.public.pem');
