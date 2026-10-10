@@ -1,5 +1,6 @@
 import { EventEmitter } from 'node:events';
 import type { Request, Response } from 'express';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Metrics } from './metrics.js';
 
 describe('S-43 HTTP completion, privacy and business semantics', () => {
@@ -72,9 +73,11 @@ describe('S-43 HTTP completion, privacy and business semantics', () => {
     }
     expect((await m.conflicts.get()).values[0].value).toBe(1);
     const text = await m.registry.metrics();
-    expect(text).not.toMatch(
-      /private-seat|another|private-request|secret-user|never-export|token=/,
-    );
+    const hasSensitiveData =
+      /private-seat|another|private-request|secret-user|never-export|token=/.test(
+        text,
+      );
+    expect(hasSensitiveData).toBe(false);
   });
   it('bounds unknown routes/methods and excludes health traffic', async () => {
     const m = new Metrics();
@@ -105,7 +108,13 @@ describe('S-43 HTTP completion, privacy and business semantics', () => {
     const spy = vi.spyOn(m.requests, 'inc').mockImplementation(() => {
       throw Error('collector failure');
     });
-    expect(() => response(m, 200, '/showtimes').emit('finish')).not.toThrow();
+    let threwError = false;
+    try {
+      response(m, 200, '/showtimes').emit('finish');
+    } catch {
+      threwError = true;
+    }
+    expect(threwError).toBe(false);
     expect(spy).toHaveBeenCalledOnce();
     process.env.MONITORING_ENABLED = 'false';
     response(m, 200, '/showtimes').emit('finish');
