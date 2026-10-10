@@ -204,6 +204,7 @@ model Order {
   payments         Payment[]
   logs             OrderLog[]
   tickets          Ticket[]
+  emailLogs        EmailLog[]
   createdAt        DateTime     @default(now()) @db.Timestamptz(3)
   updatedAt        DateTime     @updatedAt @db.Timestamptz(3)
 
@@ -303,6 +304,8 @@ model Ticket {
   checkedInAt DateTime?    @db.Timestamptz(3)
   cancelledAt DateTime?    @db.Timestamptz(3)
   price       Int          @default(0)
+  qrCodeData  String?
+  qrCodeImage String?      @db.Text
   createdAt   DateTime     @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime     @default(now()) @updatedAt @db.Timestamptz(3)
 
@@ -372,4 +375,28 @@ model TicketAdmission {
   // Partial unique NORMAL ticket and CHECK constraints are maintained by migration SQL.
   @@index([ticketId, enteredAt], map: "ticket_admissions_ticket_time")
   @@map("ticket_admissions")
+}
+
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model EmailLog {
+  id        String      @id @default(uuid()) @db.Uuid
+  orderId   String      @db.Uuid
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  recipient String
+  subject   String
+  attempts  Int         @default(1)
+  status    EmailStatus @default(PENDING)
+  lastError String?     @db.Text
+  sentAt    DateTime?   @db.Timestamptz(3)
+  createdAt DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime    @updatedAt @db.Timestamptz(3)
+
+  @@index([orderId])
+  @@map("email_logs")
 }

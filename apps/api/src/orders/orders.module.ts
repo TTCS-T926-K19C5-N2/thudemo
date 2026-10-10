@@ -1,4 +1,5 @@
 import { ScannerModule } from '../scanner/scanner.module.js';
+import { MailModule } from '../mail/mail.module.js';
 import { TicketQrController } from './ticket-qr.controller.js';
 import { TicketQrService } from './ticket-qr.service.js';
 import { Module } from '@nestjs/common';
@@ -12,7 +13,7 @@ import { TicketCheckInController } from './ticket-check-in.controller.js';
 import { TicketCheckInService } from './ticket-check-in.service.js';
 
 @Module({
-  imports: [ScannerModule],
+  imports: [ScannerModule, MailModule],
   controllers: [
     TicketQrController,
     OrdersController,

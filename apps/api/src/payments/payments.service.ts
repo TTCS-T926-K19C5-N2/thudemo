@@ -481,7 +481,7 @@ export class PaymentsService {
     // 6. Successful event with matched amount in a SINGLE TRANSACTION
     if (event.status === 'SUCCESS') {
       try {
-        return await this.db.$transaction(async (tx) => {
+        const txResult = await this.db.$transaction(async (tx) => {
           // Advisory lock using gatewayRef to prevent race conditions
           if (typeof (tx as any).$executeRaw === 'function') {
             await (tx as any).$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${event.gatewayRef}))`;
@@ -619,6 +619,12 @@ export class PaymentsService {
 
           return { received: true, status: 'PAID' };
         });
+
+        if (txResult.status === 'PAID' && typeof this.ordersService?.issueTicketsAndSendEmail === 'function') {
+          void this.ordersService.issueTicketsAndSendEmail(order.id);
+        }
+
+        return txResult;
       } catch (error: any) {
         // Catch duplicate key / concurrency errors (Prisma P2002) and treat as idempotent success
         if (

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
 import { OrdersService } from './orders.service.js';
 import { isOrderExpired } from './order-expiration.js';
@@ -60,6 +60,7 @@ describe('OrdersService & isOrderExpired', () => {
         order: {
           create: vi.fn(),
           findUnique: vi.fn(),
+          findMany: vi.fn(),
           update: vi.fn(),
         },
         orderLog: {
@@ -343,6 +344,170 @@ describe('OrdersService & isOrderExpired', () => {
         const result = await service.getOrderById(mockOrderId, mockUserId);
         // Server recalculated total wins
         expect(result.totalAmount).toBe(500000);
+      });
+    });
+
+    describe('S-27: resendEmail and getUserOrders', () => {
+      const mockMailService = {
+        sendTicketEmail: vi.fn(),
+        generateQrCode: vi.fn(),
+      };
+
+      let s27Service: OrdersService;
+
+      beforeEach(() => {
+        vi.clearAllMocks();
+        s27Service = new OrdersService(
+          mockPrisma as unknown as PrismaService,
+          mockMailService as any,
+        );
+      });
+
+      it('resendEmail: rejects when order does not exist (throws NotFoundException)', async () => {
+        mockPrisma.order.findUnique.mockResolvedValue(null);
+        await expect(
+          s27Service.resendEmail(mockUserId, mockOrderId),
+        ).rejects.toBeInstanceOf(NotFoundException);
+      });
+
+      it('resendEmail: rejects when user is not the owner (throws ForbiddenException)', async () => {
+        mockPrisma.order.findUnique.mockResolvedValue({
+          id: mockOrderId,
+          userId: 'other-user',
+        });
+        await expect(
+          s27Service.resendEmail(mockUserId, mockOrderId),
+        ).rejects.toBeInstanceOf(ForbiddenException);
+      });
+
+      it('resendEmail: rejects when order is not in PAID status (throws BadRequestException)', async () => {
+        mockPrisma.order.findUnique.mockResolvedValue({
+          id: mockOrderId,
+          userId: mockUserId,
+          status: OrderStatus.PENDING,
+          tickets: [{ id: 'ticket-1' }],
+        });
+        await expect(
+          s27Service.resendEmail(mockUserId, mockOrderId),
+        ).rejects.toBeInstanceOf(BadRequestException);
+      });
+
+      it('resendEmail: rejects when order has no tickets issued (throws BadRequestException)', async () => {
+        mockPrisma.order.findUnique.mockResolvedValue({
+          id: mockOrderId,
+          userId: mockUserId,
+          status: OrderStatus.PAID,
+          tickets: [],
+        });
+        await expect(
+          s27Service.resendEmail(mockUserId, mockOrderId),
+        ).rejects.toBeInstanceOf(BadRequestException);
+      });
+
+      it('resendEmail: re-sends email with existing tickets and NEVER creates new tickets', async () => {
+        const existingTicket = {
+          id: 'ticket-1',
+          ticketCode: 'TKT-EXISTING-1',
+          code: 'TKT-EXISTING-1',
+          seatLabel: 'A-1',
+          ticketType: 'VIP',
+          price: 500000,
+          qrCodeData: 'payload',
+          qrCodeImage: 'data:image/png;base64,sample',
+          seat: {
+            row: 'A',
+            seatNumber: 1,
+            category: { name: 'VIP' },
+          },
+        };
+
+        mockPrisma.order.findUnique.mockResolvedValue({
+          id: mockOrderId,
+          userId: mockUserId,
+          status: OrderStatus.PAID,
+          totalAmount: 500000,
+          user: { email: 'buyer@example.com' },
+          showtime: {
+            startTime: new Date('2026-11-20T19:30:00Z'),
+            event: { name: 'Concert', location: 'HN' },
+          },
+          tickets: [existingTicket],
+        });
+
+        mockMailService.sendTicketEmail.mockResolvedValue({
+          success: true,
+          attempts: 1,
+        });
+
+        const result = await s27Service.resendEmail(mockUserId, mockOrderId);
+
+        expect(result.success).toBe(true);
+        expect(mockMailService.sendTicketEmail).toHaveBeenCalledWith(
+          expect.objectContaining({
+            id: mockOrderId,
+            customerEmail: 'buyer@example.com',
+            tickets: [
+              expect.objectContaining({
+                id: 'ticket-1',
+                ticketCode: 'TKT-EXISTING-1',
+              }),
+            ],
+          }),
+          'buyer@example.com',
+        );
+        // Verify ticket.create was NEVER called
+        expect(mockPrisma.ticket?.create).toBeUndefined();
+      });
+
+      it('getUserOrders: returns formatted orders with tickets and email logs for the buyer', async () => {
+        mockPrisma.order.findMany.mockResolvedValue([
+          {
+            id: mockOrderId,
+            userId: mockUserId,
+            showtimeId: mockShowtimeId,
+            totalAmount: 500000,
+            status: OrderStatus.PAID,
+            createdAt: new Date('2026-10-10T00:00:00Z'),
+            user: { email: 'buyer@example.com' },
+            showtime: {
+              id: mockShowtimeId,
+              startTime: new Date('2026-11-20T19:30:00Z'),
+              event: { name: 'Concert', location: 'HN' },
+            },
+            tickets: [
+              {
+                id: 'ticket-1',
+                ticketCode: 'TKT-1',
+                seatId: mockSeatId1,
+                price: 500000,
+                qrCodeData: 'data',
+                qrCodeImage: 'img',
+                seat: {
+                  row: 'A',
+                  seatNumber: 1,
+                  category: { name: 'VIP' },
+                },
+              },
+            ],
+            emailLogs: [
+              {
+                id: 'log-1',
+                status: 'SENT',
+                attempts: 1,
+                lastError: null,
+                sentAt: new Date('2026-10-10T00:01:00Z'),
+              },
+            ],
+          },
+        ]);
+
+        const orders = await s27Service.getUserOrders(mockUserId);
+        expect(orders).toHaveLength(1);
+        expect(orders[0].id).toBe(mockOrderId);
+        expect(orders[0].customerEmail).toBe('buyer@example.com');
+        expect(orders[0].tickets).toHaveLength(1);
+        expect(orders[0].emailLogs).toHaveLength(1);
+        expect(orders[0].emailLogs[0].status).toBe('SENT');
       });
     });
   });

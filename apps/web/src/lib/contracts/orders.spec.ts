@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { decodeOrder, decodePendingOrder } from "./orders";
+import {
+  decodeOrder,
+  decodePendingOrder,
+  decodeResendResponse,
+  decodeOrdersList,
+} from "./orders";
 
 const response = {
   serverTime: "2026-10-05T12:00:00.000Z",
@@ -56,5 +61,67 @@ describe("pending order contract", () => {
     };
     expect(decodeOrder(expired).order.status).toBe("EXPIRED");
     expect(() => decodePendingOrder(expired)).toThrow();
+  });
+});
+
+describe("S-27 email and QR ticket contracts", () => {
+  it("decodes resend response correctly", () => {
+    const resendPayload = {
+      success: true,
+      order: { id: "order-123" },
+      emailResult: {
+        success: true,
+        attempts: 1,
+        sentAt: "2026-10-10T00:00:00.000Z",
+      },
+    };
+    const decoded = decodeResendResponse(resendPayload);
+    expect(decoded.success).toBe(true);
+    expect(decoded.emailResult.attempts).toBe(1);
+    expect(decoded.emailResult.success).toBe(true);
+  });
+
+  it("decodes buyer orders list safely", () => {
+    const list = [
+      {
+        id: "order-1",
+        userId: "user-1",
+        showtimeId: "showtime-1",
+        totalAmount: 500000,
+        status: "PAID",
+        customerEmail: "buyer@example.com",
+        createdAt: "2026-10-10T00:00:00.000Z",
+        showtime: {
+          id: "showtime-1",
+          startTime: "2026-10-20T19:00:00.000Z",
+          event: {
+            name: "Hòa nhạc",
+            location: "Nhà hát Lớn",
+          },
+        },
+        tickets: [
+          {
+            id: "ticket-1",
+            ticketCode: "TKT-123",
+            seatId: "seat-1",
+            price: 500000,
+            qrCodeData: "QR-DATA-123",
+            qrCodeImage: "data:image/png;base64,sample",
+            seat: {
+              row: "A",
+              seatNumber: 1,
+              category: { name: "VIP" },
+            },
+          },
+        ],
+      },
+    ];
+    const decoded = decodeOrdersList(list);
+    expect(decoded).toHaveLength(1);
+    expect(decoded[0].tickets[0].ticketCode).toBe("TKT-123");
+  });
+
+  it("throws ApiError if orders list is not an array", () => {
+    expect(() => decodeOrdersList({ invalid: true })).toThrow();
   });
 });

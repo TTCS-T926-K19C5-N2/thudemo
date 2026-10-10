@@ -1,3 +1,4 @@
+import { randomBytes, randomUUID } from 'node:crypto';
 import {
   BadRequestException,
   ConflictException,
@@ -5,11 +6,15 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  ForbiddenException,
+  InternalServerErrorException,
+  Optional,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { OrderStatus, PaymentStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { isOrderExpired } from './order-expiration.js';
+import { MailService, type OrderEmailData } from '../mail/mail.service.js';
 
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -137,7 +142,10 @@ const orderProjection = {
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
 
-  constructor(private readonly db: PrismaService) {}
+  constructor(
+    private readonly db: PrismaService,
+    @Optional() private readonly mailService?: MailService,
+  ) {}
 
   async createFromHold(
     showtimeId: string,
@@ -851,5 +859,276 @@ export class OrdersService {
     );
 
     return { expiredCount, skippedCount, errorCount };
+  }
+
+    /**
+   * S-27: Issue electronic tickets with QR code and send confirmation email upon successful payment.
+   */
+  async issueTicketsAndSendEmail(orderId: string): Promise<void> {
+    const order = await this.db.order.findUnique({
+      where: { id: orderId },
+      include: {
+        user: true,
+        showtime: {
+          include: {
+            event: true,
+          },
+        },
+        items: {
+          include: {
+            seat: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
+        tickets: {
+          include: {
+            seat: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order || order.status !== OrderStatus.PAID) {
+      return;
+    }
+
+    // 1. Issue tickets if not already issued
+    let tickets = order.tickets;
+    if (tickets.length === 0 && order.items.length > 0) {
+      const createdTickets: (typeof order.tickets)[number][] = [];
+      for (const item of order.items) {
+        const code = `TKT-${randomBytes(4).toString('hex').toUpperCase()}`;
+        const seatLabel = item.seat ? `${item.seat.row}-${item.seat.seatNumber}` : 'A-1';
+        const ticketType = item.seat?.category?.name ?? 'Standard';
+        const qrPayload = JSON.stringify({
+          ticketCode: code,
+          code,
+          orderId: order.id,
+          seat: seatLabel,
+          showtimeId: order.showtimeId,
+          event: order.showtime?.event?.name ?? '',
+        });
+
+        let dataUrl: string | undefined;
+        if (this.mailService) {
+          const qr = await this.mailService.generateQrCode(qrPayload);
+          dataUrl = qr.dataUrl;
+        }
+
+        const t = await this.db.ticket.create({
+          data: {
+            id: randomUUID(),
+            orderId: order.id,
+            seatId: item.seatId,
+            showtimeId: order.showtimeId,
+            code,
+            seatLabel,
+            ticketType,
+            qrCodeData: qrPayload,
+            qrCodeImage: dataUrl,
+            price: item.unitPrice,
+          },
+          include: {
+            seat: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        });
+        createdTickets.push(t);
+      }
+      tickets = createdTickets;
+    }
+
+    // 2. Dispatch email with tickets and QR codes
+    if (this.mailService && tickets.length > 0) {
+      const emailData: OrderEmailData = {
+        id: order.id,
+        customerEmail: order.user.email,
+        totalAmount: order.totalAmount,
+        eventName: order.showtime?.event?.name ?? 'Sự kiện',
+        showtimeDate: order.showtime?.startTime ?? new Date(),
+        location: order.showtime?.event?.location ?? '',
+        tickets: tickets.map((t) => ({
+          id: t.id,
+          ticketCode: t.code ?? (t as any).ticketCode ?? "",
+          seatRow: t.seat?.row ?? (t.seatLabel.split('-')[0] || ''),
+          seatNumber: t.seat?.seatNumber ?? Number(t.seatLabel.split('-')[1] || 0),
+          categoryName: t.seat?.category?.name ?? t.ticketType,
+          price: t.price,
+          qrCodeData: t.qrCodeData ?? '',
+          qrCodeImage: t.qrCodeImage,
+        })),
+      };
+
+      try {
+        await this.mailService.sendTicketEmail(emailData, order.user.email);
+      } catch (err) {
+        this.logger.error(
+          `Failed to dispatch ticket email for order ${order.id}: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+        );
+      }
+    }
+  }
+
+  /**
+   * S-27: Resend ticket email with QR code.
+   * Authenticates caller, verifies order ownership, and NEVER creates new tickets.
+   */
+  async resendEmail(userId: string, orderId: string) {
+    const order = await this.db.order.findUnique({
+      where: { id: orderId },
+      include: {
+        user: true,
+        showtime: {
+          include: {
+            event: true,
+          },
+        },
+        tickets: {
+          include: {
+            seat: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Không tìm thấy đơn hàng.');
+    }
+
+    if (order.userId !== userId) {
+      throw new ForbiddenException('Bạn không có quyền thực hiện thao tác trên đơn hàng này.');
+    }
+
+    if (order.status !== OrderStatus.PAID) {
+      throw new BadRequestException('Chỉ có thể gửi lại vé cho đơn hàng đã thanh toán thành công.');
+    }
+
+    if (!order.tickets || order.tickets.length === 0) {
+      throw new BadRequestException('Đơn hàng chưa có vé được phát hành.');
+    }
+
+    this.logger.log(
+      `[Gửi lại vé] Yêu cầu gửi lại vé cho đơn hàng ${orderId} (tổng ${order.tickets.length} vé). KHÔNG tạo thêm vé mới.`,
+    );
+
+    if (!this.mailService) {
+      throw new InternalServerErrorException('Dịch vụ gửi email chưa được cấu hình.');
+    }
+
+    const emailData: OrderEmailData = {
+      id: order.id,
+      customerEmail: order.user.email,
+      totalAmount: order.totalAmount,
+      eventName: order.showtime?.event?.name ?? 'Sự kiện',
+      showtimeDate: order.showtime?.startTime ?? new Date(),
+      location: order.showtime?.event?.location ?? '',
+      tickets: order.tickets.map((t) => ({
+        id: t.id,
+        ticketCode: t.code ?? (t as any).ticketCode ?? "",
+        seatRow: t.seat?.row ?? (t.seatLabel.split('-')[0] || ''),
+        seatNumber: t.seat?.seatNumber ?? Number(t.seatLabel.split('-')[1] || 0),
+        categoryName: t.seat?.category?.name ?? t.ticketType,
+        price: t.price,
+        qrCodeData: t.qrCodeData ?? '',
+        qrCodeImage: t.qrCodeImage,
+      })),
+    };
+
+    const emailResult = await this.mailService.sendTicketEmail(
+      emailData,
+      order.user.email,
+    );
+
+    return {
+      success: emailResult.success,
+      emailResult,
+    };
+  }
+
+  /**
+   * S-27: Retrieve buyer's orders with tickets, seat details, and email delivery logs.
+   */
+  async getUserOrders(userId: string) {
+    const orders = await this.db.order.findMany({
+      where: { userId },
+      include: {
+        user: true,
+        showtime: {
+          include: {
+            event: true,
+          },
+        },
+        tickets: {
+          include: {
+            seat: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
+        emailLogs: {
+          orderBy: { createdAt: 'desc' },
+          take: 5,
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return orders.map((order) => ({
+      id: order.id,
+      userId: order.userId,
+      showtimeId: order.showtimeId,
+      totalAmount: order.totalAmount,
+      status: order.status,
+      customerEmail: order.user.email,
+      createdAt: order.createdAt.toISOString(),
+      showtime: {
+        id: order.showtime.id,
+        startTime: order.showtime.startTime.toISOString(),
+        event: {
+          name: order.showtime.event?.name ?? '',
+          location: order.showtime.event?.location ?? '',
+        },
+      },
+      tickets: order.tickets.map((t) => ({
+        id: t.id,
+        ticketCode: t.code ?? (t as any).ticketCode ?? "",
+        seatId: t.seatId ?? '',
+        price: t.price,
+        qrCodeData: t.qrCodeData,
+        qrCodeImage: t.qrCodeImage,
+        seat: {
+          row: t.seat?.row ?? (t.seatLabel.split('-')[0] || ''),
+          seatNumber: t.seat?.seatNumber ?? Number(t.seatLabel.split('-')[1] || 0),
+          category: {
+            name: t.seat?.category?.name ?? t.ticketType,
+          },
+        },
+      })),
+      emailLogs: order.emailLogs.map((log) => ({
+        id: log.id,
+        status: log.status,
+        attempts: log.attempts,
+        lastError: log.lastError,
+        sentAt: log.sentAt?.toISOString() ?? null,
+      })),
+    }));
   }
 }

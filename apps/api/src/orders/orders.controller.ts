@@ -48,6 +48,22 @@ export class OrdersController {
     );
   }
 
+  @Get()
+  @Roles('BUYER')
+  list(@Req() req: AuthenticatedRequest) {
+    return this.service.getUserOrders(req.user.id);
+  }
+
+  @Post(':id/resend')
+  @Roles('BUYER')
+  @HttpCode(200)
+  resend(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.service.resendEmail(req.user.id, id);
+  }
+
   @Get(':id')
   @Roles('BUYER')
   getOrder(

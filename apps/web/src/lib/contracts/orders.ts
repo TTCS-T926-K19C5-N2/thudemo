@@ -333,3 +333,75 @@ export function decodeOrderStatus(value: unknown): OrderStatusResult {
     latestPayment: decodeLatestPayment(o.latestPayment),
   };
 }
+
+export type TicketItem = {
+  id: string;
+  ticketCode: string;
+  seatId: string;
+  price: number;
+  qrCodeData?: string | null;
+  qrCodeImage?: string | null;
+  seat: {
+    row: string;
+    seatNumber: number;
+    category?: {
+      name: string;
+    };
+  };
+};
+
+export type EmailDeliveryResult = {
+  success: boolean;
+  attempts: number;
+  error?: string;
+  sentAt?: string;
+};
+
+export type ResendEmailResponse = {
+  success: boolean;
+  order?: unknown;
+  emailResult: EmailDeliveryResult;
+};
+
+export function decodeResendResponse(value: unknown): ResendEmailResponse {
+  const data = object(value);
+  const emailResult = object(data.emailResult) as unknown as EmailDeliveryResult;
+  return {
+    success: Boolean(data.success),
+    order: data.order,
+    emailResult,
+  };
+}
+
+export type BuyerOrderSummary = {
+  id: string;
+  userId: string;
+  showtimeId: string;
+  totalAmount: number;
+  status: OrderStatus;
+  customerEmail?: string;
+  createdAt: string;
+  showtime: {
+    id: string;
+    startTime: string;
+    event: {
+      name: string;
+      location: string;
+    };
+  };
+  tickets: TicketItem[];
+  emailLogs?: {
+    id: string;
+    status: string;
+    attempts: number;
+    lastError?: string | null;
+    sentAt?: string | null;
+  }[];
+};
+
+export function decodeOrdersList(value: unknown): BuyerOrderSummary[] {
+  if (!Array.isArray(value)) {
+    throw new ApiError('Dữ liệu danh sách đơn hàng không hợp lệ.', 502, 'INVALID_RESPONSE');
+  }
+  return value as BuyerOrderSummary[];
+}
