@@ -1,12 +1,12 @@
 # S-31 — Vé đã soát không dùng lại được lần hai
 
-Cập nhật 09/10/2026. Đã tích hợp dependency S-30 signed QR `d423fa8d2e5143b07cd7158985776ef8ca740ce8` bằng merge giữ lịch sử, giải quyết từng conflict theo nghiệp vụ. **S-30 #68 vẫn Draft/chưa merge vì thiếu camera thật/ngoài trời; S-31 giữ Draft. Chưa merge/deploy.**
+Cập nhật 10/10/2026. S-30 #68 đã merge main bằng `2498c52901d8a2dfc7b25bdbd4d76035f1fc3bdf` sau CI/review và bằng chứng camera thật. S-31 tích hợp main bằng merge `5a97a91c6e06efa4249d96e8bb99baaca4e8ed51`, giữ lịch sử, PR #64 base main và diff chỉ S-31. HTTP/browser trên bản mới PASS; **S-31 giữ Draft trong lúc chờ phiên điện thoại cho ngoại lệ và review cuối. Chưa merge/deploy S-31.**
 
 ## DISCOVER → PLAN
 
 Backlog S-31/E-06/Sprint4/3SP/dependency S-30/Owner chưa phân giữ nguyên. Không nhầm T-31 giữ ghế. Đọc AGENTS.md và ../docs/{product,architecture,risk-and-security,ui,decision-log}. Quyền PO vẫn hiệu lực: [capability riêng theo nhân viên/suất/cửa](S31_PERMISSION_DECISION.md), canOverride mặc định false.
 
-Main khảo sát `79704a2dc2de0eddb883319a1a520085b89e18cb`. PR64 duy nhất tiếp tục branch `story/S-31-prevent-ticket-reuse`. Dependency fork PR68 giữ attribution/commit gốc; không force push/nhập main. Snapshot cũ được giữ. Base mới phải là snapshot cố định d423fa8 trong khi gate dependency chưa đủ; chỉ retarget main sau merge S-30 thực tế và chạy lại nghiệm thu.
+Main sau dependency là `2498c52901d8a2dfc7b25bdbd4d76035f1fc3bdf`; base PR64 đã retarget main sau xác minh merge S-30 thực tế. PR duy nhất tiếp tục branch `story/S-31-prevent-ticket-reuse`. Dependency fork PR68 giữ attribution/commit gốc; merge thường exact-head, không force/bypass. Snapshot cũ được giữ. CI admission trên 5a97a91 kiểm lại QR ký/ngoại lệ/50 races/rollback/restart; camera S-30 không thay bằng chứng dialog ngoại lệ trên điện thoại S-31.
 
 ## IMPLEMENT
 
