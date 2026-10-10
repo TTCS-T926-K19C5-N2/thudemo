@@ -16,6 +16,7 @@ import { PaymentsModule } from './payments/payments.module.js';
 import { MonitoringModule } from './monitoring/monitoring.module.js';
 import { CheckInModuleS29 } from './check-in/check-in-s29.module.js';
 import { WebhookSecurityFilter } from './payments/webhook-security.filter.js';
+import { ScannerModule } from './scanner/scanner.module.js';
 
 @Module({
   imports: [
@@ -33,7 +34,7 @@ import { WebhookSecurityFilter } from './payments/webhook-security.filter.js';
     OrdersModule,
     PaymentsModule,
     MonitoringModule,
-    CheckInModuleS29,
+    ScannerModule,
   ],
   controllers: [AppController],
   providers: [
