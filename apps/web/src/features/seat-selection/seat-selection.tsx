@@ -31,6 +31,12 @@ import {
   remainingSeconds,
   type ServerClock,
 } from "./server-countdown";
+import { OrderTicketModal } from "@/features/orders/order-ticket-modal";
+import {
+  decodeCheckoutResponse,
+  type OrderDetail,
+  type EmailDeliveryResult,
+} from "@/lib/contracts/orders";
 
 export function SeatSelection({ id }: { id: string }) {
   const router = useRouter();
@@ -44,6 +50,11 @@ export function SeatSelection({ id }: { id: string }) {
     [expired, setExpired] = useState(false),
     [pending, setPending] = useState(false),
     [conflict, setConflict] = useState<Seat[]>([]);
+  const [completedOrder, setCompletedOrder] = useState<OrderDetail | null>(null);
+  const [completedEmailResult, setCompletedEmailResult] =
+    useState<EmailDeliveryResult | null>(null);
+  const [checkoutPending, setCheckoutPending] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
   const authority = useRef<HoldState["hold"]>(null),
     busy = useRef(false),
     alive = useRef(true);
@@ -230,6 +241,36 @@ export function SeatSelection({ id }: { id: string }) {
       setError("Không tải được sơ đồ. Kiểm tra kết nối rồi thử lại."),
     );
   }
+
+  async function handleCheckout() {
+    if (checkoutPending || !ownedIds.length || remaining === 0) return;
+    setCheckoutPending(true);
+    setCheckoutError("");
+    setError("");
+
+    try {
+      const response = await api("/orders/checkout", decodeCheckoutResponse, {
+        method: "POST",
+        body: {
+          showtimeId: id,
+          seatIds: ownedIds,
+        },
+      });
+
+      setCompletedOrder(response.order);
+      setCompletedEmailResult(response.emailResult);
+      // Refresh seats so purchased seats reflect SOLD
+      void refresh();
+    } catch (e: unknown) {
+      setCheckoutError(
+        e instanceof Error
+          ? e.message
+          : "Thanh toán thất bại. Vui lòng kiểm tra lại thời gian giữ ghế.",
+      );
+    } finally {
+      setCheckoutPending(false);
+    }
+  }
   if (!show)
     return error ? (
       <Alert variant="destructive">
@@ -288,6 +329,14 @@ export function SeatSelection({ id }: { id: string }) {
             <Button variant="outline" onClick={retry}>
               Thử lại
             </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+      {checkoutError && (
+        <Alert variant="destructive">
+          <CircleAlert />
+          <AlertDescription>
+            {checkoutError}
           </AlertDescription>
         </Alert>
       )}
@@ -426,16 +475,44 @@ export function SeatSelection({ id }: { id: string }) {
           {hold && remaining === 0 && (
             <p role="status">Đang kiểm tra thời hạn trên máy chủ…</p>
           )}
-          {hold && (
-            <>
-              <Button variant="outline" disabled>
-                Tiếp tục
+          {hold && ownedIds.length > 0 && (
+            <div className="mt-4 pt-3 border-t border-slate-200">
+              {checkoutError && (
+                <div
+                  role="alert"
+                  className="mb-3 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg"
+                >
+                  {checkoutError}
+                </div>
+              )}
+              <Button
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 flex items-center justify-center gap-2"
+                disabled={checkoutPending || remaining === 0}
+                onClick={handleCheckout}
+              >
+                {checkoutPending
+                  ? "Đang xử lý đặt vé & thanh toán..."
+                  : `Thanh toán & Nhận vé qua Email (${ownedIds.length} ghế)`}
               </Button>
-              <p>Đặt vé và thanh toán chưa khả dụng.</p>
-            </>
+              <p className="text-xs text-slate-500 mt-2 text-center">
+                Vé điện tử kèm mã QR sẽ được gửi tới email tài khoản của bạn.
+              </p>
+            </div>
           )}
         </aside>
       </div>
+
+      {completedOrder && completedEmailResult && (
+        <OrderTicketModal
+          order={completedOrder}
+          initialEmailResult={completedEmailResult}
+          onClose={() => {
+            setCompletedOrder(null);
+            setCompletedEmailResult(null);
+            void refresh();
+          }}
+        />
+      )}
     </>
   );
 }

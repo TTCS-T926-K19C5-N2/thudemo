@@ -19,6 +19,7 @@ model User {
   sessions          Session[]
   events            Event[]    @relation("OrganizerEvents")
   holdSessions      HoldSession[]
+  orders            Order[]
 
   @@map("users")
 }
@@ -85,6 +86,7 @@ model Showtime {
   seats Seat[]
   categories SeatCategory[]
   holdSessions HoldSession[]
+  orders       Order[]
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
@@ -119,6 +121,7 @@ model Seat {
   row String
   seatNumber Int
   hold SeatHold?
+  ticket Ticket?
   @@unique([id, showtimeId])
   @@unique([showtimeId, row, seatNumber])
   @@index([categoryId, showtimeId])
@@ -160,4 +163,69 @@ model CatalogRevision {
   id Int @id
   version Int @default(0)
   @@map("catalog_revision")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model Order {
+  id            String      @id @default(uuid()) @db.Uuid
+  userId        String      @db.Uuid
+  user          User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  showtimeId    String      @db.Uuid
+  showtime      Showtime    @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  totalAmount   Int
+  status        OrderStatus @default(PAID)
+  customerEmail String
+  createdAt     DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime    @updatedAt @db.Timestamptz(3)
+  tickets       Ticket[]
+  emailLogs     EmailLog[]
+
+  @@index([userId])
+  @@index([showtimeId])
+  @@map("orders")
+}
+
+model Ticket {
+  id          String   @id @default(uuid()) @db.Uuid
+  orderId     String   @db.Uuid
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  seatId      String   @db.Uuid
+  seat        Seat     @relation(fields: [seatId], references: [id], onDelete: Restrict)
+  ticketCode  String   @unique
+  qrCodeData  String
+  qrCodeImage String?  @db.Text
+  price       Int
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  @@unique([seatId])
+  @@index([orderId])
+  @@map("tickets")
+}
+
+model EmailLog {
+  id        String      @id @default(uuid()) @db.Uuid
+  orderId   String      @db.Uuid
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  recipient String
+  subject   String
+  attempts  Int         @default(1)
+  status    EmailStatus @default(PENDING)
+  lastError String?     @db.Text
+  sentAt    DateTime?   @db.Timestamptz(3)
+  createdAt DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime    @updatedAt @db.Timestamptz(3)
+
+  @@index([orderId])
+  @@map("email_logs")
 }
