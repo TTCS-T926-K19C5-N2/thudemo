@@ -1,5 +1,7 @@
 # S-31 — GitHub handoff sau tích hợp QR ký
 
+**Cập nhật quyết định 10/10/2026:** người dùng đã cho phép merge S-31, chấp nhận bỏ gate camera/dialog thiết bị; ghi **NOT RUN / USER-WAIVED**, không ghi PASS. [Nguồn quyết định](S31_MERGE_ACCEPTANCE_DECISION.md). Các đoạn “giữ Draft/chưa được merge” bên dưới là trạng thái trước quyết định mới. Chỉ Ready/merge sau review chéo và CI đúng head cuối; giữ issue #63 mở, không deploy.
+
 Issue [#63](https://github.com/TTCS-T926-K19C5-N2/thudemo/issues/63) vẫn mở/unassigned. PR duy nhất [#64](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/64), branch story/S-31-prevent-ticket-reuse, giữ Draft. Không merge S-31/deploy.
 
 Main hiện chứa dependency [#68](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/68), merge SHA `2498c52901d8a2dfc7b25bdbd4d76035f1fc3bdf` ngày 10/10/2026 20:24:46 Asia/Saigon, merged_by sangnguyencoder. [Review Sáng APPROVED](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/68#pullrequestreview-5479098718) đúng head `75d15ecbc3d3364c5a481ded21108434a8d4cec3`, CI head PASS. Camera thật source d423fa8 và under-sun user report ghi riêng trong tài liệu S-30; không gọi đó là Codex hoặc chủ tài khoản trực tiếp kiểm ngoài trời.

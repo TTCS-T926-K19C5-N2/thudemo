@@ -1,5 +1,7 @@
 # S-31 — Bằng chứng QR ký, cập nhật 10/10/2026
 
+**Quyết định mới 10/10/2026:** người dùng cho phép merge dù chưa kiểm camera/dialog ngoại lệ S-31. Trạng thái thiết bị là **NOT RUN / USER-WAIVED**, không phải PASS. [Quyết định và nguồn xác nhận](S31_MERGE_ACCEPTANCE_DECISION.md) thay gate chờ thiết bị trước merge trong các đoạn lịch sử bên dưới; không thay kết quả test hoặc ba AC. CI head 7f68e18 hoàn tất SUCCESS, gồm S-43; head tài liệu tiếp theo cần CI/review riêng.
+
 Dependency S-30 đã merge vào main qua PR #68 ngày 10/10, merge SHA `2498c52901d8a2dfc7b25bdbd4d76035f1fc3bdf`, reviewed head `75d15ec` bằng tài khoản Sáng. [Bằng chứng hai Android thật và báo cáo dưới nắng](S30_DEVICE_EVIDENCE_20261010.md) nằm trong repository. S-31 đã merge main bằng commit `5a97a91c6e06efa4249d96e8bb99baaca4e8ed51`, PR #64 base main; không xóa snapshot hoặc viết lại lịch sử. Giữ Draft đến kiểm điện thoại S-31 và review cuối; chưa merge/deploy S-31.
 
 ## Nghiệm thu lại bản tích hợp main
