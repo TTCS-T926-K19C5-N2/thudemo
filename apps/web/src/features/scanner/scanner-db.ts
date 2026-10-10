@@ -7,27 +7,28 @@ export interface ShowtimeLocalMeta {
   ticketCount: number;
   keyId: string;
   publicKey: string;
-  status: 'ready' | 'stale' | 'syncing' | 'error';
+  verificationKeys?: { keyId: string; key: string }[];
+  status: "ready" | "stale" | "syncing" | "error";
 }
 
 export interface LocalTicket {
   showtimeId: string;
   code: string;
-  status: 'valid' | 'checked_in' | 'cancelled';
+  status: "valid" | "checked_in" | "cancelled";
   checkedInAt: string | null;
   seatLabel: string;
   ticketType: string;
   localCheckedIn?: boolean;
 }
 
-const DB_NAME = 'thudemo_scanner_db';
+const DB_NAME = "thudemo_scanner_db";
 const DB_VERSION = 1;
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
 export function openScannerDb(): Promise<IDBDatabase> {
-  if (typeof window === 'undefined') {
-    return Promise.reject(new Error('IndexedDB is not available on server'));
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("IndexedDB is not available on server"));
   }
 
   if (dbPromise) return dbPromise;
@@ -38,16 +39,16 @@ export function openScannerDb(): Promise<IDBDatabase> {
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
 
-      if (!db.objectStoreNames.contains('showtime_meta')) {
-        db.createObjectStore('showtime_meta', { keyPath: 'showtimeId' });
+      if (!db.objectStoreNames.contains("showtime_meta")) {
+        db.createObjectStore("showtime_meta", { keyPath: "showtimeId" });
       }
 
-      if (!db.objectStoreNames.contains('tickets')) {
-        const ticketStore = db.createObjectStore('tickets', {
-          keyPath: ['showtimeId', 'code'],
+      if (!db.objectStoreNames.contains("tickets")) {
+        const ticketStore = db.createObjectStore("tickets", {
+          keyPath: ["showtimeId", "code"],
         });
-        ticketStore.createIndex('showtimeId', 'showtimeId', { unique: false });
-        ticketStore.createIndex('code', 'code', { unique: false });
+        ticketStore.createIndex("showtimeId", "showtimeId", { unique: false });
+        ticketStore.createIndex("code", "code", { unique: false });
       }
     };
 
@@ -66,8 +67,8 @@ export async function getShowtimeMeta(
 ): Promise<ShowtimeLocalMeta | null> {
   const db = await openScannerDb();
   return new Promise((resolve, reject) => {
-    const tx = db.transaction('showtime_meta', 'readonly');
-    const store = tx.objectStore('showtime_meta');
+    const tx = db.transaction("showtime_meta", "readonly");
+    const store = tx.objectStore("showtime_meta");
     const req = store.get(showtimeId);
     req.onsuccess = () => resolve((req.result as ShowtimeLocalMeta) ?? null);
     req.onerror = () => reject(req.error);
@@ -76,20 +77,20 @@ export async function getShowtimeMeta(
 
 export async function saveTicketsAtomic(
   meta: ShowtimeLocalMeta,
-  tickets: Array<Omit<LocalTicket, 'showtimeId'>>,
+  tickets: Array<Omit<LocalTicket, "showtimeId">>,
 ): Promise<void> {
   const db = await openScannerDb();
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(['showtime_meta', 'tickets'], 'readwrite');
-    const metaStore = tx.objectStore('showtime_meta');
-    const ticketStore = tx.objectStore('tickets');
+    const tx = db.transaction(["showtime_meta", "tickets"], "readwrite");
+    const metaStore = tx.objectStore("showtime_meta");
+    const ticketStore = tx.objectStore("tickets");
 
     tx.onerror = () => reject(tx.error);
-    tx.onabort = () => reject(new Error('Transaction aborted'));
+    tx.onabort = () => reject(new Error("Transaction aborted"));
     tx.oncomplete = () => resolve();
 
     // 1. Delete all existing tickets for this showtimeId
-    const index = ticketStore.index('showtimeId');
+    const index = ticketStore.index("showtimeId");
     const keyRange = IDBKeyRange.only(meta.showtimeId);
     const deleteReq = index.openKeyCursor(keyRange);
 
@@ -118,18 +119,19 @@ export async function saveTicketsAtomic(
 export async function mergeTicketsIncremental(
   showtimeId: string,
   newCursor: string,
-  updatedTickets: Array<Omit<LocalTicket, 'showtimeId'>>,
+  updatedTickets: Array<Omit<LocalTicket, "showtimeId">>,
+  keyInfo?: Pick<ShowtimeLocalMeta, "keyId" | "publicKey" | "verificationKeys">,
 ): Promise<ShowtimeLocalMeta> {
   const db = await openScannerDb();
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(['showtime_meta', 'tickets'], 'readwrite');
-    const metaStore = tx.objectStore('showtime_meta');
-    const ticketStore = tx.objectStore('tickets');
+    const tx = db.transaction(["showtime_meta", "tickets"], "readwrite");
+    const metaStore = tx.objectStore("showtime_meta");
+    const ticketStore = tx.objectStore("tickets");
 
     let resolvedMeta: ShowtimeLocalMeta;
 
     tx.onerror = () => reject(tx.error);
-    tx.onabort = () => reject(new Error('Transaction aborted'));
+    tx.onabort = () => reject(new Error("Transaction aborted"));
     tx.oncomplete = () => resolve(resolvedMeta);
 
     const metaReq = metaStore.get(showtimeId);
@@ -137,9 +139,10 @@ export async function mergeTicketsIncremental(
       const meta = metaReq.result as ShowtimeLocalMeta | undefined;
       if (!meta) {
         tx.abort();
-        reject(new Error('Không tìm thấy thông tin suất để hợp nhất dữ liệu'));
+        reject(new Error("Không tìm thấy thông tin suất để hợp nhất dữ liệu"));
         return;
       }
+      if (keyInfo) Object.assign(meta, keyInfo);
 
       let pendingReads = updatedTickets.length;
       if (pendingReads === 0) {
@@ -159,19 +162,19 @@ export async function mergeTicketsIncremental(
           if (existing) {
             // Local checked_in status ALWAYS wins
             const isLocalCheckedIn =
-              existing.localCheckedIn || existing.status === 'checked_in';
+              existing.localCheckedIn || existing.status === "checked_in";
             const willBeCheckedIn =
-              isLocalCheckedIn || incoming.status === 'checked_in';
+              isLocalCheckedIn || incoming.status === "checked_in";
 
             finalTicket = {
               ...existing,
               seatLabel: incoming.seatLabel,
               ticketType: incoming.ticketType,
-              status: willBeCheckedIn
-                ? 'checked_in'
-                : incoming.status,
+              status: willBeCheckedIn ? "checked_in" : incoming.status,
               checkedInAt: willBeCheckedIn
-                ? existing.checkedInAt ?? incoming.checkedInAt ?? new Date().toISOString()
+                ? (existing.checkedInAt ??
+                  incoming.checkedInAt ??
+                  new Date().toISOString())
                 : incoming.checkedInAt,
               localCheckedIn: isLocalCheckedIn,
             };
@@ -187,7 +190,9 @@ export async function mergeTicketsIncremental(
 
           if (pendingReads === 0) {
             // Count total tickets for this showtime
-            const countReq = ticketStore.index('showtimeId').count(IDBKeyRange.only(showtimeId));
+            const countReq = ticketStore
+              .index("showtimeId")
+              .count(IDBKeyRange.only(showtimeId));
             countReq.onsuccess = () => {
               meta.ticketCount = countReq.result;
               meta.cursor = newCursor;
@@ -208,9 +213,9 @@ export async function getTicketsForShowtime(
 ): Promise<LocalTicket[]> {
   const db = await openScannerDb();
   return new Promise((resolve, reject) => {
-    const tx = db.transaction('tickets', 'readonly');
-    const store = tx.objectStore('tickets');
-    const index = store.index('showtimeId');
+    const tx = db.transaction("tickets", "readonly");
+    const store = tx.objectStore("tickets");
+    const index = store.index("showtimeId");
     const req = index.getAll(IDBKeyRange.only(showtimeId));
     req.onsuccess = () => resolve((req.result as LocalTicket[]) ?? []);
     req.onerror = () => reject(req.error);
@@ -223,8 +228,8 @@ export async function getTicketByCode(
 ): Promise<LocalTicket | null> {
   const db = await openScannerDb();
   return new Promise((resolve, reject) => {
-    const tx = db.transaction('tickets', 'readonly');
-    const store = tx.objectStore('tickets');
+    const tx = db.transaction("tickets", "readonly");
+    const store = tx.objectStore("tickets");
     const req = store.get([showtimeId, code]);
     req.onsuccess = () => resolve((req.result as LocalTicket) ?? null);
     req.onerror = () => reject(req.error);

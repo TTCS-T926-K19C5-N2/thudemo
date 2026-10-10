@@ -7,6 +7,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ScannerCryptoService } from './scanner-crypto.service.js';
 import { TicketStatus } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
 
 export interface ScannerTicketItem {
@@ -48,6 +49,10 @@ export class ScannerService {
     private readonly prisma: PrismaService,
     private readonly crypto: ScannerCryptoService,
   ) {}
+
+  publicKeys() {
+    return { keys: this.crypto.getPublicKeys() };
+  }
 
   async getAssignedShowtimes(
     userId: string,
@@ -213,19 +218,59 @@ export class ScannerService {
       });
     }
 
-    const tickets: ScannerTicketItem[] = ticketsRaw.map((t) => ({
-      code: t.code,
-      status:
-        t.status === TicketStatus.CHECKED_IN
-          ? 'checked_in'
-          : t.status === TicketStatus.CANCELLED
-            ? 'cancelled'
-            : 'valid',
-      checkedInAt: t.checkedInAt ? t.checkedInAt.toISOString() : null,
-      seatLabel: t.seatLabel,
-      ticketType: t.ticketType,
-    }));
+    const canonical = await this.prisma.$queryRaw<
+      {
+        code: string;
+        status: string;
+        checkedInAt: Date | null;
+        seatLabel: string;
+        ticketType: string;
+        legacyCodes: string[] | null;
+      }[]
+    >(Prisma.sql`
+      SELECT oi.id::text AS code,
+        CASE WHEN o.status<>'PAID' OR EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CANCELLED') THEN 'cancelled'
+          WHEN oi."checkedInAt" IS NOT NULL OR EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CHECKED_IN') THEN 'checked_in' ELSE 'valid' END AS status,
+        COALESCE(oi."checkedInAt",(SELECT min(t."checkedInAt") FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CHECKED_IN')) AS "checkedInAt",s.row||'-'||s."seatNumber" AS "seatLabel",oi."categoryName" AS "ticketType",
+        (SELECT array_agg(t.code) FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId") AS "legacyCodes"
+      FROM order_items oi JOIN orders o ON o.id=oi."orderId" JOIN seats s ON s.id=oi."seatId"
+      WHERE o."showtimeId"=${showtimeId}::uuid AND s."showtimeId"=o."showtimeId"
+        AND (${isIncremental} OR o.status='PAID')
+        AND (NOT ${isIncremental} OR o."updatedAt">${isIncremental ? new Date(since!) : new Date(0)} OR oi."checkedInAt">${isIncremental ? new Date(since!) : new Date(0)}
+          OR EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t."updatedAt">${isIncremental ? new Date(since!) : new Date(0)}))`);
+    const coveredCodes = new Set(
+      canonical.flatMap((item) => item.legacyCodes ?? []),
+    );
+    const tickets: ScannerTicketItem[] = ticketsRaw
+      .filter((ticket) => !coveredCodes.has(ticket.code))
+      .map((t) => ({
+        code: t.code,
+        status:
+          t.status === TicketStatus.CHECKED_IN
+            ? 'checked_in'
+            : t.status === TicketStatus.CANCELLED
+              ? 'cancelled'
+              : 'valid',
+        checkedInAt: t.checkedInAt ? t.checkedInAt.toISOString() : null,
+        seatLabel: t.seatLabel,
+        ticketType: t.ticketType,
+      }));
 
+    const codes = new Set(tickets.map((ticket) => ticket.code));
+    for (const item of canonical) {
+      if (
+        !codes.has(item.code) &&
+        (isIncremental || item.status !== 'cancelled')
+      ) {
+        tickets.push({
+          code: item.code,
+          seatLabel: item.seatLabel,
+          ticketType: item.ticketType,
+          status: item.status as ScannerTicketItem['status'],
+          checkedInAt: item.checkedInAt?.toISOString() ?? null,
+        });
+      }
+    }
     return {
       showtimeId: showtime.id,
       showtimeName: showtime.event.name,
