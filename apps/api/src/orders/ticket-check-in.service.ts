@@ -11,6 +11,7 @@ import { randomUUID } from 'node:crypto';
 import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { ScanCommand } from './admission-contract.js';
+import { ADMISSION_OVERRIDE_POLICY as admissionOverridePolicy } from './admission-policy.js';
 import { ScannerCryptoService } from '../scanner/scanner-crypto.service.js';
 
 type Permission = { gateName: string; staffName: string; canOverride: boolean };
@@ -43,7 +44,7 @@ export class TicketCheckInService {
     const gates = await this.db.$queryRaw<
       { gateId: string; gateName: string; canOverride: boolean }[]
     >(Prisma.sql`
-      SELECT g.id AS "gateId", g.name AS "gateName", false AS "canOverride"
+      SELECT g.id AS "gateId", g.name AS "gateName", (p."canOverride" AND ${admissionOverridePolicy.approved}) AS "canOverride"
       FROM check_in_gates g JOIN check_in_permissions p ON p."gateId" = g.id
       WHERE g."showtimeId" = ${showtimeId}::uuid AND p."userId" = ${request.user.id}::uuid ORDER BY g.name`);
     return { gates };
@@ -53,6 +54,7 @@ export class TicketCheckInService {
     showtimeId: string,
     command: ScanCommand,
     request: AuthenticatedRequest,
+    exception = false,
   ) {
     // Resolve only after COMMIT. Lock the ticket AND paid order; failures roll back ledger and checkedInAt together.
     return this.db.$transaction(async (tx) => {
@@ -72,6 +74,17 @@ export class TicketCheckInService {
           code: 'SHOWTIME_ACCESS_DENIED',
           message: 'Bạn chưa được cấp quyền soát vé tại suất/cửa này.',
         });
+      if (
+        exception &&
+        (!admissionOverridePolicy.approved || !permission.canOverride)
+      ) {
+        throw new ForbiddenException({
+          code: 'OVERRIDE_DENIED',
+          message:
+            'Bạn chưa được cấp quyền cho vào có ghi chú tại suất/cửa này.',
+        });
+      }
+      // NORMAL and EXCEPTION both resolve identity only from the same signed QR verifier.
       const claims = this.crypto.verifyQr(command.qrPayload);
       if (claims.showtimeId !== showtimeId.toLowerCase())
         throw new BadRequestException({
@@ -100,7 +113,7 @@ export class TicketCheckInService {
         });
       ticket.checkedInAt ??=
         legacy.find((t) => t.status === 'CHECKED_IN')?.checkedInAt ?? null;
-      const kind = 'NORMAL';
+      const kind = exception ? 'EXCEPTION' : 'NORMAL';
       const [replay] = await tx.$queryRaw<Admission[]>(Prisma.sql`
         SELECT * FROM ticket_admissions WHERE "staffId" = ${request.user.id}::uuid AND "requestId" = ${command.requestId}::uuid`);
       if (replay) {
@@ -121,9 +134,10 @@ export class TicketCheckInService {
       const [first] = await tx.$queryRaw<Admission[]>(Prisma.sql`
         SELECT * FROM ticket_admissions WHERE "ticketId" = ${ticketId}::uuid AND kind = 'NORMAL'`);
       if (
-        first ||
-        ticket.checkedInAt ||
-        legacy.some((t) => t.status === 'CHECKED_IN')
+        !exception &&
+        (first ||
+          ticket.checkedInAt ||
+          legacy.some((t) => t.status === 'CHECKED_IN'))
       ) {
         throw new ConflictException({
           code: 'TICKET_ALREADY_CHECKED_IN',
@@ -134,14 +148,23 @@ export class TicketCheckInService {
             gateName:
               first?.gateName ?? 'Chưa lưu thông tin cửa (vé soát trước S-31)',
           },
-          canOverride: false,
+          canOverride: Boolean(
+            first && admissionOverridePolicy.approved && permission.canOverride,
+          ),
+        });
+      }
+      if (exception && !first) {
+        throw new ConflictException({
+          code: 'EXCEPTION_REQUIRES_FIRST_ADMISSION',
+          message:
+            'Chỉ cho vào lại theo ngoại lệ khi đã có lần vào thông thường được ghi nhận đầy đủ.',
         });
       }
       const [admission] = await tx.$queryRaw<Admission[]>(Prisma.sql`
         INSERT INTO ticket_admissions (id, "ticketId", "showtimeId", "gateId", "gateName", "staffId", "staffName", "requestId", kind, reason, "ownerConfirmed")
         VALUES (${randomUUID()}::uuid, ${ticketId}::uuid, ${showtimeId}::uuid, ${command.gateId}::uuid,
           ${permission.gateName}, ${request.user.id}::uuid, ${permission.staffName}, ${command.requestId}::uuid,
-          ${kind}, ${command.reason ?? null}, ${false})
+          ${kind}, ${command.reason ?? null}, ${exception})
         ON CONFLICT DO NOTHING RETURNING *`);
       if (!admission)
         throw new ConflictException({
@@ -149,13 +172,20 @@ export class TicketCheckInService {
           message:
             'Yêu cầu đã được ghi nhận hoặc mã yêu cầu đang dùng cho hành động khác. Kiểm tra lại kết quả.',
         });
-      await tx.$executeRaw(
-        Prisma.sql`UPDATE order_items SET "checkedInAt" = ${admission.enteredAt} WHERE id = ${ticketId}::uuid`,
+      if (!exception) {
+        await tx.$executeRaw(
+          Prisma.sql`UPDATE order_items SET "checkedInAt" = ${admission.enteredAt} WHERE id = ${ticketId}::uuid`,
+        );
+        await tx.$executeRaw(
+          Prisma.sql`UPDATE tickets SET status='CHECKED_IN', "checkedInAt"=${admission.enteredAt}, "updatedAt"=clock_timestamp() WHERE "orderId"=${ticket.orderId}::uuid AND "seatId"=${ticket.seatId}::uuid`,
+        );
+      }
+      return this.result(
+        exception ? 'EXCEPTION_RECORDED' : 'SUCCESS',
+        ticketId,
+        ticket,
+        admission,
       );
-      await tx.$executeRaw(
-        Prisma.sql`UPDATE tickets SET status='CHECKED_IN', "checkedInAt"=${admission.enteredAt}, "updatedAt"=clock_timestamp() WHERE "orderId"=${ticket.orderId}::uuid AND "seatId"=${ticket.seatId}::uuid`,
-      );
-      return this.result('SUCCESS', ticketId, ticket, admission);
     });
   }
 

@@ -7,6 +7,7 @@ import { ApiError, api, object } from "@/lib/api/client";
 import { loadCurrentUser } from "@/lib/api";
 import { checkInFailureState, checkInWithWaiting } from "./check-in-request";
 import Link from "next/link";
+import { AdmissionOverride } from "./admission-override";
 import { verifyTicketQr, decodeQrKeys } from "./verify-ticket-qr";
 import type { TicketQrPublicKey } from "shared/ticket-qr";
 import {
@@ -580,6 +581,28 @@ export function TicketScanner({
             </form>
 
             <div className="flex flex-wrap gap-2">
+              {used?.canOverride && (
+                <AdmissionOverride
+                  key={`${ticketId}:${gateId}:${showtimeId}`}
+                  showtimeId={showtimeId.trim()}
+                  gateId={gateId}
+                  qrPayload={ticketId}
+                  onRecorded={(recorded) => {
+                    setUsed(null);
+                    setResult(recorded);
+                    setStatus(
+                      recorded.status === "ALREADY_RECORDED"
+                        ? "RECORDED"
+                        : "EXCEPTION",
+                    );
+                    setMessage(
+                      recorded.status === "ALREADY_RECORDED"
+                        ? "Yêu cầu ngoại lệ này đã được ghi nhận. Đây không phải lần vào mới."
+                        : "Đã ghi nhận vào lại theo ngoại lệ",
+                    );
+                  }}
+                />
+              )}
               {(status === "USED" ||
                 status === "EXCEPTION" ||
                 status === "RECORDED" ||
