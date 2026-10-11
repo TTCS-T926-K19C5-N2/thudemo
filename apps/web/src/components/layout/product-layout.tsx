@@ -15,6 +15,7 @@ import {
   Sell,
   Person,
   Admin,
+  Banknote,
 } from "@/components/ui/material-icon";
 import { SessionActions } from "./session-actions";
 import { Input } from "@/components/ui/input";
@@ -34,7 +35,14 @@ interface OrganizerLayoutProps {
   readonly children: React.ReactNode;
   readonly id?: string;
   readonly title: string;
-  readonly mode: "manage" | "import" | "prices" | "map" | "events" | "account";
+  readonly mode:
+    | "manage"
+    | "import"
+    | "prices"
+    | "map"
+    | "sales"
+    | "events"
+    | "account";
 }
 
 export function MobileShowHeader({
@@ -172,6 +180,11 @@ export function OrganizerLayout({
           },
           { href: `/showtimes/${id}/import`, name: "Sơ đồ ghế", Icon: Map },
           { href: `/showtimes/${id}/prices`, name: "Giá vé", Icon: Sell },
+          {
+            href: `/showtimes/${id}/sales`,
+            name: "Doanh thu",
+            Icon: Banknote,
+          },
         ]
       : []),
     { href: "/account", name: "Tài khoản", Icon: Person },

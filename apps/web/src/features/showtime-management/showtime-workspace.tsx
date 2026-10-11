@@ -15,18 +15,20 @@ import { formatShowtime } from "@/lib/formatting";
 import { SeatMap } from "@/components/seat-map/seat-map";
 import { SeatPricingForm } from "@/features/seat-pricing/seat-pricing-form";
 import { SeatMapImportForm } from "@/features/seat-map-import/seat-map-import-form";
+import { ShowtimeSalesReport } from "@/features/showtime-sales/showtime-sales";
 import { SaleStatusControl } from "./sale-status-control";
 export function ShowtimeWorkspace({
   id,
   mode,
 }: {
   id: string;
-  mode: "manage" | "import" | "prices" | "map";
+  mode: "manage" | "import" | "prices" | "map" | "sales";
 }) {
   const [show, setShow] = useState<OwnedShowtime | null>(null),
     [seats, setSeats] = useState<Seat[]>([]),
     [loading, setLoading] = useState(true),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [salesRefresh, setSalesRefresh] = useState(0);
   const fetchWorkspace = useCallback(
     async (signal?: AbortSignal) => {
       const [detail, map] = await Promise.all([
@@ -89,6 +91,7 @@ export function ShowtimeWorkspace({
     import: "Nạp sơ đồ JSON",
     prices: "Đặt giá theo hạng",
     map: "Xem sơ đồ ghế",
+    sales: "Doanh thu và tồn vé",
   };
   return (
     <>
@@ -102,7 +105,9 @@ export function ShowtimeWorkspace({
                 ? "Kiểm tra tọa độ và nạp dữ liệu sơ đồ cho suất diễn."
                 : mode === "map"
                   ? "Kiểm tra vị trí, hạng vé và giá từng ghế."
-                  : "Kiểm soát trạng thái phát hành từng suất biểu diễn."}
+                  : mode === "sales"
+                    ? "Số vé đã bán, đang giữ, còn trống và doanh thu theo hạng ghế."
+                    : "Kiểm soát trạng thái phát hành từng suất biểu diễn."}
           </p>
         </div>
         <div className="page-heading-actions">
@@ -115,7 +120,10 @@ export function ShowtimeWorkspace({
           ) : (
             <Button
               variant="outline"
-              onClick={() => refresh().catch((e) => setError(e.message))}
+              onClick={() => {
+                setSalesRefresh((n) => n + 1);
+                refresh().catch((e) => setError(e.message));
+              }}
             >
               Làm mới
             </Button>
@@ -153,6 +161,7 @@ export function ShowtimeWorkspace({
           <Link href={`/showtimes/${id}/import`}>Nạp sơ đồ JSON</Link>
           <Link href={`/showtimes/${id}/prices`}>Giá vé</Link>
           <Link href={`/showtimes/${id}/map`}>Xem sơ đồ</Link>
+          <Link href={`/showtimes/${id}/sales`}>Doanh thu</Link>
         </nav>
       )}
       {mode === "manage" && (
@@ -215,6 +224,9 @@ export function ShowtimeWorkspace({
           seats={seats}
           onSaved={refresh}
         />
+      )}
+      {mode === "sales" && (
+        <ShowtimeSalesReport key={id} id={id} refreshSignal={salesRefresh} />
       )}
       {mode === "map" && (
         <>

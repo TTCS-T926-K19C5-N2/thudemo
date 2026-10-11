@@ -11,7 +11,8 @@ export default async function Page({
     mode !== "manage" &&
     mode !== "import" &&
     mode !== "prices" &&
-    mode !== "map"
+    mode !== "map" &&
+    mode !== "sales"
   )
     notFound();
   return (
@@ -24,6 +25,7 @@ export default async function Page({
           import: "Nạp sơ đồ JSON",
           prices: "Đặt giá theo hạng",
           map: "Xem sơ đồ ghế",
+          sales: "Doanh thu và tồn vé",
         }[mode]
       }
     >
