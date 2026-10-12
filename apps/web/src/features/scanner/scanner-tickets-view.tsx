@@ -4,9 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import type { AssignedShowtime } from './scanner-api';
 import {
   getShowtimeMeta,
-  getTicketsForShowtime,
   type ShowtimeLocalMeta,
-  type LocalTicket,
 } from './scanner-db';
 import {
   downloadTicketsFull,
@@ -16,7 +14,6 @@ import {
 } from './scanner-sync';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import {
   ArrowLeft,
   CalendarDays,
@@ -25,7 +22,6 @@ import {
   CloudOff,
   MapPin,
   RotateCw,
-  Search,
   Ticket,
 } from '@/components/ui/material-icon';
 
@@ -42,11 +38,9 @@ export function ScannerTicketsView({
 }: ScannerTicketsViewProps) {
   const [meta, setMeta] = useState<ShowtimeLocalMeta | null>(null);
   const [ticketCount, setTicketCount] = useState<number>(0);
-  const [tickets, setTickets] = useState<LocalTicket[]>([]);
   const [status, setStatus] = useState<SyncUIStatus>('not_downloaded');
   const [downloadProgress, setDownloadProgress] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>('');
   const [isOnline, setIsOnline] = useState<boolean>(
     typeof navigator !== 'undefined' ? navigator.onLine : true,
   );
@@ -67,11 +61,11 @@ export function ScannerTicketsView({
     };
   }, []);
 
-  // Load existing metadata and tickets from IndexedDB
+  // Load existing metadata from IndexedDB
   useEffect(() => {
     let cancelled = false;
 
-    async function loadDb() {
+    async function loadLocal() {
       try {
         const existing = await getShowtimeMeta(showtime.id);
         if (cancelled) return;
@@ -80,12 +74,9 @@ export function ScannerTicketsView({
           setMeta(existing);
           setTicketCount(existing.ticketCount);
           setStatus(isListStale(existing.lastSyncAt) ? 'stale' : 'synced');
-          const list = await getTicketsForShowtime(showtime.id);
-          if (!cancelled) setTickets(list);
         } else {
           setMeta(null);
           setTicketCount(0);
-          setTickets([]);
           setStatus('not_downloaded');
         }
       } catch (err: unknown) {
@@ -93,7 +84,7 @@ export function ScannerTicketsView({
       }
     }
 
-    void loadDb();
+    void loadLocal();
     return () => {
       cancelled = true;
     };
@@ -101,12 +92,10 @@ export function ScannerTicketsView({
 
   // Setup auto sync for stale lists (> 30 mins)
   useEffect(() => {
-    const cleanup = startAutoSync(showtime.id, async (updatedMeta) => {
+    const cleanup = startAutoSync(showtime.id, (updatedMeta) => {
       setMeta(updatedMeta);
       setTicketCount(updatedMeta.ticketCount);
       setStatus('synced');
-      const list = await getTicketsForShowtime(showtime.id);
-      setTickets(list);
     });
 
     return cleanup;
@@ -123,16 +112,16 @@ export function ScannerTicketsView({
     isDownloadingRef.current = true;
     setStatus('downloading');
     setErrorMessage(null);
-    setDownloadProgress('Đang kết nối và chuẩn bị tải danh sách vé…');
+    setDownloadProgress('Đang tải danh sách vé từ máy chủ…');
 
     try {
       const result = await downloadTicketsFull(showtime.id, (step, count) => {
         if (step === 'fetching') {
-          setDownloadProgress('Đang tải danh sách vé từ máy chủ…');
+          setDownloadProgress('Đang kết nối và tải dữ liệu từ máy chủ…');
         } else if (step === 'saving') {
-          setDownloadProgress(`Đang lưu ${count ?? 0} vé vào IndexedDB của máy quét…`);
+          setDownloadProgress(`Đang lưu ${count ?? 0} vé vào thiết bị…`);
         } else if (step === 'done') {
-          setDownloadProgress(`Đã lưu hoàn tất ${count ?? 0} vé.`);
+          setDownloadProgress(`Đã lưu thành công ${count ?? 0} vé.`);
         }
       });
 
@@ -140,10 +129,9 @@ export function ScannerTicketsView({
       setTicketCount(result.ticketCount);
       setStatus('synced');
       setDownloadProgress('');
-      const list = await getTicketsForShowtime(showtime.id);
-      setTickets(list);
     } catch (err: unknown) {
       console.error('Tải danh sách vé thất bại:', err);
+      // Keep old version intact on failure
       setStatus(meta ? (isListStale(meta.lastSyncAt) ? 'stale' : 'synced') : 'error');
       setErrorMessage(
         err instanceof Error
@@ -152,7 +140,6 @@ export function ScannerTicketsView({
       );
     } finally {
       isDownloadingRef.current = false;
-      setDownloadProgress('');
     }
   };
 
@@ -166,7 +153,7 @@ export function ScannerTicketsView({
 
     isDownloadingRef.current = true;
     setErrorMessage(null);
-    setDownloadProgress('Đang tải phần thay đổi từ máy chủ…');
+    setDownloadProgress('Đang tải phần thay đổi…');
 
     try {
       const updated = await syncTicketsIncremental(showtime.id);
@@ -174,8 +161,6 @@ export function ScannerTicketsView({
         setMeta(updated);
         setTicketCount(updated.ticketCount);
         setStatus('synced');
-        const list = await getTicketsForShowtime(showtime.id);
-        setTickets(list);
       }
     } catch (err: unknown) {
       console.error('Đồng bộ phần thay đổi thất bại:', err);
@@ -192,7 +177,7 @@ export function ScannerTicketsView({
 
   // Format date helper for Vietnam timezone
   const formatVNDate = (isoStr: string | null | undefined) => {
-    if (!isoStr) return 'Chưa tải';
+    if (!isoStr) return 'Chưa có';
     try {
       return new Date(isoStr).toLocaleString('vi-VN', {
         timeZone: 'Asia/Ho_Chi_Minh',
@@ -204,116 +189,80 @@ export function ScannerTicketsView({
     }
   };
 
-  // Filtered tickets for preview table
-  const filteredTickets = tickets.filter((t) => {
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase().trim();
-    return (
-      t.code.toLowerCase().includes(q) ||
-      t.seatLabel.toLowerCase().includes(q) ||
-      t.ticketType.toLowerCase().includes(q)
-    );
-  });
-
-  const previewTickets = filteredTickets.slice(0, 15);
-
   return (
-    <div className="scanner-view-wrap" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* Top Navigation Bar */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '12px',
-        }}
-      >
-        <button
-          type="button"
+    <div className="w-full max-w-3xl mx-auto p-4 space-y-6">
+      {/* Top Navigation */}
+      <div className="flex items-center justify-between pb-3 border-b">
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={onChangeShowtime}
-          className="operations-back"
-          style={{ marginBottom: 0, cursor: 'pointer' }}
+          className="gap-2 text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft />
-          <span>Chọn suất diễn khác</span>
-        </button>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          Đổi suất diễn
+        </Button>
+        <div className="flex items-center gap-2 text-sm">
           {isOnline ? (
-            <Badge variant="outline" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <span
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: 'var(--primary)',
-                  display: 'inline-block',
-                }}
-              />
+            <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium text-xs bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               Trực tuyến
-            </Badge>
+            </span>
           ) : (
-            <Badge variant="destructive" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <CloudOff size={14} />
+            <span className="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-medium text-xs bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
+              <CloudOff className="text-sm" />
               Ngoại tuyến
-            </Badge>
+            </span>
           )}
         </div>
       </div>
 
-      {/* Showtime Facts Panel */}
-      <section className="operations-panel">
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '12px',
-            marginBottom: '16px',
-          }}
-        >
+      {/* Showtime Details Header */}
+      <div className="bg-card border rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
           <div>
-            <small style={{ color: 'var(--primary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span className="text-xs font-semibold tracking-wider uppercase text-primary">
               Suất diễn đang chọn
-            </small>
-            <h1 style={{ fontSize: '22px', fontWeight: 700, margin: '4px 0 0 0' }}>
+            </span>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground mt-0.5">
               {showtime.eventName}
             </h1>
           </div>
-
           <div>
             {status === 'not_downloaded' && (
-              <Badge variant="secondary">Chưa tải dữ liệu</Badge>
+              <Badge variant="secondary" className="text-xs px-2.5 py-1">
+                Chưa tải
+              </Badge>
             )}
             {status === 'downloading' && (
-              <Badge variant="default" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                <RotateCw className="animate-spin" size={14} />
+              <Badge variant="default" className="text-xs px-2.5 py-1 bg-blue-600 gap-1.5 animate-pulse">
+                <RotateCw className="animate-spin text-xs" />
                 Đang tải…
               </Badge>
             )}
             {status === 'synced' && (
-              <Badge variant="default" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                <CheckCircle size={14} />
+              <Badge variant="default" className="text-xs px-2.5 py-1 bg-emerald-600 gap-1">
+                <CheckCircle className="text-xs" />
                 Đã tải
               </Badge>
             )}
             {status === 'stale' && (
-              <Badge variant="destructive" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                <CircleAlert size={14} />
+              <Badge variant="secondary" className="text-xs px-2.5 py-1 bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 gap-1">
+                <CircleAlert className="text-xs" />
                 Đã cũ — cần cập nhật
               </Badge>
             )}
             {status === 'error' && (
-              <Badge variant="destructive">Lỗi tải</Badge>
+              <Badge variant="destructive" className="text-xs px-2.5 py-1">
+                Lỗi
+              </Badge>
             )}
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', color: 'var(--muted-foreground)' }}>
-          <p style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
-            <CalendarDays />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-muted-foreground pt-1">
+          <div className="flex items-center gap-2">
+            <CalendarDays className="text-primary text-base shrink-0" />
             <span>
               {new Date(showtime.startTime).toLocaleString('vi-VN', {
                 timeZone: 'Asia/Ho_Chi_Minh',
@@ -321,106 +270,73 @@ export function ScannerTicketsView({
                 timeStyle: 'short',
               })}
             </span>
-          </p>
-
+          </div>
           {showtime.location && (
-            <p style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
-              <MapPin />
-              <span>{showtime.location}</span>
-            </p>
+            <div className="flex items-center gap-2">
+              <MapPin className="text-primary text-base shrink-0" />
+              <span className="line-clamp-1">{showtime.location}</span>
+            </div>
           )}
         </div>
-      </section>
+      </div>
 
-      {/* Sync Status & Metrics Panel */}
-      <section className="operations-panel">
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Ticket />
+      {/* Sync Status & Stats Card */}
+      <div className="bg-card border rounded-2xl p-6 shadow-sm space-y-6">
+        <h2 className="text-base font-semibold flex items-center gap-2">
+          <Ticket className="text-primary" />
           Dữ liệu vé trên máy quét (S-33)
         </h2>
-        <p style={{ marginTop: '-8px' }}>
-          Danh sách vé đã tải xuống thiết bị qua IndexedDB, sẵn sàng soát vé ngay cả khi mất mạng.
-        </p>
 
-        {/* 4 Standard Metrics Columns */}
-        <div className="operations-metrics">
-          <div>
-            <dt>Số vé đã tải</dt>
-            <dd>
-              {ticketCount} <small style={{ fontWeight: 400, color: 'var(--muted-foreground)' }}>vé</small>
-            </dd>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="border rounded-xl p-4 bg-muted/20">
+            <p className="text-xs text-muted-foreground">Số vé đã tải</p>
+            <p className="text-2xl font-bold mt-1 text-foreground">
+              {ticketCount}
+              <span className="text-xs font-normal text-muted-foreground ml-1.5">
+                vé
+              </span>
+            </p>
           </div>
 
-          <div>
-            <dt>Thời điểm tải gần nhất</dt>
-            <dd style={{ fontSize: '15px', fontWeight: 600 }}>
+          <div className="border rounded-xl p-4 bg-muted/20">
+            <p className="text-xs text-muted-foreground">Thời điểm tải gần nhất</p>
+            <p className="text-sm font-semibold mt-1 text-foreground">
               {formatVNDate(meta?.downloadedAt)}
-            </dd>
+            </p>
           </div>
 
-          <div>
-            <dt>Tình trạng danh sách</dt>
-            <dd style={{ fontSize: '15px', fontWeight: 600 }}>
-              {status === 'not_downloaded' && 'Chưa tải'}
-              {status === 'downloading' && 'Đang tải…'}
-              {status === 'synced' && 'Đã đồng bộ'}
-              {status === 'stale' && 'Cũ (> 30 phút)'}
+          <div className="border rounded-xl p-4 bg-muted/20">
+            <p className="text-xs text-muted-foreground">Tình trạng</p>
+            <p className="text-sm font-semibold mt-1 text-foreground">
+              {status === 'not_downloaded' && 'Chưa tải danh sách'}
+              {status === 'downloading' && 'Đang tải dữ liệu…'}
+              {status === 'synced' && 'Đã tải mới nhất'}
+              {status === 'stale' && 'Quá 30 phút (cần tải lại)'}
               {status === 'error' && 'Lỗi kết nối'}
-            </dd>
-          </div>
-
-          <div>
-            <dt>Khoá QR / Cursor</dt>
-            <dd style={{ fontSize: '13px', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {meta ? `${meta.keyId} · ${meta.cursor.slice(0, 10)}` : 'Chưa có'}
-            </dd>
+            </p>
           </div>
         </div>
 
         {/* Downloading progress indicator */}
         {status === 'downloading' && (
-          <div
-            className="operations-notice"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              background: 'var(--muted)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
-              <strong>{downloadProgress || 'Đang xử lý dữ liệu…'}</strong>
-              <RotateCw className="animate-spin" size={16} />
+          <div className="space-y-2 p-4 rounded-xl bg-primary/5 border border-primary/20">
+            <div className="flex items-center justify-between text-xs text-primary font-medium">
+              <span>{downloadProgress || 'Đang xử lý dữ liệu…'}</span>
+              <RotateCw className="animate-spin text-sm" />
             </div>
-            <div
-              style={{
-                width: '100%',
-                height: '6px',
-                background: 'var(--border)',
-                borderRadius: '3px',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  width: '60%',
-                  height: '100%',
-                  background: 'var(--primary)',
-                  borderRadius: '3px',
-                  animation: 'pulse 1.5s infinite',
-                }}
-              />
+            <div className="w-full bg-primary/20 h-2 rounded-full overflow-hidden">
+              <div className="bg-primary h-full w-2/3 animate-pulse rounded-full" />
             </div>
           </div>
         )}
 
-        {/* Error message banner */}
+        {/* Error message with retry */}
         {errorMessage && (
-          <div className="operations-notice operations-error" role="alert">
-            <CircleAlert />
-            <div style={{ flex: 1 }}>
-              <strong>Có lỗi xảy ra:</strong>
-              <p style={{ margin: '4px 0 0 0' }}>{errorMessage}</p>
+          <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-start gap-3">
+            <CircleAlert className="text-lg shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-medium">Có lỗi xảy ra</p>
+              <p className="text-xs text-destructive/90 mt-0.5">{errorMessage}</p>
             </div>
             <Button
               size="sm"
@@ -434,9 +350,10 @@ export function ScannerTicketsView({
         )}
 
         {/* Action Buttons */}
-        <div className="operations-actions" style={{ marginTop: '8px' }}>
+        <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <Button
             size="lg"
+            className="flex-1 gap-2 text-base font-medium shadow-sm"
             onClick={handleFullDownload}
             disabled={status === 'downloading' || !isOnline}
           >
@@ -448,6 +365,7 @@ export function ScannerTicketsView({
             <Button
               size="lg"
               variant="outline"
+              className="gap-2 text-base"
               onClick={handleIncrementalSync}
               disabled={status === 'downloading' || !isOnline}
             >
@@ -457,107 +375,21 @@ export function ScannerTicketsView({
           )}
         </div>
 
-        {/* Offline Notice */}
+        {/* Offline notice */}
         {!isOnline && (
-          <div
-            className="operations-notice"
-            role="status"
-            style={{ marginTop: '16px', marginBottom: 0 }}
-          >
-            <p style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: 0, fontSize: '13px' }}>
-              <CloudOff />
-              <span>
-                Nút tải bị vô hiệu hoá khi thiết bị mất mạng. Dữ liệu vé đã tải trên máy vẫn sẵn sàng để soát vé.
-              </span>
-            </p>
+          <p className="text-xs text-muted-foreground/80 text-center flex items-center justify-center gap-1.5">
+            <CloudOff className="text-sm" />
+            Nút tải bị vô hiệu hoá khi thiết bị mất mạng. Khi có mạng trở lại, bạn có thể tải danh sách.
+          </p>
+        )}
+
+        {meta && (
+          <div className="pt-4 border-t flex flex-col sm:flex-row items-center justify-between text-xs text-muted-foreground gap-2">
+            <span>Khoá công khai QR: <strong>{meta.keyId}</strong></span>
+            <span>Mốc đồng bộ (cursor): <strong>{meta.cursor.slice(0, 19).replace('T', ' ')}</strong></span>
           </div>
         )}
-      </section>
-
-      {/* Ticket List Preview Panel */}
-      {tickets.length > 0 && (
-        <section className="operations-panel">
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '16px',
-              marginBottom: '16px',
-            }}
-          >
-            <div>
-              <h2 style={{ margin: 0 }}>Danh sách vé cục bộ ({tickets.length} vé)</h2>
-              <p style={{ margin: '4px 0 0 0' }}>
-                Hiển thị dữ liệu vé lưu trong IndexedDB của trình duyệt máy quét.
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '280px', maxWidth: '100%' }}>
-              <Search />
-              <Input
-                placeholder="Tìm mã vé, ghế..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label="Tìm kiếm vé trong máy quét"
-              />
-            </div>
-          </div>
-
-          <div className="operations-table-wrap">
-            <table className="operations-table">
-              <thead>
-                <tr>
-                  <th>Mã vé</th>
-                  <th>Hạng vé</th>
-                  <th>Vị trí ghế</th>
-                  <th>Trạng thái</th>
-                  <th>Thời gian vào</th>
-                </tr>
-              </thead>
-              <tbody>
-                {previewTickets.map((t) => (
-                  <tr key={t.code}>
-                    <td>
-                      <strong style={{ fontFamily: 'monospace' }}>{t.code}</strong>
-                    </td>
-                    <td>{t.ticketType}</td>
-                    <td>{t.seatLabel}</td>
-                    <td>
-                      {t.status === 'valid' && (
-                        <Badge variant="outline">Hợp lệ</Badge>
-                      )}
-                      {t.status === 'checked_in' && (
-                        <Badge variant="default">Đã vào</Badge>
-                      )}
-                      {t.status === 'cancelled' && (
-                        <Badge variant="destructive">Đã huỷ</Badge>
-                      )}
-                    </td>
-                    <td style={{ color: 'var(--muted-foreground)', fontSize: '13px' }}>
-                      {t.checkedInAt ? formatVNDate(t.checkedInAt) : '—'}
-                    </td>
-                  </tr>
-                ))}
-                {previewTickets.length === 0 && (
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: 'center', padding: '24px', color: 'var(--muted-foreground)' }}>
-                      Không tìm thấy vé nào khớp với từ khoá tìm kiếm.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {filteredTickets.length > 15 && (
-            <p style={{ marginTop: '12px', fontSize: '12px', color: 'var(--muted-foreground)', textAlign: 'right' }}>
-              Đang hiển thị 15 trên tổng số {filteredTickets.length} vé tìm thấy.
-            </p>
-          )}
-        </section>
-      )}
+      </div>
     </div>
   );
 }
