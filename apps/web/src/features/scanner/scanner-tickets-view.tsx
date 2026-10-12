@@ -152,6 +152,7 @@ export function ScannerTicketsView({
       );
     } finally {
       isDownloadingRef.current = false;
+      setDownloadProgress('');
     }
   };
 
