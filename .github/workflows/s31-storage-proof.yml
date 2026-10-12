@@ -1,0 +1,52 @@
+name: S31 candidate storage proof
+
+on:
+  push:
+    branches: [story/S-31-prevent-ticket-reuse]
+  pull_request:
+    paths:
+      - apps/api/prisma/verification/s31-admission-candidate.sql
+      - apps/api/scripts/*s31*.mjs
+      - .github/workflows/s31-storage-proof.yml
+
+permissions:
+  contents: read
+
+jobs:
+  candidate-storage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      DATABASE_URL: postgresql://s31_fixture:s31_fixture@127.0.0.1:15436/s31_storage_verification
+      S31_DATABASE_URL: postgresql://s31_fixture:s31_fixture@127.0.0.1:15436/s31_storage_verification
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: s31_fixture
+          POSTGRES_PASSWORD: s31_fixture
+          POSTGRES_DB: s31_storage_verification
+        ports: [15436:5432]
+        options: >-
+          --health-cmd "pg_isready -U s31_fixture -d s31_storage_verification"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter api exec prisma migrate deploy
+      - name: Verify candidate DB invariants (not story acceptance)
+        run: node apps/api/scripts/verify-s31-storage.mjs
+      - uses: actions/upload-artifact@v7
+        with:
+          name: s31-candidate-storage-proof
+          path: evidence/s31/storage-proof.json
+          if-no-files-found: error

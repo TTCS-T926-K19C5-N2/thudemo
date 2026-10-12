@@ -6,5 +6,5 @@ export default async function OrderPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return <OrderReview id={id} />;
+  return <OrderReview key={id} id={id} />;
 }
