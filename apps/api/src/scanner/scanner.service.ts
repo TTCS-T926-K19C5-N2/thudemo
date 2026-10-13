@@ -41,6 +41,53 @@ export interface AssignedShowtimeItem {
   checkedInTickets: number;
 }
 
+export interface OfflineScanItemDto {
+  scanId: string;
+  ticketCode: string;
+  gate: string;
+  deviceId?: string;
+  scannedAt: string;
+}
+
+export interface SyncResultItem {
+  scanId: string;
+  ticketCode: string;
+  status: 'ACCEPTED' | 'DUPLICATE' | 'CONFLICT' | 'NOT_FOUND';
+  message?: string;
+}
+
+export interface SyncOfflineScansResponse {
+  showtimeId: string;
+  totalReceived: number;
+  acceptedCount: number;
+  duplicateCount: number;
+  conflictCount: number;
+  results: SyncResultItem[];
+}
+
+export interface ScanConflictItem {
+  id: string;
+  showtimeId: string;
+  ticketCode: string;
+  firstGate: string;
+  firstScannedAt: string;
+  conflictGate: string;
+  conflictScannedAt: string;
+  createdAt: string;
+}
+
+export interface RealtimeEntryStatsResponse {
+  showtimeId: string;
+  showtimeName: string;
+  startTime: string;
+  totalTickets: number;
+  checkedInTickets: number;
+  remainingTickets: number;
+  entryRatePerMinute: number;
+  gateStats: Array<{ gate: string; enteredCount: number }>;
+  updatedAt: string;
+}
+
 @Injectable()
 export class ScannerService {
   private readonly logger = new Logger(ScannerService.name);
@@ -336,5 +383,283 @@ export class ScannerService {
         });
       }
     }
+  }
+
+  /**
+   * S-35: Đồng bộ các lần quét ngoại tuyến lên máy chủ khi có mạng lại
+   * S-36: Xung đột soát vé ở hai cửa được phát hiện khi đồng bộ
+   */
+  async syncOfflineScans(
+    showtimeId: string,
+    scans: OfflineScanItemDto[],
+    user: { id: string; roles: string[] },
+  ): Promise<SyncOfflineScansResponse> {
+    await this.verifyStaffAccess(showtimeId, user.id, user.roles);
+
+    const results: SyncResultItem[] = [];
+    let acceptedCount = 0;
+    let duplicateCount = 0;
+    let conflictCount = 0;
+
+    // Sắp xếp các scan theo thời gian quét tăng dần để xử lý đúng trình tự
+    const sortedScans = [...scans].sort(
+      (a, b) => new Date(a.scannedAt).getTime() - new Date(b.scannedAt).getTime(),
+    );
+
+    for (const scan of sortedScans) {
+      // 1. Kiểm tra idempotent: mã scanId duy nhất sinh trên thiết bị
+      const existingLog = await this.prisma.offlineScanLog.findUnique({
+        where: { scanId: scan.scanId },
+      });
+
+      if (existingLog) {
+        duplicateCount++;
+        results.push({
+          scanId: scan.scanId,
+          ticketCode: scan.ticketCode,
+          status: 'DUPLICATE',
+          message: 'Lần quét đã được đồng bộ trước đó',
+        });
+        continue;
+      }
+
+      // 2. Tìm vé trong suất diễn
+      const ticket = await this.prisma.ticket.findFirst({
+        where: {
+          showtimeId,
+          code: scan.ticketCode,
+        },
+      });
+
+      if (!ticket) {
+        await this.prisma.offlineScanLog.create({
+          data: {
+            scanId: scan.scanId,
+            showtimeId,
+            ticketCode: scan.ticketCode,
+            gate: scan.gate,
+            deviceId: scan.deviceId,
+            scannedAt: new Date(scan.scannedAt),
+            status: 'NOT_FOUND',
+          },
+        });
+        results.push({
+          scanId: scan.scanId,
+          ticketCode: scan.ticketCode,
+          status: 'NOT_FOUND',
+          message: 'Vé không tồn tại trong suất diễn',
+        });
+        continue;
+      }
+
+      const scanTime = new Date(scan.scannedAt);
+
+      // 3. Nếu vé hợp lệ và chưa vào: chấp nhận check-in
+      if (ticket.status === TicketStatus.VALID) {
+        await this.prisma.ticket.update({
+          where: { id: ticket.id },
+          data: {
+            status: TicketStatus.CHECKED_IN,
+            checkedInAt: scanTime,
+            gate: scan.gate,
+          },
+        });
+
+        await this.prisma.offlineScanLog.create({
+          data: {
+            scanId: scan.scanId,
+            showtimeId,
+            ticketCode: scan.ticketCode,
+            gate: scan.gate,
+            deviceId: scan.deviceId,
+            scannedAt: scanTime,
+            status: 'ACCEPTED',
+          },
+        });
+
+        acceptedCount++;
+        results.push({
+          scanId: scan.scanId,
+          ticketCode: scan.ticketCode,
+          status: 'ACCEPTED',
+        });
+        continue;
+      }
+
+      // 4. Nếu vé ĐÃ CHECKED_IN trước đó (S-36: xử lý xung đột 2 cửa)
+      if (ticket.status === TicketStatus.CHECKED_IN) {
+        conflictCount++;
+        const currentCheckedInAt = ticket.checkedInAt ?? scanTime;
+        const currentGate = ticket.gate ?? 'Cửa trước';
+
+        // S-36 AC1: Lần quét sớm hơn theo giờ thiết bị được tính là lần vào, lần kia thành xung đột
+        if (scanTime.getTime() < currentCheckedInAt.getTime()) {
+          // Lần quét này xảy ra sớm hơn -> cập nhật vé theo lần quét này
+          await this.prisma.ticket.update({
+            where: { id: ticket.id },
+            data: {
+              checkedInAt: scanTime,
+              gate: scan.gate,
+            },
+          });
+
+          // Ghi nhận lần quét trước kia thành xung đột
+          await this.prisma.scanConflict.create({
+            data: {
+              showtimeId,
+              ticketCode: ticket.code,
+              firstGate: scan.gate,
+              firstScannedAt: scanTime,
+              conflictGate: currentGate,
+              conflictScannedAt: currentCheckedInAt,
+            },
+          });
+        } else {
+          // Lần quét này muộn hơn -> lần quét này thành xung đột, không ghi đè
+          await this.prisma.scanConflict.create({
+            data: {
+              showtimeId,
+              ticketCode: ticket.code,
+              firstGate: currentGate,
+              firstScannedAt: currentCheckedInAt,
+              conflictGate: scan.gate,
+              conflictScannedAt: scanTime,
+            },
+          });
+        }
+
+        await this.prisma.offlineScanLog.create({
+          data: {
+            scanId: scan.scanId,
+            showtimeId,
+            ticketCode: scan.ticketCode,
+            gate: scan.gate,
+            deviceId: scan.deviceId,
+            scannedAt: scanTime,
+            status: 'CONFLICT',
+          },
+        });
+
+        results.push({
+          scanId: scan.scanId,
+          ticketCode: scan.ticketCode,
+          status: 'CONFLICT',
+          message: 'Vé đã được quét trước đó ở cửa khác',
+        });
+        continue;
+      }
+
+      // Nếu vé đã bị huỷ
+      results.push({
+        scanId: scan.scanId,
+        ticketCode: scan.ticketCode,
+        status: 'CONFLICT',
+        message: 'Vé đã bị huỷ',
+      });
+    }
+
+    return {
+      showtimeId,
+      totalReceived: scans.length,
+      acceptedCount,
+      duplicateCount,
+      conflictCount,
+      results,
+    };
+  }
+
+  /**
+   * S-36 AC2: Ban tổ chức mở báo cáo suất thấy danh sách vé xung đột, hai cửa, hai thời điểm
+   */
+  async getShowtimeConflicts(
+    showtimeId: string,
+    user: { id: string; roles: string[] },
+  ): Promise<ScanConflictItem[]> {
+    await this.verifyStaffAccess(showtimeId, user.id, user.roles);
+
+    const conflicts = await this.prisma.scanConflict.findMany({
+      where: { showtimeId },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return conflicts.map((c) => ({
+      id: c.id,
+      showtimeId: c.showtimeId,
+      ticketCode: c.ticketCode,
+      firstGate: c.firstGate,
+      firstScannedAt: c.firstScannedAt.toISOString(),
+      conflictGate: c.conflictGate,
+      conflictScannedAt: c.conflictScannedAt.toISOString(),
+      createdAt: c.createdAt.toISOString(),
+    }));
+  }
+
+  /**
+   * S-52: Ban tổ chức xem số khách đã vào cửa theo thời gian thực
+   */
+  async getRealtimeEntryStats(
+    showtimeId: string,
+    user: { id: string; roles: string[] },
+  ): Promise<RealtimeEntryStatsResponse> {
+    await this.verifyStaffAccess(showtimeId, user.id, user.roles);
+
+    const showtime = await this.prisma.showtime.findUnique({
+      where: { id: showtimeId },
+      include: { event: true },
+    });
+
+    if (!showtime) {
+      throw new NotFoundException('Không tìm thấy suất diễn.');
+    }
+
+    const totalTickets = await this.prisma.ticket.count({
+      where: { showtimeId },
+    });
+
+    const checkedInTickets = await this.prisma.ticket.count({
+      where: {
+        showtimeId,
+        status: TicketStatus.CHECKED_IN,
+      },
+    });
+
+    const remainingTickets = Math.max(0, totalTickets - checkedInTickets);
+
+    // Thống kê theo từng cửa
+    const gateGroups = await this.prisma.ticket.groupBy({
+      by: ['gate'],
+      where: {
+        showtimeId,
+        status: TicketStatus.CHECKED_IN,
+      },
+      _count: { id: true },
+    });
+
+    const gateStats = gateGroups.map((g) => ({
+      gate: g.gate || 'Chưa phân cửa',
+      enteredCount: g._count.id,
+    }));
+
+    // Tốc độ vào theo phút: tính số vé checked-in trong 1 phút gần nhất
+    const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+    const recentEntryCount = await this.prisma.ticket.count({
+      where: {
+        showtimeId,
+        status: TicketStatus.CHECKED_IN,
+        checkedInAt: { gte: oneMinuteAgo },
+      },
+    });
+
+    return {
+      showtimeId,
+      showtimeName: showtime.event.name,
+      startTime: showtime.startTime.toISOString(),
+      totalTickets,
+      checkedInTickets,
+      remainingTickets,
+      entryRatePerMinute: recentEntryCount,
+      gateStats,
+      updatedAt: new Date().toISOString(),
+    };
   }
 }
