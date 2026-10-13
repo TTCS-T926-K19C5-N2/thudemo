@@ -92,6 +92,7 @@ export async function syncPendingScans(
         options.onSyncComplete?.(result);
         return result;
       }
+      markServerOnline();
     }
 
     // 2. Fetch pending scans

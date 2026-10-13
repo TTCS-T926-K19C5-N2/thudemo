@@ -109,6 +109,36 @@ export function OfflineBanner({
     );
   }
 
-  // Case 4: Online, not syncing, 0 pending scans -> Banner disappears
+  if (pendingCount > 0) {
+    return (
+      <div
+        role="alert"
+        aria-live="polite"
+        data-testid="pending-sync-status-banner"
+        className="rounded-lg border border-amber-400 bg-amber-50 p-4 text-amber-950 dark:border-amber-600 dark:bg-amber-950/40 dark:text-amber-200"
+      >
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-bold tracking-wide uppercase text-sm sm:text-base">
+              {`CÒN ${pendingCount} lượt quét chưa đồng bộ`}
+            </p>
+            <p className="mt-0.5 text-xs text-amber-800 dark:text-amber-300">
+              Máy chủ chưa xác nhận các lượt quét đang chờ.
+            </p>
+          </div>
+          {onRetrySync && (
+            <button
+              type="button"
+              onClick={onRetrySync}
+              className="self-start rounded-md border border-amber-600 bg-white px-3 py-1.5 text-xs font-semibold text-amber-950 shadow-sm transition hover:bg-amber-100 dark:bg-amber-900 dark:text-amber-100 sm:self-center"
+            >
+              Thử kết nối lại
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return null;
 }

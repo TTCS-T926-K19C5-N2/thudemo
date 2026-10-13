@@ -179,6 +179,9 @@ describe("S-37: Offline Status & Pending Scan Counter", () => {
 
   describe("5. Đồng bộ thành công (AC2)", () => {
     it("đánh dấu hoàn tất, giảm bộ đếm và trở về 0 khi xong toàn bộ", async () => {
+      _setMockServerReachableForTesting(true);
+      markServerOffline();
+
       await addPendingScan({
         id: "req-1",
         showtimeId,
@@ -221,6 +224,7 @@ describe("S-37: Offline Status & Pending Scan Counter", () => {
       expect(result.syncedCount).toBe(2);
       expect(result.remainingCount).toBe(0);
       expect(await getPendingScanCount(showtimeId)).toBe(0);
+      expect(getCurrentNetworkStatus().isOnline).toBe(true);
     });
 
     it("xử lý phản hồi ALREADY_RECORDED như thành công (idempotent)", async () => {
@@ -317,6 +321,32 @@ describe("S-37: Offline Status & Pending Scan Counter", () => {
       expect(result.failedCount).toBe(1);
       expect(result.remainingCount).toBe(0);
       expect(await getPendingScanCount(showtimeId)).toBe(0);
+    });
+
+    it("giữ lượt quét chưa xác nhận khi máy chủ trả lỗi 5xx", async () => {
+      await addPendingScan({
+        id: "req-server-error",
+        showtimeId,
+        ticketId: "TK-SERVER-ERROR",
+        gateId,
+        requestId: "req-server-error",
+        createdAt: new Date().toISOString(),
+        status: "pending",
+        retryCount: 0,
+      });
+      mockedApi.mockRejectedValueOnce(
+        new ApiError("Máy chủ tạm thời không khả dụng", 503, "HTTP_503"),
+      );
+
+      const result = await syncPendingScans({
+        showtimeId,
+        checkServerBeforeSync: false,
+      });
+
+      expect(result.stoppedDueToNetwork).toBe(true);
+      expect(result.remainingCount).toBe(1);
+      expect(await getPendingScanCount(showtimeId)).toBe(1);
+      expect((await getPendingScans(showtimeId))[0].retryCount).toBe(1);
     });
   });
 
