@@ -9,10 +9,13 @@ import { ScannerCryptoService } from '../scanner/scanner-crypto.service.js';
 type TicketRow = {
   id: string;
   showtimeId: string;
+  eventName: string;
+  startTime: Date;
   checkedInAt: Date | null;
   row: string;
   seatNumber: number;
   categoryName: string;
+  tierName: string | null;
   cancelled: boolean;
   used: boolean;
 };
@@ -33,17 +36,21 @@ export class TicketQrService {
           message: 'Vé chỉ sẵn sàng sau khi thanh toán được xác nhận.',
         });
       const items = await tx.$queryRaw<TicketRow[]>(Prisma.sql`
-        SELECT oi.id,o."showtimeId",oi."checkedInAt",s.row,s."seatNumber",oi."categoryName",
+        SELECT oi.id,o."showtimeId",e.name AS "eventName",st."startTime",oi."checkedInAt",s.row,s."seatNumber",oi."categoryName",oi."tierName",
           EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CANCELLED') AS cancelled,
           EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CHECKED_IN') AS used
         FROM order_items oi JOIN orders o ON o.id=oi."orderId" JOIN seats s ON s.id=oi."seatId"
+          JOIN showtimes st ON st.id=o."showtimeId" JOIN events e ON e.id=st."eventId"
         WHERE o.id=${orderId}::uuid AND s."showtimeId"=o."showtimeId" ORDER BY s.row,s."seatNumber"`);
       return {
         tickets: items.map((item) => ({
           ticketId: item.id,
           showtimeId: item.showtimeId,
+          eventName: item.eventName,
+          startTime: item.startTime.toISOString(),
           seatLabel: `${item.row}-${item.seatNumber}`,
           category: item.categoryName,
+          tier: item.tierName,
           status: item.cancelled
             ? 'CANCELLED'
             : item.checkedInAt || item.used
