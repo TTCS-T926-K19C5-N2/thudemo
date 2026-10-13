@@ -17,6 +17,29 @@ import {
   type UsedTicket,
 } from "./admission-response";
 import { AlertTriangle, CheckCircle } from "lucide-react";
+import { OfflineBanner } from "./offline-banner";
+import {
+  addPendingScan,
+  getPendingScanByTicket,
+  getPendingScanCount,
+  removePendingScan,
+  subscribePendingCount,
+  type PendingScan,
+} from "./offline-queue";
+import {
+  subscribeNetworkStatus,
+  markServerOnline,
+  markServerOffline,
+} from "./network-status";
+import {
+  syncPendingScans,
+  subscribeSyncState,
+  isSyncing,
+} from "./sync-manager";
+import {
+  getShowtimeMeta,
+  markTicketAsLocalCheckedIn,
+} from "../scanner/scanner-db";
 
 type ScanStatus =
   | "SCANNING"
@@ -56,11 +79,34 @@ export function TicketScanner({
   const [result, setResult] = useState<CheckInResult | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [requestPending, setRequestPending] = useState(false);
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator !== "undefined" ? navigator.onLine : true,
+  );
+  const [pendingCount, setPendingCount] = useState(0);
+  const [isSyncingState, setIsSyncingState] = useState(false);
+  const [syncSuccessMessage, setSyncSuccessMessage] = useState<string | null>(
+    null,
+  );
   const scanner = useRef<Html5Qrcode | null>(null);
   const activeRequest = useRef<AbortController | null>(null);
   const requestSequence = useRef(0);
   const scanInProgress = useRef(false);
   const mounted = useRef(false);
+
+  const triggerSync = useCallback(async () => {
+    if (isSyncing()) return;
+    const syncResult = await syncPendingScans({
+      showtimeId: showtimeId.trim() || undefined,
+    });
+    if (syncResult.syncedCount > 0 && syncResult.remainingCount === 0) {
+      setSyncSuccessMessage(
+        `Đã đồng bộ thành công ${syncResult.syncedCount} lượt quét.`,
+      );
+      setTimeout(() => {
+        if (mounted.current) setSyncSuccessMessage(null);
+      }, 4000);
+    }
+  }, [showtimeId]);
 
   useEffect(() => {
     let active = true;
@@ -104,6 +150,47 @@ export function TicketScanner({
       }
     };
   }, []);
+
+  useEffect(() => {
+    const unsubCount = subscribePendingCount((count) => {
+      if (mounted.current) setPendingCount(count);
+    });
+    void getPendingScanCount(showtimeId.trim() || undefined).then((count) => {
+      if (mounted.current) setPendingCount(count);
+    });
+    return unsubCount;
+  }, [showtimeId]);
+
+  useEffect(() => {
+    return subscribeSyncState((syncing) => {
+      if (mounted.current) setIsSyncingState(syncing);
+    });
+  }, []);
+
+  useEffect(() => {
+    return subscribeNetworkStatus((netState) => {
+      if (!mounted.current) return;
+      setIsOnline(netState.isOnline);
+      if (netState.isOnline) {
+        void triggerSync();
+      }
+    });
+  }, [triggerSync]);
+
+  useEffect(() => {
+    if (showtimeId.trim() && qrKeys.length === 0) {
+      void getShowtimeMeta(showtimeId.trim())
+        .then((meta) => {
+          if (!mounted.current || !meta) return;
+          if (meta.verificationKeys && meta.verificationKeys.length > 0) {
+            setQrKeys(meta.verificationKeys);
+          } else if (meta.keyId && meta.publicKey) {
+            setQrKeys([{ keyId: meta.keyId, key: meta.publicKey }]);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [showtimeId, qrKeys.length]);
 
   const stopCamera = useCallback(async () => {
     const currentScanner = scanner.current;
@@ -152,7 +239,93 @@ export function TicketScanner({
       setMessage("Đang xác thực vé...");
 
       try {
-        await verifyTicketQr(scannedTicketId, qrKeys, showtimeId.trim());
+        let effectiveKeys = qrKeys;
+        if (!effectiveKeys.length && showtimeId.trim()) {
+          const meta = await getShowtimeMeta(showtimeId.trim()).catch(() => null);
+          if (meta?.verificationKeys?.length) {
+            effectiveKeys = meta.verificationKeys;
+          } else if (meta?.keyId && meta?.publicKey) {
+            effectiveKeys = [{ keyId: meta.keyId, key: meta.publicKey }];
+          }
+        }
+
+        await verifyTicketQr(scannedTicketId, effectiveKeys, showtimeId.trim());
+
+        // Check if ticket was already scanned locally and pending sync
+        const existingPending = await getPendingScanByTicket(
+          showtimeId.trim(),
+          scannedTicketId,
+        );
+        if (existingPending) {
+          setUsed({
+            checkedInAt: existingPending.createdAt,
+            gateName:
+              gates.find((g) => g.gateId === existingPending.gateId)?.gateName ??
+              "Cửa hiện tại",
+            canOverride: false,
+          });
+          setStatus("USED");
+          setMessage("Vé đã được quét trước đó trên máy này (đang chờ đồng bộ).");
+          return;
+        }
+
+        const previous = scanAction.current;
+        if (
+          !previous ||
+          previous.ticketId !== scannedTicketId ||
+          previous.gateId !== gateId ||
+          previous.showtimeId !== showtimeId.trim()
+        ) {
+          scanAction.current = {
+            ticketId: scannedTicketId,
+            gateId,
+            showtimeId: showtimeId.trim(),
+            requestId: crypto.randomUUID(),
+          };
+        }
+        const action = scanAction.current;
+        if (!action)
+          throw new Error("Không thể tạo lượt quét. Hãy thử lại.");
+
+        const pendingItem: PendingScan = {
+          id: action.requestId,
+          showtimeId: action.showtimeId,
+          ticketId: action.ticketId,
+          gateId: action.gateId,
+          requestId: action.requestId,
+          createdAt: new Date().toISOString(),
+          status: "pending",
+          retryCount: 0,
+        };
+
+        // Persist scan to pending queue (increases counter)
+        await addPendingScan(pendingItem);
+        void markTicketAsLocalCheckedIn(action.showtimeId, action.ticketId).catch(() => {});
+
+        // If offline: save locally, keep in queue, return RECORDED
+        if (!isOnline) {
+          if (!mounted.current || sequence !== requestSequence.current) return;
+          setStatus("RECORDED");
+          setMessage(
+            "Đã lưu ngoại tuyến thành công. Lượt quét sẽ tự động đồng bộ khi có mạng.",
+          );
+          setResult({
+            status: "ALREADY_RECORDED",
+            ticketId: action.ticketId,
+            gateName:
+              gates.find((g) => g.gateId === gateId)?.gateName ?? "Cửa hiện tại",
+            kind: "NORMAL",
+            seat: {
+              category: "Đã lưu máy",
+              row: "-",
+              number: 0,
+              label: "Lưu ngoại tuyến",
+            },
+            checkedInAt: pendingItem.createdAt,
+          });
+          return;
+        }
+
         const checkedIn = await checkInWithWaiting(
           (signal) =>
             api(
@@ -160,30 +333,11 @@ export function TicketScanner({
               decodeCheckIn,
               {
                 method: "POST",
-                body: (() => {
-                  const previous = scanAction.current;
-                  if (
-                    !previous ||
-                    previous.ticketId !== scannedTicketId ||
-                    previous.gateId !== gateId ||
-                    previous.showtimeId !== showtimeId.trim()
-                  ) {
-                    scanAction.current = {
-                      ticketId: scannedTicketId,
-                      gateId,
-                      showtimeId: showtimeId.trim(),
-                      requestId: crypto.randomUUID(),
-                    };
-                  }
-                  const action = scanAction.current;
-                  if (!action)
-                    throw new Error("Không thể tạo lượt quét. Hãy thử lại.");
-                  return {
-                    qrPayload: action.ticketId,
-                    gateId: action.gateId,
-                    requestId: action.requestId,
-                  };
-                })(),
+                body: {
+                  qrPayload: action.ticketId,
+                  gateId: action.gateId,
+                  requestId: action.requestId,
+                },
                 signal,
               },
             ),
@@ -195,7 +349,13 @@ export function TicketScanner({
           },
           controller.signal,
         );
+
         if (!mounted.current || sequence !== requestSequence.current) return;
+
+        // Server confirmed! Remove from pending queue (counter decreases)
+        await removePendingScan(pendingItem.id);
+        markServerOnline();
+
         setResult(checkedIn);
         setStatus(
           checkedIn.status === "ALREADY_RECORDED" ? "RECORDED" : "SUCCESS",
@@ -213,6 +373,41 @@ export function TicketScanner({
         ) {
           return;
         }
+
+        const isNetworkErr =
+          error instanceof ApiError &&
+          (error.status === 0 || error.code === "NETWORK_ERROR");
+
+        if (isNetworkErr) {
+          markServerOffline("Mất kết nối máy chủ");
+          setStatus("RECORDED");
+          setMessage(
+            "Mất kết nối máy chủ. Lượt quét đã được lưu ngoại tuyến để đồng bộ sau.",
+          );
+          setResult({
+            status: "ALREADY_RECORDED",
+            ticketId: scannedTicketId,
+            gateName:
+              gates.find((g) => g.gateId === gateId)?.gateName ?? "Cửa hiện tại",
+            kind: "NORMAL",
+            seat: {
+              category: "Đã lưu máy",
+              row: "-",
+              number: 0,
+              label: "Lưu ngoại tuyến",
+            },
+            checkedInAt: new Date().toISOString(),
+          });
+          return;
+        }
+
+        // Server returned a business decision (e.g. 409 USED or 400 INVALID)
+        // Remove from pending queue so we don't retry business rejections
+        const action = scanAction.current;
+        if (action?.requestId) {
+          await removePendingScan(action.requestId).catch(() => {});
+        }
+
         const duplicate = usedTicket(error);
         setUsed(duplicate);
         setStatus(duplicate ? "USED" : checkInFailureState(error));
@@ -229,8 +424,9 @@ export function TicketScanner({
         }
       }
     },
-    [showtimeId, gateId, qrKeys, stopCamera],
+    [showtimeId, gateId, qrKeys, gates, isOnline, stopCamera],
   );
+
 
   const startCamera = useCallback(async () => {
     if (scanInProgress.current) return;
@@ -331,6 +527,43 @@ export function TicketScanner({
             lần.
           </p>
         </header>
+
+        <OfflineBanner
+          isOnline={isOnline}
+          pendingCount={pendingCount}
+          isSyncing={isSyncingState}
+          onRetrySync={() => void triggerSync()}
+          syncSuccessMessage={syncSuccessMessage}
+        />
+
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground border-b pb-3">
+          <div className="flex items-center gap-2">
+            <span
+              data-testid="network-status-indicator"
+              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-medium ${
+                isOnline
+                  ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                  : "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
+              }`}
+            >
+              <span
+                className={`size-1.5 rounded-full ${
+                  isOnline ? "bg-emerald-500" : "bg-amber-500"
+                }`}
+              />
+              {isOnline ? "Trực tuyến" : "Ngoại tuyến"}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span>Lượt chờ đồng bộ:</span>
+            <span
+              data-testid="pending-scan-counter"
+              className="font-bold text-foreground text-sm"
+            >
+              {pendingCount}
+            </span>
+          </div>
+        </div>
 
         {userLoading ? (
           <p role="status">Đang kiểm tra quyền truy cập...</p>
