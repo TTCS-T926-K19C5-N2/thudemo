@@ -24,6 +24,7 @@ const base = "http://127.0.0.1:3050",
     checks: [],
     screenshots: [],
     consoleErrors: [],
+    checkInResponses: [],
     startedAt: new Date().toISOString(),
   };
 const browser = await chromium.launch({ headless: true }),
@@ -45,6 +46,17 @@ async function session(actor, viewport = { width: 1440, height: 1000 }) {
     },
   ]);
   const page = await context.newPage();
+  page.on("response", (response) => {
+    const url = new URL(response.url());
+    if (
+      url.pathname.startsWith("/api/showtimes/") &&
+      url.pathname.endsWith("/check-in")
+    )
+      report.checkInResponses.push({
+        status: response.status(),
+        path: url.pathname,
+      });
+  });
   page.on("pageerror", (error) => report.consoleErrors.push(error.message));
   page.on("console", (message) => {
     if (
@@ -279,6 +291,38 @@ try {
 } catch (error) {
   report.status = "FAIL";
   report.error = error.message;
+  const pageStates = [];
+  for (const context of contexts) {
+    const page = context.pages()[0];
+    if (!page) continue;
+    try {
+      pageStates.push({
+        url: page.url(),
+        state: await status(page).getAttribute("data-state"),
+        text: await status(page).innerText(),
+      });
+    } catch (diagnosticError) {
+      pageStates.push({
+        url: page.url(),
+        diagnosticError:
+          diagnosticError instanceof Error
+            ? diagnosticError.message
+            : String(diagnosticError),
+      });
+    }
+  }
+  console.error(
+    JSON.stringify(
+      {
+        error: error.message,
+        pageStates,
+        checkInResponses: report.checkInResponses,
+        consoleErrors: report.consoleErrors,
+      },
+      null,
+      2,
+    ),
+  );
   throw error;
 } finally {
   report.finishedAt = new Date().toISOString();

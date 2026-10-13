@@ -26,6 +26,7 @@ const report = {
     .digest("hex"),
   checks: [],
   consoleErrors: [],
+  checkInResponses: [],
   screenshots: [],
   startedAt: new Date().toISOString(),
 };
@@ -49,6 +50,17 @@ async function session(actor, viewport) {
     },
   ]);
   const page = await context.newPage();
+  page.on("response", (response) => {
+    const url = new URL(response.url());
+    if (
+      url.pathname.startsWith("/api/showtimes/") &&
+      url.pathname.endsWith("/check-in")
+    )
+      report.checkInResponses.push({
+        status: response.status(),
+        path: url.pathname,
+      });
+  });
   page.on("pageerror", (error) => report.consoleErrors.push(error.message));
   page.on("console", (message) => {
     if (
@@ -264,7 +276,7 @@ try {
     (route) => route.abort("internetdisconnected"),
     { times: 1 },
   );
-  await scan(ordinary, fixture.browserTicket);
+  await scan(ordinary, fixture.offlineTicket);
   await status(ordinary)
     .filter({
       hasText:
@@ -287,7 +299,13 @@ try {
     .getByTestId("offline-status-banner")
     .waitFor({ state: "hidden" });
   await ordinary.getByRole("button", { name: "Kiểm tra vé" }).click();
-  await status(ordinary).filter({ hasText: "Vé đã sử dụng" }).waitFor();
+  await status(ordinary)
+    .filter({ hasText: "Đây không phải lần vào mới" })
+    .waitFor();
+  check(
+    (await status(ordinary).getAttribute("data-state")) === "RECORDED",
+    "Rechecking the offline-synced ticket reuses its request instead of admitting it twice",
+  );
   check(
     (await status(desktop).getAttribute("aria-live")) === "polite" &&
       (await status(desktop).getAttribute("role")) === "status",
@@ -447,6 +465,18 @@ try {
 } catch (error) {
   report.status = "FAIL";
   report.error = error.message;
+  console.error(
+    JSON.stringify(
+      {
+        error: error.message,
+        checks: report.checks,
+        checkInResponses: report.checkInResponses,
+        consoleErrors: report.consoleErrors,
+      },
+      null,
+      2,
+    ),
+  );
   for (let i = 0; i < contexts.length; i++) {
     const page = contexts[i].pages()[0];
     if (page) await screenshot(page, `failure-${i}.png`);
