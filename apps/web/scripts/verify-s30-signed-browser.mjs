@@ -11,7 +11,7 @@ const fixture = JSON.parse(
 const root = resolve(import.meta.dirname, "../../.."),
   out = resolve(root, "evidence/s30");
 mkdirSync(out, { recursive: true });
-const base = "http://localhost:3050",
+const base = "http://127.0.0.1:3050",
   report = {
     sourceSha: process.env.QR_SOURCE_SHA ?? "working-tree",
     driverSha256: createHash("sha256")
