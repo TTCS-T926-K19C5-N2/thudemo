@@ -13,11 +13,13 @@ import type { TicketQrPublicKey } from "shared/ticket-qr";
 import {
   admissionTime,
   decodeCheckIn,
+  scanRejection,
   usedTicket,
   type CheckInResult,
+  type ScanRejection,
   type UsedTicket,
 } from "./admission-response";
-import { AlertTriangle, CheckCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 
 type ScanStatus =
   | "SCANNING"
@@ -45,6 +47,7 @@ export function TicketScanner({
   const [gateId, setGateId] = useState("");
   const [gatesLoading, setGatesLoading] = useState(false);
   const [used, setUsed] = useState<UsedTicket | null>(null);
+  const [rejection, setRejection] = useState<ScanRejection | null>(null);
   const scanAction = useRef<{
     ticketId: string;
     gateId: string;
@@ -149,11 +152,12 @@ export function TicketScanner({
       setTicketId(scannedTicketId);
       setResult(null);
       setUsed(null);
+      setRejection(null);
       setStatus("SCANNING");
       setMessage("Đang xác thực vé...");
 
       try {
-        await verifyTicketQr(scannedTicketId, qrKeys, showtimeId.trim());
+        const localRejection = await verifyTicketQr(scannedTicketId, qrKeys);
         const checkedIn = await checkInWithWaiting(
           (signal) =>
             api(
@@ -195,7 +199,9 @@ export function TicketScanner({
             }
           },
           controller.signal,
-        );
+        ).catch((error: unknown) => {
+          throw localRejection && !scanRejection(error) ? localRejection : error;
+        });
         if (!mounted.current || sequence !== requestSequence.current) return;
         setResult(checkedIn);
         setStatus(
@@ -215,12 +221,22 @@ export function TicketScanner({
           return;
         }
         const duplicate = usedTicket(error);
+        const rejected = scanRejection(error);
         setUsed(duplicate);
-        setStatus(duplicate ? "USED" : checkInFailureState(error));
+        setRejection(rejected);
+        setStatus(
+          duplicate
+            ? "USED"
+            : rejected
+              ? "INVALID"
+              : checkInFailureState(error),
+        );
         setMessage(
-          error instanceof Error
-            ? error.message
-            : "Không thể xác thực vé. Vui lòng thử lại.",
+          rejected
+            ? rejected.title
+            : error instanceof Error
+              ? error.message
+              : "Không thể xác thực vé. Vui lòng thử lại.",
         );
       } finally {
         if (sequence === requestSequence.current) {
@@ -292,6 +308,7 @@ export function TicketScanner({
     if (scanInProgress.current) return;
     scanAction.current = null;
     setUsed(null);
+    setRejection(null);
     setTicketId("");
     requestSequence.current += 1;
     activeRequest.current?.abort();
@@ -367,6 +384,7 @@ export function TicketScanner({
                   setGateId("");
                   scanAction.current = null;
                   setUsed(null);
+                  setRejection(null);
                   setResult(null);
                   setStatus("SCANNING");
                 }}
@@ -452,6 +470,7 @@ export function TicketScanner({
                   setMessage("Quét vé tại cửa hiện tại để xác thực.");
                   scanAction.current = null;
                   setUsed(null);
+                  setRejection(null);
                   setResult(null);
                   setStatus("SCANNING");
                 }}
@@ -481,13 +500,18 @@ export function TicketScanner({
               aria-live="polite"
               data-testid="ticket-scan-status"
               data-state={status}
+              data-reason-code={rejection?.reasonCode}
               className={`rounded-lg border p-4 ${statusClass}`}
             >
               <p className="flex items-center gap-2 font-semibold">
-                {status === "USED" ||
+                {status === "INVALID" ? (
+                  <XCircle
+                    aria-hidden="true"
+                    className="size-5 shrink-0"
+                  />
+                ) : status === "USED" ||
                 status === "RECORDED" ||
-                status === "ERROR" ||
-                status === "INVALID" ? (
+                status === "ERROR" ? (
                   <AlertTriangle
                     aria-hidden="true"
                     className="size-5 shrink-0"
@@ -505,6 +529,11 @@ export function TicketScanner({
                 <p className="mt-2">
                   Đã vào lúc {admissionTime(used.checkedInAt)} tại cửa{" "}
                   {used.gateName}.
+                </p>
+              )}
+              {rejection && (
+                <p className="mt-2 font-medium" data-testid="ticket-reject-detail">
+                  {rejection.detail}
                 </p>
               )}
               {result && (
@@ -563,6 +592,7 @@ export function TicketScanner({
                   onChange={(event) => {
                     setTicketId(event.target.value);
                     setUsed(null);
+                    setRejection(null);
                     setResult(null);
                     setStatus("SCANNING");
                     setMessage("Kiểm tra mã vé để xác thực.");
@@ -589,6 +619,7 @@ export function TicketScanner({
                   qrPayload={ticketId}
                   onRecorded={(recorded) => {
                     setUsed(null);
+                    setRejection(null);
                     setResult(recorded);
                     setStatus(
                       recorded.status === "ALREADY_RECORDED"

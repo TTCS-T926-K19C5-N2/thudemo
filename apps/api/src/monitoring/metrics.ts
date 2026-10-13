@@ -51,6 +51,12 @@ export class Metrics {
     labelNames: ['reason'],
     registers: [this.registry],
   });
+  readonly ticketScanRejections = new Counter({
+    name: 'ticket_scan_rejections_total',
+    help: 'Rejected ticket scans by bounded reason code.',
+    labelNames: ['reason'],
+    registers: [this.registry],
+  });
   readonly producer = new Gauge({
     name: 'ticket_producer_available',
     help: '1 means implemented producer; 0 is unavailable, not healthy zero.',
@@ -91,6 +97,10 @@ export class Metrics {
   rejectWebhook(reason: WebhookRejectionReason) {
     if (!reasons.includes(reason)) return;
     this.safe(() => this.webhookRejections.inc({ reason }));
+  }
+  rejectTicketScan(reason: string) {
+    if (!/^ERR_TICKET_[A-Z_]{1,32}$/.test(reason)) return;
+    this.safe(() => this.ticketScanRejections.inc({ reason }));
   }
   middleware = (req: Request, res: Response, next: NextFunction) => {
     if (process.env.MONITORING_ENABLED !== 'true') return next();

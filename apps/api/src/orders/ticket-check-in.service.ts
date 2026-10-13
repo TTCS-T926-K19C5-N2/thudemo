@@ -3,7 +3,6 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -13,6 +12,14 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import type { ScanCommand } from './admission-contract.js';
 import { ADMISSION_OVERRIDE_POLICY as admissionOverridePolicy } from './admission-policy.js';
 import { ScannerCryptoService } from '../scanner/scanner-crypto.service.js';
+import {
+  cancelledTicket,
+  isValidUuid,
+  notEligibleTicket,
+  unknownTicket,
+  wrongShowtime,
+  type RejectionContext,
+} from './ticket-rejection.js';
 
 type Permission = { gateName: string; staffName: string; canOverride: boolean };
 type Admission = {
@@ -27,6 +34,7 @@ type Admission = {
 type Ticket = {
   checkedInAt: Date | null;
   orderId: string;
+  orderStatus: string;
   seatId: string;
   categoryName: string;
   row: string;
@@ -85,32 +93,62 @@ export class TicketCheckInService {
         });
       }
       // NORMAL and EXCEPTION both resolve identity only from the same signed QR verifier.
-      const claims = this.crypto.verifyQr(command.qrPayload);
-      if (claims.showtimeId !== showtimeId.toLowerCase())
-        throw new BadRequestException({
-          code: 'WRONG_SHOWTIME',
-          message: 'Vé không thuộc suất đang soát.',
-        });
+      const ctx: RejectionContext = {
+        showtimeId,
+        gateId: command.gateId,
+        staffId: request.user.id,
+        requestId: command.requestId,
+      };
+      let claims: ReturnType<ScannerCryptoService['verifyQr']>;
+      try {
+        claims = this.crypto.verifyQr(command.qrPayload);
+      } catch (error) {
+        if (error instanceof BadRequestException) {
+          throw unknownTicket(ctx);
+        }
+        throw error;
+      }
+      if (!isValidUuid(claims.showtimeId)) {
+        throw unknownTicket(ctx);
+      }
+      if (claims.showtimeId.toLowerCase() !== showtimeId.toLowerCase()) {
+        const [other] = await tx.$queryRaw<
+          { eventName: string; startTime: Date }[]
+        >(Prisma.sql`
+          SELECT e.name AS "eventName", st."startTime"
+          FROM showtimes st JOIN events e ON e.id = st."eventId"
+          WHERE st.id = ${claims.showtimeId}::uuid`);
+        if (!other) {
+          throw unknownTicket(ctx);
+        }
+        throw wrongShowtime(ctx, other);
+      }
       const ticketId = claims.ticketId;
+      ctx.ticketId = ticketId;
+      if (!isValidUuid(ticketId)) {
+        throw unknownTicket(ctx, 'INVALID_TICKET');
+      }
       const [ticket] = await tx.$queryRaw<Ticket[]>(Prisma.sql`
-        SELECT oi."checkedInAt", oi."orderId", oi."seatId", oi."categoryName", s.row, s."seatNumber"
+        SELECT oi."checkedInAt", oi."orderId", o.status::text AS "orderStatus",
+          oi."seatId", oi."categoryName", s.row, s."seatNumber"
         FROM order_items oi JOIN orders o ON o.id = oi."orderId" JOIN seats s ON s.id = oi."seatId"
         WHERE oi.id = ${ticketId}::uuid AND o."showtimeId" = ${showtimeId}::uuid
-          AND s."showtimeId" = ${showtimeId}::uuid AND o.status = 'PAID'::"OrderStatus" FOR UPDATE OF oi,o`);
-      if (!ticket)
-        throw new NotFoundException({
-          code: 'INVALID_TICKET',
-          message: 'Vé không hợp lệ hoặc không thuộc suất diễn này.',
-        });
+          AND s."showtimeId" = ${showtimeId}::uuid FOR UPDATE OF oi,o`);
+      if (!ticket) {
+        throw unknownTicket(ctx, 'INVALID_TICKET');
+      }
       const legacy = await tx.$queryRaw<
-        { status: string; checkedInAt: Date | null }[]
+        { status: string; checkedInAt: Date | null; cancelledAt: Date | null }[]
       >(Prisma.sql`
-        SELECT status, "checkedInAt" FROM tickets WHERE "orderId"=${ticket.orderId}::uuid AND "seatId"=${ticket.seatId}::uuid FOR UPDATE`);
-      if (legacy.some((t) => t.status === 'CANCELLED'))
-        throw new NotFoundException({
-          code: 'INVALID_TICKET',
-          message: 'Vé không đủ điều kiện vào.',
-        });
+        SELECT status, "checkedInAt", "cancelledAt" FROM tickets WHERE "orderId"=${ticket.orderId}::uuid AND "seatId"=${ticket.seatId}::uuid FOR UPDATE`);
+      const cancelledLegacy = legacy.find((t) => t.status === 'CANCELLED');
+      if (ticket.orderStatus === 'CANCELLED' || cancelledLegacy) {
+        const cancelledAt = cancelledLegacy?.cancelledAt ?? null;
+        throw cancelledTicket(ctx, cancelledAt);
+      }
+      if (ticket.orderStatus !== 'PAID') {
+        throw notEligibleTicket(ctx);
+      }
       ticket.checkedInAt ??=
         legacy.find((t) => t.status === 'CHECKED_IN')?.checkedInAt ?? null;
       const kind = exception ? 'EXCEPTION' : 'NORMAL';

@@ -100,6 +100,22 @@ describe('S-43 HTTP completion, privacy and business semantics', () => {
       )?.value,
     ).toBe(0);
   });
+  it('tracks bounded ticket scan rejection codes and rejects malformed reasons', async () => {
+    const m = new Metrics();
+    expect((await m.ticketScanRejections.get()).values).toHaveLength(0);
+    m.rejectTicketScan('ERR_TICKET_WRONG_SHOWTIME');
+    m.rejectTicketScan('ERR_TICKET_CANCELLED');
+    m.rejectTicketScan('ERR_TICKET_UNKNOWN');
+    m.rejectTicketScan('invalid-reason');
+    m.rejectTicketScan('ERR_TICKET_WAY_TOO_LONG_REASON_IDENTIFIER_THAT_EXCEEDS_BOUNDS');
+    const values = (await m.ticketScanRejections.get()).values;
+    expect(values).toHaveLength(3);
+    expect(values.map((v) => v.labels.reason)).toEqual([
+      'ERR_TICKET_WRONG_SHOWTIME',
+      'ERR_TICKET_CANCELLED',
+      'ERR_TICKET_UNKNOWN',
+    ]);
+  });
   it('fails open if exporter metrics fail and can disable instrumentation', () => {
     const m = new Metrics();
     const spy = vi.spyOn(m.requests, 'inc').mockImplementation(() => {
