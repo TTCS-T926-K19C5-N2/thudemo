@@ -265,12 +265,27 @@ try {
     { times: 1 },
   );
   await scan(ordinary, fixture.browserTicket);
-  await status(ordinary).filter({ hasText: "Không thể kết nối" }).waitFor();
+  await status(ordinary)
+    .filter({
+      hasText:
+        "Mất kết nối máy chủ. Lượt quét đã được lưu ngoại tuyến để đồng bộ sau.",
+    })
+    .waitFor();
   check(
-    (await status(ordinary).getAttribute("data-state")) === "ERROR",
-    "Network failure shows retry guidance, never valid/offline",
+    (await status(ordinary).getAttribute("data-state")) === "RECORDED",
+    "Network failure saves the signed scan locally without claiming server confirmation",
   );
-  await screenshot(ordinary, "desktop-network-error.png");
+  await ordinary.getByTestId("offline-status-banner").waitFor();
+  await ordinary
+    .getByTestId("offline-banner-title")
+    .filter({ hasText: "1 lượt quét chưa đồng bộ" })
+    .waitFor();
+  await screenshot(ordinary, "desktop-offline-queue.png");
+  await ordinary.getByRole("button", { name: "Thử kết nối lại" }).click();
+  await ordinary.getByTestId("synced-status-banner").waitFor();
+  await ordinary
+    .getByTestId("offline-status-banner")
+    .waitFor({ state: "hidden" });
   await ordinary.getByRole("button", { name: "Kiểm tra vé" }).click();
   await status(ordinary).filter({ hasText: "Vé đã sử dụng" }).waitFor();
   check(
@@ -290,11 +305,17 @@ try {
     { times: 1 },
   );
   await scan(ordinary, fixture.retryTicket);
-  await status(ordinary).filter({ hasText: "Không thể kết nối" }).waitFor();
+  await status(ordinary)
+    .filter({
+      hasText:
+        "Mất kết nối máy chủ. Lượt quét đã được lưu ngoại tuyến để đồng bộ sau.",
+    })
+    .waitFor();
   check(
-    (await status(ordinary).getAttribute("data-state")) === "ERROR",
-    "Lost scan response after real commit never turns green",
+    (await status(ordinary).getAttribute("data-state")) === "RECORDED",
+    "Lost scan response keeps the committed request queued without premature confirmation",
   );
+  await ordinary.getByTestId("offline-status-banner").waitFor();
   await ordinary.route(
     "**/check-in",
     async (route) => {
@@ -303,16 +324,23 @@ try {
     },
     { times: 1 },
   );
-  await ordinary.getByRole("button", { name: "Kiểm tra vé" }).click();
-  await status(ordinary)
-    .filter({ hasText: "Đây không phải lần vào mới" })
-    .waitFor();
+  await ordinary.getByRole("button", { name: "Thử kết nối lại" }).click();
+  await ordinary.getByTestId("synced-status-banner").waitFor();
+  await ordinary
+    .getByTestId("offline-status-banner")
+    .waitFor({ state: "hidden" });
   check(
     retriedScanBodies.length === 2 &&
       JSON.stringify(retriedScanBodies[0]) ===
         JSON.stringify(retriedScanBodies[1]),
-    "Lost-response scan retry sends same action and renders ALREADY_RECORDED",
+    "Offline replay sends the exact same idempotency action after the server committed",
   );
+  await ordinary.getByRole("button", { name: "Kiểm tra vé" }).click();
+  await status(ordinary)
+    .filter({ hasText: "Đây không phải lần vào mới" })
+    .waitFor();
+  check((await status(ordinary).getAttribute("data-state")) === "RECORDED",
+    "The original request result remains recorded rather than admitting a duplicate");
   const retriedExceptionBodies = [];
   await desktop.getByRole("button", { name: "Cho vào có ghi chú" }).click();
   await desktop
