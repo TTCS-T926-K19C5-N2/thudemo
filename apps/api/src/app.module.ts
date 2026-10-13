@@ -21,7 +21,11 @@ import { ScannerModule } from './scanner/scanner.module.js';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: resolve(process.cwd(), '../../.env'),
+      envFilePath: [
+        resolve(process.cwd(), '.env'),
+        resolve(process.cwd(), '../../.env'),
+        resolve(process.cwd(), '../.env'),
+      ],
     }),
     PrismaModule,
     RedisModule,

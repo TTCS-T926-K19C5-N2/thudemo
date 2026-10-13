@@ -21,8 +21,23 @@ export interface LocalTicket {
   localCheckedIn?: boolean;
 }
 
+export interface OfflineScanRecord {
+  scanId: string;
+  ticketCode: string;
+  showtimeId: string;
+  gateId?: string;
+  gateName?: string;
+  scannedAt: string;
+  deviceId: string;
+  staffId: string;
+  offline: true;
+  syncStatus: "pending" | "synced" | "failed" | "conflict";
+  seatLabel?: string;
+  ticketType?: string;
+}
+
 const DB_NAME = "thudemo_scanner_db";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -50,7 +65,20 @@ export function openScannerDb(): Promise<IDBDatabase> {
         ticketStore.createIndex("showtimeId", "showtimeId", { unique: false });
         ticketStore.createIndex("code", "code", { unique: false });
       }
+
+      if (!db.objectStoreNames.contains("scan_queue")) {
+        const queueStore = db.createObjectStore("scan_queue", {
+          keyPath: "scanId",
+        });
+        queueStore.createIndex("showtimeId", "showtimeId", { unique: false });
+        queueStore.createIndex("ticketCode", "ticketCode", { unique: false });
+        queueStore.createIndex("syncStatus", "syncStatus", { unique: false });
+        queueStore.createIndex("showtime_ticket", ["showtimeId", "ticketCode"], {
+          unique: false,
+        });
+      }
     };
+
 
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => {
@@ -235,3 +263,137 @@ export async function getTicketByCode(
     req.onerror = () => reject(req.error);
   });
 }
+
+export async function saveOfflineScanAtomic(
+  scan: OfflineScanRecord,
+): Promise<void> {
+  const db = await openScannerDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(["tickets", "scan_queue"], "readwrite");
+    const ticketStore = tx.objectStore("tickets");
+    const queueStore = tx.objectStore("scan_queue");
+
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(new Error("Giao dịch lưu quét ngoại tuyến bị huỷ"));
+    tx.oncomplete = () => resolve();
+
+    // 1. Put scan into scan_queue
+    queueStore.put(scan);
+
+    // 2. Mark ticket as checked_in locally
+    const ticketReq = ticketStore.get([scan.showtimeId, scan.ticketCode]);
+    ticketReq.onsuccess = () => {
+      const existing = ticketReq.result as LocalTicket | undefined;
+      if (existing) {
+        ticketStore.put({
+          ...existing,
+          status: "checked_in",
+          localCheckedIn: true,
+          checkedInAt: scan.scannedAt,
+        });
+      }
+    };
+  });
+}
+
+export async function getPendingOfflineScans(
+  showtimeId?: string,
+): Promise<OfflineScanRecord[]> {
+  const db = await openScannerDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("scan_queue", "readonly");
+    const store = tx.objectStore("scan_queue");
+    const index = store.index("syncStatus");
+    const req = index.getAll(IDBKeyRange.only("pending"));
+
+    req.onsuccess = () => {
+      const list = (req.result as OfflineScanRecord[]) ?? [];
+      if (showtimeId) {
+        resolve(list.filter((s) => s.showtimeId === showtimeId));
+      } else {
+        resolve(list);
+      }
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function markOfflineScansSynced(
+  scanIds: string[],
+): Promise<void> {
+  if (!scanIds.length) return;
+  const db = await openScannerDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("scan_queue", "readwrite");
+    const store = tx.objectStore("scan_queue");
+
+    tx.onerror = () => reject(tx.error);
+    tx.oncomplete = () => resolve();
+
+    for (const id of scanIds) {
+      const getReq = store.get(id);
+      getReq.onsuccess = () => {
+        const item = getReq.result as OfflineScanRecord | undefined;
+        if (item) {
+          item.syncStatus = "synced";
+          store.put(item);
+        }
+      };
+    }
+  });
+}
+
+export async function hasOfflineScanForTicket(
+  showtimeId: string,
+  ticketCode: string,
+): Promise<boolean> {
+  const db = await openScannerDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("scan_queue", "readonly");
+    const store = tx.objectStore("scan_queue");
+    const index = store.index("showtime_ticket");
+    const req = index.getAll(IDBKeyRange.only([showtimeId, ticketCode]));
+
+    req.onsuccess = () => {
+      const list = (req.result as OfflineScanRecord[]) ?? [];
+      resolve(list.some((s) => s.syncStatus === "pending" || s.syncStatus === "synced"));
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function countPendingOfflineScans(
+  showtimeId?: string,
+): Promise<number> {
+  const list = await getPendingOfflineScans(showtimeId);
+  return list.length;
+}
+
+export async function clearOfflineScanQueue(
+  showtimeId?: string,
+): Promise<void> {
+  const db = await openScannerDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("scan_queue", "readwrite");
+    const store = tx.objectStore("scan_queue");
+
+    tx.onerror = () => reject(tx.error);
+    tx.oncomplete = () => resolve();
+
+    if (!showtimeId) {
+      store.clear();
+      return;
+    }
+
+    const index = store.index("showtimeId");
+    const req = index.openKeyCursor(IDBKeyRange.only(showtimeId));
+    req.onsuccess = (e) => {
+      const cursor = (e.target as IDBRequest).result as IDBCursor;
+      if (cursor) {
+        store.delete(cursor.primaryKey);
+        cursor.continue();
+      }
+    };
+  });
+}
+
