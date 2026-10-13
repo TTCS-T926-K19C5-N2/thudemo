@@ -39,6 +39,16 @@ describe('ScannerService', () => {
         count: vi.fn(),
         create: vi.fn(),
         findFirst: vi.fn(),
+        update: vi.fn(),
+        groupBy: vi.fn(),
+      },
+      offlineScanLog: {
+        findUnique: vi.fn(),
+        create: vi.fn(),
+      },
+      scanConflict: {
+        findMany: vi.fn(),
+        create: vi.fn(),
       },
       order: {
         findUnique: vi.fn(),
@@ -321,6 +331,183 @@ describe('ScannerService', () => {
       expect(list[0].totalTickets).toBe(100);
       expect(list[0].checkedInTickets).toBe(25);
       expect(list[0].location).toBe('Nhà hát Hoà Bình');
+    });
+  });
+
+  describe('S-35 Offline Scan Sync: syncOfflineScans', () => {
+    it('synchronizes a batch of offline scans successfully (idempotent)', async () => {
+      mockPrisma.offlineScanLog.findUnique.mockResolvedValue(null);
+      mockPrisma.ticket.findFirst.mockResolvedValue({
+        id: 'ticket-1',
+        code: 'TCK-001',
+        status: TicketStatus.VALID,
+        showtimeId: mockShowtimeId,
+      });
+
+      const result = await service.syncOfflineScans(
+        mockShowtimeId,
+        [
+          {
+            scanId: 'scan-uuid-1',
+            ticketCode: 'TCK-001',
+            gate: 'Cổng A',
+            deviceId: 'device-pos-1',
+            scannedAt: '2026-10-13T10:00:00.000Z',
+          },
+        ],
+        { id: 'admin-id', roles: ['ADMIN'] },
+      );
+
+      expect(result.totalReceived).toBe(1);
+      expect(result.acceptedCount).toBe(1);
+      expect(result.duplicateCount).toBe(0);
+      expect(result.results[0].status).toBe('ACCEPTED');
+
+      expect(mockPrisma.ticket.update).toHaveBeenCalledWith({
+        where: { id: 'ticket-1' },
+        data: {
+          status: TicketStatus.CHECKED_IN,
+          checkedInAt: new Date('2026-10-13T10:00:00.000Z'),
+          gate: 'Cổng A',
+        },
+      });
+      expect(mockPrisma.offlineScanLog.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          scanId: 'scan-uuid-1',
+          status: 'ACCEPTED',
+        }),
+      });
+    });
+
+    it('handles idempotent retries without duplicating entries', async () => {
+      mockPrisma.offlineScanLog.findUnique.mockResolvedValue({
+        scanId: 'scan-uuid-duplicate',
+        ticketCode: 'TCK-001',
+      });
+
+      const result = await service.syncOfflineScans(
+        mockShowtimeId,
+        [
+          {
+            scanId: 'scan-uuid-duplicate',
+            ticketCode: 'TCK-001',
+            gate: 'Cổng A',
+            scannedAt: '2026-10-13T10:00:00.000Z',
+          },
+        ],
+        { id: 'admin-id', roles: ['ADMIN'] },
+      );
+
+      expect(result.duplicateCount).toBe(1);
+      expect(result.acceptedCount).toBe(0);
+      expect(result.results[0].status).toBe('DUPLICATE');
+      expect(mockPrisma.ticket.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('S-36 Two-Gate Scan Conflict Detection', () => {
+    it('detects two-gate conflict and prioritizes earlier device scanTime', async () => {
+      mockPrisma.offlineScanLog.findUnique.mockResolvedValue(null);
+      // Ticket was already checked in at Gate B at 10:15
+      mockPrisma.ticket.findFirst.mockResolvedValue({
+        id: 'ticket-conflict',
+        code: 'TCK-CONFLICT',
+        status: TicketStatus.CHECKED_IN,
+        checkedInAt: new Date('2026-10-13T10:15:00.000Z'),
+        gate: 'Cổng B',
+        showtimeId: mockShowtimeId,
+      });
+
+      // Offline scan occurred earlier at Gate A at 10:05
+      const result = await service.syncOfflineScans(
+        mockShowtimeId,
+        [
+          {
+            scanId: 'scan-uuid-earlier',
+            ticketCode: 'TCK-CONFLICT',
+            gate: 'Cổng A',
+            scannedAt: '2026-10-13T10:05:00.000Z',
+          },
+        ],
+        { id: 'admin-id', roles: ['ADMIN'] },
+      );
+
+      expect(result.conflictCount).toBe(1);
+      expect(result.results[0].status).toBe('CONFLICT');
+      // Overwrites with earlier scan
+      expect(mockPrisma.ticket.update).toHaveBeenCalledWith({
+        where: { id: 'ticket-conflict' },
+        data: {
+          checkedInAt: new Date('2026-10-13T10:05:00.000Z'),
+          gate: 'Cổng A',
+        },
+      });
+      // Records conflict
+      expect(mockPrisma.scanConflict.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          ticketCode: 'TCK-CONFLICT',
+          firstGate: 'Cổng A',
+          conflictGate: 'Cổng B',
+        }),
+      });
+    });
+
+    it('returns conflict list for organizers and staff', async () => {
+      mockPrisma.scanConflict.findMany.mockResolvedValue([
+        {
+          id: 'conf-1',
+          showtimeId: mockShowtimeId,
+          ticketCode: 'TCK-100',
+          firstGate: 'Cổng A',
+          firstScannedAt: new Date('2026-10-13T10:00:00.000Z'),
+          conflictGate: 'Cổng B',
+          conflictScannedAt: new Date('2026-10-13T10:05:00.000Z'),
+          createdAt: new Date('2026-10-13T10:06:00.000Z'),
+        },
+      ]);
+
+      const conflicts = await service.getShowtimeConflicts(mockShowtimeId, {
+        id: 'admin-id',
+        roles: ['ADMIN'],
+      });
+
+      expect(conflicts).toHaveLength(1);
+      expect(conflicts[0].ticketCode).toBe('TCK-100');
+      expect(conflicts[0].firstGate).toBe('Cổng A');
+      expect(conflicts[0].conflictGate).toBe('Cổng B');
+    });
+  });
+
+  describe('S-52 Realtime Entry Stats: getRealtimeEntryStats', () => {
+    it('returns real-time check-in stats, remaining count, entry rate, and gate breakdown', async () => {
+      mockPrisma.showtime.findUnique.mockResolvedValue({
+        id: mockShowtimeId,
+        startTime: new Date('2026-10-13T19:00:00.000Z'),
+        event: { name: 'Đêm Nhạc Mùa Thu' },
+      });
+      mockPrisma.ticket.count
+        .mockResolvedValueOnce(500) // total
+        .mockResolvedValueOnce(350) // checked-in
+        .mockResolvedValueOnce(15); // entry rate (last minute)
+      mockPrisma.ticket.groupBy.mockResolvedValue([
+        { gate: 'Cổng A', _count: { id: 200 } },
+        { gate: 'Cổng B', _count: { id: 150 } },
+      ]);
+
+      const stats = await service.getRealtimeEntryStats(mockShowtimeId, {
+        id: 'admin-id',
+        roles: ['ADMIN'],
+      });
+
+      expect(stats.showtimeId).toBe(mockShowtimeId);
+      expect(stats.totalTickets).toBe(500);
+      expect(stats.checkedInTickets).toBe(350);
+      expect(stats.remainingTickets).toBe(150);
+      expect(stats.entryRatePerMinute).toBe(15);
+      expect(stats.gateStats).toEqual([
+        { gate: 'Cổng A', enteredCount: 200 },
+        { gate: 'Cổng B', enteredCount: 150 },
+      ]);
     });
   });
 });

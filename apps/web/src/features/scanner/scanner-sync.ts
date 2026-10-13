@@ -1,11 +1,15 @@
 import {
   fetchShowtimeTickets,
+  syncOfflineScansApi,
   type ShowtimeTicketsPayload,
 } from "./scanner-api";
 import {
   getShowtimeMeta,
   saveTicketsAtomic,
   mergeTicketsIncremental,
+  getPendingOfflineScans,
+  markOfflineScansSynced,
+  getPendingQueueCount,
   type ShowtimeLocalMeta,
 } from "./scanner-db";
 
@@ -114,6 +118,9 @@ export function startAutoSync(
     const meta = await getShowtimeMeta(showtimeId);
     if (!meta) return;
 
+    // Tự động đẩy hàng đợi quét ngoại tuyến khi có mạng lại (S-35)
+    await syncOfflineQueue(showtimeId);
+
     if (isListStale(meta.lastSyncAt)) {
       const updated = await syncTicketsIncremental(showtimeId);
       if (updated) {
@@ -127,7 +134,7 @@ export function startAutoSync(
     void checkAndSync();
   }, 60 * 1000);
 
-  // Trigger when network comes back online
+  // Trigger when network comes back online (S-35 AC1)
   const onOnline = () => {
     void checkAndSync();
   };
@@ -140,4 +147,52 @@ export function startAutoSync(
     window.clearInterval(intervalId);
     window.removeEventListener("online", onOnline);
   };
+}
+
+/**
+ * S-35: Tự đẩy lên theo lô và hàng đợi về 0 khi có mạng lại.
+ * S-35 AC2: Giả sử đẩy lên bị ngắt giữa chừng, khi có mạng lại lần nữa thì gửi tiếp phần còn lại.
+ */
+export async function syncOfflineQueue(
+  showtimeId: string,
+  onProgress?: (synced: number, total: number) => void,
+): Promise<{ syncedCount: number; remainingCount: number }> {
+  if (typeof navigator !== "undefined" && !navigator.onLine) {
+    const remaining = await getPendingQueueCount(showtimeId);
+    return { syncedCount: 0, remainingCount: remaining };
+  }
+
+  const pendingScans = await getPendingOfflineScans(showtimeId);
+  if (pendingScans.length === 0) {
+    return { syncedCount: 0, remainingCount: 0 };
+  }
+
+  const batchSize = 50;
+  let totalSynced = 0;
+
+  for (let i = 0; i < pendingScans.length; i += batchSize) {
+    const batch = pendingScans.slice(i, i + batchSize);
+    try {
+      const response = await syncOfflineScansApi(showtimeId, batch);
+      const successfulIds = response.results
+        .filter(
+          (r) =>
+            r.status === "ACCEPTED" ||
+            r.status === "DUPLICATE" ||
+            r.status === "CONFLICT",
+        )
+        .map((r) => r.scanId);
+
+      await markOfflineScansSynced(successfulIds);
+      totalSynced += successfulIds.length;
+      onProgress?.(totalSynced, pendingScans.length);
+    } catch (err) {
+      console.warn("Lỗi gửi lô ngoại tuyến (có thể ngắt kết nối):", err);
+      // Ngắt giữa chừng: dừng gửi lô tiếp theo, các scan còn lại vẫn giữ trong queue (AC2)
+      break;
+    }
+  }
+
+  const remainingCount = await getPendingQueueCount(showtimeId);
+  return { syncedCount: totalSynced, remainingCount };
 }

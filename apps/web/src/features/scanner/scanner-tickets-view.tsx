@@ -1,14 +1,22 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import type { AssignedShowtime } from './scanner-api';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import {
+  type AssignedShowtime,
+  fetchShowtimeConflicts,
+  fetchRealtimeStats,
+  type ScanConflictPayloadItem,
+  type RealtimeEntryStatsPayload,
+} from './scanner-api';
 import {
   getShowtimeMeta,
+  getPendingQueueCount,
   type ShowtimeLocalMeta,
 } from './scanner-db';
 import {
   downloadTicketsFull,
   syncTicketsIncremental,
+  syncOfflineQueue,
   startAutoSync,
   isListStale,
 } from './scanner-sync';
@@ -45,7 +53,71 @@ export function ScannerTicketsView({
     typeof navigator !== 'undefined' ? navigator.onLine : true,
   );
 
+  // S-35: Offline scan queue states
+  const [queueCount, setQueueCount] = useState<number>(0);
+  const [isSyncingQueue, setIsSyncingQueue] = useState<boolean>(false);
+  const [queueSyncMessage, setQueueSyncMessage] = useState<string | null>(null);
+
+  // S-36: Conflict report states
+  const [conflicts, setConflicts] = useState<ScanConflictPayloadItem[]>([]);
+  const [isLoadingConflicts, setIsLoadingConflicts] = useState<boolean>(false);
+
+  // S-52: Realtime stats states
+  const [realtimeStats, setRealtimeStats] = useState<RealtimeEntryStatsPayload | null>(null);
+  const [isLoadingStats, setIsLoadingStats] = useState<boolean>(false);
+
   const isDownloadingRef = useRef(false);
+
+  const refreshQueueCount = useCallback(async () => {
+    try {
+      const count = await getPendingQueueCount(showtime.id);
+      setQueueCount(count);
+    } catch {
+      // ignore
+    }
+  }, [showtime.id]);
+
+  const handleLoadRealtimeStats = useCallback(async () => {
+    if (!navigator.onLine) return;
+    setIsLoadingStats(true);
+    try {
+      const data = await fetchRealtimeStats(showtime.id);
+      setRealtimeStats(data);
+    } catch (err) {
+      console.warn('Lỗi tải thống kê vào cửa:', err);
+    } finally {
+      setIsLoadingStats(false);
+    }
+  }, [showtime.id]);
+
+  const handleSyncOfflineQueue = async () => {
+    if (!isOnline || isSyncingQueue) return;
+    setIsSyncingQueue(true);
+    setQueueSyncMessage('Đang đồng bộ hàng đợi lên máy chủ…');
+    try {
+      const res = await syncOfflineQueue(showtime.id);
+      setQueueCount(res.remainingCount);
+      setQueueSyncMessage(`Đã đồng bộ ${res.syncedCount} lượt quét. Hàng đợi còn ${res.remainingCount}.`);
+      void handleLoadRealtimeStats();
+    } catch (err) {
+      setQueueSyncMessage('Lỗi khi đồng bộ hàng đợi ngoại tuyến.');
+    } finally {
+      setIsSyncingQueue(false);
+    }
+  };
+
+  const handleLoadConflicts = async () => {
+    if (!isOnline || isLoadingConflicts) return;
+    setIsLoadingConflicts(true);
+    try {
+      const data = await fetchShowtimeConflicts(showtime.id);
+      setConflicts(data);
+    } catch (err) {
+      console.warn('Lỗi tải danh sách xung đột:', err);
+    } finally {
+      setIsLoadingConflicts(false);
+    }
+  };
 
   // Monitor online status
   useEffect(() => {
@@ -85,10 +157,14 @@ export function ScannerTicketsView({
     }
 
     void loadLocal();
+    void refreshQueueCount();
+    if (navigator.onLine) {
+      void handleLoadRealtimeStats();
+    }
     return () => {
       cancelled = true;
     };
-  }, [showtime.id]);
+  }, [showtime.id, refreshQueueCount, handleLoadRealtimeStats]);
 
   // Setup auto sync for stale lists (> 30 mins)
   useEffect(() => {
@@ -385,8 +461,171 @@ export function ScannerTicketsView({
 
         {meta && (
           <div className="pt-4 border-t flex flex-col sm:flex-row items-center justify-between text-xs text-muted-foreground gap-2">
-            <span>Khoá công khai QR: <strong>{meta.keyId}</strong></span>
+            <span>Khoá công khai QR: <strong>{meta.keyId ?? meta.verificationKeys?.[0]?.keyId ?? 'Ed25519'}</strong></span>
             <span>Mốc đồng bộ (cursor): <strong>{meta.cursor.slice(0, 19).replace('T', ' ')}</strong></span>
+          </div>
+        )}
+      </div>
+
+      {/* S-35: Offline Scan Queue Card */}
+      <div className="bg-card border rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="text-base font-semibold flex items-center gap-2">
+              <RotateCw className="text-primary" />
+              Hàng đợi quét ngoại tuyến (S-35)
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Tự động lưu và đẩy lên máy chủ theo lô khi có mạng trở lại
+            </p>
+          </div>
+          <Badge variant={queueCount > 0 ? "secondary" : "outline"} className="text-xs px-2.5 py-1">
+            {queueCount > 0 ? `${queueCount} lần quét chờ đồng bộ` : 'Hàng đợi trống (0)'}
+          </Badge>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
+          <Button
+            variant="default"
+            size="sm"
+            onClick={handleSyncOfflineQueue}
+            disabled={isSyncingQueue || !isOnline || queueCount === 0}
+            className="gap-2"
+          >
+            <RotateCw className={isSyncingQueue ? "animate-spin" : ""} />
+            {isSyncingQueue ? 'Đang đẩy lên máy chủ…' : 'Đồng bộ hàng đợi ngay'}
+          </Button>
+          {queueSyncMessage && (
+            <span className="text-xs text-muted-foreground italic">
+              {queueSyncMessage}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* S-36: Gate Scan Conflict Report Card */}
+      <div className="bg-card border rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="text-base font-semibold flex items-center gap-2">
+              <CircleAlert className="text-amber-500" />
+              Báo cáo xung đột soát vé hai cửa (S-36)
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Phát hiện vé quét trùng ở hai cửa lúc mất mạng
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleLoadConflicts}
+            disabled={isLoadingConflicts || !isOnline}
+            className="gap-1.5"
+          >
+            <RotateCw className={isLoadingConflicts ? "animate-spin" : ""} />
+            Tải báo cáo xung đột
+          </Button>
+        </div>
+
+        {conflicts.length > 0 ? (
+          <div className="overflow-x-auto border rounded-xl">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-muted/50 border-b text-muted-foreground font-medium">
+                <tr>
+                  <th className="p-3">Mã vé</th>
+                  <th className="p-3">Cửa hợp lệ (quét trước)</th>
+                  <th className="p-3">Thời điểm vào</th>
+                  <th className="p-3">Cửa xung đột (quét sau)</th>
+                  <th className="p-3">Thời điểm xung đột</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {conflicts.map((c) => (
+                  <tr key={c.id} className="hover:bg-muted/20">
+                    <td className="p-3 font-mono font-medium">{c.ticketCode}</td>
+                    <td className="p-3 text-emerald-600 font-medium">{c.firstGate}</td>
+                    <td className="p-3 text-muted-foreground">{formatVNDate(c.firstScannedAt)}</td>
+                    <td className="p-3 text-destructive font-medium">{c.conflictGate}</td>
+                    <td className="p-3 text-muted-foreground">{formatVNDate(c.conflictScannedAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground/80 italic p-3 rounded-lg bg-muted/10 border border-dashed text-center">
+            Chưa phát hiện xung đột soát vé nào cho suất diễn này.
+          </p>
+        )}
+      </div>
+
+      {/* S-52: Realtime Entry Stats Dashboard Card */}
+      <div className="bg-card border rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="text-base font-semibold flex items-center gap-2">
+              <CheckCircle className="text-emerald-500" />
+              Thống kê vào cửa theo thời gian thực (S-52)
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Số khách đã vào, chưa vào và tốc độ soát vé từng cửa
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleLoadRealtimeStats}
+            disabled={isLoadingStats || !isOnline}
+            className="gap-1.5"
+          >
+            <RotateCw className={isLoadingStats ? "animate-spin" : ""} />
+            Làm mới thống kê
+          </Button>
+        </div>
+
+        {realtimeStats && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="border rounded-xl p-3 bg-muted/20">
+                <p className="text-xs text-muted-foreground">Tổng số vé</p>
+                <p className="text-xl font-bold mt-1">{realtimeStats.totalTickets}</p>
+              </div>
+              <div className="border rounded-xl p-3 bg-emerald-500/10 border-emerald-500/20">
+                <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">Đã vào cửa</p>
+                <p className="text-xl font-bold mt-1 text-emerald-600 dark:text-emerald-400">
+                  {realtimeStats.checkedInTickets}
+                </p>
+              </div>
+              <div className="border rounded-xl p-3 bg-amber-500/10 border-amber-500/20">
+                <p className="text-xs text-amber-700 dark:text-amber-400 font-medium">Chưa vào</p>
+                <p className="text-xl font-bold mt-1 text-amber-600 dark:text-amber-400">
+                  {realtimeStats.remainingTickets}
+                </p>
+              </div>
+              <div className="border rounded-xl p-3 bg-blue-500/10 border-blue-500/20">
+                <p className="text-xs text-blue-700 dark:text-blue-400 font-medium">Tốc độ vào</p>
+                <p className="text-xl font-bold mt-1 text-blue-600 dark:text-blue-400">
+                  {realtimeStats.entryRatePerMinute} <span className="text-xs font-normal">vé/phút</span>
+                </p>
+              </div>
+            </div>
+
+            {realtimeStats.gateStats.length > 0 && (
+              <div className="space-y-2 pt-2">
+                <p className="text-xs font-medium text-muted-foreground">Lượng khách vào theo từng cửa:</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {realtimeStats.gateStats.map((gateItem) => (
+                    <div
+                      key={gateItem.gate}
+                      className="flex items-center justify-between p-2.5 rounded-lg border bg-muted/10 text-xs"
+                    >
+                      <span className="font-medium">{gateItem.gate}</span>
+                      <span className="font-semibold text-primary">{gateItem.enteredCount} khách</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

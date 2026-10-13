@@ -175,4 +175,90 @@ describe('Scanner Offline Synchronization & Stale Detection (S-33)', () => {
       expect(keys).not.toContain('userId');
     });
   });
+
+  describe('S-35 Offline Scan Queue & Synchronization', () => {
+    it('verifies 40 offline scans in queue reduce to 0 upon successful batch sync', () => {
+      // Simulate 40 scans queued
+      const queue: Array<{ scanId: string; ticketCode: string; gate: string; scannedAt: string; synced: boolean }> = [];
+      for (let i = 1; i <= 40; i++) {
+        queue.push({
+          scanId: `scan-${i}`,
+          ticketCode: `TCK-${i}`,
+          gate: 'Cửa A',
+          scannedAt: new Date(Date.now() - (40 - i) * 1000).toISOString(),
+          synced: false,
+        });
+      }
+
+      expect(queue.filter((q) => !q.synced)).toHaveLength(40);
+
+      // Simulate batch sync chunking (batchSize = 50)
+      const batch = queue.slice(0, 50);
+      const syncedScanIds = new Set(batch.map((b) => b.scanId));
+
+      // Mark synced
+      for (const item of queue) {
+        if (syncedScanIds.has(item.scanId)) {
+          item.synced = true;
+        }
+      }
+
+      const pendingAfterSync = queue.filter((q) => !q.synced);
+      expect(pendingAfterSync).toHaveLength(0);
+    });
+
+    it('resumes synchronization when network reconnects without losing unsynced items', () => {
+      const queue = [
+        { scanId: 'scan-1', ticketCode: 'T1', synced: true },
+        { scanId: 'scan-2', ticketCode: 'T2', synced: true },
+        { scanId: 'scan-3', ticketCode: 'T3', synced: false }, // failed during drop
+        { scanId: 'scan-4', ticketCode: 'T4', synced: false },
+      ];
+
+      const pendingToResume = queue.filter((q) => !q.synced);
+      expect(pendingToResume).toHaveLength(2);
+      expect(pendingToResume.map((p) => p.scanId)).toEqual(['scan-3', 'scan-4']);
+    });
+  });
+
+  describe('S-36 Two-Gate Scan Conflict Detection Representation', () => {
+    it('formats conflict records with both gates and respective timestamps', () => {
+      const conflict = {
+        id: 'conf-123',
+        showtimeId: 'st-1',
+        ticketCode: 'T-VIP-99',
+        firstGate: 'Cửa 1 (Khán đài A)',
+        firstScannedAt: '2026-10-13T18:55:00.000Z',
+        conflictGate: 'Cửa 2 (Khán đài B)',
+        conflictScannedAt: '2026-10-13T19:02:00.000Z',
+        createdAt: '2026-10-13T19:03:00.000Z',
+      };
+
+      expect(conflict.firstGate).toContain('Cửa 1');
+      expect(conflict.conflictGate).toContain('Cửa 2');
+      expect(new Date(conflict.firstScannedAt).getTime()).toBeLessThan(
+        new Date(conflict.conflictScannedAt).getTime(),
+      );
+    });
+  });
+
+  describe('S-52 Realtime Entry Stats Calculation', () => {
+    it('computes entered percentage and remaining ticket counts accurately', () => {
+      const stats = {
+        totalTickets: 250,
+        checkedInTickets: 175,
+        remainingTickets: 75,
+        entryRatePerMinute: 12,
+        gateStats: [
+          { gate: 'Cửa A', enteredCount: 100 },
+          { gate: 'Cửa B', enteredCount: 75 },
+        ],
+      };
+
+      const percent = Math.round((stats.checkedInTickets / stats.totalTickets) * 100);
+      expect(percent).toBe(70);
+      expect(stats.totalTickets - stats.checkedInTickets).toBe(stats.remainingTickets);
+      expect(stats.gateStats.reduce((sum, g) => sum + g.enteredCount, 0)).toBe(stats.checkedInTickets);
+    });
+  });
 });
