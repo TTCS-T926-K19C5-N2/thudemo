@@ -25,19 +25,26 @@ function bytes(base64: string): Uint8Array<ArrayBuffer> {
     (c) => c.charCodeAt(0),
   );
 }
+export const UNKNOWN_TICKET_MESSAGE = "Không phải vé của hệ thống.";
+
+/**
+ * Returns a local rejection (shown if server is unreachable or fails to provide structured reasons),
+ * or null when the QR signature is locally valid.
+ * Showtime matching and cancellation details are decided by server to record ERR_TICKET_* metrics and logs.
+ */
 export async function verifyTicketQr(
   value: string,
   keys: TicketQrPublicKey[],
-  showtimeId: string,
-) {
+): Promise<ApiError | null> {
+  const unknown = new ApiError(
+    UNKNOWN_TICKET_MESSAGE,
+    400,
+    "INVALID_QR_SIGNATURE",
+    { reasonCode: "ERR_TICKET_UNKNOWN" },
+  );
   const qr = parseTicketQr(value);
   const key = qr && keys.find((key) => key.keyId === qr.keyId);
-  if (!qr || !key)
-    throw new ApiError(
-      "Mã QR không hợp lệ hoặc chưa có khóa xác minh. Tải lại quyền cửa và thử lại.",
-      400,
-      "INVALID_QR_SIGNATURE",
-    );
+  if (!qr || !key) return unknown;
   let valid = false;
   try {
     const spki = key.key.replace(
@@ -58,15 +65,12 @@ export async function verifyTicketQr(
       new TextEncoder().encode(qr.signingInput),
     );
   } catch {
-    // Server verification is still mandatory. Unsupported browsers get an actionable error, never a client "valid".
+    // Server verification is still mandatory. Unsupported browsers get an actionable error.
     throw new ApiError(
       "Trình duyệt chưa thể xác minh QR. Dùng trình duyệt được hỗ trợ hoặc liên hệ người phụ trách.",
       400,
       "QR_BROWSER_UNSUPPORTED",
     );
   }
-  if (!valid)
-    throw new ApiError("Chữ ký QR không hợp lệ.", 400, "INVALID_QR_SIGNATURE");
-  if (qr.showtimeId !== showtimeId.toLowerCase())
-    throw new ApiError("Vé không thuộc suất đang soát.", 400, "WRONG_SHOWTIME");
+  return valid ? null : unknown;
 }

@@ -74,3 +74,64 @@ export function admissionTime(value: string) {
     timeZone: "Asia/Ho_Chi_Minh",
   });
 }
+
+export type ScanRejection = {
+  reasonCode:
+    | "ERR_TICKET_WRONG_SHOWTIME"
+    | "ERR_TICKET_CANCELLED"
+    | "ERR_TICKET_UNKNOWN"
+    | "ERR_TICKET_NOT_ELIGIBLE";
+  title: string;
+  detail: string;
+};
+
+const validDate = (v: unknown): v is string =>
+  typeof v === "string" && Number.isFinite(Date.parse(v));
+
+export function scanRejection(error: unknown): ScanRejection | null {
+  if (!(error instanceof ApiError)) return null;
+  const d = error.details;
+  const reasonCode = d.reasonCode;
+  switch (reasonCode) {
+    case "ERR_TICKET_WRONG_SHOWTIME": {
+      const s = d.ticketShowtime as Record<string, unknown> | undefined;
+      if (!s || typeof s.eventName !== "string" || !validDate(s.startTime)) {
+        return {
+          reasonCode: "ERR_TICKET_WRONG_SHOWTIME",
+          title: "Sai suất diễn",
+          detail: error.message || "Vé không thuộc suất đang soát.",
+        };
+      }
+      return {
+        reasonCode: "ERR_TICKET_WRONG_SHOWTIME",
+        title: "Sai suất diễn",
+        detail: `Vé của suất ${s.eventName} lúc ${admissionTime(s.startTime)}.`,
+      };
+    }
+    case "ERR_TICKET_CANCELLED": {
+      return {
+        reasonCode: "ERR_TICKET_CANCELLED",
+        title: "Vé đã huỷ",
+        detail: validDate(d.cancelledAt)
+          ? `Vé đã huỷ ngày ${new Date(d.cancelledAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}.`
+          : "Vé đã huỷ.",
+      };
+    }
+    case "ERR_TICKET_UNKNOWN": {
+      return {
+        reasonCode: "ERR_TICKET_UNKNOWN",
+        title: "Mã không hợp lệ",
+        detail: "Không phải vé của hệ thống.",
+      };
+    }
+    case "ERR_TICKET_NOT_ELIGIBLE": {
+      return {
+        reasonCode: "ERR_TICKET_NOT_ELIGIBLE",
+        title: "Chưa đủ điều kiện",
+        detail: error.message || "Vé chưa đủ điều kiện vào.",
+      };
+    }
+    default:
+      return null;
+  }
+}
