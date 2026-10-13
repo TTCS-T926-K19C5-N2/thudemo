@@ -21,8 +21,18 @@ export interface LocalTicket {
   localCheckedIn?: boolean;
 }
 
+export interface OfflineScanRecord {
+  scanId: string;
+  showtimeId: string;
+  ticketCode: string;
+  gate: string;
+  deviceId?: string;
+  scannedAt: string;
+  synced: boolean;
+}
+
 const DB_NAME = "thudemo_scanner_db";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -50,6 +60,14 @@ export function openScannerDb(): Promise<IDBDatabase> {
         ticketStore.createIndex("showtimeId", "showtimeId", { unique: false });
         ticketStore.createIndex("code", "code", { unique: false });
       }
+
+      if (!db.objectStoreNames.contains("offline_scans")) {
+        const scanStore = db.createObjectStore("offline_scans", {
+          keyPath: "scanId",
+        });
+        scanStore.createIndex("showtimeId", "showtimeId", { unique: false });
+        scanStore.createIndex("synced", "synced", { unique: false });
+      }
     };
 
     request.onsuccess = () => resolve(request.result);
@@ -60,6 +78,55 @@ export function openScannerDb(): Promise<IDBDatabase> {
   });
 
   return dbPromise;
+}
+
+export async function queueOfflineScan(scan: OfflineScanRecord): Promise<void> {
+  const db = await openScannerDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("offline_scans", "readwrite");
+    const store = tx.objectStore("offline_scans");
+    store.put(scan);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+export async function getPendingOfflineScans(
+  showtimeId: string,
+): Promise<OfflineScanRecord[]> {
+  const db = await openScannerDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("offline_scans", "readonly");
+    const store = tx.objectStore("offline_scans");
+    const index = store.index("showtimeId");
+    const req = index.getAll(IDBKeyRange.only(showtimeId));
+    req.onsuccess = () => {
+      const all = (req.result as OfflineScanRecord[]) ?? [];
+      resolve(all.filter((item) => !item.synced));
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function markOfflineScansSynced(scanIds: string[]): Promise<void> {
+  if (scanIds.length === 0) return;
+  const db = await openScannerDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("offline_scans", "readwrite");
+    const store = tx.objectStore("offline_scans");
+    for (const id of scanIds) {
+      store.delete(id);
+    }
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+export async function getPendingQueueCount(
+  showtimeId: string,
+): Promise<number> {
+  const pending = await getPendingOfflineScans(showtimeId);
+  return pending.length;
 }
 
 export async function getShowtimeMeta(
