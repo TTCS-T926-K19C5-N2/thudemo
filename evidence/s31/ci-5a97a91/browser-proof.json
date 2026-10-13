@@ -1,0 +1,58 @@
+{
+  "environment": "http://localhost:3060/scanner -> real same-origin proxy -> own API localhost:3061 -> private PostgreSQL 15442",
+  "browser": "Playwright Chromium 1.62.1; Browser plugin not available",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "camera": false,
+  "sourceSha": "5a97a91c6e06efa4249d96e8bb99baaca4e8ed51",
+  "driverSha256": "3307f2e6345b4366182c7991d5a25994e313faa899b192fb788ea32271880e82",
+  "checks": [
+    "Page identity / meaningful nonblank scanner / no framework overlay",
+    "AC1: used ticket shows 19:02 and first gate A while context is gate B",
+    "Assigned override employee sees separate action",
+    "Independent ordinary session does not see exception action",
+    "390px mobile no horizontal overflow",
+    "Dialog autofocus goes to reason",
+    "Empty reason/unconfirmed owner validation, no admission",
+    "Keyboard tab remains inside modal focus trap",
+    "Escape closes dialog and restores trigger focus",
+    "Exception >3s waiting and duplicate submit disabled",
+    "AC3: exception result distinctly named after server confirmation",
+    "Completed exception moves focus to next scan",
+    "Next scan clears result and focuses input without requiring camera",
+    "Editing ticket code clears stale valid result before server verification",
+    "Resubmitting the same action after editing displays recorded replay, never a new green admission",
+    "Explicit next scan creates a new request and rejects the consumed ticket",
+    "S-30 >3s waiting/no premature green/cannot cancel to resubmit while pending",
+    "Network failure shows retry guidance, never valid/offline",
+    "Text/icon/live region provides status beyond color",
+    "Lost scan response after real commit never turns green",
+    "Lost-response scan retry sends same action and renders ALREADY_RECORDED",
+    "Uncertain exception preserves locked reason/action for retry",
+    "Lost exception response retries same action, never displays another accepted admission",
+    "Used warning text contrast exceeds WCAG 4.5:1",
+    "Scanner admission actions have minimum 44px touch height",
+    "Mobile dialog fits viewport, touch targets and scroll available",
+    "No runtime/page/console errors beyond expected HTTP and injected network failures"
+  ],
+  "consoleErrors": [],
+  "screenshots": [
+    "desktop-used.png",
+    "mobile-used.png",
+    "mobile-actions.png",
+    "desktop-dialog-validation.png",
+    "desktop-exception.png",
+    "desktop-network-error.png",
+    "mobile-dialog.png"
+  ],
+  "startedAt": "2026-10-10T13:27:11.365Z",
+  "usedColors": {
+    "foreground": "lab(15.8111 20.9107 23.3752)",
+    "background": "lab(98.6252 -0.635922 8.42309)"
+  },
+  "usedContrastRatio": 14.465587811642001,
+  "status": "PASS",
+  "finishedAt": "2026-10-10T13:27:23.973Z"
+}

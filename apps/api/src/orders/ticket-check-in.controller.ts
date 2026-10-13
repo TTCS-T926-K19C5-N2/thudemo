@@ -33,4 +33,18 @@ export class TicketCheckInController {
   ) {
     return this.service.checkIn(showtimeId, scanCommand(body), request);
   }
+  @Post(':showtimeId/check-in/exception')
+  @HttpCode(200)
+  exception(
+    @Param('showtimeId', ParseUUIDPipe) showtimeId: string,
+    @Body() body: unknown,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    return this.service.checkIn(
+      showtimeId,
+      scanCommand(body, true),
+      request,
+      true,
+    );
+  }
 }
