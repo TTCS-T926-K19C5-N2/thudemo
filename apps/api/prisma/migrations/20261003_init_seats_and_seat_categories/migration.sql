@@ -1,0 +1,3 @@
+-- This legacy scaffold duplicated the normalized users, events, and showtimes
+-- schema and created obsolete seat tables. The canonical seat schema is
+-- created by 202610040001_sprint2_seats after the normalized base migrations.

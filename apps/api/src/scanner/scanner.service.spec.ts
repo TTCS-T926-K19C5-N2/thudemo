@@ -25,6 +25,7 @@ describe('ScannerService', () => {
     };
 
     mockPrisma = {
+      $queryRaw: vi.fn().mockResolvedValue([]),
       showtime: {
         findUnique: vi.fn(),
         findMany: vi.fn(),
@@ -44,7 +45,10 @@ describe('ScannerService', () => {
       },
     };
 
-    service = new ScannerService(mockPrisma, mockCrypto as unknown as ScannerCryptoService);
+    service = new ScannerService(
+      mockPrisma,
+      mockCrypto as unknown as ScannerCryptoService,
+    );
   });
 
   describe('Authorization: verifyStaffAccess', () => {
@@ -61,7 +65,9 @@ describe('ScannerService', () => {
       });
 
       await expect(
-        service.verifyStaffAccess(mockShowtimeId, mockOrganizerId, ['ORGANIZER']),
+        service.verifyStaffAccess(mockShowtimeId, mockOrganizerId, [
+          'ORGANIZER',
+        ]),
       ).resolves.toBeUndefined();
     });
 
@@ -72,7 +78,9 @@ describe('ScannerService', () => {
       });
 
       await expect(
-        service.verifyStaffAccess(mockShowtimeId, mockOrganizerId, ['ORGANIZER']),
+        service.verifyStaffAccess(mockShowtimeId, mockOrganizerId, [
+          'ORGANIZER',
+        ]),
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -116,7 +124,10 @@ describe('ScannerService', () => {
     it('returns full ticket list, generatedAt, cursor, publicKey, and no PII', async () => {
       mockPrisma.showtime.findUnique.mockResolvedValue({
         id: mockShowtimeId,
-        event: { name: 'Concert Đêm Nhạc Mùa Thu', organizerId: mockOrganizerId },
+        event: {
+          name: 'Concert Đêm Nhạc Mùa Thu',
+          organizerId: mockOrganizerId,
+        },
       });
 
       const now = new Date();
@@ -137,10 +148,14 @@ describe('ScannerService', () => {
         },
       ]);
 
-      const result = await service.getShowtimeTickets(mockShowtimeId, undefined, {
-        id: 'admin-id',
-        roles: ['ADMIN'],
-      });
+      const result = await service.getShowtimeTickets(
+        mockShowtimeId,
+        undefined,
+        {
+          id: 'admin-id',
+          roles: ['ADMIN'],
+        },
+      );
 
       expect(result.showtimeId).toBe(mockShowtimeId);
       expect(result.showtimeName).toBe('Concert Đêm Nhạc Mùa Thu');
@@ -200,10 +215,14 @@ describe('ScannerService', () => {
       });
       mockPrisma.ticket.findMany.mockResolvedValue([]);
 
-      const result = await service.getShowtimeTickets(mockShowtimeId, undefined, {
-        id: 'admin-id',
-        roles: ['ADMIN'],
-      });
+      const result = await service.getShowtimeTickets(
+        mockShowtimeId,
+        undefined,
+        {
+          id: 'admin-id',
+          roles: ['ADMIN'],
+        },
+      );
 
       expect(result.tickets).toEqual([]);
       expect(result.showtimeId).toBe(mockShowtimeId);
@@ -244,10 +263,14 @@ describe('ScannerService', () => {
         },
       ]);
 
-      const result = await service.getShowtimeTickets(mockShowtimeId, sinceCursor, {
-        id: 'admin-id',
-        roles: ['ADMIN'],
-      });
+      const result = await service.getShowtimeTickets(
+        mockShowtimeId,
+        sinceCursor,
+        {
+          id: 'admin-id',
+          roles: ['ADMIN'],
+        },
+      );
 
       expect(result.tickets).toHaveLength(3);
       expect(result.tickets[0].status).toBe('valid');
@@ -288,7 +311,9 @@ describe('ScannerService', () => {
       ]);
       mockPrisma.ticket.count.mockResolvedValue(25);
 
-      const list = await service.getAssignedShowtimes(mockStaffUserId, ['STAFF']);
+      const list = await service.getAssignedShowtimes(mockStaffUserId, [
+        'STAFF',
+      ]);
 
       expect(list).toHaveLength(1);
       expect(list[0].id).toBe(mockShowtimeId);
