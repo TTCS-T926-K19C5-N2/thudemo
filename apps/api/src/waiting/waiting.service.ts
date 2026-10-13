@@ -140,6 +140,10 @@ export class WaitingService {
       if (queueTotal === 0 && activeCount < this.activeLimit) return { admitted: true };
       const admitted = await this.redis.zscore(activeKey(showtimeId), member);
       if (admitted !== null && Number(admitted) > now) return { admitted: true };
+      // A buyer who reaches POST /holds before visiting the waiting page must
+      // still receive a real FIFO ticket, not a transient `queueTotal + 1`.
+      // NX preserves the original arrival time on retries.
+      await this.redis.zadd(queueKey(showtimeId), 'NX', now, member);
       const rank = await this.redis.zrank(queueKey(showtimeId), member);
       return { admitted: false, position: rank === null ? queueTotal + 1 : rank + 1 };
     } catch {

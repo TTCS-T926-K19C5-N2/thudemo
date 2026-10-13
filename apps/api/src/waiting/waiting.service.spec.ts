@@ -96,6 +96,16 @@ describe('S-40 waiting room', () => {
     expect(gate.position).toBe(1);
   });
 
+  it('gives a real FIFO ticket when a buyer reaches the hold guard first', async () => {
+    const waiting = service();
+    await waiting.join(showtime, 'u1:s1', 1000);
+    await waiting.join(showtime, 'u2:s2', 1001);
+    const gate = await waiting.requireAdmission(showtime, 'u3:s3', 1002);
+    expect(gate).toEqual({ admitted: false, position: 1 });
+    const status = await waiting.status(showtime, 'u3:s3', 1002);
+    expect(status).toMatchObject({ state: 'waiting', position: 1 });
+  });
+
   it('re-join never jumps the queue', async () => {
     const waiting = service();
     await waiting.join(showtime, 'u1:s1', 1000);
