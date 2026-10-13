@@ -91,7 +91,16 @@ jobs:
             if [ -f "$RUNNER_TEMP/s31-web.log" ]; then cat "$RUNNER_TEMP/s31-web.log"; else echo "Web log not found."; fi
             exit 1
           fi
-          node apps/web/scripts/verify-s31-browser.mjs
+          if node apps/web/scripts/verify-s31-browser.mjs; then
+            :
+          else
+            TEST_STATUS=$?
+            echo "--- API log after browser failure ---"
+            cat "$RUNNER_TEMP/s31-api.log"
+            echo "--- Web log after browser failure ---"
+            cat "$RUNNER_TEMP/s31-web.log"
+            exit "$TEST_STATUS"
+          fi
       - uses: actions/upload-artifact@v7
         if: always()
         with:
