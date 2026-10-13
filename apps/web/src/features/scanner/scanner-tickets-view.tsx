@@ -68,15 +68,6 @@ export function ScannerTicketsView({
 
   const isDownloadingRef = useRef(false);
 
-  const refreshQueueCount = useCallback(async () => {
-    try {
-      const count = await getPendingQueueCount(showtime.id);
-      setQueueCount(count);
-    } catch {
-      // ignore
-    }
-  }, [showtime.id]);
-
   const handleLoadRealtimeStats = useCallback(async () => {
     if (!navigator.onLine) return;
     setIsLoadingStats(true);
@@ -99,7 +90,7 @@ export function ScannerTicketsView({
       setQueueCount(res.remainingCount);
       setQueueSyncMessage(`Đã đồng bộ ${res.syncedCount} lượt quét. Hàng đợi còn ${res.remainingCount}.`);
       void handleLoadRealtimeStats();
-    } catch (err) {
+    } catch {
       setQueueSyncMessage('Lỗi khi đồng bộ hàng đợi ngoại tuyến.');
     } finally {
       setIsSyncingQueue(false);
@@ -137,9 +128,10 @@ export function ScannerTicketsView({
   useEffect(() => {
     let cancelled = false;
 
-    async function loadLocal() {
+    async function init() {
       try {
         const existing = await getShowtimeMeta(showtime.id);
+        const count = await getPendingQueueCount(showtime.id);
         if (cancelled) return;
 
         if (existing) {
@@ -151,20 +143,28 @@ export function ScannerTicketsView({
           setTicketCount(0);
           setStatus('not_downloaded');
         }
+        setQueueCount(count);
       } catch (err: unknown) {
         console.error('Lỗi đọc dữ liệu máy quét cục bộ:', err);
       }
+
+      if (navigator.onLine && !cancelled) {
+        try {
+          const stats = await fetchRealtimeStats(showtime.id);
+          if (!cancelled) {
+            setRealtimeStats(stats);
+          }
+        } catch {
+          // ignore
+        }
+      }
     }
 
-    void loadLocal();
-    void refreshQueueCount();
-    if (navigator.onLine) {
-      void handleLoadRealtimeStats();
-    }
+    void init();
     return () => {
       cancelled = true;
     };
-  }, [showtime.id, refreshQueueCount, handleLoadRealtimeStats]);
+  }, [showtime.id]);
 
   // Setup auto sync for stale lists (> 30 mins)
   useEffect(() => {
