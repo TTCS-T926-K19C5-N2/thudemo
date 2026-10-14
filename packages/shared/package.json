@@ -7,6 +7,9 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
-    "./ticket-qr": "./ticket-qr.js"
+    "./ticket-qr": {
+      "types": "./ticket-qr.d.ts",
+      "default": "./ticket-qr.js"
+    }
   }
 }
