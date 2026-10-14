@@ -10,6 +10,7 @@ import {
 import { OrderStatus, PaymentStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { isOrderExpired } from './order-expiration.js';
+import { SeatEventsService } from '../showtimes/seat-events.service.js';
 
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -137,7 +138,10 @@ const orderProjection = {
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
 
-  constructor(private readonly db: PrismaService) {}
+  constructor(
+    private readonly db: PrismaService,
+    private readonly seatEvents?: SeatEventsService,
+  ) {}
 
   async createFromHold(
     showtimeId: string,
@@ -783,6 +787,26 @@ export class OrdersService {
         )
         ${releaseCondition}
       `);
+
+      if (this.seatEvents && releasedSeatsCount > 0) {
+        try {
+          const items = await tx.$queryRaw<{ seatId: string; showtimeId: string }[]>(Prisma.sql`
+            SELECT oi."seatId", o."showtimeId"
+            FROM order_items oi
+            JOIN orders o ON o.id = oi."orderId"
+            WHERE oi."orderId" = ${orderId}::uuid
+          `);
+          for (const item of items) {
+            this.seatEvents.emit({
+              showtimeId: item.showtimeId,
+              seatId: item.seatId,
+              status: 'AVAILABLE',
+            });
+          }
+        } catch {
+          // Gracefully continue if query fails or mock not present
+        }
+      }
 
       this.logger.log(
         JSON.stringify({

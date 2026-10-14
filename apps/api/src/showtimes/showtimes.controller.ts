@@ -8,7 +8,10 @@ import {
   Query,
   Req,
   ParseUUIDPipe,
+  Sse,
+  type MessageEvent,
 } from '@nestjs/common';
+import type { Observable } from 'rxjs';
 import { Public, Roles } from '../auth/decorators/roles.decorator.js';
 import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js';
 import { ShowtimesService } from './showtimes.service.js';
@@ -51,6 +54,13 @@ export class ShowtimesController {
   }
   @Public() @Get(':id/seats') seats(@Param('id', ParseUUIDPipe) id: string) {
     return this.service.publicSeats(id);
+  }
+  @Public()
+  @Sse(':id/seats/stream')
+  seatsStream(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Observable<MessageEvent> {
+    return this.service.seatStream(id);
   }
   @Roles('ORGANIZER') @Get(':id/manage/seats') ownedSeats(
     @Param('id', ParseUUIDPipe) id: string,

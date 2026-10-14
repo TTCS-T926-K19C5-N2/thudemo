@@ -17,6 +17,7 @@ import {
   type PaymentGateway,
 } from './gateways/payment-gateway.interface.js';
 import { AccountantNotifier } from './accountant-notifier.js';
+import { SeatEventsService } from '../showtimes/seat-events.service.js';
 
 @Injectable()
 export class PaymentsService {
@@ -28,6 +29,7 @@ export class PaymentsService {
     private readonly accountantNotifier: AccountantNotifier,
     private readonly config: ConfigService,
     @Optional() private readonly ordersService?: OrdersService,
+    @Optional() private readonly seatEvents?: SeatEventsService,
   ) {}
 
   async initiatePayment(
@@ -323,6 +325,16 @@ export class PaymentsService {
             ${order.holdSessionId ? Prisma.sql`AND "holdSessionId" = ${order.holdSessionId}::uuid` : Prisma.empty}
           `);
 
+          if (this.seatEvents && order.items) {
+            for (const item of order.items) {
+              this.seatEvents.emit({
+                showtimeId: order.showtimeId,
+                seatId: item.seatId,
+                status: 'AVAILABLE',
+              });
+            }
+          }
+
           await tx.order.update({
             where: { id: order.id },
             data: { status: OrderStatus.NEEDS_REVIEW },
@@ -533,6 +545,16 @@ export class PaymentsService {
               ${order.holdSessionId ? Prisma.sql`AND "holdSessionId" = ${order.holdSessionId}::uuid` : Prisma.empty}
             `);
 
+            if (this.seatEvents && order.items) {
+              for (const item of order.items) {
+                this.seatEvents.emit({
+                  showtimeId: order.showtimeId,
+                  seatId: item.seatId,
+                  status: 'AVAILABLE',
+                });
+              }
+            }
+
             // Mark order as NEEDS_REVIEW
             await tx.order.update({
               where: { id: order.id },
@@ -589,6 +611,16 @@ export class PaymentsService {
             await tx.seatHold.deleteMany({
               where: { seatId: { in: seatIds } },
             });
+
+            if (this.seatEvents) {
+              for (const seatId of seatIds) {
+                this.seatEvents.emit({
+                  showtimeId: order.showtimeId,
+                  seatId,
+                  status: 'SOLD',
+                });
+              }
+            }
           }
 
           // (c) Payment -> SUCCEEDED with gateway transaction ID

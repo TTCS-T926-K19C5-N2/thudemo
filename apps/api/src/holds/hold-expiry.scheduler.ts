@@ -19,7 +19,13 @@ export class HoldExpiryScheduler implements OnModuleInit, OnModuleDestroy {
       throw new Error('HOLD_EXPIRY_MODE must be off, api or worker');
     if (mode === 'off') return;
     this.tick(); // Restart drains expired backlog without waiting for the first minute.
-    this.timer = setInterval(() => this.tick(), 60000);
+    const interval = process.env.HOLD_EXPIRY_INTERVAL_MS
+      ? Number(process.env.HOLD_EXPIRY_INTERVAL_MS)
+      : (mode === 'api' ? 2000 : 60000);
+    this.timer = setInterval(() => this.tick(), interval);
+  }
+  async sweepExpired(): Promise<number> {
+    return this.service.sweep();
   }
   private tick() {
     if (this.running) return;

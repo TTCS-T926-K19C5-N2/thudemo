@@ -5,14 +5,17 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  type MessageEvent,
 } from '@nestjs/common';
 import { Prisma, ShowtimeStatus } from '@prisma/client';
 import type { Redis } from 'ioredis';
 import { randomUUID, createHash } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
+import { EMPTY, type Observable } from 'rxjs';
 import { SEAT_STATUS_SQL } from './seat-status.sql.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { validateSeatMap, type ImportedSeat } from './seat-map.js';
+import { SeatEventsService } from './seat-events.service.js';
 type Tx = Prisma.TransactionClient;
 type SeatRow = {
   id: string;
@@ -43,6 +46,7 @@ export class ShowtimesService {
     private readonly db: PrismaService,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
     config: ConfigService,
+    private readonly seatEvents?: SeatEventsService,
   ) {
     const target = new URL(config.getOrThrow<string>('DATABASE_URL'));
     const identity = `${target.hostname}:${target.port}${target.pathname}`;
@@ -314,6 +318,12 @@ export class ShowtimesService {
     if (!show || show.status !== 'ON_SALE')
       throw new NotFoundException('Suất diễn chưa mở bán hoặc đã đóng.');
     return show.seats;
+  }
+  seatStream(id: string): Observable<MessageEvent> {
+    if (!this.seatEvents) {
+      return EMPTY;
+    }
+    return this.seatEvents.stream(id);
   }
   async ownedSeats(id: string, owner: string) {
     const [show] = await this.db.seatReadQuery<{ organizerId: string }[]>(

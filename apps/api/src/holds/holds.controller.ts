@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -38,6 +39,18 @@ export class HoldsController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.service.current(
+      id,
+      req.user.id,
+      req.sessionHash ?? hashSessionToken(req.sessionToken),
+    );
+  }
+  @Delete()
+  @HttpCode(200)
+  release(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.service.release(
       id,
       req.user.id,
       req.sessionHash ?? hashSessionToken(req.sessionToken),

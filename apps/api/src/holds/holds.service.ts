@@ -14,8 +14,9 @@ import type {
   HoldConnection,
   HoldQueryable,
 } from '../prisma/hold-transaction.js';
+import { SeatEventsService } from '../showtimes/seat-events.service.js';
 
-export type ExpiredClaim = { seatId: string; token: string };
+export type ExpiredClaim = { seatId: string; token: string; showtimeId?: string };
 export type HoldState = {
   serverTime: Date;
   hold: { id: string; expiresAt: Date; seatIds: string[] } | null;
@@ -48,7 +49,10 @@ export function requestedSeats(body: unknown): string[] {
 @Injectable()
 export class HoldsService {
   private readonly logger = new Logger(HoldsService.name);
-  constructor(private readonly db: PrismaService) {}
+  constructor(
+    private readonly db: PrismaService,
+    private readonly seatEvents?: SeatEventsService,
+  ) {}
 
   async claim(
     showtimeId: string,
@@ -128,6 +132,15 @@ export class HoldsService {
           message: 'Giữ ghế tạm thời không khả dụng. Tải lại sơ đồ rồi thử lại.',
           requestId,
         });
+      }
+      if (this.seatEvents && result.seatIds) {
+        for (const seatId of result.seatIds) {
+          this.seatEvents.emit({
+            showtimeId,
+            seatId,
+            status: 'HELD',
+          });
+        }
       }
       return {
         serverTime: result.serverTime,
@@ -306,7 +319,7 @@ export class HoldsService {
 
   expiredBatch(): Promise<ExpiredClaim[]> {
     return this.db.$queryRaw(
-      Prisma.sql`SELECT h."seatId", h.token FROM seat_holds h
+      Prisma.sql`SELECT h."seatId", h.token, h."showtimeId" FROM seat_holds h
         WHERE h."expiresAt" <= clock_timestamp()
         AND NOT EXISTS (
           SELECT 1 FROM order_items oi
@@ -321,9 +334,22 @@ export class HoldsService {
   async cleanupBatch(candidates: ExpiredClaim[]): Promise<number> {
     if (!candidates.length) return 0;
     // Snapshot token AND current expiry are checked again: an old job cannot delete a new right.
-    return this.db
+    const deletedCount = await this.db
       .$executeRaw(Prisma.sql`DELETE FROM seat_holds h USING jsonb_to_recordset(${JSON.stringify(candidates)}::jsonb) AS old("seatId" uuid,token uuid)
       WHERE h."seatId"=old."seatId" AND h.token=old.token AND h."expiresAt"<=clock_timestamp()`);
+
+    if (deletedCount > 0 && this.seatEvents) {
+      for (const candidate of candidates) {
+        if (candidate.showtimeId) {
+          this.seatEvents.emit({
+            showtimeId: candidate.showtimeId,
+            seatId: candidate.seatId,
+            status: 'AVAILABLE',
+          });
+        }
+      }
+    }
+    return deletedCount;
   }
 
   async sweep(): Promise<number> {
@@ -335,5 +361,37 @@ export class HoldsService {
     }
     this.logger.log(JSON.stringify({ event: 'hold_expiry', deleted }));
     return deleted;
+  }
+
+  async release(
+    showtimeId: string,
+    userId: string,
+    sessionHash: string,
+  ): Promise<{ releasedCount: number }> {
+    const held = await this.db.$queryRaw<{ seatId: string; showtimeId: string }[]>(
+      Prisma.sql`SELECT h."seatId", h."showtimeId" FROM seat_holds h
+        JOIN hold_sessions hs ON hs.id = h."holdSessionId"
+        WHERE hs."showtimeId" = ${showtimeId}::uuid
+          AND hs."userId" = ${userId}::uuid
+          AND hs."sessionHash" = ${sessionHash}`,
+    );
+    if (!held.length) return { releasedCount: 0 };
+
+    const seatIds = held.map((h) => h.seatId);
+    await this.db.$executeRaw(
+      Prisma.sql`DELETE FROM seat_holds h
+        WHERE h."seatId" IN (${Prisma.join(seatIds.map((id) => Prisma.sql`${id}::uuid`))})`,
+    );
+
+    if (this.seatEvents) {
+      for (const s of held) {
+        this.seatEvents.emit({
+          showtimeId: s.showtimeId,
+          seatId: s.seatId,
+          status: 'AVAILABLE',
+        });
+      }
+    }
+    return { releasedCount: held.length };
   }
 }

@@ -1,5 +1,10 @@
 import { ApiError, object } from "@/lib/api/client";
 export type SeatStatus = "AVAILABLE" | "HELD" | "SOLD";
+export type SeatStatusChangedEvent = {
+  showtimeId: string;
+  seatId: string;
+  status: SeatStatus;
+};
 export type SaleStatus = "DRAFT" | "ON_SALE" | "CLOSED";
 export type Seat = {
   id: string;

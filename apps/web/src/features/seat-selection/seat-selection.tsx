@@ -136,12 +136,54 @@ export function SeatSelection({ id }: { id: string }) {
     const visible = () => {
       if (document.visibilityState === "visible") reconnect();
     };
+    let eventSource: EventSource | null = null;
+    if (typeof window !== "undefined" && typeof EventSource !== "undefined") {
+      try {
+        eventSource = new EventSource(`/api/showtimes/${id}/seats/stream`);
+        eventSource.onmessage = (event) => {
+          if (!alive.current) return;
+          try {
+            const data = JSON.parse(event.data) as {
+              showtimeId?: string;
+              seatId?: string;
+              status?: "AVAILABLE" | "HELD" | "SOLD";
+            };
+            if (data.showtimeId === id && data.seatId && data.status) {
+              setSeats((current) =>
+                current.map((seat) =>
+                  seat.id === data.seatId
+                    ? {
+                        ...seat,
+                        status: data.status as "AVAILABLE" | "HELD" | "SOLD",
+                      }
+                    : seat,
+                ),
+              );
+              if (data.status !== "AVAILABLE") {
+                setDraft((current) =>
+                  current.filter((seat) => seat.id !== data.seatId),
+                );
+              }
+            } else if (!busy.current) {
+              void refresh();
+            }
+          } catch {
+            if (!busy.current) void refresh();
+          }
+        };
+      } catch {
+        // Fallback gracefully if EventSource is unavailable
+      }
+    }
     window.addEventListener("online", reconnect);
     window.addEventListener("focus", reconnect);
     document.addEventListener("visibilitychange", visible);
     return () => {
       alive.current = false;
       controller.abort();
+      if (eventSource) {
+        eventSource.close();
+      }
       window.removeEventListener("online", reconnect);
       window.removeEventListener("focus", reconnect);
       document.removeEventListener("visibilitychange", visible);
