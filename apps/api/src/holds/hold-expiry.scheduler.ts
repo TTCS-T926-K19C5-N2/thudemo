@@ -30,10 +30,13 @@ export class HoldExpiryScheduler
   async onApplicationBootstrap() {
     const mode = process.env.HOLD_EXPIRY_MODE ?? 'off';
     if (mode === 'off') return;
-    await this.cleanupExpiredHolds();
+    if (this.running) {
+      await this.running;
+    } else {
+      await this.cleanupExpiredHolds();
+    }
   }
   async cleanupExpiredHolds(): Promise<number> {
-    await this.running;
     const sweepFn =
       this.service.cleanupExpiredHolds?.bind(this.service) ??
       this.service.sweep.bind(this.service);

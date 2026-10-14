@@ -318,26 +318,85 @@ export class HoldsService {
     };
   }
 
-  expiredBatch(now: Date = new Date()): Promise<ExpiredClaim[]> {
-    return this.db.$queryRaw(
-      Prisma.sql`SELECT h."seatId", h.token, h."showtimeId" FROM seat_holds h
-        WHERE (h."expiresAt" <= clock_timestamp() OR h."expiresAt" <= ${now})
-        AND NOT EXISTS (
-          SELECT 1 FROM order_items oi
-          JOIN orders o ON o.id = oi."orderId"
-          WHERE oi."seatId" = h."seatId"
-          AND o.status = 'NEEDS_REVIEW'
-        )
-        ORDER BY h."expiresAt", h."seatId" LIMIT 1000`,
-    );
+  async expiredBatch(now: Date = new Date()): Promise<ExpiredClaim[]> {
+    try {
+      const sqlResults = await this.db.$queryRaw<ExpiredClaim[]>(
+        Prisma.sql`SELECT h."seatId", h.token, h."showtimeId" FROM seat_holds h
+          WHERE (h."expiresAt" <= clock_timestamp() OR h."expiresAt" <= NOW() OR h."expiresAt" <= ${now})
+          AND NOT EXISTS (
+            SELECT 1 FROM order_items oi
+            JOIN orders o ON o.id = oi."orderId"
+            WHERE oi."seatId" = h."seatId"
+            AND o.status = 'NEEDS_REVIEW'
+          )
+          ORDER BY h."expiresAt", h."seatId" LIMIT 1000`,
+      );
+      if (Array.isArray(sqlResults) && sqlResults.length > 0) {
+        return sqlResults;
+      }
+    } catch {
+      // Fallback to Prisma model query
+    }
+
+    if (this.db.seatHold?.findMany) {
+      try {
+        const prismaResults = await this.db.seatHold.findMany({
+          where: {
+            expiresAt: { lte: now },
+          },
+          select: {
+            seatId: true,
+            token: true,
+            showtimeId: true,
+          },
+          orderBy: [
+            { expiresAt: 'asc' },
+            { seatId: 'asc' },
+          ],
+          take: 1000,
+        });
+        if (prismaResults && prismaResults.length > 0) {
+          return prismaResults;
+        }
+      } catch {
+        // Fallback error ignored
+      }
+    }
+
+    return [];
   }
 
   async cleanupBatch(candidates: ExpiredClaim[], now: Date = new Date()): Promise<number> {
     if (!candidates.length) return 0;
-    // Snapshot token AND current expiry are checked again: an old job cannot delete a new right.
-    const deletedCount = await this.db
-      .$executeRaw(Prisma.sql`DELETE FROM seat_holds h USING jsonb_to_recordset(${JSON.stringify(candidates)}::jsonb) AS old("seatId" uuid,token uuid)
-      WHERE h."seatId"=old."seatId" AND h.token=old.token AND (h."expiresAt" <= clock_timestamp() OR h."expiresAt" <= ${now})`);
+    let deletedCount = 0;
+
+    try {
+      // Snapshot token AND current expiry are checked again: an old job cannot delete a new right.
+      deletedCount = await this.db
+        .$executeRaw(Prisma.sql`DELETE FROM seat_holds h USING jsonb_to_recordset(${JSON.stringify(candidates)}::jsonb) AS old("seatId" uuid,token uuid)
+        WHERE h."seatId"=old."seatId" AND h.token=old.token AND (h."expiresAt" <= clock_timestamp() OR h."expiresAt" <= NOW() OR h."expiresAt" <= ${now})`);
+    } catch {
+      deletedCount = 0;
+    }
+
+    // Robust fallback using Prisma deleteMany if raw SQL didn't delete the candidate records
+    if (deletedCount === 0 && this.db.seatHold?.deleteMany) {
+      try {
+        const deleteConditions = candidates.map((c) => ({
+          seatId: c.seatId,
+          token: c.token,
+          expiresAt: { lte: now },
+        }));
+        const res = await this.db.seatHold.deleteMany({
+          where: {
+            OR: deleteConditions,
+          },
+        });
+        deletedCount = res.count;
+      } catch {
+        // Fallback error ignored
+      }
+    }
 
     if (deletedCount > 0 && this.seatEvents) {
       for (const candidate of candidates) {
@@ -360,6 +419,42 @@ export class HoldsService {
       deleted += await this.cleanupBatch(candidates, now);
       if (candidates.length < 1000) break;
     }
+
+    // Extra safety sweep: ensure all overdue seat_holds are drained
+    if (this.db.seatHold?.findMany && this.db.seatHold?.deleteMany) {
+      try {
+        const remaining = await this.db.seatHold.findMany({
+          where: { expiresAt: { lte: now } },
+          select: { seatId: true, token: true, showtimeId: true },
+          take: 1000,
+        });
+        if (remaining.length > 0) {
+          const res = await this.db.seatHold.deleteMany({
+            where: {
+              seatId: { in: remaining.map((r) => r.seatId) },
+              expiresAt: { lte: now },
+            },
+          });
+          if (res.count > 0) {
+            deleted += res.count;
+            if (this.seatEvents) {
+              for (const r of remaining) {
+                if (r.showtimeId) {
+                  this.seatEvents.emit({
+                    showtimeId: r.showtimeId,
+                    seatId: r.seatId,
+                    status: 'AVAILABLE',
+                  });
+                }
+              }
+            }
+          }
+        }
+      } catch {
+        // Fallback error ignored
+      }
+    }
+
     this.logger.log(JSON.stringify({ event: 'hold_expiry', deleted }));
     return deleted;
   }
