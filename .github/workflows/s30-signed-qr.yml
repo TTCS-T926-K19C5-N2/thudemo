@@ -71,43 +71,16 @@ jobs:
           export SCANNER_KEY_ID=fixture-k2
           export SCANNER_SIGNING_PRIVATE_KEY_FILE="$QR_FIXTURE_KEY_DIR/fixture-k2.private.pem"
           export SCANNER_PUBLIC_KEYS="$(node --input-type=module -e 'import{readFileSync}from"node:fs";console.log(JSON.stringify(Object.fromEntries(["fixture-k1","fixture-k2"].map(k=>[k,readFileSync(process.env.QR_FIXTURE_KEY_DIR+"/"+k+".public.pem","utf8")]))))')"
-          mkdir -p apps/web/.next/standalone/apps/web/.next/static apps/web/.next/standalone/apps/web/public
-          cp -R apps/web/.next/static/. apps/web/.next/standalone/apps/web/.next/static/
-          cp -R apps/web/public/. apps/web/.next/standalone/apps/web/public/
-          PORT=3051 WEB_ORIGIN=http://127.0.0.1:3050 node apps/api/dist/main.js > "$RUNNER_TEMP/qr-api.log" 2>&1 &
+          PORT=3051 WEB_ORIGIN=http://localhost:3050 node apps/api/dist/main.js > "$RUNNER_TEMP/qr-api.log" 2>&1 &
           API_PID=$!
-          (
-            cd apps/web/.next/standalone/apps/web
-            exec env HOSTNAME=127.0.0.1 PORT=3050 node server.js
-          ) > "$RUNNER_TEMP/qr-web.log" 2>&1 &
+          pnpm --filter web exec next start --hostname 127.0.0.1 --port 3050 > "$RUNNER_TEMP/qr-web.log" 2>&1 &
           WEB_PID=$!
           trap 'kill "$API_PID" "$WEB_PID" 2>/dev/null || true' EXIT
-          SERVERS_READY=0
           for i in {1..60}; do
-            if curl -fsS http://127.0.0.1:3051/health >/dev/null 2>&1 && curl -fsS http://127.0.0.1:3050 >/dev/null 2>&1 && curl -fsS http://127.0.0.1:3050/api/health >/dev/null 2>&1; then
-              SERVERS_READY=1
-              break
-            fi
+            if curl -fsS http://127.0.0.1:3051/health >/dev/null && curl -fsS http://127.0.0.1:3050 >/dev/null; then break; fi
             sleep 1
           done
-          if [ "$SERVERS_READY" -eq 0 ]; then
-            echo "API or web server failed to start."
-            echo "--- API log ---"
-            if [ -f "$RUNNER_TEMP/qr-api.log" ]; then cat "$RUNNER_TEMP/qr-api.log"; else echo "API log not found."; fi
-            echo "--- Web log ---"
-            if [ -f "$RUNNER_TEMP/qr-web.log" ]; then cat "$RUNNER_TEMP/qr-web.log"; else echo "Web log not found."; fi
-            exit 1
-          fi
-          if node apps/web/scripts/verify-s30-signed-browser.mjs; then
-            :
-          else
-            TEST_STATUS=$?
-            echo "--- API log after browser failure ---"
-            cat "$RUNNER_TEMP/qr-api.log"
-            echo "--- Web log after browser failure ---"
-            cat "$RUNNER_TEMP/qr-web.log"
-            exit "$TEST_STATUS"
-          fi
+          node apps/web/scripts/verify-s30-signed-browser.mjs
       - uses: actions/upload-artifact@v7
         if: always()
         with:

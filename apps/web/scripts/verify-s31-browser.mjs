@@ -16,7 +16,7 @@ const root = resolve(import.meta.dirname, "../../..");
 const evidence = resolve(root, "evidence/s31");
 const report = {
   environment:
-    "http://127.0.0.1:3060/scanner -> real same-origin proxy -> own API 127.0.0.1:3061 -> private PostgreSQL 15442",
+    "http://localhost:3060/scanner -> real same-origin proxy -> own API localhost:3061 -> private PostgreSQL 15442",
   browser: "Playwright Chromium 1.62.1; Browser plugin not available",
   viewports: ["1440x1000", "390x844"],
   camera: false,
@@ -26,7 +26,6 @@ const report = {
     .digest("hex"),
   checks: [],
   consoleErrors: [],
-  checkInResponses: [],
   screenshots: [],
   startedAt: new Date().toISOString(),
 };
@@ -44,23 +43,12 @@ async function session(actor, viewport) {
     {
       name: "event_session",
       value: token,
-      url: "http://127.0.0.1:3060",
+      url: "http://localhost:3060",
       httpOnly: true,
       sameSite: "Lax",
     },
   ]);
   const page = await context.newPage();
-  page.on("response", (response) => {
-    const url = new URL(response.url());
-    if (
-      url.pathname.startsWith("/api/showtimes/") &&
-      url.pathname.endsWith("/check-in")
-    )
-      report.checkInResponses.push({
-        status: response.status(),
-        path: url.pathname,
-      });
-  });
   page.on("pageerror", (error) => report.consoleErrors.push(error.message));
   page.on("console", (message) => {
     if (
@@ -71,7 +59,7 @@ async function session(actor, viewport) {
       report.consoleErrors.push(message.text());
   });
   await page.goto(
-    `http://127.0.0.1:3060/scanner?showtimeId=${fixture.showtimeId}`,
+    `http://localhost:3060/scanner?showtimeId=${fixture.showtimeId}`,
   );
   await page.getByRole("button", { name: "Tải cửa được phân công" }).click();
   await page
@@ -276,36 +264,15 @@ try {
     (route) => route.abort("internetdisconnected"),
     { times: 1 },
   );
-  await scan(ordinary, fixture.offlineTicket);
-  await status(ordinary)
-    .filter({
-      hasText:
-        "Mất kết nối máy chủ. Lượt quét đã được lưu ngoại tuyến để đồng bộ sau.",
-    })
-    .waitFor();
+  await scan(ordinary, fixture.browserTicket);
+  await status(ordinary).filter({ hasText: "Không thể kết nối" }).waitFor();
   check(
-    (await status(ordinary).getAttribute("data-state")) === "RECORDED",
-    "Network failure saves the signed scan locally without claiming server confirmation",
+    (await status(ordinary).getAttribute("data-state")) === "ERROR",
+    "Network failure shows retry guidance, never valid/offline",
   );
-  await ordinary.getByTestId("offline-status-banner").waitFor();
-  await ordinary
-    .getByTestId("offline-banner-title")
-    .filter({ hasText: "1 lượt quét chưa đồng bộ" })
-    .waitFor();
-  await screenshot(ordinary, "desktop-offline-queue.png");
-  await ordinary.getByRole("button", { name: "Thử kết nối lại" }).click();
-  await ordinary.getByTestId("synced-status-banner").waitFor();
-  await ordinary
-    .getByTestId("offline-status-banner")
-    .waitFor({ state: "hidden" });
+  await screenshot(ordinary, "desktop-network-error.png");
   await ordinary.getByRole("button", { name: "Kiểm tra vé" }).click();
-  await status(ordinary)
-    .filter({ hasText: "Đây không phải lần vào mới" })
-    .waitFor();
-  check(
-    (await status(ordinary).getAttribute("data-state")) === "RECORDED",
-    "Rechecking the offline-synced ticket reuses its request instead of admitting it twice",
-  );
+  await status(ordinary).filter({ hasText: "Vé đã sử dụng" }).waitFor();
   check(
     (await status(desktop).getAttribute("aria-live")) === "polite" &&
       (await status(desktop).getAttribute("role")) === "status",
@@ -323,17 +290,11 @@ try {
     { times: 1 },
   );
   await scan(ordinary, fixture.retryTicket);
-  await status(ordinary)
-    .filter({
-      hasText:
-        "Mất kết nối máy chủ. Lượt quét đã được lưu ngoại tuyến để đồng bộ sau.",
-    })
-    .waitFor();
+  await status(ordinary).filter({ hasText: "Không thể kết nối" }).waitFor();
   check(
-    (await status(ordinary).getAttribute("data-state")) === "RECORDED",
-    "Lost scan response keeps the committed request queued without premature confirmation",
+    (await status(ordinary).getAttribute("data-state")) === "ERROR",
+    "Lost scan response after real commit never turns green",
   );
-  await ordinary.getByTestId("offline-status-banner").waitFor();
   await ordinary.route(
     "**/check-in",
     async (route) => {
@@ -342,23 +303,16 @@ try {
     },
     { times: 1 },
   );
-  await ordinary.getByRole("button", { name: "Thử kết nối lại" }).click();
-  await ordinary.getByTestId("synced-status-banner").waitFor();
-  await ordinary
-    .getByTestId("offline-status-banner")
-    .waitFor({ state: "hidden" });
-  check(
-    retriedScanBodies.length === 2 &&
-      JSON.stringify(retriedScanBodies[0]) ===
-        JSON.stringify(retriedScanBodies[1]),
-    "Offline replay sends the exact same idempotency action after the server committed",
-  );
   await ordinary.getByRole("button", { name: "Kiểm tra vé" }).click();
   await status(ordinary)
     .filter({ hasText: "Đây không phải lần vào mới" })
     .waitFor();
-  check((await status(ordinary).getAttribute("data-state")) === "RECORDED",
-    "The original request result remains recorded rather than admitting a duplicate");
+  check(
+    retriedScanBodies.length === 2 &&
+      JSON.stringify(retriedScanBodies[0]) ===
+        JSON.stringify(retriedScanBodies[1]),
+    "Lost-response scan retry sends same action and renders ALREADY_RECORDED",
+  );
   const retriedExceptionBodies = [];
   await desktop.getByRole("button", { name: "Cho vào có ghi chú" }).click();
   await desktop
@@ -465,18 +419,6 @@ try {
 } catch (error) {
   report.status = "FAIL";
   report.error = error.message;
-  console.error(
-    JSON.stringify(
-      {
-        error: error.message,
-        checks: report.checks,
-        checkInResponses: report.checkInResponses,
-        consoleErrors: report.consoleErrors,
-      },
-      null,
-      2,
-    ),
-  );
   for (let i = 0; i < contexts.length; i++) {
     const page = contexts[i].pages()[0];
     if (page) await screenshot(page, `failure-${i}.png`);
