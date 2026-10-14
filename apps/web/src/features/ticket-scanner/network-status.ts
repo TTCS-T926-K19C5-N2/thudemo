@@ -9,10 +9,15 @@ export interface NetworkStatusState {
 type StatusListener = (state: NetworkStatusState) => void;
 const listeners = new Set<StatusListener>();
 
+const initialBrowserOnline =
+  typeof window !== "undefined" && typeof navigator !== "undefined"
+    ? navigator.onLine
+    : true;
+
 let currentState: NetworkStatusState = {
-  isOnline: typeof navigator !== "undefined" ? navigator.onLine : true,
-  isServerReachable: typeof navigator !== "undefined" ? navigator.onLine : true,
-  browserOnline: typeof navigator !== "undefined" ? navigator.onLine : true,
+  isOnline: initialBrowserOnline,
+  isServerReachable: initialBrowserOnline,
+  browserOnline: initialBrowserOnline,
   lastCheckedAt: null,
   serverError: null,
 };

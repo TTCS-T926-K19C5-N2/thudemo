@@ -80,9 +80,8 @@ export function TicketScanner({
   const [result, setResult] = useState<CheckInResult | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [requestPending, setRequestPending] = useState(false);
-  const [isOnline, setIsOnline] = useState(
-    typeof navigator !== "undefined" ? navigator.onLine : true,
-  );
+  const [isOnline, setIsOnline] = useState(true);
+  const [browserOnline, setBrowserOnline] = useState(true);
   const [pendingCount, setPendingCount] = useState(0);
   const [isSyncingState, setIsSyncingState] = useState(false);
   const [syncSuccessMessage, setSyncSuccessMessage] = useState<string | null>(
@@ -172,6 +171,7 @@ export function TicketScanner({
     return subscribeNetworkStatus((netState) => {
       if (!mounted.current) return;
       setIsOnline(netState.isOnline);
+      setBrowserOnline(netState.browserOnline);
       if (netState.isOnline) {
         void triggerSync();
       }
@@ -299,12 +299,13 @@ export function TicketScanner({
           retryCount: 0,
         };
 
-        // Persist scan to pending queue (increases counter)
-        await addPendingScan(pendingItem);
-        void markTicketAsLocalCheckedIn(action.showtimeId, action.ticketId).catch(() => {});
-
-        // If offline: save locally, keep in queue, return RECORDED
-        if (!isOnline) {
+        // If the browser is offline, save locally and sync when it reconnects.
+        if (!browserOnline) {
+          await addPendingScan(pendingItem);
+          void markTicketAsLocalCheckedIn(
+            action.showtimeId,
+            action.ticketId,
+          ).catch(() => {});
           if (!mounted.current || sequence !== requestSequence.current) return;
           setStatus("RECORDED");
           setMessage(
@@ -380,6 +381,37 @@ export function TicketScanner({
           (error.status === 0 || error.code === "NETWORK_ERROR");
 
         if (isNetworkErr) {
+          const failedAction = scanAction.current;
+          if (!failedAction) {
+            setStatus("ERROR");
+            setMessage(error.message);
+            return;
+          }
+          const failedPendingItem: PendingScan = {
+            id: failedAction.requestId,
+            showtimeId: failedAction.showtimeId,
+            ticketId: failedAction.ticketId,
+            gateId: failedAction.gateId,
+            requestId: failedAction.requestId,
+            createdAt: new Date().toISOString(),
+            status: "pending",
+            retryCount: 0,
+          };
+          try {
+            await addPendingScan(failedPendingItem);
+          } catch (queueError) {
+            setStatus("ERROR");
+            setMessage(
+              queueError instanceof Error
+                ? `Mất kết nối máy chủ và không thể lưu lượt quét ngoại tuyến: ${queueError.message}`
+                : "Mất kết nối máy chủ và không thể lưu lượt quét ngoại tuyến.",
+            );
+            return;
+          }
+          void markTicketAsLocalCheckedIn(
+            failedAction.showtimeId,
+            failedAction.ticketId,
+          ).catch(() => {});
           markServerOffline("Mất kết nối máy chủ");
           setStatus("RECORDED");
           setMessage(
@@ -425,7 +457,7 @@ export function TicketScanner({
         }
       }
     },
-    [showtimeId, gateId, qrKeys, gates, isOnline, stopCamera],
+    [showtimeId, gateId, qrKeys, gates, browserOnline, stopCamera],
   );
 
 
