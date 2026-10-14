@@ -7,7 +7,6 @@ import { AppModule } from '../src/app.module.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 import { hashSessionToken, SESSION_COOKIE } from '../src/auth/auth.service.js';
 import { OrderStatus, PaymentStatus } from '@prisma/client';
-import { HoldsService } from '../src/holds/holds.service.js';
 import { validatePaymentGatewayConfig } from '../src/payments/payments-config.validator.js';
 
 describe('Mock Gateway S-19 E2E Integration', () => {

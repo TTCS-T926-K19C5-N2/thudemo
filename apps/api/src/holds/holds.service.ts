@@ -6,6 +6,7 @@ import {
   NotFoundException,
   ServiceUnavailableException,
   HttpException,
+  Optional,
 } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { Prisma } from '@prisma/client';
@@ -51,7 +52,7 @@ export class HoldsService {
   private readonly logger = new Logger(HoldsService.name);
   constructor(
     private readonly db: PrismaService,
-    private readonly seatEvents?: SeatEventsService,
+    @Optional() private readonly seatEvents?: SeatEventsService,
   ) {}
 
   async claim(
@@ -317,10 +318,10 @@ export class HoldsService {
     };
   }
 
-  expiredBatch(): Promise<ExpiredClaim[]> {
+  expiredBatch(now: Date = new Date()): Promise<ExpiredClaim[]> {
     return this.db.$queryRaw(
       Prisma.sql`SELECT h."seatId", h.token, h."showtimeId" FROM seat_holds h
-        WHERE h."expiresAt" <= clock_timestamp()
+        WHERE (h."expiresAt" <= clock_timestamp() OR h."expiresAt" <= ${now})
         AND NOT EXISTS (
           SELECT 1 FROM order_items oi
           JOIN orders o ON o.id = oi."orderId"
@@ -331,12 +332,12 @@ export class HoldsService {
     );
   }
 
-  async cleanupBatch(candidates: ExpiredClaim[]): Promise<number> {
+  async cleanupBatch(candidates: ExpiredClaim[], now: Date = new Date()): Promise<number> {
     if (!candidates.length) return 0;
     // Snapshot token AND current expiry are checked again: an old job cannot delete a new right.
     const deletedCount = await this.db
       .$executeRaw(Prisma.sql`DELETE FROM seat_holds h USING jsonb_to_recordset(${JSON.stringify(candidates)}::jsonb) AS old("seatId" uuid,token uuid)
-      WHERE h."seatId"=old."seatId" AND h.token=old.token AND h."expiresAt"<=clock_timestamp()`);
+      WHERE h."seatId"=old."seatId" AND h.token=old.token AND (h."expiresAt" <= clock_timestamp() OR h."expiresAt" <= ${now})`);
 
     if (deletedCount > 0 && this.seatEvents) {
       for (const candidate of candidates) {
@@ -352,15 +353,19 @@ export class HoldsService {
     return deletedCount;
   }
 
-  async sweep(): Promise<number> {
+  async sweep(now: Date = new Date()): Promise<number> {
     let deleted = 0;
     for (let batch = 0; batch < 10; batch++) {
-      const candidates = await this.expiredBatch();
-      deleted += await this.cleanupBatch(candidates);
+      const candidates = await this.expiredBatch(now);
+      deleted += await this.cleanupBatch(candidates, now);
       if (candidates.length < 1000) break;
     }
     this.logger.log(JSON.stringify({ event: 'hold_expiry', deleted }));
     return deleted;
+  }
+
+  async cleanupExpiredHolds(now: Date = new Date()): Promise<number> {
+    return this.sweep(now);
   }
 
   async release(

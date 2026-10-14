@@ -59,4 +59,23 @@ describe('S-43 worker instrumentation preserves cadence and recovery', () => {
     await scheduler.onModuleDestroy();
     expect(sweep).not.toHaveBeenCalled();
   });
+  it('onApplicationBootstrap drains backlog immediately on startup', async () => {
+    process.env.HOLD_EXPIRY_MODE = 'worker';
+    const cleanupExpiredHolds = vi.fn().mockResolvedValue(5);
+    const scheduler = new HoldExpiryScheduler({
+      cleanupExpiredHolds,
+    } as unknown as HoldsService);
+    await scheduler.onApplicationBootstrap();
+    expect(cleanupExpiredHolds).toHaveBeenCalledOnce();
+  });
+  it('onApplicationBootstrap skips sweep if mode is off', async () => {
+    process.env.HOLD_EXPIRY_MODE = 'off';
+    const cleanupExpiredHolds = vi.fn().mockResolvedValue(0);
+    const scheduler = new HoldExpiryScheduler({
+      cleanupExpiredHolds,
+    } as unknown as HoldsService);
+    await scheduler.onApplicationBootstrap();
+    expect(cleanupExpiredHolds).not.toHaveBeenCalled();
+  });
 });
+
