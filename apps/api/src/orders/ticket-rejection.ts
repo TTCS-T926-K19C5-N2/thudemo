@@ -54,6 +54,16 @@ export function unknownTicket(
   });
 }
 
+/** Signed QR verified, but no matching ticket in DB for this showtime: 404 (S-30/S-31 contract). */
+export function ticketNotFound(ctx: RejectionContext) {
+  record(TICKET_REJECTION.UNKNOWN, ctx);
+  return new NotFoundException({
+    code: 'INVALID_TICKET',
+    reasonCode: TICKET_REJECTION.UNKNOWN,
+    message: 'Không phải vé của hệ thống.',
+  });
+}
+
 export function wrongShowtime(
   ctx: RejectionContext,
   other: { eventName: string; startTime: Date },

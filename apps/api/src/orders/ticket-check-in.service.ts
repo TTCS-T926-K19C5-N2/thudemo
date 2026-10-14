@@ -16,6 +16,7 @@ import {
   cancelledTicket,
   isValidUuid,
   notEligibleTicket,
+  ticketNotFound,
   unknownTicket,
   wrongShowtime,
   type RejectionContext,
@@ -135,7 +136,7 @@ export class TicketCheckInService {
         WHERE oi.id = ${ticketId}::uuid AND o."showtimeId" = ${showtimeId}::uuid
           AND s."showtimeId" = ${showtimeId}::uuid FOR UPDATE OF oi,o`);
       if (!ticket) {
-        throw unknownTicket(ctx, 'INVALID_TICKET');
+        throw ticketNotFound(ctx);
       }
       const legacy = await tx.$queryRaw<
         { status: string; checkedInAt: Date | null; cancelledAt: Date | null }[]

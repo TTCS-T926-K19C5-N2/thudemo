@@ -105,7 +105,7 @@ describe("Admission response semantics", () => {
     );
     expect(unknown).toEqual({
       reasonCode: "ERR_TICKET_UNKNOWN",
-      title: "Mã không hợp lệ",
+      title: "Mã QR không hợp lệ",
       detail: "Không phải vé của hệ thống.",
     });
 

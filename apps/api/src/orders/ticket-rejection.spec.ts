@@ -5,6 +5,7 @@ import {
   isValidUuid,
   notEligibleTicket,
   TICKET_REJECTION,
+  ticketNotFound,
   unknownTicket,
   wrongShowtime,
   type RejectionContext,
@@ -37,6 +38,18 @@ describe('S-39 Ticket rejection semantics, logging and metrics', () => {
     const response = err.getResponse() as Record<string, unknown>;
     expect(response).toEqual({
       code: 'INVALID_QR_SIGNATURE',
+      reasonCode: TICKET_REJECTION.UNKNOWN,
+      message: 'Không phải vé của hệ thống.',
+    });
+    expect(metricSpy).toHaveBeenCalledWith(TICKET_REJECTION.UNKNOWN);
+  });
+
+  it('returns 404 INVALID_TICKET when signed ticket is not found in DB', async () => {
+    const metricSpy = vi.spyOn(metrics, 'rejectTicketScan');
+    const err = ticketNotFound(ctx);
+    expect(err.getStatus()).toBe(404);
+    expect(err.getResponse()).toEqual({
+      code: 'INVALID_TICKET',
       reasonCode: TICKET_REJECTION.UNKNOWN,
       message: 'Không phải vé của hệ thống.',
     });

@@ -25,7 +25,7 @@ function bytes(base64: string): Uint8Array<ArrayBuffer> {
     (c) => c.charCodeAt(0),
   );
 }
-export const UNKNOWN_TICKET_MESSAGE = "Không phải vé của hệ thống.";
+export const UNKNOWN_TICKET_MESSAGE = "Mã QR không hợp lệ";
 
 /**
  * Returns a local rejection (shown if server is unreachable or fails to provide structured reasons),

@@ -120,7 +120,7 @@ export function scanRejection(error: unknown): ScanRejection | null {
     case "ERR_TICKET_UNKNOWN": {
       return {
         reasonCode: "ERR_TICKET_UNKNOWN",
-        title: "Mã không hợp lệ",
+        title: "Mã QR không hợp lệ",
         detail: "Không phải vé của hệ thống.",
       };
     }
