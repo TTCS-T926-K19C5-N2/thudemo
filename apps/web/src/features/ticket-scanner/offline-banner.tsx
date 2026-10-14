@@ -24,7 +24,7 @@ export function OfflineBanner({
         role="alert"
         aria-live="polite"
         data-testid="offline-status-banner"
-        className="fixed inset-x-4 top-20 z-50 mx-auto max-w-3xl rounded-lg border border-amber-400 bg-amber-50 p-4 text-amber-950 shadow-lg dark:border-amber-600 dark:bg-amber-950/40 dark:text-amber-200"
+        className="pointer-events-none fixed left-0 top-0 z-[9999] w-full rounded-lg border border-amber-400 bg-amber-50 p-4 text-amber-950 shadow-lg dark:border-amber-600 dark:bg-amber-950/40 dark:text-amber-200"
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
@@ -52,7 +52,7 @@ export function OfflineBanner({
             <button
               type="button"
               onClick={onRetrySync}
-              className="self-start rounded-md border border-amber-600 bg-white px-3 py-1.5 text-xs font-semibold text-amber-950 shadow-sm transition hover:bg-amber-100 disabled:opacity-50 dark:bg-amber-900 dark:text-amber-100 sm:self-center"
+              className="pointer-events-auto self-start rounded-md border border-amber-600 bg-white px-3 py-1.5 text-xs font-semibold text-amber-950 shadow-sm transition hover:bg-amber-100 disabled:opacity-50 dark:bg-amber-900 dark:text-amber-100 sm:self-center"
             >
               Thử kết nối lại
             </button>
@@ -69,7 +69,7 @@ export function OfflineBanner({
         role="status"
         aria-live="polite"
         data-testid="syncing-status-banner"
-        className="fixed inset-x-4 top-20 z-50 mx-auto max-w-3xl rounded-lg border border-blue-400 bg-blue-50 p-4 text-blue-950 shadow-lg dark:border-blue-600 dark:bg-blue-950/40 dark:text-blue-200"
+        className="pointer-events-none fixed left-0 top-0 z-[9999] w-full rounded-lg border border-blue-400 bg-blue-50 p-4 text-blue-950 shadow-lg dark:border-blue-600 dark:bg-blue-950/40 dark:text-blue-200"
       >
         <div className="flex items-center gap-3">
           <RotateCw
@@ -99,7 +99,7 @@ export function OfflineBanner({
         role="status"
         aria-live="polite"
         data-testid="synced-status-banner"
-        className="fixed inset-x-4 top-20 z-50 mx-auto flex max-w-3xl items-center justify-between rounded-lg border border-emerald-400 bg-emerald-50 p-3 text-emerald-950 shadow-lg dark:border-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-200"
+        className="pointer-events-none fixed left-0 top-0 z-[9999] flex w-full items-center justify-between rounded-lg border border-emerald-400 bg-emerald-50 p-3 text-emerald-950 shadow-lg dark:border-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-200"
       >
         <div className="flex items-center gap-2.5 text-sm">
           <CheckCircle className="size-4 shrink-0 text-emerald-600" aria-hidden="true" />
@@ -115,7 +115,7 @@ export function OfflineBanner({
         role="alert"
         aria-live="polite"
         data-testid="pending-sync-status-banner"
-        className="fixed inset-x-4 top-20 z-50 mx-auto max-w-3xl rounded-lg border border-amber-400 bg-amber-50 p-4 text-amber-950 shadow-lg dark:border-amber-600 dark:bg-amber-950/40 dark:text-amber-200"
+        className="pointer-events-none fixed left-0 top-0 z-[9999] w-full rounded-lg border border-amber-400 bg-amber-50 p-4 text-amber-950 shadow-lg dark:border-amber-600 dark:bg-amber-950/40 dark:text-amber-200"
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -130,7 +130,7 @@ export function OfflineBanner({
             <button
               type="button"
               onClick={onRetrySync}
-              className="self-start rounded-md border border-amber-600 bg-white px-3 py-1.5 text-xs font-semibold text-amber-950 shadow-sm transition hover:bg-amber-100 dark:bg-amber-900 dark:text-amber-100 sm:self-center"
+              className="pointer-events-auto self-start rounded-md border border-amber-600 bg-white px-3 py-1.5 text-xs font-semibold text-amber-950 shadow-sm transition hover:bg-amber-100 dark:bg-amber-900 dark:text-amber-100 sm:self-center"
             >
               Thử kết nối lại
             </button>

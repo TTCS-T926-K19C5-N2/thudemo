@@ -537,7 +537,7 @@ export function TicketScanner({
           syncSuccessMessage={syncSuccessMessage}
         />
 
-        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground border-b pb-3">
+        <div className="pointer-events-none fixed left-0 top-20 z-[9999] flex w-full flex-wrap items-center justify-between gap-2 border-b bg-background/95 px-4 pb-3 pt-2 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <span
               data-testid="network-status-indicator"

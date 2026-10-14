@@ -10,14 +10,16 @@ describe("OfflineBanner", () => {
         isOnline: false,
         pendingCount: 2,
         isSyncing: false,
+        onRetrySync: () => {},
       }),
     );
 
     expect(markup).toContain('data-testid="offline-status-banner"');
     expect(markup).toContain(
-      'class="fixed inset-x-4 top-20 z-50 mx-auto max-w-3xl',
+      'class="pointer-events-none fixed left-0 top-0 z-[9999] w-full',
     );
     expect(markup).toContain("ĐANG NGOẠI TUYẾN — 2 lượt quét chưa đồng bộ");
+    expect(markup).toContain("pointer-events-auto");
   });
 
   it("keeps unconfirmed scans visible when online but not syncing", () => {
