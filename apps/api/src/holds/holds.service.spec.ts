@@ -166,3 +166,65 @@ describe('hold driver error translation', () => {
     },
   );
 });
+
+describe('expiredBatch and sweep exclusion logic', () => {
+  const seatId1 = '00000000-0000-4000-8000-000000000001';
+  const seatId2 = '00000000-0000-4000-8000-000000000002';
+
+  it('returns empty array directly from raw SQL without leaking into fallback', async () => {
+    const db = {
+      $queryRaw: vi.fn().mockResolvedValue([]),
+      seatHold: { findMany: vi.fn() },
+    };
+    const holds = new HoldsService(db as unknown as PrismaService);
+    const result = await holds.expiredBatch();
+    expect(result).toEqual([]);
+    expect(db.$queryRaw).toHaveBeenCalledOnce();
+    expect(db.seatHold.findMany).not.toHaveBeenCalled();
+  });
+
+  it('fallback excludes seats belonging to NEEDS_REVIEW orders when $queryRaw throws', async () => {
+    const db = {
+      $queryRaw: vi.fn().mockRejectedValue(new Error('raw query error')),
+      orderItem: {
+        findMany: vi.fn().mockResolvedValue([{ seatId: seatId1 }]),
+      },
+      seatHold: {
+        findMany: vi.fn().mockResolvedValue([
+          { seatId: seatId2, token: 'tok2', showtimeId: 'st2' },
+        ]),
+      },
+    };
+    const holds = new HoldsService(db as unknown as PrismaService);
+    const result = await holds.expiredBatch();
+
+    expect(db.orderItem.findMany).toHaveBeenCalledWith({
+      where: { order: { status: 'NEEDS_REVIEW' } },
+      select: { seatId: true },
+    });
+    expect(db.seatHold.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          seatId: { notIn: [seatId1] },
+        }),
+      }),
+    );
+    expect(result).toEqual([
+      { seatId: seatId2, token: 'tok2', showtimeId: 'st2' },
+    ]);
+  });
+
+  it('sweep does not purge seats not returned by expiredBatch', async () => {
+    const db = {
+      $queryRaw: vi.fn().mockResolvedValue([]),
+      $executeRaw: vi.fn(),
+      seatHold: { deleteMany: vi.fn() },
+    };
+    const holds = new HoldsService(db as unknown as PrismaService);
+    const deleted = await holds.sweep();
+    expect(deleted).toBe(0);
+    expect(db.$executeRaw).not.toHaveBeenCalled();
+    expect(db.seatHold.deleteMany).not.toHaveBeenCalled();
+  });
+});
+

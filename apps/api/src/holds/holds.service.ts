@@ -331,7 +331,7 @@ export class HoldsService {
           )
           ORDER BY h."expiresAt", h."seatId" LIMIT 1000`,
       );
-      if (Array.isArray(sqlResults) && sqlResults.length > 0) {
+      if (Array.isArray(sqlResults)) {
         return sqlResults;
       }
     } catch {
@@ -340,9 +340,21 @@ export class HoldsService {
 
     if (this.db.seatHold?.findMany) {
       try {
+        let excludedSeatIds: string[] = [];
+        if (this.db.orderItem?.findMany) {
+          const reviewItems = await this.db.orderItem.findMany({
+            where: { order: { status: 'NEEDS_REVIEW' } },
+            select: { seatId: true },
+          });
+          excludedSeatIds = reviewItems.map((item) => item.seatId);
+        }
+
         const prismaResults = await this.db.seatHold.findMany({
           where: {
             expiresAt: { lte: now },
+            ...(excludedSeatIds.length > 0
+              ? { seatId: { notIn: excludedSeatIds } }
+              : {}),
           },
           select: {
             seatId: true,
@@ -355,7 +367,7 @@ export class HoldsService {
           ],
           take: 1000,
         });
-        if (prismaResults && prismaResults.length > 0) {
+        if (prismaResults) {
           return prismaResults;
         }
       } catch {
@@ -418,41 +430,6 @@ export class HoldsService {
       const candidates = await this.expiredBatch(now);
       deleted += await this.cleanupBatch(candidates, now);
       if (candidates.length < 1000) break;
-    }
-
-    // Extra safety sweep: ensure all overdue seat_holds are drained
-    if (this.db.seatHold?.findMany && this.db.seatHold?.deleteMany) {
-      try {
-        const remaining = await this.db.seatHold.findMany({
-          where: { expiresAt: { lte: now } },
-          select: { seatId: true, token: true, showtimeId: true },
-          take: 1000,
-        });
-        if (remaining.length > 0) {
-          const res = await this.db.seatHold.deleteMany({
-            where: {
-              seatId: { in: remaining.map((r) => r.seatId) },
-              expiresAt: { lte: now },
-            },
-          });
-          if (res.count > 0) {
-            deleted += res.count;
-            if (this.seatEvents) {
-              for (const r of remaining) {
-                if (r.showtimeId) {
-                  this.seatEvents.emit({
-                    showtimeId: r.showtimeId,
-                    seatId: r.seatId,
-                    status: 'AVAILABLE',
-                  });
-                }
-              }
-            }
-          }
-        }
-      } catch {
-        // Fallback error ignored
-      }
     }
 
     this.logger.log(JSON.stringify({ event: 'hold_expiry', deleted }));
