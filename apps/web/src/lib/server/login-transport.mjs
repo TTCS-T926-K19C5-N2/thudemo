@@ -1,4 +1,8 @@
-import { signLoginPeer, LOGIN_PEER_HEADER } from "shared/login-peer";
+import {
+  signLoginPeer,
+  LOGIN_PEER_HEADER,
+  isLoginProxyPath,
+} from "shared/login-peer";
 
 /** @param {Record<string, string | undefined>} env @param {string[]} args */
 export function runtimeOptions(env = process.env, args = process.argv) {
@@ -18,7 +22,7 @@ export function loginTransport(handler, secret) {
     delete request.headers[LOGIN_PEER_HEADER];
     try {
       const path = new URL(request.url ?? "/", "http://localhost").pathname;
-      if (request.method === "POST" && path === "/api/auth/login") {
+      if (request.method === "POST" && isLoginProxyPath(path)) {
         request.headers[LOGIN_PEER_HEADER] = signLoginPeer(
           request.socket.remoteAddress,
           secret,

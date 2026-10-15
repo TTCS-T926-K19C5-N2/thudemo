@@ -2,9 +2,27 @@ import {
   canonicalPeer,
   signLoginPeer,
   verifyLoginPeer,
+  isLoginProxyPath,
 } from 'shared/login-peer';
 describe('Login transport peer attestation', () => {
   const secret = 'fixture-only-key-with-at-least-32-random-characters';
+  it('classifies all equivalent login spellings before choosing the peer boundary', () => {
+    for (const path of [
+      '/api/auth/login',
+      '/api/Auth/LOGIN',
+      '/api/auth/login/',
+      '/api/%61uth/login',
+    ])
+      expect(isLoginProxyPath(path)).toBe(true);
+    for (const path of [
+      '/api/auth/logout',
+      '/api/auth/login/other',
+      '/auth/login',
+      '//api/auth/login',
+    ])
+      expect(isLoginProxyPath(path)).toBe(false);
+    expect(() => isLoginProxyPath('/api/%zz/login')).toThrow();
+  });
   it('canonicalizes mapped IPv4 and verifies a fresh signed peer', () => {
     const now = 1800000000000;
     expect(canonicalPeer('::ffff:127.0.0.1')).toBe('127.0.0.1');

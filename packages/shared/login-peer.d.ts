@@ -1,4 +1,5 @@
 export const LOGIN_PEER_HEADER: string;
+export function isLoginProxyPath(path: string): boolean;
 export function canonicalPeer(ip: string | undefined): string;
 export function signLoginPeer(
   ip: string,

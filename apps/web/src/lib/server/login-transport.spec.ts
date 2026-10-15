@@ -63,6 +63,13 @@ describe("Custom runtime entry boundary", () => {
         "127.0.0.4",
       );
       expect(await call("/api/health", "GET")).toBe("none");
+      for (const path of [
+        "/api/Auth/LOGIN",
+        "/api/auth/login/",
+        "/api/%61uth/login",
+      ]) {
+        expect(verifyLoginPeer(await call(path), secret)).toBe("127.0.0.4");
+      }
     } finally {
       await new Promise<void>((resolve) => server.close(() => resolve()));
     }

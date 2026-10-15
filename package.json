@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "pnpm --parallel --filter api --filter web run dev",
     "build": "pnpm -r run build",
-    "test": "pnpm -r run test",
+    "test": "pnpm -r run test && node --test deploy/laptop-gateway.spec.mjs deploy/laptop-release.spec.mjs",
     "lint": "pnpm -r run lint",
     "typecheck": "pnpm --filter api run typecheck && pnpm --filter web run typecheck"
   },

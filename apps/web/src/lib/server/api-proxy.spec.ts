@@ -81,6 +81,19 @@ describe("Runtime same-origin API proxy", () => {
     }
     expect(fetchMock).not.toHaveBeenCalled();
   });
+  it("also requires attestation for case variants that Express accepts as login", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const result = await proxyApi(
+      new Request("http://localhost/api/Auth/LOGIN", {
+        method: "POST",
+        body: "{}",
+      }),
+      ["Auth", "LOGIN"],
+    );
+    expect(result.status).toBe(503);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
   it("fails closed without exposing upstream credentials and bounds body before forwarding", async () => {
     vi.stubGlobal(
       "fetch",

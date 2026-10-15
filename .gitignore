@@ -75,6 +75,7 @@ web_modules/
 # dotenv environment variable files
 .env
 .sprint1-local/
+.sprint1-staging/
 .env.development.local
 .env.test.local
 .env.production.local

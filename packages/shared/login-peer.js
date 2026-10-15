@@ -2,6 +2,14 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { isIP } from "node:net";
 
 export const LOGIN_PEER_HEADER = "x-event-login-peer";
+// Express login matching is case insensitive and accepts a trailing slash.
+// Classify every equivalent proxy path before deciding whether identity is required.
+export function isLoginProxyPath(path) {
+  return (
+    decodeURIComponent(path).replace(/\/+$/, "").toLowerCase() ===
+    "/api/auth/login"
+  );
+}
 export function canonicalPeer(ip) {
   const value = ip?.startsWith("::ffff:") ? ip.slice(7) : ip;
   if (typeof value !== "string" || value.length > 45 || !isIP(value))
