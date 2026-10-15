@@ -1,12 +1,8 @@
+import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import {
-  Controller,
-  Get,
-  Param,
-  Query,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
-import { SessionAuthGuard, type AuthenticatedRequest } from '../auth/guards/session-auth.guard.js';
+  SessionAuthGuard,
+  type AuthenticatedRequest,
+} from '../auth/guards/session-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { ScannerService } from './scanner.service.js';
@@ -15,6 +11,12 @@ import { ScannerService } from './scanner.service.js';
 @UseGuards(SessionAuthGuard, RolesGuard)
 export class ScannerController {
   constructor(private readonly scannerService: ScannerService) {}
+
+  @Get('qr-keys')
+  @Roles('STAFF', 'ADMIN', 'ORGANIZER')
+  keys() {
+    return this.scannerService.publicKeys();
+  }
 
   @Get('showtimes')
   @Roles('STAFF', 'ADMIN', 'ORGANIZER')
@@ -32,10 +34,6 @@ export class ScannerController {
     @Query('since') since: string | undefined,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.scannerService.getShowtimeTickets(
-      showtimeId,
-      since,
-      req.user,
-    );
+    return this.scannerService.getShowtimeTickets(showtimeId, since, req.user);
   }
 }
