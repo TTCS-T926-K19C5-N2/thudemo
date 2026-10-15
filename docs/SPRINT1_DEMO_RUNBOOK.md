@@ -1,5 +1,7 @@
 # Sprint 1 — demo local và laptop staging riêng
 
+**Cập nhật16/10,00:31:** ca hai Wi-Fi peer đã PASS. MáyWindows10.88.164.22 chạy30wrong→429; serverRedis30/PTTL610giây và laptop10.88.164.155 login/me200 đồng thời. `evidence/sprint1/20261016-two-peer/correlation.json`. Không cần chạy lại probe chỉ để demo; IPmáythứhai giữ khóa tự hết, dự kiến khoảng00:41:38 theoPTTL, chưa nhận đã kiểm login sau hết khóa. Không DEL/rútTTL hoặc khóa lại peer trong lúc teamdemo.
+
 Giữ V1 và dữ liệu giả. Worktree: `D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-sprint1-gitflow-20261015`. Nhánh feature → develop, PR #91 Draft; chưa merge/Sprint Done. `status` in exact source đang chạy; evidence có SHA riêng.
 
 ## 1. Laptop staging đang chạy
@@ -90,7 +92,7 @@ Test runner dùng DB15446/sprint2_integration,15450/signed_qr_integration,Redis1
 
 ## 5. Gate để nhóm tiếp tục
 
-- Firewall/certtrust và actual HTTPSUI15ca đã PASS. Máy Windows thứ hai trustedhome PASS USER-ATTESTED. Để kiểm IPbudget thật độc lập, chép `scripts/sprint1-staging-client.ps1` sang **máy thứ hai** và chạy `powershell.exe -NoProfile -File .\sprint1-staging-client.ps1`. Script không cần mật khẩu, tối đa31 yêu cầu bằng email giả/XFF/attestation giả, có thể giới hạn IP đó900s. Đợi tự hết, không DEL/rútTTL. JSON không có credential được ghi Desktop/sprint1-wifi-client-evidence.json; chuyển về `.sprint1-staging/incoming/` trên laptop rồi đối chiếu Redis, đồng thời laptop vẫn login200. Không đánh PASS ca này chỉ từ việc mở trang.
+- Firewall/certtrust và actual HTTPSUI15ca đã PASS. Máy Windows thứ hai trustedhome PASS USER-ATTESTED. Để kiểm IPbudget thật độc lập, chép `scripts/sprint1-staging-client.ps1` sang **máy thứ hai** và chạy `powershell.exe -NoProfile -File .\sprint1-staging-client.ps1`. Script không cần mật khẩu, tối đa31 yêu cầu bằng email giả/XFF/attestation giả, có thể giới hạn IP đó900s. Đợi tự hết, không DEL/rútTTL. JSON không có credential được ghi Desktop/sprint1-wifi-client-evidence.json; chuyển về `.sprint1-staging/incoming/` trên laptop rồi đối chiếu Redis, đồng thời laptop vẫn login200. **Đã thực hiện16/10 và PASS**; chỉ chạy lại có chủ đích, không đánh PASS chỉ từ việc mở trang.
 - Thànhviên khác review PR91 headcuối; AI scan chỉ là hỗ trợ. Chưa merge khi dependencyfullaudit còn braceshigh hoặc các gate cần thiết chưa đạt.
 - Sau tíchhợp develop được phêduyệt, kiểm CI exactmergeSHA, watcher/timeline auto-deploy<10phút, failedcheckno-deploy, failure-retains-old/rollback thực; không gọi manualdeploy là auto.
 - K01 cần stagingcomparison/điềukiệnđo/review và NFR liênquan; không miễn300ms bằngCI800ms, không nhận Sprint2Done.

@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-10-15T17:04:59.082Z",
+  "recordedAt": "2026-10-15T17:31:27.895Z",
   "runtimeSource": "b52ba6afa07d29444e5e809892e5325f0966625c",
   "featureHeadBeforeEvidenceCommit": "b52ba6afa07d29444e5e809892e5325f0966625c",
   "reviewedIntegrationSnapshot": "97ff91710fea7736acac5c413ab7a9d77a502212",
@@ -14,7 +14,7 @@
   "gates": {
     "localDemo": "PASS",
     "S01": "BLOCKED auto-deploy/postmerge acceptance",
-    "S02": "PASS HTTPS UI/API core; independent two-peer rate-limit remains BLOCKED pending artifact",
+    "S02": "PASS in current laptop HTTPS profile; independent two real Wi-Fi peers verified with client artifact +live Redis +laptop200",
     "S04": "PASS on actual laptop HTTPS UI/API/database",
     "K01": "BLOCKED overall; two-store research measured, human architecture review/acceptance conditions incomplete; product NFR FAIL",
     "DoD": "FAIL dependency-clean gate; BLOCKED human review/autodeploy",
@@ -39,7 +39,7 @@
     "result": "FAIL",
     "scope": "HTTPS product endpoint; 2000 calls; single API +co-located generator"
   },
-  "pendingClientArtifact": true,
+  "pendingClientArtifact": false,
   "humanApproval": "none; AI assistance is not represented as independent member approval",
   "secrets": "Credentials/config/private keys remain Git and Docker ignored; no password recorded here",
   "access": {
@@ -47,6 +47,7 @@
     "currentUserTrust": "PASS actual matching certificate found",
     "httpsStagingBrowser": "PASS15cases desktop/mobile with system TLS trust",
     "secondDeviceHome": "PASS USER-ATTESTED Windows sameWiFi trustedHTTPS",
-    "independentSecondPeer": "NOT RUN pending portable probe artifact"
-  }
+    "independentSecondPeer": "PASS, see ../20261016-two-peer/correlation.json"
+  },
+  "twoPeerEvidence": "../20261016-two-peer/correlation.json"
 }

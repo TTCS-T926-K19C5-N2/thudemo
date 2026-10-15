@@ -11,3 +11,6 @@ Endpoint benchmark HTTPSb52:2000calls,100winner/100conflict mỗi vòng; allp951
 Runbook/acceptancematrix/reviewreport trong docs. URL https://10.88.164.155:3470; credentials chỉ localignored `.sprint1-staging/config.json`. KhôngpublicTunnel/providerpayment/prod. Rollback previouscode giữ DBhistory/khóa; không reset/migrate-down hoặc bypassprotection.
 
 Bổ sung16/10: chạy15caUI trên actual HTTPSb52, không bypassTLS. Kiểm lại Windowsrule TCP3470/LANIP/LocalSubnet và trustedroot. Browserverifier expire chính tokenHash của context; phiên A khác vẫn200. Có portablePowerShell second-device probe bounded/no-credential; chưa có artifact thì NOT RUN. K01 laptopresearch riêng PG15/Redis7-AOF, hai process,3×200same-seat mỗi store: đúng1winner; cảhai giữowner sau graceful restart (khác no-persistence cũ), không hardcrash/productendpoint/humanreview. Base develop đã tiến8bceec4(PR71) sau snapshot97ff đang demo; cần exact-head/base review trước merge.
+
+
+16/10: đóng ca hai Wi-Fi peer trên sourceb52. Máy10.88.164.22 gửi30wrong→429, artifact tương quan30run-specificaccountcounters và remoteIPcounter30; laptop10.88.164.155 login/me200 khi remotePTTL còn610.349giây, kể cả callerheaders giả. Không DEL/rútTTL/restartRedis; logout đúng session kiểm. Evidence `20261016-two-peer/correlation.json`; S02HTTPSprofile PASS, DoD/auto-deploy/audit/K01 vẫn giữ gate riêng.

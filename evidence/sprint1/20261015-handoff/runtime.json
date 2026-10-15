@@ -41,7 +41,7 @@
   "access": {
     "windows": "PASS actual rule/filter/trusted root in windows-access.json",
     "browser": "PASS system-trusted TLS home and 15 full staging UI cases; no verification bypass",
-    "secondWifiDevice": "PASS USER-ATTESTED trusted HTTPS home; independent-peer budget test awaits client artifact"
+    "secondWifiDevice": "PASS client artifact correlated with live Redis IP30/PTTL610s while laptop200; see ../20261016-two-peer/correlation.json"
   },
   "limits": [
     "Manual candidate deployment is not postmerge auto deployment",
