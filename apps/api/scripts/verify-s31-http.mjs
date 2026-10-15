@@ -757,10 +757,15 @@ try {
     max: Math.max(...timings),
   };
   fixture.browserTicket = firstTicket;
+  fixture.offlineTicket = await ticket();
   fixture.freshTicket = await ticket();
   fixture.retryTicket = await ticket();
   fixture.browserTicket = signer.issueQr(
     fixture.browserTicket,
+    fixture.showtimeId,
+  );
+  fixture.offlineTicket = signer.issueQr(
+    fixture.offlineTicket,
     fixture.showtimeId,
   );
   fixture.freshTicket = signer.issueQr(fixture.freshTicket, fixture.showtimeId);
