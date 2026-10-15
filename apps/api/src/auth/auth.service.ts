@@ -71,7 +71,7 @@ export class AuthService {
       user?.password ?? (await this.dummyHash),
       passwordInput,
     );
-    if (!user || !isMatch || !user.isEmailVerified) {
+    if (!user || !isMatch || !user.isEmailVerified || !user.isActive) {
       try {
         const failures = await this.redis.incrementLoginFailures(email);
         if (failures >= 5) {

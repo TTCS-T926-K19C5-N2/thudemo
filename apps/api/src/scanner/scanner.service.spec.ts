@@ -323,4 +323,147 @@ describe('ScannerService', () => {
       expect(list[0].location).toBe('Nhà hát Hoà Bình');
     });
   });
+
+  describe('S-34 Offline Scans: syncOfflineScans', () => {
+    beforeEach(() => {
+      mockPrisma.offlineScanLog = {
+        findUnique: vi.fn(),
+        create: vi.fn(),
+      };
+      mockPrisma.orderItem = {
+        findFirst: vi.fn(),
+        update: vi.fn(),
+      };
+      mockPrisma.ticket.update = vi.fn();
+      mockPrisma.ticket.updateMany = vi.fn();
+    });
+
+    it('returns previously recorded status if scanId already processed (idempotency)', async () => {
+      mockPrisma.offlineScanLog.findUnique.mockResolvedValue({
+        scanId: 'scan-uuid-1',
+        status: 'ACCEPTED',
+        message: 'Đồng bộ lượt quét ngoại tuyến thành công.',
+      });
+
+      const res = await service.syncOfflineScans(
+        [
+          {
+            scanId: 'scan-uuid-1',
+            ticketCode: 'ticket-1',
+            showtimeId: mockShowtimeId,
+            scannedAt: '2026-10-12T10:00:00.000Z',
+            deviceId: 'dev-1',
+          },
+        ],
+        { id: mockStaffUserId, roles: ['ADMIN'] },
+      );
+
+      expect(res).toEqual([
+        {
+          scanId: 'scan-uuid-1',
+          ticketCode: 'ticket-1',
+          status: 'synced',
+          message: 'Đồng bộ lượt quét ngoại tuyến thành công.',
+        },
+      ]);
+    });
+
+    it('rejects scan if ticket is not found in showtime', async () => {
+      mockPrisma.offlineScanLog.findUnique.mockResolvedValue(null);
+      mockPrisma.orderItem.findFirst.mockResolvedValue(null);
+      mockPrisma.ticket.findFirst.mockResolvedValue(null);
+
+      const res = await service.syncOfflineScans(
+        [
+          {
+            scanId: 'scan-uuid-2',
+            ticketCode: 'invalid-code',
+            showtimeId: mockShowtimeId,
+            scannedAt: '2026-10-12T10:00:00.000Z',
+            deviceId: 'dev-1',
+          },
+        ],
+        { id: mockStaffUserId, roles: ['ADMIN'] },
+      );
+
+      expect(res[0].status).toBe('rejected');
+      expect(res[0].message).toContain('không tồn tại');
+      expect(mockPrisma.offlineScanLog.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          scanId: 'scan-uuid-2',
+          status: 'INVALID',
+        }),
+      });
+    });
+
+    it('records conflict without error when ticket is already checked in', async () => {
+      mockPrisma.offlineScanLog.findUnique.mockResolvedValue(null);
+      mockPrisma.orderItem.findFirst.mockResolvedValue({
+        id: 'order-item-1',
+        orderId: 'order-1',
+        seatId: 'seat-1',
+        checkedInAt: new Date('2026-10-12T09:30:00.000Z'),
+        order: { status: 'PAID', showtimeId: mockShowtimeId },
+      });
+
+      const res = await service.syncOfflineScans(
+        [
+          {
+            scanId: 'scan-uuid-3',
+            ticketCode: 'order-item-1',
+            showtimeId: mockShowtimeId,
+            scannedAt: '2026-10-12T09:40:00.000Z',
+            deviceId: 'dev-2',
+          },
+        ],
+        { id: mockStaffUserId, roles: ['ADMIN'] },
+      );
+
+      expect(res[0].status).toBe('conflict');
+      expect(res[0].message).toContain('trước đó');
+      expect(mockPrisma.offlineScanLog.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          scanId: 'scan-uuid-3',
+          status: 'CONFLICT',
+        }),
+      });
+    });
+
+    it('successfully updates ticket and records ACCEPTED when ticket is valid and not checked in', async () => {
+      mockPrisma.offlineScanLog.findUnique.mockResolvedValue(null);
+      mockPrisma.orderItem.findFirst.mockResolvedValue({
+        id: 'order-item-valid',
+        orderId: 'order-valid',
+        seatId: 'seat-valid',
+        checkedInAt: null,
+        order: { status: 'PAID', showtimeId: mockShowtimeId },
+      });
+
+      const res = await service.syncOfflineScans(
+        [
+          {
+            scanId: 'scan-uuid-4',
+            ticketCode: 'order-item-valid',
+            showtimeId: mockShowtimeId,
+            scannedAt: '2026-10-12T09:45:00.000Z',
+            deviceId: 'dev-1',
+          },
+        ],
+        { id: mockStaffUserId, roles: ['ADMIN'] },
+      );
+
+      expect(res[0].status).toBe('synced');
+      expect(mockPrisma.orderItem.update).toHaveBeenCalledWith({
+        where: { id: 'order-item-valid' },
+        data: { checkedInAt: new Date('2026-10-12T09:45:00.000Z') },
+      });
+      expect(mockPrisma.offlineScanLog.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          scanId: 'scan-uuid-4',
+          status: 'ACCEPTED',
+        }),
+      });
+    });
+  });
 });
+
