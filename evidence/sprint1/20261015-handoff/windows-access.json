@@ -1,0 +1,25 @@
+﻿{
+    "scope":  "Read-only actual Windows rule/filter and current-user certificate-store verification after user completed OS steps",
+    "timeUtc":  "2026-10-15T17:00:22.8098949Z",
+    "source":  "b52ba6afa07d29444e5e809892e5325f0966625c",
+    "limits":  [
+                   "Not evidence that all remote client flows were executed",
+                   "OS elevation/trust earlier blockers are resolved; prior blocked evidence retained"
+               ],
+    "certificate":  {
+                        "thumbprint":  "E02C50E31370E5CB10F86BFFA7917EFD2BFB7579",
+                        "currentUserRootTrusted":  true,
+                        "expires":  "2026-11-14T15:44:28.0000000Z"
+                    },
+    "firewall":  {
+                     "localAddress":  "10.88.164.155",
+                     "name":  "Sprint1LaptopStaging-20261015-3470",
+                     "direction":  "Inbound",
+                     "remoteAddress":  "LocalSubnet",
+                     "localPort":  "3470",
+                     "protocol":  "TCP",
+                     "enabled":  "True",
+                     "action":  "Allow"
+                 },
+    "status":  "PASS"
+}

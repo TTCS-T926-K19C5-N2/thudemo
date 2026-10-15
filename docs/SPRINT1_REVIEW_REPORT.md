@@ -1,6 +1,22 @@
-# Sprint 1 — review, sửa và bàn giao hiện hành
+# Sprint 1 — review, sửa và bàn giao hiện hành (cập nhật 16/10/2026)
 
 Phạm vi DEC-09: **S-01/T-01–03, S-02/T-04–06, S-04/T-09–10 và K-01**. Giữ V1; S-03 thuộc Sprint 3. Nguồn: backlog Excel hiện hành, DoD-DoR, `../docs/{product,architecture,ui,risk-and-security,decision-log}.md`, các task và PR/commit thực tế. Không quy tác giả chỉ theo người mở PR; bảng provenance lịch sử phía dưới giữ nguồn riêng.
+
+## Kết quả bàn giao cuối — source sản phẩm b52ba6a
+
+**Bản chạy:** `b52ba6afa07d29444e5e809892e5325f0966625c`, đã chứa develop97ff917. Local [http://localhost:3440](http://localhost:3440/) và staging [https://10.88.164.155:3470](https://10.88.164.155:3470) đều READY qua health/home thực. Commit tài liệu/evidence sau đó không thay source runtime; xem final-summary.json và PR head để phân biệt.
+
+- PASS: build/lint/typecheck; **284 API +116 web +8 Node**, **88 integration**, **15 browser desktop/mobile**, không page/runtime error hay console bất ngờ. Coverage đo lại trên b52 cùng baseline/config/Vitest/V8, phần trăm giữ nguyên; `H/coverage/comparison.json` có hash từng source.
+- PASS: CI chính đúng b52, run38769484549 và38769477199, đủ5job; workflow S30/S31 cũng xanh. Các workflow/head tài liệu sau đó có JSON riêng, không gán CI864 cho bản mới.
+- PASS: triển khai manual b52 trong **433.533s**; đã backup rồi migrate các SQL upstream additive sau kiểm không có duplicate order-seat. **Rollback thật b52→864→b52**, mỗi lần smoke/login/health hợp lệ, giữ schema/data/khóa. `H/timeline.json`, `H/migration-compatibility.json`, `H/runtime.json`.
+- PASS: health thật staging khi dừng Redis hoặc PostgreSQL riêng trả503, khôi phục trả200; `H/dependency-health.json`. Chỉ container có label staging này được thao tác.
+- PASS: HTTPS API trên b52 kiểm lại cookie/session/logout/expired401, A draft/edit, B/buyer403, suất tương lai/quá khứ/trùng cảnh báo, UTC/FK, TTL900 và API restart; case-alias/spoof vẫn charge peer LAN thật. `H/https-api.json`. Natural expiry đã chờ thật ở864 (`L/https-api.json`); lượt b52 không chờ lại và ghi **NOT RUN** rõ, không coi là đo mới. Tài khoản lock-test hiện có thể đang khóa, các account demo chính không bị khóa.
+- FAIL NFR trên b52: **2000 HTTPS calls**, mỗi vòng đúng100winner/100conflict/100active rights; **p95all1519.9835ms**, steady688.0835ms >300ms. Đây là đo một API/generator cùng laptop, không chấp thuận NFR. Lượt8641597.9634ms giữ riêng. CI b52 đo273.3143ms all/186.9608ms steady (<300 trong CI đó), không thay staging acceptance hoặc miễn ngưỡng theo bool800ms.
+- **PASS sau thao tác OS của người dùng:** đã đọc lại rule/filter Windows: TCP3470, đúng LANIP, LocalSubnet; chứng chỉ đúng thumbprint trong CurrentUser Root. Browser HTTPS home200 và **15 ca staging UI desktop/mobile PASS** không bỏ kiểm TLS, pageErrors/unexpectedConsoleErrors rỗng. `H/windows-access.json`, `H/browser-tls.json`, `H/staging-browser/`. Giữ lỗi ERR_CERT_AUTHORITY_INVALID trước khi trust trong browser-tls-before-trust.json. Người dùng trực tiếp xác nhận máy Windows thứ hai cùng Wi-Fi mở HTTPS không cảnh báo: PASS **USER-ATTESTED**, `H/second-device-user-confirmation.json`. Ca rate-limit hai peer độc lập vẫn chờ artifact từ máy thứ hai; không lấy việc mở home thay test đó.
+- BLOCKED: chưa merge/human review, watcher vẫn từ chối develop chưa có fix; manualdeploy/rollback không thay AC merge→auto-deploy<10phút. Web staging hiện là Node production loopback sau gateway, API dùng Docker; web image đã kiểm riêng, **chưa nhận toàn bộ web staging chạy Docker**.
+- FAIL DoD dependency: prodscan0 nhưng fullscan vẫn1highbraces/no upstream patch; không waive. K01 tổng thể vẫn BLOCKED bởi staging comparison/review và NFR liên quan. Sprint1 **chưa Done**, PR91 giữ Draft/chưa merge.
+
+**K-01 bổ sung trên laptop:** đã chạy hai process nghiên cứu với PostgreSQL15/Redis7-AOF-everysec trong container/volume riêng15456/16406, không chạm DB/cache sản phẩm. Mỗi phương án chạy3vòng200yêu cầu/cùng1ghế, đúng1winner/199conflict; overlapping sets, deadline, retry, expiry/stale-token, transaction-failure và restart PASS. PostgreSQL p95 ba vòng644.9619/326.9403/308.3991ms; Redis85.2419/50.7857/40.9145ms. **Cả hai giữ owner sau graceful restart** khi Redis bật AOF; khác kết quả Redis không persistence trước đây vì điều kiện đo khác. Không thử mất điện/hard crash; fsync everysec không được nhận là không mất dữ liệu. Source gốc b52 giữ nguyên, bản thích nghi target/Redis-condition có hash và source riêng ở `H/k01-laptop-research/`. Đây là prototype datastore/two-loopback-process trên profile nghiên cứu của staging laptop, không phải endpoint sản phẩm hay client LAN. DEC-12 vẫn chỉ cho PG authority tạm local; cần thành viên review kết luận/điều kiện kiến trúc và gate NFR, không tự phê duyệt staging architecture. Phần "staging comparison" chưa chạy trong các đoạn snapshot cũ bên dưới được thay bằng kết quả nghiên cứu mới này; K01 tổng thể còn BLOCKED bởi review/điều kiện nghiệm thu và NFR sản phẩm FAIL.
 
 ## Revision và môi trường
 
@@ -12,50 +28,54 @@ Phạm vi DEC-09: **S-01/T-01–03, S-02/T-04–06, S-04/T-09–10 và K-01**. G
 
 ## Kết luận theo gate
 
-| Gate | Kết quả | Bằng chứng / ranh giới |
-|---|---|---|
-| Demo local | PASS | Profile riêng; API/browser15 ca trước trên develop, staging HTTPS API thật; dùng Status để xác nhận source đang chạy |
-| S-01/T-01–02 candidate864189e | PASS | Frozen install sạch, migrate/generate/build/lint/typecheck/unit/integration, Docker runtime và 5job CI đúng SHA |
-| S-01/T-03 toàn bộ | BLOCKED | Candidate manual đã chạy 485.989s, home/health200; failure giữ bản cũ đã kiểm; **chưa có merge→auto-deploy**, chưa chứng minh team Wi-Fi |
-| S-02 local | PASS | API/browser/Redis thật; server401/403, default deny, đa vai trò, logout/replay/expiry, account/IP |
-| S-02 HTTPS staging phần API | PASS | Cookie Secure/HttpOnly/Lax/900s; 5wrong→6th429, TTL900; API restart giữ khóa; spoof/case alias tính đúng peer LAN; evidence HTTPS |
-| S-02 staging toàn bộ | BLOCKED | Trình duyệt chưa tin chứng chỉ và chưa kiểm hai thiết bị Wi-Fi độc lập; không dùng XFF giả thay client thứ hai |
-| S-04 local | PASS | UI+API+DB draft/ownership/edit/reload/validation/double-submit/future/past/duplicate-warning/UTC→VN |
-| S-04 HTTPS staging API | PASS | Draft ẩn buyer, A edit/readback, B/buyer403, future201/past400/duplicate201+warning, DBUTC/FK Restrict |
-| S-04 staging UI | BLOCKED | Cần OS/browser trust + UI trên URL LAN; bằng chứng local không đổi nhãn thành staging |
-| K-01 spike | PASS trong môi trường đã đo | Hai datastore, cạnh tranh/restart và DEC-12 PG authority tạm local; CI artifacts đúng SHA864189e có riêng |
-| K-01 staging/NFR tổng thể | BLOCKED | Endpoint HTTPS đo thật nhưng không đạt NFR; thiếu so sánh hai datastore và điều kiện nghiệm thu staging đầy đủ |
-| Endpoint NFR p95<300ms | FAIL | 2000 HTTPS calls/200buyers/100seats×10; correctness100winner/100conflict mỗi vòng; all1597.9634ms, steady613.8044ms; một API/generator cùng laptop. Không thay300 bằng800 |
-| Dependency runtime | PASS | Prod audit0; Next16.3.8/sharp0.35.5/deepmerge8/mysql2_3.23.1/source-map-js1.2.2; frozen lock |
-| Dependency toàn bộ/DoD row5 | FAIL | Còn high **braces3.0.3 GHSA-vfj7-8cjw-p6xm**, upstream chưa có bản vá; không ignore/waiver |
-| Coverage delta/DoD row3 | PASS trong scope đo | Vitest/V8_4.1.11, baseline/config như nhau; API lines7.89→76.78%, branches2.50→87.95%; web23.94→77.52%, branches18.37→63.94%; source manifest xác định phạm vi |
-| Review độc lập/DoD row2 | BLOCKED | Chưa có thành viên khác trực tiếp review SHA cuối. AI security scan và việc đăng nhập nhiều tài khoản không thay human approval |
-| Sprint 1 đủ AC/DoD | Chưa | Human review, audit full, staging UI/Wi-Fi/autodeploy và K01 còn thiếu |
+| Gate                          | Kết quả                     | Bằng chứng / ranh giới                                                                                                                                          |
+| ----------------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Demo local                    | PASS                        | Profile riêng; API/browser15 ca trước trên develop, staging HTTPS API thật; dùng Status để xác nhận source đang chạy                                            |
+| S-01/T-01–02 candidate864189e | PASS                        | Frozen install sạch, migrate/generate/build/lint/typecheck/unit/integration, Docker runtime và 5job CI đúng SHA                                                 |
+| S-01/T-03 toàn bộ             | BLOCKED                     | Manual b52 433.533s, rollback b52→864→b52, failure giữ bản cũ và health503/restore200 PASS; **chưa merge→auto-deploy**, chưa team Wi-Fi/full web Docker staging |
+| S-02 local                    | PASS                        | API/browser/Redis thật; server401/403, default deny, đa vai trò, logout/replay/expiry, account/IP                                                               |
+| S-02 HTTPS staging phần API   | PASS                        | Cookie Secure/HttpOnly/Lax/900s; 5wrong→6th429, TTL900; API restart giữ khóa; spoof/case alias tính đúng peer LAN; evidence HTTPS                               |
+| S-02 staging toàn bộ          | BLOCKED                     | HTTPS UI/API và Wi-Fi home/trust đã đạt theo tier; còn ca rate-limit hai peer độc lập cần client artifact + server Redis đối chiếu                              |
+| S-04 local                    | PASS                        | UI+API+DB draft/ownership/edit/reload/validation/double-submit/future/past/duplicate-warning/UTC→VN                                                             |
+| S-04 HTTPS staging API        | PASS                        | Draft ẩn buyer, A edit/readback, B/buyer403, future201/past400/duplicate201+warning, DBUTC/FK Restrict                                                          |
+| S-04 staging UI               | PASS                        | 15 ca desktop/mobile chạy trực tiếp HTTPS b52, DB thật; screenshot/console/result riêng H/staging-browser                                                       |
+| K-01 spike                    | PASS trong môi trường đã đo | Hai datastore, cạnh tranh/restart và DEC-12 PG authority tạm local; CI artifacts đúng SHA864189e có riêng                                                       |
+| K-01 staging/NFR tổng thể     | BLOCKED                     | Endpoint HTTPS đo thật nhưng không đạt NFR; thiếu so sánh hai datastore và điều kiện nghiệm thu staging đầy đủ                                                  |
+| Endpoint NFR p95<300ms        | FAIL                        | b52:2000HTTPS calls,100winner/100conflict mỗi vòng; all1519.9835ms/steady688.0835ms; một API/generator cùng laptop. Lượt864 giữ riêng; không thay300 bằng800    |
+| Dependency runtime            | PASS                        | Prod audit0; Next16.3.8/sharp0.35.5/deepmerge8/mysql2_3.23.1/source-map-js1.2.2; frozen lock                                                                    |
+| Dependency toàn bộ/DoD row5   | FAIL                        | Còn high **braces3.0.3 GHSA-vfj7-8cjw-p6xm**, upstream chưa có bản vá; không ignore/waiver                                                                      |
+| Coverage delta/DoD row3       | PASS trong scope đo         | Vitest/V8_4.1.11, baseline/config như nhau; API lines7.89→76.78%, branches2.50→87.95%; web23.94→77.52%, branches18.37→63.94%; source manifest xác định phạm vi  |
+| Review độc lập/DoD row2       | BLOCKED                     | Chưa có thành viên khác trực tiếp review SHA cuối. AI security scan và việc đăng nhập nhiều tài khoản không thay human approval                                 |
+| Sprint 1 đủ AC/DoD            | Chưa                        | Human review, audit full, staging UI/Wi-Fi/autodeploy và K01 còn thiếu                                                                                          |
 
 ## Findings và sửa có bằng chứng
 
 Các finding gốc F-01/F-02/F-03 và bước tái hiện/expected/actual/root cause/test nằm trong phần lịch sử phía dưới; bản sửa được chuyển có chọn lọc sang develop, giữ `isActive`, STAFF→check-in và không kéo S-32 từ main.
 
-| Finding | Ảnh hưởng / tái hiện | Nguyên nhân và sửa | Regression / kết quả |
-|---|---|---|---|
-| F-01 IP brute-force | High; xoay email hoặc giả XFF để né account lock | Shared Redis IP counter30fail/900s, HMAC peer+timestamp+route, entry sở hữu TCPpeer; caller headers bị loại | Real TCP local+Redis, signed/stale/forged unit, HTTPS alias/spoof LAN counter PASS; client Wi-Fi thứ hai BLOCKED |
-| F-02 giờ suất | High dữ liệu; máy timezone khác tạo ngày/giờ VN bị lệch | VN input+07→UTC, display Asia/Ho_Chi_Minh; invalidFeb30 bị chặn | API/DB/US-device browser VN roundtrip PASS |
-| F-03 hết phiên mất form | Medium; server401 khi lưu | sessionStorage draft+owner; allowlist returnTo; restore đúng chủ một lần | Browser401→login→restore; khác chủ/malformed unit PASS |
-| F-04 login alias boundary | High auth; `/api/Auth/login` tới Nest dù exact-path HMAC không chạy | Classify decode/case/trailing slash chung tại shared helper/transport/APIproxy; thiếu attestation fail closed | Unit encoded/case/stale/signatures và HTTPS `/api/Auth/LOGIN` spoof vẫn charge peer thực PASS tại864189e |
-| F-05 pointer rollback | High vận hành; smoke lỗi sau switch có thể làm mất previous pointer | Snapshot/restore **cả active và previous** byte-for-byte trước cleanup | 8 Node tests gồm fault-injection promotion PASS; failure candidate runtime giữ active864189e PASS |
-| F-06 lỗi truy vấn CIM | Medium vận hành; lỗi PowerShell không được coi như PID đã chết để recover lock | ErrorAction Stop và parseProcessIdentity fail closed khi exit/error | Dedicated regression PASS; không kill process chưa xác minh |
-| F-07 integration tiền điều kiện | Test harness; token fixture hex64 bị guard401 | Đổi token benchmark thành base64url43 đúng contract; không sửa guard | Lượt invalid-fixture giữ riêng, không dùng đo NFR hay quy lỗi sản phẩm |
+| Finding                         | Ảnh hưởng / tái hiện                                                           | Nguyên nhân và sửa                                                                                            | Regression / kết quả                                                                                             |
+| ------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| F-01 IP brute-force             | High; xoay email hoặc giả XFF để né account lock                               | Shared Redis IP counter30fail/900s, HMAC peer+timestamp+route, entry sở hữu TCPpeer; caller headers bị loại   | Real TCP local+Redis, signed/stale/forged unit, HTTPS alias/spoof LAN counter PASS; client Wi-Fi thứ hai BLOCKED |
+| F-02 giờ suất                   | High dữ liệu; máy timezone khác tạo ngày/giờ VN bị lệch                        | VN input+07→UTC, display Asia/Ho_Chi_Minh; invalidFeb30 bị chặn                                               | API/DB/US-device browser VN roundtrip PASS                                                                       |
+| F-03 hết phiên mất form         | Medium; server401 khi lưu                                                      | sessionStorage draft+owner; allowlist returnTo; restore đúng chủ một lần                                      | Browser401→login→restore; khác chủ/malformed unit PASS                                                           |
+| F-04 login alias boundary       | High auth; `/api/Auth/login` tới Nest dù exact-path HMAC không chạy            | Classify decode/case/trailing slash chung tại shared helper/transport/APIproxy; thiếu attestation fail closed | Unit encoded/case/stale/signatures và HTTPS `/api/Auth/LOGIN` spoof vẫn charge peer thực PASS tại864189e         |
+| F-05 pointer rollback           | High vận hành; smoke lỗi sau switch có thể làm mất previous pointer            | Snapshot/restore **cả active và previous** byte-for-byte trước cleanup                                        | 8 Node tests gồm fault-injection promotion PASS; failure candidate runtime giữ active864189e PASS                |
+| F-06 lỗi truy vấn CIM           | Medium vận hành; lỗi PowerShell không được coi như PID đã chết để recover lock | ErrorAction Stop và parseProcessIdentity fail closed khi exit/error                                           | Dedicated regression PASS; không kill process chưa xác minh                                                      |
+| F-07 integration tiền điều kiện | Test harness; token fixture hex64 bị guard401                                  | Đổi token benchmark thành base64url43 đúng contract; không sửa guard                                          | Lượt invalid-fixture giữ riêng, không dùng đo NFR hay quy lỗi sản phẩm                                           |
 
 Không migration sản phẩm nào được sửa trong repair. Khi merge develop97ff, các migration upstream thêm maxTicketsPerUser/default4, ticket keyId/signature+unique order-seat, ownerEmail/transfer và ticket_logs. Đây là thay đổi tích hợp upstream; phải backup/kiểm dữ liệu trước migrate. Script tự động vẫn từ chối migration mới; manual yêu cầu đúng SHA bản cũ đã review. Khóa ký ticket mới chỉ tạo một lần ở profile staging; khóa scanner/TLS hiện hữu được giữ.
 
 ## Kiểm chứng và giới hạn
+
+**An toàn script nghiệm thu:** script browser cũ expire mọi session của fixture A; khi mở staging mode đã phát hiện và sửa thành `userId + tokenHash` đúng cookie do context tạo. Regression tạo phiên A độc lập, kiểm expiry timestamp không đổi và `/auth/me` vẫn200, logout chỉ phiên phụ của test. Lượt HTTPS15case sau sửa PASS. Không hồi sinh session cũ. Script client Wi-Fi mới không yêu cầu credential, tối đa31 login sai bằng email ngẫu nhiên, XFF/attestation giả; có thể chặn IP máy thứ hai900s, không tài khoản demo chính. Chưa có artifact thì ghi NOT RUN.
+
+**Base drift:** sau snapshot97ff, develop nhận PR71/S61 tới8bceec45c7c22fe3cdacb25a18d772c5688bf034. Nguồn đang demo b52 vẫn dùng snapshot97ff đã kiểm; không tự gọi S61 là Sprint1 hay nhận đã nghiệm thu branch develop mới hơn. PR vẫn cần human review exact head và kiểm base/CI lại trước merge.
 
 - Candidate864189e: API220/web105 unit; Node5; integration81+4; browser15 desktop/mobile; build/lint/typecheck PASS. JSON coverage có counts khác unit default do scope/config, không dùng count suy coverage. Helper timezone `.test.ts` trước đây không được discover; đã đổi `.spec.ts` và ghi đính chính, không sửa lịch sử.
 - Candidate sau merge97ff: API284/web116/Node8, integration84+4 và build/lint/typecheck PASS. Lượt integration đầu FAIL do token-budget test timeout5s khi build chạy đồng thời và suite ticket mới chưa cho exactport15446; giữ gates-merge-initial.json. Sau build kết thúc và bổ sung exactport với SPRINT1_ISOLATED_TEST=true, full84+4 PASS, không nới timeout/assert. CI head tích hợp được ghi riêng ở `20261015-handoff` khi hoàn tất.
 - Full audit chưa sạch; scoped fast-glob→tinyglobby không phải drop-in (glob/absolute/trailing/junction parity), nên chưa thay chỉ để xanh scan. Hướng cần quyết định: upstream patch hoặc adapter/dependency thay thế được kiểm rule parity. Gate vẫn FAIL.
 - Security scan develop `b0fb0ae4-1158-4ce6-affd-34d469c95d6a`; follow-up laptop `6ad87ca3-6cdb-43aa-91d4-d577a125a862`, source19file supplementSHA99d8360e… khớp product864189e; không có residual reportable trong phạm vi scan. Compatibility follow-up có supplement riêng; không là chứng nhận toàn bộ source PR70/92 hoặc human approval.
 - CI864189e artifacts K01/T31 được lưu private rồi lấy số đo sạch. Product CI p95all423.363ms/steady309.672ms, budget800ms xanh **không đạt**300ms. Staging HTTPS p95 cao hơn; không tối ưu toàn Sprint2 hoặc sửa NFR để đạt.
-- TLS request nghiệm thu dùng exact CA cert + hostname và rejectUnauthorized:true; không tắt verify. Browser Chromium thực tế trả ERR_CERT_AUTHORITY_INVALID (H/browser-tls.json). OS import cert cần người dùng xác nhận; firewall tạo rule trả AccessDenied5 vì phiên không elevated. Không dùng công cụ khác né. Máy thứ hai/browser TLS còn BLOCKED.
+- TLS: lượt trước trust bị ERR_CERT_AUTHORITY_INVALID/AccessDenied5 đã giữ lịch sử. Sau người dùng thực hiện OS steps, read-only Windows checks và actual HTTPS browser15 ca PASS; máy thứ hai trustedHTTPS home PASS theo xác nhận trực tiếp. Independent peer-budget vẫn pending; không bỏ TLS verification.
 - Watcher chạy, fetch develop nhưng **BLOCKED_develop_missing_approved_fix**, đúng fail-closed trước merge. Chưa có bằng chứng pipeline red ngăn triển khai thực tế sau merge. develop chưa protection (404 lúc kiểm); ghi vấn đề quy trình, không tự thay.
 - Cấu hình MoMo là synthetic/endpoint disabled.invalid để production module startup; không thanh toán, email, provider sandbox hay worker acceptance. Issued-session `isActive` là baseline S28 limitation; repair vẫn chặn login inactive, không nhận đã giải quyết thu hồi phiên tức thời.
 

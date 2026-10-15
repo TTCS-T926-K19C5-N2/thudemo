@@ -1,7 +1,7 @@
 {
-  "time": "2026-10-15T16:28:21.075Z",
-  "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
-  "status": "BLOCKED",
-  "reason": "ERR_CERT_AUTHORITY_INVALID",
-  "scope": "System/browser trust or LAN access must be completed; no ignoreHTTPSErrors or insecure bypass used"
+  "time": "2026-10-15T16:58:08.167Z",
+  "source": "b52ba6afa07d29444e5e809892e5325f0966625c",
+  "status": "PASS",
+  "http": 200,
+  "scope": "Browser TLS/home only, no ignored certificate errors; not team-device or UI-flow acceptance"
 }

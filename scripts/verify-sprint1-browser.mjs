@@ -2,19 +2,37 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { resolve } from "node:path";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { stagingConfig, stagingRelease } from "../deploy/laptop-gateway.mjs";
+import { createHash } from "node:crypto";
 const root = resolve(import.meta.dirname, ".."),
   apiRequire = createRequire(resolve(root, "apps/api/package.json"));
-apiRequire("dotenv").config({ path: resolve(root, ".env"), quiet: true });
+const staging = process.argv.includes("--staging");
+const stage = staging
+  ? stagingConfig(
+      JSON.parse(readFileSync(resolve(root, ".sprint1-staging/config.json"))),
+    )
+  : null;
+const active = staging
+  ? stagingRelease(
+      JSON.parse(readFileSync(resolve(root, ".sprint1-staging/active.json"))),
+    )
+  : null;
+if (!staging)
+  apiRequire("dotenv").config({ path: resolve(root, ".env"), quiet: true });
+const databaseUrl = staging
+  ? `postgresql://${stage.user}:${stage.dbPassword}@127.0.0.1:${stage.pgPort}/${stage.database}?schema=public`
+  : process.env.DATABASE_URL;
 let target;
 try {
-  target = new URL(process.env.DATABASE_URL ?? "");
+  target = new URL(databaseUrl ?? "");
 } catch {
   throw new Error("Invalid local DATABASE_URL configuration");
 }
 assert(
   target.hostname === "127.0.0.1" &&
-    target.port === "15445" &&
-    target.pathname === "/sprint1_gitflow_20261015",
+    target.port === (staging ? "15455" : "15445") &&
+    target.pathname ===
+      (staging ? "/sprint1_staging_20261015" : "/sprint1_gitflow_20261015"),
   "Exact isolated demo database required",
 );
 const { chromium } = createRequire(resolve(root, "apps/web/package.json"))(
@@ -23,13 +41,25 @@ const { chromium } = createRequire(resolve(root, "apps/web/package.json"))(
 const { PrismaClient } = apiRequire("@prisma/client"),
   { PrismaPg } = apiRequire("@prisma/adapter-pg");
 const db = new PrismaClient({
-  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+  adapter: new PrismaPg({ connectionString: databaseUrl }),
 });
 const config = JSON.parse(
-    readFileSync(resolve(root, ".sprint1-local/config.json")),
+    readFileSync(
+      resolve(
+        root,
+        staging ? ".sprint1-staging/config.json" : ".sprint1-local/config.json",
+      ),
+    ),
   ),
-  origin = `http://localhost:${config.webPort}`;
-const out = resolve(root, "evidence/sprint1/20261015-gitflow/browser");
+  origin = staging
+    ? `https://${stage.lanAddress}:${stage.gatewayPort}`
+    : `http://localhost:${config.webPort}`;
+const out = resolve(
+  root,
+  staging
+    ? "evidence/sprint1/20261015-handoff/staging-browser"
+    : "evidence/sprint1/20261015-gitflow/browser",
+);
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ headless: true }),
   results = [],
@@ -189,10 +219,49 @@ try {
   pass("real-server400-field-error-input-retained-recovery");
   await page.locator("#event-name").fill(name + " khôi phục phiên");
   const owner = await db.user.findUniqueOrThrow({ where: { email: a.email } });
-  await db.session.updateMany({
-    where: { userId: owner.id },
+  // Expire only the session created by this browser, preserving human/demo tabs.
+  // An independent new fixture session proves the mutation cannot revoke all A sessions.
+  const parallel = await browser.newContext();
+  const parallelPage = await parallel.newPage();
+  await parallelPage.goto(origin + "/login");
+  await login(parallelPage, a);
+  const sessionHash = async (context) => {
+    const cookie = (await context.cookies(origin)).find(
+      (value) => value.name === "event_session",
+    );
+    assert(cookie, "The verification context must own a session cookie");
+    return createHash("sha256").update(cookie.value).digest("hex");
+  };
+  const currentHash = await sessionHash(ctx),
+    parallelHash = await sessionHash(parallel);
+  assert.notEqual(currentHash, parallelHash);
+  const parallelBefore = await db.session.findUniqueOrThrow({
+    where: { tokenHash: parallelHash },
+  });
+  const affected = await db.session.updateMany({
+    where: { userId: owner.id, tokenHash: currentHash },
     data: { expiresAt: new Date(Date.now() - 1000) },
   });
+  assert.equal(affected.count, 1);
+  assert.equal(
+    (
+      await db.session.findUniqueOrThrow({ where: { tokenHash: parallelHash } })
+    ).expiresAt.toISOString(),
+    parallelBefore.expiresAt.toISOString(),
+  );
+  assert.equal(
+    await parallelPage.evaluate(
+      async () => (await fetch("/api/auth/me")).status,
+    ),
+    200,
+  );
+  assert.equal(
+    await parallelPage.evaluate(
+      async () => (await fetch("/api/auth/logout", { method: "POST" })).status,
+    ),
+    200,
+  );
+  await parallel.close();
   injection = true;
   await page.getByRole("button", { name: "Lưu thay đổi", exact: true }).click();
   await page.waitForURL("**/login?returnTo=*");
@@ -206,7 +275,10 @@ try {
     name + " khôi phục phiên",
   );
   injection = false;
-  pass("expired-session401-login-return-restores-same-owner-draft");
+  pass("expired-session401-login-return-restores-same-owner-draft", {
+    expiryScope:
+      "Only this context tokenHash; independent same-owner session remains valid",
+  });
   await page.getByRole("button", { name: "Lưu thay đổi", exact: true }).click();
   await page.getByRole("status").filter({ hasText: "Đã lưu" }).waitFor();
   const other = await browser.newContext({
@@ -290,6 +362,10 @@ try {
     JSON.stringify(
       {
         origin,
+        source: active?.sha ?? "Local source manifest applies",
+        environment: staging
+          ? "Actual laptop staging HTTPS, system trusted certificate, no ignoreHTTPSErrors"
+          : "Isolated local demo",
         viewports: ["1440x1000 US timezone", "390x844 Vietnam"],
         results,
         pageErrors: errors,
@@ -300,7 +376,12 @@ try {
     ),
   );
   writeFileSync(
-    resolve(root, ".sprint1-local/browser-fixture.json"),
+    resolve(
+      root,
+      staging
+        ? ".sprint1-staging/browser-fixture.json"
+        : ".sprint1-local/browser-fixture.json",
+    ),
     JSON.stringify({ eventId: id }),
   );
 } finally {

@@ -1,6 +1,6 @@
 {
-  "head": "3be5b99771ff9da9e986ce9d8e334c70a0b19738",
-  "base": "97ff91710fea7736acac5c413ab7a9d77a502212",
+  "head": "b52ba6afa07d29444e5e809892e5325f0966625c",
+  "base": "8bceec45c7c22fe3cdacb25a18d772c5688bf034",
   "files": [
     {
       "path": ".dockerignore",
@@ -288,11 +288,15 @@
     },
     {
       "path": "scripts/verify-sprint1-browser.mjs",
-      "sha256": "e2ccb7c84160aac1fed1c6e8d9a919f22624713dda2057ae6dfca0c6bc075871"
+      "sha256": "a203b3d46e75192a00f14bc01f4fea318ec710634aed5a68551bb71f0b730ff8"
     },
     {
       "path": "scripts/verify-sprint1-staging.mjs",
       "sha256": "e42911c96d6d9f2c6fe009d2924f4524d04e2039ba7964d63d8cde79894e1e57"
+    },
+    {
+      "path": "scripts/sprint1-staging-client.ps1",
+      "sha256": "b2388ebbe887fa96a0d9dee5850faa2b4786e119531a7af440390626b9b0bec2"
     }
   ]
 }

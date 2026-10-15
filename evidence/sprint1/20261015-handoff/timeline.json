@@ -28,5 +28,38 @@
     "event": "controlled-candidate-rejected-old-retained",
     "sha": "864189edcba0b0c112203d8de4ebbfb189ac7148",
     "activeSha": "864189edcba0b0c112203d8de4ebbfb189ac7148"
+  },
+  {
+    "time": "2026-10-15T16:29:58.386Z",
+    "event": "candidate-start",
+    "sha": "b52ba6afa07d29444e5e809892e5325f0966625c"
+  },
+  {
+    "time": "2026-10-15T16:30:06.119Z",
+    "event": "manual-migration-compatibility-acknowledged",
+    "from": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+    "to": "b52ba6afa07d29444e5e809892e5325f0966625c",
+    "files": [
+      "apps/api/prisma/migrations/202610080001_s42_ticket_limit/migration.sql",
+      "apps/api/prisma/migrations/202610090001_s25_s26_signed_tickets/migration.sql",
+      "apps/api/prisma/migrations/202610090002_s57_ticket_transfer/migration.sql"
+    ]
+  },
+  {
+    "time": "2026-10-15T16:37:11.918Z",
+    "event": "promoted",
+    "sha": "b52ba6afa07d29444e5e809892e5325f0966625c",
+    "oldSha": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+    "elapsedSeconds": 433.533
+  },
+  {
+    "time": "2026-10-15T16:37:41.016Z",
+    "event": "rollback",
+    "sha": "864189edcba0b0c112203d8de4ebbfb189ac7148"
+  },
+  {
+    "time": "2026-10-15T16:37:42.120Z",
+    "event": "rollback",
+    "sha": "b52ba6afa07d29444e5e809892e5325f0966625c"
   }
 ]

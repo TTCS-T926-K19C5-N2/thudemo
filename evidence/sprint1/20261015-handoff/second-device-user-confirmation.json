@@ -1,0 +1,17 @@
+﻿{
+    "evidenceTier":  "USER-ATTESTED",
+    "notAttested":  [
+                        "second-device login/RBAC workflows",
+                        "two independent peer rate-limit isolation",
+                        "independent human PR review"
+                    ],
+    "source":  "b52ba6afa07d29444e5e809892e5325f0966625c",
+    "status":  "PASS",
+    "statement":  "User directly confirmed running ConfigureFirewall and TrustCertificate; laptop HTTPS opens; a second Windows machine on the same Wi-Fi opens https://10.88.164.155:3470 without certificate warning.",
+    "cases":  [
+                  "laptop trusted HTTPS",
+                  "second Windows Wi-Fi HTTPS reachable and trusted"
+              ],
+    "recordedUtc":  "2026-10-15T17:00:22.8434551Z",
+    "rawSecretMaterial":  "none"
+}
