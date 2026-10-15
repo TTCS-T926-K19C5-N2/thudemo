@@ -44,7 +44,7 @@ function notifyListeners(): void {
     try {
       listener({ ...currentState });
     } catch (err) {
-      console.error("Lỗi listener trạng thái mạng:", err);
+      console.warn("Lỗi listener trạng thái mạng:", err);
     }
   }
 }

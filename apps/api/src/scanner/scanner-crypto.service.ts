@@ -4,7 +4,8 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import {
   sign,
   verify,
@@ -17,6 +18,21 @@ import {
   ticketQrInput,
   type TicketQrPublicKey,
 } from 'shared/ticket-qr';
+
+function normalizePem(pem: string): string {
+  return pem.includes('\\n') ? pem.replace(/\\n/g, '\n') : pem;
+}
+
+function resolveKeyFile(file: string): string {
+  if (existsSync(file)) return file;
+  const candidates = [
+    resolve(process.cwd(), file),
+    resolve(process.cwd(), '../..', file),
+    resolve(process.cwd(), '..', file),
+    resolve(process.cwd(), 'apps/api', file),
+  ];
+  return candidates.find((p) => existsSync(p)) || file;
+}
 
 export interface ScannerPublicKeyInfo extends TicketQrPublicKey {
   version: 'ET1';
@@ -46,21 +62,27 @@ export class ScannerCryptoService {
     try {
       if (!this.activeKeyId || !/^[A-Za-z0-9_-]{1,32}$/.test(this.activeKeyId))
         throw Error();
-      const ring: unknown = publicRing ? JSON.parse(publicRing) : {};
+      let cleanRingStr = publicRing;
+      if (cleanRingStr && cleanRingStr.includes('\\"')) {
+        cleanRingStr = cleanRingStr.replace(/\\"/g, '"');
+      }
+      const ring: unknown = cleanRingStr ? JSON.parse(cleanRingStr) : {};
       if (!ring || typeof ring !== 'object' || Array.isArray(ring))
         throw Error();
       for (const [id, pem] of Object.entries(ring)) {
         if (!/^[A-Za-z0-9_-]{1,32}$/.test(id) || typeof pem !== 'string')
           throw Error();
-        if (!pem.trim().startsWith('-----BEGIN PUBLIC KEY-----')) throw Error();
-        const key = createPublicKey(pem);
+        const normPem = normalizePem(pem);
+        if (!normPem.trim().startsWith('-----BEGIN PUBLIC KEY-----')) throw Error();
+        const key = createPublicKey(normPem);
         if (key.asymmetricKeyType !== 'ed25519') throw Error();
         this.keys.set(id, key);
       }
       if (activePublic) {
-        if (!activePublic.trim().startsWith('-----BEGIN PUBLIC KEY-----'))
+        const normActivePublic = normalizePem(activePublic);
+        if (!normActivePublic.trim().startsWith('-----BEGIN PUBLIC KEY-----'))
           throw Error();
-        const key = createPublicKey(activePublic);
+        const key = createPublicKey(normActivePublic);
         if (key.asymmetricKeyType !== 'ed25519') throw Error();
         const existing = this.keys.get(this.activeKeyId);
         if (
@@ -74,9 +96,10 @@ export class ScannerCryptoService {
       }
       if (privateFile && privatePem) throw Error();
       if (privateFile || privatePem) {
-        this.privateKey = createPrivateKey(
-          privateFile ? readFileSync(privateFile) : privatePem!,
-        );
+        const rawPrivate = privateFile
+          ? readFileSync(resolveKeyFile(privateFile))
+          : normalizePem(privatePem!);
+        this.privateKey = createPrivateKey(rawPrivate);
         if (this.privateKey.asymmetricKeyType !== 'ed25519') throw Error();
         const derived = createPublicKey(this.privateKey);
         const configured = this.keys.get(this.activeKeyId);

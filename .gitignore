@@ -135,3 +135,9 @@ dist
 output/playwright/
 apps/api/prisma/*.db
 apps/api/prisma/*.db-journal
+
+# Local cryptographic keys
+*.pem
+.keys/
+keys/
+

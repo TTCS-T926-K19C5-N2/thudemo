@@ -2,12 +2,14 @@ export const TICKET_QR_VERSION = "ET1";
 export const TICKET_QR_ALGORITHM = "Ed25519";
 const uuid =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+const ticketIdPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$|^[A-Za-z0-9_-]{1,64}$/;
 const keyId = /^[A-Za-z0-9_-]{1,32}$/;
 export function ticketQrInput(value) {
   if (
     !keyId.test(value.keyId) ||
     !uuid.test(value.showtimeId) ||
-    !uuid.test(value.ticketId)
+    !ticketIdPattern.test(value.ticketId)
   )
     throw new Error("Invalid QR identifiers");
   return [
@@ -27,7 +29,7 @@ export function parseTicketQr(value) {
     parts[1] !== TICKET_QR_ALGORITHM ||
     !keyId.test(parts[2]) ||
     !uuid.test(parts[3]) ||
-    !uuid.test(parts[4]) ||
+    !ticketIdPattern.test(parts[4]) ||
     !/^[A-Za-z0-9_-]{85}[AQgw]$/.test(parts[5])
   )
     return null;

@@ -48,7 +48,7 @@ function setSyncInProgress(value: boolean): void {
     try {
       listener(value);
     } catch (err) {
-      console.error("Lỗi listener trạng thái đồng bộ:", err);
+      console.warn("Lỗi listener trạng thái đồng bộ:", err);
     }
   }
 }
