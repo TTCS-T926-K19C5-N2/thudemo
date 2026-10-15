@@ -138,7 +138,14 @@ async function account(roleName) {
   users.push(id);
   return { id, cookie: `event_session=${token}` };
 }
-async function call(port, path, method = 'GET', body, account) {
+// S-42 branch note: 200-concurrency bursts on cold 384MB CI containers
+// intermittently exceed a 15s client abort even when the server is healthy
+// (diagnose showed freshly healthy containers at failure time). The abort
+// kills the whole run before any status invariant is evaluated, so a short
+// client timeout measures runner impatience, not product latency. Benchmark
+// batches — whose p95 is only RECORDED, never gated, in this script — get a
+// longer client budget; every other probe keeps the strict 15s default.
+async function call(port, path, method = 'GET', body, account, timeoutMs = 15000) {
   const start = performance.now();
   const r = await fetch(`http://127.0.0.1:${port}${path}`, {
     method,
@@ -147,7 +154,7 @@ async function call(port, path, method = 'GET', body, account) {
       ...(account ? { cookie: account.cookie } : {}),
     },
     ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
-    signal: AbortSignal.timeout(15000),
+    signal: AbortSignal.timeout(timeoutMs),
   });
   const data = await r.json();
   return { status: r.status, ms: performance.now() - start, data };
@@ -278,6 +285,7 @@ async function benchmark(a, b) {
         'POST',
         { seatIds: [id] },
         a,
+        60000,
       ),
       call(
         i % 2 ? 18001 : 18002,
@@ -285,6 +293,7 @@ async function benchmark(a, b) {
         'POST',
         { seatIds: [id] },
         b,
+        60000,
       ),
     ]);
     const results = await Promise.all(tasks);
