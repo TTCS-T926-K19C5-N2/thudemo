@@ -17,6 +17,7 @@ import https from "node:https";
 import net from "node:net";
 import assert from "node:assert/strict";
 import { stagingConfig, stagingRelease } from "../deploy/laptop-gateway.mjs";
+import { requireBuildResources } from "../deploy/laptop-resources.mjs";
 import {
   prepareTicketKey,
   ticketKeyEnv,
@@ -531,7 +532,8 @@ async function deploy() {
     console.log("This source is already active; use status.");
     return;
   }
-  timeline("candidate-start", { sha });
+  const resources = requireBuildResources({ workspacePath: dir });
+  timeline("candidate-start", { sha, resources });
   await dependencies(c);
   ensureNetwork();
   const releaseRoot = resolve(dir, "releases", sha);
