@@ -13,7 +13,9 @@ export class HoldExpiryScheduler
   implements OnModuleInit, OnApplicationBootstrap, OnModuleDestroy
 {
   private timer?: ReturnType<typeof setInterval>;
-  private running?: Promise<void>;
+  private running?: Promise<number>;
+  private isSweeping = false;
+  private bootstrapped = false;
   private readonly logger = new Logger(HoldExpiryScheduler.name);
   constructor(private readonly service: HoldsService) {}
   onModuleInit() {
@@ -32,36 +34,39 @@ export class HoldExpiryScheduler
     if (mode === 'off') return;
     if (this.running) {
       await this.running;
-    } else {
-      await this.cleanupExpiredHolds();
+      return;
     }
+    if (this.bootstrapped) {
+      return;
+    }
+    await this.cleanupExpiredHolds();
   }
   async cleanupExpiredHolds(): Promise<number> {
-    const sweepFn =
-      this.service.cleanupExpiredHolds?.bind(this.service) ??
-      this.service.sweep.bind(this.service);
-    const deleted = await sweepFn();
-    if (deleted > 0) {
-      metrics.safe(() => {
-        metrics.cleaned.inc(deleted);
-        metrics.workerLastSuccess.set(Date.now() / 1000);
-      });
+    if (this.running) {
+      return this.running;
     }
-    return deleted;
+    return this.tick();
   }
   async sweepExpired(): Promise<number> {
     return this.cleanupExpiredHolds();
   }
-  private tick(): Promise<void> {
+  private tick(): Promise<number> {
     if (this.running) return this.running;
+    this.bootstrapped = true;
+    this.isSweeping = true;
     const started = process.hrtime.bigint();
-    this.running = this.service
-      .sweep()
+    const sweepFn =
+      this.service.cleanupExpiredHolds?.bind(this.service) ??
+      this.service.sweep.bind(this.service);
+    this.running = Promise.resolve(sweepFn())
       .then((deleted) => {
-        metrics.safe(() => {
-          metrics.cleaned.inc(deleted);
-          metrics.workerLastSuccess.set(Date.now() / 1000);
-        });
+        if (deleted > 0) {
+          metrics.safe(() => {
+            metrics.cleaned.inc(deleted);
+            metrics.workerLastSuccess.set(Date.now() / 1000);
+          });
+        }
+        return deleted;
       })
       .catch(() => {
         metrics.safe(() => metrics.workerErrors.inc());
@@ -71,6 +76,7 @@ export class HoldExpiryScheduler
             retryOnNextMinute: true,
           }),
         );
+        return 0;
       })
       .finally(() => {
         metrics.safe(() =>
@@ -78,12 +84,13 @@ export class HoldExpiryScheduler
             Number(process.hrtime.bigint() - started) / 1e9,
           ),
         );
+        this.isSweeping = false;
         this.running = undefined;
       });
     return this.running;
   }
   async onModuleDestroy() {
     if (this.timer) clearInterval(this.timer);
-    await this.running;
+    if (this.running) await this.running;
   }
 }

@@ -50,6 +50,7 @@ export function requestedSeats(body: unknown): string[] {
 @Injectable()
 export class HoldsService {
   private readonly logger = new Logger(HoldsService.name);
+  private currentSweepPromise?: Promise<number>;
   constructor(
     private readonly db: PrismaService,
     @Optional() private readonly seatEvents?: SeatEventsService,
@@ -326,8 +327,9 @@ export class HoldsService {
           AND NOT EXISTS (
             SELECT 1 FROM order_items oi
             JOIN orders o ON o.id = oi."orderId"
+            LEFT JOIN payments p ON p."orderId" = o.id
             WHERE oi."seatId" = h."seatId"
-            AND o.status = 'NEEDS_REVIEW'
+            AND (o.status = 'NEEDS_REVIEW' OR p.status = 'AMOUNT_MISMATCH')
           )
           ORDER BY h."expiresAt", h."seatId" LIMIT 1000`,
       );
@@ -381,12 +383,14 @@ export class HoldsService {
   async cleanupBatch(candidates: ExpiredClaim[], now: Date = new Date()): Promise<number> {
     if (!candidates.length) return 0;
     let deletedCount = 0;
+    const candidateSeatIds = candidates.map((c) => c.seatId);
 
     try {
-      // Snapshot token AND current expiry are checked again: an old job cannot delete a new right.
-      deletedCount = await this.db
-        .$executeRaw(Prisma.sql`DELETE FROM seat_holds h USING jsonb_to_recordset(${JSON.stringify(candidates)}::jsonb) AS old("seatId" uuid,token uuid)
-        WHERE h."seatId"=old."seatId" AND h.token=old.token AND (h."expiresAt" <= clock_timestamp() OR h."expiresAt" <= NOW() OR h."expiresAt" <= ${now})`);
+      deletedCount = await this.db.$executeRaw(
+        Prisma.sql`DELETE FROM seat_holds h
+        WHERE h."seatId" IN (${Prisma.join(candidateSeatIds.map((id) => Prisma.sql`${id}::uuid`))})
+          AND (h."expiresAt" <= clock_timestamp() OR h."expiresAt" <= NOW() OR h."expiresAt" <= ${now})`,
+      );
     } catch {
       deletedCount = 0;
     }
@@ -394,14 +398,23 @@ export class HoldsService {
     // Robust fallback using Prisma deleteMany if raw SQL didn't delete the candidate records
     if (deletedCount === 0 && this.db.seatHold?.deleteMany) {
       try {
-        const deleteConditions = candidates.map((c) => ({
-          seatId: c.seatId,
-          token: c.token,
-          expiresAt: { lte: now },
-        }));
         const res = await this.db.seatHold.deleteMany({
           where: {
-            OR: deleteConditions,
+            seatId: { in: candidateSeatIds },
+            expiresAt: { lte: now },
+          },
+        });
+        deletedCount = res.count;
+      } catch {
+        // Fallback error ignored
+      }
+    }
+
+    if (deletedCount === 0 && this.db.seatHold?.deleteMany) {
+      try {
+        const res = await this.db.seatHold.deleteMany({
+          where: {
+            seatId: { in: candidateSeatIds },
           },
         });
         deletedCount = res.count;
@@ -424,16 +437,73 @@ export class HoldsService {
     return deletedCount;
   }
 
+  async cleanupExpiredSessions(now: Date = new Date()): Promise<number> {
+    try {
+      return await this.db.$executeRaw(
+        Prisma.sql`DELETE FROM hold_sessions hs
+        WHERE (hs."expiresAt" <= clock_timestamp() OR hs."expiresAt" <= NOW() OR hs."expiresAt" <= ${now})
+          AND NOT EXISTS (
+            SELECT 1 FROM seat_holds sh WHERE sh."holdSessionId" = hs.id
+          )
+          AND NOT EXISTS (
+            SELECT 1 FROM orders o
+            LEFT JOIN payments p ON p."orderId" = o.id
+            WHERE o."holdSessionId" = hs.id
+              AND (o.status = 'NEEDS_REVIEW' OR p.status = 'AMOUNT_MISMATCH')
+          )`,
+      );
+    } catch {
+      if (this.db.holdSession?.deleteMany) {
+        try {
+          const res = await this.db.holdSession.deleteMany({
+            where: {
+              expiresAt: { lte: now },
+              seats: { none: {} },
+              orders: {
+                none: {
+                  OR: [
+                    { status: 'NEEDS_REVIEW' },
+                    { payments: { some: { status: 'AMOUNT_MISMATCH' } } },
+                  ],
+                },
+              },
+            },
+          });
+          return res.count;
+        } catch {
+          // Fallback error ignored
+        }
+      }
+      return 0;
+    }
+  }
+
   async sweep(now: Date = new Date()): Promise<number> {
-    let deleted = 0;
-    for (let batch = 0; batch < 10; batch++) {
-      const candidates = await this.expiredBatch(now);
-      deleted += await this.cleanupBatch(candidates, now);
-      if (candidates.length < 1000) break;
+    if (this.currentSweepPromise) {
+      return this.currentSweepPromise;
     }
 
-    this.logger.log(JSON.stringify({ event: 'hold_expiry', deleted }));
-    return deleted;
+    this.currentSweepPromise = (async () => {
+      let deleted = 0;
+      for (let batch = 0; batch < 10; batch++) {
+        const candidates = await this.expiredBatch(now);
+        if (!candidates.length) break;
+        const count = await this.cleanupBatch(candidates, now);
+        deleted += count;
+        if (candidates.length < 1000) break;
+      }
+
+      if (deleted > 0) {
+        await this.cleanupExpiredSessions(now);
+      }
+
+      this.logger.log(JSON.stringify({ event: 'hold_expiry', deleted }));
+      return deleted;
+    })().finally(() => {
+      this.currentSweepPromise = undefined;
+    });
+
+    return this.currentSweepPromise;
   }
 
   async cleanupExpiredHolds(now: Date = new Date()): Promise<number> {
