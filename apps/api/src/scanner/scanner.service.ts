@@ -12,6 +12,7 @@ import { randomUUID } from 'node:crypto';
 
 export interface ScannerTicketItem {
   code: string;
+  legacyCodes?: string[];
   status: 'valid' | 'checked_in' | 'cancelled';
   checkedInAt: string | null;
   seatLabel: string;
@@ -269,6 +270,7 @@ export class ScannerService {
         codes.add(item.code);
         tickets.push({
           code: item.code,
+          legacyCodes: item.legacyCodes ?? [],
           seatLabel: item.seatLabel,
           ticketType: item.ticketType,
           status: item.status as ScannerTicketItem['status'],

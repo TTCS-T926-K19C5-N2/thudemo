@@ -249,7 +249,12 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
       .expect(200);
 
     const issued = await db.ticket.findMany({ where: { showtimeId } });
-    const ticketCodes = res.body.tickets.map((t: { code: string }) => t.code);
+    const ticketCodes = res.body.tickets.flatMap(
+      (t: { code: string; legacyCodes?: string[] }) => [
+        t.code,
+        ...(t.legacyCodes ?? []),
+      ],
+    );
     for (const ticket of issued) {
       expect(ticketCodes).toContain(ticket.code);
     }
