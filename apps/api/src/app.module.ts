@@ -38,6 +38,7 @@ import { ScannerModule } from './scanner/scanner.module.js';
     OrdersModule,
     PaymentsModule,
     MonitoringModule,
+    CheckInModuleS29,
     ScannerModule,
   ],
   controllers: [AppController],
