@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { TicketEmailScheduler } from './ticket-email.scheduler.js';
 
 function makeScheduler(opts: {
-  candidates: { id: string; emailLogs: { status: string }[] }[];
+  candidates: { id: string }[];
   sendResult?: { sent: boolean; attempts: number };
   mode?: string;
 }) {
@@ -25,23 +25,22 @@ describe('TicketEmailScheduler (S-27 AC1 automatic delivery)', () => {
     vi.clearAllMocks();
   });
 
-  it('queries only PAID orders with no SENT email log', async () => {
+  it('queries only PAID orders with no SENT or FAILED email log', async () => {
     const { scheduler, prisma } = makeScheduler({ candidates: [] });
 
     await scheduler.runBatch();
 
     const args = prisma.order.findMany.mock.calls[0][0];
     expect(args.where.status).toBe('PAID');
-    expect(args.where.emailLogs).toEqual({ none: { status: 'SENT' } });
+    expect(args.where.emailLogs).toEqual({
+      none: { status: { in: ['SENT', 'FAILED'] } },
+    });
     expect(args.take).toBeGreaterThan(0);
   });
 
   it('sends tickets for each eligible PAID order', async () => {
     const { scheduler, ticketEmail } = makeScheduler({
-      candidates: [
-        { id: 'o1', emailLogs: [] },
-        { id: 'o2', emailLogs: [{ status: 'FAILED' }] },
-      ],
+      candidates: [{ id: 'o1' }, { id: 'o2' }],
     });
 
     const sent = await scheduler.runBatch();
@@ -51,25 +50,20 @@ describe('TicketEmailScheduler (S-27 AC1 automatic delivery)', () => {
     expect(ticketEmail.sendTicketsForPaidOrderSystem).toHaveBeenCalledWith('o2');
   });
 
-  it('stops retrying an order after 3 FAILED records (manual follow-up)', async () => {
-    const { scheduler, ticketEmail } = makeScheduler({
-      candidates: [
-        {
-          id: 'o-dead',
-          emailLogs: [{ status: 'FAILED' }, { status: 'FAILED' }, { status: 'FAILED' }],
-        },
-      ],
-    });
+  it('the scan query excludes orders that already have a FAILED row (AC2: 3 attempts total)', async () => {
+    // Unit-level check of the selection rule only. The real "not picked up again"
+    // behaviour is verified against PostgreSQL, because the mock returns what it is told.
+    const { scheduler, prisma } = makeScheduler({ candidates: [] });
 
-    const sent = await scheduler.runBatch();
+    await scheduler.runBatch();
 
-    expect(sent).toBe(0);
-    expect(ticketEmail.sendTicketsForPaidOrderSystem).not.toHaveBeenCalled();
+    const args = prisma.order.findMany.mock.calls[0][0];
+    expect(args.where.emailLogs.none.status.in).toContain('FAILED');
   });
 
   it('does not count a failed send as delivered', async () => {
     const { scheduler } = makeScheduler({
-      candidates: [{ id: 'o1', emailLogs: [] }],
+      candidates: [{ id: 'o1' }],
       sendResult: { sent: false, attempts: 3 },
     });
 

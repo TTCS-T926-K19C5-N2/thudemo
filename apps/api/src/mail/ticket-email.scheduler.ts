@@ -63,20 +63,21 @@ export class TicketEmailScheduler implements OnModuleInit, OnModuleDestroy {
   // The send itself is idempotent per scan because a SENT row is written before
   // the next scan can select the order again.
   async runBatch(): Promise<number> {
+    // A send already makes MAIL_MAX_ATTEMPTS attempts. If it still fails, the order
+    // gets one FAILED row and is NOT rescanned: that is the "ghi nhận lỗi để quản trị
+    // xử lý tay" step, so total attempts stay at 3 (AC2).
     const candidates = await this.prisma.order.findMany({
       where: {
         status: 'PAID',
-        emailLogs: { none: { status: 'SENT' } },
+        emailLogs: { none: { status: { in: ['SENT', 'FAILED'] } } },
       },
-      select: { id: true, emailLogs: { select: { status: true } } },
+      select: { id: true },
       orderBy: { createdAt: 'asc' },
       take: TICKET_EMAIL_BATCH_SIZE,
     });
 
     let sent = 0;
     for (const order of candidates) {
-      const failed = order.emailLogs.filter((l) => l.status === 'FAILED').length;
-      if (failed >= MAIL_MAX_ATTEMPTS) continue;
       const result = await this.ticketEmail.sendTicketsForPaidOrderSystem(order.id);
       if (result.sent) sent += 1;
     }
