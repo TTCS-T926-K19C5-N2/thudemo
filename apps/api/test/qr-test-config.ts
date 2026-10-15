@@ -10,3 +10,7 @@ process.env.SCANNER_PUBLIC_KEYS = JSON.stringify({
     .export({ type: 'spki', format: 'pem' })
     .toString(),
 });
+process.env.TICKET_SIGNING_ACTIVE_KEY_ID = 'integration-fixture';
+process.env.TICKET_SIGNING_PRIVATE_KEY = process.env.SCANNER_SIGNING_PRIVATE_KEY;
+process.env.TICKET_SIGNING_PUBLIC_KEYS = process.env.SCANNER_PUBLIC_KEYS;
+

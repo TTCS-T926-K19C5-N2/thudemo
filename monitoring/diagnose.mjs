@@ -18,6 +18,7 @@ const sensitive = [
   "telegram-token",
   "external-smtp-password",
   "external-telegram-token",
+  "ticket-signing-key",
 ]
   .filter((n) => existsSync(resolve(runtime, n)))
   .map((n) => readFileSync(resolve(runtime, n), "utf8").trim())
