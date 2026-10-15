@@ -36,6 +36,19 @@ export interface OfflineScanRecord {
   ticketType?: string;
 }
 
+export interface PendingScanRecord {
+  id: string;
+  showtimeId: string;
+  ticketId: string;
+  gateId: string;
+  requestId: string;
+  createdAt: string;
+  status: "pending" | "syncing" | "synced" | "failed";
+  retryCount: number;
+  lastError?: string;
+  syncedAt?: string;
+}
+
 const DB_NAME = "thudemo_scanner_db";
 const DB_VERSION = 2;
 
@@ -77,8 +90,16 @@ export function openScannerDb(): Promise<IDBDatabase> {
           unique: false,
         });
       }
-    };
 
+      if (!db.objectStoreNames.contains("pending_scans")) {
+        const pendingStore = db.createObjectStore("pending_scans", {
+          keyPath: "id",
+        });
+        pendingStore.createIndex("showtimeId", "showtimeId", { unique: false });
+        pendingStore.createIndex("status", "status", { unique: false });
+        pendingStore.createIndex("createdAt", "createdAt", { unique: false });
+      }
+    };
 
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => {
@@ -362,6 +383,32 @@ export async function hasOfflineScanForTicket(
   });
 }
 
+export async function markTicketAsLocalCheckedIn(
+  showtimeId: string,
+  code: string,
+): Promise<void> {
+  const db = await openScannerDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("tickets", "readwrite");
+    const store = tx.objectStore("tickets");
+    const req = store.get([showtimeId, code]);
+    req.onsuccess = () => {
+      const ticket = req.result as LocalTicket | undefined;
+      if (ticket) {
+        ticket.localCheckedIn = true;
+        ticket.status = "checked_in";
+        ticket.checkedInAt = ticket.checkedInAt ?? new Date().toISOString();
+        const putReq = store.put(ticket);
+        putReq.onsuccess = () => resolve();
+        putReq.onerror = () => reject(putReq.error);
+      } else {
+        resolve();
+      }
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
 export async function countPendingOfflineScans(
   showtimeId?: string,
 ): Promise<number> {
@@ -396,4 +443,3 @@ export async function clearOfflineScanQueue(
     };
   });
 }
-
