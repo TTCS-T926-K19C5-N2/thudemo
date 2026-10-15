@@ -275,9 +275,12 @@ async function instrumentation(enabled) {
 const percentile = (values, p) =>
   [...values].sort((a, b) => a - b)[Math.ceil(values.length * p) - 1];
 async function benchmark(a, b) {
-  const batch = async () => {
+  const resetClaims = async () => {
     await db.seatHold.deleteMany({ where: { showtimeId: showId } });
     await db.holdSession.deleteMany({ where: { showtimeId: showId } });
+  };
+  const batch = async () => {
+    await resetClaims();
     const tasks = seatIds.flatMap((id, i) => [
       call(
         i % 2 ? 18002 : 18001,
@@ -319,11 +322,40 @@ async function benchmark(a, b) {
     for (const [pair, order] of orders.entries()) {
       for (const [position, enabled] of order.entries()) {
         await instrumentation(enabled);
-        const warmup = await batch();
+        // Recreating both APIs intentionally clears their S-42 limit cache and
+        // DB pools. Prime each process with one excluded request before the
+        // 200-concurrency S-43 sample; otherwise this monitoring-overhead test
+        // also measures a cold, unrelated ticket-limit lookup and can fail its
+        // strict 100/100 invariant before producing any benchmark evidence.
+        // Both requests must still succeed, and all writes are removed before
+        // the asserted warmup and measured batch.
+        // The previous measured batch intentionally leaves 100 active holds.
+        // Remove them before priming, otherwise these two fixed seats can
+        // nondeterministically belong to the opposite fixture account and the
+        // prime itself returns 409 on later crossover rounds.
+        await resetClaims();
+        const prime = await Promise.all([
+          call(
+            18001,
+            `/showtimes/${showId}/holds`,
+            'POST',
+            { seatIds: [seatIds[0]] },
+            a,
+          ),
+          call(
+            18002,
+            `/showtimes/${showId}/holds`,
+            'POST',
+            { seatIds: [seatIds[1]] },
+            b,
+          ),
+        ]);
         check(
-          warmup.statuses[200] === 100 && warmup.statuses[409] === 100,
-          'benchmark warmup atomic hold invariant 100 successes / 100 conflicts',
+          prime.every((result) => result.status === 200),
+          'benchmark process priming succeeds before concurrent samples',
         );
+        await resetClaims();
+        const warmup = await batch();
         report.benchmarkWarmup.push({
           instrumentation: enabled,
           pair,
@@ -331,6 +363,10 @@ async function benchmark(a, b) {
           ...warmup,
           excludedFromPooledSamples: true,
         });
+        check(
+          warmup.statuses[200] === 100 && warmup.statuses[409] === 100,
+          'benchmark warmup atomic hold invariant 100 successes / 100 conflicts',
+        );
         const { rawMs: ms, statuses } = await batch();
         check(
           statuses[200] === 100 && statuses[409] === 100,
