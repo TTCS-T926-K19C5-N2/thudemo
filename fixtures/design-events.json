@@ -1,0 +1,166 @@
+{
+  "synthetic": true,
+  "sourceProject": "1184317708208520256",
+  "sourceScreen": "067ffc23e523451f8a347980081c73e6",
+  "events": [
+    {
+      "key": "autumn-symphony",
+      "eventId": "c0100400-0000-4000-8000-000000000001",
+      "showtimeId": "c0100401-0000-4000-8000-000000000001",
+      "name": "Đêm nhạc Tháng Mười - Giai điệu Mùa Thu",
+      "description": "Trải nghiệm âm nhạc và nghệ thuật trực tiếp tại Nhà hát Ánh Dương, Quận 1, TP.HCM.",
+      "location": "Nhà hát Ánh Dương, Quận 1, TP.HCM",
+      "startTime": "2026-10-16T19:30:00+07:00",
+      "categoryLabel": "Chính kịch & Thính phòng",
+      "categories": [
+        {
+          "name": "Ban công",
+          "price": 350000
+        },
+        {
+          "name": "Tiêu chuẩn",
+          "price": 650000
+        },
+        {
+          "name": "VIP",
+          "price": 1200000
+        }
+      ],
+      "posterPath": "/images/events/autumn-symphony.jpg",
+      "posterUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuBNxEZpWQ6n-v5bEVHbvPirkjqfbnoNmLcHdhyD0rjYmRnMjWH6sPZENg791kGMylZvh3q2Hm-xwFIFPsQn5icnq-gT4R_O-Q52B11qPX6T_W4lUFxxpcBHN53C3d_1N8NjT4viy1CUREcVv4Rr-zuJ1wnD1JJrS41eNjJDvzYRuYMew0JdSbhKyyEbDzgxy4ZDCSNYIxT2h_tQXdilCvdgovWYkKBlCVjsBn9Mq5vn-dLUkKoFeo_YvjSD4zEQZanpPfv8dHCvzSY",
+      "mobilePosterPath": "/images/events/autumn-symphony-mobile.jpg",
+      "mobilePosterUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuBKT2GqEks-LP6qGMyc7C45b9aIKSdUYij2J5VUztkorfQ-6x14ZWW0Pnd2WG4-vLwlkwJ6RHgu3RQmdC1P-MW37hqJ5CSltBar7o9mSiX6zCvWXuCvI3ksc7F4tFOSo4JDNk7jqunuXTH7F_MCkV_OQxBNLh4dx44iReDXvxsHuOJhKA4KoxtO5qfb0zcIkkZq1RkdLVJtqHB7NaONuDRDW7CWIZAWPd-X1-Ri8-QkdtmoiY1pcXkMIgMHQUzoxZHsfybFUeD0ovs",
+      "bannerPath": "/images/events/autumn-symphony-banner.jpg",
+      "bannerUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuAv9uogRf2X5i6LbMLljOfow9DYdVHrj_FjDi6phSx2-vcfc0--TlOhVRWz-eOkdCw5_mvs_4RrxOlF_ZQQLDzpTiKlfjampBjslOLhm4x1qFKhKaodcpIKYEDmVaKEEIjUwTLlh8jZEUso7tz3ZDE8TACHbGZiRJ6YUkoyn2B0HIXbsrk5XY9J53m_ZTq0PcOtBSWfoomsPgLMUsDjmWwHBOMZ5W5mzrefDwizsr8T5nQZPO-0Pgd_3UJBx2ecXtsA5XQb0hdUH50"
+    },
+    {
+      "key": "starlight-piano",
+      "eventId": "c0100400-0000-4000-8000-000000000002",
+      "showtimeId": "c0100401-0000-4000-8000-000000000002",
+      "name": "Hòa nhạc Thính phòng Ánh Sao",
+      "description": "Trải nghiệm âm nhạc và nghệ thuật trực tiếp tại Nhà hát Thành Phố, Đồng Khởi, Q.1.",
+      "location": "Nhà hát Thành Phố, Đồng Khởi, Q.1",
+      "startTime": "2026-10-18T20:00:00+07:00",
+      "categoryLabel": "Hòa tấu Piano",
+      "categories": [
+        {
+          "name": "Tiêu chuẩn",
+          "price": 450000
+        },
+        {
+          "name": "VIP",
+          "price": 900000
+        }
+      ],
+      "posterPath": "/images/events/starlight-piano.jpg",
+      "posterUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuDOl3HPmxXKibIwwTe_-EBrOeB7XIprvGqSe4pK9RCCmQYdrOv2Yb0L_boF1x40MiNwwvnSrz9tTyxvUAN5M4U3lvyHr0vWISJSudsyJRjUENcPpFlRgcgWGzLCTVJ5pOZX1goEmkI8qCHmTTY9Vb5cm9WcvMlwuWEGxJTMnabvX2NlHAvoQyH-q-Mi4erZcYqHs52RIWFusoIxxlH6Cygt4PCXxAinveaLh3sSGvA-VwLgy7xhKGTWpY19KyHwiWmtCOvMLPXboKY",
+      "mobilePosterPath": "/images/events/starlight-piano-mobile.jpg",
+      "mobilePosterUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuAnihz5KXeVO-OC2Es6NEXkZWjdfCt4hdxETsKnNILeEl_qrfDVdYh_pQF00J3-mlKy5tWL3tucTmKPkdTljYcRt-LwZymguAYs8-wu4qOuVwXhzYZ488jOA6vIfMNN5TR7p83j8MkfWcIvGNntrAU4eGDfwHT_QnKnXTcXUkwM3IPqNOoVDO_6rUcIAHgPPbfXfQW9NevtlzAh08hiBd1Tbhy8QMTgVV0X_itw6YYI5OgP2sSV24dOL2bX1DHs8cj8fX1yHNMnuSA",
+      "bannerPath": null
+    },
+    {
+      "key": "mustard-blossom",
+      "eventId": "c0100400-0000-4000-8000-000000000003",
+      "showtimeId": "c0100401-0000-4000-8000-000000000003",
+      "name": "Vở kịch: Mùa Hoa Cải Nở",
+      "description": "Trải nghiệm âm nhạc và nghệ thuật trực tiếp tại Sân khấu Kịch IDECAF, Q.1.",
+      "location": "Sân khấu Kịch IDECAF, Q.1",
+      "startTime": "2026-10-24T19:00:00+07:00",
+      "categoryLabel": "Kịch nói đương đại",
+      "categories": [
+        {
+          "name": "Phổ thông",
+          "price": 250000
+        },
+        {
+          "name": "Vé trung tâm",
+          "price": 400000
+        }
+      ],
+      "posterPath": "/images/events/mustard-blossom.jpg",
+      "posterUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuC_7pwS267LQ9IsdRLP1MU0q5ZqYaADjj0jyEAXSMn3wRGw-zWCaBMLnZoG0ICC0bOBPMxILhcgVQvApGveMCbTtg1GuXSy2RtfNpLHiXmwjP-1KvnmyBBCkI_C1x6d310wgfwFuQWAox4I8UwCKXBiKY0moBbSK_qb_s-jRVMfncbf5U6b3ASauqVWUZQyDiys_rLH1aL8EAkzqD1EXIsLi4D8QSvKqTMd9o-_jgPN4xDGt49ptXLc6DBOZFkVx3iYT2yQyRTMTEI",
+      "mobilePosterPath": "/images/events/mustard-blossom-mobile.jpg",
+      "mobilePosterUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuAhSI0qQTVO_iAotSQkCHzUE6KZtnfPSqTnCV30hgVJOsNRHE30Xp14FfTRsknQGilgAoNGbGneQhrO0ePbCHFSq7XQbUe6jtCBhZaAITVul6lGzwygEmXOT4FxWBEKdZBLfUsFUglkn3g-oOxdKh0QqDtcOcG2EY304BbMJI_J8A_oM4oYrIGQ-hAC8xk4uBTwgT-6YU0WRCXhhd2iegdB8ZISnaS5VbQx3yZruczIjHLDRj0Fq3FO7dwBbsYMd2Eg_UQEiRW7lk8",
+      "bannerPath": null
+    },
+    {
+      "key": "indie-night",
+      "eventId": "c0100400-0000-4000-8000-000000000004",
+      "showtimeId": "c0100401-0000-4000-8000-000000000004",
+      "name": "Indie Night TP.HCM Vol. 4",
+      "description": "Trải nghiệm âm nhạc và nghệ thuật trực tiếp tại Soul Live Project Complex, Q.3.",
+      "location": "Soul Live Project Complex, Q.3",
+      "startTime": "2026-10-30T20:30:00+07:00",
+      "categoryLabel": "Indie Acoustic / Rock",
+      "categories": [
+        {
+          "name": "General Admission đứng",
+          "price": 300000
+        },
+        {
+          "name": "Ban công VIP",
+          "price": 500000
+        }
+      ],
+      "posterPath": "/images/events/indie-night.jpg",
+      "posterUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuBdoP_ztbpPRL7KVBLbB9GdlHk6bkEjHnt_8OmZeIUb_lk8JpxTFxQQSvOn17r4Oygmmp52oBSRNFDFKAKzSktqhic39tPbD5IV9SF-4Pg-mFU25YhmNhSuimby_Vybdr6O5EBroEy7S64LaGlUZsmBi6DEKpeMsFK9w-1AAdvHmC4T9N8HekwXF21-MiIjD-Kvtbm15QHOjpZy1OXei8eV0krqPcuVwiUn4R2mk1kcSQVn1C7OiqZPVDjJpo8kLPahtll4i2Nl3mE",
+      "mobilePosterPath": "/images/events/indie-night-mobile.jpg",
+      "mobilePosterUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuC-WVF5lrhJqt-XquEzzCOPNsPBD34CPjl_RbZrYXxRFvR6YpkJKnwMEuo-yJ7Aja6P-6zsegQKza_7PlktMpMszGdeDhu6YCAt8fW2vDecdvaUnhHP-8-K-195Vdi6gm3uKa6lp5Gzgfs7MfoOI1CBkzBLMiHZbmz4i1T8BxwILVzsf-jeXipyJzgSyyRFmEw-fnX8HzygV9EDfu1NRDiTiNFEyod5zy0iKO4EKphtOr9jfUn0fFE1CsOPuGMg8qVgLkNJmjSWxRQ",
+      "bannerPath": null
+    },
+    {
+      "key": "trinh-poetry",
+      "eventId": "c0100400-0000-4000-8000-000000000005",
+      "showtimeId": "c0100401-0000-4000-8000-000000000005",
+      "name": "Đêm Thơ & Nhạc Trịnh Công Sơn",
+      "description": "Trải nghiệm âm nhạc và nghệ thuật trực tiếp tại Phòng trà Đồng Dao, Pasteur, Q.1.",
+      "location": "Phòng trà Đồng Dao, Pasteur, Q.1",
+      "startTime": "2026-11-07T19:30:00+07:00",
+      "categoryLabel": "Nhạc Trữ Tình",
+      "categories": [
+        {
+          "name": "Ghế Bàn Sau",
+          "price": 400000
+        },
+        {
+          "name": "Ghế Gần Sân Khấu",
+          "price": 650000
+        }
+      ],
+      "posterPath": "/images/events/trinh-poetry.jpg",
+      "posterUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCseweFSJlTYlC-F_SbGGVDSsx_qbm19y47ciupSVCfMWbfpS4Mh38Sd74s4MB7DzYhflXtmLu0kOs-URgMEj3EQfQhcIspwf5Vsc7cOHqR7bSWFPe0BxV_WdVdHhrGYEh8XzpUSAoNW9MXzg3m7uGPOJ8Auf9dlUc32qanmF4PKqwVeXNxlm6JB3wA1odivOXJRXlqZ8H5MmvNNDd5JmvBAmlL3O0v8cMp_-X7181Vzg--Psgl1kYmFvz1UBSeI-KU10yQFUkH8RE",
+      "mobilePosterPath": "/images/events/trinh-poetry-mobile.jpg",
+      "mobilePosterUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCSTl9c37X2KeN5QFHnw2i9UqUvrQoFak9FWgvCS0KfnsBsz5iHhf7CnCi614-4jbiS9cUwZZ75mbIzW-RuXSRvdwDXEoMLJF4vXaNiIQ376D7Ef6vNLDZzaJyJkChEGWG5Q0Asrd4RrDZ9RfIKP2Qa6cylFsKj-KuGSlykoj8nj2W6iCMjh3pouJl73pI08MKNwYUvv5l0GvBnNIQGB3f6W4JFStbSAcK-dy12dCM6rm8NE6Rbqzb07PW6b-eblB5IoT9KojD3N90",
+      "bannerPath": null
+    },
+    {
+      "key": "autumn-choir",
+      "eventId": "c0100400-0000-4000-8000-000000000006",
+      "showtimeId": "c0100401-0000-4000-8000-000000000006",
+      "name": "Giao hưởng Mùa Thu & Tình ca",
+      "description": "Trải nghiệm âm nhạc và nghệ thuật trực tiếp tại Nhà hát Lớn, Lam Sơn, Q.1.",
+      "location": "Nhà hát Lớn, Lam Sơn, Q.1",
+      "startTime": "2026-11-15T19:30:00+07:00",
+      "categoryLabel": "Giao hưởng Hợp xướng",
+      "categories": [
+        {
+          "name": "Lầu 2",
+          "price": 500000
+        },
+        {
+          "name": "Trệt A",
+          "price": 850000
+        },
+        {
+          "name": "VIP Box",
+          "price": 1500000
+        }
+      ],
+      "posterPath": "/images/events/autumn-choir.jpg",
+      "posterUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuDZDqeWscfFUZHvQPs-ld1TMt1y6DIRzAlSIPlVDJcr70fXdbuv2AB1Qo-BtZ_7DJuXDNXiqmvxxZGmtkyvcUDRKCbOhiIiHKbui4PFBiJ0cCZ1GXD2oGRbzSFuddVFrI1gnv1dLtCqx90cyPK7zCj5eLKu3JbmJAqf_nvY-a8EErmXcxJRPwveHKfITKZO_lj6fF-v4RLCUs81B1iGswTkDCHkgl29SDdOa5OdPln3lvAolROwyTJEchDiaVaFE6AuWi4Au-weKcs",
+      "mobilePosterPath": "/images/events/autumn-choir-mobile.jpg",
+      "mobilePosterUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuDZDqeWscfFUZHvQPs-ld1TMt1y6DIRzAlSIPlVDJcr70fXdbuv2AB1Qo-BtZ_7DJuXDNXiqmvxxZGmtkyvcUDRKCbOhiIiHKbui4PFBiJ0cCZ1GXD2oGRbzSFuddVFrI1gnv1dLtCqx90cyPK7zCj5eLKu3JbmJAqf_nvY-a8EErmXcxJRPwveHKfITKZO_lj6fF-v4RLCUs81B1iGswTkDCHkgl29SDdOa5OdPln3lvAolROwyTJEchDiaVaFE6AuWi4Au-weKcs",
+      "bannerPath": null
+    }
+  ]
+}

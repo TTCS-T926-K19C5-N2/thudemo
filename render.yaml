@@ -1,0 +1,61 @@
+# Prepared locally only. Sync/deploy requires permission to upload this revision.
+# Every resource explicitly Free; no worker/cron, disk, preview or paid default.
+services:
+  - type: web
+    name: sang-event-api
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeployTrigger: "off"
+    healthCheckPath: /health
+    envVars:
+      - key: SERVICE_ROLE
+        value: api
+      - key: NODE_ENV
+        value: production
+      - key: HOLD_EXPIRY_MODE
+        value: api
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sang-event-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: sang-event-cache
+          property: connectionString
+      - key: WEB_ORIGIN
+        sync: false
+  - type: web
+    name: sang-event-web
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeployTrigger: "off"
+    healthCheckPath: /api/health
+    envVars:
+      - key: SERVICE_ROLE
+        value: web
+      - key: NODE_ENV
+        value: production
+      - key: API_INTERNAL_URL
+        sync: false
+  - type: keyvalue
+    name: sang-event-cache
+    plan: free
+    region: singapore
+    maxmemoryPolicy: noeviction
+    persistenceMode: "off"
+    ipAllowList: []
+databases:
+  - name: sang-event-postgres
+    plan: free
+    region: singapore
+    postgresMajorVersion: "15"
+    databaseName: sang_events_staging
+    user: sang_events
+    ipAllowList: []

@@ -5,7 +5,10 @@ export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     globals: true,
+    setupFiles: ['./test/qr-test-config.ts'],
     root: './',
     include: ['**/*.e2e-spec.ts'],
+    // Suites share one database; catalog assertions must not see another suite's fixtures.
+    fileParallelism: false,
   },
 });

@@ -1,0 +1,40 @@
+{
+  "sourceSha": "ed76c9a005029707719279b05170695b011e5395",
+  "driverSha256": "1b561638b7847b2b8f602bf507bcd5094177274c1f72e174262532a09c74e993",
+  "environment": "Real web3050 -> API3051 -> private PG15440; independent staff and owner sessions",
+  "camera": false,
+  "staging": false,
+  "checks": [
+    "Signed used ticket at B shows first 19:02 gate A",
+    "S-30 does not expose S-31 exception action",
+    "Signed ticket verified by browser public key then real server commit returns seat",
+    "Next scan clears and focuses input",
+    "Unsigned real UUID rejected without green state",
+    "Unsupported QR version rejected by browser",
+    "Over3s waits and prevents duplicate submit, no green before commit",
+    "Changing QR clears stale valid result",
+    "Network failure never produces valid/offline state",
+    "Mobile390x844 fits without horizontal overflow",
+    "Touch target at least44px",
+    "Result has live region and text/icon beyond color",
+    "Owner page renders one real signed QR at a time",
+    "Paid order does not show pending-payment countdown/expiry",
+    "Actual QR image decodes to owner-issued signed payload; image fixture is not hardware-camera proof",
+    "Decoded signed image accepted through the real scanner/API",
+    "S-33 full snapshot stores canonical tickets and both rotation public keys in real IndexedDB",
+    "S-33 snapshot route still renders after online scanner route integration",
+    "No unexpected browser console/runtime errors"
+  ],
+  "screenshots": [
+    "desktop-used.png",
+    "desktop-valid.png",
+    "desktop-invalid.png",
+    "desktop-network-error.png",
+    "mobile-used.png",
+    "desktop-owner-qr-fixture.png"
+  ],
+  "consoleErrors": [],
+  "startedAt": "2026-10-09T07:29:17.939Z",
+  "status": "PASS",
+  "finishedAt": "2026-10-09T07:29:25.743Z"
+}

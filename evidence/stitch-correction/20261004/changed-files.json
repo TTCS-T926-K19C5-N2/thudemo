@@ -1,0 +1,312 @@
+[
+  {
+    "path": "README.md",
+    "sha256": "2a547d0de13ffc4d3ea55815f09f7ab7d959db0538f6e77e6ecae227f250e58e",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/api/prisma/migrations/202610040004_event_presentation/migration.sql",
+    "sha256": "6f0313764256bf508b1461021cb6fdd86f2526875f46c62411e520bda30beaf1",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/api/prisma/schema.prisma",
+    "sha256": "362fec2af513124732960f9f8fb4942ffab0542d1f12899e3760ee2823bf46be",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/api/scripts/seed-design-fidelity.mjs",
+    "sha256": "0407728820623c0337464c5db6fa8140e205947f8f62d63174a7464fba20c2ac",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/api/scripts/seed-sprint2.mjs",
+    "sha256": "759627959671744348468631941f88d219f38b1f8eb79450d400477a56c5a9d2",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/api/src/showtimes/showtimes.service.ts",
+    "sha256": "b23b1323e23d55ac43cc4424a1864d8f08f587bbf110912ff81187ed8f325e62",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/api/test/sprint2.e2e-spec.ts",
+    "sha256": "4ffa0a07a0e47ba647a141fe4b2aba27c80c26f48eae6f41b1539144e668cd77",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/web/package.json",
+    "sha256": "d3392d8b1f47d4027b93c5abecc4ba3c3a496837ae6e5aae92c9938b3486cec6",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/public/images/events/autumn-choir-mobile.jpg",
+    "sha256": "d9b88a3cac89d3064b87e53a7278201d4d22f3c61bb8937c665ebe13b78d4925",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/public/images/events/autumn-choir.jpg",
+    "sha256": "d9b88a3cac89d3064b87e53a7278201d4d22f3c61bb8937c665ebe13b78d4925",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/public/images/events/autumn-symphony-banner.jpg",
+    "sha256": "57f35a2a9626575488c91bda5e4aaaa0d8906ef7950b14c0da3ff7f7dcabc911",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/public/images/events/autumn-symphony-mobile.jpg",
+    "sha256": "44134c7ad471a2657ecad9d445e48970d6f2c7093889cf12ef893b4b163e237b",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/public/images/events/autumn-symphony.jpg",
+    "sha256": "d85a8049eafb550b2e138a490aa3f477d1a553d710bfc95de84e03ed78924a8c",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/public/images/events/indie-night-mobile.jpg",
+    "sha256": "4bc20942376dc9a182849eca7ce7e3e93e12c03c68ea337f7b351b9e7a3c72dd",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/public/images/events/indie-night.jpg",
+    "sha256": "8af0c7041e0f13e0469c938c449d046d4c4806212c1752d0aadc2de4c5e581bc",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/public/images/events/mustard-blossom-mobile.jpg",
+    "sha256": "7f161f2c2a77616d53094d367baaa0b74d59e63e05a5be8a9a1eaff87834f13a",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/public/images/events/mustard-blossom.jpg",
+    "sha256": "ef69206f76c7154dc66722e1cbbe7f7b2cb8d6f0e4fe2107406eeda8e76aa4b4",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/public/images/events/starlight-piano-mobile.jpg",
+    "sha256": "cc55e2a7b269d0f6fe2d72c04e0a281354d8c9d844d47f68ff1d6087e45298fc",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/public/images/events/starlight-piano.jpg",
+    "sha256": "c77cc1bc758ef929fadd23a176b2e97f54d70be92a460107391e0e26e539acf2",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/public/images/events/trinh-poetry-mobile.jpg",
+    "sha256": "ec575cbd8cf3b2c4e693351326ce32fe7f3592449f386784f6f7102cc7e6a347",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/public/images/events/trinh-poetry.jpg",
+    "sha256": "43289db29a7118f439b288dc1674360bf00e031a0e8fb56d88e8767ee9ab02e9",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/app/account/page.tsx",
+    "sha256": "4565f14f3700515a06cbcde22a656f30596532334ffbe2eceafa6f6c22e39301",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/web/src/app/events/page.tsx",
+    "sha256": "f202a462a61bf640a4fb0b5e3b7113f797c8ca087c17f017e4727320003b3ab6",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/web/src/app/layout.tsx",
+    "sha256": "bd894f16083c113dec770dc25ea60f4dffa2d8c84adb510beb73995f91f22ccf",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/web/src/app/login/page.tsx",
+    "sha256": "3d82c4d8cee337347d2e3880b0e505dc9885dd89c16bd64331c2a2440519c1ab",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/web/src/app/product.css",
+    "sha256": "a7821f66b0ac43e785472fcb25b79868c2d0d19dcac75e21913c9d17c53ce48b",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/app/shows/[id]/page.tsx",
+    "sha256": "bc86c81cd329393e8d58431979231ac935cb49689df09e9fd9d7fbac0065f961",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/web/src/app/shows/[id]/seats/page.tsx",
+    "sha256": "641ca674efc9739b04888cbc046f94e5145b10b845b7a6c297476c52f3eab859",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/web/src/app/showtimes/[id]/[mode]/page.tsx",
+    "sha256": "0991d9f77d918d2b9691af924fb0f322ea2825c14dc53b29b73a313f5077f69f",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/web/src/components/layout/product-layout.tsx",
+    "sha256": "c56739d39d8e32ea63a3b68034de5221ecd7f3900af7cf44717cf1aab7aa0553",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/components/login-form.tsx",
+    "sha256": "adf51afd063726800cf1f39a2362f780668fdaec4a15c168dfeb18c12f7713e0",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/web/src/components/seat-map/seat-map.tsx",
+    "sha256": "148ef26e093b3f3929f763d4e4804ce18cd4d76b028d550f8cd46c727fb09e63",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/components/ui/table.tsx",
+    "sha256": "77239066498ff81075f50b076cf1256ea2683cbe1847b2af2fb851b206c10f61",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/features/event-catalog/event-catalog.tsx",
+    "sha256": "1fcb1b290dcd89b5a20fd23292a500a2b1e7f7a65776ff700611555068f1acea",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/features/event-catalog/event-poster.tsx",
+    "sha256": "5d24dbe93ce85ae8d8642a215405dd45a1ba044819ddc59ad219068c60738aa9",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/features/event-catalog/public-showtime.tsx",
+    "sha256": "c5d5651fb1de1505cd696212d5161a99cd089bba30d63cd8e60ac752e7412bd4",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/features/seat-map-import/seat-map-import-form.tsx",
+    "sha256": "06e21471315f45019443ac719fc372b4ba59f2358cac7e405e97e4394b65945c",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/features/seat-pricing/seat-pricing-form.tsx",
+    "sha256": "9f76b95e1d939b41ae3852dfa1323c95a2151026419be6a75bc55656d34953cd",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/features/seat-selection/seat-selection.tsx",
+    "sha256": "57c4f1632deb3c2ae58a147e31caeb90cadd2af873697d6efec97179f3d50794",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/features/showtime-management/sale-status-control.tsx",
+    "sha256": "bf5bfe89d322c0cb3dd21fcb7da2d9927f5ce9603d91fd03d19bc6d5d52eeef7",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/features/showtime-management/showtime-workspace.tsx",
+    "sha256": "fcb76d975657f7ffe8d48617a87b398710c1f33ae7b9cacee19947c3ff0b2aa3",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/lib/api.ts",
+    "sha256": "9d14ef866d6479b2a50c857e980c5ce1db7cf19cbda4c1ee6662baf31b35f766",
+    "snapshotExists": true
+  },
+  {
+    "path": "apps/web/src/lib/api/client.spec.ts",
+    "sha256": "679ea2f2ea180f97dc178a7c4f4f292c6fbb149c04716c8df5d9f31eb7878116",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/lib/api/client.ts",
+    "sha256": "d4d61c22b16125fd0a7faaadac30f384a73fdfa146f861935fb1d08384d0bda9",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/lib/contracts/showtimes.ts",
+    "sha256": "e824f248c8893148fd53a98c0b32b74634571380f4a55b44fb6730336d254dbb",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/lib/formatting/index.ts",
+    "sha256": "24693d0d3aa914b2a943d4e641d6cf0e41284b2ddd0318c2b1be012ac87215bf",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/src/lib/presentation/seat-category.ts",
+    "sha256": "a33d0bbf847a43437f00a03fedcd0e7964fefbef65f3784199a46b13728f1c5e",
+    "snapshotExists": false
+  },
+  {
+    "path": "apps/web/vitest.config.ts",
+    "sha256": "1922c4a4384e1b3a5c931a439c07592d98bff26ec5ba808e3777f1a5a9f1cee1",
+    "snapshotExists": false
+  },
+  {
+    "path": "docs/K01_EVIDENCE.md",
+    "sha256": "2b4250ed19d3d32f4e70f9de369f445946284260772d969d29cbefd7bdd221d5",
+    "snapshotExists": true
+  },
+  {
+    "path": "docs/SPRINT2_HANDOFF.md",
+    "sha256": "ad15cf3184a5bc72fbc128aa8a5cccfda772f55e6fbd955fb0fdc155e5568fa1",
+    "snapshotExists": true
+  },
+  {
+    "path": "docs/SPRINT2_LOCAL_EVIDENCE.md",
+    "sha256": "ee3c8fd7a0262312070afc9127d4012daaa652175782b2db1c8f4edc12947532",
+    "snapshotExists": true
+  },
+  {
+    "path": "docs/STITCH_CORRECTION_EVIDENCE.md",
+    "sha256": "36cf4b55e85d05d78b587aa607cef6175e2c82861b82a9e70b67b74cf86d6af0",
+    "snapshotExists": false
+  },
+  {
+    "path": "docs/STITCH_CORRECTION_HANDOFF.md",
+    "sha256": "1c57e93bbf051085ee530295c80f80998f885c2340d6ea9edcb73ad3d0341419",
+    "snapshotExists": false
+  },
+  {
+    "path": "docs/STITCH_CORRECTION_PLAN.md",
+    "sha256": "05994d477a9f0b1b6271929abe51bdcb893ac336c1f4e8be560d6accbcb2b8ad",
+    "snapshotExists": false
+  },
+  {
+    "path": "docs/STITCH_FIDELITY_LEDGER.md",
+    "sha256": "eadcd3578f9434d719af353bf633f6f83df74154c711d66b5d1c1adad939ed68",
+    "snapshotExists": false
+  },
+  {
+    "path": "fixtures/design-events.json",
+    "sha256": "9eb93fb5568ceb16e71e14ff80c00c7b5e5023c9a2b237280dba2c794d197f54",
+    "snapshotExists": false
+  },
+  {
+    "path": "pnpm-lock.yaml",
+    "sha256": "fe247d8c0ecdd2094e020817fbcc2fb9c98acdf3db0a17395b7c0407205c608f",
+    "snapshotExists": false
+  },
+  {
+    "path": "scripts/capture-correction-before.js",
+    "sha256": "928314a00c4a728de89de331f2d04725d743b994ce95a1e799264a8f866f4c62",
+    "snapshotExists": false
+  },
+  {
+    "path": "scripts/correction-browser-flow.js",
+    "sha256": "db46d3a4933b46d52956c549fd001d66449685df1aa37651b2f8fc87df7b2203",
+    "snapshotExists": false
+  },
+  {
+    "path": "scripts/run-sprint2-local.ps1",
+    "sha256": "f19a38b586221c7b9c5d2f4875b4060b500bcc03e5d061e9fb3676db4c02ca31",
+    "snapshotExists": true
+  },
+  {
+    "path": "scripts/verify-stitch-browser.ps1",
+    "sha256": "d12c2a0afd156ad9d9f8ddd1ae74fce65eec7dc0ab5666ce62d131cf7ad7350e",
+    "snapshotExists": false
+  },
+  {
+    "path": "scripts/verify-stitch-correction.ps1",
+    "sha256": "67413717d4a71f5d095699496527318a6d5ab5b6a1d58faf4161f318be76b7e2",
+    "snapshotExists": false
+  }
+]
