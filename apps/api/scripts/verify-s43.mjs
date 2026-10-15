@@ -211,25 +211,51 @@ async function instrumentation(enabled) {
       },
     }),
   );
-  const r = spawnSync(
-    'docker',
-    [
-      ...composeArgs,
-      '-f',
-      file,
-      'up',
-      '-d',
-      '--no-build',
-      '--no-deps',
-      '--force-recreate',
-      'api-a',
-      'api-b',
-    ],
-    { cwd: root, encoding: 'utf8', timeout: 120000, windowsHide: true },
-  );
+  // S-42 branch note: shared CI runners intermittently fail this recreate with
+  // a non-zero docker exit before any product traffic runs (main stays green).
+  // Retry the CLI call itself; the 90s health wait below still gates boot, so
+  // no acceptance behavior changes. The sanitized docker stderr is kept in the
+  // evidence report to diagnose a persistent (non-transient) failure.
+  const sanitize = (text) =>
+    String(text)
+      .replace(
+        /(password|passwd|token|secret|credential)(["'\s:=]+)([^\s"'&;]+)/gi,
+        '$1$2***',
+      )
+      .slice(0, 2000);
+  let attempts = 0;
+  let lastError = '';
+  while (attempts < 3) {
+    attempts += 1;
+    const r = spawnSync(
+      'docker',
+      [
+        ...composeArgs,
+        '-f',
+        file,
+        'up',
+        '-d',
+        '--no-build',
+        '--no-deps',
+        '--force-recreate',
+        'api-a',
+        'api-b',
+      ],
+      { cwd: root, encoding: 'utf8', timeout: 120000, windowsHide: true },
+    );
+    if (r.status === 0) {
+      lastError = '';
+      break;
+    }
+    lastError = sanitize(
+      `exit=${r.status} signal=${r.signal ?? 'none'} stderr=${r.stderr ?? ''} error=${r.error?.message ?? ''}`,
+    );
+    report.instrumentationRecreate = { attempts, lastError };
+    await sleep(5000);
+  }
   assert(
-    r.status === 0,
-    'Instrumentation override failed; inspect private diagnostics',
+    lastError === '',
+    'Instrumentation override failed; see instrumentationRecreate in this report',
   );
   await wait(async () => {
     const responses = await Promise.all([
