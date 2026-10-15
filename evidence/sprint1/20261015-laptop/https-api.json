@@ -1,0 +1,71 @@
+{
+  "startedSource": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+  "origin": "https://10.88.164.155:3470",
+  "transport": "Real HTTPS, certificate and hostname verified using this exact staging certificate as trust anchor",
+  "results": [
+    {
+      "name": "https-home-health-anonymous401",
+      "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+      "status": "PASS"
+    },
+    {
+      "name": "production-secure-cookie-contract",
+      "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+      "status": "PASS"
+    },
+    {
+      "name": "organizer-draft-created-and-hidden-from-buyer",
+      "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+      "status": "PASS"
+    },
+    {
+      "name": "owner-b-and-buyer-server403",
+      "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+      "status": "PASS"
+    },
+    {
+      "name": "event-edit-readback-persists",
+      "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+      "status": "PASS"
+    },
+    {
+      "name": "future-past-duplicate-warning-utc-storage-and-fk-restrict",
+      "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+      "status": "PASS"
+    },
+    {
+      "name": "logout-replay-and-server-expired-session401",
+      "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+      "status": "PASS"
+    },
+    {
+      "name": "existing-fixture-lock-still429-policy-not-shortened",
+      "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+      "status": "PASS",
+      "remainingSeconds": 791,
+      "failuresExecutedThisRun": 0
+    },
+    {
+      "name": "owned-api-restart-retains-account-lock-in-redis",
+      "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+      "status": "PASS"
+    },
+    {
+      "name": "https-case-alias-charges-actual-lan-peer-despite-spoofed-valid-attestation",
+      "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+      "status": "PASS"
+    },
+    {
+      "name": "tls-independent-peer-network-routing",
+      "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+      "status": "BLOCKED",
+      "reason": "ENETUNREACH",
+      "detail": "Windows cannot route this loopback source to the LAN listener; requires a second real Wi-Fi client. No header spoof used as substitute."
+    }
+  ],
+  "limitations": [
+    "Not an independent second-device test",
+    "Browser/system trust still requires OS confirmation",
+    "Manual candidate deployment does not prove develop auto-deploy AC"
+  ]
+}
