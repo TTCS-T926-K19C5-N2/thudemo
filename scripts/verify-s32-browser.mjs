@@ -24,7 +24,11 @@ const fixture = JSON.parse(
 );
 const origin = process.env.S32_WEB_ORIGIN ?? "http://localhost:3100";
 assert.equal(new URL(origin).hostname, "localhost");
-const output = resolve(root, "evidence/orders-integration/20261008/browser");
+const output = resolve(
+  root,
+  process.env.S32_BROWSER_EVIDENCE_DIR ??
+    "evidence/orders-integration/20261008/browser",
+);
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const results = [],

@@ -34,4 +34,4 @@ Giữ PublicLayout/account/navigation, existing Button/Badge/Table/Alert/Skeleto
 
 Desktop table, mobile cards; code/event/showtime/date/seats/total/status/details; skeleton/empty/discovery/error/retry giữ page/login continuation/safe403; bàn phím/focus và session switch. Payment action chỉ là chức năng S-17/S-19 thực sự đã có, explicit click khi đơn chờ còn hạn; mở trang không tạo payment. Không thêm refund/cancel/export/search/QR/mua lại.
 
-Migration chỉ `202610080001_order_history_index`; đã áp trên DB riêng15434, chưa shared/staging. Toàn bộ file, dependency risk, reviewer đề xuất và gate integration ở tài liệu handoff. Code review là review của Codex, không attribution/approval độc lập.
+Migration chỉ `202610080001_order_history_index`; đã áp trên DB riêng15434, chưa shared/staging. Toàn bộ file, dependency risk, reviewer đề xuất và gate integration ở tài liệu handoff. Code review là review của công cụ tự động, không attribution/approval độc lập.

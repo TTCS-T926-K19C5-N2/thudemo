@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { api } from "@/lib/api/client";
-import { decodePayResponse } from "@/lib/contracts/orders";
+import {
+  decodePayResponse,
+  type LatestPaymentInfo,
+} from "@/lib/contracts/orders";
 import type { OrderSummary } from "@/lib/contracts/order-history";
 import { formatShowtime } from "@/lib/formatting";
 import {
@@ -16,10 +19,12 @@ import {
 export function OrderPaymentAction({
   order,
   serverTime,
+  latestPayment,
   onPay,
 }: {
   order: OrderSummary;
   serverTime: string;
+  latestPayment?: LatestPaymentInfo | null;
   onPay?: () => void;
 }) {
   const [remaining, setRemaining] = useState(() =>
@@ -87,13 +92,34 @@ export function OrderPaymentAction({
       <p role="timer" aria-label="Thời gian thanh toán còn lại">
         Còn {countdownLabel(remaining)}
       </p>
+      {latestPayment?.status === "FAILED" && (
+        <Alert data-testid="payment-retry-alert">
+          <AlertDescription>
+            Thanh toán lần trước không thành công, ghế của bạn vẫn được giữ đến
+            thời hạn trên.
+          </AlertDescription>
+        </Alert>
+      )}
+      {latestPayment?.status === "INITIATED" && (
+        <Alert data-testid="payment-pending-alert">
+          <AlertDescription>
+            Bạn có một giao dịch đang chờ xác nhận, thanh toán lại có thể bị trừ
+            tiền hai lần.
+          </AlertDescription>
+        </Alert>
+      )}
       {error && (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
       <Button onClick={() => void pay()} disabled={paying || remaining <= 0}>
-        {paying ? "Đang chuyển đến thanh toán…" : "Thanh toán"}
+        {paying
+          ? "Đang chuyển đến thanh toán…"
+          : latestPayment?.status === "FAILED" ||
+              latestPayment?.status === "INITIATED"
+            ? "Thanh toán lại"
+            : "Thanh toán"}
       </Button>
     </div>
   );

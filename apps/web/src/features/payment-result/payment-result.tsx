@@ -174,7 +174,8 @@ export function PaymentResult({ orderId }: PaymentResultProps) {
 
         // If PENDING and latest payment is INITIATED or pending, begin 2s polling
         if (
-          currentStatus.status === "PENDING" &&
+          (currentStatus.status === "PENDING" ||
+            currentStatus.status === "PENDING_PAYMENT") &&
           (!currentStatus.latestPayment ||
             currentStatus.latestPayment.status === "INITIATED")
         ) {
@@ -206,7 +207,8 @@ export function PaymentResult({ orderId }: PaymentResultProps) {
       if (statusRes.status === "fulfilled") {
         setOrderStatus(statusRes.value);
         if (
-          statusRes.value.status === "PENDING" &&
+          (statusRes.value.status === "PENDING" ||
+            statusRes.value.status === "PENDING_PAYMENT") &&
           (!statusRes.value.latestPayment ||
             statusRes.value.latestPayment.status === "INITIATED")
         ) {
@@ -433,7 +435,8 @@ export function PaymentResult({ orderId }: PaymentResultProps) {
 
             {/* 3. PENDING & FAILED latest payment: "Thanh toán không thành công" */}
             {!isTimeout &&
-              currentStatus === "PENDING" &&
+              (currentStatus === "PENDING" ||
+                currentStatus === "PENDING_PAYMENT") &&
               latestPayStatus === "FAILED" && (
                 <div
                   data-testid="payment-result-payment-failed"
@@ -475,7 +478,8 @@ export function PaymentResult({ orderId }: PaymentResultProps) {
 
             {/* 4. PENDING & INITIATED: "Đang xác nhận thanh toán" */}
             {!isTimeout &&
-              currentStatus === "PENDING" &&
+              (currentStatus === "PENDING" ||
+                currentStatus === "PENDING_PAYMENT") &&
               (!latestPayStatus || latestPayStatus === "INITIATED") && (
                 <div
                   data-testid="payment-result-confirming"

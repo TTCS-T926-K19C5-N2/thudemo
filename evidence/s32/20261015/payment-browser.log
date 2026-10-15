@@ -1,0 +1,22 @@
+{
+  "origin": "http://localhost:3300",
+  "gateway": "mock (no settlement submitted, no real money)",
+  "results": [
+    {
+      "name": "desktop: V1 detail -> existing mock gateway; booked amount unchanged despite live price change",
+      "status": "passed",
+      "amount": 500000,
+      "paymentStatus": "INITIATED",
+      "orderAndHoldUnchanged": true
+    },
+    {
+      "name": "mobile: V1 detail -> existing mock gateway; booked amount unchanged despite live price change",
+      "status": "passed",
+      "amount": 500000,
+      "paymentStatus": "INITIATED",
+      "orderAndHoldUnchanged": true
+    }
+  ],
+  "passed": 2,
+  "failed": 0
+}

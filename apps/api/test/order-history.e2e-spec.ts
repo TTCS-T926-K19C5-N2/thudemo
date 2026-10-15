@@ -384,7 +384,10 @@ describe('S-32 order history (real isolated PostgreSQL and session authenticatio
       }
       expect(runs[0].statementCount).toBe(runs[1].statementCount);
       expect(runs[1].statementCount).toBe(runs[2].statementCount);
-      const output = resolve('../../evidence/orders-integration/20261008');
+      const output = resolve(
+        process.env.S32_EVIDENCE_DIR ??
+          '../../evidence/orders-integration/20261008',
+      );
       await mkdir(output, { recursive: true });
       // Parameterized SQL only: never persist query parameters, session cookies or tokens.
       await writeFile(

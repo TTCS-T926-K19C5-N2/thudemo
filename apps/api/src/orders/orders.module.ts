@@ -1,3 +1,6 @@
+import { ScannerModule } from '../scanner/scanner.module.js';
+import { TicketQrController } from './ticket-qr.controller.js';
+import { TicketQrService } from './ticket-qr.service.js';
 import { Module } from '@nestjs/common';
 import {
   OrdersController,
@@ -6,10 +9,24 @@ import {
 import { OrdersService } from './orders.service.js';
 import { OrderHistoryService } from './order-history.service.js';
 import { OrderExpiryScheduler } from './order-expiry.scheduler.js';
+import { TicketCheckInController } from './ticket-check-in.controller.js';
+import { TicketCheckInService } from './ticket-check-in.service.js';
 
 @Module({
-  controllers: [OrdersController, ShowtimeOrdersController],
-  providers: [OrdersService, OrderHistoryService, OrderExpiryScheduler],
+  imports: [ScannerModule],
+  controllers: [
+    TicketQrController,
+    OrdersController,
+    ShowtimeOrdersController,
+    TicketCheckInController,
+  ],
+  providers: [
+    TicketQrService,
+    OrdersService,
+    OrderHistoryService,
+    OrderExpiryScheduler,
+    TicketCheckInService,
+  ],
   exports: [OrdersService, OrderExpiryScheduler],
 })
 export class OrdersModule {}

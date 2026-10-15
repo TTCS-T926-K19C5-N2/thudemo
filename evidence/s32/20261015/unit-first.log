@@ -1,0 +1,46 @@
+
+> event-ticketing-platform@1.0.0 test D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008
+> pnpm -r run test
+
+Scope: 3 of 4 workspace projects
+apps/api test$ vitest run
+apps/web test$ vitest run
+apps/web test: (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+apps/web test:   - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+apps/web test: Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+apps/api test: The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+apps/web test:  RUN  v4.1.11 D:/Development/03_Academic/Bán vé sự kiện có sơ đồ ghế/thudemo-orders-ready-20261008/apps/web
+apps/api test:  RUN  v4.1.11 D:/Development/03_Academic/Bán vé sự kiện có sơ đồ ghế/thudemo-orders-ready-20261008/apps/api
+apps/web test:  Test Files  11 passed (11)
+apps/web test:       Tests  54 passed (54)
+apps/web test:    Start at  13:36:00
+apps/web test:    Duration  1.24s (transform 2.95s, setup 0ms, import 3.92s, tests 372ms, environment 2ms)
+apps/web test: Done
+apps/api test: [Nest] 21568  - 13:36:02 15/10/2026     LOG [MockGatewayService] Sending mock IPN webhook to http://localhost:3001/payments/webhook for order 11111111-2222-3333-4444-555555555555 (resultCode=0)
+apps/api test: [Nest] 21568  - 13:36:02 15/10/2026     LOG [MockGatewayService] Sending mock IPN webhook to http://localhost:3001/payments/webhook for order 11111111-2222-3333-4444-555555555555 (resultCode=49)
+apps/api test: [Nest] 21568  - 13:36:02 15/10/2026     LOG [MockGatewayService] MOCK_WEBHOOK_DELAY_MS is -1: Skipping webhook dispatch for order 11111111-2222-3333-4444-555555555555
+apps/api test: [Nest] 21568  - 13:36:02 15/10/2026     LOG [MockGatewayService] MOCK_WEBHOOK_DELAY_MS is 1000ms: Delayed webhook dispatch for order 11111111-2222-3333-4444-555555555555
+apps/api test: [Nest] 21568  - 13:36:03 15/10/2026     LOG [MockGatewayService] Sending mock IPN webhook to http://localhost:3001/payments/webhook for order 11111111-2222-3333-4444-555555555555 (resultCode=0)
+apps/api test: [Nest] 15480  - 13:36:02 15/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"11111111-2222-3333-4444-555555555555","releasedSeatsCount":2}
+apps/api test: [Nest] 15480  - 13:36:02 15/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"11111111-2222-3333-4444-555555555555","releasedSeatsCount":2}
+apps/api test: [Nest] 15480  - 13:36:02 15/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"11111111-2222-3333-4444-555555555555","releasedSeatsCount":0}
+apps/api test: [Nest] 15480  - 13:36:02 15/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"order-1","releasedSeatsCount":1}
+apps/api test: [Nest] 15480  - 13:36:02 15/10/2026     LOG [OrdersService] {"event":"order_expiry_job","candidatesCount":2,"expiredCount":1,"skippedCount":1,"errorCount":0}
+apps/api test: [Nest] 15480  - 13:36:02 15/10/2026   ERROR [OrdersService] Failed to expire order order-err: DB deadlock
+apps/api test: [Nest] 15480  - 13:36:02 15/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"order-ok","releasedSeatsCount":2}
+apps/api test: [Nest] 15480  - 13:36:02 15/10/2026     LOG [OrdersService] {"event":"order_expiry_job","candidatesCount":2,"expiredCount":1,"skippedCount":0,"errorCount":1}
+apps/api test: [Nest] 15480  - 13:36:02 15/10/2026     LOG [OrdersService] {"event":"order_expiry_job","candidatesCount":0,"expiredCount":0,"skippedCount":0,"errorCount":0}
+apps/api test: [Nest] 15480  - 13:36:32 15/10/2026     LOG [OrdersService] {"event":"order_expiry_job","candidatesCount":0,"expiredCount":0,"skippedCount":0,"errorCount":0}
+apps/api test: [Nest] 22228  - 13:36:02 15/10/2026    WARN [PaymentsService] Webhook signature verification failed from IP: 127.0.0.1
+apps/api test: [Nest] 22228  - 13:36:02 15/10/2026    WARN [PaymentsService] Webhook order not found: unknown_order from IP: unknown
+apps/api test: [Nest] 22228  - 13:36:02 15/10/2026     LOG [PaymentsService] Order 22222222-2222-4222-8222-222222222222 is already PAID. Duplicate webhook received, returning success.
+apps/api test: [Nest] 22228  - 13:36:02 15/10/2026     LOG [PaymentsService] Order 22222222-2222-4222-8222-222222222222 is already PAID. Duplicate webhook received, returning success.
+apps/api test: [Nest] 22228  - 13:36:02 15/10/2026     LOG [PaymentsService] Order 22222222-2222-4222-8222-222222222222 is already PAID. Duplicate webhook received, returning success.
+apps/api test: [Nest] 22228  - 13:36:02 15/10/2026     LOG [PaymentsService] Order 22222222-2222-4222-8222-222222222222 is already PAID. Duplicate webhook received, returning success.
+apps/api test: [Nest] 22228  - 13:36:02 15/10/2026    WARN [PaymentsService] Duplicate webhook caught by unique constraint for order 22222222-2222-4222-8222-222222222222: Unique constraint failed on the fields: (`gatewayRef`)
+apps/api test: [Nest] 10168  - 13:36:02 15/10/2026   ERROR [HoldExpiryScheduler] {"event":"hold_expiry_failed","retryOnNextMinute":true}
+apps/api test:  Test Files  25 passed (25)
+apps/api test:       Tests  181 passed (181)
+apps/api test:    Start at  13:36:00
+apps/api test:    Duration  3.28s (transform 4.86s, setup 0ms, import 25.42s, tests 1.72s, environment 5ms)
+apps/api test: Done

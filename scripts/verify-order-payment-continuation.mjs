@@ -28,7 +28,8 @@ const origin = process.env.S32_WEB_ORIGIN ?? "http://localhost:3200";
 assert.equal(new URL(origin).hostname, "localhost");
 const output = resolve(
   root,
-  "evidence/orders-integration/20261008/payment-continuation",
+  process.env.S32_PAYMENT_EVIDENCE_DIR ??
+    "evidence/orders-integration/20261008/payment-continuation",
 );
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
@@ -71,9 +72,7 @@ try {
         .getByRole("button", { name: "Đăng nhập", exact: true })
         .click();
       await page.getByRole("heading", { name: "Ghế đã đặt" }).waitFor();
-      await page
-        .getByRole("button", { name: "Thanh toán", exact: true })
-        .click();
+      await page.getByRole("button", { name: /^Thanh toán(?: lại)?$/ }).click();
       await page.waitForURL("**/mock-gateway/pay?**");
       await page
         .getByRole("heading", { name: "Cổng thanh toán giả lập", exact: true })

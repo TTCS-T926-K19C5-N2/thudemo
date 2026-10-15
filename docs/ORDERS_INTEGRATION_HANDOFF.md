@@ -9,7 +9,7 @@ Ngày 08/10/2026, giờ Việt Nam. Đã làm việc theo thứ tự dependency 
 - PR #47 đã **MERGED**, revision nguồn `dc47c016c081c1c84534ac8d2d3957e5cd59d434`. Không còn cần phát triển S-32 trên branch `test` chưa merge.
 - PR #51 vẫn **OPEN**, revision mới `4cd96aaef2aed8099f777371dd3446adca76cebe`. Diff riêng so với main chỉ còn 2 file web; phần schema/API S-17 đã vào main qua các PR tích hợp khác. Không nhập lại schema/migration/Orders từ PR #51.
 - Main hiện có S-19/20/21/22/23; giữ nguyên scheduler và luồng kết quả thanh toán của main khi hòa giải. Chưa gọi bản local này là code đã tích hợp vào main.
-- Hai worktree S-32 cũ và checkout `thudemo` nhiều WIP không bị sửa. Checkpoint patch + SHA-256 nằm ngoài repo ở `../.codex-tmp/orders-priority-20261008/`; không đưa `.env`/secret vào checkpoint hoặc Git.
+- Hai worktree S-32 cũ và checkout `thudemo` nhiều WIP không bị sửa. Checkpoint patch + SHA-256 nằm ngoài repo ở `thư mục checkpoint local bên ngoài repository`; không đưa `.env`/secret vào checkpoint hoặc Git.
 
 ## 1. S-16 — sửa hạn gốc DEC-10
 
@@ -54,12 +54,12 @@ Chi tiết AC/test/log/ảnh: [S32_EVIDENCE.md](S32_EVIDENCE.md). Kết quả cu
 - **Git main**: S-16/dependency đã có; bản sửa và S-32 ở worktree local chưa tích hợp.
 - **CI diff mới**: chưa có, vì chưa commit/push.
 - Job CI test khai báo `S32_ISOLATED_TEST=true`, `HOLD_EXPIRY_MODE=off`, `ORDER_EXPIRY_MODE=off` cho database riêng `15432/sprint2_integration`, giống guard và cấu hình đã kiểm local. Không bỏ test hoặc sửa guard để chạy trên shared database.
-- **Review độc lập**: chưa có; phần review hiện tại do Codex thực hiện, không phải approval của thành viên nhóm.
+- **Review độc lập**: chưa có; phần review hiện tại do công cụ tự động thực hiện, không phải approval của thành viên nhóm.
 - **Staging/shared DB/load/production**: chưa kiểm/deploy. Không tự sửa database đang dùng hoặc môi trường remote.
 
 ## Gói review và PR đề xuất
 
-`evidence/orders-integration/20261008/source-files.txt` ghi file mới/sửa/xóa thuộc bản này; `review.patch` là snapshot source + tài liệu trước commit, kể cả file chưa theo dõi. Logs/screenshots/JSON nằm riêng cùng thư mục evidence; các `.log` trong gói này được chọn rõ khi stage, không thay ignore rule toàn dự án. `final-summary.json` ghi kết quả tại thời điểm trước commit, không phải trạng thái Git/CI sau khi mở PR.
+`evidence/orders-integration/20261008/source-files.txt` ghi file mới/sửa/xóa thuộc bản này; Diff source được tra cứu trực tiếp qua Git/PR; bỏ bản patch lặp lại để tránh lưu hai bản cùng nội dung. Logs/screenshots/JSON nằm riêng cùng thư mục evidence; các `.log` trong gói này được chọn rõ khi stage, không thay ignore rule toàn dự án. `final-summary.json` ghi kết quả tại thời điểm trước commit, không phải trạng thái Git/CI sau khi mở PR.
 
 PR title đề xuất: **`fix(orders): preserve hold deadline and integrate buyer history with V1`**.
 

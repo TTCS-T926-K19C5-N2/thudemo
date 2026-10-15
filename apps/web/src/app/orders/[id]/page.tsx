@@ -11,5 +11,5 @@ export default async function OrderPage({
   searchParams: Promise<{ page?: string | string[] }>;
 }) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  return <OrderReview id={id} page={historyPage(query.page) ?? 1} />;
+  return <OrderReview key={id} id={id} page={historyPage(query.page) ?? 1} />;
 }

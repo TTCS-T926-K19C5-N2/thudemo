@@ -88,11 +88,16 @@ export class OrderHistoryService {
             id: true,
             status: true,
             paymentExpiresAt: true,
-            _count: { select: { payments: true } },
+            _count: {
+              select: {
+                payments: true,
+                logs: { where: { type: 'PAYMENT_ATTEMPT' } },
+              },
+            },
             payments: {
               orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
               take: 1,
-              select: { id: true, status: true },
+              select: { id: true, status: true, attemptNo: true },
             },
           },
         });
@@ -109,8 +114,12 @@ export class OrderHistoryService {
           expiresAt: expiry,
           paymentExpiresAt: expiry,
           serverTime: clock.serverTime.toISOString(),
+          paymentAttempts: order._count.logs || order._count.payments,
           latestPayment: order.payments[0]
-            ? { ...order.payments[0], attemptNo: order._count.payments }
+            ? {
+                ...order.payments[0],
+                attemptNo: order.payments[0].attemptNo ?? order._count.payments,
+              }
             : null,
         };
       },
@@ -165,11 +174,17 @@ export class OrderHistoryService {
           where: { id, userId },
           select: {
             ...summaryProjection,
-            _count: { select: { items: true, payments: true } },
+            _count: {
+              select: {
+                items: true,
+                payments: true,
+                logs: { where: { type: 'PAYMENT_ATTEMPT' } },
+              },
+            },
             payments: {
               orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
               take: 1,
-              select: { id: true, status: true },
+              select: { id: true, status: true, attemptNo: true },
             },
             items: {
               orderBy: { seatId: 'asc' },
@@ -232,8 +247,12 @@ export class OrderHistoryService {
           },
           items,
           created: false,
+          paymentAttempts: order._count.logs || order._count.payments,
           latestPayment: order.payments[0]
-            ? { ...order.payments[0], attemptNo: order._count.payments }
+            ? {
+                ...order.payments[0],
+                attemptNo: order.payments[0].attemptNo ?? order._count.payments,
+              }
             : null,
           order: { ...view, paymentExpiresAt: expiresAt, items },
         };

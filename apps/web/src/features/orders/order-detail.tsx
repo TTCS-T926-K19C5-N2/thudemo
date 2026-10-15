@@ -21,6 +21,7 @@ import { useOrderRead } from "./use-order-read";
 import { OrderBadge } from "./order-badge";
 import { OrderError, OrderLoading } from "./order-feedback";
 import { OrderPaymentAction } from "./order-payment-action";
+import { SignedTickets } from "@/features/order-review/signed-tickets";
 
 export function OrderDetail({
   id,
@@ -96,6 +97,7 @@ export function OrderDetail({
                     key={order.id}
                     order={order}
                     serverTime={value.serverTime}
+                    latestPayment={value.latestPayment}
                     onPay={onPay}
                   />
                 )}
@@ -137,6 +139,9 @@ export function OrderDetail({
                 </TableBody>
               </Table>
             </section>
+            {order.status === "PAID" && (
+              <SignedTickets key={order.id} orderId={order.id} />
+            )}
           </>
         )}
       </div>

@@ -1,5 +1,11 @@
 import { ApiError, object } from "@/lib/api/client";
-import { decodeOrder, type OrderResult, type OrderStatus } from "./orders";
+import {
+  decodeOrder,
+  decodeOrderDetail as decodeExistingDetail,
+  type OrderResult,
+  type OrderStatus,
+  type LatestPaymentInfo,
+} from "./orders";
 
 export type OrderSummary = {
   id: string;
@@ -29,6 +35,8 @@ export type OrderHistory = {
 };
 export type OrderDetail = Omit<OrderResult, "order"> & {
   order: OrderSummary & OrderResult["order"];
+  latestPayment: LatestPaymentInfo | null;
+  paymentAttempts: number;
 };
 const invalid = (): never => {
   throw new ApiError(
@@ -115,7 +123,13 @@ export function decodeOrderDetail(value: unknown): OrderDetail {
   const detail = decodeOrder(value);
   const order = { ...detail.order, ...decodeSummary(object(value).order) };
   if (order.seatCount !== order.items.length) return invalid();
-  return { ...detail, order };
+  const existing = decodeExistingDetail(value);
+  return {
+    ...detail,
+    order,
+    latestPayment: existing.latestPayment ?? null,
+    paymentAttempts: existing.paymentAttempts ?? 0,
+  };
 }
 
 export const historyDeadline = (value: OrderHistory) =>
