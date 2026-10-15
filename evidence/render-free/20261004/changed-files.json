@@ -1,0 +1,203 @@
+{
+  "parentDecisionLog": "../docs/decision-log.md",
+  "modifiedOrAdded": [
+    {
+      "after": "07bca6245880d82a351c8b65f0e117e2512da9a565dae544dd3f5fd1b80d299d",
+      "path": ".github\\workflows\\ci.yml",
+      "change": "Modified existing WIP",
+      "before": "656b34d58dc5068cfa4c5b52b3d6b495b900d1fd8299fca213ecfa6c96e60c1c"
+    },
+    {
+      "after": "aa8ab167c8462a38f4829dc3ed395ef366df92ca203470b9bc49136d12884735",
+      "path": "docs\\K01_EVIDENCE.md",
+      "change": "Modified existing WIP",
+      "before": "2b4250ed19d3d32f4e70f9de369f445946284260772d969d29cbefd7bdd221d5"
+    },
+    {
+      "after": "da2b457939d6ed7e278bb274e638796d53f54c91f9316cfb3c5ffd9846a930cd",
+      "path": "docs\\SPRINT1_GITHUB_HANDOFF.md",
+      "change": "Modified existing WIP",
+      "before": "27554966b0afbb7d0960b4404c8e55121ce9c36dcdb6f23df0c02eb4bfe198b7"
+    },
+    {
+      "after": "0fdd62709fcd30d29abaae15b596f1eca7249d704f23b2be2040c62c02b2b00b",
+      "path": "docs\\T03_DOCKER_PACKAGING.md",
+      "change": "Modified existing WIP",
+      "before": "44bc7f348f3b09b1a5bd859025219292e1412b9f7970b5c81357446b9fa775c2"
+    },
+    {
+      "after": "310d0964637dd0f183c54bb522bbb3c2eef629449be92528f95e5253e50c7e54",
+      "path": "docs\\STITCH_FIDELITY_LEDGER.md",
+      "change": "Modified existing WIP",
+      "before": "eadcd3578f9434d719af353bf633f6f83df74154c711d66b5d1c1adad939ed68"
+    },
+    {
+      "after": "5c347ca1a7b5167588b2b69515c993a070ab17ee57934cf92b85a5723bdcd195",
+      "path": "docs\\STITCH_CORRECTION_HANDOFF.md",
+      "change": "Modified existing WIP",
+      "before": "1c57e93bbf051085ee530295c80f80998f885c2340d6ea9edcb73ad3d0341419"
+    },
+    {
+      "after": "65e6dfeb357086488ae09667b087cf1f03c34cb6046da64efdfb5f2f68688378",
+      "path": "docs\\STITCH_CORRECTION_EVIDENCE.md",
+      "change": "Modified existing WIP",
+      "before": "36cf4b55e85d05d78b587aa607cef6175e2c82861b82a9e70b67b74cf86d6af0"
+    },
+    {
+      "after": "f8efa337feb008fa3fe182d948ab5b7290effba7cb81d8afbb1d014d76a9ad0c",
+      "path": "docs\\SPRINT2_IMPLEMENTATION_PLAN.md",
+      "change": "Modified existing WIP",
+      "before": "fd31b6ae698c0ac987891e7a46b626c0decf426c0beaa69b00b1529d636a2ed4"
+    },
+    {
+      "after": "8448f4a8645b6e9d11a4f138bb28cf30853fce27e98cd7a1bf0419581fdc72e3",
+      "path": "docs\\SPRINT2_HANDOFF.md",
+      "change": "Modified existing WIP",
+      "before": "ad15cf3184a5bc72fbc128aa8a5cccfda772f55e6fbd955fb0fdc155e5568fa1"
+    },
+    {
+      "after": "23ff60c3276f2ef5be3fc2e8e14bb3142bf2191aa113cc6e93f07dbac29108b2",
+      "path": "scripts\\verify-stitch-correction.ps1",
+      "change": "Modified existing WIP",
+      "before": "67413717d4a71f5d095699496527318a6d5ab5b6a1d58faf4161f318be76b7e2"
+    },
+    {
+      "after": "3309ba61546bda20de3541c7142f1444f3ffa34d1aa680cb25dc3ad249807223",
+      "path": "scripts\\verify-stitch-browser.ps1",
+      "change": "Modified existing WIP",
+      "before": "d12c2a0afd156ad9d9f8ddd1ae74fce65eec7dc0ab5666ce62d131cf7ad7350e"
+    },
+    {
+      "after": "181e146607ddae34d1e0defa6e071a81014192f02d04af7a90d11314d0aad2b0",
+      "path": "scripts\\verify-sprint2-migrations.ps1",
+      "change": "Modified existing WIP",
+      "before": "0c9117f50ab84e1c52d1f780550c706f3cc89bf29f48aefa654d283703d67765"
+    },
+    {
+      "after": "e46fd81535ef151d36d6661dc23b5dd88898a6980f174ba3de2cf854f16c4a20",
+      "path": "scripts\\correction-browser-flow.js",
+      "change": "Modified existing WIP",
+      "before": "db46d3a4933b46d52956c549fd001d66449685df1aa37651b2f8fc87df7b2203"
+    },
+    {
+      "after": "a4a1a8918b6f578c81ebab962c66133a72ad233942099355a1a46ec8f8cc6522",
+      "path": "apps\\api\\test\\sprint2.e2e-spec.ts",
+      "change": "Modified existing WIP",
+      "before": "4ffa0a07a0e47ba647a141fe4b2aba27c80c26f48eae6f41b1539144e668cd77"
+    },
+    {
+      "after": "a7fcc9e3e178eecddd2072c8183377a13a59c1e7387a217f3bb31c3bbe9446e7",
+      "path": "apps\\api\\src\\redis\\redis.module.ts",
+      "change": "Modified existing WIP",
+      "before": "9bbe038c2eb5a66aff5970c947f6b898f69f8ed244246b37fb0dfa5f07436d59"
+    },
+    {
+      "after": "cd5d4444353c53f75808e33f2f8323680fdb8b03534d67fddfd2c16896539997",
+      "path": "apps\\api\\src\\main.ts",
+      "change": "Modified existing WIP",
+      "before": "cacc44c9473d4e372622c68eb9254d1a67e96c9b091c7b2ebe4463ad52f4a1ef"
+    },
+    {
+      "after": "8e2b5feae53344fcb14f503e2a6b311e54c2b0728ee73dfd544d235e14325abb",
+      "path": "apps\\web\\next.config.ts",
+      "change": "Modified existing WIP",
+      "before": "f616bfbda2c2f606d2cf4353e2ed90c03d46720c94691f5d90199614ceb1c15f"
+    },
+    {
+      "after": "fb04262334c2d3863bbbc57ec6671e25bb13c7900d55c5b59d511bf9b683e041",
+      "path": "Dockerfile",
+      "change": "Modified existing WIP",
+      "before": "89fa3eca7869ce5b3d81ebad5371f7e766eb2e222a2cb91daa3d05020313a71d"
+    },
+    {
+      "after": "834431d84e0d1775a4fecafff726de8790f7e51550b49122193121c2b61f03a4",
+      "path": ".dockerignore",
+      "change": "Modified existing WIP",
+      "before": "55f6e9957652f5d8db75ffe75227cfda368ba5ac282fc557deab6be6015673cd"
+    },
+    {
+      "after": "5deef6b9b31b0966f6d7a43ba1c6a894e175de091f0520fec0bae38f926d7089",
+      "path": "README.md",
+      "change": "Modified existing WIP",
+      "before": "2a547d0de13ffc4d3ea55815f09f7ab7d959db0538f6e77e6ecae227f250e58e"
+    },
+    {
+      "path": "render.yaml",
+      "change": "Added in Render phase",
+      "after": "844a6fc86daaf4764dc32bec42e9550e1eb39d0d41485b9378e04aaad8281061"
+    },
+    {
+      "path": "deploy/render-start.mjs",
+      "change": "Added in Render phase",
+      "after": "a09cf413129facade4ddc710a2973cc02403c9e4789cf2b1aa1914eca67be64a"
+    },
+    {
+      "path": "scripts/verify-render-profile.py",
+      "change": "Added in Render phase",
+      "after": "2f59e8c4a181f29a5a0324a9ff901a0842f987f0f6d24b29f9ccd730201ec9a0"
+    },
+    {
+      "path": "docs/RENDER_FREE_RUNBOOK.md",
+      "change": "Added in Render phase",
+      "after": "c609f1a330959479096da162acdac39ed527acf03b86dff61450890d5a293bfe"
+    },
+    {
+      "path": "docs/SPRINT2_PO_REVIEW.md",
+      "change": "Added in Render phase",
+      "after": "a211d645168b83eaad47f647406b4412d3bfdbbbd6fd8940ece127a523b780a3"
+    },
+    {
+      "path": "apps/web/src/app/api/[...path]/route.ts",
+      "change": "Added in Render phase",
+      "after": "a975a529cd755240f5de2a9a8aff6176d16cbbe031981dc2b3d8948c1d73370a"
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.ts",
+      "change": "Added in Render phase",
+      "after": "96de4528925d50c2cd985bf9e3ff2ee3d6d695ea1221e0036b083ae46f6aca47"
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.spec.ts",
+      "change": "Added in Render phase",
+      "after": "efb9984a25b4e358db6db42fe81ed59987ab74e0d86a9238765e8a6e2294c311"
+    },
+    {
+      "path": "apps/api/scripts/k01/candidate-stores.mjs",
+      "change": "Added in Render phase",
+      "after": "8bec4c1f474b42d1540033d56f6a4ea8daf4d8c8f224f3c51018ada996053e50"
+    },
+    {
+      "path": "apps/api/scripts/k01/candidate-server.mjs",
+      "change": "Added in Render phase",
+      "after": "a48f142a13589fa144e850c13a3d854efeacff6a023f3b4ea0e1fe90285b77bb"
+    },
+    {
+      "path": "apps/api/scripts/k01/compare-candidates.mjs",
+      "change": "Added in Render phase",
+      "after": "2557b35ba2615464e3a31eaa9ca61d3f5b4048e7831f65ef3b21bf2bc884fc17"
+    },
+    {
+      "path": "apps/api/scripts/render-staging-target.mjs",
+      "change": "Added in Render phase",
+      "after": "ae07bcf479d72121683d091205c5325364a6393876c3c436ccc1e8af0c29b550"
+    },
+    {
+      "path": "apps/api/scripts/render-staging-target.spec.mjs",
+      "change": "Added in Render phase",
+      "after": "b05f59a1da077d206664bcfb9db56d5bc95768567d8802547d7700b378b0a356"
+    },
+    {
+      "path": "apps/api/scripts/seed-render-staging.mjs",
+      "change": "Added in Render phase",
+      "after": "0a332eade10ccc953354a6e6337b148560c3e4364a1177ae979455e27af3cf35"
+    },
+    {
+      "path": "scripts/verify-k01-candidates.ps1",
+      "change": "Added in Render phase",
+      "after": "5864f416aa25c67e6ed470c7a5bb6e97dddf6af6044f2df2eca0803e7392bf87"
+    }
+  ],
+  "noTaskMarkdownStatusEdits": true,
+  "existingDependenciesLockfileUnchanged": true,
+  "evidence": "evidence/render-free/20261004"
+}

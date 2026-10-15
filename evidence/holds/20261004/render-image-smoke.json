@@ -1,0 +1,16 @@
+{
+  "local": true,
+  "render": false,
+  "checks": [
+    "Real production-profile login through same-origin web proxy",
+    "Production cookie flags retained; not TLS staging evidence",
+    "New authenticated session begins without another session ownership",
+    "Docker product endpoint confirms actual PostgreSQL ownership",
+    "Proxy GET preserves original server deadline",
+    "Cross-origin hold rejected",
+    "Real logout succeeds",
+    "Revoked cookie cannot read or claim ownership"
+  ],
+  "serviceMemoryLimitMiB": 512,
+  "serviceCpuLimit": 0.5
+}

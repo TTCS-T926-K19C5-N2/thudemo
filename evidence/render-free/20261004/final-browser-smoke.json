@@ -1,0 +1,1 @@
+{"checks":["Final image proxied health","Final image real login","Host-only HttpOnly Secure SameSite cookie","Session through same-origin proxy","Cross-origin mutation rejected","Real logout","Logout revokes session"],"staging":false,"mode":"Final Docker image, real database/Redis and same-origin proxy; localhost Secure-cookie support is not Render TLS evidence"}

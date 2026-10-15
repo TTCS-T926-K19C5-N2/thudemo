@@ -1,0 +1,17 @@
+# S-43 — refinement triển khai ngày 06/10/2026
+
+Nguồn: workbook `Bán vé sự kiện có sơ đồ ghế (1).xlsx`, Backlog!A3:O3; `../approved-refinement.md`, `../docs/architecture.md` §12/14, `../docs/decision-log.md`; prompt PO ngày 06/10/2026. Story **S-43**, E-01, Later/Should, 3 SP thô, Sprint 6, dependency S-01, Owner chưa phân được giữ nguyên. PO yêu cầu triển khai trước lịch; không sửa kế hoạch các sprint khác.
+
+AC gốc: “Có bảng theo dõi số yêu cầu, tỉ lệ lỗi, thời gian phản hồi p95, số tranh chấp ghế và số webhook bị từ chối; vượt ngưỡng thì gửi cảnh báo. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP”. NFR gốc: “chưa refine — cần chốt kênh nhận cảnh báo và công cụ thu thập số liệu”.
+
+**Đã xác nhận:** Email + Telegram cá nhân là hai kênh bắt buộc; recipient nằm trong quyết định local của PO, không đưa PII vào repo. Ngân sách 0, chỉ monitoring Docker local; không deploy Render, production, đổi protection hay xây thanh toán giả. Một lượt Firing + Resolved mỗi kênh external được ủy quyền khi credentials hợp lệ và private chat đã xác minh. SMTP accepted/message ID chỉ là provider acceptance; người nhận phải xác nhận đọc/nhận end-to-end.
+
+**AI đề xuất kỹ thuật được chọn:** Prometheus 3.5.0 (Apache-2.0), Alertmanager 0.28.1 (Apache-2.0), Grafana OSS 12.1.1 (AGPL-3.0), Node client `@prometheus-io/client` 0.16.1 (Apache-2.0, hỗ trợ Node 24). Compose độc lập, pin version; không `latest`. Client thay thế package prom-client đã deprecated theo registry và repository chính thức. Giữ NestJS/Next.js/PostgreSQL/Redis, không đổi UI ứng dụng. Sáng (`sangnguyencoder`) là account tích hợp đề xuất; Quyền (`tovanquyenh-blip`) đăng review kỹ thuật tự động bởi Codex theo ủy quyền. Mapping này không phải Owner đã có trong workbook.
+
+**AI đề xuất ngưỡng cấu hình:** 50 RPS/5m/for 2m; 5xx >5%/5m/minimum 100 completed+aborted responses/for 2m; >100 conflict requests/5m/for 2m; >20 rejected webhook requests/5m/for 2m (chỉ khi producer available); scrape down 1m; worker không có sweep thành công trong 180s/for 1m. Đây là ngưỡng ban đầu cần hiệu chỉnh baseline/capacity, không phải AC đã được PO duyệt. Hold p95 >0.300s/5m/minimum 100 hold POST responses/for 2m bám NFR có sẵn. Lỗi 4xx, 409 nghiệp vụ và aborted 499 được tách khỏi tử số 5xx, vẫn nằm trong duration và mẫu số.
+
+**Cần PO chốt:** owner vận hành, lịch trực, thời gian phản hồi; credentials sender/bot nhập tại máy; xác nhận nhận notification. Không tự cam kết SLA hoặc 24/7. Webhook/email/refund job chưa có producer trên main: webhook AC Pending, lỗi gửi email/hoàn tiền và backlog/oldest age chưa có nguồn được nghiệm thu. S-01: code/CI/local đã tích hợp; staging/deploy/rollback thực vẫn cần bằng chứng riêng, không fully Done.
+
+Tasks kỹ thuật con (không dùng ID T-xx): instrumentation; stack/rules/dashboard; receiver/integration/failure; evidence/runbook/CI; exact-SHA review và PR integration. Story chỉ Done khi đủ AC/DoD, bao gồm staging và producer thật. Implementation có thể merge khi merge gates đạt và issue vẫn mở.
+
+Nguồn kỹ thuật: [histogram aggregation](https://prometheus.io/docs/practices/histograms/), [cardinality](https://prometheus.io/docs/practices/naming/), [Alertmanager routing/retry](https://prometheus.io/docs/alerting/latest/alertmanager/), [transport config](https://prometheus.io/docs/alerting/latest/configuration/), [Node client](https://github.com/prometheus/client_js), [Telegram sendMessage](https://core.telegram.org/bots/api#sendmessage).

@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-06",
+  "environment": "Local browser + ttcs_local PostgreSQL, not production",
+  "applicationSourceChanged": false,
+  "cases": [
+    {
+      "id": "TC-S15-01-pointer",
+      "result": "PASS",
+      "showtimeId": "beeb3497-e545-41dd-90a8-8e226c391877",
+      "method": "Real mouse movement through right-click plus Escape; no left-click or arrow-key seat changes. onClick does not handle right-click, so inspection changes exercise onPointerMove. The browser surface has no dedicated hover primitive.",
+      "observed": [
+        { "seat": "C-1", "category": "Ban công", "price": 350000 },
+        { "seat": "B-1", "category": "Tiêu chuẩn", "price": 650000 },
+        { "seat": "A-1", "category": "VIP", "price": 1200000 }
+      ],
+      "selectedSeatsAfterEachInspection": 0
+    },
+    {
+      "id": "TC-S16-11",
+      "result": "PASS",
+      "showtimeId": "6bdf7f2a-753a-4de2-baae-66bab1340c61",
+      "method": "Dedicated loopback proxy withheld the successful upstream response, then truncated its body and closed the connection after the server committed the order. No application code or system network settings changed.",
+      "loadingButton": { "text": "Đang tạo đơn…", "disabled": true },
+      "errorMessage": "Không đọc được phản hồi. Hãy thử lại.",
+      "retryActions": ["Thử lại", "Đặt vé"],
+      "attempts": [
+        {
+          "attempt": 1,
+          "upstreamStatus": 200,
+          "created": true,
+          "orderId": "48d86ca9-65d0-4c28-8b27-17349d49634f",
+          "serverTime": "2026-10-05T18:24:17.479Z",
+          "paymentExpiresAt": "2026-10-05T18:34:17.479Z",
+          "totalAmount": 1850000,
+          "itemCount": 2
+        },
+        {
+          "attempt": 2,
+          "upstreamStatus": 200,
+          "created": false,
+          "orderId": "48d86ca9-65d0-4c28-8b27-17349d49634f",
+          "serverTime": "2026-10-05T18:24:54.578Z",
+          "paymentExpiresAt": "2026-10-05T18:34:17.479Z",
+          "totalAmount": 1850000,
+          "itemCount": 2
+        }
+      ],
+      "database": {
+        "orderCountForFixture": 1,
+        "status": "PENDING_PAYMENT",
+        "items": [
+          { "seat": "A-1", "unitPrice": 1200000 },
+          { "seat": "B-1", "unitPrice": 650000 }
+        ],
+        "sessionAndSeatDeadlinesEqualOrderDeadline": true,
+        "deadlineNotExtendedByRetry": true
+      },
+      "finalDirectApplicationUrl": "http://localhost:3000/orders/48d86ca9-65d0-4c28-8b27-17349d49634f"
+    }
+  ],
+  "consoleErrorAndWarningEntriesReturned": [],
+  "limitations": [
+    "Screenshot capture still unavailable; evidence uses real browser actions and DOM observations.",
+    "Interrupted response body is tested, not every kind of offline or cellular-network failure."
+  ]
+}

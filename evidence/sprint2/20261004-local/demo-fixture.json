@@ -1,0 +1,9 @@
+{
+  "eventId": "3add2dc0-5539-43a0-8a90-a7df4a4e0605",
+  "showtimeId": "d28b37fc-7849-4718-8301-4d2631c681b9",
+  "accounts": [
+    "sprint2-organizer@demo.invalid",
+    "sprint2-buyer@demo.invalid"
+  ],
+  "fakeData": true
+}
