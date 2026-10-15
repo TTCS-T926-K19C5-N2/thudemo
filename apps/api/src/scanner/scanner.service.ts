@@ -242,7 +242,12 @@ export class ScannerService {
         AND (${isIncremental} OR o.status='PAID')
         AND (NOT ${isIncremental} OR o."updatedAt">${isIncremental ? new Date(since!) : new Date(0)} OR oi."checkedInAt">${isIncremental ? new Date(since!) : new Date(0)}
           OR EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t."updatedAt">${isIncremental ? new Date(since!) : new Date(0)}))`);
-    const tickets: ScannerTicketItem[] = ticketsRaw.map((t) => ({
+    const coveredCodes = new Set(
+      canonical.flatMap((item) => item.legacyCodes ?? []),
+    );
+    const tickets: ScannerTicketItem[] = ticketsRaw
+      .filter((ticket) => !coveredCodes.has(ticket.code))
+      .map((t) => ({
       code: t.code,
       status:
         t.status === TicketStatus.CHECKED_IN
