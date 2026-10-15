@@ -12,6 +12,7 @@ import { randomUUID } from 'node:crypto';
 
 export interface ScannerTicketItem {
   code: string;
+  legacyCodes?: string[];
   status: 'valid' | 'checked_in' | 'cancelled';
   checkedInAt: string | null;
   seatLabel: string;
@@ -27,6 +28,10 @@ export interface ShowtimeTicketsResponse {
     keyId: string;
     key: string;
   };
+  publicKeys?: {
+    keyId: string;
+    publicKey: string;
+  }[];
   tickets: ScannerTicketItem[];
 }
 
@@ -244,17 +249,17 @@ export class ScannerService {
     const tickets: ScannerTicketItem[] = ticketsRaw
       .filter((ticket) => !coveredCodes.has(ticket.code))
       .map((t) => ({
-        code: t.code,
-        status:
-          t.status === TicketStatus.CHECKED_IN
-            ? 'checked_in'
-            : t.status === TicketStatus.CANCELLED
-              ? 'cancelled'
-              : 'valid',
-        checkedInAt: t.checkedInAt ? t.checkedInAt.toISOString() : null,
-        seatLabel: t.seatLabel,
-        ticketType: t.ticketType,
-      }));
+      code: t.code,
+      status:
+        t.status === TicketStatus.CHECKED_IN
+          ? 'checked_in'
+          : t.status === TicketStatus.CANCELLED
+            ? 'cancelled'
+            : 'valid',
+      checkedInAt: t.checkedInAt ? t.checkedInAt.toISOString() : null,
+      seatLabel: t.seatLabel,
+      ticketType: t.ticketType,
+    }));
 
     const codes = new Set(tickets.map((ticket) => ticket.code));
     for (const item of canonical) {
@@ -262,8 +267,10 @@ export class ScannerService {
         !codes.has(item.code) &&
         (isIncremental || item.status !== 'cancelled')
       ) {
+        codes.add(item.code);
         tickets.push({
           code: item.code,
+          legacyCodes: item.legacyCodes ?? [],
           seatLabel: item.seatLabel,
           ticketType: item.ticketType,
           status: item.status as ScannerTicketItem['status'],
@@ -277,6 +284,15 @@ export class ScannerService {
       generatedAt: now.toISOString(),
       cursor: now.toISOString(),
       publicKey: this.crypto.getPublicKeyInfo(),
+      ...(typeof this.crypto.getPublicKeys === 'function'
+        ? {
+            publicKeys: this.crypto.getPublicKeys().map((k) => ({
+              keyId: k.keyId,
+              publicKey: k.key,
+              key: k.key,
+            })),
+          }
+        : {}),
       tickets,
     };
   }
