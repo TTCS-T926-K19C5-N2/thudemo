@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends openssl ca-c
 RUN npm install --global pnpm@10.15.1
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY patches patches
 COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
 COPY packages/shared/package.json packages/shared/package.json

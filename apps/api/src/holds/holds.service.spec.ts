@@ -3,6 +3,7 @@ import {
   Logger,
   ServiceUnavailableException,
 } from '@nestjs/common';
+import type { HoldConnection } from '../prisma/hold-transaction.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { HoldsService, parseTicketLimit } from './holds.service.js';
 
@@ -252,15 +253,22 @@ describe('S-42 per-account ticket limit', () => {
 
   it('allows a claim that exactly reaches the limit', async () => {
     const { db, holds } = fixture(2, '1', '0');
-    const state = await holds.claim(showtimeId, userId, 'fixture-session-hash', {
-      seatIds: [seatA],
-    });
+    const state = await holds.claim(
+      showtimeId,
+      userId,
+      'fixture-session-hash',
+      {
+        seatIds: [seatA],
+      },
+    );
     expect(state.hold?.seatIds).toEqual([seatA]);
     expect(db.commitHoldRoutine).toHaveBeenCalledOnce();
   });
 
   it('skips counting when the showtime has no limit', async () => {
-    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => {});
+    const warn = vi
+      .spyOn(Logger.prototype, 'warn')
+      .mockImplementation(() => {});
     vi.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
     const db = {
       seatReadQuery: vi.fn().mockResolvedValue([{ maxTicketsPerUser: null }]),
@@ -285,19 +293,63 @@ describe('S-42 per-account ticket limit', () => {
     expect(warn).not.toHaveBeenCalled();
   });
 
-  const limitQueryCount = (db: { seatReadQuery: { mock: { calls: unknown[][] } } }) =>
+  const limitQueryCount = (db: {
+    seatReadQuery: { mock: { calls: unknown[][] } };
+  }) =>
     db.seatReadQuery.mock.calls.filter((args: unknown[]) => {
       const first = args[0] as { text?: unknown };
       return (
-        typeof first.text === 'string' && first.text.includes('maxTicketsPerUser')
+        typeof first.text === 'string' &&
+        first.text.includes('maxTicketsPerUser')
       );
     }).length;
 
+  it.each([null, 4])(
+    'reuses each occupied request connection for cold quota reads (limit %s)',
+    async (limit) => {
+      const { db, holds } = fixture(limit, '0', '0');
+      const clients = Array.from(
+        { length: 10 },
+        () => ({ release: vi.fn() }) as unknown as HoldConnection,
+      );
+      db.seatReadQuery
+        .mockReset()
+        .mockImplementation(
+          async (sql: { text: string }, client: HoldConnection) => {
+            // All ten slots are held by authenticated requests. A second acquisition
+            // would never complete; quota reads must use one of the owned connections.
+            if (!clients.includes(client))
+              throw Error('Would wait on exhausted pool');
+            await new Promise((done) => setImmediate(done));
+            return sql.text.includes('maxTicketsPerUser')
+              ? [{ maxTicketsPerUser: limit }]
+              : [{ held: '0', bought: '0' }];
+          },
+        );
+      const results = await Promise.all(
+        clients.map((client, index) =>
+          holds.claim(
+            showtimeId,
+            `user-${index}`,
+            'fixture-session-hash',
+            { seatIds: [seatA] },
+            client,
+          ),
+        ),
+      );
+      expect(results).toHaveLength(10);
+      expect(limitQueryCount(db)).toBe(1);
+      expect(db.seatReadQuery).toHaveBeenCalledTimes(limit === null ? 1 : 11);
+      for (const client of clients)
+        expect(client.release).not.toHaveBeenCalled();
+      for (const [index, args] of db.commitHoldRoutine.mock.calls.entries())
+        expect(args[1]).toBe(clients[index]);
+    },
+  );
+
   it('refetches the limit after the cache TTL expires', async () => {
     const { db, holds } = fixture(null, '0', '0');
-    (
-      holds as unknown as { limitCacheTtlMs: number }
-    ).limitCacheTtlMs = 0;
+    (holds as unknown as { limitCacheTtlMs: number }).limitCacheTtlMs = 0;
     const body = { seatIds: [seatA] };
     await holds.claim(showtimeId, userId, 'fixture-session-hash', body);
     await holds.claim(showtimeId, userId, 'fixture-session-hash', body);
@@ -334,7 +386,9 @@ describe('S-42 per-account ticket limit', () => {
   });
 
   it('fails closed when the limit lookup errors so the limit is never bypassed', async () => {
-    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => {});
+    const warn = vi
+      .spyOn(Logger.prototype, 'warn')
+      .mockImplementation(() => {});
     vi.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
     const db = {
       seatReadQuery: vi.fn().mockRejectedValueOnce(new Error('db down')),

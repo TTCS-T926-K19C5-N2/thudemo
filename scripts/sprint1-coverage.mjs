@@ -5,9 +5,18 @@ import { resolve, relative } from "node:path";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 const root = resolve(import.meta.dirname, "..");
-const baseline = resolve(root, ".sprint1-local/baseline");
-const baseSha = "07d683fcfcfd7d05c8aff1119ab6dc3c63f6e458";
-const output = resolve(root, "evidence/sprint1/20261015-gitflow/coverage");
+const baseline = resolve(
+  root,
+  process.env.SPRINT1_COVERAGE_BASELINE_DIR ?? ".sprint1-local/baseline",
+);
+const baseSha =
+  process.env.SPRINT1_COVERAGE_BASE_SHA ??
+  "07d683fcfcfd7d05c8aff1119ab6dc3c63f6e458";
+const output = resolve(
+  root,
+  process.env.SPRINT1_COVERAGE_OUTPUT ??
+    "evidence/sprint1/20261015-gitflow/coverage",
+);
 mkdirSync(output, { recursive: true });
 const slash = (path) => path.replaceAll("\\", "/");
 const normalize = (data, dir) =>
@@ -90,14 +99,21 @@ function counters(file, lines) {
   };
 }
 const projects = [];
-for (const name of ["api", "web"]) {
-  const config = `apps/${name}/vitest.sprint1-coverage.config.ts`;
+for (const name of (process.env.SPRINT1_COVERAGE_PROJECTS ?? "api,web").split(
+  ",",
+)) {
+  const config = `apps/${name}/${process.env.SPRINT1_COVERAGE_CONFIG ?? "vitest.sprint1-coverage.config.ts"}`;
   const bytes = readFileSync(resolve(root, config));
   if (!bytes.equals(readFileSync(resolve(baseline, config))))
     throw new Error("Coverage configs differ");
   const load = (dir, file) =>
     JSON.parse(
-      readFileSync(resolve(dir, `apps/${name}/coverage/sprint1/${file}`)),
+      readFileSync(
+        resolve(
+          dir,
+          `apps/${name}/coverage/${process.env.SPRINT1_COVERAGE_REPORT ?? "sprint1"}/${file}`,
+        ),
+      ),
     );
   const beforeSummary = normalize(
     load(baseline, "coverage-summary.json"),

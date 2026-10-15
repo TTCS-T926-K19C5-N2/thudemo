@@ -54,12 +54,20 @@ const config = JSON.parse(
   origin = staging
     ? `https://${stage.lanAddress}:${stage.gatewayPort}`
     : `http://localhost:${config.webPort}`;
+const outputAt = process.argv.indexOf("--output");
 const out = resolve(
   root,
-  staging
-    ? "evidence/sprint1/20261015-handoff/staging-browser"
-    : "evidence/sprint1/20261015-gitflow/browser",
+  outputAt >= 0
+    ? process.argv[outputAt + 1]
+    : staging
+      ? "evidence/sprint1/20261015-handoff/staging-browser"
+      : "evidence/sprint1/20261015-gitflow/browser",
 );
+if (
+  !out.startsWith(resolve(root, "evidence/sprint1") + "/") &&
+  !out.startsWith(resolve(root, "evidence/sprint1") + "\\")
+)
+  throw Error("Browser evidence must stay in Sprint 1 directory");
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ headless: true }),
   results = [],

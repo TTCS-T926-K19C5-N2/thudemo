@@ -135,6 +135,33 @@ function stopOwned(record) {
     throw new Error("Refuse process identity mismatch");
   process.kill(record.pid);
 }
+const network = "sprint1-staging-20261015";
+function ensureNetwork() {
+  if (
+    !docker("network", "ls", "--format", "{{.Name}}")
+      .split(/\r?\n/)
+      .includes(network)
+  )
+    docker("network", "create", "--label", "sprint1.staging=20261015", network);
+  const info = JSON.parse(docker("network", "inspect", network))[0];
+  if (info.Labels?.["sprint1.staging"] !== "20261015")
+    throw Error("Refuse foreign staging network");
+  for (const name of [
+    "sprint1-stage-pg-20261015",
+    "sprint1-stage-redis-20261015",
+  ]) {
+    if (!ownedContainer(name)) throw Error("Staging dependency missing");
+    if (
+      !JSON.parse(docker("inspect", name))[0].NetworkSettings.Networks[network]
+    )
+      docker("network", "connect", network, name);
+  }
+}
+function stopRelease(release) {
+  stopOwned(release.webProcess);
+  for (const name of [release.webContainer, release.apiContainer])
+    if (name && ownedContainer(name)) docker("stop", name);
+}
 function apiEnv(c) {
   return {
     ...ticketKeyEnv(dir),
@@ -142,9 +169,9 @@ function apiEnv(c) {
     APP_ENV: "staging",
     SERVICE_ROLE: "api",
     PORT: "10000",
-    DATABASE_URL: `postgresql://${c.user}:${c.dbPassword}@host.docker.internal:${c.pgPort}/${c.database}?schema=public`,
-    REDIS_HOST: "host.docker.internal",
-    REDIS_PORT: String(c.redisPort),
+    DATABASE_URL: `postgresql://${c.user}:${c.dbPassword}@sprint1-stage-pg-20261015:5432/${c.database}?schema=public`,
+    REDIS_HOST: "sprint1-stage-redis-20261015",
+    REDIS_PORT: "6379",
     REDIS_URL: "",
     WEB_ORIGIN: `https://${c.lanAddress}:${c.gatewayPort}`,
     AUTH_PROXY_SECRET: c.authProxySecret,
@@ -506,6 +533,7 @@ async function deploy() {
   }
   timeline("candidate-start", { sha });
   await dependencies(c);
+  ensureNetwork();
   const releaseRoot = resolve(dir, "releases", sha);
   mkdirSync(releaseRoot, { recursive: true });
   const source = resolve(releaseRoot, "source");
@@ -606,11 +634,6 @@ async function deploy() {
     [resolve(root, "apps/api/scripts/seed-sprint1-staging.mjs")],
     { env },
   );
-  run("web-build", "corepack.cmd", ["pnpm", "--filter", "web", "build"], {
-    cwd: source,
-    env: { ...env, NODE_ENV: "production" },
-    shell: true,
-  });
   const image = `sprint1-staging-api:${sha.slice(0, 12)}`;
   run(
     "api-image",
@@ -627,6 +650,22 @@ async function deploy() {
     ],
     { cwd: source },
   );
+  const webImage = `sprint1-staging-web:${sha.slice(0, 12)}`;
+  run(
+    "web-image",
+    "docker",
+    [
+      "build",
+      "--target",
+      "web",
+      "--label",
+      `org.opencontainers.image.revision=${sha}`,
+      "-t",
+      webImage,
+      ".",
+    ],
+    { cwd: source },
+  );
   const slot = active?.webPort === 3473 ? 1 : 0,
     webPort = 3473 + slot,
     apiPort = 3471 + slot;
@@ -634,8 +673,7 @@ async function deploy() {
   if (existsSync(slotFile)) {
     const stale = JSON.parse(readFileSync(slotFile));
     if (stale.sha === active?.sha) throw new Error("Refuse active slot");
-    stopOwned(stale.webProcess);
-    if (ownedContainer(stale.apiContainer)) docker("stop", stale.apiContainer);
+    stopRelease(stale);
   }
   await free(webPort);
   await free(apiPort);
@@ -649,6 +687,8 @@ async function deploy() {
     apiContainer,
     "--label",
     "sprint1.staging=20261015",
+    "--network",
+    network,
     "--env-file",
     file,
     "-p",
@@ -657,52 +697,53 @@ async function deploy() {
     `type=bind,source=${resolve(dir, "scanner-signing.pem")},target=/run/secrets/scanner.pem,readonly`,
     image,
   );
-  let webChild,
-    switched = false;
+  let webContainer;
+  let switched = false;
   const pointers = pointerSnapshot(dir);
   try {
     await waitHealth(apiPort);
-    const entry = resolve(source, "apps/web/node_modules/next/dist/bin/next"),
-      fd = openSync(resolve(releaseRoot, "web.log"), "a");
-    const webEnv = {
-      ...Object.fromEntries(
-        [
-          "PATH",
-          "Path",
-          "SystemRoot",
-          "SYSTEMROOT",
-          "TEMP",
-          "TMP",
-          "USERPROFILE",
-          "APPDATA",
-          "LOCALAPPDATA",
-        ]
-          .filter((key) => process.env[key] !== undefined)
-          .map((key) => [key, process.env[key]]),
-      ),
+    webContainer = `sprint1-stage-web-${sha.slice(0, 12)}-${Date.now()}`;
+    const webFile = resolve(releaseRoot, "web.env");
+    writeEnv(webFile, {
       NODE_ENV: "production",
-      API_INTERNAL_URL: `http://127.0.0.1:${apiPort}`,
+      API_INTERNAL_URL: `http://${apiContainer}:10000`,
       AUTH_PROXY_SECRET: c.authProxySecret,
-    };
-    webChild = spawn(
-      process.execPath,
-      [entry, "start", "--hostname", "127.0.0.1", "--port", String(webPort)],
-      {
-        cwd: resolve(source, "apps/web"),
-        env: webEnv,
-        windowsHide: true,
-        detached: true,
-        stdio: ["ignore", fd, fd],
-      },
+    });
+    // The existing LAN gateway owns the peer and signs the login attestation.
+    // Use Next's private listener here; route handlers still verify the HMAC.
+    // server.mjs is for direct transport ownership and would replace it with
+    // the container's gateway peer. Do not nest the two transport owners.
+    docker(
+      "run",
+      "-d",
+      "--name",
+      webContainer,
+      "--label",
+      "sprint1.staging=20261015",
+      "--network",
+      network,
+      "--env-file",
+      webFile,
+      "-p",
+      `127.0.0.1:${webPort}:3000`,
+      webImage,
+      "node",
+      "node_modules/next/dist/bin/next",
+      "start",
+      "--hostname",
+      "0.0.0.0",
+      "--port",
+      "3000",
     );
-    closeSync(fd);
     const release = {
       sha,
       webPort,
       apiPort,
       apiContainer,
       image,
-      webProcess: remember(webChild, entry),
+      webContainer,
+      webImage,
+      network,
       startedAt: new Date().toISOString(),
     };
     let ready = false;
@@ -730,8 +771,7 @@ async function deploy() {
         sha,
         activeSha: active?.sha ?? null,
       });
-      webChild.kill();
-      docker("stop", apiContainer);
+      stopRelease(release);
       console.log(
         "Controlled candidate failed verification; active release retained.",
       );
@@ -755,7 +795,8 @@ async function deploy() {
     );
   } catch (error) {
     if (switched) restorePointers(dir, pointers);
-    if (webChild) webChild.kill();
+    if (webContainer && ownedContainer(webContainer))
+      docker("stop", webContainer);
     if (ownedContainer(apiContainer)) docker("stop", apiContainer);
     timeline("candidate-failed-old-retained", {
       sha,
@@ -814,9 +855,8 @@ async function main() {
     ])
       if (existsSync(resolve(dir, file))) {
         const value = JSON.parse(readFileSync(resolve(dir, file)));
-        stopOwned(value.webProcess ?? value);
-        if (value.apiContainer && ownedContainer(value.apiContainer))
-          docker("stop", value.apiContainer);
+        if (value.apiContainer) stopRelease(value);
+        else stopOwned(value);
       }
     console.log(
       "Owned staging processes stopped; dependencies, keys, volumes and data retained.",

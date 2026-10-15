@@ -1,6 +1,7 @@
 packages:
-  - "apps/*"
-  - "packages/*"
+  - apps/*
+  - packages/*
+
 onlyBuiltDependencies:
   - "@nestjs/core"
   - "@prisma/client"
@@ -12,9 +13,19 @@ onlyBuiltDependencies:
   - workerd
 
 overrides:
-  "@prisma/config@7.10.0>deepmerge-ts": 8.0.0
-  "prisma@7.10.0>mysql2": 3.23.1
-  "source-map-js@<1.2.2": 1.2.2
-  "next@16.3.8>sharp": 0.35.5
   "@nestjs/mau@0.2.8>undici": 6.28.1
-  "external-editor@3.1.0>tmp": 0.2.7
+  "@next/eslint-plugin-next@16.3.8>fast-glob": "-"
+  "@prisma/config@7.10.0>deepmerge-ts": 8.0.0
+  external-editor@3.1.0>tmp: 0.2.7
+  next@16.3.8>sharp: 0.35.5
+  prisma@7.10.0>mysql2: 3.23.1
+  source-map-js@<1.2.2: 1.2.2
+
+packageExtensions:
+  "@next/eslint-plugin-next@16.3.8":
+    dependencies:
+      brace-expansion: 5.0.12
+      glob: 13.0.6
+
+patchedDependencies:
+  "@next/eslint-plugin-next@16.3.8": patches/@next__eslint-plugin-next@16.3.8.patch

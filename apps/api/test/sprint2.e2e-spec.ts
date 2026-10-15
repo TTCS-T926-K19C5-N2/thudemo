@@ -156,6 +156,22 @@ describe('Sprint 2 isolated database integration', () => {
       await app.close();
     }
   });
+  it('does not expose research Redis routes or accept a caller-supplied prototype owner', async () => {
+    for (const prefix of ['/showtimes', '/api/showtimes']) {
+      for (const cookie of [undefined, buyerCookie]) {
+        const call = request(app.getHttpServer())
+          .post(`${prefix}/st_101/hold-seats`)
+          .set('x-user-id', 'forged-prototype-owner')
+          .send({ userId: 'forged-prototype-owner', seatIds: ['A1'] });
+        if (cookie) call.set('Cookie', cookie);
+        await call.expect(404);
+      }
+    }
+    await request(app.getHttpServer())
+      .get('/api/showtimes/st_101/seats?seatIds=A1')
+      .expect(404);
+  });
+
   it('projects sold/held/expired inventory fixtures in the production SQL expression using DB time', async () => {
     const rows = await db.$queryRaw<
       { id: string; status: string }[]

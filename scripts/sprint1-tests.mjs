@@ -12,7 +12,12 @@ import net from "node:net";
 const root = resolve(import.meta.dirname, ".."),
   c = JSON.parse(readFileSync(resolve(root, ".sprint1-local/config.json")));
 const dir = resolve(root, ".sprint1-local"),
-  out = resolve(root, "evidence/sprint1/20261015-gitflow");
+  out = resolve(
+    root,
+    process.env.SPRINT1_EVIDENCE_DIR ?? "evidence/sprint1/20261015-gitflow",
+  );
+if (!out.startsWith(resolve(root, "evidence/sprint1") + "\\"))
+  throw Error("Evidence must stay within Sprint 1 directory");
 mkdirSync(out, { recursive: true });
 const require = createRequire(resolve(root, "apps/api/package.json"));
 require("dotenv").config({ path: resolve(root, ".env"), quiet: true });
@@ -31,6 +36,7 @@ const env = {
   SPRINT1_ISOLATED_TEST: "true",
   HOLD_EXPIRY_MODE: "off",
   ORDER_EXPIRY_MODE: "off",
+  VERIFICATION_EVIDENCE_DIR: resolve(out, "integration"),
 };
 // Unit tests supply independent key configurations; do not inject demo keys.
 for (const key of Object.keys(env))

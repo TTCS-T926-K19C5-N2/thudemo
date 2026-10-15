@@ -60,10 +60,18 @@ const report = {
     "Additive fake fixtures remain; no reset, history deletion or modification of existing users/holds.",
   ],
 };
+const at = process.argv.indexOf("--output");
 const output = resolve(
   root,
-  "evidence/sprint1/20261015-laptop/endpoint-benchmark.json",
+  at < 0
+    ? "evidence/sprint1/20261015-laptop/endpoint-benchmark.json"
+    : process.argv[at + 1],
 );
+if (
+  !output.startsWith(resolve(root, "evidence/sprint1") + "/") &&
+  !output.startsWith(resolve(root, "evidence/sprint1") + "\\")
+)
+  throw Error("Benchmark evidence must stay within Sprint 1 directory");
 function save() {
   mkdirSync(resolve(output, ".."), { recursive: true });
   writeFileSync(output, JSON.stringify(report, null, 2));
