@@ -98,8 +98,15 @@ describe('Payments S-20 Idempotency & Concurrency E2E Integration', () => {
     return { order, payment, gatewayRef };
   }
 
-  function signWebhook(orderId: string, gatewayRef: string, transId: string, amount = 250000) {
-    const extraData = Buffer.from(JSON.stringify({ orderId })).toString('base64');
+  function signWebhook(
+    orderId: string,
+    gatewayRef: string,
+    transId: string,
+    amount = 250000,
+  ) {
+    const extraData = Buffer.from(JSON.stringify({ orderId })).toString(
+      'base64',
+    );
     const payload: Record<string, unknown> = {
       partnerCode: 'MOMO',
       orderId: gatewayRef,
@@ -114,7 +121,11 @@ describe('Payments S-20 Idempotency & Concurrency E2E Integration', () => {
       responseTime: Date.now(),
       extraData,
     };
-    payload.signature = buildMomoSignature(payload, momoAccessKey, momoSecretKey);
+    payload.signature = buildMomoSignature(
+      payload,
+      momoAccessKey,
+      momoSecretKey,
+    );
     return payload;
   }
 
@@ -122,7 +133,9 @@ describe('Payments S-20 Idempotency & Concurrency E2E Integration', () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
       target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
+      (target.port !== '15432' &&
+        (target.port !== '15434' ||
+          process.env.S32_ISOLATED_TEST !== 'true')) ||
       target.pathname !== '/sprint2_integration'
     ) {
       throw new Error('Run only on the isolated sprint2_integration database');
@@ -233,8 +246,12 @@ describe('Payments S-20 Idempotency & Concurrency E2E Integration', () => {
 
       // Fire 2 concurrent requests
       const [resA, resB] = await Promise.all([
-        request(app.getHttpServer()).post('/payments/webhook').send(webhookPayload),
-        request(app.getHttpServer()).post('/payments/webhook').send(webhookPayload),
+        request(app.getHttpServer())
+          .post('/payments/webhook')
+          .send(webhookPayload),
+        request(app.getHttpServer())
+          .post('/payments/webhook')
+          .send(webhookPayload),
       ]);
 
       // Neither must return 500

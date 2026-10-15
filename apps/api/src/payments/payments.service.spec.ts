@@ -89,7 +89,9 @@ describe('PaymentsService Unit Tests', () => {
     };
 
     mockOrdersService = {
-      expireOrder: vi.fn().mockResolvedValue({ status: 'expired', releasedSeatsCount: 1 }),
+      expireOrder: vi
+        .fn()
+        .mockResolvedValue({ status: 'expired', releasedSeatsCount: 1 }),
     };
 
     service = new PaymentsService(
@@ -107,12 +109,13 @@ describe('PaymentsService Unit Tests', () => {
         id: orderId,
         userId: 'other_user',
         status: OrderStatus.PENDING,
+        totalAmount: 100000,
         expiresAt: new Date(Date.now() + 600000),
       });
 
-      await expect(
-        service.initiatePayment(orderId, userId),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.initiatePayment(orderId, userId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('throws BadRequestException if order is expired', async () => {
@@ -120,28 +123,29 @@ describe('PaymentsService Unit Tests', () => {
         id: orderId,
         userId,
         status: OrderStatus.PENDING,
+        totalAmount: 100000,
         expiresAt: new Date(Date.now() - 10000), // Expired
         items: [],
       });
 
-      await expect(
-        service.initiatePayment(orderId, userId),
-      ).rejects.toThrow(BadRequestException);
+      await expect(service.initiatePayment(orderId, userId)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
-    it('calculates total strictly from DB seat prices and creates INITIATED payment', async () => {
+    it('uses the recorded booking total after live category price changes and creates INITIATED payment', async () => {
       mockPrisma.order.findUnique.mockResolvedValue({
         id: orderId,
         userId,
         status: OrderStatus.PENDING,
-        totalAmount: 100, // Client or forged value
+        totalAmount: 50000, // Server-side total saved by S-16 at booking time
         expiresAt: new Date(Date.now() + 600000),
         items: [
           {
             seatId,
             unitPrice: 50000,
             seat: {
-              category: { price: 75000 }, // Authoritative DB price
+              category: { price: 75000 }, // Live price changed after the booking snapshot
             },
           },
         ],
@@ -157,13 +161,13 @@ describe('PaymentsService Unit Tests', () => {
       expect(mockGateway.createPayment).toHaveBeenCalledWith(
         expect.objectContaining({
           orderId,
-          amount: 75000, // Must use DB seat price, not unitPrice or order totalAmount
+          amount: 50000, // Must keep the recorded order amount
         }),
       );
       expect(mockPrisma.payment.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           orderId,
-          amount: 75000,
+          amount: 50000,
           status: PaymentStatus.INITIATED,
         }),
       });
@@ -209,6 +213,7 @@ describe('PaymentsService Unit Tests', () => {
       mockPrisma.order.findUnique.mockResolvedValue({
         id: orderId,
         status: OrderStatus.PENDING,
+        totalAmount: 100000,
         expiresAt: new Date(Date.now() + 600000),
         items: [
           {
@@ -241,7 +246,7 @@ describe('PaymentsService Unit Tests', () => {
       );
     });
 
-    it('processes matched SUCCESS in single transaction: PAID, SOLD, holds deleted, payment SUCCEEDED', async () => {
+    it('processes booked amount after live price changes: PAID, SOLD, holds deleted, payment SUCCEEDED', async () => {
       (mockGateway.verifyWebhook as any).mockResolvedValue(true);
       (mockGateway.parseWebhook as any).mockResolvedValue({
         orderId,
@@ -254,11 +259,13 @@ describe('PaymentsService Unit Tests', () => {
       mockPrisma.order.findUnique.mockResolvedValue({
         id: orderId,
         status: OrderStatus.PENDING,
+        totalAmount: 100000,
         expiresAt: new Date(Date.now() + 600000),
         items: [
           {
             seatId,
-            seat: { category: { price: 100000 } },
+            unitPrice: 100000,
+            seat: { category: { price: 900000 } },
           },
         ],
       });
@@ -309,6 +316,7 @@ describe('PaymentsService Unit Tests', () => {
       mockPrisma.order.findUnique.mockImplementation(async () => ({
         id: orderId,
         status: currentOrderStatus,
+        totalAmount: 100000,
         expiresAt: new Date(Date.now() + 600000),
         items: [{ seatId, seat: { category: { price: 100000 } } }],
       }));
@@ -352,6 +360,7 @@ describe('PaymentsService Unit Tests', () => {
       mockPrisma.order.findUnique.mockResolvedValue({
         id: orderId,
         status: OrderStatus.PENDING,
+        totalAmount: 100000,
         expiresAt: new Date(Date.now() - 60000), // Expired 1 minute ago
         items: [{ seatId, seat: { category: { price: 100000 } } }],
       });
@@ -396,12 +405,15 @@ describe('PaymentsService Unit Tests', () => {
       mockPrisma.order.findUnique.mockResolvedValue({
         id: orderId,
         status: OrderStatus.PENDING,
+        totalAmount: 100000,
         expiresAt: new Date(Date.now() + 600000),
         items: [{ seatId, seat: { category: { price: 100000 } } }],
       });
 
       // Simulate concurrent transaction throwing P2002 Unique constraint failed
-      const p2002Error: any = new Error('Unique constraint failed on the fields: (`gatewayRef`)');
+      const p2002Error: any = new Error(
+        'Unique constraint failed on the fields: (`gatewayRef`)',
+      );
       p2002Error.code = 'P2002';
       mockPrisma.$transaction = vi.fn().mockRejectedValue(p2002Error);
 
@@ -424,14 +436,19 @@ describe('PaymentsService Unit Tests', () => {
       mockPrisma.order.findUnique.mockResolvedValue({
         id: orderId,
         status: OrderStatus.PENDING,
+        totalAmount: 100000,
         expiresAt: new Date(Date.now() + 600000),
         items: [{ seatId, seat: { category: { price: 100000 } } }],
       });
 
       // Simulate a failure in DB connection inside transaction
-      mockPrisma.$transaction = vi.fn().mockRejectedValue(new Error('DB connection failure'));
+      mockPrisma.$transaction = vi
+        .fn()
+        .mockRejectedValue(new Error('DB connection failure'));
 
-      await expect(service.handleWebhook({}, {})).rejects.toThrow('DB connection failure');
+      await expect(service.handleWebhook({}, {})).rejects.toThrow(
+        'DB connection failure',
+      );
     });
 
     it('marks payment FAILED and leaves order PENDING when webhook event is FAILED', async () => {
@@ -447,6 +464,7 @@ describe('PaymentsService Unit Tests', () => {
       mockPrisma.order.findUnique.mockResolvedValue({
         id: orderId,
         status: OrderStatus.PENDING,
+        totalAmount: 100000,
         expiresAt: new Date(Date.now() + 600000),
         items: [{ seatId, seat: { category: { price: 100000 } } }],
       });
@@ -483,6 +501,7 @@ describe('PaymentsService Unit Tests', () => {
         mockPrisma.order.findUnique.mockResolvedValue({
           id: orderId,
           status: OrderStatus.PENDING,
+          totalAmount: 100000,
           expiresAt: new Date(Date.now() - 60000), // 1 min ago
           items: [{ seatId, seat: { category: { price: 100000 } } }],
         });
@@ -523,6 +542,7 @@ describe('PaymentsService Unit Tests', () => {
         mockPrisma.order.findUnique.mockResolvedValueOnce({
           id: orderId,
           status: OrderStatus.PENDING,
+          totalAmount: 100000,
           expiresAt: new Date(Date.now() + 1000), // looks valid initially
           items: [{ seatId, seat: { category: { price: 100000 } } }],
         });
@@ -563,6 +583,7 @@ describe('PaymentsService Unit Tests', () => {
         mockPrisma.order.findUnique.mockResolvedValueOnce({
           id: orderId,
           status: OrderStatus.PENDING,
+          totalAmount: 100000,
           expiresAt: new Date(Date.now() + 10000),
           items: [{ seatId, seat: { category: { price: 100000 } } }],
         });
@@ -879,4 +900,3 @@ describe('PaymentsService Unit Tests', () => {
     });
   });
 });
-

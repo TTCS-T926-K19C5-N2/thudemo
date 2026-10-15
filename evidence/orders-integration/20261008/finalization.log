@@ -1,0 +1,61 @@
+{
+  "verifiedAt": "2026-10-08T07:32:05.926Z",
+  "branch": "task/orders-integration-ready",
+  "baseSha": "de610b58ab065a22342ab18a49970626134197fd",
+  "sourceFiles": 49,
+  "privateDatabase": "127.0.0.1:15434/sprint2_integration",
+  "migrations": 18,
+  "health": {
+    "http": 200,
+    "status": "ok"
+  },
+  "checks": {
+    "format": "PASS",
+    "lint": "PASS with 4 baseline warnings",
+    "typecheck": "PASS",
+    "build": "PASS",
+    "unit": {
+      "passed": 180,
+      "api": 143,
+      "web": 37
+    },
+    "integration": {
+      "passed": 102,
+      "total": 102,
+      "success": true
+    },
+    "browser": {
+      "passed": 33,
+      "total": 33
+    },
+    "mockPaymentContinuation": {
+      "passed": 2,
+      "total": 2
+    },
+    "diff": "PASS",
+    "preservation": {
+      "previousMainFilesChecked": 67,
+      "previousMainChangedHashes": [],
+      "previousMainStatusUnchanged": true,
+      "originalCheckoutStatusUnchanged": true
+    }
+  },
+  "remoteObserved": {
+    "pr47": "MERGED",
+    "pr51": "OPEN",
+    "pr51Head": "4cd96aaef2aed8099f777371dd3446adca76cebe",
+    "pr51CiRun": "37619912035",
+    "pr51Ci": "failure"
+  },
+  "gates": {
+    "committed": false,
+    "pushed": false,
+    "pullRequestCreated": false,
+    "mainIntegrated": false,
+    "independentReview": false,
+    "newDiffCI": false,
+    "staging": false,
+    "sharedDatabaseChanged": false,
+    "deployed": false
+  }
+}

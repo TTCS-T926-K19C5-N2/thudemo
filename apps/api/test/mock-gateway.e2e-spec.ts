@@ -49,7 +49,9 @@ describe('Mock Gateway S-19 E2E Integration', () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
       target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
+      (target.port !== '15432' &&
+        (target.port !== '15434' ||
+          process.env.S32_ISOLATED_TEST !== 'true')) ||
       target.pathname !== '/sprint2_integration'
     ) {
       throw new Error('Run only on the isolated sprint2_integration database');
@@ -176,7 +178,14 @@ describe('Mock Gateway S-19 E2E Integration', () => {
         expiresAt: new Date(Date.now() + 600000),
         paymentExpiresAt: new Date(Date.now() + 600000),
         items: {
-          create: [{ seatId: seat1Id, categoryName: 'Standard', tierName: 'Standard', unitPrice: 200000 }],
+          create: [
+            {
+              seatId: seat1Id,
+              categoryName: 'Standard',
+              tierName: 'Standard',
+              unitPrice: 200000,
+            },
+          ],
         },
       },
     });
@@ -227,7 +236,14 @@ describe('Mock Gateway S-19 E2E Integration', () => {
         expiresAt: new Date(Date.now() + 600000),
         paymentExpiresAt: new Date(Date.now() + 600000),
         items: {
-          create: [{ seatId: seat2Id, categoryName: 'Standard', tierName: 'Standard', unitPrice: 200000 }],
+          create: [
+            {
+              seatId: seat2Id,
+              categoryName: 'Standard',
+              tierName: 'Standard',
+              unitPrice: 200000,
+            },
+          ],
         },
       },
     });
@@ -257,15 +273,21 @@ describe('Mock Gateway S-19 E2E Integration', () => {
 
     // 5. Verify database changes:
     // (a) Order is now PAID
-    const updatedOrder = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+    const updatedOrder = await db.order.findUniqueOrThrow({
+      where: { id: order.id },
+    });
     expect(updatedOrder.status).toBe(OrderStatus.PAID);
 
     // (b) Seat is marked SOLD
-    const updatedSeat = await db.seat.findUniqueOrThrow({ where: { id: seat2Id } });
+    const updatedSeat = await db.seat.findUniqueOrThrow({
+      where: { id: seat2Id },
+    });
     expect(updatedSeat.isSold).toBe(true);
 
     // (c) Seat hold is deleted
-    const remainingHold = await db.seatHold.findUnique({ where: { seatId: seat2Id } });
+    const remainingHold = await db.seatHold.findUnique({
+      where: { seatId: seat2Id },
+    });
     expect(remainingHold).toBeNull();
 
     // (d) Payment is SUCCEEDED
@@ -276,7 +298,9 @@ describe('Mock Gateway S-19 E2E Integration', () => {
 
   it('AC 3: Submitting FAILED outcome marks payment FAILED and leaves order PENDING', async () => {
     // 1. Create a seat for failure test
-    const cat = await db.seatCategory.findFirstOrThrow({ where: { showtimeId } });
+    const cat = await db.seatCategory.findFirstOrThrow({
+      where: { showtimeId },
+    });
     const sFail = await db.seat.create({
       data: {
         showtimeId,
@@ -318,7 +342,14 @@ describe('Mock Gateway S-19 E2E Integration', () => {
         expiresAt: new Date(Date.now() + 600000),
         paymentExpiresAt: new Date(Date.now() + 600000),
         items: {
-          create: [{ seatId: sFail.id, categoryName: 'Standard', tierName: 'Standard', unitPrice: 200000 }],
+          create: [
+            {
+              seatId: sFail.id,
+              categoryName: 'Standard',
+              tierName: 'Standard',
+              unitPrice: 200000,
+            },
+          ],
         },
       },
     });
@@ -345,7 +376,9 @@ describe('Mock Gateway S-19 E2E Integration', () => {
     expect(submitRes.body.status).toBe('FAILED');
 
     // Verify order remains PENDING
-    const updatedOrder = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+    const updatedOrder = await db.order.findUniqueOrThrow({
+      where: { id: order.id },
+    });
     expect(updatedOrder.status).toBe(OrderStatus.PENDING);
 
     // Verify payment record is marked FAILED

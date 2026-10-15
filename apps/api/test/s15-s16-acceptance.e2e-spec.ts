@@ -90,7 +90,9 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
       target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
+      (target.port !== '15432' &&
+        (target.port !== '15434' ||
+          process.env.S32_ISOLATED_TEST !== 'true')) ||
       target.pathname !== '/sprint2_integration'
     )
       throw Error(
@@ -275,7 +277,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     expect(fresh.body.order.totalAmount).toBe(1500000);
   });
 
-  it('TC-S16-01: creates exactly the two held seats at server prices and extends both holds for 600 seconds', async () => {
+  it('TC-S16-01: creates exactly the two held seats at server prices and preserves the original hold deadline (DEC-10)', async () => {
     await openSale();
     const selected = [
       seats.find((s) => s.categoryId === categories[0].id)!,
@@ -293,9 +295,10 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     ).toEqual(selected.map((s) => s.id).sort());
     expect(result.body.order.totalAmount).toBe(1850000);
     const deadline = Date.parse(result.body.order.paymentExpiresAt);
-    expect(deadline - Date.parse(result.body.serverTime)).toBe(600000);
-    expect(deadline).toBeGreaterThanOrEqual(
-      Date.parse(held.body.hold.expiresAt),
+    expect(deadline).toBe(Date.parse(held.body.hold.expiresAt));
+    expect(deadline - Date.parse(result.body.serverTime)).toBeGreaterThan(0);
+    expect(deadline - Date.parse(result.body.serverTime)).toBeLessThanOrEqual(
+      600000,
     );
     expect(
       (
@@ -960,12 +963,16 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     await request(app.getHttpServer()).get(path).expect(404);
   });
 
-  it('TC-S16-04: concurrent double-click requests create one order and one copy of each item', async () => {
+  it('TC-S16-04: concurrent requests across both creation routes produce one order and one copy of each item', async () => {
     await openSale();
     await hold(seats.slice(0, 2).map((s) => s.id)).expect(200);
     const responses = await Promise.all([
       place().expect(200),
-      place().expect(200),
+      request(app.getHttpServer())
+        .post('/orders')
+        .set('Cookie', buyer.cookie)
+        .send({ showtimeId: showId })
+        .expect(201),
     ]);
     expect(responses[0].body.order.id).toBe(responses[1].body.order.id);
     expect(

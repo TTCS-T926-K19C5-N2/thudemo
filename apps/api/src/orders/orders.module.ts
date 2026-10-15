@@ -7,6 +7,7 @@ import {
   ShowtimeOrdersController,
 } from './orders.controller.js';
 import { OrdersService } from './orders.service.js';
+import { OrderHistoryService } from './order-history.service.js';
 import { OrderExpiryScheduler } from './order-expiry.scheduler.js';
 import { TicketCheckInController } from './ticket-check-in.controller.js';
 import { TicketCheckInService } from './ticket-check-in.service.js';
@@ -22,6 +23,7 @@ import { TicketCheckInService } from './ticket-check-in.service.js';
   providers: [
     TicketQrService,
     OrdersService,
+    OrderHistoryService,
     OrderExpiryScheduler,
     TicketCheckInService,
   ],

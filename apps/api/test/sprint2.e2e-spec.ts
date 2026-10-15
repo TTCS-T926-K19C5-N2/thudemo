@@ -60,7 +60,9 @@ describe('Sprint 2 isolated database integration', () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
       target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
+      (target.port !== '15432' &&
+        (target.port !== '15434' ||
+          process.env.S32_ISOLATED_TEST !== 'true')) ||
       target.pathname !== '/sprint2_integration'
     )
       throw new Error('Run only on the isolated sprint2_integration database');
@@ -431,7 +433,7 @@ describe('Sprint 2 isolated database integration', () => {
     ).toBe(false);
     await request(app.getHttpServer()).get('/showtimes?cursor=bad').expect(400);
   }, 30000);
-  it('creates one pending order from live holds, snapshots prices, extends ten minutes and rejects expired seats', async () => {
+  it('creates one pending order from live holds, snapshots prices, preserves the original hold deadline and rejects expired seats', async () => {
     const available = await db.seat.findMany({
       where: { showtimeId: showId },
       orderBy: [{ categoryId: 'asc' }, { row: 'asc' }, { seatNumber: 'asc' }],
@@ -473,17 +475,20 @@ describe('Sprint 2 isolated database integration', () => {
     );
     const paymentExpiresAt = Date.parse(placedA.body.order.paymentExpiresAt);
     // Promise.all preserves input order, not which concurrent request won the lock.
-    // Only the creator gets a new 600-second deadline; the reuser must not extend it.
+    // Creation and retries share the original hold deadline (DEC-10).
     const created = placedA.body.created ? placedA : placedB;
     const reused = placedA.body.created ? placedB : placedA;
-    expect(paymentExpiresAt - Date.parse(created.body.serverTime)).toBe(600000);
+    expect(paymentExpiresAt).toBe(holdExpiresAt);
+    expect(
+      paymentExpiresAt - Date.parse(created.body.serverTime),
+    ).toBeGreaterThan(0);
     expect(reused.body.order.paymentExpiresAt).toBe(
       created.body.order.paymentExpiresAt,
     );
     const remaining = paymentExpiresAt - Date.parse(reused.body.serverTime);
     expect(remaining).toBeGreaterThan(0);
     expect(remaining).toBeLessThanOrEqual(600000);
-    expect(paymentExpiresAt).toBeGreaterThanOrEqual(holdExpiresAt);
+    expect(paymentExpiresAt).toBe(holdExpiresAt);
     expect(
       await db.order.count({
         where: { userId: buyer, showtimeId: showId },
@@ -520,7 +525,7 @@ describe('Sprint 2 isolated database integration', () => {
     await request(app.getHttpServer())
       .get(`/orders/${placedA.body.order.id}`)
       .set('Cookie', secondBuyer.cookie)
-      .expect(404);
+      .expect(403);
     const freshSeat = available.find(
       (seat) =>
         seat.categoryId === firstCategory.id &&

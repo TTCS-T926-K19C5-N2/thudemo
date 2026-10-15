@@ -1,0 +1,21 @@
+
+> api@0.0.1 test:e2e D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008\apps\api
+> vitest run --config ./vitest.config.e2e.ts "--reporter=json" "--outputFile=../../evidence/orders-integration/20261008/integration-first-results.json"
+
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+(node:12380) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:21024) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:9816) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:3620) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[Nest] 36836  - 14:01:56 08/10/2026   ERROR [AccountantNotifier] {"event":"payment_amount_mismatch","alert":"ACCOUNTANT_ALERT","message":"Số tiền thanh toán nhận được khác với tổng tiền đơn hàng trong hệ thống!","orderId":"b31254b7-845b-4bb1-9471-4f473d0157ff","expectedAmount":300000,"receivedAmount":150000,"transactionId":"tx_mismatch_123","gatewayRef":"b31254b7-845b-4bb1-9471-4f473d0157ff_mismatch_test","reason":"Số tiền thanh toán nhận từ cổng không khớp với tổng tiền đơn hàng","notifiedEmail":null,"timestamp":"2026-10-08T07:01:56.597Z"}
+[Nest] 36540  - 14:01:59 08/10/2026   ERROR [AccountantNotifier] {"event":"payment_late_received","alert":"ACCOUNTANT_ALERT","message":"Khách hàng thanh toán sau khi đơn hàng đã hết hạn!","orderId":"4f44745b-0073-4fd4-a876-ef8b319679b5","amount":250000,"transactionId":"momo_trans_late_1791442919877","gatewayRef":"4f44745b-0073-4fd4-a876-ef8b319679b5_1791442919874","reason":"Thanh toán sau khi đơn hết hạn, cần hoàn tiền","notifiedEmail":null,"timestamp":"2026-10-08T07:01:59.929Z"}
+(node:36540) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+JSON report written to D:/Development/03_Academic/Bán vé sự kiện có sơ đồ ghế/thudemo-orders-ready-20261008/evidence/orders-integration/20261008/integration-first-results.json
+D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008\apps\api:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  api@0.0.1 test:e2e: `vitest run --config ./vitest.config.e2e.ts "--reporter=json" "--outputFile=../../evidence/orders-integration/20261008/integration-first-results.json"`
+Exit status 1

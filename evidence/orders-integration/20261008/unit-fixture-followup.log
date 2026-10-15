@@ -1,0 +1,61 @@
+
+> event-ticketing-platform@1.0.0 test D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008
+> pnpm -r run test
+
+Scope: 3 of 4 workspace projects
+apps/api test$ vitest run
+apps/web test$ vitest run
+apps/web test: (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+apps/web test:   - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+apps/web test: Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+apps/api test: The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+apps/web test:  RUN  v4.1.11 D:/Development/03_Academic/Bán vé sự kiện có sơ đồ ghế/thudemo-orders-ready-20261008/apps/web
+apps/api test:  RUN  v4.1.11 D:/Development/03_Academic/Bán vé sự kiện có sơ đồ ghế/thudemo-orders-ready-20261008/apps/api
+apps/web test:  Test Files  8 passed (8)
+apps/web test:       Tests  37 passed (37)
+apps/web test:    Start at  14:00:43
+apps/web test:    Duration  2.63s (transform 2.29s, setup 0ms, import 3.65s, tests 451ms, environment 2ms)
+apps/web test: Done
+apps/api test: [Nest] 22252  - 14:00:47 08/10/2026     LOG [MockGatewayService] Sending mock IPN webhook to http://localhost:3001/payments/webhook for order 11111111-2222-3333-4444-555555555555 (resultCode=0)
+apps/api test: [Nest] 22252  - 14:00:47 08/10/2026     LOG [MockGatewayService] Sending mock IPN webhook to http://localhost:3001/payments/webhook for order 11111111-2222-3333-4444-555555555555 (resultCode=49)
+apps/api test: [Nest] 22252  - 14:00:47 08/10/2026     LOG [MockGatewayService] MOCK_WEBHOOK_DELAY_MS is -1: Skipping webhook dispatch for order 11111111-2222-3333-4444-555555555555
+apps/api test: [Nest] 22252  - 14:00:47 08/10/2026     LOG [MockGatewayService] MOCK_WEBHOOK_DELAY_MS is 1000ms: Delayed webhook dispatch for order 11111111-2222-3333-4444-555555555555
+apps/api test: [Nest] 22252  - 14:00:48 08/10/2026     LOG [MockGatewayService] Sending mock IPN webhook to http://localhost:3001/payments/webhook for order 11111111-2222-3333-4444-555555555555 (resultCode=0)
+apps/api test: [Nest] 21936  - 14:00:47 08/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"11111111-2222-3333-4444-555555555555","releasedSeatsCount":2}
+apps/api test: [Nest] 21936  - 14:00:47 08/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"11111111-2222-3333-4444-555555555555","releasedSeatsCount":2}
+apps/api test: [Nest] 21936  - 14:00:47 08/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"11111111-2222-3333-4444-555555555555","releasedSeatsCount":0}
+apps/api test: [Nest] 21936  - 14:00:47 08/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"order-1","releasedSeatsCount":1}
+apps/api test: [Nest] 21936  - 14:00:47 08/10/2026     LOG [OrdersService] {"event":"order_expiry_job","candidatesCount":2,"expiredCount":1,"skippedCount":1,"errorCount":0}
+apps/api test: [Nest] 21936  - 14:00:47 08/10/2026   ERROR [OrdersService] Failed to expire order order-err: DB deadlock
+apps/api test: [Nest] 21936  - 14:00:47 08/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"order-ok","releasedSeatsCount":2}
+apps/api test: [Nest] 21936  - 14:00:47 08/10/2026     LOG [OrdersService] {"event":"order_expiry_job","candidatesCount":2,"expiredCount":1,"skippedCount":0,"errorCount":1}
+apps/api test: [Nest] 21936  - 14:00:47 08/10/2026     LOG [OrdersService] {"event":"order_expiry_job","candidatesCount":0,"expiredCount":0,"skippedCount":0,"errorCount":0}
+apps/api test: [Nest] 21936  - 14:01:17 08/10/2026     LOG [OrdersService] {"event":"order_expiry_job","candidatesCount":0,"expiredCount":0,"skippedCount":0,"errorCount":0}
+apps/api test: [Nest] 31432  - 14:00:48 08/10/2026    WARN [PaymentsService] Webhook signature verification failed from IP: 127.0.0.1
+apps/api test: [Nest] 31432  - 14:00:48 08/10/2026    WARN [PaymentsService] Webhook order not found: unknown_order from IP: unknown
+apps/api test: [Nest] 31432  - 14:00:48 08/10/2026    WARN [PaymentsService] Duplicate webhook caught by unique constraint for order 22222222-2222-4222-8222-222222222222: Unique constraint failed on the fields: (`gatewayRef`)
+apps/api test:  ❯ src/payments/payments.service.spec.ts (15 tests | 1 failed) 124ms
+apps/api test:        × handles 5 sequential duplicate webhooks idempotently (only 1 state change, returns 200 for all) 42ms
+apps/api test: [Nest] 8556  - 14:00:48 08/10/2026   ERROR [HoldExpiryScheduler] {"event":"hold_expiry_failed","retryOnNextMinute":true}
+apps/api test: ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+apps/api test:  FAIL  src/payments/payments.service.spec.ts > PaymentsService Unit Tests > handleWebhook > handles 5 sequential duplicate webhooks idempotently (only 1 state change, returns 200 for all)
+apps/api test: AssertionError: expected 'AMOUNT_MISMATCH' to be 'PAID' // Object.is equality
+apps/api test: Expected: "PAID"
+apps/api test: Received: "AMOUNT_MISMATCH"
+apps/api test:  ❯ src/payments/payments.service.spec.ts:318:27
+apps/api test:     316|       // 1st call: order transitions PENDING -> PAID
+apps/api test:     317|       const res1 = await service.handleWebhook({}, {});
+apps/api test:     318|       expect(res1.status).toBe('PAID');
+apps/api test:        |                           ^
+apps/api test:     319|       expect(mockPrisma.seat.updateMany).toHaveBeenCalledTimes(1);
+apps/api test:     320|
+apps/api test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+apps/api test:  Test Files  1 failed | 19 passed (20)
+apps/api test:       Tests  1 failed | 142 passed (143)
+apps/api test:    Start at  14:00:43
+apps/api test:    Duration  6.00s (transform 7.49s, setup 0ms, import 37.41s, tests 2.28s, environment 7ms)
+apps/api test: Failed
+D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008\apps\api:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  api@0.0.1 test: `vitest run`
+Exit status 1
+ ELIFECYCLE  Test failed. See above for more details.

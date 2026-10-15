@@ -13,7 +13,7 @@ export default async function LoginPage({
   const { returnTo } = await searchParams;
   const destination = safeReturnTo(returnTo ?? null) ?? undefined;
   let show: PublicShowtime | null = null;
-  if (destination) {
+  if (destination?.startsWith("/shows/")) {
     try {
       const id = destination.split("/")[2];
       const response = await fetch(

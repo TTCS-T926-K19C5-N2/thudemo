@@ -19,6 +19,7 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { api, object, ApiError } from "@/lib/api/client";
 import { loadCurrentUser, safeReturnTo } from "@/lib/api";
+import { notifySessionChanged } from "@/lib/session-events";
 import type { PublicShowtime } from "@/lib/contracts/showtimes";
 import { formatVnd, formatShowtime } from "@/lib/formatting";
 export function LoginForm({
@@ -45,6 +46,7 @@ export function LoginForm({
         method: "POST",
         body: { email: email.trim(), password },
       });
+      notifySessionChanged();
       const user = await loadCurrentUser();
       if (!user)
         throw new Error(
@@ -82,7 +84,13 @@ export function LoginForm({
       }
     >
       <div className="product-login">
-        <h1>{returnTo ? "Đăng nhập để tiếp tục chọn ghế" : "Đăng nhập"}</h1>
+        <h1>
+          {returnTo?.startsWith("/orders")
+            ? "Đăng nhập để xem đơn hàng"
+            : returnTo
+              ? "Đăng nhập để tiếp tục chọn ghế"
+              : "Đăng nhập"}
+        </h1>
         <p>
           {returnTo
             ? "Đăng nhập bằng email và mật khẩu của bạn."
@@ -100,8 +108,9 @@ export function LoginForm({
                 </strong>
               )}
               <p>
-                Sau khi đăng nhập thành công, bạn sẽ quay lại chọn ghế{" "}
-                {show ? `cho ${show.event.name}` : "cho đúng suất diễn"}.
+                {returnTo?.startsWith("/orders")
+                  ? "Sau khi đăng nhập thành công, bạn sẽ quay lại đơn hàng đang xem."
+                  : `Sau khi đăng nhập thành công, bạn sẽ quay lại chọn ghế ${show ? `cho ${show.event.name}` : "cho đúng suất diễn"}.`}
               </p>
             </div>
           </div>
@@ -188,7 +197,7 @@ export function LoginForm({
             </section>
           )}
 
-          {returnTo && (
+          {returnTo?.startsWith("/shows/") && (
             <p className="login-availability">
               Việc chọn vị trí chưa xác nhận đặt chỗ. Ghế chỉ được giữ sau khi
               máy chủ xác nhận thành công.

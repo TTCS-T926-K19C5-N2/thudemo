@@ -1,0 +1,136 @@
+
+> event-ticketing-platform@1.0.0 test D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008
+> pnpm -r run test
+
+Scope: 3 of 4 workspace projects
+apps/api test$ vitest run
+apps/web test$ vitest run
+apps/web test: (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+apps/web test:   - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+apps/web test: Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+apps/api test: The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+apps/web test:  RUN  v4.1.11 D:/Development/03_Academic/Bán vé sự kiện có sơ đồ ghế/thudemo-orders-ready-20261008/apps/web
+apps/api test:  RUN  v4.1.11 D:/Development/03_Academic/Bán vé sự kiện có sơ đồ ghế/thudemo-orders-ready-20261008/apps/api
+apps/web test:  Test Files  8 passed (8)
+apps/web test:       Tests  37 passed (37)
+apps/web test:    Start at  13:58:13
+apps/web test:    Duration  1.60s (transform 1.98s, setup 0ms, import 3.06s, tests 327ms, environment 2ms)
+apps/web test: Done
+apps/api test: [Nest] 2532  - 13:58:16 08/10/2026     LOG [MockGatewayService] Sending mock IPN webhook to http://localhost:3001/payments/webhook for order 11111111-2222-3333-4444-555555555555 (resultCode=0)
+apps/api test: [Nest] 2532  - 13:58:16 08/10/2026     LOG [MockGatewayService] Sending mock IPN webhook to http://localhost:3001/payments/webhook for order 11111111-2222-3333-4444-555555555555 (resultCode=49)
+apps/api test: [Nest] 2532  - 13:58:16 08/10/2026     LOG [MockGatewayService] MOCK_WEBHOOK_DELAY_MS is -1: Skipping webhook dispatch for order 11111111-2222-3333-4444-555555555555
+apps/api test: [Nest] 2532  - 13:58:16 08/10/2026     LOG [MockGatewayService] MOCK_WEBHOOK_DELAY_MS is 1000ms: Delayed webhook dispatch for order 11111111-2222-3333-4444-555555555555
+apps/api test: [Nest] 2532  - 13:58:17 08/10/2026     LOG [MockGatewayService] Sending mock IPN webhook to http://localhost:3001/payments/webhook for order 11111111-2222-3333-4444-555555555555 (resultCode=0)
+apps/api test: [Nest] 38024  - 13:58:16 08/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"11111111-2222-3333-4444-555555555555","releasedSeatsCount":2}
+apps/api test: [Nest] 38024  - 13:58:16 08/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"11111111-2222-3333-4444-555555555555","releasedSeatsCount":2}
+apps/api test: [Nest] 38024  - 13:58:16 08/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"11111111-2222-3333-4444-555555555555","releasedSeatsCount":0}
+apps/api test: [Nest] 38024  - 13:58:16 08/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"order-1","releasedSeatsCount":1}
+apps/api test: [Nest] 38024  - 13:58:16 08/10/2026     LOG [OrdersService] {"event":"order_expiry_job","candidatesCount":2,"expiredCount":1,"skippedCount":1,"errorCount":0}
+apps/api test: [Nest] 38024  - 13:58:16 08/10/2026   ERROR [OrdersService] Failed to expire order order-err: DB deadlock
+apps/api test: [Nest] 38024  - 13:58:16 08/10/2026     LOG [OrdersService] {"event":"order_expired","orderId":"order-ok","releasedSeatsCount":2}
+apps/api test: [Nest] 38024  - 13:58:16 08/10/2026     LOG [OrdersService] {"event":"order_expiry_job","candidatesCount":2,"expiredCount":1,"skippedCount":0,"errorCount":1}
+apps/api test: [Nest] 38024  - 13:58:16 08/10/2026     LOG [OrdersService] {"event":"order_expiry_job","candidatesCount":0,"expiredCount":0,"skippedCount":0,"errorCount":0}
+apps/api test: [Nest] 38024  - 13:58:46 08/10/2026     LOG [OrdersService] {"event":"order_expiry_job","candidatesCount":0,"expiredCount":0,"skippedCount":0,"errorCount":0}
+apps/api test: [Nest] 24496  - 13:58:16 08/10/2026    WARN [PaymentsService] Webhook signature verification failed from IP: 127.0.0.1
+apps/api test: [Nest] 24496  - 13:58:16 08/10/2026    WARN [PaymentsService] Webhook order not found: unknown_order from IP: unknown
+apps/api test:  ❯ src/payments/payments.service.spec.ts (15 tests | 6 failed) 127ms
+apps/api test:        × marks order NEEDS_REVIEW, payment AMOUNT_MISMATCH and alerts accountant on mismatched amount 34ms
+apps/api test:        × processes matched SUCCESS in single transaction: PAID, SOLD, holds deleted, payment SUCCEEDED 9ms
+apps/api test:        × handles 5 sequential duplicate webhooks idempotently (only 1 state change, returns 200 for all) 4ms
+apps/api test:        × catches unique constraint error (P2002) and returns idempotent success instead of 500 5ms
+apps/api test:          × AC 7: when atomic update for PAID matches 0 rows due to collision (order expired), enters late payment path safely 4ms
+apps/api test:          × AC 7: when atomic update matches 0 rows because order was already PAID (duplicate), returns PAID without re-processing 14ms
+apps/api test: [Nest] 34388  - 13:58:17 08/10/2026   ERROR [HoldExpiryScheduler] {"event":"hold_expiry_failed","retryOnNextMinute":true}
+apps/api test: ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+apps/api test:  FAIL  src/payments/payments.service.spec.ts > PaymentsService Unit Tests > handleWebhook > marks order NEEDS_REVIEW, payment AMOUNT_MISMATCH and alerts accountant on mismatched amount
+apps/api test: AssertionError: expected "vi.fn()" to be called with arguments: [ ObjectContaining{…} ]
+apps/api test: Received:
+apps/api test:   1st vi.fn() call:
+apps/api test:   [
+apps/api test: -   ObjectContaining {
+apps/api test: -     "expectedAmount": 100000,
+apps/api test: +   {
+apps/api test: +     "expectedAmount": undefined,
+apps/api test: +     "gatewayRef": "22222222-2222-4222-8222-222222222222_123",
+apps/api test:       "orderId": "22222222-2222-4222-8222-222222222222",
+apps/api test: +     "reason": "Số tiền thanh toán nhận từ cổng không khớp với tổng tiền đơn hàng",
+apps/api test:       "receivedAmount": 50000,
+apps/api test: +     "transactionId": "momo_tx_99",
+apps/api test:     },
+apps/api test:   ]
+apps/api test: Number of calls: 1
+apps/api test:  ❯ src/payments/payments.service.spec.ts:218:49
+apps/api test:     216|         }),
+apps/api test:     217|       });
+apps/api test:     218|       expect(mockNotifier.notifyAmountMismatch).toHaveBeenCalledWith(
+apps/api test:        |                                                 ^
+apps/api test:     219|         expect.objectContaining({
+apps/api test:     220|           orderId,
+apps/api test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+apps/api test:  FAIL  src/payments/payments.service.spec.ts > PaymentsService Unit Tests > handleWebhook > processes matched SUCCESS in single transaction: PAID, SOLD, holds deleted, payment SUCCEEDED
+apps/api test: AssertionError: expected 'AMOUNT_MISMATCH' to be 'PAID' // Object.is equality
+apps/api test: Expected: "PAID"
+apps/api test: Received: "AMOUNT_MISMATCH"
+apps/api test:  ❯ src/payments/payments.service.spec.ts:254:26
+apps/api test:     252|       const res = await service.handleWebhook({}, {});
+apps/api test:     253|
+apps/api test:     254|       expect(res.status).toBe('PAID');
+apps/api test:        |                          ^
+apps/api test:     255|       expect(mockPrisma.$transaction).toHaveBeenCalled();
+apps/api test:     256|       expect(mockPrisma.order.updateMany).toHaveBeenCalledWith(
+apps/api test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+apps/api test:  FAIL  src/payments/payments.service.spec.ts > PaymentsService Unit Tests > handleWebhook > handles 5 sequential duplicate webhooks idempotently (only 1 state change, returns 200 for all)
+apps/api test: AssertionError: expected 'AMOUNT_MISMATCH' to be 'PAID' // Object.is equality
+apps/api test: Expected: "PAID"
+apps/api test: Received: "AMOUNT_MISMATCH"
+apps/api test:  ❯ src/payments/payments.service.spec.ts:311:27
+apps/api test:     309|       // 1st call: order transitions PENDING -> PAID
+apps/api test:     310|       const res1 = await service.handleWebhook({}, {});
+apps/api test:     311|       expect(res1.status).toBe('PAID');
+apps/api test:        |                           ^
+apps/api test:     312|       expect(mockPrisma.seat.updateMany).toHaveBeenCalledTimes(1);
+apps/api test:     313|
+apps/api test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+apps/api test:  FAIL  src/payments/payments.service.spec.ts > PaymentsService Unit Tests > handleWebhook > catches unique constraint error (P2002) and returns idempotent success instead of 500
+apps/api test: Error: Unique constraint failed on the fields: (`gatewayRef`)
+apps/api test:  ❯ src/payments/payments.service.spec.ts:387:31
+apps/api test:     385|
+apps/api test:     386|       // Simulate concurrent transaction throwing P2002 Unique constra…
+apps/api test:     387|       const p2002Error: any = new Error(
+apps/api test:        |                               ^
+apps/api test:     388|         'Unique constraint failed on the fields: (`gatewayRef`)',
+apps/api test:     389|       );
+apps/api test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+apps/api test:  FAIL  src/payments/payments.service.spec.ts > PaymentsService Unit Tests > handleWebhook > S-23 Webhook & Expiration Collisions > AC 7: when atomic update for PAID matches 0 rows due to collision (order expired), enters late payment path safely
+apps/api test: AssertionError: expected 'AMOUNT_MISMATCH' to be 'LATE' // Object.is equality
+apps/api test: Expected: "LATE"
+apps/api test: Received: "AMOUNT_MISMATCH"
+apps/api test:  ❯ src/payments/payments.service.spec.ts:533:28
+apps/api test:     531|         const res = await service.handleWebhook({}, {});
+apps/api test:     532|
+apps/api test:     533|         expect(res.status).toBe('LATE');
+apps/api test:        |                            ^
+apps/api test:     534|         expect(mockPrisma.order.update).toHaveBeenCalledWith(
+apps/api test:     535|           expect.objectContaining({
+apps/api test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+apps/api test:  FAIL  src/payments/payments.service.spec.ts > PaymentsService Unit Tests > handleWebhook > S-23 Webhook & Expiration Collisions > AC 7: when atomic update matches 0 rows because order was already PAID (duplicate), returns PAID without re-processing
+apps/api test: AssertionError: expected 'AMOUNT_MISMATCH' to be 'PAID' // Object.is equality
+apps/api test: Expected: "PAID"
+apps/api test: Received: "AMOUNT_MISMATCH"
+apps/api test:  ❯ src/payments/payments.service.spec.ts:571:28
+apps/api test:     569|         const res = await service.handleWebhook({}, {});
+apps/api test:     570|
+apps/api test:     571|         expect(res.status).toBe('PAID');
+apps/api test:        |                            ^
+apps/api test:     572|         // Does NOT update order or delete seats
+apps/api test:     573|         expect(mockPrisma.order.update).not.toHaveBeenCalled();
+apps/api test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+apps/api test:  Test Files  1 failed | 19 passed (20)
+apps/api test:       Tests  6 failed | 137 passed (143)
+apps/api test:    Start at  13:58:13
+apps/api test:    Duration  4.65s (transform 6.12s, setup 0ms, import 31.01s, tests 1.77s, environment 9ms)
+apps/api test: Failed
+D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-orders-ready-20261008\apps\api:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  api@0.0.1 test: `vitest run`
+Exit status 1
+ ELIFECYCLE  Test failed. See above for more details.
