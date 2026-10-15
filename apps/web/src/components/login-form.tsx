@@ -52,7 +52,11 @@ export function LoginForm({
         );
       router.replace(
         safeReturnTo(returnTo ?? null) ??
-          (user.roles.includes("ORGANIZER") ? "/events" : user.roles.includes("STAFF") ? "/check-in" : "/account"),
+          (user.roles.includes("ORGANIZER")
+            ? "/events"
+            : user.roles.includes("STAFF")
+              ? "/check-in"
+              : "/account"),
       );
       router.refresh();
     } catch (e) {
@@ -82,7 +86,13 @@ export function LoginForm({
       }
     >
       <div className="product-login">
-        <h1>{returnTo ? "Đăng nhập để tiếp tục chọn ghế" : "Đăng nhập"}</h1>
+        <h1>
+          {returnTo?.startsWith("/events/")
+            ? "Đăng nhập để tiếp tục sửa sự kiện"
+            : returnTo
+              ? "Đăng nhập để tiếp tục chọn ghế"
+              : "Đăng nhập"}
+        </h1>
         <p>
           {returnTo
             ? "Đăng nhập bằng email và mật khẩu của bạn."
@@ -100,8 +110,9 @@ export function LoginForm({
                 </strong>
               )}
               <p>
-                Sau khi đăng nhập thành công, bạn sẽ quay lại chọn ghế{" "}
-                {show ? `cho ${show.event.name}` : "cho đúng suất diễn"}.
+                {returnTo?.startsWith("/events/")
+                  ? "Sau khi đăng nhập, bạn sẽ quay lại biểu mẫu sự kiện. Nội dung đang nhập được khôi phục cho cùng tài khoản trên thẻ này."
+                  : `Sau khi đăng nhập thành công, bạn sẽ quay lại chọn ghế ${show ? `cho ${show.event.name}` : "cho đúng suất diễn"}.`}
               </p>
             </div>
           </div>
@@ -188,7 +199,7 @@ export function LoginForm({
             </section>
           )}
 
-          {returnTo && (
+          {returnTo?.startsWith("/shows/") && (
             <p className="login-availability">
               Việc chọn vị trí chưa xác nhận đặt chỗ. Ghế chỉ được giữ sau khi
               máy chủ xác nhận thành công.

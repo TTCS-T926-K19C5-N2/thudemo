@@ -10,6 +10,10 @@
     "./ticket-qr": {
       "types": "./ticket-qr.d.ts",
       "default": "./ticket-qr.js"
+    },
+    "./login-peer": {
+      "types": "./login-peer.d.ts",
+      "default": "./login-peer.js"
     }
   }
 }

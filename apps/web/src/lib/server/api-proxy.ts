@@ -1,4 +1,5 @@
 const BODY_LIMIT = 5 * 1024 * 1024;
+import { verifyLoginPeer, LOGIN_PEER_HEADER } from "shared/login-peer";
 
 export function upstreamUrl(base: string, path: string[], search: string): URL {
   const url = new URL(base);
@@ -66,6 +67,11 @@ export async function proxyApi(
       new URL(request.url).search,
     );
     const headers = new Headers();
+    if (request.method === "POST" && path.join("/") === "auth/login") {
+      const attestation = request.headers.get(LOGIN_PEER_HEADER) ?? "";
+      verifyLoginPeer(attestation, process.env.AUTH_PROXY_SECRET);
+      headers.set(LOGIN_PEER_HEADER, attestation);
+    }
     for (const name of [
       "accept",
       "content-type",

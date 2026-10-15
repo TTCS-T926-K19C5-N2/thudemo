@@ -1,3 +1,11 @@
+# Trạng thái đối chiếu 15/10/2026 — không thay lịch sử dưới đây
+
+Review Sprint1 lấy source main `81d1dd9d8f453b32ed0c6956399e5600f71a32d6` và đọc raw artifact của CI run `38695462765`, job `K-01 / candidate-research`. Bản lưu: `evidence/sprint1/20261015/k01-current-ci.json`. PostgreSQL p95 ba lượt200/1:489.41/225.51/177.61ms; Redis:58.09/35.09/30.15ms. Mỗi lượt1winner/199conflict/0errors. Hai process/store, PostgreSQL15/Redis7 thật; pool8/process; AMD EPYC9V45,4threads,Node24.21.0. PG giữ ownership sau restart, Redis không persistence mất ownership. Đây là CI prototype mới; chuỗi mode “not CI” trong producer là nhãn lịch sử, không thay provenance artifact. Recommendation “pending” trong raw cũng không hủy DEC12 đã duyệt tạm local.
+
+DEC12 tiếp tục là nguồn quyết định authority tạm local. PR29 report cũ chỉ đo Redis nên chưa đủ so sánh hai phương án; không dùng PR29 OPEN để kết luận main thiếu sản phẩm, không merge implementation khác chỉ để đóng spike. Staging vẫn **BLOCKED**. Artifact sản phẩm T31 cùng CI có overallp95 **368.67ms**, steadyp95 **250.65ms**, checker threshold **800ms**: không nhận PASS300ms cho toàn bộ request. Không trộn datastore/prototype/product endpoint hoặc local/CI/staging. Báo cáo/matrix hiện hành: `SPRINT1_REVIEW_REPORT.md`, `SPRINT1_ACCEPTANCE_MATRIX.md`.
+
+Phần bên dưới giữ nguyên kết quả và trạng thái tại thời điểm04/10, bao gồm các câu “CI chưa chạy”; chúng không mô tả CI mới15/10.
+
 # DEC-12 — checkpoint nghiệm thu sản phẩm local
 
 PO đã chấp thuận tạm thời PostgreSQL authoritative, Redis/Valkey cache/counter cho tám task local; nguyên văn decision-logDEC12. Không K01PASSstaging/NFRwaiver. [Bằng chứng sản phẩm](SEAT_HOLD_LOCAL_EVIDENCE.md):2API thật, authHTTP200/100×10 mỗi lượt100winner/100409, deadline/atomic/expiry/staletoken/APIrestart/worker minute/backlog/shutdown; counter và **loginlock thật** mất khi Valkeyrestart, PGhold giữ nguyên. LatestNFR750,96ms FAIL (lượt trước270,25PASS chỉ lịch sử). CI/Render chưa chạy. Prototype bên dưới giữ nguyên, không thay số đo spike bằng API metrics.

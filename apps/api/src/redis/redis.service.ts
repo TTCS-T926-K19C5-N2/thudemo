@@ -11,6 +11,22 @@ function accountKey(prefix: string, email: string): string {
 export class RedisService {
   constructor(@Inject('REDIS_CLIENT') private readonly redis: Redis) {}
 
+  // A separate shared budget prevents rotating email addresses from bypassing
+  // account lockout. Use the transport peer only; forwarded headers are untrusted.
+  async loginIpRetryAfter(ip: string): Promise<number> {
+    const key = accountKey('ip-fail', ip);
+    const count = Number((await this.redis.get(key)) ?? 0);
+    return count >= 30 ? Math.max(1, await this.redis.ttl(key)) : 0;
+  }
+
+  async recordLoginIpFailure(ip: string): Promise<void> {
+    await this.redis.eval(
+      "local n = redis.call('INCR', KEYS[1]); if n == 1 then redis.call('EXPIRE', KEYS[1], 900); end; return n",
+      1,
+      accountKey('ip-fail', ip),
+    );
+  }
+
   async ping(): Promise<void> {
     if (this.redis.status !== 'ready') {
       throw new Error('Redis is unavailable');

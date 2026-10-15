@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { proxyApi, upstreamUrl } from "./api-proxy";
+import { signLoginPeer, LOGIN_PEER_HEADER } from "shared/login-peer";
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
@@ -20,6 +21,8 @@ describe("Runtime same-origin API proxy", () => {
     ).toThrow();
   });
   it("forwards cookie and real origin, strips spoofed headers and preserves errors/cookies", async () => {
+    const secret = "test-only-peer-attestation-secret-32-characters";
+    vi.stubEnv("AUTH_PROXY_SECRET", secret);
     vi.stubEnv("API_INTERNAL_URL", "https://sang-api.onrender.com");
     const headers = new Headers({
       "content-type": "application/json",
@@ -39,6 +42,7 @@ describe("Runtime same-origin API proxy", () => {
       new Request("https://sang-web.onrender.com/api/auth/login", {
         method: "POST",
         headers: {
+          [LOGIN_PEER_HEADER]: signLoginPeer("192.0.2.10", secret),
           origin: "https://sang-web.onrender.com",
           cookie: "session=fixture",
           "x-forwarded-host": "spoof",
@@ -56,6 +60,26 @@ describe("Runtime same-origin API proxy", () => {
     expect(forwarded.get("cookie")).toBe("session=fixture");
     expect(forwarded.has("x-forwarded-host")).toBe(false);
     expect(res.headers.get("cache-control")).toBe("no-store");
+  });
+  it("fails closed on missing or forged transport identity before forwarding login", async () => {
+    vi.stubEnv(
+      "AUTH_PROXY_SECRET",
+      "test-only-peer-attestation-secret-32-characters",
+    );
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    for (const value of ["", "forged"]) {
+      const res = await proxyApi(
+        new Request("http://localhost/api/auth/login", {
+          method: "POST",
+          headers: { [LOGIN_PEER_HEADER]: value },
+          body: "{}",
+        }),
+        ["auth", "login"],
+      );
+      expect(res.status).toBe(503);
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
   });
   it("fails closed without exposing upstream credentials and bounds body before forwarding", async () => {
     vi.stubGlobal(

@@ -90,7 +90,11 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
       target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
+      !(
+        target.port === '15432' ||
+        (target.port === '15446' &&
+          process.env.SPRINT1_ISOLATED_TEST === 'true')
+      ) ||
       target.pathname !== '/sprint2_integration'
     )
       throw Error(

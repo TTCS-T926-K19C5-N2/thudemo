@@ -1,5 +1,7 @@
 # Chạy dự án bán vé sự kiện trên máy cá nhân
 
+> **Sprint 1 review/demo 15/10/2026:** xem [runbook](docs/SPRINT1_DEMO_RUNBOOK.md), [ma trận nghiệm thu](docs/SPRINT1_ACCEPTANCE_MATRIX.md) và [báo cáo](docs/SPRINT1_REVIEW_REPORT.md). Profile này dùng worktree/database/container riêng, web 3440/API 3441; Git Flow feature → develop; staging laptop LAN đang chuẩn bị. Khi chạy web, dùng entry `pnpm --filter web dev` hoặc `start` để xác thực IP đăng nhập qua proxy. Root `.env` cần `WEB_PORT` và `AUTH_PROXY_SECRET` ngẫu nhiên tối thiểu 32 ký tự, cùng giá trị server-only trên web/API. Không dùng `next start` trực tiếp. Các checkpoint cũ bên dưới chỉ phản ánh thời điểm được ghi.
+
 > **Hướng dẫn hiện hành cho giao diện, tài khoản và giữ ghế Sprint 2:** [LOCAL_USER_GUIDE](docs/LOCAL_USER_GUIDE.md). Có lệnh build/chạy/test từng bước, tài khoản người tổ chức/người mua, cách đọc mật khẩu giả riêng trên máy và xử lý lỗi. Profile review dùng PostgreSQL 15432/Redis 16379 với database `stitch_fidelity`; các mục T-01 và checkpoint cũ dưới đây được giữ làm lịch sử, dùng profile khác.
 
 Đây là hướng dẫn cho môi trường local theo T-01/TECH-01. Docker Compose chạy PostgreSQL và Redis; API NestJS và web Next.js chạy trực tiếp trên máy. Web dùng cổng **3000**, API dùng cổng **3001**. Các lệnh dưới đây dùng PowerShell và được chạy từ thư mục `thudemo/` chứa file README này.

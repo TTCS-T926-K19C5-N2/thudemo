@@ -60,7 +60,11 @@ describe('Sprint 2 isolated database integration', () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
       target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
+      !(
+        target.port === '15432' ||
+        (target.port === '15446' &&
+          process.env.SPRINT1_ISOLATED_TEST === 'true')
+      ) ||
       target.pathname !== '/sprint2_integration'
     )
       throw new Error('Run only on the isolated sprint2_integration database');
@@ -111,7 +115,9 @@ describe('Sprint 2 isolated database integration', () => {
         await db.seatHold.deleteMany({ where: { showtimeId: { in: ids } } });
         await db.holdSession.deleteMany({ where: { showtimeId: { in: ids } } });
         await db.seat.deleteMany({ where: { showtimeId: { in: ids } } });
-        await db.seatCategory.deleteMany({ where: { showtimeId: { in: ids } } });
+        await db.seatCategory.deleteMany({
+          where: { showtimeId: { in: ids } },
+        });
         await db.showtime.deleteMany({ where: { eventId } });
         await db.event.delete({ where: { id: eventId } });
       }

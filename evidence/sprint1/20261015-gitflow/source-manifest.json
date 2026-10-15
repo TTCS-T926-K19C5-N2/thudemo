@@ -1,0 +1,239 @@
+{
+  "baseline": "07d683fcfcfd7d05c8aff1119ab6dc3c63f6e458",
+  "branch": "feature/sprint1-acceptance-20261015",
+  "candidate": "source hashes before first Draft PR commit; docs/evidence excluded from self-hash",
+  "sources": [
+    {
+      "path": ".dockerignore",
+      "sha256": "7dc62a8726d3481ff616628df652844c472fb0a6410f0bf45b9fb5065c477614"
+    },
+    {
+      "path": ".env.example",
+      "sha256": "810c836c0a3951caac5bc808c8cd62af187d23b01cb885abe9a30929c1be307a"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "efdc5d1f89695a1dac0f3145f046473c94ca1c8e9265b56a501271bc940ddbac"
+    },
+    {
+      "path": "Dockerfile",
+      "sha256": "b9a4146e9c776051467d6c7260aa747be6ed37807ecc19bcaf418d9983540395"
+    },
+    {
+      "path": "README.md",
+      "sha256": "80192266b7b0495af81c7582c0cc1802b81933f82d3954ba35ac68b574b2ee3e"
+    },
+    {
+      "path": "apps/api/src/auth/auth.controller.ts",
+      "sha256": "dc407268e4cacc3e5dec5e8c65e93a97edd843b1eb1215ba5e167888450f9034"
+    },
+    {
+      "path": "apps/api/src/auth/auth.service.ts",
+      "sha256": "8797311334f066cc8d3b022111749f6130ccddc153a82c33c14468e371eb25c4"
+    },
+    {
+      "path": "apps/api/src/redis/redis.service.ts",
+      "sha256": "8a4322c2d04366343c71d941fd834c6a1a855c08a51f6d54621b0fed23cabd3a"
+    },
+    {
+      "path": "apps/api/test/mock-gateway.e2e-spec.ts",
+      "sha256": "74f27aacf19ce25bd644e015c2f0b11952a99a22baf73a57004b018ef6a52f0e"
+    },
+    {
+      "path": "apps/api/test/orders.e2e-spec.ts",
+      "sha256": "673b34e4a28fbfa099bd4fb3fac12b958cf2f4ef4445e17fe82e12a386bfd252"
+    },
+    {
+      "path": "apps/api/test/payments-idempotency.e2e-spec.ts",
+      "sha256": "db84c9ad035046b133688db987d9c3dac5d292c1d4c7e3cf6331ab83d197e6a3"
+    },
+    {
+      "path": "apps/api/test/payments-signature-verification.e2e-spec.ts",
+      "sha256": "147b65857deb4d37994fd622bbfe2c9d7c505124a491883ab71f712be8af8097"
+    },
+    {
+      "path": "apps/api/test/payments.e2e-spec.ts",
+      "sha256": "d915e131884588c31d90c76413c909e8a9abaddc93ab5ee4c703b53952c9d154"
+    },
+    {
+      "path": "apps/api/test/s15-s16-acceptance.e2e-spec.ts",
+      "sha256": "427d9b486a35147eb563a87f10df9bbf7e441797acf735cdf41464f1a37c0837"
+    },
+    {
+      "path": "apps/api/test/sprint2.e2e-spec.ts",
+      "sha256": "e94a28bf537d643c0d92ea39075573679d39f25698f69f85fb85fa3651a976cc"
+    },
+    {
+      "path": "apps/api/test/ticket-check-in.e2e-spec.ts",
+      "sha256": "32b6e7adc4337c639a8acee019af764267864c4b78cc34e9a1b365187fd19c39"
+    },
+    {
+      "path": "apps/web/package.json",
+      "sha256": "ce70c10e44e9272e6617cf1fdbdc2da019a20ce0e402d02d5be3197475b32581"
+    },
+    {
+      "path": "apps/web/src/app/globals.css",
+      "sha256": "1f5392260b278e3f1c30068c5d1b0ab445cd7de09014fedcfe80db169df78156"
+    },
+    {
+      "path": "apps/web/src/components/event-editor.tsx",
+      "sha256": "90ea3477927dfa4644413decad61aafacdfb8c4d630503965b292aab0e8475d8"
+    },
+    {
+      "path": "apps/web/src/components/login-form.tsx",
+      "sha256": "a0c88eb917049b27de7b58d5779777b4b4fb3cbb2f34cb7f255268bca64f15ee"
+    },
+    {
+      "path": "apps/web/src/lib/api.ts",
+      "sha256": "51cc622c68cf26f676de4c66947f190c7635dd3175eec829b3a9cfb803fde36e"
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.spec.ts",
+      "sha256": "64a824a2fa75d5f704b51f95dcf4b6fc947aefb3c0759c42800b8e0fd9da852f"
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.ts",
+      "sha256": "b33d27335cdf52b1f5372c3ac6cdc4d0112d8576caee8a0b09d948e57d4f5da4"
+    },
+    {
+      "path": "apps/web/vitest.config.ts",
+      "sha256": "d3de02103d859fbdca7fbd5cfde6f27e6a9f6eb8d68daa3aa091cabb48d70b01"
+    },
+    {
+      "path": "deploy/render-start.mjs",
+      "sha256": "770f98a6f37a11b6aabfc9d6546c93f2e2e5d1528f809daa556b2c6973408a9e"
+    },
+    {
+      "path": "packages/shared/package.json",
+      "sha256": "185c156494af0e555489ecd65c38199ec447510ba11ff454ece8b8a37d928144"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "9358b7f58194adbaf617c2dfeee2c36d98d0fc7b03385861ffdd594c7b5f60e0"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "sha256": "fc440d87dadc230222c49a207ff3a266e22b6dc57b23d8a696b5a431a85d9869"
+    },
+    {
+      "path": "render.yaml",
+      "sha256": "8eb73e83626f67df49bcc3baa34ecab7a04fc5f0a945f51404f755332b64705b"
+    },
+    {
+      "path": "apps/api/scripts/seed-sprint1.mjs",
+      "sha256": "f5cc2abc2467da9569d9971bc2500cf72ef286bbf33e791538a0f94d0adf4724"
+    },
+    {
+      "path": "apps/api/src/auth/auth.controller.spec.ts",
+      "sha256": "2ebbab2f4cffb0ff903e5d5965d3fec16841047a5f7524eb674ba6eeea630d89"
+    },
+    {
+      "path": "apps/api/src/auth/auth.service.spec.ts",
+      "sha256": "64bd89f0102fcbd2ee380b659435a0cafe1928d5adc3e60b9158fbd929436269"
+    },
+    {
+      "path": "apps/api/src/auth/login-peer.spec.ts",
+      "sha256": "e77ba5467dfae4e95fc53a25cda349050caf9083831ae1919322f74172971296"
+    },
+    {
+      "path": "apps/api/src/redis/redis.service.spec.ts",
+      "sha256": "252b6da41bbc29720e595eb772d45638726afa9f6db16b78428642e30bb2eabb"
+    },
+    {
+      "path": "apps/api/test/sprint1-ip.e2e-spec.ts",
+      "sha256": "f7fd154cce7fd3393ae5eaeeee380adfd8e4c1e6e13b4f075c1360416e2ab71f"
+    },
+    {
+      "path": "apps/api/vitest.sprint1-coverage.config.ts",
+      "sha256": "3b21f3b3ed9a897274bf04ba137d7e808836d61a9837c74684a0d065bd483762"
+    },
+    {
+      "path": "apps/web/server.mjs",
+      "sha256": "a2e56f663cfb59738726faa10b60b15a8fe451449e18a5c6b36e98d87da59c39"
+    },
+    {
+      "path": "apps/web/src/components/event-editor.spec.tsx",
+      "sha256": "758e1280b1af729a23dfad8b67cea500061087df71ee5ac507f04866dae5e661"
+    },
+    {
+      "path": "apps/web/src/components/login-form.spec.tsx",
+      "sha256": "8ae62762648e1c710d543913a0d49e697ee6a65d6bb31fd233d1adccae7c13e3"
+    },
+    {
+      "path": "apps/web/src/lib/api.spec.ts",
+      "sha256": "d2206e18ad96477019f5183af0f7b9ed467df771fc86a340ed4b83b852982362"
+    },
+    {
+      "path": "apps/web/src/lib/formatting/vietnam-input.spec.ts",
+      "sha256": "965c73fdca253495a678c1892357284a199913a0c23c6d7af468299dc11817a3"
+    },
+    {
+      "path": "apps/web/src/lib/formatting/vietnam-input.ts",
+      "sha256": "6737e55392713b51ce9bd837d6c147743f1ec04631d504d46cd78b11acf0a19e"
+    },
+    {
+      "path": "apps/web/src/lib/server/login-transport.mjs",
+      "sha256": "434acffab87d5b1c7831d78af83414b9b735df30b1c08bb0da2bf2e25de43af5"
+    },
+    {
+      "path": "apps/web/src/lib/server/login-transport.spec.ts",
+      "sha256": "7fc91253df52c906a30da747acfe2aedf19d981b8257ebc60a238054e1b0340c"
+    },
+    {
+      "path": "apps/web/src/styles/vendor/shadcn-LICENSE.md",
+      "sha256": "1564074e13439397221ffd522e2e504d56561994a23d371aa5e3ad43e4f5423f"
+    },
+    {
+      "path": "apps/web/src/styles/vendor/shadcn-tailwind.css",
+      "sha256": "bc7d83425702955b4cb67cb14ede9d603f9d912376d57a2d81d661094d2a782a"
+    },
+    {
+      "path": "apps/web/vitest.sprint1-coverage.config.ts",
+      "sha256": "887908e023290ce8da9cfc6493e833b141a2bee226ac3d47c12497d6f59c0007"
+    },
+    {
+      "path": "packages/shared/login-peer.d.ts",
+      "sha256": "ffe1a5706810d52bf5dae124c747b2cc119c585e08623c79a169fdb99c15f76e"
+    },
+    {
+      "path": "packages/shared/login-peer.js",
+      "sha256": "571c478f108bfc82adf5c7398b3b61b1283dd63d8556b6a9b5dca318e6e364a5"
+    },
+    {
+      "path": "scripts/sprint1-coverage.mjs",
+      "sha256": "4335dcb2dd1692762fc87815cf90814ee20ecda8262e68873b2e66043a18f951"
+    },
+    {
+      "path": "scripts/sprint1-demo.ps1",
+      "sha256": "7d32664526dadb459b65d9c720b8885404eec8786051da38a3a0d373018e7f69"
+    },
+    {
+      "path": "scripts/sprint1-docker-smoke.mjs",
+      "sha256": "676a8fe0bda3392a1d70fdb71ccbad07efd3e36ad0df7c4e0d7651c5c582bb1e"
+    },
+    {
+      "path": "scripts/sprint1-process.ps1",
+      "sha256": "c0b56c0bb9777170b43c9a8b97a4d38fc46d80db5da6c2a2a323e9a17bdce66f"
+    },
+    {
+      "path": "scripts/sprint1-setup.mjs",
+      "sha256": "7d3d28ca06a03e1d426b39bf70b9f93df0cf380be7ca2b6727060e5c1e0b9ed7"
+    },
+    {
+      "path": "scripts/sprint1-sources.py",
+      "sha256": "3adc699e23f68b8b6265fb6b1ee59ab39f1a90bf4990b76f5eb6ed012b82fe27"
+    },
+    {
+      "path": "scripts/sprint1-tests.mjs",
+      "sha256": "31f67c9ec048abdf94546399cdcc088f8d021227b274f789057031ee4871cb77"
+    },
+    {
+      "path": "scripts/verify-sprint1-api.mjs",
+      "sha256": "def94eb74fa159775b396d6bc2dd3bb06df89b9a561aef6f3304f50f0b7b6521"
+    },
+    {
+      "path": "scripts/verify-sprint1-browser.mjs",
+      "sha256": "e2ccb7c84160aac1fed1c6e8d9a919f22624713dda2057ae6dfca0c6bc075871"
+    }
+  ]
+}

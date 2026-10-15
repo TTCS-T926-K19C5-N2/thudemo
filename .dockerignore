@@ -1,4 +1,5 @@
 .git
+.sprint1-local
 .env
 .env.*
 **/.env
