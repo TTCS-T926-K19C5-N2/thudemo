@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>05 Nạp sơ đồ JSON — Sprint 2</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface": "#191b23",
+            "inverse-surface": "#2e3038",
+            "on-secondary": "#ffffff",
+            "on-primary": "#ffffff",
+            "secondary": "#4c5d8b",
+            "primary": "#0045a9",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed": "#031944",
+            "on-secondary-container": "#415381",
+            "tertiary-fixed": "#ffdbcd",
+            "surface-variant": "#e1e2ec",
+            "on-tertiary-container": "#ffd8c9",
+            "inverse-primary": "#b1c5ff",
+            "surface-container": "#ededf7",
+            "surface-bright": "#faf8ff",
+            "primary-container": "#175cd3",
+            "on-primary-fixed": "#001847",
+            "outline": "#737785",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "outline-variant": "#c3c6d6",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-error-container": "#93000a",
+            "surface-dim": "#d9d9e3",
+            "on-primary-container": "#d7e0ff",
+            "surface-container-low": "#f3f3fd",
+            "on-tertiary": "#ffffff",
+            "inverse-on-surface": "#f0f0fa",
+            "secondary-fixed-dim": "#b4c5fa",
+            "surface-tint": "#0957ce",
+            "on-tertiary-fixed": "#360f00",
+            "surface-container-highest": "#e1e2ec",
+            "on-secondary-fixed-variant": "#344572",
+            "surface": "#faf8ff",
+            "primary-fixed-dim": "#b1c5ff",
+            "surface-container-high": "#e7e7f2",
+            "on-surface-variant": "#424654",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "background": "#faf8ff",
+            "tertiary-container": "#ac4100",
+            "secondary-container": "#b6c8fd",
+            "secondary-fixed": "#dae2ff",
+            "tertiary-fixed-dim": "#ffb597",
+            "primary-fixed": "#dae2ff",
+            "tertiary": "#853000",
+            "on-background": "#191b23",
+            "error": "#ba1a1a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    body {
+      font-family: 'Geist', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface-container-high min-h-screen text-on-surface antialiased flex justify-center">
+<!-- Mobile Device Shell Canvas (Strict 390px layout viewport) -->
+<div class="w-full max-w-[390px] min-h-screen bg-surface-container-lowest flex flex-col shadow-xl relative border-x border-outline-variant">
+<!-- Top Bar Quản Trị (Linear Task Flow Header) -->
+<header class="sticky top-0 z-40 bg-surface-container-lowest border-b border-outline-variant px-4 h-14 flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<button aria-label="Menu quản trị" class="w-11 h-11 -ml-1 flex items-center justify-center rounded-lg text-on-surface hover:bg-surface-container transition-colors active:opacity-80" type="button">
+<span class="material-symbols-outlined text-[22px]">menu</span>
+</button>
+<div class="flex flex-col">
+<h1 class="text-sm font-bold font-headline leading-tight text-on-surface tracking-tight">05 Nạp sơ đồ JSON</h1>
+<p class="text-[11px] font-medium text-on-surface-variant leading-none mt-0.5">Suất 16/10/2026</p>
+</div>
+</div>
+<div class="flex items-center"></div>
+</header>
+<!-- Main Content Container with 16px Gutters -->
+<main class="flex-1 px-4 py-4 space-y-4">
+<!-- Thông tin sự kiện bối cảnh -->
+<section class="bg-surface-container-low rounded-lg p-3 border border-outline-variant">
+<div class="flex items-start justify-between">
+<div>
+<p class="text-[11px] font-medium text-outline uppercase tracking-wider">Sự kiện áp dụng</p>
+<h2 class="text-sm font-bold text-on-surface mt-0.5">Đêm nhạc Tháng Mười</h2>
+<p class="text-xs text-on-surface-variant mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-outline">location_on</span>
+              Nhà hát Ánh Dương (địa điểm giả)
+            </p>
+</div>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant text-[11px] font-medium">
+<span class="material-symbols-outlined text-[13px]">calendar_today</span>
+            19:30 · 16/10
+          </span>
+</div>
+</section>
+<!-- Thanh tiến trình 2 bước -->
+<section class="bg-surface-container-lowest rounded-lg p-3.5 border border-outline-variant space-y-3">
+<div class="flex items-center justify-between text-xs font-semibold">
+<span class="text-on-surface">Tiến trình nạp cấu hình</span>
+<span class="text-primary font-bold">Bước 1/2</span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<!-- Bước 1: Đã hoàn tất -->
+<div class="rounded-lg p-2.5 bg-surface-container-low border border-primary-container/30 relative">
+<div class="flex items-center gap-1.5 mb-1">
+<span class="w-4 h-4 rounded-full bg-primary-container text-white flex items-center justify-center text-[10px]">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</span>
+<span class="text-xs font-bold text-on-surface">1. Kiểm tra JSON</span>
+</div>
+<p class="text-[11px] text-primary-container font-semibold">Tệp JSON hợp lệ</p>
+</div>
+<!-- Bước 2: Đang chờ xác nhận -->
+<div class="rounded-lg p-2.5 bg-surface-container border border-outline-variant">
+<div class="flex items-center gap-1.5 mb-1">
+<span class="w-4 h-4 rounded-full border border-outline text-outline flex items-center justify-center text-[10px] font-bold">
+                2
+              </span>
+<span class="text-xs font-semibold text-on-surface">2. Nạp sơ đồ</span>
+</div>
+<p class="text-[11px] text-on-surface-variant">Chờ xác nhận áp dụng</p>
+</div>
+</div>
+</section>
+<!-- Khu vực tệp JSON đã chọn (File Status) -->
+<section class="bg-surface-container-lowest rounded-lg p-3.5 border border-outline-variant space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-8 h-8 rounded bg-surface-container flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[20px]">code</span>
+</span>
+<div>
+<p class="text-xs font-bold text-on-surface font-headline truncate max-w-[190px]">seats-demo-2000.json</p>
+<p class="text-[11px] text-on-surface-variant">842 KB · Tối đa 5MB</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 text-xs py-1.5 border-y border-outline-variant">
+<div>
+<span class="text-outline text-[11px] block">Quy chuẩn dữ liệu</span>
+<span class="font-semibold text-on-surface text-xs">ST-ISO-2026</span>
+</div>
+<div>
+<span class="text-outline text-[11px] block">Tổng số lượng ghế</span>
+<span class="font-semibold text-on-surface text-xs">2.000 ghế xác định</span>
+</div>
+</div>
+<!-- Thông báo xác thực thành công -->
+<div class="rounded-lg p-2.5 bg-surface-container-low border border-primary/20 flex gap-2 items-start"><span class="material-symbols-outlined text-primary text-[18px] mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span><p class="text-[11px] leading-relaxed text-on-surface"><strong class="font-semibold text-primary">Tệp hợp lệ</strong> · 2.000 ghế · 3 hạng vé</p></div>
+<!-- Cảnh báo an toàn -->
+</section>
+<!-- Bảng phân bổ hạng vé tóm tắt -->
+<section class="bg-surface-container-lowest rounded-lg p-3.5 border border-outline-variant">
+<div class="flex items-center justify-between mb-2.5">
+<h3 class="text-xs font-bold font-headline text-on-surface uppercase tracking-wider">Phân bổ hạng vé</h3>
+<span class="text-[11px] text-outline">Đồng bộ tự động</span>
+</div>
+<div class="divide-y divide-outline-variant">
+<!-- VIP -->
+<div class="py-2 flex items-center justify-between text-xs">
+<div class="flex items-center gap-2">
+<span class="w-3.5 h-3.5 rounded bg-primary-container inline-flex items-center justify-center text-white text-[9px] font-bold">V</span>
+<div>
+<span class="font-bold text-on-surface">VIP</span>
+<span class="text-outline text-[11px] ml-1">(400 ghế · 20%)</span>
+</div>
+</div>
+<span class="font-bold text-on-surface">1.200.000 ₫</span>
+</div>
+<!-- Tiêu chuẩn -->
+<div class="py-2 flex items-center justify-between text-xs">
+<div class="flex items-center gap-2">
+<span class="w-3.5 h-3.5 rounded bg-secondary inline-flex items-center justify-center text-white text-[9px] font-bold">T</span>
+<div>
+<span class="font-bold text-on-surface">Tiêu chuẩn</span>
+<span class="text-outline text-[11px] ml-1">(1.000 ghế · 50%)</span>
+</div>
+</div>
+<span class="font-bold text-on-surface">650.000 ₫</span>
+</div>
+<!-- Ban công -->
+<div class="py-2 flex items-center justify-between text-xs">
+<div class="flex items-center gap-2">
+<span class="w-3.5 h-3.5 rounded bg-outline inline-flex items-center justify-center text-white text-[9px] font-bold">B</span>
+<div>
+<span class="font-bold text-on-surface">Ban công</span>
+<span class="text-outline text-[11px] ml-1">(600 ghế · 30%)</span>
+</div>
+</div>
+<span class="font-bold text-on-surface">350.000 ₫</span>
+</div>
+</div>
+</section>
+<!-- Khung xem trước sơ đồ ghế (Visual Map Preview) -->
+<section class="bg-surface-container-lowest rounded-lg p-3 border border-outline-variant space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-on-surface">grid_view</span>
+<h3 class="text-xs font-bold font-headline text-on-surface">Bản xem trước ma trận ghế</h3>
+</div>
+<!-- Nút công cụ zoom xem trước -->
+<div class="flex items-center border border-outline-variant rounded-md overflow-hidden bg-surface-container-low">
+<button aria-label="Thu nhỏ" class="w-7 h-7 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">zoom_out</span>
+</button>
+<div class="w-px h-4 bg-outline-variant"></div>
+<button aria-label="Phóng to" class="w-7 h-7 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">zoom_in</span>
+</button>
+<div class="w-px h-4 bg-outline-variant"></div>
+<button aria-label="Vừa màn hình" class="w-7 h-7 flex items-center justify-center text-on-surface hover:bg-surface-variant transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">fit_screen</span>
+</button>
+</div>
+</div>
+<!-- Canvas sơ đồ ma trận mô phỏng trực quan -->
+<div class="bg-surface-container-low rounded border border-outline-variant p-3 overflow-hidden flex flex-col items-center">
+<!-- Sân khấu -->
+<div class="w-3/4 h-5 rounded-t-sm bg-outline text-white text-[10px] font-bold tracking-wider flex items-center justify-center mb-3">
+            SÂN KHẤU CHÍNH
+          </div>
+<!-- Lưới ghế thu nhỏ dạng ma trận -->
+<div class="w-full space-y-1.5 flex flex-col items-center">
+<!-- Khu VIP (4 hàng) -->
+<div class="space-y-0.5">
+<div class="flex gap-1 justify-center">
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+</div>
+<div class="flex gap-1 justify-center">
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></span>
+</div>
+</div>
+<!-- Lối đi nhỏ -->
+<div class="w-full text-center text-[9px] text-outline font-medium tracking-tight">LỐI ĐI GIỮA HÀNG</div>
+<!-- Khu Tiêu chuẩn (6 hàng đại diện) -->
+<div class="space-y-0.5">
+<div class="flex gap-1 justify-center">
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+</div>
+<div class="flex gap-1 justify-center">
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+</div>
+<div class="flex gap-1 justify-center">
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-secondary"></span>
+</div>
+</div>
+<!-- Khu Ban công (Tầng trên) -->
+<div class="w-full pt-1 border-t border-outline-variant/60 flex flex-col items-center">
+<span class="text-[9px] text-outline font-medium mb-0.5">TẦNG BAN CÔNG</span>
+<div class="flex gap-1 justify-center">
+<span class="w-2.5 h-2.5 rounded-[2px] bg-outline"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-outline"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-outline"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-outline"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-outline"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-outline"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-outline"></span>
+<span class="w-2.5 h-2.5 rounded-[2px] bg-outline"></span>
+</div>
+</div>
+</div>
+</div>
+<!-- Ghi chú ngắn xác thực -->
+<p class="text-[11px] text-on-surface-variant leading-relaxed"><span class="text-outline font-medium">Xem trước chưa lưu dữ liệu</span></p>
+</section>
+<!-- Footer Disclaimer Anchor (From JSON) -->
+<footer class="pt-2 pb-4 text-center">
+<p class="text-[11px] text-outline font-medium">Demo Sprint 2 · dữ liệu giả</p>
+<div class="flex justify-center gap-4 text-[11px] text-on-surface-variant mt-1">
+<span class="hover:underline">Điều khoản</span>
+<span class="hover:underline">Bảo mật</span>
+<span class="hover:underline">Hỗ trợ kỹ thuật</span>
+</div>
+</footer>
+</main>
+<!-- Fixed Action Bar at Bottom (44px tap targets minimum) -->
+<div class="sticky bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant p-4 space-y-2 z-30 shadow-md pb-safe">
+<!-- Nút hành động chính (Primary blue) -->
+<button class="w-full h-11 bg-primary-container text-white font-headline text-sm font-semibold rounded-md flex items-center justify-center gap-2 hover:bg-primary transition-colors active:opacity-90 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[19px]">cloud_upload</span>
+<span>Nạp sơ đồ &amp; Áp dụng</span>
+</button>
+<!-- Nút phụ -->
+<button class="w-full h-11 bg-surface-container text-on-surface font-headline text-sm font-semibold rounded-md flex items-center justify-center gap-2 border border-outline-variant hover:bg-surface-variant transition-colors active:opacity-80" type="button">
+<span class="material-symbols-outlined text-[19px]">file_upload</span>
+<span>Chọn tệp JSON khác</span>
+</button>
+</div>
+</div>
+</body></html>

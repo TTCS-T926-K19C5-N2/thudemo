@@ -1,0 +1,350 @@
+{
+  "sourceSha": "d423fa8d2e5143b07cd7158985776ef8ca740ce8",
+  "environment": "LOCAL_PHYSICAL_ANDROID_CAMERA_WITH_ISOLATED_FIXTURE_DB",
+  "captureDate": "2026-10-10",
+  "timezone": "Asia/Saigon",
+  "transport": "ADB USB localhost forwarding; one cable, sequential devices",
+  "fixture": "Paid test tickets issued through the real authenticated owner endpoint. No customer tickets, real payment/provider or staging claim.",
+  "reporter": "Người dùng trong phiên task; không suy ra thành viên nhóm nào đã trực tiếp kiểm",
+  "observation": "Actual live rear camera tracks, initially empty scan input, requester physically scanned displayed QR, real API/committed database checks; no QR text/image/video injection into scanner.",
+  "deviceConnectionNote": "Phone 1 used Playwright CDP; Phone 2/3 use the task page CDP only after whole-browser Playwright attachment timed out on other tabs. No personal tabs modified.",
+  "cases": [
+    {
+      "id": "valid-1",
+      "scenario": "valid-1",
+      "status": "PASS_CAMERA_TECHNICAL",
+      "sourceSha": "d423fa8d2e5143b07cd7158985776ef8ca740ce8",
+      "device": {
+        "name": "Redmi Note 13 Pro 5G",
+        "model": "2312DRA50G",
+        "android": "16",
+        "chrome": "154.0.8037.126"
+      },
+      "startedAt": "2026-10-10T12:19:34.664Z",
+      "finishedAt": "2026-10-10T12:19:50.952Z",
+      "cameraLiveObserved": true,
+      "cameraSettings": [
+        {
+          "state": "live",
+          "enabled": true,
+          "width": 480,
+          "height": 640,
+          "facingMode": "environment"
+        }
+      ],
+      "secureContext": true,
+      "initialScanInputEmpty": true,
+      "httpResults": [
+        {
+          "status": 200,
+          "expectedSignedQr": true
+        }
+      ],
+      "newNormalAdmissions": 1,
+      "normalHistoryUnchanged": false,
+      "firstNormal": {
+        "kind": "NORMAL",
+        "gate": "A",
+        "staffName": "Nhân viên cửa A",
+        "enteredAt": "2026-10-10T12:19:50.841Z"
+      },
+      "scannerStatus": "Vé hợp lệ. Check-in thành công.Cửa: AHạng ghế: Hạng thườngSố ghế: ANDROID-faffecd1-1Thời điểm check-in: 19:19:50 10/10/2026",
+      "runtimeErrors": [],
+      "requesterConfirmation": "hợp lệ",
+      "screenshot": "valid-1-device.png",
+      "screenshotSha256": "9e68b90242b84eab931075c5632e028103f0b74426f51a904872b796b4039c27",
+      "rawObservationSha256": "e5f0e6ab0fd9eca521b78e9721023f9bed603612de39cb1d693e85862c069481",
+      "rawClassifierResult": false,
+      "classificationNote": "Original raw classification used a case-sensitive label; preserved unchanged. Strict validator checks actual message, committed history, signed request, staff/gate and live camera."
+    },
+    {
+      "id": "unsigned",
+      "scenario": "unsigned",
+      "status": "PASS_CAMERA_TECHNICAL",
+      "sourceSha": "d423fa8d2e5143b07cd7158985776ef8ca740ce8",
+      "device": {
+        "name": "Redmi Note 13 Pro 5G",
+        "model": "2312DRA50G",
+        "android": "16",
+        "chrome": "154.0.8037.126"
+      },
+      "startedAt": "2026-10-10T12:22:26.025Z",
+      "finishedAt": "2026-10-10T12:22:40.210Z",
+      "cameraLiveObserved": true,
+      "cameraSettings": [
+        {
+          "state": "live",
+          "enabled": true,
+          "width": 480,
+          "height": 640,
+          "facingMode": "environment"
+        }
+      ],
+      "secureContext": true,
+      "initialScanInputEmpty": true,
+      "httpResults": [],
+      "newNormalAdmissions": 0,
+      "normalHistoryUnchanged": true,
+      "firstNormal": {
+        "kind": "NORMAL",
+        "gate": "A",
+        "staffName": "Nhân viên cửa A",
+        "enteredAt": "2026-10-10T12:19:50.841Z"
+      },
+      "scannerStatus": "Mã QR không hợp lệ hoặc chưa có khóa xác minh. Tải lại quyền cửa và thử lại.",
+      "runtimeErrors": [],
+      "requesterConfirmation": "đã báo không hợp lệ và từ chối QR",
+      "screenshot": "unsigned-device.png",
+      "screenshotSha256": "34181bf8eb1288339af9f6c3af52d09ce76b3cdc6793fbcaec2785fb629c3006",
+      "rawObservationSha256": "68e2bdb064812430913da7a2bb8a2c953184f097d48676c6066be5fdb01ff632",
+      "rawClassifierResult": true,
+      "classificationNote": "Raw observation and strict validator agree"
+    },
+    {
+      "id": "tampered",
+      "scenario": "tampered",
+      "status": "PASS_CAMERA_TECHNICAL",
+      "sourceSha": "d423fa8d2e5143b07cd7158985776ef8ca740ce8",
+      "device": {
+        "name": "Redmi Note 13 Pro 5G",
+        "model": "2312DRA50G",
+        "android": "16",
+        "chrome": "154.0.8037.126"
+      },
+      "startedAt": "2026-10-10T12:23:24.060Z",
+      "finishedAt": "2026-10-10T12:24:22.789Z",
+      "cameraLiveObserved": true,
+      "cameraSettings": [
+        {
+          "state": "live",
+          "enabled": true,
+          "width": 480,
+          "height": 640,
+          "facingMode": "environment"
+        }
+      ],
+      "secureContext": true,
+      "initialScanInputEmpty": true,
+      "httpResults": [],
+      "newNormalAdmissions": 0,
+      "normalHistoryUnchanged": true,
+      "firstNormal": {
+        "kind": "NORMAL",
+        "gate": "A",
+        "staffName": "Nhân viên cửa A",
+        "enteredAt": "2026-10-10T12:19:50.841Z"
+      },
+      "scannerStatus": "Chữ ký QR không hợp lệ.",
+      "runtimeErrors": [],
+      "requesterConfirmation": "đã báo lỗi QR không hợp lệ",
+      "screenshot": "tampered-device.png",
+      "screenshotSha256": "326b56e658da0339dfd4bbf3df4e1529c4bda9f61d84a1892c9c68be14d46a65",
+      "rawObservationSha256": "839974355c47c05c5d9f0949185106c44e2afdd01970a5b6de1ac6d2b8716d08",
+      "rawClassifierResult": true,
+      "classificationNote": "Raw observation and strict validator agree"
+    },
+    {
+      "id": "duplicate-1",
+      "scenario": "duplicate-1",
+      "status": "PASS_CAMERA_TECHNICAL",
+      "sourceSha": "d423fa8d2e5143b07cd7158985776ef8ca740ce8",
+      "device": {
+        "name": "Redmi Note 13",
+        "model": "2404ARN45A",
+        "android": "16",
+        "chrome": "154.0.8037.126"
+      },
+      "startedAt": "2026-10-10T12:34:35.336Z",
+      "finishedAt": "2026-10-10T12:34:50.237Z",
+      "cameraLiveObserved": true,
+      "cameraSettings": [
+        {
+          "state": "live",
+          "enabled": true,
+          "width": 480,
+          "height": 640,
+          "facingMode": "environment"
+        }
+      ],
+      "secureContext": true,
+      "initialScanInputEmpty": true,
+      "httpResults": [
+        {
+          "status": 409,
+          "expectedSignedQr": true
+        }
+      ],
+      "newNormalAdmissions": 0,
+      "normalHistoryUnchanged": true,
+      "firstNormal": {
+        "kind": "NORMAL",
+        "gate": "A",
+        "staffName": "Nhân viên cửa A",
+        "enteredAt": "2026-10-10T12:19:50.841Z"
+      },
+      "scannerStatus": "Vé đã sử dụngĐã vào lúc 19:19:50 10/10/2026 tại cửa A.",
+      "runtimeErrors": [],
+      "requesterConfirmation": "báo vé đã dùng",
+      "screenshot": "duplicate-1-device.png",
+      "screenshotSha256": "6e21bbc1e3acb0ea8836604b001754ef08da509a47654e1d5dcf804373c55c8e",
+      "rawObservationSha256": "66897b73eebd7b4d649beb7fbcd2366b6593038698a7d458af8368312a0d562a",
+      "rawClassifierResult": true,
+      "classificationNote": "Raw observation and strict validator agree"
+    },
+    {
+      "id": "valid-2",
+      "scenario": "valid-2",
+      "status": "PASS_CAMERA_TECHNICAL",
+      "sourceSha": "d423fa8d2e5143b07cd7158985776ef8ca740ce8",
+      "device": {
+        "name": "Redmi Note 13",
+        "model": "2404ARN45A",
+        "android": "16",
+        "chrome": "154.0.8037.126"
+      },
+      "startedAt": "2026-10-10T12:35:18.274Z",
+      "finishedAt": "2026-10-10T12:35:53.486Z",
+      "cameraLiveObserved": true,
+      "cameraSettings": [
+        {
+          "state": "live",
+          "enabled": true,
+          "width": 480,
+          "height": 640,
+          "facingMode": "environment"
+        }
+      ],
+      "secureContext": true,
+      "initialScanInputEmpty": true,
+      "httpResults": [
+        {
+          "status": 200,
+          "expectedSignedQr": true
+        }
+      ],
+      "newNormalAdmissions": 1,
+      "normalHistoryUnchanged": false,
+      "firstNormal": {
+        "kind": "NORMAL",
+        "gate": "B",
+        "staffName": "Nhân viên cửa B",
+        "enteredAt": "2026-10-10T12:35:53.456Z"
+      },
+      "scannerStatus": "Vé hợp lệ. Check-in thành công.Cửa: BHạng ghế: Hạng thườngSố ghế: ANDROID-faffecd1-2Thời điểm check-in: 19:35:53 10/10/2026",
+      "runtimeErrors": [],
+      "requesterConfirmation": "báo thành công",
+      "screenshot": "valid-2-device.png",
+      "screenshotSha256": "7f9a04ba784d0d118974501294025a2ce2f4873a575852044a2508408ee8f629",
+      "rawObservationSha256": "0a62eb69920d25f196ad014f23f600fccf8330d497af2cc412d0579f73031e09",
+      "rawClassifierResult": true,
+      "classificationNote": "Raw observation and strict validator agree"
+    },
+    {
+      "id": "device2-unsigned",
+      "scenario": "unsigned",
+      "status": "PASS_CAMERA_TECHNICAL",
+      "sourceSha": "d423fa8d2e5143b07cd7158985776ef8ca740ce8",
+      "device": {
+        "name": "Redmi Note 13",
+        "model": "2404ARN45A",
+        "android": "16",
+        "chrome": "154.0.8037.126"
+      },
+      "startedAt": "2026-10-10T12:36:44.087Z",
+      "finishedAt": "2026-10-10T12:36:59.618Z",
+      "cameraLiveObserved": true,
+      "cameraSettings": [
+        {
+          "state": "live",
+          "enabled": true,
+          "width": 480,
+          "height": 640,
+          "facingMode": "environment"
+        }
+      ],
+      "secureContext": true,
+      "initialScanInputEmpty": true,
+      "httpResults": [],
+      "newNormalAdmissions": 0,
+      "normalHistoryUnchanged": true,
+      "firstNormal": {
+        "kind": "NORMAL",
+        "gate": "A",
+        "staffName": "Nhân viên cửa A",
+        "enteredAt": "2026-10-10T12:19:50.841Z"
+      },
+      "scannerStatus": "Mã QR không hợp lệ hoặc chưa có khóa xác minh. Tải lại quyền cửa và thử lại.",
+      "runtimeErrors": [],
+      "requesterConfirmation": "báo QR không hợp lệ",
+      "screenshot": "device2-unsigned-device.png",
+      "screenshotSha256": "bf618727a487a060319796a95d581c44eb7653d01eea64751d0fcde33ee98ae7",
+      "rawObservationSha256": "c86a66dacfa5d43df52ba2ee5b9896de631cdb25cf1cb814f1d914ea815432c2",
+      "rawClassifierResult": true,
+      "classificationNote": "Raw observation and strict validator agree"
+    },
+    {
+      "id": "device2-tampered",
+      "scenario": "tampered",
+      "status": "PASS_CAMERA_TECHNICAL",
+      "sourceSha": "d423fa8d2e5143b07cd7158985776ef8ca740ce8",
+      "device": {
+        "name": "Redmi Note 13",
+        "model": "2404ARN45A",
+        "android": "16",
+        "chrome": "154.0.8037.126"
+      },
+      "startedAt": "2026-10-10T12:37:26.338Z",
+      "finishedAt": "2026-10-10T12:38:09.908Z",
+      "cameraLiveObserved": true,
+      "cameraSettings": [
+        {
+          "state": "live",
+          "enabled": true,
+          "width": 480,
+          "height": 640,
+          "facingMode": "environment"
+        }
+      ],
+      "secureContext": true,
+      "initialScanInputEmpty": true,
+      "httpResults": [],
+      "newNormalAdmissions": 0,
+      "normalHistoryUnchanged": true,
+      "firstNormal": {
+        "kind": "NORMAL",
+        "gate": "A",
+        "staffName": "Nhân viên cửa A",
+        "enteredAt": "2026-10-10T12:19:50.841Z"
+      },
+      "scannerStatus": "Chữ ký QR không hợp lệ.",
+      "runtimeErrors": [],
+      "requesterConfirmation": "báo chữ ký không hợp lệ",
+      "screenshot": "device2-tampered-device.png",
+      "screenshotSha256": "c884af1c13be51b1d202a04062ddcfe3952458eceaf5e0c19ff44c12e8dda8e5",
+      "rawObservationSha256": "f4e78f10a196c4420e14226e6a0a1b14decb31cdcfa23e5afc95abf136565d1d",
+      "rawClassifierResult": true,
+      "classificationNote": "Raw observation and strict validator agree"
+    }
+  ],
+  "plannedCameraCases": 10,
+  "cameraCasesCompleted": 7,
+  "remainingCameraCases": ["valid-3", "device3-unsigned", "device3-tampered"],
+  "outdoorReadability": "PASS_USER_REPORTED",
+  "simultaneousPhysicalScanners": "NOT_RUN; separate real two-API-process concurrency evidence applies",
+  "staging": "NOT_RUN",
+  "mergeGate": "PENDING_FINAL_HEAD_CI_AND_CROSS_ACCOUNT_REVIEW",
+  "cameraGateOnTwoDevices": "PASS_CAMERA_TECHNICAL_FOR_SEVEN_CAPTURED_CASES",
+  "thirdDevice": "NOT_RUN: requester stopped the optional third-device session; device was serving Wi-Fi and could not access the task in that session. No OS/browser or PASS inferred.",
+  "outdoorReport": {
+    "devices": ["Redmi Note 13 Pro 5G", "Redmi Note 13"],
+    "date": "2026-10-10",
+    "approximateLocalTime": "12:00",
+    "timezone": "Asia/Saigon",
+    "lighting": "Direct sunshine",
+    "result": "Text/icons/gate/time readable and buttons operable",
+    "applicationIdentifiedByRequester": "Scanner V1 bản S-30 đã sửa QR (PR #68)",
+    "evidenceType": "Requester physical test report, not instrumented observation or a midday screenshot",
+    "reportedWords": "Cả 2 máy lúc 12h trưa nay, nắng trực tiếp, đọc rõ và bấm được",
+    "sourceAttribution": "Requester identified the signed-QR S-30 scanner; the instrumented evening camera session separately pins source SHA d423fa8. No midday process or camera telemetry is claimed."
+  }
+}

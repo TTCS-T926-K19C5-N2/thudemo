@@ -1,0 +1,8 @@
+{
+  "runtimePnpm": "10.15.1",
+  "check": "git diff --check",
+  "remote": false,
+  "exitCode": 0,
+  "runtimeNode": "v24.21.0",
+  "local": true
+}

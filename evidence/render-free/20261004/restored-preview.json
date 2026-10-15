@@ -1,0 +1,6 @@
+{
+  "url": "http://localhost:3000",
+  "health": "ok",
+  "mode": "Local restored preview",
+  "launcher": "Existing direct local runner; hidden helper launcher policy rejected, no bypass/external action"
+}

@@ -1,0 +1,9 @@
+{
+  "components/sprint2/seat-map.tsx": "components/seat-map/seat-map.tsx",
+  "components/sprint2/public-catalog.tsx": "features/event-catalog/event-catalog.tsx",
+  "components/sprint2/public-show.tsx": "features/event-catalog/public-showtime.tsx",
+  "components/sprint2/showtime-manager.tsx": "features/showtime-management/showtime-workspace.tsx",
+  "components/sprint2/request.ts": "lib/api/client.ts",
+  "components/sprint2/shell.tsx": "components/layout/product-layout.tsx",
+  "app/sprint2.css": "app/product.css"
+}
