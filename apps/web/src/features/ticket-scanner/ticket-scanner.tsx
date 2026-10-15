@@ -104,7 +104,8 @@ export function TicketScanner({
   const [isSyncingQueue, setIsSyncingQueue] = useState(false);
   const [syncSuccessMessage, setSyncSuccessMessage] = useState<string | null>(null);
 
-  const isDeviceOnline = isOnline && browserOnline && !offlineModeSimulated;
+  const isExplicitOffline = offlineModeSimulated || !browserOnline;
+  const isDeviceOnline = !isExplicitOffline;
 
   const scanAction = useRef<{
     ticketId: string;
@@ -229,7 +230,7 @@ export function TicketScanner({
         void currentScanner
           .stop()
           .catch((error: unknown) =>
-            console.error("Không thể dừng camera quét QR.", error),
+            console.warn("Không thể dừng camera quét QR.", error),
           );
       }
     };
@@ -784,7 +785,7 @@ export function TicketScanner({
         </header>
 
         <OfflineBanner
-          isOnline={isDeviceOnline}
+          isOnline={isOnline && !isExplicitOffline}
           pendingCount={pendingCount}
           isSyncing={isSyncingState || isSyncingQueue}
           onRetrySync={() => void triggerSync()}
@@ -796,17 +797,17 @@ export function TicketScanner({
             <span
               data-testid="network-status-indicator"
               className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-medium ${
-                isDeviceOnline
+                isOnline && !isExplicitOffline
                   ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
                   : "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
               }`}
             >
               <span
                 className={`size-1.5 rounded-full ${
-                  isDeviceOnline ? "bg-emerald-500" : "bg-amber-500"
+                  isOnline && !isExplicitOffline ? "bg-emerald-500" : "bg-amber-500"
                 }`}
               />
-              {isDeviceOnline ? "Trực tuyến" : "Ngoại tuyến"}
+              {isOnline && !isExplicitOffline ? "Trực tuyến" : "Ngoại tuyến"}
             </span>
           </div>
           <div className="flex items-center gap-1.5">

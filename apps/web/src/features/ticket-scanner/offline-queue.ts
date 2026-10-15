@@ -32,7 +32,7 @@ function notifyCountChanged(count: number): void {
     try {
       listener(count);
     } catch (err) {
-      console.error("Lỗi trong subscriber đếm lượt quét:", err);
+      console.warn("Lỗi trong subscriber đếm lượt quét:", err);
     }
   }
 }
