@@ -9,6 +9,7 @@ import { CircleAlert, RotateCw, Ticket } from "@/components/ui/material-icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   fetchOrderTickets,
+  resendOrderTickets,
   transferTicket,
   type OrderTicket,
   type OrderTicketStatus,
@@ -61,6 +62,27 @@ export function OrderTickets({ orderId }: { orderId: string }) {
   const [toEmail, setToEmail] = useState("");
   const [transferError, setTransferError] = useState("");
   const [isTransferring, setIsTransferring] = useState(false);
+  const [resendState, setResendState] = useState<
+    { kind: "idle" } | { kind: "sending" } | { kind: "sent" } | { kind: "failed"; message: string }
+  >({ kind: "idle" });
+
+  // Re-sends the already-issued tickets to the account email (S-27 AC3).
+  const handleResend = async () => {
+    setResendState({ kind: "sending" });
+    try {
+      const result = await resendOrderTickets(orderId);
+      setResendState(
+        result.sent
+          ? { kind: "sent" }
+          : { kind: "failed", message: result.error ?? "Chưa gửi được email vé." },
+      );
+    } catch (e: unknown) {
+      setResendState({
+        kind: "failed",
+        message: e instanceof Error ? e.message : "Chưa gửi được email vé.",
+      });
+    }
+  };
 
   const handleTransfer = async (ticketId: string) => {
     if (!toEmail) {
@@ -135,6 +157,27 @@ export function OrderTickets({ orderId }: { orderId: string }) {
             Xuất trình mã QR tại cửa soát vé. Mỗi mã chỉ dùng được một lần, không
             chia sẻ mã cho người khác.
           </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleResend}
+              disabled={resendState.kind === "sending"}
+              data-testid="resend-tickets"
+            >
+              {resendState.kind === "sending" ? "Đang gửi..." : "Gửi lại vé"}
+            </Button>
+            {resendState.kind === "sent" && (
+              <span role="status" className="text-sm text-muted-foreground">
+                Đã gửi vé tới email tài khoản của bạn.
+              </span>
+            )}
+            {resendState.kind === "failed" && (
+              <span role="alert" className="text-sm text-red-500">
+                {resendState.message}
+              </span>
+            )}
+          </div>
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {tickets.map((ticket) => (
               <li

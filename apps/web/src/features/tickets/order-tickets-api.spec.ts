@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { decodeOrderTickets } from "./order-tickets-api";
+import { decodeOrderTickets, resendOrderTickets } from "./order-tickets-api";
+import { vi } from "vitest";
 
 const ticket = {
   id: "t1",
@@ -37,5 +38,26 @@ describe("decodeOrderTickets", () => {
     expect(() => decodeOrderTickets({})).toThrow("Không đọc được dữ liệu vé.");
     expect(() => decodeOrderTickets({ tickets: [{ ...ticket, status: "USED" }] })).toThrow();
     expect(() => decodeOrderTickets({ tickets: [{ ...ticket, id: 1 }] })).toThrow();
+  });
+});
+
+describe("resendOrderTickets", () => {
+  it("calls the resend endpoint with POST and never sends ticket data", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ sent: true, attempts: 1 }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    try {
+      const result = await resendOrderTickets("order-1");
+      expect(result).toEqual({ sent: true, attempts: 1, error: undefined });
+      const [url, init] = fetchMock.mock.calls[0];
+      expect(String(url)).toContain("/orders/order-1/tickets/resend");
+      expect(init.method).toBe("POST");
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });
