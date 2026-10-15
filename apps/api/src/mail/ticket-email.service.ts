@@ -34,7 +34,26 @@ export class TicketEmailService {
     private readonly mail: MailService,
   ) {}
 
+  // Owner-checked entry point used by the buyer's "resend" action.
   async sendTicketsForOrder(
+    orderId: string,
+    userId: string,
+  ): Promise<TicketEmailResult> {
+    return this.deliver(orderId, userId);
+  }
+
+  // Automatic delivery after PAID. Runs without a request user; the recipient is
+  // still the order owner's account email, so no ownership bypass happens here.
+  async sendTicketsForPaidOrderSystem(orderId: string): Promise<TicketEmailResult> {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      select: { userId: true },
+    });
+    if (!order) return { sent: false, attempts: 0, error: 'Không tìm thấy đơn hàng.' };
+    return this.deliver(orderId, order.userId);
+  }
+
+  private async deliver(
     orderId: string,
     userId: string,
   ): Promise<TicketEmailResult> {

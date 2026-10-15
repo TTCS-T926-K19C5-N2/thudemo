@@ -59,6 +59,26 @@ describe('TicketEmailService (S-27)', () => {
     expect(sent.html).toContain('cid:qr-t1');
   });
 
+  it('automatic delivery sends to the owner account without a request user', async () => {
+    prisma.order.findUnique
+      .mockResolvedValueOnce({ userId: OWNER_ID })
+      .mockResolvedValueOnce(orderRow());
+
+    const result = await service.sendTicketsForPaidOrderSystem(ORDER_ID);
+
+    expect(result).toEqual({ sent: true, attempts: 1 });
+    expect(mail.send.mock.calls[0][0].to).toBe('buyer@example.com');
+  });
+
+  it('automatic delivery returns not-found for a missing order', async () => {
+    prisma.order.findUnique.mockResolvedValueOnce(null);
+
+    const result = await service.sendTicketsForPaidOrderSystem('missing');
+
+    expect(result.sent).toBe(false);
+    expect(mail.send).not.toHaveBeenCalled();
+  });
+
   it('never creates tickets when resending (no new ticket rows)', async () => {
     await service.sendTicketsForOrder(ORDER_ID, OWNER_ID);
     await service.sendTicketsForOrder(ORDER_ID, OWNER_ID);

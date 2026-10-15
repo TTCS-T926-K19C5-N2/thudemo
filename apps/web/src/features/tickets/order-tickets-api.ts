@@ -42,6 +42,24 @@ export function fetchOrderTickets(orderId: string, signal?: AbortSignal) {
   return api(`/orders/${orderId}/tickets`, decodeOrderTickets, { signal });
 }
 
+export type ResendTicketsResult = { sent: boolean; attempts: number; error?: string };
+
+// Re-sends the tickets already issued for this order. Never creates tickets (S-27 AC3).
+export function resendOrderTickets(orderId: string) {
+  return api(
+    `/orders/${orderId}/tickets/resend`,
+    (value): ResendTicketsResult => {
+      const data = object(value);
+      return {
+        sent: data.sent === true,
+        attempts: typeof data.attempts === "number" ? data.attempts : 0,
+        error: typeof data.error === "string" ? data.error : undefined,
+      };
+    },
+    { method: "POST", body: {} }
+  );
+}
+
 export async function transferTicket(orderId: string, ticketId: string, toEmail: string) {
   return api(
     `/orders/${orderId}/tickets/${ticketId}/transfer`,
