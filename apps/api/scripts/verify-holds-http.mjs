@@ -230,6 +230,9 @@ try {
       status: 'ON_SALE',
       structureLocked: true,
       seatMapId: randomUUID(),
+      // T-31 proves hold concurrency, not S-42 limits: opt out of the default
+      // 4-ticket limit for this 100-seat-batch fixture.
+      maxTicketsPerUser: null,
     },
   });
   showtimeId = show.id;
