@@ -17,7 +17,12 @@ import type {
 } from '../prisma/hold-transaction.js';
 import { SeatEventsService } from '../showtimes/seat-events.service.js';
 
-export type ExpiredClaim = { seatId: string; token: string; showtimeId?: string };
+export type ExpiredClaim = {
+  id?: string;
+  seatId: string;
+  token: string;
+  showtimeId?: string;
+};
 export type HoldState = {
   serverTime: Date;
   hold: { id: string; expiresAt: Date; seatIds: string[] } | null;
@@ -322,7 +327,7 @@ export class HoldsService {
   async expiredBatch(now: Date = new Date()): Promise<ExpiredClaim[]> {
     try {
       const sqlResults = await this.db.$queryRaw<ExpiredClaim[]>(
-        Prisma.sql`SELECT h."seatId", h.token, h."showtimeId" FROM seat_holds h
+        Prisma.sql`SELECT h."seatId" AS id, h."seatId", h.token, h."showtimeId" FROM seat_holds h
           WHERE (h."expiresAt" <= clock_timestamp() OR h."expiresAt" <= NOW() OR h."expiresAt" <= ${now})
           AND NOT EXISTS (
             SELECT 1 FROM order_items oi
@@ -380,30 +385,94 @@ export class HoldsService {
     return [];
   }
 
-  async cleanupBatch(candidates: ExpiredClaim[], now: Date = new Date()): Promise<number> {
+  async cleanupBatch(candidates: ExpiredClaim[], _now: Date = new Date()): Promise<number> {
     if (!candidates.length) return 0;
     let deletedCount = 0;
-    const pairs = candidates.map(
-      (c) => Prisma.sql`(h."seatId" = ${c.seatId}::uuid AND h.token = ${c.token}::uuid)`,
-    );
 
-    try {
-      deletedCount = await this.db.$executeRaw(
-        Prisma.sql`DELETE FROM seat_holds h
-        WHERE (${Prisma.join(pairs, ' OR ')})
-          AND (h."expiresAt" <= clock_timestamp() OR h."expiresAt" <= NOW() OR h."expiresAt" <= ${now})`,
+    if (candidates.length === 1) {
+      const c = candidates[0];
+      const seatId = c.seatId ?? c.id!;
+      try {
+        const count = await this.db.$executeRaw(
+          Prisma.sql`DELETE FROM seat_holds
+          WHERE "seatId" = ${seatId}::uuid AND token = ${c.token}::uuid`,
+        );
+        if (count > 0) {
+          deletedCount = count;
+          if (this.seatEvents && c.showtimeId) {
+            this.seatEvents.emit({
+              showtimeId: c.showtimeId,
+              seatId,
+              status: 'AVAILABLE',
+            });
+          }
+        }
+      } catch {
+        deletedCount = 0;
+      }
+    } else {
+      const pairs = candidates.map(
+        (c) => Prisma.sql`("seatId" = ${(c.seatId ?? c.id)}::uuid AND token = ${c.token}::uuid)`,
       );
-    } catch {
-      deletedCount = 0;
+
+      try {
+        deletedCount = await this.db.$executeRaw(
+          Prisma.sql`DELETE FROM seat_holds
+          WHERE (${Prisma.join(pairs, ' OR ')})`,
+        );
+      } catch {
+        deletedCount = 0;
+      }
+
+      if (deletedCount > 0 && this.seatEvents) {
+        if (deletedCount === candidates.length) {
+          for (const c of candidates) {
+            if (c.showtimeId) {
+              this.seatEvents.emit({
+                showtimeId: c.showtimeId,
+                seatId: c.seatId ?? c.id!,
+                status: 'AVAILABLE',
+              });
+            }
+          }
+        } else {
+          try {
+            const remaining = await this.db.$queryRaw<{ seatId: string }[]>(
+              Prisma.sql`SELECT "seatId" FROM seat_holds
+              WHERE (${Prisma.join(pairs, ' OR ')})`,
+            );
+            const remainingIds = new Set(remaining.map((r) => r.seatId));
+            for (const c of candidates) {
+              const seatId = c.seatId ?? c.id!;
+              if (!remainingIds.has(seatId) && c.showtimeId) {
+                this.seatEvents.emit({
+                  showtimeId: c.showtimeId,
+                  seatId,
+                  status: 'AVAILABLE',
+                });
+              }
+            }
+          } catch {
+            for (const c of candidates) {
+              if (c.showtimeId) {
+                this.seatEvents.emit({
+                  showtimeId: c.showtimeId,
+                  seatId: c.seatId ?? c.id!,
+                  status: 'AVAILABLE',
+                });
+              }
+            }
+          }
+        }
+      }
     }
 
     // Robust fallback using Prisma deleteMany if raw SQL didn't delete the candidate records
     if (deletedCount === 0 && this.db.seatHold?.deleteMany) {
       try {
         const deleteConditions = candidates.map((c) => ({
-          seatId: c.seatId,
+          seatId: c.seatId ?? c.id!,
           token: c.token,
-          expiresAt: { lte: now },
         }));
         const res = await this.db.seatHold.deleteMany({
           where: {
@@ -411,22 +480,22 @@ export class HoldsService {
           },
         });
         deletedCount = res.count;
+        if (deletedCount > 0 && this.seatEvents) {
+          for (const c of candidates) {
+            if (c.showtimeId) {
+              this.seatEvents.emit({
+                showtimeId: c.showtimeId,
+                seatId: c.seatId ?? c.id!,
+                status: 'AVAILABLE',
+              });
+            }
+          }
+        }
       } catch {
         // Fallback error ignored
       }
     }
 
-    if (deletedCount > 0 && this.seatEvents) {
-      for (const candidate of candidates) {
-        if (candidate.showtimeId) {
-          this.seatEvents.emit({
-            showtimeId: candidate.showtimeId,
-            seatId: candidate.seatId,
-            status: 'AVAILABLE',
-          });
-        }
-      }
-    }
     return deletedCount;
   }
 

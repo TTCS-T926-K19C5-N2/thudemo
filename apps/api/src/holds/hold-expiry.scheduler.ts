@@ -15,7 +15,6 @@ export class HoldExpiryScheduler
   private timer?: ReturnType<typeof setInterval>;
   private running?: Promise<number>;
   private isSweeping = false;
-  private bootstrapped = false;
   private readonly logger = new Logger(HoldExpiryScheduler.name);
   constructor(private readonly service: HoldsService) {}
   onModuleInit() {
@@ -23,7 +22,6 @@ export class HoldExpiryScheduler
     if (!['off', 'api', 'worker'].includes(mode))
       throw new Error('HOLD_EXPIRY_MODE must be off, api or worker');
     if (mode === 'off') return;
-    void this.tick(); // Restart drains expired backlog without waiting for the first minute.
     const interval = process.env.HOLD_EXPIRY_INTERVAL_MS
       ? Number(process.env.HOLD_EXPIRY_INTERVAL_MS)
       : (mode === 'api' ? 2000 : 60000);
@@ -32,18 +30,11 @@ export class HoldExpiryScheduler
   async onApplicationBootstrap() {
     const mode = process.env.HOLD_EXPIRY_MODE ?? 'off';
     if (mode === 'off') return;
-    if (this.running) {
-      await this.running;
-      return;
-    }
-    if (this.bootstrapped) {
-      return;
-    }
     await this.cleanupExpiredHolds();
   }
   async cleanupExpiredHolds(): Promise<number> {
-    if (this.running) {
-      return this.running;
+    if (this.isSweeping || this.running) {
+      return this.running ?? 0;
     }
     return this.tick();
   }
@@ -51,8 +42,7 @@ export class HoldExpiryScheduler
     return this.cleanupExpiredHolds();
   }
   private tick(): Promise<number> {
-    if (this.running) return this.running;
-    this.bootstrapped = true;
+    if (this.isSweeping || this.running) return this.running ?? Promise.resolve(0);
     this.isSweeping = true;
     const started = process.hrtime.bigint();
     const sweepFn =

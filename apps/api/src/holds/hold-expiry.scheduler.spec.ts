@@ -24,7 +24,7 @@ describe('S-43 worker instrumentation preserves cadence and recovery', () => {
       sweep,
     } as unknown as HoldsService);
     scheduler.onModuleInit();
-    await vi.advanceTimersByTimeAsync(1);
+    await scheduler.onApplicationBootstrap();
     expect(sweep).toHaveBeenCalledOnce();
     await vi.advanceTimersByTimeAsync(60000);
     expect(sweep).toHaveBeenCalledTimes(2);
@@ -45,6 +45,7 @@ describe('S-43 worker instrumentation preserves cadence and recovery', () => {
       sweep,
     } as unknown as HoldsService);
     scheduler.onModuleInit();
+    await scheduler.onApplicationBootstrap();
     await vi.advanceTimersByTimeAsync(60001);
     expect(sweep).toHaveBeenCalledTimes(2);
     await scheduler.onModuleDestroy();
@@ -56,6 +57,7 @@ describe('S-43 worker instrumentation preserves cadence and recovery', () => {
       sweep,
     } as unknown as HoldsService);
     scheduler.onModuleInit();
+    await scheduler.onApplicationBootstrap();
     await scheduler.onModuleDestroy();
     expect(sweep).not.toHaveBeenCalled();
   });
@@ -76,6 +78,22 @@ describe('S-43 worker instrumentation preserves cadence and recovery', () => {
     } as unknown as HoldsService);
     await scheduler.onApplicationBootstrap();
     expect(cleanupExpiredHolds).not.toHaveBeenCalled();
+  });
+  it('does not trigger concurrent sweep if already sweeping', async () => {
+    process.env.HOLD_EXPIRY_MODE = 'worker';
+    let resolveSweep: (val: number) => void;
+    const sweepPromise = new Promise<number>((r) => {
+      resolveSweep = r;
+    });
+    const sweep = vi.fn().mockReturnValue(sweepPromise);
+    const scheduler = new HoldExpiryScheduler({
+      sweep,
+    } as unknown as HoldsService);
+    const p1 = scheduler.cleanupExpiredHolds();
+    const p2 = scheduler.cleanupExpiredHolds();
+    expect(sweep).toHaveBeenCalledOnce();
+    resolveSweep!(1);
+    await Promise.all([p1, p2]);
   });
 });
 
