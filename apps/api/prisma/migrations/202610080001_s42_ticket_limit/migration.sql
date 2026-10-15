@@ -1,3 +1,3 @@
--- S-42: per-account ticket limit per showtime. Nullable = unlimited, so existing
--- rows need no backfill and the check is skipped until an organizer sets a limit.
-ALTER TABLE "showtimes" ADD COLUMN "maxTicketsPerUser" INTEGER;
+-- S-42: per-account ticket limit per showtime. Default 4 (owner chốt);
+-- organizer may set 1..2000 per showtime or NULL for unlimited.
+ALTER TABLE "showtimes" ADD COLUMN "maxTicketsPerUser" INTEGER DEFAULT 4;

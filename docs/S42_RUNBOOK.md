@@ -3,9 +3,9 @@
 ## AC
 
 Ban tổ chức đặt giới hạn theo suất (`PATCH /showtimes/:id/ticket-limit`,
-`{maxTicketsPerUser: 1..2000 | null}`); `null` = không giới hạn (mặc định cho
-suất cũ). Khi giữ ghế, `đang giữ + đã mua + xin thêm > giới hạn` thì `403
-{code: TICKET_LIMIT}` và không chạm tới routine giữ ghế.
+`{maxTicketsPerUser: 1..2000 | null}`); `null` = không giới hạn, suất mới
+mặc định 4 (owner S-42 chốt). Khi giữ ghế, `đang giữ + đã mua + xin thêm >
+giới hạn` thì `403 {code: TICKET_LIMIT}` và không chạm tới routine giữ ghế.
 
 ## Cách đếm (không đếm trùng)
 
@@ -26,8 +26,8 @@ suất cũ). Khi giữ ghế, `đang giữ + đã mua + xin thêm > giới hạn
   scalping), nhưng hai claim cùng mili-giây có thể cùng lọt — chống bán trùng
   ghế (S-13, ở tầng DB) không ảnh hưởng. Muốn chặn tuyệt đối thì đưa kiểm tra
   vào `claim_hold_v3`.
-* `[CẦN CHỐT]` giới hạn theo tài khoản hay số điện thoại đã xác minh; hiện theo
-  tài khoản. Giá trị mặc định khi ban tổ chức chưa đặt: không giới hạn.
+* `[ĐÃ CHỐT trong phạm vi S-42]` theo tài khoản (không theo SĐT vì User chưa có
+  phone verification); mặc định 4 vé/tài khoản/suất, BTC sửa được theo suất.
 
 ## Kiểm thử
 

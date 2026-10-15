@@ -86,7 +86,12 @@ export class HoldsService {
       >(
         Prisma.sql`SELECT "maxTicketsPerUser" FROM showtimes WHERE id=${showtimeId}::uuid`,
       );
-      return row?.maxTicketsPerUser ?? null;
+      // Owner chốt S-42: mặc định 4 vé/tài khoản/suất (migration backfill 4);
+      // NULL = BTC mở không giới hạn. Suất lạ (không có hàng) cũng dùng 4 —
+      // routine giữ ghế sẽ trả 404 sau. `?? null` giữ tương thích test cũ mock
+      // hàng thiếu cột.
+      if (!row) return 4;
+      return row.maxTicketsPerUser ?? null;
     } catch {
       // A configured limit must never be bypassed because the read pool is
       // unavailable. Do not cache the failure: a later claim can retry.

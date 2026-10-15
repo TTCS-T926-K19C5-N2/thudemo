@@ -6,7 +6,7 @@ import { api, object } from "@/lib/api/client";
 import type { OwnedShowtime } from "@/lib/contracts/showtimes";
 
 // S-42: organizer sets the per-account ticket limit for one showtime.
-// null = unlimited (default for shows created before S-42).
+// null = unlimited; new showtimes default to 4 (owner chốt S-42).
 export function TicketLimitControl({
   show,
   onChanged,
