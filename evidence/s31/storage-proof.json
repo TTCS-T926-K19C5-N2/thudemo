@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-08T08:46:00.141Z",
+  "scope": "candidate PostgreSQL storage proof; NOT S-30 API, sessions, QR, RBAC, browser or AC acceptance",
+  "sourceSha256": "22454cd90733d2bd63793dd2fe86065e4a91c3ed3a2499d736c4639b61658297",
+  "realRepositoryMigrationsApplied": 18,
+  "raceRounds": 50,
+  "processes": "two separate Node workers; separate PostgreSQL connections",
+  "candidateRaceRoundP95Ms": 5.269399999999905,
+  "checks": [
+    {
+      "name": "first entry records trusted-input actor, gate and database time",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat at B returns original 19:02 at A without overwriting",
+      "result": "PASS"
+    },
+    {
+      "name": "50 races through two OS processes and PostgreSQL connections: exactly one admission per ticket",
+      "result": "PASS"
+    },
+    {
+      "name": "concurrent retry returns ALREADY_RECORDED rather than another ADMITTED",
+      "result": "PASS"
+    },
+    {
+      "name": "concurrent request key reuse for different tickets maps to REQUEST_CONFLICT",
+      "result": "PASS"
+    },
+    {
+      "name": "restart a database worker preserves ticket used state",
+      "result": "PASS"
+    },
+    {
+      "name": "missing, cancelled and wrong-show tickets return no entry metadata",
+      "result": "PASS"
+    },
+    {
+      "name": "partial unique index rejects a second direct NORMAL insert",
+      "result": "PASS"
+    },
+    {
+      "name": "transaction rollback leaves no used state or admission",
+      "result": "PASS"
+    },
+    {
+      "name": "exception ledger reason constraint rejects blank, whitespace and over-limit values",
+      "result": "PASS"
+    },
+    {
+      "name": "direct exception fixture keeps first entry and does not reopen ordinary admission",
+      "result": "PASS"
+    }
+  ],
+  "pending": [
+    "S-30 API/QR/session/scoped authorization integration",
+    "PO exception permission and scope",
+    "authorized exception endpoint",
+    "two API instances and API restart",
+    "V1 desktop/mobile/browser/real camera",
+    "staging and S-30 latency NFR"
+  ]
+}

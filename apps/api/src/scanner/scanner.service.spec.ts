@@ -1,27 +1,31 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ScannerService } from './scanner.service.js';
-import { TicketSigningService } from '../tickets/ticket-signing.service.js';
+import { ScannerCryptoService } from './scanner-crypto.service.js';
 import { TicketStatus } from '@prisma/client';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
 describe('ScannerService', () => {
   let service: ScannerService;
   let mockPrisma: any;
-  let mockSigning: any;
+  let mockCrypto: any;
 
   const mockShowtimeId = 'showtime-1111-1111-1111-111111111111';
   const mockStaffUserId = 'staff-2222-2222-2222-222222222222';
   const mockOrganizerId = 'organizer-3333-3333-3333-333333333333';
 
   beforeEach(() => {
-    mockSigning = {
-      getPublicKeys: vi.fn().mockReturnValue([
-        { keyId: 'k1', publicKey: 'MOCK_RETIRED_KEY', active: false },
-        { keyId: 'k2', publicKey: 'MOCK_ACTIVE_KEY', active: true },
-      ]),
+    mockCrypto = {
+      getKeyId: vi.fn().mockReturnValue('k1'),
+      getPublicKeyInfo: vi.fn().mockReturnValue({
+        keyId: 'k1',
+        key: '-----BEGIN PUBLIC KEY-----\nMOCK_KEY\n-----END PUBLIC KEY-----',
+      }),
+      signTicket: vi.fn().mockReturnValue('mock-sig'),
+      verifyTicket: vi.fn().mockReturnValue(true),
     };
 
     mockPrisma = {
+      $queryRaw: vi.fn().mockResolvedValue([]),
       showtime: {
         findUnique: vi.fn(),
         findMany: vi.fn(),
@@ -41,7 +45,10 @@ describe('ScannerService', () => {
       },
     };
 
-    service = new ScannerService(mockPrisma, mockSigning as unknown as TicketSigningService);
+    service = new ScannerService(
+      mockPrisma,
+      mockCrypto as unknown as ScannerCryptoService,
+    );
   });
 
   describe('Authorization: verifyStaffAccess', () => {
@@ -58,7 +65,9 @@ describe('ScannerService', () => {
       });
 
       await expect(
-        service.verifyStaffAccess(mockShowtimeId, mockOrganizerId, ['ORGANIZER']),
+        service.verifyStaffAccess(mockShowtimeId, mockOrganizerId, [
+          'ORGANIZER',
+        ]),
       ).resolves.toBeUndefined();
     });
 
@@ -69,7 +78,9 @@ describe('ScannerService', () => {
       });
 
       await expect(
-        service.verifyStaffAccess(mockShowtimeId, mockOrganizerId, ['ORGANIZER']),
+        service.verifyStaffAccess(mockShowtimeId, mockOrganizerId, [
+          'ORGANIZER',
+        ]),
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -110,10 +121,13 @@ describe('ScannerService', () => {
   });
 
   describe('Full Download: getShowtimeTickets (since omitted)', () => {
-    it('returns full ticket list, generatedAt, cursor, public keys, and no PII', async () => {
+    it('returns full ticket list, generatedAt, cursor, publicKey, and no PII', async () => {
       mockPrisma.showtime.findUnique.mockResolvedValue({
         id: mockShowtimeId,
-        event: { name: 'Concert Đêm Nhạc Mùa Thu', organizerId: mockOrganizerId },
+        event: {
+          name: 'Concert Đêm Nhạc Mùa Thu',
+          organizerId: mockOrganizerId,
+        },
       });
 
       const now = new Date();
@@ -134,15 +148,19 @@ describe('ScannerService', () => {
         },
       ]);
 
-      const result = await service.getShowtimeTickets(mockShowtimeId, undefined, {
-        id: 'admin-id',
-        roles: ['ADMIN'],
-      });
+      const result = await service.getShowtimeTickets(
+        mockShowtimeId,
+        undefined,
+        {
+          id: 'admin-id',
+          roles: ['ADMIN'],
+        },
+      );
 
       expect(result.showtimeId).toBe(mockShowtimeId);
       expect(result.showtimeName).toBe('Concert Đêm Nhạc Mùa Thu');
-      // Retired keys are included so tickets issued before a rotation verify.
-      expect(result.publicKeys.map((k) => k.keyId)).toEqual(['k1', 'k2']);
+      expect(result.publicKey.keyId).toBe('k1');
+      expect(result.publicKey.key).toContain('MOCK_KEY');
       expect(result.cursor).toBeDefined();
       expect(result.tickets).toHaveLength(2);
 
@@ -197,10 +215,14 @@ describe('ScannerService', () => {
       });
       mockPrisma.ticket.findMany.mockResolvedValue([]);
 
-      const result = await service.getShowtimeTickets(mockShowtimeId, undefined, {
-        id: 'admin-id',
-        roles: ['ADMIN'],
-      });
+      const result = await service.getShowtimeTickets(
+        mockShowtimeId,
+        undefined,
+        {
+          id: 'admin-id',
+          roles: ['ADMIN'],
+        },
+      );
 
       expect(result.tickets).toEqual([]);
       expect(result.showtimeId).toBe(mockShowtimeId);
@@ -241,10 +263,14 @@ describe('ScannerService', () => {
         },
       ]);
 
-      const result = await service.getShowtimeTickets(mockShowtimeId, sinceCursor, {
-        id: 'admin-id',
-        roles: ['ADMIN'],
-      });
+      const result = await service.getShowtimeTickets(
+        mockShowtimeId,
+        sinceCursor,
+        {
+          id: 'admin-id',
+          roles: ['ADMIN'],
+        },
+      );
 
       expect(result.tickets).toHaveLength(3);
       expect(result.tickets[0].status).toBe('valid');
@@ -285,7 +311,9 @@ describe('ScannerService', () => {
       ]);
       mockPrisma.ticket.count.mockResolvedValue(25);
 
-      const list = await service.getAssignedShowtimes(mockStaffUserId, ['STAFF']);
+      const list = await service.getAssignedShowtimes(mockStaffUserId, [
+        'STAFF',
+      ]);
 
       expect(list).toHaveLength(1);
       expect(list[0].id).toBe(mockShowtimeId);
