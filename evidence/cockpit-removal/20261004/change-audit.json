@@ -1,0 +1,49 @@
+{
+  "trackedNonWebDiffUnchanged": true,
+  "changedSinceSnapshot": [
+    {
+      "path": ".stitch\\resources\\style-guide.json",
+      "change": "modified"
+    },
+    {
+      "path": ".stitch\\metadata.json",
+      "change": "modified"
+    },
+    {
+      "path": "apps\\web\\src\\components\\workspace-header.tsx",
+      "change": "deleted"
+    },
+    {
+      "path": "apps\\web\\src\\components\\layout\\product-layout.tsx",
+      "change": "modified"
+    },
+    {
+      "path": "apps\\web\\src\\components\\event-editor.tsx",
+      "change": "modified"
+    },
+    {
+      "path": "apps\\web\\src\\components\\brand-mark.tsx",
+      "change": "deleted"
+    },
+    {
+      "path": "apps\\web\\src\\app\\globals.css",
+      "change": "modified"
+    },
+    {
+      "path": "apps\\web\\src\\app\\account\\page.tsx",
+      "change": "modified"
+    },
+    {
+      "path": "apps\\web\\src\\app\\layout.tsx",
+      "change": "modified"
+    },
+    {
+      "path": "apps\\web\\src\\app\\product.css",
+      "change": "modified"
+    },
+    {
+      "path": "apps\\web\\src\\app\\events\\page.tsx",
+      "change": "modified"
+    }
+  ]
+}

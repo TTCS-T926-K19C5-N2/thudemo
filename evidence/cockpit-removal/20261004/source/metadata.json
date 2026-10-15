@@ -1,0 +1,541 @@
+{
+  "project": {
+    "createTime": "2026-10-04T05:29:10.457464Z",
+    "designTheme": {
+      "bodyFont": "GEIST",
+      "bodyFontFamily": "Geist",
+      "colorMode": "LIGHT",
+      "colorVariant": "FIDELITY",
+      "customColor": "#175CD3",
+      "designMd": "# Sprint 2 — Vé sự kiện\nVietnamese internal UI demo, fictional events only. Ticketbox reference observed 04/10/2026: emerald navigation header, dark neutral discovery canvas, poster-led information and prominent date/price. Borrow content hierarchy and event browsing clarity, not brand/logo/artwork.\nOrganizer area uses Quiet Operations from project docs: #F7F8FA canvas, white surfaces, #172033 text, #667085 metadata, #D6DAE1 border, #175CD3 primary, #1849A9 hover. No marketing hero in operations. Geist 24/32 page titles, 14/21 body, 12/18 metadata. 32px desktop/16px mobile gutters. Inputs/buttons radius 6, panels 8, dialogs 12; no decorative gradients/glass/neon/heavy shadows. Single primary per task, table/dividers rather than nested cards. Public discovery may use charcoal #202124 backgrounds behind fictional poster artwork; controls keep primary blue identity.\nSeat glyphs square with symbols: available hollow, held by you blue + check, held by others neutral + lock/hatch, sold dark + X. Prices in Vietnamese 1.250.000 ₫, no color-only distinction. Category label and price visible.\nAll screens responsive, 44px touch targets, readable labels, visible focus. Desktop seat map + 340px summary, mobile map + bottom summary. Server confirms holding; expiry is 10 minutes from first seat, extra seats do not reset. All-or-none conflict, list rejected seats. No payment/order/QR/check-in/register/restore-session/release-seat feature in Sprint2. Controls to later sprint may be visibly disabled and labeled unavailable in this demo.\nCreate designed UI screens, no source code changes. Mark discreetly Demo Sprint 2 · dữ liệu giả. Same fictional event Đêm nhạc Tháng Mười, 16/10/2026 19:30, Nhà hát Ánh Dương (địa điểm giả); VIP 1.200.000 ₫, Tiêu chuẩn 650.000 ₫, Ban công 350.000 ₫ across all screens.",
+      "font": "GEIST",
+      "headlineFont": "GEIST",
+      "headlineFontFamily": "Geist",
+      "labelFont": "GEIST",
+      "labelFontFamily": "Geist",
+      "namedColors": {
+        "background": "#faf8ff",
+        "error": "#ba1a1a",
+        "error_container": "#ffdad6",
+        "inverse_on_surface": "#f0f0fa",
+        "inverse_primary": "#b1c5ff",
+        "inverse_surface": "#2e3038",
+        "on_background": "#191b23",
+        "on_error": "#ffffff",
+        "on_error_container": "#93000a",
+        "on_primary": "#ffffff",
+        "on_primary_container": "#d7e0ff",
+        "on_primary_fixed": "#001847",
+        "on_primary_fixed_variant": "#0040a0",
+        "on_secondary": "#ffffff",
+        "on_secondary_container": "#415381",
+        "on_secondary_fixed": "#031944",
+        "on_secondary_fixed_variant": "#344572",
+        "on_surface": "#191b23",
+        "on_surface_variant": "#424654",
+        "on_tertiary": "#ffffff",
+        "on_tertiary_container": "#ffd8c9",
+        "on_tertiary_fixed": "#360f00",
+        "on_tertiary_fixed_variant": "#7d2d00",
+        "outline": "#737785",
+        "outline_variant": "#c3c6d6",
+        "primary": "#0045a9",
+        "primary_container": "#175cd3",
+        "primary_fixed": "#dae2ff",
+        "primary_fixed_dim": "#b1c5ff",
+        "secondary": "#4c5d8b",
+        "secondary_container": "#b6c8fd",
+        "secondary_fixed": "#dae2ff",
+        "secondary_fixed_dim": "#b4c5fa",
+        "surface": "#faf8ff",
+        "surface_bright": "#faf8ff",
+        "surface_container": "#ededf7",
+        "surface_container_high": "#e7e7f2",
+        "surface_container_highest": "#e1e2ec",
+        "surface_container_low": "#f3f3fd",
+        "surface_container_lowest": "#ffffff",
+        "surface_dim": "#d9d9e3",
+        "surface_tint": "#0957ce",
+        "surface_variant": "#e1e2ec",
+        "tertiary": "#853000",
+        "tertiary_container": "#ac4100",
+        "tertiary_fixed": "#ffdbcd",
+        "tertiary_fixed_dim": "#ffb597"
+      },
+      "roundness": "ROUND_EIGHT",
+      "spacingScale": 2
+    },
+    "deviceType": "DESKTOP",
+    "metadata": {
+      "userRole": "OWNER"
+    },
+    "name": "projects/1184317708208520256",
+    "origin": "STITCH",
+    "projectType": "PROJECT_DESIGN",
+    "screenInstances": [
+      {
+        "height": 1024,
+        "id": "00e1f736c6bb4aca894f4728ff92135e",
+        "label": "04 Quản lý suất diễn",
+        "sourceScreen": "projects/1184317708208520256/screens/00e1f736c6bb4aca894f4728ff92135e",
+        "width": 1280,
+        "x": 5376,
+        "y": 2673
+      },
+      {
+        "height": 1024,
+        "id": "0250def27ff14f23bc9e472b16637e72",
+        "label": "09 JSON không hợp lệ — T14",
+        "sourceScreen": "projects/1184317708208520256/screens/0250def27ff14f23bc9e472b16637e72",
+        "width": 1280,
+        "x": 4032,
+        "y": 5775
+      },
+      {
+        "height": 1620,
+        "id": "067ffc23e523451f8a347980081c73e6",
+        "label": "01 Khám phá sự kiện",
+        "sourceScreen": "projects/1184317708208520256/screens/067ffc23e523451f8a347980081c73e6",
+        "width": 1280,
+        "y": 796
+      },
+      {
+        "height": 1316,
+        "id": "0b94ab36f0ae436cae97733764e77ab9",
+        "label": "03 Chọn và giữ ghế",
+        "sourceScreen": "projects/1184317708208520256/screens/0b94ab36f0ae436cae97733764e77ab9",
+        "width": 1280,
+        "x": 2688,
+        "y": 796
+      },
+      {
+        "height": 1309,
+        "id": "1fc6011c53304f4ba8864d70b71ccea1",
+        "label": "M05 Nạp sơ đồ JSON",
+        "sourceScreen": "projects/1184317708208520256/screens/1fc6011c53304f4ba8864d70b71ccea1",
+        "width": 390,
+        "x": 1362,
+        "y": 3953
+      },
+      {
+        "height": 959,
+        "id": "20fc786dd53d4ea4b9bbad8dd29ee5e5",
+        "label": "M06 Đặt giá theo hạng",
+        "sourceScreen": "projects/1184317708208520256/screens/20fc786dd53d4ea4b9bbad8dd29ee5e5",
+        "width": 390,
+        "x": 10316,
+        "y": 2673
+      },
+      {
+        "height": 1094,
+        "id": "349f28c3ac9241efa2dedf6003cbfedd",
+        "label": "M09 JSON không hợp lệ — T14",
+        "sourceScreen": "projects/1184317708208520256/screens/349f28c3ac9241efa2dedf6003cbfedd",
+        "width": 390,
+        "x": 454,
+        "y": 7322
+      },
+      {
+        "height": 970,
+        "id": "4362f9256dd941f590b097ad207e340e",
+        "label": "12 Ghế vừa được người khác giữ — T30",
+        "sourceScreen": "projects/1184317708208520256/screens/4362f9256dd941f590b097ad207e340e",
+        "width": 1280,
+        "x": 9862,
+        "y": 5775
+      },
+      {
+        "height": 1257,
+        "id": "4764acf9388b46f8b26cf3fcb54abafe",
+        "label": "10 Giá chưa hợp lệ — T35",
+        "sourceScreen": "projects/1184317708208520256/screens/4764acf9388b46f8b26cf3fcb54abafe",
+        "width": 1280,
+        "x": 1344,
+        "y": 5775
+      },
+      {
+        "height": 1075,
+        "id": "52811634066d4855beb17a3dfb21740f",
+        "label": "M11 Chọn ghế trước khi giữ — T20/T24",
+        "sourceScreen": "projects/1184317708208520256/screens/52811634066d4855beb17a3dfb21740f",
+        "width": 390,
+        "x": 1362,
+        "y": 7322
+      },
+      {
+        "height": 884,
+        "id": "58028de332754185802595452f0a41b9",
+        "label": "M16 Không tải được sự kiện",
+        "sourceScreen": "projects/1184317708208520256/screens/58028de332754185802595452f0a41b9",
+        "width": 390,
+        "x": 3632,
+        "y": 7322
+      },
+      {
+        "height": 1024,
+        "id": "5ba37d201ee64e25a06d42f4fe839b01",
+        "label": "07 Xem sơ đồ ghế (Read-only)",
+        "sourceScreen": "projects/1184317708208520256/screens/5ba37d201ee64e25a06d42f4fe839b01",
+        "width": 1280,
+        "x": 4032,
+        "y": 2673
+      },
+      {
+        "height": 1063,
+        "id": "5f054a02e26949728d70914f88f5b2da",
+        "label": "08 Đăng nhập để chọn ghế",
+        "sourceScreen": "projects/1184317708208520256/screens/5f054a02e26949728d70914f88f5b2da",
+        "width": 1280,
+        "x": 7174,
+        "y": 5775
+      },
+      {
+        "height": 884,
+        "id": "68eb789cfc394ba4b087518c22d2fbd2",
+        "label": "M15 Không tìm thấy sự kiện",
+        "sourceScreen": "projects/1184317708208520256/screens/68eb789cfc394ba4b087518c22d2fbd2",
+        "width": 390,
+        "x": 3178,
+        "y": 7322
+      },
+      {
+        "height": 1134,
+        "id": "6d416705815141dfaba897aab6a06016",
+        "label": "M14 Danh sách đang tải",
+        "sourceScreen": "projects/1184317708208520256/screens/6d416705815141dfaba897aab6a06016",
+        "width": 390,
+        "x": 2270,
+        "y": 7322
+      },
+      {
+        "height": 1024,
+        "id": "6f8e57d7a84e4723a6f9686db5018ca0",
+        "label": "06 Đặt giá theo hạng",
+        "sourceScreen": "projects/1184317708208520256/screens/6f8e57d7a84e4723a6f9686db5018ca0",
+        "width": 1280,
+        "x": 8972,
+        "y": 2673
+      },
+      {
+        "height": 1003,
+        "id": "70cbb7d303394a5c83e16cb46f19491a",
+        "label": "M10 Giá chưa hợp lệ — T35",
+        "sourceScreen": "projects/1184317708208520256/screens/70cbb7d303394a5c83e16cb46f19491a",
+        "width": 390,
+        "x": 908,
+        "y": 7322
+      },
+      {
+        "height": 1027,
+        "id": "77ecdad3c24549b69584f589105bc3cf",
+        "label": "M03 Chọn và giữ ghế",
+        "sourceScreen": "projects/1184317708208520256/screens/77ecdad3c24549b69584f589105bc3cf",
+        "width": 390,
+        "x": 12568,
+        "y": 2673
+      },
+      {
+        "height": 1024,
+        "id": "87c2f5d77a9b4c159d36c17b41d0a2e9",
+        "label": "06 Đặt giá theo hạng",
+        "sourceScreen": "projects/1184317708208520256/screens/87c2f5d77a9b4c159d36c17b41d0a2e9",
+        "width": 1280,
+        "x": 2688,
+        "y": 2673
+      },
+      {
+        "height": 1586,
+        "id": "8a1b1fb6473340aba5c54604c49d452f",
+        "label": "M01 Khám phá sự kiện",
+        "sourceScreen": "projects/1184317708208520256/screens/8a1b1fb6473340aba5c54604c49d452f",
+        "width": 390,
+        "x": 454,
+        "y": 3953
+      },
+      {
+        "height": 1291,
+        "id": "907bd2951a6141d398c52cc953ca4f86",
+        "label": "13 Hết thời gian giữ — T24/T28",
+        "sourceScreen": "projects/1184317708208520256/screens/907bd2951a6141d398c52cc953ca4f86",
+        "width": 1280,
+        "x": 11206,
+        "y": 5775
+      },
+      {
+        "height": 1028,
+        "id": "922cda99ddc24deb986d255ce1752e28",
+        "label": "M07 Xem sơ đồ ghế",
+        "sourceScreen": "projects/1184317708208520256/screens/922cda99ddc24deb986d255ce1752e28",
+        "width": 390,
+        "x": 12114,
+        "y": 2673
+      },
+      {
+        "height": 1024,
+        "id": "93529f35a3e9497eb855b0050d8cc61b",
+        "label": "05 Nạp sơ đồ JSON",
+        "sourceScreen": "projects/1184317708208520256/screens/93529f35a3e9497eb855b0050d8cc61b",
+        "width": 1280,
+        "x": 1344,
+        "y": 2673
+      },
+      {
+        "height": 1063,
+        "id": "989007f1d70b45e59858a025b7f05c68",
+        "label": "08 Đăng nhập để chọn ghế",
+        "sourceScreen": "projects/1184317708208520256/screens/989007f1d70b45e59858a025b7f05c68",
+        "width": 1280,
+        "y": 5775
+      },
+      {
+        "height": 1024,
+        "id": "9b294786f6ba4aabb770caef00d59377",
+        "label": "07 Xem sơ đồ ghế (Read-only)",
+        "sourceScreen": "projects/1184317708208520256/screens/9b294786f6ba4aabb770caef00d59377",
+        "width": 1280,
+        "x": 10770,
+        "y": 2673
+      },
+      {
+        "height": 1286,
+        "id": "9d48b1c78831459d99a5d269466d2e76",
+        "label": "M06 Đặt giá theo hạng",
+        "sourceScreen": "projects/1184317708208520256/screens/9d48b1c78831459d99a5d269466d2e76",
+        "width": 390,
+        "x": 2270,
+        "y": 3953
+      },
+      {
+        "height": 1024,
+        "id": "a72542cf8a234688bd3bb812e0f4ec64",
+        "label": "09 JSON không hợp lệ — T14",
+        "sourceScreen": "projects/1184317708208520256/screens/a72542cf8a234688bd3bb812e0f4ec64",
+        "width": 1280,
+        "x": 2688,
+        "y": 5775
+      },
+      {
+        "height": 1118,
+        "id": "ace8a0b9fe7e454e910c70806cfcba9a",
+        "label": "M04 Quản lý suất diễn",
+        "sourceScreen": "projects/1184317708208520256/screens/ace8a0b9fe7e454e910c70806cfcba9a",
+        "width": 390,
+        "x": 8064,
+        "y": 2673
+      },
+      {
+        "height": 540,
+        "id": "assets_11368154981114117566",
+        "sourceAsset": "assets/11368154981114117566",
+        "type": "DESIGN_SYSTEM_INSTANCE",
+        "width": 960
+      },
+      {
+        "height": 884,
+        "id": "b03b8e50691045b8a10a003180aeaa25",
+        "label": "M12 Ghế vừa được người khác giữ — T30",
+        "sourceScreen": "projects/1184317708208520256/screens/b03b8e50691045b8a10a003180aeaa25",
+        "width": 390,
+        "x": 1816,
+        "y": 7322
+      },
+      {
+        "height": 1182,
+        "id": "b0511488600840a4b76f7a00d189e3b0",
+        "label": "M03 Chọn và giữ ghế",
+        "sourceScreen": "projects/1184317708208520256/screens/b0511488600840a4b76f7a00d189e3b0",
+        "width": 390,
+        "x": 908,
+        "y": 3953
+      },
+      {
+        "height": 1024,
+        "id": "b7037f5d9e6d4ea9b7dc408f29a7145f",
+        "label": "04 Quản lý suất diễn",
+        "sourceScreen": "projects/1184317708208520256/screens/b7037f5d9e6d4ea9b7dc408f29a7145f",
+        "width": 1280,
+        "y": 2673
+      },
+      {
+        "height": 1180,
+        "id": "bd9a6672cc0c44ad8a1d646526d12dc0",
+        "label": "M13 Hết thời gian giữ — T24/T28",
+        "sourceScreen": "projects/1184317708208520256/screens/bd9a6672cc0c44ad8a1d646526d12dc0",
+        "width": 390,
+        "x": 2724,
+        "y": 7322
+      },
+      {
+        "height": 1568,
+        "id": "c09c09ec5b9944bb98a7dba1a9ce29b5",
+        "label": "M02 Chi tiết suất diễn",
+        "sourceScreen": "projects/1184317708208520256/screens/c09c09ec5b9944bb98a7dba1a9ce29b5",
+        "width": 390,
+        "y": 3953
+      },
+      {
+        "height": 1089,
+        "id": "c8e82fa54a344a2fad66d66d6c9985bf",
+        "label": "10 Giá chưa hợp lệ — T35",
+        "sourceScreen": "projects/1184317708208520256/screens/c8e82fa54a344a2fad66d66d6c9985bf",
+        "width": 1280,
+        "x": 5376,
+        "y": 5775
+      },
+      {
+        "height": 1414,
+        "id": "d361e8055a034b32921745734f96658e",
+        "label": "M07 Xem sơ đồ ghế",
+        "sourceScreen": "projects/1184317708208520256/screens/d361e8055a034b32921745734f96658e",
+        "width": 390,
+        "x": 2724,
+        "y": 3953
+      },
+      {
+        "height": 1168,
+        "id": "dba783fc4ece44e2948c0ba46034960d",
+        "label": "M05 Nạp sơ đồ JSON",
+        "sourceScreen": "projects/1184317708208520256/screens/dba783fc4ece44e2948c0ba46034960d",
+        "width": 390,
+        "x": 8518,
+        "y": 2673
+      },
+      {
+        "height": 1705,
+        "id": "e44ee9ca7e104e9caa80e894f2bdcdfd",
+        "label": "02 Chi tiết suất diễn",
+        "sourceScreen": "projects/1184317708208520256/screens/e44ee9ca7e104e9caa80e894f2bdcdfd",
+        "width": 1280,
+        "x": 1344,
+        "y": 796
+      },
+      {
+        "height": 1024,
+        "id": "e8fd30e083654772a91ce72289e51a7a",
+        "label": "05 Nạp sơ đồ JSON",
+        "sourceScreen": "projects/1184317708208520256/screens/e8fd30e083654772a91ce72289e51a7a",
+        "width": 1280,
+        "x": 6720,
+        "y": 2673
+      },
+      {
+        "height": 1135,
+        "id": "f165167c08454f238a9902c085879e0e",
+        "label": "11 Chọn ghế trước khi giữ — T20/T24",
+        "sourceScreen": "projects/1184317708208520256/screens/f165167c08454f238a9902c085879e0e",
+        "width": 1280,
+        "x": 8518,
+        "y": 5775
+      },
+      {
+        "height": 884,
+        "id": "fa4f08ad2ccc4ebaa18d0ee4d1019a89",
+        "label": "M08 Đăng nhập để chọn ghế",
+        "sourceScreen": "projects/1184317708208520256/screens/fa4f08ad2ccc4ebaa18d0ee4d1019a89",
+        "width": 390,
+        "y": 7322
+      },
+      {
+        "height": 1197,
+        "id": "fc17da850a404552be43970014418499",
+        "label": "03 Chọn và giữ ghế",
+        "sourceScreen": "projects/1184317708208520256/screens/fc17da850a404552be43970014418499",
+        "width": 1280,
+        "x": 13022,
+        "y": 2673
+      },
+      {
+        "height": 1372,
+        "id": "fd494f22ffa34f38a402bc2e3bf4cdb1",
+        "label": "M02 Chi tiết suất diễn",
+        "sourceScreen": "projects/1184317708208520256/screens/fd494f22ffa34f38a402bc2e3bf4cdb1",
+        "width": 390,
+        "x": 6720,
+        "y": 5775
+      },
+      {
+        "height": 1246,
+        "id": "fe6160af1784450c884f0afd257f7096",
+        "label": "M04 Quản lý suất diễn",
+        "sourceScreen": "projects/1184317708208520256/screens/fe6160af1784450c884f0afd257f7096",
+        "width": 390,
+        "x": 1816,
+        "y": 3953
+      }
+    ],
+    "thumbnailScreenshot": {
+      "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1VkwusOlqlovUGdMy-pDaaLJJMG-Pmo2qnadpWR_Q2m6Ji2x3UQK8JM6eZ4oGoLmJ21S4eMqwl5jhPk1u0_ZE--3EnP7d-1RN907isf4yesp2n64pOIvEtBjNnnpAIa4CO01XuVZJGUt5NxNs8U0FWmQ4rqDymuz5Lo7qAb7A28P8nI-lVxYNKVHoKfby60RWxuvHx-5SAoHOeCPNVEYMvxPSdeTUcM3LV0VRVXlxiCJRu0REDtDm809a4",
+      "name": "projects/1184317708208520256/files/4d09ea8c3a7549b2a6f2c67871009fc3"
+    },
+    "title": "Nguyễn Văn Sáng — Demo Sprint 2 · Vé sự kiện",
+    "updateTime": "2026-10-04T12:38:11.779357Z",
+    "visibility": "PUBLIC"
+  },
+  "screens": {
+    "00e1f736c6bb4aca894f4728ff92135e": {
+      "deviceType": "DESKTOP",
+      "height": "2048",
+      "htmlCode": {
+        "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzAwMDY1Y2ZlY2JhMzhmOGMwNmYxYzMzZDIzMGFjNjU5EgsSBxDiitOqrQoYAZIBIwoKcHJvamVjdF9pZBIVQhMxMTg0MzE3NzA4MjA4NTIwMjU2&filename=&opi=89354086",
+        "mimeType": "text/html",
+        "name": "projects/1184317708208520256/files/13916774275260403173"
+      },
+      "name": "projects/1184317708208520256/screens/00e1f736c6bb4aca894f4728ff92135e",
+      "screenshot": {
+        "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1VFOchIp-Z0V6AABxoDOG2CPEFLdpag_C3CMHqAbvvpM8viHikaBY8pR-9nt25JLqFvC4TJWH2T_yHGUpOC_d5lMTn-18i7_QmO2E_7kcVknMEhbAT6ODLrcmUvGgIef8nodc5uJ1GPgEPoPvP0D3pgINnj2hKkGcIroQQEdysVLhi7OnPF3gOq9AfxS_B885s-o-dcnfYqOx02CRO59yRD0jsK6ABWpXEYvCxCjeMCM5uhHK_bbRLHOw",
+        "name": "projects/1184317708208520256/files/883aeabb66bd488ea9be439e8ec9c1e1"
+      },
+      "title": "04 Quản lý suất diễn",
+      "width": "2560"
+    },
+    "ace8a0b9fe7e454e910c70806cfcba9a": {
+      "deviceType": "MOBILE",
+      "height": "2170",
+      "htmlCode": {
+        "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzAwMDY1Y2ZlY2M0MmJhYmUwNzNhZjFiYWY1MDU5Y2U2EgsSBxDiitOqrQoYAZIBIwoKcHJvamVjdF9pZBIVQhMxMTg0MzE3NzA4MjA4NTIwMjU2&filename=&opi=89354086",
+        "mimeType": "text/html",
+        "name": "projects/1184317708208520256/files/9960320258141239645"
+      },
+      "name": "projects/1184317708208520256/screens/ace8a0b9fe7e454e910c70806cfcba9a",
+      "screenshot": {
+        "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1V7cWMjpwphultcwefyFXb7RPT7cuNrH5blk_vwAhC8heJBmjfY8NQC9JnGBkjnVWvOP4c5SO1CE2-35TzfPq0SMGvsIg6Bq8VuejZh8QHl_j3c2ULgfSRapoFQxqOyx0T4SetqtKVbT7QJPU4GDqLwOsS5hf1NtzQhYVsMG2AHWq9AbeGO0TyT_QvT8WSLa9NB2RWZ7HmYig_AtRB5bHBUsJOKSXXMt2f7ehjhLGfWVNHulvgibCNaBJI",
+        "name": "projects/1184317708208520256/files/5f8278bb98014d30a72a6c49d2a48ecd"
+      },
+      "title": "M04 Quản lý suất diễn",
+      "width": "780"
+    },
+    "6f8e57d7a84e4723a6f9686db5018ca0": {
+      "deviceType": "DESKTOP",
+      "height": "2048",
+      "htmlCode": {
+        "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzAwMDY1Y2ZlYzlkMjA5NmIwNzllNmU5OTUyMzEwMjBjEgsSBxDiitOqrQoYAZIBIwoKcHJvamVjdF9pZBIVQhMxMTg0MzE3NzA4MjA4NTIwMjU2&filename=&opi=89354086",
+        "mimeType": "text/html",
+        "name": "projects/1184317708208520256/files/3343496024527360091"
+      },
+      "name": "projects/1184317708208520256/screens/6f8e57d7a84e4723a6f9686db5018ca0",
+      "screenshot": {
+        "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1XCsLLRux1uGg_1vt9kqgtLVl5FgYpNMsmUzrIlaedETyFJE5Qgf282Rf3SQt8DxMWRXrmeLVoz0_RYhjD4dAZP7Z0Bn1qPsgjSN4vOfHfBrPYjlB74elI75XWRrHOKcXILD3lfC9XnJRHe1_YKAKMXqQd9KeWxWqL4RRTIKaZqi0BeU3IodEqVahy76E5bJD3DQykY5EVrc4sNhVf2d_pBHrMEYy2j2TDe_YeVuiavhON5kZxWO2xFVA",
+        "name": "projects/1184317708208520256/files/6d7fcf7d1f984859bc387a24ddae0320"
+      },
+      "title": "06 Đặt giá theo hạng",
+      "width": "2560"
+    },
+    "067ffc23e523451f8a347980081c73e6": {
+      "deviceType": "DESKTOP",
+      "height": "3242",
+      "htmlCode": {
+        "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzAwMDY1Y2ZlY2IxOTk2NTUwNTNiNTEwMGY5MWVmOWU2EgsSBxDiitOqrQoYAZIBIwoKcHJvamVjdF9pZBIVQhMxMTg0MzE3NzA4MjA4NTIwMjU2&filename=&opi=89354086",
+        "mimeType": "text/html",
+        "name": "projects/1184317708208520256/files/10374099440585049555"
+      },
+      "name": "projects/1184317708208520256/screens/067ffc23e523451f8a347980081c73e6",
+      "screenshot": {
+        "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1VBrVR86Q54iWYlAmcxlZYbGbCSIspYyc8iEmwePxgIYat6gfaII88i2TLYauHhNBOvouyO-7vqVaO0c3Gaf_TIoc0uoyLFOz2_837mRR9A3CqEd7S-1dYfy-tQXZ_5KdGa3jaxhXrJtjqb5y8RdybbnTcWb7T_AIXrUtb7B8AesLZiw1zfV9VrGhRVInufr5hcTAfk9Q6jfF9fKsdFNAkSs-ZpRrsNaUIJtP-kj4igp7ZsOrQe-KK_LQ",
+        "name": "projects/1184317708208520256/files/5803dcf8a855401d8d16c5c7b350facf"
+      },
+      "title": "01 Khám phá sự kiện",
+      "width": "2560"
+    }
+  },
+  "lastSyncTime": "2026-10-04T16:19:00.749Z"
+}
