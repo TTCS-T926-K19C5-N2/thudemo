@@ -383,12 +383,14 @@ export class HoldsService {
   async cleanupBatch(candidates: ExpiredClaim[], now: Date = new Date()): Promise<number> {
     if (!candidates.length) return 0;
     let deletedCount = 0;
-    const candidateSeatIds = candidates.map((c) => c.seatId);
+    const pairs = candidates.map(
+      (c) => Prisma.sql`(h."seatId" = ${c.seatId}::uuid AND h.token = ${c.token}::uuid)`,
+    );
 
     try {
       deletedCount = await this.db.$executeRaw(
         Prisma.sql`DELETE FROM seat_holds h
-        WHERE h."seatId" IN (${Prisma.join(candidateSeatIds.map((id) => Prisma.sql`${id}::uuid`))})
+        WHERE (${Prisma.join(pairs, ' OR ')})
           AND (h."expiresAt" <= clock_timestamp() OR h."expiresAt" <= NOW() OR h."expiresAt" <= ${now})`,
       );
     } catch {
@@ -398,23 +400,14 @@ export class HoldsService {
     // Robust fallback using Prisma deleteMany if raw SQL didn't delete the candidate records
     if (deletedCount === 0 && this.db.seatHold?.deleteMany) {
       try {
+        const deleteConditions = candidates.map((c) => ({
+          seatId: c.seatId,
+          token: c.token,
+          expiresAt: { lte: now },
+        }));
         const res = await this.db.seatHold.deleteMany({
           where: {
-            seatId: { in: candidateSeatIds },
-            expiresAt: { lte: now },
-          },
-        });
-        deletedCount = res.count;
-      } catch {
-        // Fallback error ignored
-      }
-    }
-
-    if (deletedCount === 0 && this.db.seatHold?.deleteMany) {
-      try {
-        const res = await this.db.seatHold.deleteMany({
-          where: {
-            seatId: { in: candidateSeatIds },
+            OR: deleteConditions,
           },
         });
         deletedCount = res.count;
