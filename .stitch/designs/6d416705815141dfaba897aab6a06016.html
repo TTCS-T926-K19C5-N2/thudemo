@@ -1,0 +1,317 @@
+<!DOCTYPE html><html class="light" lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Khám phá sự kiện - Vé Sự Kiện (Demo Sprint 2)</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-container": "#d7e0ff",
+            "surface-container": "#ededf7",
+            "on-secondary-container": "#415381",
+            "on-primary-fixed": "#001847",
+            "secondary": "#4c5d8b",
+            "inverse-on-surface": "#f0f0fa",
+            "tertiary": "#853000",
+            "surface-bright": "#faf8ff",
+            "surface-container-lowest": "#ffffff",
+            "on-surface-variant": "#424654",
+            "on-error": "#ffffff",
+            "background": "#faf8ff",
+            "surface-dim": "#d9d9e3",
+            "surface-container-low": "#f3f3fd",
+            "surface-container-highest": "#e1e2ec",
+            "on-secondary-fixed-variant": "#344572",
+            "surface-container-high": "#e7e7f2",
+            "primary-fixed-dim": "#b1c5ff",
+            "on-tertiary-fixed": "#360f00",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "inverse-primary": "#b1c5ff",
+            "on-primary": "#ffffff",
+            "on-surface": "#191b23",
+            "secondary-container": "#b6c8fd",
+            "error": "#ba1a1a",
+            "surface": "#faf8ff",
+            "outline": "#737785",
+            "on-tertiary-container": "#ffd8c9",
+            "outline-variant": "#c3c6d6",
+            "surface-tint": "#0957ce",
+            "on-secondary": "#ffffff",
+            "on-background": "#191b23",
+            "secondary-fixed-dim": "#b4c5fa",
+            "on-secondary-fixed": "#031944",
+            "inverse-surface": "#2e3038",
+            "primary-fixed": "#dae2ff",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-error-container": "#93000a",
+            "secondary-fixed": "#dae2ff",
+            "tertiary-fixed-dim": "#ffb597",
+            "tertiary-fixed": "#ffdbcd",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "tertiary-container": "#ac4100",
+            "primary": "#0045a9",
+            "surface-variant": "#e1e2ec",
+            "primary-container": "#175cd3"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+    }
+    /* Clean, soft skeleton pulsing */
+    @keyframes subtlePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+    .skeleton-pulse {
+      animation: subtlePulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body antialiased min-h-screen flex justify-center">
+<!-- Mobile Container (Max 390px Viewport) -->
+<div class="w-full max-w-[390px] min-h-screen bg-surface-container-lowest flex flex-col relative shadow-sm border-x border-outline-variant">
+<!-- Top App Bar (Shared Components standard) -->
+<header class="bg-surface docked full-width top-0 sticky z-40 flex items-center justify-between px-4 h-14 w-full">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="confirmation_number">confirmation_number</span>
+<span class="font-headline text-base font-bold text-primary tracking-tight">Vé Sự Kiện</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-label text-xs">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+<span class="font-medium text-primary">TP. HCM</span>
+</div>
+</header>
+<!-- Search & Filters Container (Active State while Query is Searching/Loading) -->
+<section class="px-4 pt-3 pb-3 bg-surface border-b border-outline-variant">
+<!-- Search Input with preserved user query 'Đêm nhạc' -->
+<div class="relative flex items-center w-full mb-3">
+<span class="material-symbols-outlined absolute left-3 text-outline pointer-events-none text-xl" data-icon="search">search</span>
+<input aria-label="Tìm kiếm sự kiện" class="w-full h-10 pl-9 pr-9 bg-surface-container text-on-surface font-body text-sm rounded-[6px] border border-outline-variant focus:outline-none focus:ring-1 focus:ring-primary select-none cursor-default font-medium" readonly="" type="text" value="Đêm nhạc">
+<button aria-label="Xóa nội dung tìm kiếm" class="absolute right-2.5 w-5 h-5 rounded-full flex items-center justify-center text-outline hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-base" data-icon="cancel">cancel</span>
+</button>
+</div>
+<!-- Category Filter Chips -->
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
+<button class="px-3 py-1.5 rounded-[6px] text-xs font-label font-medium bg-primary text-on-primary whitespace-nowrap shadow-none" type="button">
+          Tất cả
+        </button>
+<button class="px-3 py-1.5 rounded-[6px] text-xs font-label font-medium bg-surface-container-low text-on-surface-variant border border-outline-variant whitespace-nowrap hover:bg-surface-container transition-colors" type="button">
+          Ca nhạc
+        </button>
+<button class="px-3 py-1.5 rounded-[6px] text-xs font-label font-medium bg-surface-container-low text-on-surface-variant border border-outline-variant whitespace-nowrap hover:bg-surface-container transition-colors" type="button">
+          Kịch &amp; Nghệ thuật
+        </button>
+<button class="px-3 py-1.5 rounded-[6px] text-xs font-label font-medium bg-surface-container-low text-on-surface-variant border border-outline-variant whitespace-nowrap hover:bg-surface-container transition-colors" type="button">
+          Hội thảo
+        </button>
+</div>
+</section>
+<!-- Meta Status Indicator: Discreet sprint marker and loading hint -->
+<div class="px-4 py-2 bg-surface-container-low border-b border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary skeleton-pulse"></span>
+<span class="font-label text-[11px] font-medium text-outline">Đang tải danh sách sự kiện...</span>
+</div>
+<span class="font-label text-[11px] text-on-surface-variant/70 tracking-tight">Demo Sprint 2 · dữ liệu giả</span>
+</div>
+<!-- Main Content: Skeleton List (Strictly Skeleton Blocks, NO Circular Spinners) -->
+<main class="flex-1 px-4 py-3 space-y-3">
+<!-- Skeleton Item 1 (Matching exact M01 event card geometry: left poster, right title/date/location/price) -->
+<article aria-hidden="true" class="p-3 bg-surface-container-lowest rounded-[8px] border border-outline-variant flex gap-3 shadow-none skeleton-pulse">
+<!-- Square Poster Skeleton with subtle rounded corners -->
+<div class="w-24 h-28 rounded-[6px] bg-surface-container-highest flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant/60 text-2xl" data-icon="image">image</span>
+</div>
+<!-- Right Details Content Skeleton -->
+<div class="flex-1 flex flex-col justify-between py-0.5">
+<div class="space-y-2">
+<!-- Event Title placeholder -->
+<div class="h-4 bg-surface-container-highest rounded-[4px] w-11/12"></div>
+<!-- Subtitle / Artist placeholder -->
+<div class="h-3 bg-surface-container rounded-[4px] w-2/3"></div>
+<!-- Date & Time placeholder -->
+<div class="flex items-center gap-1 pt-1">
+<div class="w-3.5 h-3.5 rounded bg-surface-container"></div>
+<div class="h-2.5 bg-surface-container rounded-[4px] w-28"></div>
+</div>
+<!-- Venue placeholder -->
+<div class="flex items-center gap-1">
+<div class="w-3.5 h-3.5 rounded bg-surface-container"></div>
+<div class="h-2.5 bg-surface-container rounded-[4px] w-32"></div>
+</div>
+</div>
+<!-- Price Range & Action Pill Skeleton -->
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/50 mt-1">
+<div class="h-3.5 bg-surface-container-highest rounded-[4px] w-20"></div>
+<div class="h-7 w-20 bg-surface-container-highest rounded-[6px]"></div>
+</div>
+</div>
+</article>
+<!-- Skeleton Item 2 -->
+<article aria-hidden="true" class="p-3 bg-surface-container-lowest rounded-[8px] border border-outline-variant flex gap-3 shadow-none skeleton-pulse" style="animation-delay: 150ms;">
+<div class="w-24 h-28 rounded-[6px] bg-surface-container-highest flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant/60 text-2xl" data-icon="image">image</span>
+</div>
+<div class="flex-1 flex flex-col justify-between py-0.5">
+<div class="space-y-2">
+<div class="h-4 bg-surface-container-highest rounded-[4px] w-10/12"></div>
+<div class="h-3 bg-surface-container rounded-[4px] w-1/2"></div>
+<div class="flex items-center gap-1 pt-1">
+<div class="w-3.5 h-3.5 rounded bg-surface-container"></div>
+<div class="h-2.5 bg-surface-container rounded-[4px] w-24"></div>
+</div>
+<div class="flex items-center gap-1">
+<div class="w-3.5 h-3.5 rounded bg-surface-container"></div>
+<div class="h-2.5 bg-surface-container rounded-[4px] w-36"></div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/50 mt-1">
+<div class="h-3.5 bg-surface-container-highest rounded-[4px] w-24"></div>
+<div class="h-7 w-20 bg-surface-container-highest rounded-[6px]"></div>
+</div>
+</div>
+</article>
+<!-- Skeleton Item 3 -->
+<article aria-hidden="true" class="p-3 bg-surface-container-lowest rounded-[8px] border border-outline-variant flex gap-3 shadow-none skeleton-pulse" style="animation-delay: 300ms;">
+<div class="w-24 h-28 rounded-[6px] bg-surface-container-highest flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant/60 text-2xl" data-icon="image">image</span>
+</div>
+<div class="flex-1 flex flex-col justify-between py-0.5">
+<div class="space-y-2">
+<div class="h-4 bg-surface-container-highest rounded-[4px] w-3/4"></div>
+<div class="h-3 bg-surface-container rounded-[4px] w-3/5"></div>
+<div class="flex items-center gap-1 pt-1">
+<div class="w-3.5 h-3.5 rounded bg-surface-container"></div>
+<div class="h-2.5 bg-surface-container rounded-[4px] w-28"></div>
+</div>
+<div class="flex items-center gap-1">
+<div class="w-3.5 h-3.5 rounded bg-surface-container"></div>
+<div class="h-2.5 bg-surface-container rounded-[4px] w-28"></div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/50 mt-1">
+<div class="h-3.5 bg-surface-container-highest rounded-[4px] w-16"></div>
+<div class="h-7 w-20 bg-surface-container-highest rounded-[6px]"></div>
+</div>
+</div>
+</article>
+<!-- Skeleton Item 4 -->
+<article aria-hidden="true" class="p-3 bg-surface-container-lowest rounded-[8px] border border-outline-variant flex gap-3 shadow-none skeleton-pulse" style="animation-delay: 450ms;">
+<div class="w-24 h-28 rounded-[6px] bg-surface-container-highest flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant/60 text-2xl" data-icon="image">image</span>
+</div>
+<div class="flex-1 flex flex-col justify-between py-0.5">
+<div class="space-y-2">
+<div class="h-4 bg-surface-container-highest rounded-[4px] w-5/6"></div>
+<div class="h-3 bg-surface-container rounded-[4px] w-2/4"></div>
+<div class="flex items-center gap-1 pt-1">
+<div class="w-3.5 h-3.5 rounded bg-surface-container"></div>
+<div class="h-2.5 bg-surface-container rounded-[4px] w-32"></div>
+</div>
+<div class="flex items-center gap-1">
+<div class="w-3.5 h-3.5 rounded bg-surface-container"></div>
+<div class="h-2.5 bg-surface-container rounded-[4px] w-24"></div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/50 mt-1">
+<div class="h-3.5 bg-surface-container-highest rounded-[4px] w-20"></div>
+<div class="h-7 w-20 bg-surface-container-highest rounded-[6px]"></div>
+</div>
+</div>
+</article>
+<!-- Disabled Pagination Bar (As requested) -->
+<nav aria-label="Phân trang danh sách sự kiện" class="pt-2 pb-4 flex items-center justify-between opacity-50 pointer-events-none select-none">
+<button class="h-9 px-3 rounded-[6px] border border-outline-variant bg-surface text-on-surface-variant font-label text-xs font-medium flex items-center gap-1 cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span>
+<span>Trước</span>
+</button>
+<div class="flex items-center gap-1">
+<span class="w-8 h-8 rounded-[6px] bg-surface-container-highest text-on-surface-variant font-label text-xs font-medium flex items-center justify-center">1</span>
+<span class="w-8 h-8 rounded-[6px] text-outline font-label text-xs font-medium flex items-center justify-center">2</span>
+<span class="w-8 h-8 rounded-[6px] text-outline font-label text-xs font-medium flex items-center justify-center">...</span>
+<span class="w-8 h-8 rounded-[6px] text-outline font-label text-xs font-medium flex items-center justify-center">8</span>
+</div>
+<button class="h-9 px-3 rounded-[6px] border border-outline-variant bg-surface text-on-surface-variant font-label text-xs font-medium flex items-center gap-1 cursor-not-allowed" disabled="">
+<span>Sau</span>
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</nav>
+</main>
+<!-- Footer Component from Shared Components JSON -->
+<footer class="flex flex-col items-center justify-center py-6 px-4 mb-16 space-y-2 w-full text-center bg-surface-container-low border-t border-outline-variant">
+<div class="font-headline text-xs font-semibold text-on-surface-variant">
+        Demo Sprint 2 · dữ liệu giả
+      </div>
+<div class="flex items-center justify-center space-x-3 font-body text-xs text-on-surface-variant leading-relaxed">
+<span class="text-on-surface-variant">Điều khoản</span>
+<span class="text-outline-variant">·</span>
+<span class="text-on-surface-variant">Bảo mật</span>
+<span class="text-outline-variant">·</span>
+<span class="text-on-surface-variant">Hỗ trợ kỹ thuật</span>
+</div>
+<p class="font-body text-[11px] text-outline">
+        Hệ thống mẫu phục vụ thử nghiệm nội bộ quy trình giữ chỗ sự kiện.
+      </p>
+</footer>
+<!-- Bottom Navigation Bar from Shared Components JSON (Top destination "Sự kiện" active) -->
+<nav aria-label="Điều hướng chính" class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-2 bg-surface border-t border-outline-variant pb-safe max-w-[390px] mx-auto right-0">
+<!-- Destination 1: Sự kiện (ACTIVE) -->
+<a class="flex flex-col items-center justify-center text-primary font-medium py-1 transition-transform duration-100 active:scale-95 flex-1" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="explore" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="font-label text-xs font-semibold mt-0.5">Sự kiện</span>
+</a>
+<!-- Destination 2: Sơ đồ vé -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1 hover:text-primary transition-transform duration-100 active:scale-95 flex-1" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="event_seat">event_seat</span>
+<span class="font-label text-xs font-medium mt-0.5">Sơ đồ vé</span>
+</a>
+<!-- Destination 3: Vé của tôi -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1 hover:text-primary transition-transform duration-100 active:scale-95 flex-1" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="confirmation_number">confirmation_number</span>
+<span class="font-label text-xs font-medium mt-0.5">Vé của tôi</span>
+</a>
+<!-- Destination 4: Quản trị -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant py-1 hover:text-primary transition-transform duration-100 active:scale-95 flex-1" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span class="font-label text-xs font-medium mt-0.5">Quản trị</span>
+</a>
+</nav>
+</div>
+</body></html>

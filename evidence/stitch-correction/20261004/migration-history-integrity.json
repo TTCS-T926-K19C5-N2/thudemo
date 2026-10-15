@@ -1,0 +1,34 @@
+[
+  {
+    "name": "202609290001_t01_probe_apply",
+    "repositoryMatchesAppliedChecksum": true
+  },
+  {
+    "name": "202609290002_t01_probe_compensate",
+    "repositoryMatchesAppliedChecksum": true
+  },
+  {
+    "name": "202609290003_t01_probe_reapply",
+    "repositoryMatchesAppliedChecksum": true
+  },
+  {
+    "name": "202610010001_t04_users_roles",
+    "repositoryMatchesAppliedChecksum": true
+  },
+  {
+    "name": "202610010002_t09_events_showtimes",
+    "repositoryMatchesAppliedChecksum": true
+  },
+  {
+    "name": "202610010003_t05_sessions",
+    "repositoryMatchesAppliedChecksum": true
+  },
+  {
+    "name": "202610040001_sprint2_seats",
+    "repositoryMatchesAppliedChecksum": true
+  },
+  {
+    "name": "202610040004_event_presentation",
+    "repositoryMatchesAppliedChecksum": true
+  }
+]

@@ -1,0 +1,47 @@
+{
+  "status": "PASS_TECHNICAL_WITH_DEVICE_AND_DEPENDENCY_BLOCKER",
+  "applicationRevision": "5cd1e2dc03293cb191ac6a0eec7f8ee3fe15ed96",
+  "ciEvidenceSha": "8e6374d45574ab06ed08e1d81619aa0030401526",
+  "ciEvidenceRun": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/37909249448",
+  "format": "PASS changed source/docs/workflow",
+  "lint": "PASS; four inherited warnings",
+  "typecheck": "PASS",
+  "build": "PASS API/web",
+  "unit": {
+    "api": 178,
+    "web": 50,
+    "status": "PASS local candidate matching application revision"
+  },
+  "fullIntegration": {
+    "tests": 84,
+    "status": "PASS",
+    "database": "task-owned private sprint2_integration port15432"
+  },
+  "http": {
+    "checks": 46,
+    "races": 50,
+    "instances": 2,
+    "status": "PASS local and CI signed QR"
+  },
+  "browser": {
+    "checks": 27,
+    "status": "PASS CI",
+    "camera": false,
+    "staging": false
+  },
+  "wip": {
+    "files": 1881,
+    "changed": 0,
+    "missing": 0,
+    "statusEqual": true
+  },
+  "signedQr": "PASS NORMAL and EXCEPTION; no UUID bypass; rotation and restart",
+  "poOverride": "Explicit staff/showtime/gate capability; default false; approved decision preserved",
+  "rollback": "PASS populated compensation guard / transaction fault injection; empty compensation/reapply not run",
+  "realDeviceCamera": "NOT RUN",
+  "outdoorReadability": "NOT RUN",
+  "staging": "NOT RUN",
+  "dependencyMerged": false,
+  "merged": false,
+  "deployed": false
+}

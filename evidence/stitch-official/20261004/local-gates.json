@@ -1,0 +1,22 @@
+[
+  {
+    "command": "pnpm lint",
+    "exitCode": 0,
+    "seconds": 8.8533992
+  },
+  {
+    "command": "pnpm typecheck",
+    "exitCode": 0,
+    "seconds": 8.3728058
+  },
+  {
+    "command": "pnpm test",
+    "exitCode": 0,
+    "seconds": 5.1208483
+  },
+  {
+    "command": "pnpm build",
+    "exitCode": 0,
+    "seconds": 11.7584405
+  }
+]
