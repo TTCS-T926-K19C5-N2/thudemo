@@ -29,7 +29,7 @@ function TicketQr({ payload, label }: { payload: string; label: string }) {
       type: "svg",
       errorCorrectionLevel: "M",
       margin: 2,
-    }).then((svg) => {
+    }).then((svg: string) => {
       if (!cancelled)
         setSrc(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`);
     });
