@@ -16,6 +16,7 @@ import { OrdersModule } from './orders/orders.module.js';
 import { PaymentsModule } from './payments/payments.module.js';
 import { MonitoringModule } from './monitoring/monitoring.module.js';
 import { CheckInModuleS29 } from './check-in/check-in-s29.module.js';
+import { TicketsModule } from './tickets/tickets.module.js';
 import { WebhookSecurityFilter } from './payments/webhook-security.filter.js';
 import { ScannerModule } from './scanner/scanner.module.js';
 
@@ -40,6 +41,7 @@ import { ScannerModule } from './scanner/scanner.module.js';
     PaymentsModule,
     MonitoringModule,
     CheckInModuleS29,
+    TicketsModule,
     ScannerModule,
     SeatHoldModule,
   ],

@@ -503,6 +503,8 @@ try {
       eventId,
       status: 'ON_SALE',
       startTime: new Date(Date.now() + 86400000),
+      // S-43 benchmark accumulates many 1-seat holds per user; not an S-42 test.
+      maxTicketsPerUser: null,
     },
   });
   showId = show.id;
