@@ -125,7 +125,13 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     if (!eventId) throw Error('Fixture setup did not complete');
     showId = (
       await db.showtime.create({
-        data: { eventId, startTime: new Date(Date.now() + 86400000) },
+        // Bulk-hold acceptance proves the routine, not S-42 limits (covered by
+        // holds.service.spec.ts); opt out of the default 4-ticket limit here.
+        data: {
+          eventId,
+          startTime: new Date(Date.now() + 86400000),
+          maxTicketsPerUser: null,
+        },
       })
     ).id;
     const names = ['VIP', 'Tiêu chuẩn', 'Ban công'];
