@@ -536,9 +536,16 @@ async function deploy() {
   ensureNetwork();
   const releaseRoot = resolve(dir, "releases", sha);
   mkdirSync(releaseRoot, { recursive: true });
-  const source = resolve(releaseRoot, "source");
+  // Keep Windows pnpm patch paths below MAX_PATH; provenance uses the full SHA.
+  const source = resolve(dir, "builds", sha.slice(0, 12));
+  const sourceMarker = resolve(source, ".sprint1-source-sha");
+  if (
+    existsSync(source) &&
+    (!existsSync(sourceMarker) || readFileSync(sourceMarker, "utf8") !== sha)
+  )
+    throw Error("Build directory provenance mismatch; refusing reuse");
   if (!existsSync(source)) {
-    mkdirSync(source);
+    mkdirSync(source, { recursive: true });
     git(
       "archive",
       "--format=zip",
@@ -551,6 +558,7 @@ async function deploy() {
       "-C",
       source,
     ]);
+    writeFileSync(sourceMarker, sha, { flag: "wx" });
   }
   if (active) {
     const changed = git(
