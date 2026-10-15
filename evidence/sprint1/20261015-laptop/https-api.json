@@ -61,6 +61,11 @@
       "status": "BLOCKED",
       "reason": "ENETUNREACH",
       "detail": "Windows cannot route this loopback source to the LAN listener; requires a second real Wi-Fi client. No header spoof used as substitute."
+    },
+    {
+      "name": "natural-lock-expiry-valid-login200-no-del-no-shortened-ttl",
+      "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+      "status": "PASS"
     }
   ],
   "limitations": [

@@ -144,6 +144,9 @@ try {
       status: "ON_SALE",
       structureLocked: true,
       seatMapId: randomUUID(),
+      // Isolate hold contention from the existing S-42 per-buyer quota.
+      // NULL is that feature's supported unlimited value, for this new fixture only.
+      maxTicketsPerUser: null,
     },
   });
   const category = await db.seatCategory.create({

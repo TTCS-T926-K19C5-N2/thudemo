@@ -1,0 +1,51 @@
+{
+  "time": "2026-10-15T16:29:13.595Z",
+  "activeSource": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+  "origin": "https://10.88.164.155:3470",
+  "image": {
+    "name": "sprint1-staging-api:864189edcba0",
+    "id": "sha256:67d0f371230cd3a867fbf27c84443eef9430e540d0adf0da3030c6c6be9cc534",
+    "source": "864189edcba0b0c112203d8de4ebbfb189ac7148"
+  },
+  "ports": {
+    "pg": 15455,
+    "redis": 16405,
+    "publicTLS": 3470,
+    "apiLoopback": 3471,
+    "webLoopback": 3473
+  },
+  "certificate": {
+    "sha256": "7B:43:36:26:D3:E4:E3:0C:4F:D6:66:68:A2:6F:49:CB:95:9F:08:F1:CC:07:73:EC:78:E2:8F:F4:70:8B:40:91",
+    "expires": "Nov 14 15:44:28 2026 GMT",
+    "publicFile": ".sprint1-staging/tls/server-cert.cer"
+  },
+  "backups": [
+    {
+      "file": "1792080009939-864189edcba0b0c112203d8de4ebbfb189ac7148.dump",
+      "bytes": 896
+    },
+    {
+      "file": "1792081013703-864189edcba0b0c112203d8de4ebbfb189ac7148.dump",
+      "bytes": 72214
+    }
+  ],
+  "watcher": {
+    "time": "2026-10-15T16:18:58.779Z",
+    "status": "BLOCKED_develop_missing_approved_fix",
+    "sha": "97ff91710fea7736acac5c413ab7a9d77a502212"
+  },
+  "access": {
+    "firewall": "BLOCKED: elevated Windows permissions required; AccessDenied5 observed",
+    "browser": "See browser-tls.json; no TLS bypass",
+    "secondWifiDevice": "NOT RUN"
+  },
+  "secretLocations": [
+    ".sprint1-staging/config.json",
+    ".sprint1-staging/ticket-signing.der.b64"
+  ],
+  "limits": [
+    "Manual candidate deployment is not postmerge auto deployment",
+    "API Docker + native loopback Next web behind owned TLS gateway; not full web Docker staging",
+    "No public tunnel, real payment/provider, production or independent human review"
+  ]
+}

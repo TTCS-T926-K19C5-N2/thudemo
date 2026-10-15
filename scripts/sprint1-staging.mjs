@@ -18,6 +18,12 @@ import net from "node:net";
 import assert from "node:assert/strict";
 import { stagingConfig, stagingRelease } from "../deploy/laptop-gateway.mjs";
 import {
+  prepareTicketKey,
+  ticketKeyEnv,
+  requireMigrationReview,
+  parseProcessIdentity,
+} from "../deploy/laptop-compat.mjs";
+import {
   signLoginPeer,
   LOGIN_PEER_HEADER,
 } from "../packages/shared/login-peer.js";
@@ -102,12 +108,12 @@ function ownedContainer(name) {
 }
 function processIdentity(pid) {
   if (!Number.isInteger(pid) || pid < 1) throw new Error("Invalid process id");
-  const command = `$p=Get-CimInstance Win32_Process -Filter 'ProcessId=${pid}'; if($p){[pscustomobject]@{created=$p.CreationDate.ToUniversalTime().ToString('o');command=$p.CommandLine;name=$p.Name}|ConvertTo-Json -Compress}`;
+  const command = `$ErrorActionPreference='Stop'; $p=Get-CimInstance Win32_Process -Filter 'ProcessId=${pid}'; if($p){[pscustomobject]@{created=$p.CreationDate.ToUniversalTime().ToString('o');command=$p.CommandLine;name=$p.Name}|ConvertTo-Json -Compress}`;
   const r = spawnSync("powershell.exe", ["-NoProfile", "-Command", command], {
     encoding: "utf8",
     windowsHide: true,
   });
-  return r.stdout.trim() ? JSON.parse(r.stdout) : null;
+  return parseProcessIdentity(r);
 }
 function remember(child, entry) {
   child.unref();
@@ -131,6 +137,7 @@ function stopOwned(record) {
 }
 function apiEnv(c) {
   return {
+    ...ticketKeyEnv(dir),
     NODE_ENV: "production",
     APP_ENV: "staging",
     SERVICE_ROLE: "api",
@@ -517,20 +524,27 @@ async function deploy() {
       source,
     ]);
   }
-  if (
-    active &&
-    git(
+  if (active) {
+    const changed = git(
       "diff",
       "--name-only",
       active.sha,
       sha,
       "--",
       "apps/api/prisma/migrations",
-    )
-  )
-    throw new Error(
-      "New migrations require separate backup/compatibility review; no automatic schema change",
     );
+    requireMigrationReview(
+      active.sha,
+      changed,
+      option("--reviewed-migrations-from"),
+    );
+    if (changed)
+      timeline("manual-migration-compatibility-acknowledged", {
+        from: active.sha,
+        to: sha,
+        files: changed.split(/\r?\n/),
+      });
+  }
   const dbURL = `postgresql://${c.user}:${c.dbPassword}@127.0.0.1:${c.pgPort}/${c.database}?schema=public`;
   const env = {
     ...process.env,
@@ -757,6 +771,13 @@ async function main() {
     return;
   }
   const c = config();
+  if (action === "prepare-ticket-key") {
+    prepareTicketKey(dir);
+    console.log(
+      "Persistent staging ticket key is ready; existing key preserved.",
+    );
+    return;
+  }
   if (action === "deploy") {
     await deploy();
     return;
@@ -822,7 +843,13 @@ async function lockedMain() {
     console.log("Verified stale deployment lock removed.");
     return;
   }
-  const release = ["init", "deploy", "rollback", "stop"].includes(action)
+  const release = [
+    "init",
+    "prepare-ticket-key",
+    "deploy",
+    "rollback",
+    "stop",
+  ].includes(action)
     ? acquireLock()
     : () => {};
   try {

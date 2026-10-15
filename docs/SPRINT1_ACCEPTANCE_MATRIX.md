@@ -1,37 +1,40 @@
-# Sprint 1 — ma trận hiện hành trên develop
+# Sprint 1 — ma trận nghiệm thu hiện hành
 
-Baseline **07d683fcfcfd7d05c8aff1119ab6dc3c63f6e458** + candidate source hashes. Git Flow feature → develop theo chỉ đạo mới nhất. DEC-09 scope giữ nguyên. Host staging mới: laptop riêng/LAN theo người dùng15/10; Cloudflare Tunnel giai đoạn sau. **E = evidence/sprint1/20261015-gitflow/**. Bảng cũ phía dưới là lịch sử main, không là kết quả develop.
+Baseline07d683fc; deployed candidate864189e; tích hợp snapshot develop97ff917 vào feature. Mỗi evidence có SHA riêng; không gán kết quả source cũ cho head mới. Phạm vi DEC09/UIV1. **L**=`evidence/sprint1/20261015-laptop/`; **G**=`20261015-gitflow/`; **H**=`20261015-handoff/`. Chi tiết provenance/findings trong report; bảng main dưới chỉ lịch sử.
 
 | Story/Task | AC/NFR/DoD | Implementation | Test case | Môi trường | Evidence | Kết quả | Lỗi/gate còn mở |
 |---|---|---|---|---|---|---|---|
-| S01/T01 | Toolchain/lock/migration/client/start | setup/demo/Prisma | fresh install + migrate deploy/generate/validate + READY | riêng3440/3441/15445/16395 | gates.json, source manifest | PASS | Không reset/db push |
-| T01 | Health dependency thật | health module | API health + proxy200; outage historical only | develop realPG/Redis | api.json; historical infrastructure | PASS | Fresh outage trên laptop staging chưa chạy |
-| T02 | Build/lint/typecheck/unit/integration | CI unchanged + scripts | local219API+104web,81+4integration | develop candidate | gates.json,coverage | PASS | Remote CI candidate NOT RUN cho đến push |
-| T02 | Failing checks block deploy | CI/gate laptop planned | controlled failure | laptop staging | pending | NOT RUN | Không dùng historical main required checks cho develop |
-| T03 | Docker runtime trước traffic | Dockerfile/custom entry | health/home/proxy/login/cookie/me | local Docker3460/3461 | docker-smoke.json | PASS | Không thay staging |
-| T03/S01 | Auto deploy <10min,200,old survives,rollback | laptop staging separate | deploy/failed candidate/rollback timeline | LAN staging | pending | BLOCKED | Đang chuẩn bị; không tự giảm ngưỡng |
-| S02/T04 | Roles/unique/Argon2id | schema/seed | five roles,6fixtures,unique rejects,hash prefix | real DB | api.json | PASS | No migration change |
-| T05 | Cookie/session expiry/logout | auth controller/service | logout replay401,expire401,production flags | API + Docker | api.json/docker-smoke | PASS | TLS LAN cookie cần kiểm riêng |
-| T05 | Account5fail,6th429,900s | AuthService/Redis | TTL/restart; natural900s historical main only | real Redis | api.json; old lock-natural-expiry.json | PASS | Không relabel natural-expiry cũ thành develop |
-| T05 | IP + account,anti enumeration/spoof | login-peer/runtime/Redis | rotated accounts30,peer independence,forged/stale tokens | actual TCP + API Redis | api.json/unit/scan | PASS | Edge public chưa trong phạm vi mới |
-| T06 | Server403/defaultdeny/audit | existing guards/routes | buyer directAPI/undeclaredroute/ownerB/multirole | real API/browser | api.json/browser/results.json/integration | PASS | isActive issued-session baseline limitation tách riêng |
-| T05/T09 | Expiry recovery đúng owner | EventEditor/safeReturnTo/LoginForm | server401→login→return→restore; differentowner/malformed draft | real browser + unit | browser/results.json/coverage | PASS | Không khẳng định mọi UI branch100% |
-| S04/T09 | Create valid draft,hidden from buyer/edit/reload | event routes/editor | UI+API+DB ownership | real browser/API/PG | api.json/browser | PASS | Staging chưa chạy |
-| T09 | Validation/double submit | editor refs/server | field400 retains input/recover,count1 | desktop/mobile | browser/results.json | PASS | V1 preserved |
-| T10 | Future vs past + duplicate warns/saves | events service/editor | future201,past400,duplicate201+warning,two rows | API/browser/DB | api.json/browser | PASS | Không unique-time constraint |
-| T10 | UTC/VN roundtrip | Timestamptz + helper | US device00:30VN→prior17:30Z→reload | DB/browser/unit | api.json/browser/coverage | PASS | Invalid Feb30 rejected |
-| T09/10 | FK/history integrity | existing schema | delete referenced event rejects | isolatedDB | api.json | PASS | Không thêm chức năng xóa |
-| K01 | PG+Redis comparison/restart/decision | prototype + DEC12 | existing exact-SHA artifacts | historical local/CI | ../20261015/k01-current-ci.json | PASS | Evidence tier retained |
-| K01/NFR | Endpoint p95<300/staging | product endpoint | acceptance environment missing | LAN staging | pending | BLOCKED | CI800ms không thay300ms |
-| DoD row2 | Review thành viên khác | DraftPR | human reviewed SHA | GitHub | pending | BLOCKED | AI scan không thay approval |
-| DoD row3 | Coverage phần đổi không giảm | identical Vitest/V8_4.1.11 | baseline/patch/changed lines&branches | isolated harness | coverage/comparison.json | PASS | API76.57%,web77.52% lines scope only |
-| DoD row4 | CI xanh candidateSHA | unchanged workflow | GitHub run after push | GitHub | pending | NOT RUN | Không dùng baseline CI |
-| DoD row5 | No secrets + audit sạch | ignores/overrides/vendor CSS | literal secrets check/prod+full audit | files/dependencies/image | secret-review/dependency-audit | FAIL | Full one high braces; prod0 |
-| DoD row6 | AC staging | laptop plan | HTTPS/LAN/team/rollout | new staging | pending | BLOCKED | Local PASS không thay staging |
-| DoD money/seat/webhook rows7–8 | Regression affected existing flows | unchanged product modules | 85integrationinclpayment/scanner | separate fixtures | gates.json | PASS | Không nhận hoàn thành sprint sau |
-| DoD row9 | No PII/payment in logs | auth counter digest,synthetic fixtures | diff/log review | local synthetic | security review | PASS | Production operational log gate không chứng nhận |
+| S01/T01 | Lock/toolchain/fresh install/migration/client | setup/Prisma/clean git archive | frozen install/migrate/generate/start | local riêng + staging candidate864 | G/gates,L/runtime | PASS | Không reset/db push |
+| T01 | Health dependency thật | health module | health200, dependency outage503 | API/realPGRedis | G/api; historical infrastructure | PASS | Outage mới staging chưa chạy |
+| T02 | Build/lint/typecheck/unit | CI5job + test runner | đúng SHA864; integrated head riêng | GitHub/local | L/candidate-ci,H/gates | PASS | Cập nhật CI head cuối ở H |
+| T02 | Test thất bại chặn deploy | watcher checks all success | predicate fail-closed; missingancestor blocks thật | laptop watcher | L/runtime | BLOCKED | Cần red-CI controlled evidence sau tích hợp, không phá main |
+| T03 | Docker/production entry | API Docker+TLSgateway+loopbackNext | health/home/login/Secure cookie | staging864 | L/https-api | PASS | API container, web native Node; không gọi full-Docker web staging |
+| T03 | Merge→auto-deploy<10min | watcher develop afterCI | manual485.989s≠postmerge AC | laptop | L/timeline | BLOCKED | Chưa merge/human review; không đổi T03AC |
+| T03 | Candidate lỗi giữ bản cũ | candidate smoke + atomic pointers | wrong attestation candidate rejected, old health200 | real staging864 | L/timeline | PASS | Post-switch restore có Node test; runtime rollback riêng |
+| T03 | Rollback+backup/history | previous pointer/pg_dump | exact previousSHA health, preserveDB | staging | H/runtime | NOT RUN | Chỉ PASS khi có timeline rollback thật |
+| T04 | users/roles/unique/Argon2id | schema/guarded seeds | five roles/6fixtures, unique reject/hash | localPG + staging fixtures | G/api,L/runtime | PASS | Không plaintext demo password |
+| T05 | Secure cookie/expiry/logout | production auth/session | Secure,HttpOnly,Lax,900s; anonymous/expired/logout401 | real HTTPS864 | L/https-api | PASS | UI TLS chưa tin cert |
+| T05 | 5wrong→6th429/15min | Redis accountlock | actualTTL900/APIrestart/natural expiry | HTTPS+realRedis | L/https-api-initial,L/https-api | PASS | Natural expiry chỉ PASS khi result tương ứng đã ghi |
+| T05 | IP/account/anti enumeration | sharedRedis/HMAC owned TCP | unknown/wrong same401, stale/forged/casealias, rotatedaccounts | localTCP/API, HTTPS864 | G/api,G/proxy-ip-final,L/https-api | PASS | Hai Wi-Fi clients độc lập BLOCKED |
+| T06 | Server403/defaultdeny/publicintent/audit | RolesGuard/global guards/inventory | buyer create/edit denied, undeclaredroute, rolelogs | realAPI/browser | G/api,rbac-inventory,unit | PASS | Staging hai-client/trình duyệt chưa đủ |
+| T06 | Multi-role/adminscope | roles.some | BUYER+ORGANIZER; admin no implicitowner | localAPI | G/api | PASS | Không tạo superscope |
+| T05/T09 | Expiry UI/owner recovery | EventEditor/LoginForm/safeReturnTo |401→login→restore sameowner, otherowner rejects | desktop/mobile + unit | G/browser/coverage | PASS | StagingUI BLOCKED cert |
+| S04/T09 | Create/edit draft/hidden/reload | event API/editor | A draft201,buyer omitted,A patchreadback | localUI/API+HTTPSAPI864 | G/browser,L/https-api | PASS | StagingUI chưa kiểm |
+| T09 | Owner B/buyer forbidden | findOwned/RolesGuard | URL/API B403,buyer403 | browser/API+HTTPS864 | G/browser,L/https-api | PASS | Server side |
+| T09 | Validation/input/double submit | editor field/ref guards |400 retained/fix/save,count1 | desktop/mobile | G/browser | PASS | Không universal API idempotency |
+| T10 | Future/past/duplicate warning | service/editor | future201,past400,two duplicate201+warning | UI/API/DB+HTTPS864 | G/browser,L/https-api | PASS | Không unique-timeconstraint |
+| T10 | UTC/VN timezone | timestamptz/helper | USdeviceVNinput→UTCDB→reloadVN | browser/PG/unit | G/browser/coverage,L/https-api | PASS | InvalidFeb30 checked |
+| T09/10 | FK/data history | schema Restrict | eventwithshows delete fails | realPG864 | L/https-api | PASS | Không thêm xóa nghiệp vụ |
+| K01 | PG+Redis/conditions/restart/decision | isolated spike/DEC12 |200same-seat,2process,expiry/restart | local/CI exactSHA | K01 docs,CI artifacts864 | PASS | Chỉ local authority tạm; review member còn chờ |
+| K01 | Staging datastore comparison | spike separateproduct | both options in acceptedstaging | LAN staging | pending | BLOCKED | Không lấy product endpoint thay datastore |
+| K01/NFR | Endpointp95<300ms | existing holdsendpoint |2000realHTTPS,100winner/100conflict×10 | staging864/1API/co-located | L/endpoint-benchmark | FAIL | all1597.9634ms/steady613.8044ms; không đổi300→800 |
+| DoD row2 | Thành viên khác review | DraftPR91 | reviewed exactSHA | GitHub | PRreviews | BLOCKED | Không dùng accountrotation giả human |
+| DoD row3 | Coverage delta không giảm | identicalVitest/V8_4.1.11 | baseline/changedlines/branches | isolatedharness | G/coverage/comparison | PASS | ScopeAPI76.78/web77.52%; không là toànapp |
+| DoD row4 | CI head xanh | unchangedCIworkflow |5jobs exactSHA | GitHub | L/candidate-ci,H/CI | PASS | Không dùng SHA864 cho mergedsource mới |
+| DoD row5 | Secret sạch/audit sạch | ignore/overrides/vendorCSS | fixtureliteralcheck/prod+fullaudit | files+dependencies | G/audit,H/secret-review | FAIL | prod0 nhưng full1highbraces/no patch |
+| DoD row6 | AC staging/teamUI | isolatedLANgateway | certtrust/firewall/two-device/UI | laptop+teamWi-Fi | L/https-api,H/runtime | BLOCKED | OSAccessDenied5/trustdialog; không bypassTLS |
 
-## Lịch sử ma trận main81d1dd9 — không áp dụng candidate develop
+## Lịch sử main — không đại diện head hiện hành
 
 # Sprint 1 acceptance matrix — 15/10/2026
 

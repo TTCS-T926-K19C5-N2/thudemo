@@ -1,0 +1,7 @@
+{
+  "time": "2026-10-15T16:28:21.075Z",
+  "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+  "status": "BLOCKED",
+  "reason": "ERR_CERT_AUTHORITY_INVALID",
+  "scope": "System/browser trust or LAN access must be completed; no ignoreHTTPSErrors or insecure bypass used"
+}

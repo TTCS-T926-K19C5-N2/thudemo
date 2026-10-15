@@ -1,51 +1,67 @@
-# Sprint 1 — trạng thái hiện hành trên develop, 15/10/2026
+# Sprint 1 — review, sửa và bàn giao hiện hành
 
-**Đây là phần kết luận hiện hành.** Phần review main bên dưới được giữ làm lịch sử, không chứng nhận source develop. Phạm vi vẫn DEC-09: S-01/T-01–03, S-02/T-04–06, S-04/T-09–10, K-01; UI V1. S-03 ở Sprint 3.
+Phạm vi DEC-09: **S-01/T-01–03, S-02/T-04–06, S-04/T-09–10 và K-01**. Giữ V1; S-03 thuộc Sprint 3. Nguồn: backlog Excel hiện hành, DoD-DoR, `../docs/{product,architecture,ui,risk-and-security,decision-log}.md`, các task và PR/commit thực tế. Không quy tác giả chỉ theo người mở PR; bảng provenance lịch sử phía dưới giữ nguồn riêng.
 
-## Revision và quy trình
+## Revision và môi trường
 
-Theo chỉ đạo trực tiếp của người dùng ngày 15/10: áp dụng Git Flow, feature → develop. Nhánh sửa **feature/sprint1-acceptance-20261015** từ **07d683fcfcfd7d05c8aff1119ab6dc3c63f6e458**; worktree thudemo-sprint1-gitflow-20261015. Fetch lại develop không có thay đổi. Main81d1dd9 có S-32 chưa có ở develop; không kéo S-32 sang. Giữ isActive và điều hướng STAFF từ develop. Worktree review cũ/WIP gốc và phiên3300/3400 được giữ nguyên. GitHub develop là default, chưa có protection (404); không đổi protection hoặc bỏ qua review.
+- Nhánh sửa `feature/sprint1-acceptance-20261015` → **develop**, Draft PR [#91](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/91). Người dùng cho phép commit/push/PR và staging giả; Git Flow theo chỉ đạo trực tiếp mới nhất/DEC-13. Chưa merge, không bypass protection, không giả review qua tài khoản khác.
+- Baseline review ban đầu develop **07d683fcfcfd7d05c8aff1119ab6dc3c63f6e458**. Candidate đã kiểm và triển khai **864189edcba0b0c112203d8de4ebbfb189ac7148** (sau 0c1358e); CI đúng SHA gồm đủ 5 job PASS, run [38765169156](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38765169156).
+- Trong phiên, develop nhận PR #70/#92 tới **97ff91710fea7736acac5c413ab7a9d77a502212**. Tích hợp snapshot này bằng merge vào feature, giữ attribution/lịch sử; giải xung đột chỉ package/lock/Render config, giữ Next16.3.8/HMAC và thêm dependency/config QR upstream. Story mới không được nhận là nghiệm thu Sprint 1. Bản tích hợp có evidence riêng `20261015-handoff`, không gán bằng chứng 864189e cho source mới.
+- WIP gốc `thudemo`, review cũ `thudemo-sprint1-review-20261015`, phiên S-32_3300/3301 và demo cũ3400/3401 được giữ nguyên. Local develop riêng3440/3441, PG15445/Redis16395. Staging riêng **https://10.88.164.155:3470**, PG15455/Redis16405. Credentials chỉ trong `.sprint1-staging/config.json` hoặc `.sprint1-local/config.json`, bị ignore; không có password trong báo cáo.
+- Render đã khảo sát read-only rồi bỏ theo yêu cầu người dùng; không tạo tài nguyên. Laptop LAN thay Render; Cloudflare Tunnel giai đoạn sau.
 
-Người dùng đã cho phép commit/push/Draft PR và staging dữ liệu giả; chỉ merge sau review thành viên khác và gate kỹ thuật. **Chỉ đạo mới nhất thay Render bằng laptop staging riêng trong Wi-Fi; Cloudflare Tunnel để giai đoạn sau.** Không tạo tài nguyên Render. Render MCP đã kết nối và đọc workspace My Workspace không có tài nguyên; đây chỉ là lịch sử khảo sát, không còn blocker yêu cầu đăng nhập Render.
+## Kết luận theo gate
 
-## Kết luận hiện hành
-
-| Gate | Kết quả | Bằng chứng / phần còn thiếu |
+| Gate | Kết quả | Bằng chứng / ranh giới |
 |---|---|---|
-| Demo local | PASS | Web http://localhost:3440, API3441; PG15445/sprint1_gitflow_20261015, Redis16395; Status kiểm ba URL200 |
-| S-01 local | PASS | Fresh frozen install, migration deploy/generate/validate, build/lint/typecheck; Docker render image build và chạy, cookie production có Secure/HttpOnly |
-| S-01/T-03 tổng thể | BLOCKED | Laptop LAN staging đang chuẩn bị; CI/deploy sau merge, giữ bản cũ, rollback và <10phút chưa nghiệm thu |
-| S-02 | PASS local; BLOCKED staging | API/browser/Redis thật, auth/RBAC/expiry/ownership; chưa chứng nhận HTTPS LAN và máy khác |
-| S-04 | PASS local; BLOCKED staging | Draft/create/edit/owner403/validation/double-submit/future/past/duplicate-warning/VNUTC/reload qua UI+API+DB |
-| K-01 | BLOCKED tổng thể | Giữ quyết định PG authority tạm local DEC-12, spike hai store và restart; chưa thay benchmark endpoint/staging |
-| Dependency runtime | PASS | pnpm audit --prod: 0 advisory; runtime image xác nhận Next16.3.8/sharp0.35.5/deepmerge8/mysql2_3.23.1/source-map-js1.2.2 |
-| Dependency toàn bộ / DoD | FAIL | Còn GHSA-vfj7-8cjw-p6xm braces3.0.3 ở công cụ ESLint; upstream chưa có bản vá; không ignore/miễn gate |
-| Coverage delta unit | PASS trong phạm vi đo | API lines7.89→76.57%, branches2.50→87.95%; web lines23.94→77.52%, branches18.37→63.60%; cùng Vitest/V8_4.1.11 và config |
-| Diff security | PASS trong phạm vi scan | Scan b0fb0ae4-1158-4ce6-affd-34d469c95d6a không finding mới; snapshot dbf72ef6… + supplement8files; không là review người thật |
-| CI của bản sửa / review thành viên khác | NOT RUN / BLOCKED | Chờ Draft PR/head và reviewer; không dùng CI main thay thế |
-| Sprint 1 đủ AC/DoD | Chưa | Dependency đầy đủ, staging và review người thật chưa đạt |
+| Demo local | PASS | Profile riêng; API/browser15 ca trước trên develop, staging HTTPS API thật; dùng Status để xác nhận source đang chạy |
+| S-01/T-01–02 candidate864189e | PASS | Frozen install sạch, migrate/generate/build/lint/typecheck/unit/integration, Docker runtime và 5job CI đúng SHA |
+| S-01/T-03 toàn bộ | BLOCKED | Candidate manual đã chạy 485.989s, home/health200; failure giữ bản cũ đã kiểm; **chưa có merge→auto-deploy**, chưa chứng minh team Wi-Fi |
+| S-02 local | PASS | API/browser/Redis thật; server401/403, default deny, đa vai trò, logout/replay/expiry, account/IP |
+| S-02 HTTPS staging phần API | PASS | Cookie Secure/HttpOnly/Lax/900s; 5wrong→6th429, TTL900; API restart giữ khóa; spoof/case alias tính đúng peer LAN; evidence HTTPS |
+| S-02 staging toàn bộ | BLOCKED | Trình duyệt chưa tin chứng chỉ và chưa kiểm hai thiết bị Wi-Fi độc lập; không dùng XFF giả thay client thứ hai |
+| S-04 local | PASS | UI+API+DB draft/ownership/edit/reload/validation/double-submit/future/past/duplicate-warning/UTC→VN |
+| S-04 HTTPS staging API | PASS | Draft ẩn buyer, A edit/readback, B/buyer403, future201/past400/duplicate201+warning, DBUTC/FK Restrict |
+| S-04 staging UI | BLOCKED | Cần OS/browser trust + UI trên URL LAN; bằng chứng local không đổi nhãn thành staging |
+| K-01 spike | PASS trong môi trường đã đo | Hai datastore, cạnh tranh/restart và DEC-12 PG authority tạm local; CI artifacts đúng SHA864189e có riêng |
+| K-01 staging/NFR tổng thể | BLOCKED | Endpoint HTTPS đo thật nhưng không đạt NFR; thiếu so sánh hai datastore và điều kiện nghiệm thu staging đầy đủ |
+| Endpoint NFR p95<300ms | FAIL | 2000 HTTPS calls/200buyers/100seats×10; correctness100winner/100conflict mỗi vòng; all1597.9634ms, steady613.8044ms; một API/generator cùng laptop. Không thay300 bằng800 |
+| Dependency runtime | PASS | Prod audit0; Next16.3.8/sharp0.35.5/deepmerge8/mysql2_3.23.1/source-map-js1.2.2; frozen lock |
+| Dependency toàn bộ/DoD row5 | FAIL | Còn high **braces3.0.3 GHSA-vfj7-8cjw-p6xm**, upstream chưa có bản vá; không ignore/waiver |
+| Coverage delta/DoD row3 | PASS trong scope đo | Vitest/V8_4.1.11, baseline/config như nhau; API lines7.89→76.78%, branches2.50→87.95%; web23.94→77.52%, branches18.37→63.94%; source manifest xác định phạm vi |
+| Review độc lập/DoD row2 | BLOCKED | Chưa có thành viên khác trực tiếp review SHA cuối. AI security scan và việc đăng nhập nhiều tài khoản không thay human approval |
+| Sprint 1 đủ AC/DoD | Chưa | Human review, audit full, staging UI/Wi-Fi/autodeploy và K01 còn thiếu |
 
-Evidence mới: **evidence/sprint1/20261015-gitflow/**. Source manifest/hashes ghi cụ thể bản sửa; SHA baseline một mình không đại diện candidate. Bằng chứng cũ nằm **20261015/**, chỉ áp dụng main81d1dd9+diff cũ.
+## Findings và sửa có bằng chứng
 
-## Những việc đã hoàn tất trên develop
+Các finding gốc F-01/F-02/F-03 và bước tái hiện/expected/actual/root cause/test nằm trong phần lịch sử phía dưới; bản sửa được chuyển có chọn lọc sang develop, giữ `isActive`, STAFF→check-in và không kéo S-32 từ main.
 
-- Chuyển bản sửa account/IP login, transport HMAC và recovery/timezone từ review trước; merge thủ công các file phân kỳ để giữ isActive, STAFF và exports hiện hữu. Không thêm luồng orders S-32 vào safeReturnTo.
-- Next/eslint-config-next16.3.8; scoped overrides sharp0.35.5, Prisma-config→deepmerge8.0.0, Prisma→mysql2_3.23.1, source-map-js1.2.2. Không nâng Prisma sang prerelease/major mới.
-- Bỏ shadcn CLI khỏi runtime sau khi vendor **nguyên byte** CSS4.21.0 kèm MIT license; không thay primitive/UI. Khắc phục thêm dependency dev từ develop: mau→undici6.28.1, external-editor→tmp0.2.7. Review độc lập phát hiện tmp0.2.6 còn bypass dạng Array; đã nâng lại và audit xác nhận chỉ còn braces.
-- Full audit baseline develop cũng đo riêng: không đồng nhất với 12 advisory production của lượt main trước. JSON giữ các đường dependency và advisory chính thức. Không dùng audit fix --force, không dùng advisory waiver.
-- DoD nguồn: “Unit test cho nhánh logic mới; độ phủ trên phần thay đổi không giảm”. Baseline từ git archive develop, frozen install riêng; cùng config byte-for-byte và Vitest/V8_4.1.11. So sánh từng file, dòng và nhánh giao diff ở coverage/comparison.json. File mới không có mẫu số baseline; không suy coverage từ số test.
-- Test thời gian trước đây đặt .test.ts nên **không được discover** bởi config chỉ .spec.ts. Đã đổi .spec.ts và kiểm invalid-date/UTC roundtrip; đính chính câu helper đã kiểm trong báo cáo lịch sử.
-- Unit hiện tại API219/web104; integration81 + scanner4. Guard test chỉ bổ sung exact15446/sprint2_integration và15450/signed_qr_integration với SPRINT1_ISOLATED_TEST=true. Không dùng DB S-32_15432. Performance artifact suite tự sinh được lưu sang evidence Sprint1, trả file Sprint2 về baseline.
-- Browser15 checks, desktop1440×1000 timezone Mỹ/mobile390×844 VN; đã xem screenshot, không page error hay console bất ngờ. Browser plugin absent, dùng Playwright1.62.1. CUA lỗi khởi tạo assets os error3; không có policy rejection bị né.
-- Docker image **sprint1-gitflow-render:20261015**, runtime nonroot; health/home/proxy/login/me200; cookie Secure/HttpOnly. Dùng cấu hình MoMo giả chỉ để module startup, không gọi provider/không nhận tiền. Image hash và runtime source hashes ghi trong docker-smoke.json; không gọi Docker là staging.
+| Finding | Ảnh hưởng / tái hiện | Nguyên nhân và sửa | Regression / kết quả |
+|---|---|---|---|
+| F-01 IP brute-force | High; xoay email hoặc giả XFF để né account lock | Shared Redis IP counter30fail/900s, HMAC peer+timestamp+route, entry sở hữu TCPpeer; caller headers bị loại | Real TCP local+Redis, signed/stale/forged unit, HTTPS alias/spoof LAN counter PASS; client Wi-Fi thứ hai BLOCKED |
+| F-02 giờ suất | High dữ liệu; máy timezone khác tạo ngày/giờ VN bị lệch | VN input+07→UTC, display Asia/Ho_Chi_Minh; invalidFeb30 bị chặn | API/DB/US-device browser VN roundtrip PASS |
+| F-03 hết phiên mất form | Medium; server401 khi lưu | sessionStorage draft+owner; allowlist returnTo; restore đúng chủ một lần | Browser401→login→restore; khác chủ/malformed unit PASS |
+| F-04 login alias boundary | High auth; `/api/Auth/login` tới Nest dù exact-path HMAC không chạy | Classify decode/case/trailing slash chung tại shared helper/transport/APIproxy; thiếu attestation fail closed | Unit encoded/case/stale/signatures và HTTPS `/api/Auth/LOGIN` spoof vẫn charge peer thực PASS tại864189e |
+| F-05 pointer rollback | High vận hành; smoke lỗi sau switch có thể làm mất previous pointer | Snapshot/restore **cả active và previous** byte-for-byte trước cleanup | 8 Node tests gồm fault-injection promotion PASS; failure candidate runtime giữ active864189e PASS |
+| F-06 lỗi truy vấn CIM | Medium vận hành; lỗi PowerShell không được coi như PID đã chết để recover lock | ErrorAction Stop và parseProcessIdentity fail closed khi exit/error | Dedicated regression PASS; không kill process chưa xác minh |
+| F-07 integration tiền điều kiện | Test harness; token fixture hex64 bị guard401 | Đổi token benchmark thành base64url43 đúng contract; không sửa guard | Lượt invalid-fixture giữ riêng, không dùng đo NFR hay quy lỗi sản phẩm |
 
-## Gate còn mở và cách đóng
+Không migration sản phẩm nào được sửa trong repair. Khi merge develop97ff, các migration upstream thêm maxTicketsPerUser/default4, ticket keyId/signature+unique order-seat, ownerEmail/transfer và ticket_logs. Đây là thay đổi tích hợp upstream; phải backup/kiểm dữ liệu trước migrate. Script tự động vẫn từ chối migration mới; manual yêu cầu đúng SHA bản cũ đã review. Khóa ký ticket mới chỉ tạo một lần ở profile staging; khóa scanner/TLS hiện hữu được giữ.
 
-1. **Braces dev advisory:** không được ghi scan toàn bộ sạch. Phương án đề xuất cho nhóm: đợi bản vá upstream hoặc review thay dependency glob của plugin ESLint tương thích, giữ đủ rule; không chỉ bỏ lint/plugin để làm audit xanh. Chưa có quyết định miễn DoD.
-2. **Laptop staging:** cấu hình riêng, TLS/cert LAN và dữ liệu giả; kiểm lại toàn bộ AC qua URL LAN, xác nhận máy thứ hai. Chưa public/Cloudflare, không đổi AC/NFR. Cơ chế deploy sau CI develop, candidate thất bại vẫn giữ bản cũ và rollback phải có timeline/revision thật.
-3. **Human review:** cần ít nhất một thành viên khác theo DoD-DoR row2. Không dùng tài khoản khác/AI scan làm bằng chứng người thật. Chỉ tích hợp develop khi review/gate cần thiết đạt; main theo release Git Flow, không push trực tiếp.
-4. **K01/NFR:** giữ nguyên bằng chứng và giới hạn lịch sử phía dưới. CI800ms không thay NFR300ms; phép đo datastore không thay endpoint sản phẩm. Không mở rộng thành Sprint2.
-5. **Baseline ngoài phạm vi:** SessionAuthGuard hiện không kiểm isActive cho session đã cấp (có từ develop); bản sửa giữ chặn login inactive. Không nhận đã giải quyết thu hồi phiên tức thời của S-28.
+## Kiểm chứng và giới hạn
+
+- Candidate864189e: API220/web105 unit; Node5; integration81+4; browser15 desktop/mobile; build/lint/typecheck PASS. JSON coverage có counts khác unit default do scope/config, không dùng count suy coverage. Helper timezone `.test.ts` trước đây không được discover; đã đổi `.spec.ts` và ghi đính chính, không sửa lịch sử.
+- Candidate sau merge97ff: API284/web116/Node8, integration84+4 và build/lint/typecheck PASS. Lượt integration đầu FAIL do token-budget test timeout5s khi build chạy đồng thời và suite ticket mới chưa cho exactport15446; giữ gates-merge-initial.json. Sau build kết thúc và bổ sung exactport với SPRINT1_ISOLATED_TEST=true, full84+4 PASS, không nới timeout/assert. CI head tích hợp được ghi riêng ở `20261015-handoff` khi hoàn tất.
+- Full audit chưa sạch; scoped fast-glob→tinyglobby không phải drop-in (glob/absolute/trailing/junction parity), nên chưa thay chỉ để xanh scan. Hướng cần quyết định: upstream patch hoặc adapter/dependency thay thế được kiểm rule parity. Gate vẫn FAIL.
+- Security scan develop `b0fb0ae4-1158-4ce6-affd-34d469c95d6a`; follow-up laptop `6ad87ca3-6cdb-43aa-91d4-d577a125a862`, source19file supplementSHA99d8360e… khớp product864189e; không có residual reportable trong phạm vi scan. Compatibility follow-up có supplement riêng; không là chứng nhận toàn bộ source PR70/92 hoặc human approval.
+- CI864189e artifacts K01/T31 được lưu private rồi lấy số đo sạch. Product CI p95all423.363ms/steady309.672ms, budget800ms xanh **không đạt**300ms. Staging HTTPS p95 cao hơn; không tối ưu toàn Sprint2 hoặc sửa NFR để đạt.
+- TLS request nghiệm thu dùng exact CA cert + hostname và rejectUnauthorized:true; không tắt verify. Browser Chromium thực tế trả ERR_CERT_AUTHORITY_INVALID (H/browser-tls.json). OS import cert cần người dùng xác nhận; firewall tạo rule trả AccessDenied5 vì phiên không elevated. Không dùng công cụ khác né. Máy thứ hai/browser TLS còn BLOCKED.
+- Watcher chạy, fetch develop nhưng **BLOCKED_develop_missing_approved_fix**, đúng fail-closed trước merge. Chưa có bằng chứng pipeline red ngăn triển khai thực tế sau merge. develop chưa protection (404 lúc kiểm); ghi vấn đề quy trình, không tự thay.
+- Cấu hình MoMo là synthetic/endpoint disabled.invalid để production module startup; không thanh toán, email, provider sandbox hay worker acceptance. Issued-session `isActive` là baseline S28 limitation; repair vẫn chặn login inactive, không nhận đã giải quyết thu hồi phiên tức thời.
+
+## Bàn giao
+
+Runbook có lệnh start/status, địa chỉ, credentials path, trust cert/firewall đúng cổng, demo A/B/buyer/lock, rollback và cách phục hồi. Evidence theo tier: `20261015/` là lịch sử main; `20261015-gitflow/` baseline07+repair; `20261015-laptop/` deployed864 và HTTPS; `20261015-handoff/` tích hợp develop mới. Không gọi Sprint Done khi các gate còn mở. PR Draft giữ để review, chưa merge vào develop/main.
 
 ## Findings lịch sử — nguồn main, giữ để đối chiếu
 

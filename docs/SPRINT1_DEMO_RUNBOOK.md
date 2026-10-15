@@ -1,48 +1,46 @@
-# Sprint 1 — hướng dẫn kiểm thử và demo local
+# Sprint 1 — demo local và laptop staging riêng
 
-Ngày kiểm: 15/10/2026. Nguồn: develop `07d683fcfcfd7d05c8aff1119ab6dc3c63f6e458` cộng diff candidate trong nhánh feature/sprint1-acceptance-20261015. Giữ UI V1, chỉ dùng dữ liệu giả. Lệnh dưới đây không commit, push hoặc deploy.
+Giữ V1 và dữ liệu giả. Worktree: `D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-sprint1-gitflow-20261015`. Nhánh feature → develop, PR #91 Draft; chưa merge/Sprint Done. `status` in exact source đang chạy; evidence có SHA riêng.
 
-## 1. Mở đúng phiên
+## 1. Laptop staging đang chạy
 
-Mở PowerShell và chạy:
+**Web/API proxy: https://10.88.164.155:3470**; health `/api/health`. Credentials admin/A/B/buyer/lock-test/multi-role: **`.sprint1-staging/config.json`**. Chỉ mở file local; không chép password/token/privatekey vào chat/PR.
 
 ```powershell
 Set-Location -LiteralPath 'D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-sprint1-gitflow-20261015'
-powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Status
+node .\scripts\sprint1-staging.mjs status
 ```
 
-Nếu chưa chạy, khởi động bằng **một lệnh**:
+Status chỉ READY sau HTTPS home/health200 với CA/hostname được xác minh. Candidate đã kiểm864189e (xem active.json cho bản thực tế sau handoff). Database15455/sprint1_staging_20261015 và Redis16405 riêng, bindloopback; gatewayLAN3470, hai slotAPI3471/3472 và web3473/3474 đều loopback. Không mở DB/Redis ra Wi-Fi.
+
+**Cần thao tác Windows của chủ máy:** phiên hiện tại bị từ chối tạo firewall rule (AccessDenied5); import certificate chờ hộp thoại OS. Không coi browser/team access PASS trước khi thực hiện:
+
+1. PowerShell **Run as administrator**, ở đúng worktree: `powershell.exe -NoProfile -File .\scripts\sprint1-staging-access.ps1 -ConfigureFirewall`. Chỉ TCP3470/LANIP đã cấu hình/RemoteAddress LocalSubnet; không tắt firewall hay đổi profile mạng.
+2. PowerShell thường: `powershell.exe -NoProfile -File .\scripts\sprint1-staging-access.ps1 -TrustCertificate`; đọc và xác nhận OS prompt. Chỉ current-user trust chứng chỉ staging, không cài privatekey.
+3. Máy thành viên cùng Wi-Fi nhận **chỉ** public cert `.sprint1-staging/tls/server-cert.cer`, xác minh fingerprint rồi import vào trusted roots của đúng user/browser. Không chia sẻ server-key.pem/config.json. Mở URL LAN, home200 và login A. GuestWi-Fi/clientisolation có thể chặn ngang; ghi BLOCKED nếu vậy.
+
+SHA256 fingerprint: `7B:43:36:26:D3:E4:E3:0C:4F:D6:66:68:A2:6F:49:CB:95:9F:08:F1:CC:07:73:EC:78:E2:8F:F4:70:8B:40:91`. Hết hạn14/11/2026 15:44:28UTC. Cert SAN IP10.88.164.155; DHCP đổi IP cần cấu hình/cert/WEB_ORIGIN được kiểm lại; không bỏ kiểm TLS. Cloudflare Tunnel chưa triển khai.
+
+Khởi động/tái lập **một lệnh** trên máy đã init profile và có Git/Node24.21.0/pnpm10.15.1/DockerDesktop:
 
 ```powershell
-powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1
+node .\scripts\sprint1-staging.mjs deploy --sha <exact-40-character-commit-SHA>
 ```
 
-Lệnh kiểm Node 24.21.0, pnpm 10.15.1, Docker Linux engine, cổng và container; khởi động dependency; cài bằng lockfile; áp migration; seed an toàn; build và start. Chỉ in **READY** khi health của API, trang chủ web và health qua proxy đều thực sự trả 200.
+Script guardđúng profile/port/label/PID, start dependencies, archive source sạch, frozeninstall/generate/backup/migrate/guardedseed/build/DockerAPI, smoke candidate rồi mới chuyểntraffic; READY sau HTTPS smoke. Private logs/backups ở `.sprint1-staging/`; không xóa volume hoặc đổi khóa. Nếu lầnđầu profile chưa tồn tại: `node .\scripts\sprint1-staging.mjs init --lan 10.88.164.155`, rồi `prepare-ticket-key`; init không ghiđè config/khóa hiện hữu. Không dùng init để chữa lỗi profile đang có.
 
-- Web: **http://localhost:3440**
-- API health: **http://localhost:3441/health**
-- Proxy health: **http://localhost:3440/api/health**
-- Credentials: **`.sprint1-local/config.json`**. Mở file trên máy để lấy email/password; không chép nội dung vào chat, báo cáo hoặc PR.
-- Cấu hình app: root `.env`; khóa ký và log: `.sprint1-local/`. Cả hai bị Git ignore; thư mục private cũng bị Docker ignore.
+Nếu commit mới có migration: auto-deploy từ chối. Đọc SQL, kiểm compatibility bản cũ, backup và dữ liệu (đặc biệt unique ticket order-seat), rồi mới manual `deploy --sha <newSHA> --reviewed-migrations-from <exact-activeSHA>`. Flag là operator acknowledgement kỹ thuật, không thay humanPRreview. Không migrate-down/reset. Khóa QR ticket riêng được giữ tại `.sprint1-staging/ticket-signing.der.b64`; `prepare-ticket-key` chạy lại giữ nguyên khóa.
 
-| Tài khoản trong config | Dùng để |
-|---|---|
-| admin | Kiểm vai trò quản trị; không tự có quyền organizer |
-| organizer-a | Demo tạo/sửa sự kiện |
-| organizer-b | Kiểm từ chối truy cập sự kiện của A |
-| buyer | Kiểm API trái quyền và sự kiện nháp |
-| lock-test | Bài khóa đăng nhập; không dùng tài khoản demo chính |
-| multi-role | Kiểm BUYER + ORGANIZER, không tạo vai trò mới |
-
-Phiên mới dùng PostgreSQL 15445, database `sprint1_gitflow_20261015`, Redis 16395. Phiên S-32 tại 3300/3301, PostgreSQL 15432 và Redis 16381 được giữ nguyên.
-
-Nếu script báo cổng bận hoặc container khác label, hãy dừng và đọc lỗi. Không kill tiến trình khác, không xóa volume. Dừng riêng phiên này:
+Rollback đã có previousslot khỏe:
 
 ```powershell
-powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Stop
+node .\scripts\sprint1-staging.mjs rollback
+node .\scripts\sprint1-staging.mjs status
 ```
 
-Sau đó có thể Start lại. Dữ liệu và container được giữ. Khóa ký chỉ tạo lần đầu cho profile riêng; không tái tạo khóa hiện hữu. `-SkipBuild` chỉ dành cho lần chạy lại đúng bản đã build; kiểm thử tái lập nên dùng lệnh mặc định có build.
+Smoke previous trước switch; không đảo migration/khóa/xóa dữ liệu. `previous.json` sau rollback trỏ bản vừa rời, cho phép chuyển lại bằng rollback lần nữa sau smoke. Chỉ dùng khi chủ động kiểm staging, không giữa buổi demo. `deploy --sha <activeSHA> --exercise-failure` kiểm candidate sai attestation, active giữ200; không phá main/CI. `stop` chỉ dừng process/container app thuộc profile, giữ dependencies/volume/history. `recover-lock` chỉ khi PID/creationtime chứng minh owner đã thoát, không xóa lock bằng tay.
+
+Watcher đã chuẩn bị/chạy: mỗi phút fetch develop, chỉ deploy khi approvedminimumSHA là ancestor và **mọi** check đúngSHA success; corebuild/lint/test phải có. Hiện BLOCKED develop chưa chứa fix; không tự merge. Manual485.989s không là bằng chứng AC merge→auto-deploy<10phút. Muốn bật lại watcher đã dừng: `powershell.exe -NoProfile -File .\scripts\sprint1-staging-access.ps1 -StartWatcher -MinimumSourceSha <approvedSHA>`; không chạy bản thứhai.
 
 ## 2. Kịch bản demo
 
@@ -65,48 +63,36 @@ Dùng profile trình duyệt riêng cho A, B và buyer. Cùng dùng hostname `lo
 | 13. Restart | Khi lock-test đang khóa: Stop rồi Start riêng phiên app, Redis vẫn chạy | Khóa còn, TTL giảm; hết 15 phút tự mở và login đúng thành công | Không restart Redis hoặc task khác để làm mất khóa |
 | 14. Trình bày evidence | Mở report, matrix và thư mục evidence | Phân biệt source CI, local repair, prototype, endpoint, staging | Không nói CI xanh nghĩa là Sprint Done; staging vẫn BLOCKED |
 
-Bài kiểm main trước đã chờ khóa tự hết **900 giây thật**; bằng chứng đó không được gán lại cho develop. Lượt develop kiểm TTL/restart bằng Redis thật. Bài UI bổ sung đã khóa lại tài khoản phụ; xem thời gian còn lại trên UI trước khi chạy lại bước 12. Tài khoản chính vẫn dùng được. Budget IP là 30 lần sai/15 phút; không tiếp tục dò nhiều tài khoản từ cùng máy trong demo. Bằng chứng hai TCP peer thật nằm trong `proxy-ip-final.json`.
 
-## 3. Kiểm API và chạy lại regression
+Dùng URL staging cho bước trên sau certtrust, hoặc `http://localhost:3440` cho demo local đã kiểm UI. Cả hai có credentials/DB riêng; không trộn password/cookie. Các bước UI staging và thiết bị Wi-Fi chỉ đánh PASS sau thao tác thực tế. Chỉ tài khoản `lock-test` bị khóa kiểm; chờ15phút thật, không DEL/rútTTL. Các account khác dùng demo bình thường; budget IP30fail/15phút nên tránh chạy bài brute-force trong buổi team demo cùng peer.
 
-Có thể dùng DevTools Network để xem status, method và route. Không lưu hoặc chia sẻ cookie/token. Verifier đọc credential local và chỉ cho đúng database/cache demo:
+## 3. Demo local dự phòng
 
 ```powershell
-node .\scripts\verify-sprint1-api.mjs
-node .\scripts\verify-sprint1-browser.mjs
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Status
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1
 ```
 
-API verifier kiểm cổng 3442 trống, tự mở/tắt tiến trình verification riêng, tạo thêm sự kiện/suất giả và khóa lock-test 15 phút. Nó không xóa lịch sử. Browser verifier tạo thêm dữ liệu giả và chủ động làm hết hạn session của **organizer-a fixture** để kiểm recovery. Chỉ chạy khi đang chủ động kiểm expiry, không chạy lúc người khác demo cùng tài khoản.
+Web3440/API3441, PG15445/Redis16395, credentials `.sprint1-local/config.json`, config root.env ignored. Mặc định build/start kiểmREADY. Stopchỉphiênnày: `-Action Stop`. Không đụng3300/3301/S32,3400/3401/demo cũ. Đổi source phải stop/build/start thuộc profile này; không build đè `.next` của server đang chạy. Giữ AUTH_PROXY_SECRET server-only≥32; localcustomentry sở hữupeer. Staging dùng TLSgateway riêng sở hữupeer rồi loopbackNext; không đưa bareNext ra LAN.
 
-Bộ kiểm hồi quy dùng database riêng:
+## 4. Chạy lại kiểm thử có chủ đích
 
 ```powershell
+node .\scripts\verify-sprint1-staging.mjs --wait-natural-expiry
+node .\scripts\benchmark-sprint1-staging.mjs --create-synthetic-fixtures
 node .\scripts\sprint1-tests.mjs
 ```
 
-Runner chạy lint/typecheck/unit/integration. Profile chính: PostgreSQL 15446, database `sprint2_integration`, Redis 16396. Suite scanner chạy đủ ở PostgreSQL 15450, database `signed_qr_integration`, guard mở rộng exact profile với SPRINT1_ISOLATED_TEST=true. Nếu cổng bận hoặc label khác thì dừng. Không chạy E2E mù vào database demo hoặc môi trường khác. Các suite có cleanup fixture của chúng; không đưa dữ liệu thật vào database test.
+Verifier tạo thêm fakeevent/showtime, chủ động hết phiên organizer-A fixture và restart **đúng APIstaging** để kiểmlock. Chỉ chạy khi không có người demo cùng A. Dùng CA pin+rejectUnauthorized:true, không ignoreHTTPSerrors. Khóa đợi15phút thật; IPpeer thứhai Windowsloopback→LAN khôngroute được được ghiBLOCKED. Cần hai máy Wi-Fi thực.
 
-## 4. Khắc phục môi trường
+Benchmark là **endpoint sản phẩm thật quaHTTPS**, 200buyers/100seats×10, fixtureArgon2id+900s hashedsessions và showtime mới quotaNULL theoS42 để tách testcạnhtranh khỏi businessquota; không đổi suất hiện hữu. Không gọi login để tính endpointlatency. Giữ history, thêm dữ liệu giả, khôngcleanup/reset. Generator cùng laptop,1API, không thay twoinstance/datastorespike. NFR300ms giữnguyên; lần864189e all1597.9634ms FAIL. Invalidfixturetoken lượtđầu nằm JSONriêng và bị loại phépđo.
 
-- **Migration lỗi:** xem private `migrate.log`, kiểm DB/port/label và history. Không sửa migration đã áp dụng, `db push` hoặc reset DB. Chuỗi migration bù đã kiểm trong database riêng.
-- **Login 503:** kiểm `AUTH_PROXY_SECRET` server-only giống nhau ở web/API và dùng entry hỗ trợ qua `pnpm --filter web dev/start` hoặc script này. Bare `next start` không có attestation. Không bật tin cậy XFF tùy ý. Giữ khóa hiện có.
-- **Browser 401:** dùng đúng hostname/profile; phiên hết sau 15 phút là contract. API production qua HTTP có Secure cookie không gửi lại là đúng. Demo HTTP dùng API development mode; không tắt Secure trên production.
-- **Health 503:** dependency thực sự lỗi; chờ healthy rồi Status. Tiến trình còn sống không đủ để nhận READY.
-- **Đổi source:** Stop phiên này rồi Start mặc định để build lại. Tránh build đè trong lúc demo. SHA cộng diff/hash manifest xác định bản kiểm.
-- **Secret/log:** chỉ chia sẻ evidence đã lọc ở `evidence/sprint1/20261015/`. Không upload `.env`, config.json, PEM, Docker env hoặc raw log.
+Test runner dùng DB15446/sprint2_integration,15450/signed_qr_integration,Redis16396; guardexacttarget+label. Có cleanupfixture của suite, không đưa dữliệu thật vào DBtest. Chạy build/test tuần tự nếu thiếu CPU; không nới assert/NFR để xanh. Evidence lưu đúngsource/môi trường và giữ lượtthấtbại.
 
-## 5. Gate staging cho phase được cấp quyền sau
+## 5. Gate để nhóm tiếp tục
 
-1. Xử lý advisory dependency, review phiên bản và final diff. Chỉ publish sau khi được ủy quyền; chạy CI trên final SHA. CI của main cũ không chứng minh patch mới.
-2. Xác minh Render project, region/Free plan, retention dữ liệu giả theo DEC-08/11; cấp secret runtime riêng và kiểm durability PostgreSQL/Redis. Không đưa secret vào image hoặc browser.
-3. Cấu hình CI → deploy sau checks; profile hiện giữ `autoDeployTrigger: off`. Chứng minh test thất bại không triển khai. Không tự bật deployment bằng runbook local.
-4. Đo merge → phiên bản mới hoạt động dưới 10 phút; health dependency và smoke HTTPS trước chuyển traffic; kiểm cookie Secure, assets, proxy, role và owner.
-5. Kiểm client IP qua edge Render với ít nhất hai client thật và spoof header. TCP peer local không chứng minh identity sau load balancer; không để mọi người dùng chung budget của edge.
-6. Migration phải tương thích bản cũ trong lúc rollout, có hướng dẫn backup/compensation. Không đảo schema phá lịch sử để rollback image.
-7. Kiểm candidate lỗi trong staging được phép: bản cũ vẫn 200, không switch khi health lỗi; rollback đúng SHA rồi smoke. Lưu run URL, URL staging, SHA và thời gian.
-8. Chạy AC trên staging, so sánh K-01 và NFR endpoint đúng ngưỡng. Ghi giới hạn sleep/worker/Redis restart/retention của Free plan; không tự miễn DoD.
-
-**Local READY không đồng nghĩa staging PASS, Sprint 1 Done hoặc được phép publish.**
-## Staging hiện hành
-
-Theo người dùng15/10, chuyển sang laptop riêng/LAN, không tiếp tục Render. Profile staging riêng và hướng dẫn team sẽ được bổ sung sau khi start/HTTPS smoke thành công. Chưa bật Cloudflare Tunnel. Không dùng URL3440 làm bằng chứng staging.
+- Chủmáy hoàn tất firewall/certtrust, thành viên máy khác kiểm UI/login/draft/B403/buyer403 và peerbudget độc lập; lưu screenshot/console đã làm sạch.
+- Thànhviên khác review PR91 headcuối; AI scan chỉ là hỗ trợ. Chưa merge khi dependencyfullaudit còn braceshigh hoặc các gate cần thiết chưa đạt.
+- Sau tíchhợp develop được phêduyệt, kiểm CI exactmergeSHA, watcher/timeline auto-deploy<10phút, failedcheckno-deploy, failure-retains-old/rollback thực; không gọi manualdeploy là auto.
+- K01 cần stagingcomparison/điềukiệnđo/review và NFR liênquan; không miễn300ms bằngCI800ms, không nhận Sprint2Done.
+- Không provider/payment/email/Cloudflare/production trong phiênnày. MoMoconfig giả disabledendpoint chỉ để productionstartup. Nếu health503, đọcprivatelog/dependencies; không tắtguard/verifier.
