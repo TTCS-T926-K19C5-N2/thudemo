@@ -1,0 +1,8 @@
+{
+  "image": "sha256:ba886f9516901776767156159e55e540f16e36c39b6bc981aa60a8cf3b35b067",
+  "health": "ok",
+  "source": "Local final image, no publish/deploy",
+  "apiImage": "sha256:ba886f9516901776767156159e55e540f16e36c39b6bc981aa60a8cf3b35b067",
+  "checkedAt": "2026-10-04T11:00:38.0470459Z",
+  "webImage": "sha256:ba886f9516901776767156159e55e540f16e36c39b6bc981aa60a8cf3b35b067"
+}

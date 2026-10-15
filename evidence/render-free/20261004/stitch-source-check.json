@@ -1,0 +1,270 @@
+{
+  "project": "1184317708208520256",
+  "requiredCount": 29,
+  "rows": [
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/catalog-1280.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "067ffc23e523451f8a347980081c73e6"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/detail-1280.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "e44ee9ca7e104e9caa80e894f2bdcdfd"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": false,
+      "newCapture": null,
+      "pngExists": true,
+      "holdGated": true,
+      "id": "fc17da850a404552be43970014418499"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/manage-1280.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "00e1f736c6bb4aca894f4728ff92135e"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/import-1280.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "e8fd30e083654772a91ce72289e51a7a"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/prices-1280.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "6f8e57d7a84e4723a6f9686db5018ca0"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/map-1280.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "9b294786f6ba4aabb770caef00d59377"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/login-1280.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "5f054a02e26949728d70914f88f5b2da"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/import-error-1280.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "0250def27ff14f23bc9e472b16637e72"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/prices-error-1280.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "c8e82fa54a344a2fad66d66d6c9985bf"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/draft-1280.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "f165167c08454f238a9902c085879e0e"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": false,
+      "newCapture": null,
+      "pngExists": true,
+      "holdGated": true,
+      "id": "4362f9256dd941f590b097ad207e340e"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": false,
+      "newCapture": null,
+      "pngExists": true,
+      "holdGated": true,
+      "id": "907bd2951a6141d398c52cc953ca4f86"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/catalog-390.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "8a1b1fb6473340aba5c54604c49d452f"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/detail-390.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "fd494f22ffa34f38a402bc2e3bf4cdb1"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": false,
+      "newCapture": null,
+      "pngExists": true,
+      "holdGated": true,
+      "id": "77ecdad3c24549b69584f589105bc3cf"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/manage-390.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "ace8a0b9fe7e454e910c70806cfcba9a"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/import-390.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "dba783fc4ece44e2948c0ba46034960d"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/prices-390.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "20fc786dd53d4ea4b9bbad8dd29ee5e5"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/map-390.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "922cda99ddc24deb986d255ce1752e28"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/login-clean-390.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "fa4f08ad2ccc4ebaa18d0ee4d1019a89"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/import-error-390.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "349f28c3ac9241efa2dedf6003cbfedd"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/prices-error-390.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "70cbb7d303394a5c83e16cb46f19491a"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/draft-390.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "52811634066d4855beb17a3dfb21740f"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": false,
+      "newCapture": null,
+      "pngExists": true,
+      "holdGated": true,
+      "id": "b03b8e50691045b8a10a003180aeaa25"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": false,
+      "newCapture": null,
+      "pngExists": true,
+      "holdGated": true,
+      "id": "bd9a6672cc0c44ad8a1d646526d12dc0"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/loading-390.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "6d416705815141dfaba897aab6a06016"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/empty-390.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "68eb789cfc394ba4b087518c22d2fbd2"
+    },
+    {
+      "htmlExists": true,
+      "live": true,
+      "captureExists": true,
+      "newCapture": "after/error-390.png",
+      "pngExists": true,
+      "holdGated": false,
+      "id": "58028de332754185802595452f0a41b9"
+    }
+  ],
+  "checkedAt": "2026-10-04T10:58:52.3696657Z",
+  "liveScreenCount": 43,
+  "staging": false
+}

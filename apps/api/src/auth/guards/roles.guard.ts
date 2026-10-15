@@ -1,7 +1,14 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Logger,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from '@prisma/client';
 import { ROLES_KEY, IS_PUBLIC_KEY } from '../decorators/roles.decorator.js';
+import type { RoleName } from '../roles.js';
+import type { AuthenticatedRequest } from './session-auth.guard.js';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -14,32 +21,36 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    
+
     if (isPublic) {
       return true;
     }
 
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredRoles = this.reflector.getAllAndOverride<RoleName[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     // Default Deny: If no roles are specified, deny access.
     if (!requiredRoles || requiredRoles.length === 0) {
-      this.logger.warn(`Access denied to route ${context.getHandler().name}: No roles declared (Default Deny)`);
+      this.logger.warn(
+        `Access denied to route ${context.getHandler().name}: No roles declared (Default Deny)`,
+      );
       throw new ForbiddenException('Access denied');
     }
 
-    const { user } = context.switchToHttp().getRequest();
-    
+    const { user } = context.switchToHttp().getRequest<AuthenticatedRequest>();
+
     if (!user) {
       throw new ForbiddenException('User not authenticated');
     }
 
-    const hasRole = requiredRoles.some((role) => user.role === role);
-    
+    const hasRole = requiredRoles.some((role) => user.roles.includes(role));
+
     if (!hasRole) {
-      this.logger.warn(`Access denied: User ${user.id} with role ${user.role} attempted to access route requiring ${requiredRoles.join(',')}`);
+      this.logger.warn(
+        `Access denied to route ${context.getHandler().name}: role mismatch`,
+      );
       throw new ForbiddenException('Insufficient permissions');
     }
 

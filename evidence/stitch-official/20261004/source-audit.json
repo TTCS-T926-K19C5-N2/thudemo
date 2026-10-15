@@ -1,0 +1,354 @@
+{
+  "rows": [
+    {
+      "id": "067ffc23e523451f8a347980081c73e6",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        2560,
+        3242
+      ],
+      "cssViewport": 1280,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "e44ee9ca7e104e9caa80e894f2bdcdfd",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        1280,
+        1705
+      ],
+      "cssViewport": 1280,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 1.0
+    },
+    {
+      "id": "fc17da850a404552be43970014418499",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        2560,
+        2396
+      ],
+      "cssViewport": 1280,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "00e1f736c6bb4aca894f4728ff92135e",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        2560,
+        2048
+      ],
+      "cssViewport": 1280,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "e8fd30e083654772a91ce72289e51a7a",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        2560,
+        2048
+      ],
+      "cssViewport": 1280,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "6f8e57d7a84e4723a6f9686db5018ca0",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        2560,
+        2048
+      ],
+      "cssViewport": 1280,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "9b294786f6ba4aabb770caef00d59377",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        2560,
+        2048
+      ],
+      "cssViewport": 1280,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "5f054a02e26949728d70914f88f5b2da",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        2560,
+        2126
+      ],
+      "cssViewport": 1280,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "0250def27ff14f23bc9e472b16637e72",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        2560,
+        2048
+      ],
+      "cssViewport": 1280,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "c8e82fa54a344a2fad66d66d6c9985bf",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        2560,
+        2180
+      ],
+      "cssViewport": 1280,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "f165167c08454f238a9902c085879e0e",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        2560,
+        2272
+      ],
+      "cssViewport": 1280,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "4362f9256dd941f590b097ad207e340e",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        2560,
+        2048
+      ],
+      "cssViewport": 1280,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "907bd2951a6141d398c52cc953ca4f86",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        2560,
+        2582
+      ],
+      "cssViewport": 1280,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "8a1b1fb6473340aba5c54604c49d452f",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        3132
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "fd494f22ffa34f38a402bc2e3bf4cdb1",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        2744
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "77ecdad3c24549b69584f589105bc3cf",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        2054
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "ace8a0b9fe7e454e910c70806cfcba9a",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        2170
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "dba783fc4ece44e2948c0ba46034960d",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        2304
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "20fc786dd53d4ea4b9bbad8dd29ee5e5",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        1840
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "922cda99ddc24deb986d255ce1752e28",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        2024
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "fa4f08ad2ccc4ebaa18d0ee4d1019a89",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        1768
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "349f28c3ac9241efa2dedf6003cbfedd",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        2188
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "70cbb7d303394a5c83e16cb46f19491a",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        2006
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "52811634066d4855beb17a3dfb21740f",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        2150
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "b03b8e50691045b8a10a003180aeaa25",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        1768
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "bd9a6672cc0c44ad8a1d646526d12dc0",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        2360
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "6d416705815141dfaba897aab6a06016",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        2268
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "68eb789cfc394ba4b087518c22d2fbd2",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        1768
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    },
+    {
+      "id": "58028de332754185802595452f0a41b9",
+      "domUnchanged": true,
+      "pngViewed": true,
+      "bitmap": [
+        780,
+        1768
+      ],
+      "cssViewport": 390,
+      "audit": "Viewed exact downloaded PNG and independent HTML render. Bitmap width/CSS width is measured, not an assertion of the author browser DPR; metadata and downloaded bitmap dimensions may differ.",
+      "bitmapToCssWidthRatio": 2.0
+    }
+  ],
+  "allDomUnchanged": true,
+  "note": "Byte hashes differ because current download serializes void tags and doctype differently. Existing exports retained."
+}
