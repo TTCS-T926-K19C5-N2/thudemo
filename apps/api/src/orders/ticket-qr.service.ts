@@ -36,13 +36,17 @@ export class TicketQrService {
         (TicketRow & {
           code: string | null;
           ticketDbId: string | null;
+          transferredToEmail: string | null;
+          ownerEmail: string | null;
         })[]
       >(Prisma.sql`
         SELECT oi.id,o."showtimeId",oi."checkedInAt",s.row,s."seatNumber",oi."categoryName",
           EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CANCELLED') AS cancelled,
           EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CHECKED_IN') AS used,
           (SELECT t.code FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" LIMIT 1) AS code,
-          (SELECT t.id::text FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" LIMIT 1) AS "ticketDbId"
+          (SELECT t.id::text FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" LIMIT 1) AS "ticketDbId",
+          (SELECT t."transferredToEmail" FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" LIMIT 1) AS "transferredToEmail",
+          (SELECT t."ownerEmail" FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" LIMIT 1) AS "ownerEmail"
         FROM order_items oi JOIN orders o ON o.id=oi."orderId" JOIN seats s ON s.id=oi."seatId"
         WHERE o.id=${orderId}::uuid AND s."showtimeId"=o."showtimeId" ORDER BY s.row,s."seatNumber"`);
       return {
@@ -59,6 +63,8 @@ export class TicketQrService {
             : item.checkedInAt || item.used
               ? 'CHECKED_IN'
               : 'VALID',
+          transferredToEmail: item.transferredToEmail ?? null,
+          ownerEmail: item.ownerEmail ?? null,
           qrPayload: item.cancelled
             ? null
             : this.crypto.issueQr(item.id, item.showtimeId),

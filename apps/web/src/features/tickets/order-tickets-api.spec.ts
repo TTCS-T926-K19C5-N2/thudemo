@@ -22,9 +22,10 @@ describe("decodeOrderTickets", () => {
         seatLabel: "A-1",
         ticketType: "VIP",
         status: "VALID",
+        transferredToEmail: null,
         qrPayload: ticket.qrPayload,
       },
-      expect.objectContaining({ id: "t2", qrPayload: null }),
+      expect.objectContaining({ id: "t2", qrPayload: null, transferredToEmail: null }),
     ]);
   });
 
