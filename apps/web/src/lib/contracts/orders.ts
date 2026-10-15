@@ -51,6 +51,14 @@ export type OrderDetail = {
   status: OrderStatus;
   rawStatus: string;
   totalAmount: number;
+  subtotal?: number;
+  discountAmount?: number;
+  couponCode?: string | null;
+  coupon?: {
+    code: string;
+    discountType: string;
+    discountValue: number;
+  } | null;
   expiresAt: string;
   serverTime: string;
   remainingSeconds: number;
@@ -217,6 +225,21 @@ export function decodeOrderDetail(value: unknown): OrderDetail {
     status: (o.status === "PENDING_PAYMENT" ? "PENDING" : o.status) as OrderStatus,
     rawStatus: typeof o.rawStatus === "string" ? o.rawStatus : (o.status as string),
     totalAmount: o.totalAmount,
+    subtotal: typeof o.subtotal === "number" ? o.subtotal : undefined,
+    discountAmount: typeof o.discountAmount === "number" ? o.discountAmount : 0,
+    couponCode: typeof o.couponCode === "string" ? o.couponCode : null,
+    coupon:
+      o.coupon && typeof o.coupon === "object"
+        ? {
+            code: String((o.coupon as Record<string, unknown>).code ?? ""),
+            discountType: String(
+              (o.coupon as Record<string, unknown>).discountType ?? "",
+            ),
+            discountValue: Number(
+              (o.coupon as Record<string, unknown>).discountValue ?? 0,
+            ),
+          }
+        : null,
     expiresAt,
     serverTime: o.serverTime,
     remainingSeconds: o.remainingSeconds,
@@ -240,6 +263,27 @@ export function decodeOrderDetail(value: unknown): OrderDetail {
     items,
     latestPayment: decodeLatestPayment(o.latestPayment),
     paymentAttempts: typeof o.paymentAttempts === "number" ? o.paymentAttempts : 0,
+  };
+}
+
+export type ApplyCouponResult = {
+  orderId: string;
+  originalTotal: number;
+  discountAmount: number;
+  finalTotal: number;
+  couponCode: string;
+  message: string;
+};
+
+export function decodeApplyCouponResult(value: unknown): ApplyCouponResult {
+  const o = object(value);
+  return {
+    orderId: typeof o.orderId === "string" ? o.orderId : "",
+    originalTotal: typeof o.originalTotal === "number" ? o.originalTotal : 0,
+    discountAmount: typeof o.discountAmount === "number" ? o.discountAmount : 0,
+    finalTotal: typeof o.finalTotal === "number" ? o.finalTotal : 0,
+    couponCode: typeof o.couponCode === "string" ? o.couponCode : "",
+    message: typeof o.message === "string" ? o.message : "",
   };
 }
 

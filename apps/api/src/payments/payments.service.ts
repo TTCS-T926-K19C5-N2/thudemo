@@ -86,6 +86,8 @@ export class PaymentsService {
       const price = item.seat?.category?.price ?? item.unitPrice;
       authoritativeTotal += price;
     }
+    const discountAmount = order.discountAmount ?? 0;
+    authoritativeTotal = Math.max(0, authoritativeTotal - discountAmount);
 
     if (authoritativeTotal <= 0) {
       throw new BadRequestException('Tổng tiền đơn hàng không hợp lệ.');
@@ -430,9 +432,10 @@ export class PaymentsService {
     for (const item of order.items) {
       orderTotal += item.seat?.category?.price ?? item.unitPrice;
     }
+    const expectedAmount = Math.max(0, orderTotal - (order.discountAmount ?? 0));
 
     // 5. Amount mismatch check
-    if (event.status === 'SUCCESS' && event.amount !== orderTotal) {
+    if (event.status === 'SUCCESS' && event.amount !== expectedAmount) {
       await this.db.$transaction(async (tx) => {
         await tx.order.update({
           where: { id: order.id },
@@ -467,7 +470,7 @@ export class PaymentsService {
 
       await this.accountantNotifier.notifyAmountMismatch({
         orderId: order.id,
-        expectedAmount: orderTotal,
+        expectedAmount,
         receivedAmount: event.amount,
         transactionId: event.transactionId,
         gatewayRef: event.gatewayRef,
@@ -589,6 +592,17 @@ export class PaymentsService {
             await tx.seatHold.deleteMany({
               where: { seatId: { in: seatIds } },
             });
+          }
+
+          // (b2) Concurrency-safe: Trừ lượt dùng coupon khi đơn hàng thanh toán thành công
+          if (order.couponId) {
+            await tx.$executeRaw(Prisma.sql`
+              UPDATE "coupons"
+              SET "usedCount" = "usedCount" + 1,
+                  "updatedAt" = CURRENT_TIMESTAMP
+              WHERE "id" = ${order.couponId}::uuid
+                AND "usedCount" < "maxUses"
+            `);
           }
 
           // (c) Payment -> SUCCEEDED with gateway transaction ID

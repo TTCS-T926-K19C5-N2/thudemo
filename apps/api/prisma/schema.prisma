@@ -72,6 +72,7 @@ model Event {
   organizer        User       @relation("OrganizerEvents", fields: [organizerId], references: [id], onDelete: Restrict)
   showtimes        Showtime[]
   orders           Order[]
+  coupons          Coupon[]
   createdAt        DateTime   @default(now()) @db.Timestamptz(3)
   updatedAt        DateTime   @updatedAt @db.Timestamptz(3)
 
@@ -200,6 +201,9 @@ model Order {
   paymentExpiresAt DateTime     @db.Timestamptz(3)
   expiresAt        DateTime?    @db.Timestamptz(3)
   totalAmount      Int
+  couponId         String?      @db.Uuid
+  coupon           Coupon?      @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  discountAmount   Int          @default(0)
   items            OrderItem[]
   payments         Payment[]
   logs             OrderLog[]
@@ -372,4 +376,32 @@ model TicketAdmission {
   // Partial unique NORMAL ticket and CHECK constraints are maintained by migration SQL.
   @@index([ticketId, enteredAt], map: "ticket_admissions_ticket_time")
   @@map("ticket_admissions")
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+model Coupon {
+  id             String       @id @default(uuid()) @db.Uuid
+  code           String       @unique
+  eventId        String       @db.Uuid
+  event          Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  discountType   DiscountType
+  discountValue  Int
+  maxDiscount    Int?
+  minOrderAmount Int?         @default(0)
+  maxUses        Int
+  usedCount      Int          @default(0)
+  validFrom      DateTime     @default(now()) @db.Timestamptz(3)
+  expiresAt      DateTime     @db.Timestamptz(3)
+  isActive       Boolean      @default(true)
+  orders         Order[]
+  createdAt      DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(3)
+
+  @@index([eventId])
+  @@index([code])
+  @@map("coupons")
 }

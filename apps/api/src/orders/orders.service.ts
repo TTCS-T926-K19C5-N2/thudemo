@@ -71,6 +71,14 @@ export type OrderDetailResponse = {
   status: OrderStatus;
   rawStatus: OrderStatus;
   totalAmount: number;
+  subtotal?: number;
+  discountAmount?: number;
+  couponCode?: string | null;
+  coupon?: {
+    code: string;
+    discountType: string;
+    discountValue: number;
+  } | null;
   expiresAt: string;
   paymentExpiresAt: string;
   serverTime: string;
@@ -105,6 +113,8 @@ export type OrderDetailResponse = {
     status: OrderStatus;
     paymentExpiresAt: string;
     totalAmount: number;
+    subtotal?: number;
+    discountAmount?: number;
     items: {
       seatId: string;
       categoryName: string;
@@ -513,6 +523,7 @@ export class OrdersService {
       include: {
         event: true,
         showtime: true,
+        coupon: true,
         items: {
           include: {
             seat: {
@@ -534,14 +545,17 @@ export class OrdersService {
 
     // Prices are the snapshots captured server-side when the order was created
     // (S-16); a later category price change must not alter a pending order.
-    let recalculatedTotal = 0;
+    let recalculatedSubtotal = 0;
     for (const item of order.items) {
-      recalculatedTotal += item.unitPrice;
+      recalculatedSubtotal += item.unitPrice;
     }
 
-    if (recalculatedTotal !== order.totalAmount) {
+    const discountAmount = order.discountAmount ?? 0;
+    const finalTotal = Math.max(0, recalculatedSubtotal - discountAmount);
+
+    if (finalTotal !== order.totalAmount) {
       this.logger.warn(
-        `Order ${order.id} total amount mismatch: recorded=${order.totalAmount}, recalculated=${recalculatedTotal}`,
+        `Order ${order.id} total amount mismatch: recorded=${order.totalAmount}, calculated=${finalTotal}`,
       );
     }
 
@@ -619,7 +633,17 @@ export class OrdersService {
       id: order.id,
       status: resolvedStatus,
       rawStatus: order.status,
-      totalAmount: recalculatedTotal,
+      totalAmount: finalTotal,
+      subtotal: recalculatedSubtotal,
+      discountAmount,
+      couponCode: order.coupon?.code ?? null,
+      coupon: order.coupon
+        ? {
+            code: order.coupon.code,
+            discountType: order.coupon.discountType,
+            discountValue: order.coupon.discountValue,
+          }
+        : null,
       expiresAt: expiresIso,
       paymentExpiresAt: expiresIso,
       serverTime: serverTimeIso,
@@ -643,7 +667,9 @@ export class OrdersService {
         id: order.id,
         status: resolvedStatus,
         paymentExpiresAt: expiresIso,
-        totalAmount: recalculatedTotal,
+        totalAmount: finalTotal,
+        subtotal: recalculatedSubtotal,
+        discountAmount,
         items,
       },
       created: false,

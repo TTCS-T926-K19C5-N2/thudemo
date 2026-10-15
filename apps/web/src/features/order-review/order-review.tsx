@@ -14,6 +14,7 @@ import {
   Ticket,
 } from "@/components/ui/material-icon";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { SignedTickets } from "./signed-tickets";
@@ -31,6 +32,7 @@ import { PublicLayout } from "@/components/layout/product-layout";
 import { api, ApiError } from "@/lib/api/client";
 import { loadCurrentUser } from "@/lib/api";
 import {
+  decodeApplyCouponResult,
   decodeOrderDetail,
   decodePayResponse,
   type OrderDetail,
@@ -59,6 +61,10 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
   const [notFound, setNotFound] = useState<boolean>(false);
   const [paying, setPaying] = useState<boolean>(false);
   const [payError, setPayError] = useState<string>("");
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [couponLoading, setCouponLoading] = useState<boolean>(false);
+  const [couponError, setCouponError] = useState<string>("");
+  const [couponSuccess, setCouponSuccess] = useState<string>("");
   const alive = useRef(true);
 
   const refresh = useCallback(async () => {
@@ -170,6 +176,54 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
     }, 1000);
     return () => clearInterval(interval);
   }, [order, expired, clock]);
+
+  const handleApplyCoupon = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const clean = couponCode.trim();
+    if (!clean) {
+      setCouponError("Vui lòng nhập mã giảm giá.");
+      return;
+    }
+    setCouponLoading(true);
+    setCouponError("");
+    setCouponSuccess("");
+    try {
+      const res = await api(`/orders/${id}/coupon`, decodeApplyCouponResult, {
+        method: "POST",
+        body: JSON.stringify({ code: clean }),
+      });
+      setCouponSuccess(
+        res.message || `Áp dụng mã ${res.couponCode} thành công!`,
+      );
+      setCouponCode("");
+      await refresh();
+    } catch (err) {
+      setCouponError(
+        err instanceof Error ? err.message : "Không thể áp dụng mã giảm giá.",
+      );
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = async () => {
+    setCouponLoading(true);
+    setCouponError("");
+    setCouponSuccess("");
+    try {
+      await api(`/orders/${id}/coupon`, decodeApplyCouponResult, {
+        method: "DELETE",
+      });
+      setCouponSuccess("Đã gỡ mã giảm giá khỏi đơn hàng.");
+      await refresh();
+    } catch (err) {
+      setCouponError(
+        err instanceof Error ? err.message : "Không thể gỡ mã giảm giá.",
+      );
+    } finally {
+      setCouponLoading(false);
+    }
+  };
 
   const defaultPayHandler = async () => {
     if (onPay) {
@@ -436,23 +490,142 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
                 </TableBody>
               </Table>
               <Separator />
-              <div className="p-5 bg-card flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="text-sm text-muted-foreground">
-                  Tổng cộng:{" "}
-                  <strong className="text-foreground">
-                    {order.items.length} vé
-                  </strong>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs text-muted-foreground uppercase tracking-wider block">
-                    Tổng tiền thanh toán
-                  </span>
-                  <span
-                    className="text-2xl sm:text-3xl font-extrabold text-primary"
-                    data-testid="total-amount"
-                  >
-                    {formatVnd(order.totalAmount)}
-                  </span>
+              <div className="p-5 bg-card flex flex-col gap-4">
+                {/* S-56: Ô nhập mã giảm giá sự kiện */}
+                {!expired &&
+                  (order.status === "PENDING" ||
+                    order.status === "PENDING_PAYMENT") && (
+                    <div
+                      className="p-4 rounded-xl border border-dashed bg-muted/30"
+                      data-testid="coupon-section"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <Ticket className="h-5 w-5 text-primary" />
+                          <span className="font-semibold text-sm">
+                            Mã giảm giá sự kiện
+                          </span>
+                        </div>
+                        {order.couponCode ? (
+                          <div className="flex items-center gap-2">
+                            <Badge
+                              variant="outline"
+                              className="border-emerald-500 text-emerald-600 bg-emerald-50 text-xs px-2.5 py-1 font-mono font-bold"
+                              data-testid="active-coupon-badge"
+                            >
+                              {order.couponCode}
+                            </Badge>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                              onClick={handleRemoveCoupon}
+                              disabled={couponLoading}
+                              data-testid="remove-coupon-button"
+                            >
+                              Gỡ mã
+                            </Button>
+                          </div>
+                        ) : (
+                          <form
+                            onSubmit={handleApplyCoupon}
+                            className="flex items-center gap-2 w-full sm:w-auto"
+                          >
+                            <Input
+                              placeholder="Nhập mã ưu đãi..."
+                              value={couponCode}
+                              onChange={(e) =>
+                                setCouponCode(e.target.value.toUpperCase())
+                              }
+                              className="h-8 text-xs font-mono uppercase w-full sm:w-44"
+                              disabled={couponLoading}
+                              data-testid="coupon-input"
+                            />
+                            <Button
+                              type="submit"
+                              size="sm"
+                              className="h-8 text-xs px-3"
+                              disabled={couponLoading || !couponCode.trim()}
+                              data-testid="apply-coupon-button"
+                            >
+                              {couponLoading ? (
+                                <>
+                                  <RotateCw className="mr-1 h-3.5 w-3.5 animate-spin" />
+                                  Áp dụng...
+                                </>
+                              ) : (
+                                "Áp dụng"
+                              )}
+                            </Button>
+                          </form>
+                        )}
+                      </div>
+                      {couponError && (
+                        <p
+                          className="text-xs text-destructive mt-2"
+                          data-testid="coupon-error"
+                        >
+                          {couponError}
+                        </p>
+                      )}
+                      {couponSuccess && (
+                        <p
+                          className="text-xs text-emerald-600 mt-2 font-medium"
+                          data-testid="coupon-success"
+                        >
+                          {couponSuccess}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                {/* Subtotal, discount & total amount */}
+                <div className="flex flex-col gap-2 pt-1">
+                  <div className="flex justify-between items-center text-sm text-muted-foreground">
+                    <span>
+                      Tạm tính:{" "}
+                      <strong className="text-foreground">
+                        {order.items.length} vé
+                      </strong>
+                    </span>
+                    <span className="font-medium text-foreground">
+                      {formatVnd(
+                        order.subtotal ??
+                          order.totalAmount + (order.discountAmount ?? 0),
+                      )}
+                    </span>
+                  </div>
+
+                  {(order.discountAmount ?? 0) > 0 && (
+                    <div
+                      className="flex justify-between items-center text-sm text-emerald-600 font-medium"
+                      data-testid="discount-row"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        Giảm giá ({order.couponCode ?? "Coupon"}):
+                      </span>
+                      <span
+                        className="font-bold"
+                        data-testid="discount-amount"
+                      >
+                        - {formatVnd(order.discountAmount ?? 0)}
+                      </span>
+                    </div>
+                  )}
+
+                  <Separator className="my-1" />
+
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider font-semibold">
+                      Tổng tiền thanh toán
+                    </span>
+                    <span
+                      className="text-2xl sm:text-3xl font-extrabold text-primary"
+                      data-testid="total-amount"
+                    >
+                      {formatVnd(order.totalAmount)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
