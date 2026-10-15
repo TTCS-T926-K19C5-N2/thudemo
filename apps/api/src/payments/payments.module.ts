@@ -12,6 +12,7 @@ import {
   MockGatewayEnabledGuard,
 } from './mock-gateway.controller.js';
 import { MockGatewayService } from './mock-gateway.service.js';
+import { ReconciliationService } from './reconciliation.service.js';
 
 import { OrdersModule } from '../orders/orders.module.js';
 
@@ -42,11 +43,13 @@ export const paymentGatewayProvider: Provider = {
     paymentGatewayProvider,
     AccountantNotifier,
     PaymentsService,
+    ReconciliationService,
     MockGatewayService,
     MockGatewayEnabledGuard,
   ],
   exports: [
     PaymentsService,
+    ReconciliationService,
     PAYMENT_GATEWAY,
     AccountantNotifier,
     MockPaymentGateway,
