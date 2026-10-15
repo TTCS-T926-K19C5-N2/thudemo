@@ -1,5 +1,5 @@
 {
-  "head": "b52ba6afa07d29444e5e809892e5325f0966625c",
+  "head": "8107cbf35f800beda4e19f9de8277c4a10f376b4",
   "base": "8bceec45c7c22fe3cdacb25a18d772c5688bf034",
   "files": [
     {
@@ -267,6 +267,10 @@
       "sha256": "45b0ba45e686fa91d09c4eeb29d70c9d27393479d33e5479d944e50649d2787c"
     },
     {
+      "path": "scripts/sprint1-staging-client.ps1",
+      "sha256": "b2388ebbe887fa96a0d9dee5850faa2b4786e119531a7af440390626b9b0bec2"
+    },
+    {
       "path": "scripts/sprint1-staging-watch.mjs",
       "sha256": "6790c8573e3370985ec44675831d3ac2ae3f02c6dbb0743872e93d29e07ad806"
     },
@@ -293,10 +297,6 @@
     {
       "path": "scripts/verify-sprint1-staging.mjs",
       "sha256": "e42911c96d6d9f2c6fe009d2924f4524d04e2039ba7964d63d8cde79894e1e57"
-    },
-    {
-      "path": "scripts/sprint1-staging-client.ps1",
-      "sha256": "b2388ebbe887fa96a0d9dee5850faa2b4786e119531a7af440390626b9b0bec2"
     }
   ]
 }
