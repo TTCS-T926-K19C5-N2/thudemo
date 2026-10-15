@@ -43,11 +43,6 @@ import {
 } from "@/features/seat-selection/server-countdown";
 import { OrderTickets } from "@/features/tickets/order-tickets";
 
-// The hold countdown only applies while the order still awaits payment;
-// a PAID order past its hold deadline is not expired.
-function awaitingPayment(order: Pick<OrderDetail, "status">): boolean {
-  return order.status === "PENDING" || order.status === "PENDING_PAYMENT";
-}
 
 export interface OrderReviewProps {
   id: string;
@@ -135,11 +130,7 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
         serverAnchor.receivedAt,
       );
       setRemaining(rem);
-<<<<<<< HEAD
-      setExpired(data.isExpired || (awaitingPayment(data) && rem <= 0));
-=======
       setExpired(data.status !== "PAID" && (data.isExpired || rem <= 0));
->>>>>>> origin/main
       setLoading(false);
     }
 
@@ -170,11 +161,7 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
 
   // Live countdown timer based on server clock synchronization
   useEffect(() => {
-<<<<<<< HEAD
-    if (!order || expired || !clock || !awaitingPayment(order)) return;
-=======
     if (!order || order.status === "PAID" || expired || !clock) return;
->>>>>>> origin/main
     const interval = setInterval(() => {
       const rem = remainingSeconds(order.expiresAt, clock, performance.now());
       setRemaining(rem);
