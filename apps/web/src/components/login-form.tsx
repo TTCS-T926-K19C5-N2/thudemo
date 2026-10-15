@@ -52,7 +52,7 @@ export function LoginForm({
         );
       router.replace(
         safeReturnTo(returnTo ?? null) ??
-          (user.roles.includes("ORGANIZER") ? "/events" : "/account"),
+          (user.roles.includes("ORGANIZER") ? "/events" : user.roles.includes("STAFF") ? "/check-in" : "/account"),
       );
       router.refresh();
     } catch (e) {

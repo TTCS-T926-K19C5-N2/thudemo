@@ -14,6 +14,7 @@ import { HoldsModule } from './holds/holds.module.js';
 import { OrdersModule } from './orders/orders.module.js';
 import { PaymentsModule } from './payments/payments.module.js';
 import { MonitoringModule } from './monitoring/monitoring.module.js';
+import { CheckInModuleS29 } from './check-in/check-in-s29.module.js';
 import { TicketsModule } from './tickets/tickets.module.js';
 import { WebhookSecurityFilter } from './payments/webhook-security.filter.js';
 import { ScannerModule } from './scanner/scanner.module.js';
@@ -22,7 +23,11 @@ import { ScannerModule } from './scanner/scanner.module.js';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: resolve(process.cwd(), '../../.env'),
+      envFilePath: [
+        resolve(process.cwd(), '.env'),
+        resolve(process.cwd(), '../../.env'),
+        resolve(process.cwd(), '../.env'),
+      ],
     }),
     PrismaModule,
     RedisModule,
@@ -34,6 +39,7 @@ import { ScannerModule } from './scanner/scanner.module.js';
     OrdersModule,
     PaymentsModule,
     MonitoringModule,
+    CheckInModuleS29,
     TicketsModule,
     ScannerModule,
   ],
