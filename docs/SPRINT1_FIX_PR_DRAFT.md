@@ -1,4 +1,61 @@
-# PR91 — sửa nền tảng và nghiệm thu Sprint 1
+# PR91 — gói review Sprint1 hiện tại
+
+Phạm vi đã duyệt DEC15: **S01–S04/K01, T01–T10**. Feature → develop. S30/S31/T31 chỉ kiểm hồi quy khi có ảnh hưởng; không dùng làm AC Sprint1. Chưa Sprint Done và chưa được merge.
+
+## Bản cần review
+
+Product snapshot đã kiểm: `02a8e86a6fea05a49bd27902c08652920e444a10`; base develop `80f7a53d752d78ea6b65da3f8c6c08ca23e78176`. Commit tiếp theo đóng gói hai sửa vận hành + bằng chứng/tài liệu; exact PR head và CI phải đọc từ GitHub sau push, không dùng snapshot này thay bản cuối.
+
+Sửa chính: auth/session/RBAC mặc định đóng, ownership/draft/showtime UTC-VN; S03 consent có phiên bản, pendingBUYER, token hash24h/one-use, final password do người giữ mailbox đặt, outbox mã hóa/retry và SMTP TLS; demo một lệnh với fixture/profile riêng. Giữ V1 và migration bổ sung.
+
+## Findings đã sửa và giới hạn
+
+- HIGH pending-account pre-hijack: activation bắt buộc mật khẩu cuối do người giữ token đặt; credential cũ bị từ chối.
+- MEDIUM SMTP unbounded admission: Redis shared120/hour, caller30/hour trước sharedbudget; resend5/hour/email. Header IP giả bị từ chối. SameNAT chia sẻ callerbudget; nhiều IP vẫn có thể tiêu thụ globalcap.
+- Consent storage fault: transaction trả503, không tạo account/token/send; retry sau khi DB phục hồi PASS.
+- Gateway detached spawn race: chờ socket trước TLShealth; firewall đổi IP chỉ sửa ownedrule được xác minh.
+- Migration29→30 giữ core data/history/FK, chuyển legacy token sang hash; **API cũ không kích hoạt được link sau khi plaintextfields bị xóa**. Rollback chỉ bảo đảm coreauth/events, đăng ký phải dùng handler mới hoặc tắt ở bản cũ.
+
+## Bằng chứng để đọc
+
+Trong `evidence/sprint1/20261016-s03-onboarding/`: `traceability-s03.json`, `artifact-integrity.json`, `regression-admission/gates.json`, `consent-storage-fault.json`, `admission-fix.json`, `coverage-delta/comparison.json`, `ci-02a8e86.json`, `populated-migration.json`, `smtp-product-staging.json`, `staging-api-02a8e86/https-api.json`, `staging-browser-02a8e86/results.json`, `rollback-current.json`, `staging-replica-restart.json`, `staging-secret-sweep.json`, `operations-delta-review.json`.
+
+Ma trận đầy đủ `docs/SPRINT1_ACCEPTANCE_MATRIX.md`; báo cáo `docs/SPRINT1_REVIEW_REPORT.md`; K01 `docs/K01_EVIDENCE.md`: PO chấp thuận đầu ra với sai lệch timebox/mentor được ghi rõ DEC17, không hồi tố tuân thủ.
+
+Staging thủ công hiện tại **https://10.88.164.155:3470**, exact02a. SMTP đã được người dùng xác nhận nhận/kích hoạt/login ở mạng trước; DB/session đối chiếu PASS. Đổi mạng giữ certificate/key/data, cảAPI+activation origin; firewall readback PASS. Đây chưa là merge→auto-deploy.
+
+Clone610 ban đầu sạch rồi fullrebuild02a đã browser/lifecycle PASS. Clone hoàn toàn mới exact02a còn bị RAMguard2GiB chặn trước install/build; phải hoàn thành riêng, không thay bằng bằng chứng tăng dần.
+
+## Checklist người review trực tiếp
+
+- Đọc diff cuối và exacthead/checks trên PR; không approve snapshot cũ.
+- Kiểm auth/ownership/defaultdeny, register/consent/activate/outbox và trustedpeer boundary.
+- Kiểm migration và giới hạn rollback, seedguard, secret placement, owned process/container boundaries.
+- Đối chiếu từng AC/NFR/DoD với artifact/source/environment trong ma trận; kiểm ca clone sạch còn thiếu trước merge.
+- Xác nhận rủi ro hoặc yêu cầu sửa bằng nhận xét của chính người review. AI review không thay approval người khác.
+
+Nội dung review gợi ý (thành viên tự sửa theo điều thực sự đã đọc/kiểm): “Tôi đã đọc diff tại <exactSHA>, đối chiếu <các mục đã kiểm> với <artifact>, kiểm trực tiếp <luồng đã thử>. Findings/rủi ro còn lại: <nội dung>. Quyết định: approve/request changes/comment.” Không đăng mẫu này như một review đã xảy ra.
+
+Sau approval hợp lệ và CI headcuối: merge bằng exacthead theo protection; để watcher tựdeploy develop; đo merge→healthy<600s và chạy nghiệm thu trên SHA tích hợp. Không bỏ gate hoặc sửa policy để merge.
+
+## Hồ sơ lịch sử bên dưới
+
+Các checkpoint cũ sau đây phản ánh đúng thời điểm của chúng; IP/head/status cũ không phải trạng thái hiện hành.
+
+## Lịch sử vận hành16/10 — IP10.112 và candidate02a (đã thay bởi checkpoint đầu trang)
+
+URL staging hiện tại: **https://10.112.63.197:3470**. IP10.88.164.155 trong checkpoint cũ đã hết gán trên laptop. User chấp thuận chuyển mạng; đã đổi chứng chỉ SAN với **cùng khóa TLS**, giữ cert cũ/private backup, scanner/ticket/proxy/DB key và credentials. Hai API activea2 được tạo lại từ cùng image digest, chỉ đổi WEB_ORIGIN; DBcounts giữ6606users/44events/55showtimes/0orders/0tickets/29migrations trước candidate upgrade. Rule firewall đọc lại đúng TCP3470/LocalSubnet/IPmới sau user chạyadmin; CurrentUser Root đã trust cert mới. FingerprintSHA256 `1C:1A:1E:67:61:05:37:B8:A1:7E:F9:42:D1:C7:2A:F5:39:5F:50:46:D3:1D:05:D8:5E:07:85:E4:4F:3A:93:3F`. Máy khác cần import **chỉ cert public mới**; không copy privatekey/config.
+
+Candidateapp02a8e86 đã build/READY trên clone riêng, browserdesktop/mobile17cases+5fullflows và stop/start cùngprofile PASS; filecredentials vẫn `.sprint1-demo/config.json`. Tạm dừng đúng profile clone để dành tài nguyên buildstaging, dữ liệu/secret giữ nguyên. Sau khi rảnh có thể `powershell.exe -NoProfile -File scripts\sprint1-demo.ps1` tại clone, Start reuse source khôngđổi vẫn health/login/logoutsmoke và RAMguard512MiB. Fullbuild vẫn cần2GiB, không bỏguard.
+
+SMTP staging cho mọi emailhợp lệ khi allowlist trống; riêng bài kiểm chỉ gửi tới REGISTRATION_TEST_EMAIL đã được user chọn. Khi mở link kích hoạt, **đặt mật khẩu cuối cùng** rồi đăng nhập. Token trongfragment không chép vào chat/log. Registration/resend có caller30/hour trướcshared120/hour, resend5/hour/email. SameNAT/IP cùngbudget; đó là limit, không allowlist.
+
+Chuyển Wi-Fi về sau: xác minh IP gán thực tế, chuẩn bị cert mới dùngkeyhiệnhữu+backup config, cập nhậtorigin của release cókiểmhealth/data/keyhash. OfficialOScommand `powershell.exe -NoProfile -File scripts\sprint1-staging-access.ps1 -ConfigureFirewall -UpdateOwnedFirewallAddress` cầnAdministrator, từ chối rulekhác/TCPport/RemoteAddresspolicykhác. Trustcert dùng-TrustCertificate theođúngprofile. Không gọiinit lại vì init tạoidentity/profilemới.
+
+Historicalpreviousaccf còn containernhưng image digest gốc không còn trong localcatalog; không dùng tagkhác giảthayảnh gốc. Giữ container/data nguyên. Candidate mới saupromote phải dùng activea2 đãkiểm làmrollback và kiểmrollbackthật. `network-change.json` ghi giới hạn. Không nhận metadataimage haybackupfile là bằng chứngrollback.
+
+Candidate02a đangdeploy quaDocker saubackup/compatibilityreview; đọcStatus choSHAthực tế. Đây là **manualcandidate rehearsal**, chưa phải merge→autodeploy<10phút. Review thànhviênkhác/CI cuối/developmerge/watcher/integratedAC vẫn riêng. K01 đầu ra+PGauthority đượcPOchấp thuận với sai lệchtimebox/mentor theoDEC17, không giả bằngchứng quákhứ.
+
 
 > **Scope mới DEC15:** S03/T07/T08 đã được user đưa vào Sprint1; thêm clone sạch/một lệnh đầy đủ. Các kết quả cũ bên dưới chỉ phủ phạm vi trước; S03/onboarding đang review, chưa PASS. `evidence/sprint1/20261016-s03-onboarding/scope-and-plan.json` là ledger khởi đầu, sẽ mở rộng từng AC/NFR/DoD.
 

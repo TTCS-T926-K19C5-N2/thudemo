@@ -1,0 +1,298 @@
+{
+  "time": "2026-10-16T16:16:56.348145+00:00",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "result": "PASS",
+  "assertion": "Every referenced S03/onboarding evidence artifact exists; hashes identify inspected content. This structural audit alone does not prove assertion semantics.",
+  "checks": [
+    {
+      "gate": "T07-01",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T07-01",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T07-01",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T07-02",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T07-02",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T07-02",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T07-03",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T07-03",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T07-03",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T07-04",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T07-04",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T07-04",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T07-05",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T07-05",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T07-05",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T07-06",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T07-06",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T07-06",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T07-07",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T07-07",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T07-07",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T07-08",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T07-08",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T07-08",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T07-08",
+      "artifact": "consent-storage-fault.json",
+      "sha256": "41e2c93abe7a3caddf389936470aac7e600d73fd86aa6ed4aa347002c7da1343"
+    },
+    {
+      "gate": "T08-01",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T08-01",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T08-01",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T08-02",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T08-02",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T08-02",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T08-03",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T08-03",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T08-03",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T08-04",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T08-04",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T08-04",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T08-05",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T08-05",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T08-05",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T08-06",
+      "artifact": "regression-admission/gates.json",
+      "sha256": "54cb58b5e5e70f74cf5df2e748e7d57d9050222ae3c7675576ecfc4672d96a80"
+    },
+    {
+      "gate": "T08-06",
+      "artifact": "regression-admission/summary.json",
+      "sha256": "79429618079aae96506a467181f50165c762b800971c6fdbb96bedb1b5bbd629"
+    },
+    {
+      "gate": "T08-06",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "T08-07",
+      "artifact": "smtp-product-local.json",
+      "sha256": "1e992f37efcd5ea967b947fea4bd12a89ae07de48885944a88994b7e821c14df"
+    },
+    {
+      "gate": "T08-07",
+      "artifact": "smtp-product-staging.json",
+      "sha256": "d49578b817d48ca5417c224578c3fb28262d00205ebd4b52d8fea748c0916145"
+    },
+    {
+      "gate": "T08-08",
+      "artifact": "runtime-secret-sweep.json",
+      "sha256": "c135b92d5330d8604679369b5d09c3d21563dabce5601509456588c4032a0d22"
+    },
+    {
+      "gate": "T08-08",
+      "artifact": "clean-clone-lifecycle.json",
+      "sha256": "cf9cf4356b39dcf967114d27358fbcaef22e4a3a3bc328878337aad6842598e8"
+    },
+    {
+      "gate": "T08-08",
+      "artifact": "staging-secret-sweep.json",
+      "sha256": "a1b467f3f4831dc6324f5317a0cdd80bf81dcd7adeddbe2b465c367de1300a87"
+    },
+    {
+      "gate": "T08-08",
+      "artifact": "staging-replica-restart.json",
+      "sha256": "205ffff23bd684ccc9c3c2bf3e6d978f5b20dc3027cea0e86c3e7214bff2b886"
+    },
+    {
+      "gate": "T08-09",
+      "artifact": "populated-migration.json",
+      "sha256": "fb43b128969e889133ac558cc60e1e7a181d1a6a9f33524556d9238fb791366f"
+    },
+    {
+      "gate": "T08-09",
+      "artifact": "rollback-current.json",
+      "sha256": "804310e0e8959e9fe21d369a89842905e03016a0aa924f5de68908538167f56e"
+    },
+    {
+      "gate": "ONBOARD-01",
+      "artifact": "clean-clone-browser.json",
+      "sha256": "9c84ef938a944eef83ca45f044995df7c4e46467d6f529d4dabd0cb590b71e33"
+    },
+    {
+      "gate": "ONBOARD-02",
+      "artifact": "clean-clone-browser.json",
+      "sha256": "9c84ef938a944eef83ca45f044995df7c4e46467d6f529d4dabd0cb590b71e33"
+    },
+    {
+      "gate": "ONBOARD-02",
+      "artifact": "browser-02a8e86/results.json",
+      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+    },
+    {
+      "gate": "ONBOARD-03",
+      "artifact": "clean-clone-lifecycle.json",
+      "sha256": "cf9cf4356b39dcf967114d27358fbcaef22e4a3a3bc328878337aad6842598e8"
+    },
+    {
+      "gate": "ONBOARD-04",
+      "artifact": "clean-clone-lifecycle.json",
+      "sha256": "cf9cf4356b39dcf967114d27358fbcaef22e4a3a3bc328878337aad6842598e8"
+    },
+    {
+      "gate": "ONBOARD-04",
+      "artifact": "admission-fix.json",
+      "sha256": "b7bcaab231c2de7d3c4cafdef9a8bc79e8d84f1f9004c2d5016144aeadc4788c"
+    },
+    {
+      "gate": "ONBOARD-05",
+      "artifact": "../../../docs/SPRINT1_DEMO_RUNBOOK.md",
+      "sha256": "073149a184e8bd02012bb272cec32a2627e7de5a77c121af9e2755613989f9b0"
+    }
+  ]
+}

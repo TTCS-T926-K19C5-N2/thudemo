@@ -1,0 +1,43 @@
+{
+  "time": "2026-10-16T15:23:20.186Z",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "environment": "https://10.112.63.197:3470 isolated laptop Docker replicas, PG15/Redis and Internet SMTP",
+  "testRecipientSelectedByUser": true,
+  "recipientRedacted": true,
+  "allowlistRequired": false,
+  "assertions": [
+    {
+      "assertion": "Real trusted HTTPS browser opens approved notice; no TLS bypass",
+      "result": "PASS"
+    },
+    {
+      "assertion": "UI register201 creates pending BUYER and affirmative versioned consent",
+      "result": "PASS"
+    },
+    {
+      "assertion": "Real staging outbox SENT and ciphertext cleared after verified-TLS SMTP acceptance",
+      "result": "PASS",
+      "attempts": 1
+    },
+    {
+      "assertion": "Human received/activated/logged in; server verified, all tokens consumed, affirmative consent and only BUYER retained",
+      "result": "PASS"
+    },
+    {
+      "assertion": "Actual activated account TLS login/me200, Secure HttpOnly cookie, event-create403, logout200 and old-session replay401",
+      "result": "PASS"
+    }
+  ],
+  "inboxReceipt": {
+    "result": "PASS",
+    "source": "Direct user confirmation: đã nhận, kích hoạt và đăng nhập",
+    "observedAt": "2026-10-16T15:29:43.732Z"
+  },
+  "activationAndLogin": "PASS",
+  "result": "PASS",
+  "limitations": [
+    "Manual candidate staging02a, not merged develop or auto-deploy evidence",
+    "One user-selected real inbox; not all mail providers",
+    "No raw mailbox token or recipient retained in evidence"
+  ]
+}

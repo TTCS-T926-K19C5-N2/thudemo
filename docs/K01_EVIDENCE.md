@@ -1,10 +1,12 @@
 # K-01 — hồ sơ quyết định hiện tại, 16/10/2026
 
-**Quyết định authority đã được PO duyệt cho laptop staging dữ liệu giả theo DEC-14 (16/10/2026). K-01 chưa Done:** DoD review của thành viên khác và bằng chứng timebox/mentor còn thiếu. DEC-12 local/DEC-13 host là lịch sử; xác nhận trực tiếp mới của PO mở rộng authority sang profile staging này. Không chọn lại Redis chỉ vì tốc độ prototype.
+> **Quyết định hiện tại DEC17 (16/10):** PO Nguyễn Văn Sáng chấp thuận đầu ra kỹ thuật với sai lệch timebox/mentor được công khai. Không có bằng chứng timebox1ngày/mentor trong quá khứ; không nhận tuân thủ hồi tố. DEC14 PGauthority fake-data laptop staging giữ nguyên. ApprovalPR/người khác/CI/merge/autodeploy vẫn riêng. Evidence `evidence/sprint1/20261016-s03-onboarding/k01-deviation-approval.json`.
+
+**Quyết định authority đã được PO duyệt cho laptop staging dữ liệu giả theo DEC-14 (16/10/2026). K-01 chưa Done:** DoD review của thành viên khác còn chờ. Sai lệch thiếu bằng chứng timebox/mentor được PO chấp thuận theo DEC17, không nhận tuân thủ hồi tố. DEC-12 local/DEC-13 host là lịch sử; xác nhận trực tiếp mới của PO mở rộng authority sang profile staging này. Không chọn lại Redis chỉ vì tốc độ prototype.
 
 K01 Backlog row14 yêu cầu200request cùng1ghế, cảhai phương án, sốđo và quyết định/lýdo; T31 Tasksrow32 thuộcSprint2,200/100×10. Không có nguồn chuyển T31 vàoSprint1.
 
-**Audit quy trình gốc:** Backlog!K14 còn yêu cầu timebox1ngày/có người hướng dẫn ngồi cùng. Artifact đo không chứng minh điều này; trạng thái NOT RUN, cần xác nhận trung thực quá trình đã diễn ra hoặc quyết định xử lý sai lệch. Không dựng lại lịch sử. K01-A chỉ PASS số đo hai phương án; K01-C PASS quyết định PO theo DEC14; DoD02 vẫn chờ member review, K01-D chờ evidence quá trình.
+**Audit quy trình gốc:** Backlog!K14 còn yêu cầu timebox1ngày/có người hướng dẫn ngồi cùng. Artifact đo không chứng minh điều này; trạng thái lịch sử NOT RUN; quyết định xử lý sai lệch hiện tại đã được PO chấp thuận theo DEC17. Không dựng lại lịch sử. K01-A chỉ PASS số đo hai phương án; K01-C PASS quyết định PO theo DEC14; DoD02 vẫn chờ member review, K01-D historical NOT RUN / PO-ACCEPTED-DEVIATION theo DEC17.
 
 ## A. So sánh kho giữ ghế — tách khỏi endpoint sản phẩm
 

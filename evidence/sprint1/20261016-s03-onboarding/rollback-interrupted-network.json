@@ -1,0 +1,7 @@
+{
+  "time": "2026-10-16T16:11:19.195355+00:00",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "result": "NOT RUN",
+  "reason": "Rollback verification TLS timeout after host Wi-Fi changed from10.112.63.197 to10.88.164.155. Active pointer compensated to original02a; no data/key reset. Repeat after authorized network rebind.",
+  "evidence": "Runtime assigned-IP readback and rollback command exit1; not an application acceptance PASS"
+}

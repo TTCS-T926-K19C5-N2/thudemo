@@ -25,7 +25,7 @@ powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Start
 powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Restart
 ```
 
-Stop chỉ dừng process/container của profile này, giữ volume, lịch sử và secret. Source đổi thì dùng Restart để build lại; không `down -v`, reset DB hoặc dừng Node/Docker dùng chung. Khi lỗi, chưa có READY; đọc log private `.sprint1-demo/*.log` và lỗi ngắn trên terminal. Thiết lập cũ trong worktree15/10 vẫn dùng `-Legacy` và runbook checkpoint cũ. Demo localhost khác bootstrap HTTPS/LAN lần đầu và khác resume staging đã cấu hình; certificate/firewall vẫn cần thao tác OS được nêu trong runbook.
+Stop chỉ dừng process/container của profile này, giữ volume, lịch sử và secret. Start dùng lại build khi source fingerprint không đổi và luôn kiểm health/smoke; Restart build lại (trừ -SkipBuild hợp lệ). Source đổi thì dùng Restart để build lại; không `down -v`, reset DB hoặc dừng Node/Docker dùng chung. Khi lỗi, chưa có READY; đọc log private `.sprint1-demo/*.log` và lỗi ngắn trên terminal. Thiết lập cũ trong worktree15/10 vẫn dùng `-Legacy` và runbook checkpoint cũ. Demo localhost khác bootstrap HTTPS/LAN lần đầu và khác resume staging đã cấu hình; certificate/firewall vẫn cần thao tác OS được nêu trong runbook.
 
 ## 1. Chuẩn bị
 

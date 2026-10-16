@@ -1,4 +1,4 @@
-param([switch]$TrustCertificate,[switch]$ConfigureFirewall,[switch]$StartWatcher,[string]$MinimumSourceSha)
+param([switch]$TrustCertificate,[switch]$ConfigureFirewall,[switch]$UpdateOwnedFirewallAddress,[switch]$StartWatcher,[string]$MinimumSourceSha)
 $ErrorActionPreference='Stop'
 $taskRoot=Split-Path -Parent $PSScriptRoot
 $taskDir=Join-Path $taskRoot '.sprint1-staging'
@@ -16,7 +16,23 @@ if($ConfigureFirewall){
   $taskExisting=Get-NetFirewallRule -Name $taskName -ErrorAction SilentlyContinue
   if($taskExisting){
     if($taskExisting.Description -ne $taskDir){throw 'Refuse foreign firewall rule'}
-    Write-Host 'Owned staging firewall rule already exists; inspect filters before changing it.'
+    if($UpdateOwnedFirewallAddress){
+      Get-NetIPAddress -AddressFamily IPv4 -IPAddress $taskConfig.lanAddress -ErrorAction Stop | Out-Null
+      $taskPorts=$taskExisting | Get-NetFirewallPortFilter
+      $taskAddress=$taskExisting | Get-NetFirewallAddressFilter
+      if($taskExisting.Direction.ToString() -ne 'Inbound' -or $taskExisting.Action.ToString() -ne 'Allow' -or
+         @('TCP','6') -notcontains $taskPorts.Protocol.ToString() -or $taskPorts.LocalPort.ToString() -ne '3470' -or
+         ($taskAddress.RemoteAddress -join ',') -ne 'LocalSubnet'){
+        throw 'Owned rule policy differs; refusing to overwrite existing protection'
+      }
+      $taskAddress | Set-NetFirewallAddressFilter -LocalAddress $taskConfig.lanAddress | Out-Null
+      $taskVerified=Get-NetFirewallRule -Name $taskName | Get-NetFirewallAddressFilter
+      if(($taskVerified.LocalAddress -join ',') -ne $taskConfig.lanAddress -or
+         ($taskVerified.RemoteAddress -join ',') -ne 'LocalSubnet'){throw 'Firewall address verification failed'}
+      Write-Host 'Updated only the owned rule LAN address; TCP3470 and LocalSubnet policy retained.'
+    }else{
+      Write-Host 'Owned staging firewall rule already exists; use -UpdateOwnedFirewallAddress for an approved LAN address change.'
+    }
   }else{
     New-NetFirewallRule -Name $taskName -DisplayName 'Sprint1 laptop staging HTTPS (local subnet only)' -Description $taskDir -Direction Inbound -Action Allow -Protocol TCP -LocalPort 3470 -LocalAddress $taskConfig.lanAddress -RemoteAddress LocalSubnet -Profile Any | Out-Null
     Write-Host 'Firewall permits only staging TCP3470 to the configured LAN address from LocalSubnet.'

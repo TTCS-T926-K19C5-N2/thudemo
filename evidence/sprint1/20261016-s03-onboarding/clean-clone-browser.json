@@ -1,6 +1,6 @@
 {
-  "time": "2026-10-16T14:12:35.108Z",
-  "source": "ef3e4c9cd640f8274741439783c6a7f726e6f265",
+  "time": "2026-10-16T14:50:23.360Z",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
   "environment": "Clean clone on D, generated config/new PostgreSQL DB/Redis/Mailpit; no private inputs copied",
   "cases": [
     {
@@ -24,6 +24,6 @@
       "result": "PASS"
     }
   ],
-  "eventId": "3809d443-ca4e-4acb-96e7-955276ea9d62",
+  "eventId": "3ee74376-6481-4f95-940b-3f5c8934a009",
   "result": "PASS"
 }

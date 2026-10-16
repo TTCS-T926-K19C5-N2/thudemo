@@ -1,5 +1,58 @@
 # Sprint 1 — ma trận nghiệm thu đã đối chiếu nguồn (16/10/2026)
 
+## Checkpoint mạng và nghiệm thu mới nhất — 2026-10-16T16:12:49.189416+00:00
+
+URL hiện tại **https://10.88.164.155:3470**, candidate thủ công **02a8e86a6fea05a49bd27902c08652920e444a10**. Người dùng xác nhận chuyển lại mạng này; giữ nguyên certificate/key, cập nhật cả API origin và activation-link origin. `network-return-current.json`: HTTPS health200; firewall đã PASS: người dùng chạy Administrator, live readback đúng10.88.164.155/TCP3470/LocalSubnet/InboundAllow. Evidence email thật ở IP trước vẫn đúng thời điểm/môi trường, không đổi nhãn sang mạng mới.
+
+`rollback-current.json`: rollback thật sang a2 với database30 migrations, smoke/health, rồi khôi phục02a; data counts/history/key bytes giữ nguyên. Old API chỉ tương thích auth/events, không có S03 activation mới. `staging-secret-sweep.json`: actual candidate API/replica/web stdout+stderr không chứa sensitive literal đã chọn; không phải chứng minh không có mọi loại leak. `smtp-product-staging.json`: user nhận/kích hoạt/login, server xác minh BUYER/consent/consumed tokens và login/logout/replay401 PASS.
+
+Chưa Sprint Done: exact02a clean clone mới bị RAMguard trước install/build (RAM khả dụng khoảng1.1GiB); profile clone610→02a đã fullbuild/browser/lifecycle PASS nhưng không thay cho ca clone02a mới. Review người thật, merge develop, CI integrated và watcher auto-deploy <10phút vẫn chưa thực hiện.
+
+## Trạng thái hiện hành — 16/10/2026, sau DEC17 và sửa admission
+
+**Chưa Sprint Done.** Candidate source `02a8e86a6fea05a49bd27902c08652920e444a10`; develop `80f7a53d752d78ea6b65da3f8c6c08ca23e78176`; laptopHTTPS `https://10.112.63.197:3470` đã chạy candidate thủ công `02a8e86a6fea05a49bd27902c08652920e444a10` với S03; chưa merge develop/auto-deploy. Wi-Fi đổi lại10.88.164.155; đã rebind và kiểm trusted HTTPS, firewall readback PASS theo xác nhận người dùng. Phạm vi hiện tại DEC15: **S01–S04/K01, T01–T10**. DEC09 loạiS03 là lịch sử; S30/S31/T31 vẫn ngoài nghiệm thu. Bảng dưới là kết quả có giới hạn, không thay chứng cứ gốc bằng nhãn head mới.
+
+K01: PO đã trả lời **“Chấp thuận đầu ra, ghi rõ sai lệch timebox/mentor”**. DEC17 ghi nhận đầu ra được chấp thuận hiện tại; không có bằng chứng quá khứ từng timebox1ngày/cómentor. Không hồi tốPASS, không miễn approvalPR/CI/staging.
+
+Evidence tương đối bảng: `evidence/sprint1/20261016-s03-onboarding/` (audit = `20261016-acceptance-audit/`). Ma trận hai chiều gốc72điều khoản giữ trong `audit/traceability.json`; bổ sung22mụcS03/onboarding trong `traceability-s03.json`. Các checkpoint cũ phía dưới giữ lịch sử, không được đọc như trạng thái hiện tại.
+
+| Task / Story | Hành vi bắt buộc và ca đã kiểm | Evidence / revision / môi trường | Kết quả local và điều kiện Done |
+|---|---|---|---|
+| T01 / S01 | Toolchain/lock/rootenv; PG/Redis thật; generate/migrate; dependency outage; apply→bù→reapply; clone mới | audit/clean-native.json + migration-cycle.json (5b); clone610/30migrations; regression hiện tại | PASS các ca local đã nêu; rebuild02a+browser+owned lifecycle đã PASS; review/tích hợp còn chờ |
+| T02 / S01 | Push/PR build/typecheck/lint/test song song; whole pipeline<5phút; lint đỏ chặn merge; checks đúng tên | ci-61030ac.json: run38914308239,253s; negativePR95 lịch sử; regression-admission/gates.json | PASS snapshot610 và negativegate; CIexact02a PASS228giây tại run38918293689, không chuyển S30/T31 thành AC |
+| T03 / S01 | Image chạy thật; staging riêng; health-before-switch; failgiữold; backup/migration/rollback; merge→autohealthy<10phút | a2/accf laptop historical runtime; source/watch/rollback evidence cũ | BLOCKED tổng task: candidateS03 đã deploy thủ công (580.061s), HTTPS/API/browser/email thật PASS ở10.112.63.197; chưa có merge→watcher auto-deploy. Laptop hợp lệ, không cầnVPS |
+| T04 / S02 | users/roles/join đủ5vai trò; DBuniqueemail; Argon2id/TEXT; guardedseed chạy lặp; migration | audit migration-cycle, clean-native; populated-migration.json29→30; clone610fixtures | PASS local; chờ review và bản tích hợp, không tự đổiDone |
+| T05 / S02 | Login/nav; cookies/session/expiry/logout401; 5sai/lần6khóa900s; APIrestart/TTL tự nhiên; emailparity; account+IP | HTTPSa2 +two-peer b52 có provenance; final HTTPregression; login classifier/counter không đổi | PASS ca đã kiểm; không chạy lại probeIP. Final integrated smoke còn chờ |
+| T06 / S02 | Global defaultdeny; unknownroute403; anonymous401; buyer directAPI403+log; ownership/multirole/nav | HTTPSa2 +NestHTTP/PG/Redis; regression-admission98cases; browser610 | PASS local ca liên quan; final integrated và review còn chờ |
+| T07 / S03 | name/email/password validation; normalized unique pendingBUYER; genericduplicate; approvednotice; uncheckedconsent; atomic user/version/purpose/status/time; consentfault503/retry | traceability-s03 T07-01…08; browser-02a8e86; consent-storage-fault.json; current98integration | PASS local assertions; PASS staging candidate02a: trusted HTTPS browser +API, smtp-product-staging.json; chưa phải bản tích hợp |
+| T08 / S03 | SMTPadapter; randomhashed24h/one-use; concurrentactivation; mailbox finalpassword; unverified401; resend5/h; boundedretry; noopenredirect; mailprivacy | browser-02a8e86; smtp-product-local4fec humanreceipt+DB/session; populatedmigration; admission-fix.json current | PASS các ca local/delivery đã nêu; runtime log/key sweep hiện tại PASS; PASS staging02a gửi/nhận/kích hoạt/login thật: smtp-product-staging.json; user trực tiếp xác nhận, server/session đối chiếu |
+| T09 / S04 | owner/event/showtimeFK; deliberateRestrict; PAIDhistory retained; TIMESTAMPTZ/UTC; migrationcycle | audit5b migration-cycle +a2FK/paidfixture; populatedmigration29→30 | PASS local/baselinecompatible; current integrated smoke còn chờ |
+| T10 / S04 | A draft/create/edit/list/reload; buyerhidden/403; BURL/API403; futurelinked; pastfieldreject; duplicatewarn/save; doubleclick1; inputretained; VNtime | a2 realHTTPS15desktop/mobile/TZcases +clean-clone-browser610 +current integration | PASS ca đã kiểm; staging-browser-02a8e86/results.json và staging-api-02a8e86/https-api.json đã kiểm candidate02a mới; final integrated còn chờ |
+| K01 | PG/Redis200cùng1ghế×3; winner/conflict/errors/latency; expiry/restart/persistence/tradeoffs; decision | docs/K01_EVIDENCE.md +research artifacts; DEC14PGauthority; DEC17directPOapproval | PASS đầu ra kỹ thuật có sai lệch quy trình được PO chấp thuận. Timebox1ngày/mentor lịch sử vẫn NOT RUN; không còn chờ quyết định sai lệch; reviewDoD riêng |
+| DoD02 | Người khác trực tiếp review bản cuối | PR91 reviews hiệnrỗng, author sangnguyencoder; review tự động ghi đúng bản chất | BLOCKED; không tựapprove/đổi tài khoản/bypass |
+| DoD03 | Test nhánh mới/coverage không giảm | foundationcomparison lịch sử +new-sourcecoverage API92.13lines/83.01branches, web97.19/88.72 tại610 | PASS snapshot đã đo; coverage-delta/comparison.json cùng config610→02a: API88.41lines/80.74branches, web98.28/90.90; cảline/branch không giảm |
+| DoD04 | CI build/lint/typecheck/test xanh đúng revision | ci-61030ac.json253s; current source mới đã push | PASS head02a; CI phải kiểm riêng khi có commit cuối sau đó |
+| DoD05 | Dependency/secret scan | dependency-delta.json fullaudit0; secret-preflight.json; historicalscan +supplementfa4 | PASS dependencygraph; current runtime-secret-sweep.json PASS; security03 đã sửa; candidate staging API/browser/SMTP/log/restart đã có evidence |
+| DoD06 | AC toàn bộ trên staging | candidate02a với30migrations đã kiểm thủ công; bản tích hợp chưa có | NOT RUN bản tích hợp, không đóng bởi localMailpit/CI |
+| DoD07–08 | Regression đồng thời/idempotence/cleanup khi phần sửa ảnh hưởng | full98PGRedis+4scanner; oldK01research táchendpointT31 | PASS regression hiện tại; không nhận nghiệm thu story ngoàiSprint1 |
+| DoD09 | Secret/token/PII khônglog; deniallog hợp lệ | priora2rolelog +literalpreflight; S03fixedgenericerrors | PASS sweep runtime local cuối theo phạm vi artifact; staging-S03 log sweep còn chờ; baselinepaymentF15 tách riêng |
+| DoD10 | Docs/backlog/task/PR đúng thực tế | DEC15–17 +ma trận này +traceability; parenttasks Inprogress | Đang đồng bộ; không đổi tất cảDone từ báo cáo |
+
+
+### Findings và giới hạn current
+
+- **S03-SEC01 HIGH:** pending pre-registration giữ mật khẩu attacker sau mailboxactivation. Sửa mailboxholder chọn mật khẩu cuối, khóa user/consume mọi token atomic; attacker401/owner200 và concurrent200/400 đã kiểm.
+- **S03-SEC02 MEDIUM:** không chặn tổng công việcSMTP. Sửa sharedRedis120/hour, failclosed503, giữ resend5/hour/email; allowlist trống vẫn mọi email hợp lệ.
+- **S03-SEC03 MEDIUM:** no-opresend dùng hết budget mọi người. Trướcfix31st201; saufix120requests =30admitted/90blocked, shareddebits30, peerkhác201, forged403. Caller30/hour dùng socket/HMAC; XFFkhôngchọnidentity. NAT/IPchung chia sẻbudget; nhiềupeer vẫn có thể dùng hết sharedcap có chủ đích. `admission-fix.json` giữrepro/cause/fix/test.
+- Lỗi persistenceconsent đã chứng minh503/noaccount/notoken/nosend rồiretry201 bằng trigger thử riêng, không sửa migration/staging. `consent-storage-fault.json`.
+- Clone610 firstcommandREADY và lifecycleprofile443 đã PASS; clonefreshprofileb257 đã rebuild02a sau khi RAMguard2GiB đạt; browser17assertions+5flows và stop/start/30migrations/secretbytes/dataretention đã PASS tại chính profile này. Các lần guard từ chối được giữ lịch sử. Không đổinhãn PASS của profile trước. Cache resume512MiB chỉ áp matching source, không attestation compiled artifacts. Không bỏguard hoặc dừng ứng dụng khác.
+- SMTP/inbox thật đã PASS local4fec theo xác nhận user; final password UI610 kiểm bằngcatcher riêng. Chưa gọi đây là stagingreceipt. OldAPIrollback không kích hoạt plaintextlink sau migration30: giữ registrationoff hoặc handler mới, không hứa downgradeS03 đầy đủ.
+
+---
+
+## Các checkpoint trước — giữ lịch sử, đọc trạng thái hiện hành ở trên
+
+
 > **Scope mới DEC15:** S03/T07/T08 đã được user đưa vào Sprint1; thêm clone sạch/một lệnh đầy đủ. Các kết quả cũ bên dưới chỉ phủ phạm vi trước; S03/onboarding đang review, chưa PASS. `evidence/sprint1/20261016-s03-onboarding/scope-and-plan.json` là ledger khởi đầu, sẽ mở rộng từng AC/NFR/DoD.
 
 ## Cập nhật xác nhận PO — DEC-14, 16/10/2026

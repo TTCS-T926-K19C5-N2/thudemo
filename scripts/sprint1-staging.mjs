@@ -354,6 +354,34 @@ async function startGateway(c) {
   closeSync(out);
   closeSync(err);
   writeFileSync(state, JSON.stringify(remember(child, entry), null, 2));
+  // A detached child has not necessarily bound its socket when spawn returns.
+  // Wait before callers perform the mandatory TLS/health verification.
+  for (let attempt = 0; attempt < 30; attempt++) {
+    const listening = await new Promise((done) => {
+      const socket = net.createConnection({
+        host: c.lanAddress,
+        port: c.gatewayPort,
+      });
+      socket.setTimeout(250);
+      socket.once("connect", () => {
+        socket.end();
+        done(true);
+      });
+      socket.once("error", () => {
+        socket.destroy();
+        done(false);
+      });
+      socket.once("timeout", () => {
+        socket.destroy();
+        done(false);
+      });
+    });
+    if (listening) return;
+    await new Promise((done) => setTimeout(done, 100));
+  }
+  throw Error(
+    "Owned staging gateway did not start listening; inspect private gateway logs",
+  );
 }
 async function resumeActive(c) {
   const activePath = resolve(dir, "active.json");
