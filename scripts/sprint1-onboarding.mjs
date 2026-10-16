@@ -10,7 +10,7 @@ import {
   closeSync,
 } from "node:fs";
 import { resolve } from "node:path";
-import { execFileSync, spawnSync, spawn } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { parseEnv } from "node:util";
 
 const root = realpathSync(resolve(import.meta.dirname, ".."));
@@ -493,22 +493,29 @@ try {
   };
   jsonWrite(stateFile, state);
   for (const mode of ["api", "web"]) {
-    const fd = openSync(resolve(dir, mode + ".log"), "a");
-    const child = spawn(process.execPath, [worker, mode], {
-      cwd: root,
-      env,
-      detached: true,
-      windowsHide: true,
-      stdio: ["ignore", fd, fd],
-    });
-    closeSync(fd);
-    child.unref();
-    const info = processInfo(child.pid);
+    // Windows PowerShell waits for console-attached descendants of native
+    // commands even after Node exits. Start-Process gives the worker its own
+    // hidden window/stdio, so the one-command launcher actually returns.
+    const quote = (value) => "'" + value.replaceAll("'", "''") + "'";
+    const launch = spawnSync(
+      "powershell.exe",
+      [
+        "-NoProfile",
+        "-NonInteractive",
+        "-Command",
+        `$p=Start-Process -FilePath ${quote(process.execPath)} -ArgumentList ${quote('"' + worker + '" ' + mode)} -WorkingDirectory ${quote(root)} -WindowStyle Hidden -PassThru -RedirectStandardOutput ${quote(resolve(dir, mode + ".out.log"))} -RedirectStandardError ${quote(resolve(dir, mode + ".err.log"))};$p.Id`,
+      ],
+      { env, encoding: "utf8", windowsHide: true },
+    );
+    if (launch.status !== 0 || !/^\d+$/.test(launch.stdout.trim()))
+      fail("Background worker launch failed; inspect private logs");
+    const pid = Number(launch.stdout.trim());
+    const info = processInfo(pid);
     if (!info)
       fail(
         `${mode} exited before ownership could be recorded; inspect private logs`,
       );
-    state.processes.push({ mode, pid: child.pid, created: info.created });
+    state.processes.push({ mode, pid, created: info.created });
     jsonWrite(stateFile, state);
   }
   let healthy = false;
