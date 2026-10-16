@@ -11,9 +11,10 @@ import { OrderHistoryService } from './order-history.service.js';
 import { OrderExpiryScheduler } from './order-expiry.scheduler.js';
 import { TicketCheckInController } from './ticket-check-in.controller.js';
 import { TicketCheckInService } from './ticket-check-in.service.js';
+import { WaitingModule } from '../waiting/waiting.module.js';
 
 @Module({
-  imports: [ScannerModule],
+  imports: [ScannerModule, WaitingModule],
   controllers: [
     TicketQrController,
     OrdersController,
