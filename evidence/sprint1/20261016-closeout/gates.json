@@ -16,7 +16,8 @@
       "evidence": "source-provenance.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T01-01",
@@ -30,7 +31,8 @@
       "evidence": "checks-a2e5f67/gates.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on the stated source/environment; no postmerge or human approval inferred."
+      "closureCondition": "Verified on the stated source/environment; no postmerge or human approval inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T01-02",
@@ -44,7 +46,8 @@
       "evidence": "runtime.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T01-03",
@@ -58,7 +61,8 @@
       "evidence": "fresh-database.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "New empty guarded database: all29 migrations apply, no reset/drop. Clean archive frozen install/generate/build recorded separately in timeline."
+      "closureCondition": "New empty guarded database: all29 migrations apply, no reset/drop. Clean archive frozen install/generate/build recorded separately in timeline.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T01-04",
@@ -72,7 +76,8 @@
       "evidence": "../20261015/infrastructure.json",
       "result": "PASS",
       "sourceSha": "81d1dd9d8f453b32ed0c6956399e5600f71a32d6",
-      "closureCondition": "Original compensation/reapply proof retained, not retagged as current SHA; original migration files preserved. source-provenance.json identifies provenance."
+      "closureCondition": "Original compensation/reapply proof retained, not retagged as current SHA; original migration files preserved. source-provenance.json identifies provenance.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T01-05",
@@ -86,7 +91,8 @@
       "evidence": "dependency-health-final.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Each owned dependency stopped:503; restored:200, persistent volumes retained."
+      "closureCondition": "Each owned dependency stopped:503; restored:200, persistent volumes retained.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T01-06",
@@ -100,7 +106,8 @@
       "evidence": "secret-review.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Actual private credential/key literals checked across publishable diff/evidence; frontend static files checked separately. Not a whole-product PII audit."
+      "closureCondition": "Actual private credential/key literals checked across publishable diff/evidence; frontend static files checked separately. Not a whole-product PII audit.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T02-01",
@@ -111,10 +118,11 @@
       "implementation": "ci.yml",
       "testCase": "exact SHA check runs + workflow graph",
       "environment": "GitHub",
-      "evidence": "candidate-ci.json",
+      "evidence": "ci-f774-scope.json",
       "result": "PASS",
-      "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "All13 checks completed-success on a2; final PR head requires its own live checks. Full core CI wall time under5min, no threshold changes."
+      "sourceSha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "closureCondition": "Five required policy checks completed success; core CI wall217s<300. S30 baseline failure remains visible separately, not falsely all-repository green. Final post-doc PR head must be verified live.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T02-02",
@@ -124,11 +132,12 @@
       "phase": "premerge",
       "implementation": "GitHub protection/rulesets",
       "testCase": "read live develop policy + historical red lint",
-      "environment": "GitHub",
-      "evidence": "github-policy.json",
-      "result": "FAIL",
-      "sourceSha": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
-      "closureCondition": "Develop is unprotected. Maintainer must authorize/apply enforced checks/review policy; original user instruction forbids changing protection without permission."
+      "environment": "GitHub protected develop / isolated negative PR95 closed unmerged",
+      "evidence": "protection/negative-gate.json; protection/protection-after.json",
+      "result": "PASS",
+      "sourceSha": "3051bba97a2f08171f6a780ae8fd486fc595b031",
+      "closureCondition": "Actual lint failure required=true, other four required checks success, PR BLOCKED under enforced-admin protection; no merge endpoint/forged approval. Approval was also missing, recorded explicitly; no claim to isolate internal blocker cause.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T02-03",
@@ -139,10 +148,11 @@
       "implementation": "parallel core jobs + dependent research/hold jobs",
       "testCase": "exact head workflow wall time, no threshold change",
       "environment": "GitHub",
-      "evidence": "candidate-ci.json",
+      "evidence": "ci-f774-scope.json",
       "result": "PASS",
-      "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "All13 checks completed-success on a2; final PR head requires its own live checks. Full core CI wall time under5min, no threshold changes."
+      "sourceSha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "closureCondition": "Five required policy checks completed success; core CI wall217s<300. S30 baseline failure remains visible separately, not falsely all-repository green. Final post-doc PR head must be verified live.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T02-04",
@@ -156,7 +166,8 @@
       "evidence": "watcher-gate-rehearsal.json",
       "result": "PASS",
       "sourceSha": "cdb7fdbac5594f4831715731dd2b19893cecc9a2",
-      "closureCondition": "Not a live bad GitHub push or postmerge auto deployment Source hash compatibility of watcher in source-provenance.json; rehearsal is not live GitHub merge enforcement."
+      "closureCondition": "Not a live bad GitHub push or postmerge auto deployment Source hash compatibility of watcher in source-provenance.json; rehearsal is not live GitHub merge enforcement.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T03-01",
@@ -170,7 +181,8 @@
       "evidence": "runtime.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T03-02",
@@ -184,7 +196,8 @@
       "evidence": "runtime.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T03-03",
@@ -198,7 +211,8 @@
       "evidence": "source-provenance.json",
       "result": "BLOCKED",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Only after actual approved merge: integratedSHA CI, automatic watcher deploy, merge-to-healthy<10min. No manual substitute."
+      "closureCondition": "Only after actual approved merge: integratedSHA CI, automatic watcher deploy, merge-to-healthy<10min. No manual substitute.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T03-04",
@@ -212,7 +226,8 @@
       "evidence": "timeline.json",
       "result": "PASS",
       "sourceSha": "accf832be519d9790845c3590acd3f481c5594ac",
-      "closureCondition": "Controlled bad-attestation candidate accf832 was rejected before traffic switch, active accf832200. Deployment decision code unchanged at a2; evidence remains historical, not a new a2 failure run."
+      "closureCondition": "Controlled bad-attestation candidate accf832 was rejected before traffic switch, active accf832200. Deployment decision code unchanged at a2; evidence remains historical, not a new a2 failure run.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T03-05",
@@ -226,21 +241,8 @@
       "evidence": "rollback-final.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Actual a2→accf832→a2; HTTPS200 both switches, data/migration counts and key hashes unchanged; no down migration/reset."
-    },
-    {
-      "id": "T03-06",
-      "storyTask": "S01/T03",
-      "requirement": "Resource-safe rebuild/restart",
-      "requirementSource": "direct prerequisite after disk incident",
-      "phase": "premerge",
-      "implementation": "laptop-resources + resume",
-      "testCase": "disk below12GiB fails before build; owned resume",
-      "environment": "Windows laptop",
-      "evidence": "runtime.json",
-      "result": "PASS",
-      "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Actual a2→accf832→a2; HTTPS200 both switches, data/migration counts and key hashes unchanged; no down migration/reset.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T04-01",
@@ -254,7 +256,8 @@
       "evidence": "data-final.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T04-02",
@@ -268,7 +271,8 @@
       "evidence": "data-final.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T04-03",
@@ -282,13 +286,14 @@
       "evidence": "data-final.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T04-04",
       "storyTask": "S02/T04",
-      "requirement": "Safe repeatable seed admin/A/B/buyer/lock/multi",
-      "requirementSource": "../tasks/T-04.md AC/NFR",
+      "requirement": "Seed five roles plus admin and organizer; additional A/B/buyer/lock fixtures support requested demo",
+      "requirementSource": "T04 Nội dung/AC (five roles/two accounts); extra fixtures from user demo request, not new Story AC",
       "phase": "premerge",
       "implementation": "guarded seed and private config",
       "testCase": "idempotent seed; foreign target refused",
@@ -296,7 +301,8 @@
       "evidence": "data-final.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T04-05",
@@ -310,7 +316,8 @@
       "evidence": "../20261015/infrastructure.json",
       "result": "PASS",
       "sourceSha": "81d1dd9d8f453b32ed0c6956399e5600f71a32d6",
-      "closureCondition": "Original compensation/reapply proof retained, not retagged as current SHA; original migration files preserved. source-provenance.json identifies provenance."
+      "closureCondition": "Original compensation/reapply proof retained, not retagged as current SHA; original migration files preserved. source-provenance.json identifies provenance.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T05-01",
@@ -324,7 +331,8 @@
       "evidence": "api-a2e5f67/https-api.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T05-02",
@@ -338,7 +346,8 @@
       "evidence": "api-a2e5f67/https-api.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T05-03",
@@ -352,7 +361,8 @@
       "evidence": "api-a2e5f67/https-api.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T05-04",
@@ -366,7 +376,8 @@
       "evidence": "api-a2e5f67/https-api.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T05-05",
@@ -380,7 +391,8 @@
       "evidence": "api-a2e5f67/https-api.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T05-06",
@@ -394,7 +406,8 @@
       "evidence": "api-a2e5f67/https-api.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Waited actual900s/PTTL expiry then valid login200. No DEL, shortened TTL or IP brute-force repeat. Earlier TTL=0 harness failure retained at api-final."
+      "closureCondition": "Waited actual900s/PTTL expiry then valid login200. No DEL, shortened TTL or IP brute-force repeat. Earlier TTL=0 harness failure retained at api-final.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T05-07",
@@ -408,7 +421,8 @@
       "evidence": "api-a2e5f67/https-api.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T05-08",
@@ -422,7 +436,8 @@
       "evidence": "../20261016-two-peer/correlation.json",
       "result": "PASS",
       "sourceSha": "b52ba6afa07d29444e5e809892e5325f0966625c",
-      "closureCondition": "Final topology compatible source + focused regression; no repeat second-device brute force"
+      "closureCondition": "Final topology compatible source + focused regression; no repeat second-device brute force",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T06-01",
@@ -436,7 +451,8 @@
       "evidence": "api-a2e5f67/https-api.json; denial-log.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T06-02",
@@ -450,7 +466,8 @@
       "evidence": "checks-a2e5f67/gates.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on the stated source/environment; no postmerge or human approval inferred."
+      "closureCondition": "Verified on the stated source/environment; no postmerge or human approval inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T06-03",
@@ -464,7 +481,8 @@
       "evidence": "route-inventory.txt; checks-a2e5f67/gates.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on the stated source/environment; no postmerge or human approval inferred."
+      "closureCondition": "Verified on the stated source/environment; no postmerge or human approval inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T06-04",
@@ -478,7 +496,8 @@
       "evidence": "browser-a2e5f67/results.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T06-05",
@@ -492,7 +511,8 @@
       "evidence": "data-final.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T09-01",
@@ -503,10 +523,11 @@
       "implementation": "schema/FK",
       "testCase": "cannot delete event referenced by showtimes/order/ticket history",
       "environment": "real PG",
-      "evidence": "api-a2e5f67/https-api.json",
+      "evidence": "api-a2e5f67/https-api.json; paid-parent-fk.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Actual event/showtime delete with fake PAID order/ticket is rejected P2003 and history retained. New fixture transaction rolled back; no deletion API added.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T09-02",
@@ -520,7 +541,8 @@
       "evidence": "../20261015/infrastructure.json",
       "result": "PASS",
       "sourceSha": "81d1dd9d8f453b32ed0c6956399e5600f71a32d6",
-      "closureCondition": "Original compensation/reapply proof retained, not retagged as current SHA; original migration files preserved. source-provenance.json identifies provenance."
+      "closureCondition": "Original compensation/reapply proof retained, not retagged as current SHA; original migration files preserved. source-provenance.json identifies provenance.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T09-03",
@@ -531,10 +553,11 @@
       "implementation": "Prisma Timestamptz",
       "testCase": "DBtype and roundtrip UTC→VN",
       "environment": "PG/browser",
-      "evidence": "api-a2e5f67/https-api.json; paid-parent-fk.json",
+      "evidence": "api-a2e5f67/https-api.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Real guarded test DB: event/showtime deletion rejected P2003 with PAID order and linked ticket intact; new fixture transaction rolled back. No new deletion API or ticket lifecycle redesign."
+      "closureCondition": "Real UTC/timestamptz storage and VN roundtrip verified; paid-parent FK evidence belongs to T09-01.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T10-01",
@@ -548,7 +571,8 @@
       "evidence": "api-a2e5f67/https-api.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T10-02",
@@ -562,7 +586,8 @@
       "evidence": "browser-a2e5f67/results.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T10-03",
@@ -576,7 +601,8 @@
       "evidence": "browser-a2e5f67/results.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T10-04",
@@ -590,7 +616,8 @@
       "evidence": "api-a2e5f67/https-api.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T10-05",
@@ -604,7 +631,8 @@
       "evidence": "api-a2e5f67/https-api.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T10-06",
@@ -618,7 +646,8 @@
       "evidence": "api-a2e5f67/https-api.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T10-07",
@@ -632,7 +661,8 @@
       "evidence": "api-a2e5f67/https-api.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T10-08",
@@ -646,7 +676,8 @@
       "evidence": "browser-a2e5f67/results.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T10-09",
@@ -660,7 +691,8 @@
       "evidence": "browser-a2e5f67/results.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "T10-10",
@@ -674,13 +706,14 @@
       "evidence": "browser-a2e5f67/results.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "K01-A",
       "storyTask": "K01",
       "requirement": "Both PG/Redis measured with conditions and concurrency",
-      "requirementSource": "Backlogrow14; K01spike",
+      "requirementSource": "Backlog K01 row14 (scope DEC09): 200 concurrent/same ONE seat, both stores, figures/conditions; architecture§16 Sprint1",
       "phase": "premerge",
       "implementation": "research separate modules/scripts",
       "testCase": "2process/store200same-seat×3; expiry/stale/retry/restart",
@@ -688,27 +721,14 @@
       "evidence": "../20261015-handoff/k01-laptop-research/k01-candidates.json",
       "result": "PASS",
       "sourceSha": "b52ba6afa07d29444e5e809892e5325f0966625c",
-      "closureCondition": "Graceful restart only; not power-loss or product endpoint"
-    },
-    {
-      "id": "K01-B",
-      "storyTask": "K01/NFR",
-      "requirement": "Product endpoint200concurrent/100seats×10; allp95<300ms",
-      "requirementSource": "DEC12; architecture; approvedNFR",
-      "phase": "premerge",
-      "implementation": "PG authority; cold quota connection reuse",
-      "testCase": "full HTTPS2000calls including cold and failures",
-      "environment": "laptop real product",
-      "evidence": "performance-summary.json",
-      "result": "FAIL",
-      "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "HTTP2 passes under documented one-laptop real-API-login condition; HTTP1 cold and older H2 cold DB-issued-fixture run fail. All samples retained; no universal NFR PASS or physical-device requirement invented."
+      "closureCondition": "Graceful restart only; not power-loss or product endpoint",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "K01-C",
       "storyTask": "K01",
       "requirement": "Authority choice/reason reject alternative/review",
-      "requirementSource": "Backlogrow14; DEC12",
+      "requirementSource": "Backlog K01 row14 decision/chosen mechanism/reason; DEC11 PO confirms after evidence; DEC12 local-only; DoD row2",
       "phase": "premerge",
       "implementation": "PG temporary LOCAL only until reviewed",
       "testCase": "Lead reads current research+tradeoff+productNFR",
@@ -716,7 +736,8 @@
       "evidence": "../../../docs/K01_EVIDENCE.md",
       "result": "BLOCKED",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Lead/PO must approve proposed PG authority for fake-data laptop staging. DEC12 is local-only; no automatic architecture waiver."
+      "closureCondition": "Research output and DEC12 local PG decision exist. Human review/confirmation for the remaining staging K01 evidence is not recorded. Do not use product T31 latency as this gate or sign a fictitious human review.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "DOD-02",
@@ -730,7 +751,8 @@
       "evidence": "candidate-pr.json",
       "result": "BLOCKED",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "A real other member must review final exact PR head; AI review/account rotation cannot satisfy DoD row2."
+      "closureCondition": "A real other member must review final exact PR head; AI review/account rotation cannot satisfy DoD row2.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "DOD-03",
@@ -744,7 +766,8 @@
       "evidence": "coverage-foundation-final/comparison.json",
       "result": "PASS",
       "sourceSha": "accf832be519d9790845c3590acd3f481c5594ac",
-      "closureCondition": "Same baseline/config/V8:70.51→85.25lines,79.10→84.31branches; touched executable lines/branches100%. Original auth/UI comparison remains separate."
+      "closureCondition": "Same baseline/config/V8:70.51→85.25lines,79.10→84.31branches; touched executable lines/branches100%. Original auth/UI comparison remains separate.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "DOD-04",
@@ -755,10 +778,11 @@
       "implementation": "GitHub Actions",
       "testCase": "exact final head + integrated head",
       "environment": "as case states",
-      "evidence": "candidate-ci.json",
+      "evidence": "ci-f774-scope.json",
       "result": "PASS",
-      "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "All13 checks completed-success on a2; final PR head requires its own live checks. Full core CI wall time under5min, no threshold changes."
+      "sourceSha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "closureCondition": "Five required policy checks completed success; core CI wall217s<300. S30 baseline failure remains visible separately, not falsely all-repository green. Final post-doc PR head must be verified live.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "DOD-05",
@@ -772,7 +796,8 @@
       "evidence": "dependency-audit-all.json",
       "result": "PASS",
       "sourceSha": "accf832be519d9790845c3590acd3f481c5594ac",
-      "closureCondition": "Fresh full and prod audits0; scoped patched dependency tested. Literal secret review separately recorded."
+      "closureCondition": "Fresh full and prod audits0; scoped patched dependency tested. Literal secret review separately recorded.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "DOD-06",
@@ -786,35 +811,8 @@
       "evidence": "source-provenance.json",
       "result": "BLOCKED",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Functional staging evidence exists; human/architecture/policy, remaining NFR failures and postmerge integrated acceptance outstanding."
-    },
-    {
-      "id": "DOD-07",
-      "storyTask": "DoD",
-      "requirement": "Seat changes concurrent/no double assignment",
-      "requirementSource": "DoD-DoR row7",
-      "phase": "premerge",
-      "implementation": "existing PGholdproc",
-      "testCase": "HTTP100winner/100conflict×10 + multi-seat atomicity",
-      "environment": "as case states",
-      "evidence": "checks-a2e5f67/gates.json",
-      "result": "PASS",
-      "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on the stated source/environment; no postmerge or human approval inferred."
-    },
-    {
-      "id": "DOD-08",
-      "storyTask": "DoD",
-      "requirement": "Relevant cleanup/retry idempotence",
-      "requirementSource": "DoD-DoR row8",
-      "phase": "premerge",
-      "implementation": "token-fenced PG cleanup",
-      "testCase": "stale owner/retry/expired and worker tests",
-      "environment": "as case states",
-      "evidence": "checks-a2e5f67/gates.json",
-      "result": "PASS",
-      "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on the stated source/environment; no postmerge or human approval inferred."
+      "closureCondition": "Only Sprint1 story AC/K01 research and applicable DoD. Human review and actual T03 postmerge auto-deploy outstanding; T31 latency and QR story completion are separate.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "DOD-09",
@@ -828,7 +826,8 @@
       "evidence": "secret-review.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Actual private credential/key literals checked across publishable diff/evidence; frontend static files checked separately. Not a whole-product PII audit."
+      "closureCondition": "Actual private credential/key literals checked across publishable diff/evidence; frontend static files checked separately. Not a whole-product PII audit.",
+      "acceptanceScope": "sprint1_acceptance"
     },
     {
       "id": "DOD-10",
@@ -842,13 +841,81 @@
       "evidence": "source-provenance.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Report, matrix, runbook and prepared PR body agree on source, evidence and remaining gates; final GitHub state separately checked."
+      "closureCondition": "Report, matrix, runbook and prepared PR body agree on source, evidence and remaining gates; final GitHub state separately checked.",
+      "acceptanceScope": "sprint1_acceptance"
+    }
+  ],
+  "prHeadAtCapture": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "repairRegressions": [
+    {
+      "id": "DOD-07",
+      "storyTask": "DoD",
+      "requirement": "Seat changes concurrent/no double assignment",
+      "requirementSource": "DoD-DoR row7",
+      "phase": "premerge",
+      "implementation": "existing PGholdproc",
+      "testCase": "HTTP100winner/100conflict×10 + multi-seat atomicity",
+      "environment": "as case states",
+      "evidence": "checks-a2e5f67/gates.json",
+      "result": "PASS",
+      "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "closureCondition": "Conditional original DoD applies to the existing hold/payment code touched by this repair. Passing regression does not accept Sprint2 stories or add T31 product NFR to Sprint1.",
+      "acceptanceScope": "repair_regression"
+    },
+    {
+      "id": "DOD-08",
+      "storyTask": "DoD",
+      "requirement": "Relevant cleanup/retry idempotence",
+      "requirementSource": "DoD-DoR row8",
+      "phase": "premerge",
+      "implementation": "token-fenced PG cleanup",
+      "testCase": "stale owner/retry/expired and worker tests",
+      "environment": "as case states",
+      "evidence": "checks-a2e5f67/gates.json",
+      "result": "PASS",
+      "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "closureCondition": "Conditional original DoD applies to the existing hold/payment code touched by this repair. Passing regression does not accept Sprint2 stories or add T31 product NFR to Sprint1.",
+      "acceptanceScope": "repair_regression"
+    }
+  ],
+  "demoSupportChecks": [
+    {
+      "id": "T03-06",
+      "storyTask": "S01/T03",
+      "requirement": "Resource-safe rebuild/restart",
+      "requirementSource": "User authorized isolated demo/recovery after disk incident; operational prerequisite, not a new T03 AC",
+      "phase": "premerge",
+      "implementation": "laptop-resources + resume",
+      "testCase": "disk below12GiB fails before build; owned resume",
+      "environment": "Windows laptop",
+      "evidence": "runtime.json",
+      "result": "PASS",
+      "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
+      "acceptanceScope": "demo_support"
+    }
+  ],
+  "futureSprintChecks": [
+    {
+      "id": "K01-B",
+      "storyTask": "S10/S13/T31 — Sprint2 / related verification",
+      "requirement": "Product endpoint200concurrent/100seats×10; allp95<300ms",
+      "requirementSource": "Backlog S10 row15 p95; Tasks T31 row32 Sprint2; product§7/architecture§14; DEC12 preserves these, does not move Sprint",
+      "phase": "premerge",
+      "implementation": "PG authority; cold quota connection reuse",
+      "testCase": "full HTTPS2000calls including cold and failures",
+      "environment": "laptop real product",
+      "evidence": "performance-summary.json",
+      "result": "FAIL",
+      "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "closureCondition": "Retain measured PASS/FAIL for its exact conditions. Not a K01/Sprint1 acceptance criterion; no approved source moves T31 into Sprint1.",
+      "acceptanceScope": "future_sprint_acceptance"
     },
     {
       "id": "K01-B-H2",
-      "storyTask": "K01/NFR",
+      "storyTask": "S10/S13/T31 — Sprint2 / related verification",
       "requirement": "All p95<300ms, HTTP2 conditional scenario",
-      "requirementSource": "DEC12; architecture; approvedNFR",
+      "requirementSource": "Backlog S10 row15 p95; Tasks T31 row32 Sprint2; product§7/architecture§14; DEC12 preserves these, does not move Sprint",
       "phase": "premerge",
       "implementation": "PG authority; cold quota connection reuse",
       "testCase": "200 actual-API-authenticated buyers/100seats×10; all200 requests overlap, DB1000 active rights verified",
@@ -856,13 +923,14 @@
       "evidence": "load-laptop-h2-cold-api-2/correlation.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Conditional measured result only. Full gate retains other failed scenarios; no slow samples discarded."
+      "closureCondition": "Retain measured PASS/FAIL for its exact conditions. Not a K01/Sprint1 acceptance criterion; no approved source moves T31 into Sprint1.",
+      "acceptanceScope": "future_sprint_acceptance"
     },
     {
       "id": "K01-B-H1",
-      "storyTask": "K01/NFR",
+      "storyTask": "S10/S13/T31 — Sprint2 / related verification",
       "requirement": "All p95<300ms, HTTP1.1 conditional scenario",
-      "requirementSource": "DEC12; architecture; approvedNFR",
+      "requirementSource": "Backlog S10 row15 p95; Tasks T31 row32 Sprint2; product§7/architecture§14; DEC12 preserves these, does not move Sprint",
       "phase": "premerge",
       "implementation": "PG authority; cold quota connection reuse",
       "testCase": "200 actual-API-authenticated buyers/100seats×10; all200 requests overlap, DB1000 active rights verified",
@@ -870,8 +938,43 @@
       "evidence": "load-laptop-h1-cold-api-1/correlation.json",
       "result": "FAIL",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Conditional measured result only. Full gate retains other failed scenarios; no slow samples discarded."
+      "closureCondition": "Retain measured PASS/FAIL for its exact conditions. Not a K01/Sprint1 acceptance criterion; no approved source moves T31 into Sprint1.",
+      "acceptanceScope": "future_sprint_acceptance"
     }
   ],
-  "prHeadAtCapture": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d"
+  "scopeClarification": "2026-10-16 user clarification; DEC09 unchanged. K01 research != T31 endpoint. No NFR erased or transferred into Sprint1.",
+  "originalReviewedItems": 62,
+  "integrationPolicy": {
+    "source": "User authorized develop protection16Oct2026; not a Sprint membership decision",
+    "requiredChecks": [
+      "T-02 / build-and-typecheck",
+      "T-02 / lint",
+      "T-02 / test",
+      "K-01 / candidate-research",
+      "T-31 / hold-concurrency"
+    ],
+    "humanReview": "Still required, no independent approval exists",
+    "watcher": "All actually reported checks on exact developSHA must succeed. S30/S31/S43 workflows currently PR/main-focused; no develop push trigger. No check or assertion disabled."
+  },
+  "repositoryRegressions": [
+    {
+      "id": "REG-S30",
+      "result": "FAIL",
+      "source": "S30 outside Sprint1; baseline defect, matched60 fixtures/base/head both7fail",
+      "evidence": "s30-baseline/comparison.json",
+      "integrationImpact": "Not required in develop protection, but not a fully green PR and watcher blocks if failed check exists on deployed SHA; no policy weakened"
+    },
+    {
+      "id": "REG-S31",
+      "result": "PASS",
+      "source": "S31 outside Sprint1, f774 PR check completed success; not S31 acceptance",
+      "evidence": "s30-baseline/pr-checks-f774.json"
+    },
+    {
+      "id": "REG-S43",
+      "result": "PASS",
+      "source": "S43 outside Sprint1, f774 PR check completed success; not S43 acceptance",
+      "evidence": "s30-baseline/pr-checks-f774.json"
+    }
+  ]
 }

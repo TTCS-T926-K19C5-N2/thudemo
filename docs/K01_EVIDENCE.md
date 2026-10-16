@@ -2,6 +2,8 @@
 
 **Chưa nhận K-01 hoàn tất.** DEC-12 duyệt PostgreSQL authority **tạm cho local**; quyền triển khai laptop LAN theo DEC-13 không tự mở rộng phê duyệt authority. Cần Lead/PO xem bộ bằng chứng dưới đây và xác nhận phạm vi staging. Không chọn lại Redis chỉ vì tốc độ prototype.
 
+K01 Backlog row14 yêu cầu200request cùng1ghế, cảhai phương án, sốđo và quyết định/lýdo; T31 Tasksrow32 thuộcSprint2,200/100×10. Không có nguồn chuyển T31 vàoSprint1.
+
 ## A. So sánh kho giữ ghế — tách khỏi endpoint sản phẩm
 
 | Phép đo | PostgreSQL p95 từng lượt (ms) | Redis p95 từng lượt (ms) | Điều kiện và kết quả |
@@ -13,13 +15,13 @@ Raw và source adapted có hash: `evidence/sprint1/20261015-handoff/k01-laptop-r
 
 PG và Redis-AOF đều giữ owner sau **graceful container restart** ở lượt15/10. Điều này **không chứng minh power loss, hard crash hoặc zero-data-loss**. AOF everysec có cửa sổ chưa fsync; ownership Redis vẫn khác transaction của orders trong PG. Redis không persistence ở lượt04/10/CI có failure model khác; không trộn hai profile.
 
-## B. Endpoint sản phẩm — gate độc lập
+## B. Endpoint sản phẩm — bằng chứng Sprint2 liên quan, không là AC K01/Sprint1
 
 `evidence/sprint1/20261016-closeout/performance/` giữ cả các lượt FAIL và raw mẫu mới, thông số giao thức/topology. Bài đo giữ200request đồng thời/100ghế×10, cookie/session thật, PGdurable,100winner+100conflict mỗi lượt. Ngưỡng giữ nguyên **all p95<300ms**, gồm lượt đầu; steady chỉ chẩn đoán. CI800ms budget và prototype không thay NFR.
 
 Điều tra16/10: claim request giữ connection từ session guard nhưng quota lookup vay thêm connection cùng pool gây cạn pool; dùng lại connection của request, không tăng pool/giảm auth. PG queries có index; fsync/synchronous_commit vẫn bật. Tiếp tục đo TLS/gateway/Next/API và kiểm correctness sau tối ưu. Kết quả hiện tại theo matrix/report; không tự ký đã đạt NFR trong hồ sơ kiến trúc.
 
-Lượt endpoint mới sourcea2e5f67 cùng laptop/process client riêng: H2 sau200loginAPI thật allp95233.1358/223.1592/263.4703msPASS có điều kiện; H1 cùng phương pháp737.9675msFAIL, H2coldDB-issued-fixture359.0416msFAIL được giữ. Không máy tải riêng bắt buộc trong T31AC/product§7/architecture§14; không tự bỏ ngưỡng300ms hoặc lượtFAIL. Chi tiết CPU/RAM/ELU/2000rawresponses/DB1000quyền trong closeout/load-laptop-* và performance-summary.json. NFR tổngthể vẫnFAIL, tách khỏi phêduyệt authority.
+Lượt endpoint mới sourcea2e5f67 cùng laptop/process client riêng: H2 sau200loginAPI thật allp95233.1358/223.1592/263.4703msPASS có điều kiện; H1 cùng phương pháp737.9675msFAIL, H2coldDB-issued-fixture359.0416msFAIL được giữ. Không máy tải riêng bắt buộc trong T31AC/product§7/architecture§14; không tự bỏ ngưỡng300ms hoặc lượtFAIL. Chi tiết CPU/RAM/ELU/2000rawresponses/DB1000quyền trong closeout/load-laptop-* và performance-summary.json. NFR S10/S13 cònFAIL/conditionalPASS; không đưa T31 thành blocker Sprint1. DEC11/12 giữ NFR nhưng không chuyển Sprint.
 
 ## C. Đề xuất cụ thể để Lead/PO phê duyệt
 

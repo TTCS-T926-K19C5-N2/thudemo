@@ -10,17 +10,17 @@ Laptop staging riêng: TLSgateway3470, webDocker+2API, privatePG15455/Redis16405
 
 Source a2e5f67 (runtime), app regression accf832 cùng source ứng dụng: build/lint/typecheck,342API+123web+18Node,88+4integration;15browser desktop/mobile trustedHTTPS; API/DB/Redis thật. Coverage cùng baseline/config: originalauth API76.78/web77.52lines; foundation70.51→85.25lines,79.10→84.31branches; touched executable lines/branches100%. Dependencyoutage503→restore200; badcandidate giữ active; actual rollback a2e5f67→accf832→a2e5f67 giữ DB/migration count/khóa. Exact head CI cuối đọc tại PR; không lấy kết quả SHA cũ thay required checks mới.
 
-NFR chưa đóng tổng thể:200concurrent/100seats×10,2000rawsamples,100winner/100conflict mỗi vòng. H2 a2e5f67 cùng laptop/processriêng sau200loginAPI thật đạt allp95233.1358/223.1592/263.4703ms; H1 cùng phương pháp737.9675msFAIL và H2coldDB-issued359.0416msFAIL đều giữ. Không bắt buộc máy tải riêng theo nguồn đã đọc; không dùng steady-only/CI/prototype thay300ms. CLI fail khi vượtNFR, ghi CPU/RAM/ELU/source/Docker/DBownership. Thử nhiều gateway bị loại vì cold chưaổnđịnh. HaiWi-Fi peer nguồn b52 giữ riêng, không lặpIPprobe.
+Ngoài nghiệm thuSprint1 — phépđo S10/S13/T31 theoủyquyền:200concurrent/100seats×10,2000rawsamples,100winner/100conflict mỗi vòng. H2 a2e5f67 cùng laptop/processriêng sau200loginAPI thật đạt allp95233.1358/223.1592/263.4703ms; H1 cùng phương pháp737.9675msFAIL và H2coldDB-issued359.0416msFAIL đều giữ. Không bắt buộc máy tải riêng theo nguồn đã đọc; không dùng steady-only/CI/prototype thay300ms. CLI fail khi vượtNFR, ghi CPU/RAM/ELU/source/Docker/DBownership. Thử nhiều gateway bị loại vì cold chưaổnđịnh. HaiWi-Fi peer nguồn b52 giữ riêng, không lặpIPprobe.
 
-Trước merge: thành viên thật approve exacthead; Lead review K01 authority và NFR/topology; policy chặn merge được maintainer cho phép; required checks xanh/không unresolved. AI scan hỗ trợ, không thay human approval. Sau merge hợp lệ: watcher tự chạy, ghi merge→CI→deploy→healthy<10phút và nghiệm thu integratedSHA; manual230.018s không là auto-deploy. Không main/release/production/publicTunnel/paidhosting.
+Trước merge: thành viên thật approve exacthead; review/xác nhận K01 theo phạmvi nghiêncứu; policy develop đã áp dụng/readback và negativePR95 xác nhận; required checks xanh/không unresolved. AI scan hỗ trợ, không thay human approval. Sau merge hợp lệ: watcher tự chạy, ghi merge→CI→deploy→healthy<10phút và nghiệm thu integratedSHA; manual230.018s không là auto-deploy. Không main/release/production/publicTunnel/paidhosting.
 
 Bổ sung FK test trên DB riêng: xóa event/showtime có PAID order/ticket bị P2003, lịch sử giữ nguyên; rollback fixture mới. Các CASCADE ticket cũ được ghi riêng trong report, không thêm API xóa hoặc mở rộng lifecycle.
 
-Evidence: evidence/sprint1/20261016-closeout/, ma trận62gate/report/runbook trong docs. Demo https://10.88.164.155:3470; credentials chỉ ignoredlocal .sprint1-staging/config.json. Rollback code giữ DB/history/keys, không reset/migrate-down.
+Evidence: evidence/sprint1/20261016-closeout/, 62mục đã phânloại (56Sprint1,2repairregression,1support,3futurechecks)/report/runbook trong docs. Demo https://10.88.164.155:3470; credentials chỉ ignoredlocal .sprint1-staging/config.json. Rollback code giữ DB/history/keys, không reset/migrate-down.
 
-## Đề xuất policy develop — cần maintainer cho phép, chưa áp dụng
+## Policy develop — đã được cho phép và áp dụng16/10
 
-Live16/10: protected=false, protection404, rules/rulesets rỗng. T02 yêu cầu pipeline đỏ chặn merge nên FAIL. JSON dưới là đề xuất cụ thể, chỉ PUT sau khi chủ repository cho phép thay protection.
+Trước thay đổi: protected=false/protection404/rulesrỗng; giữsnapshot. Sau ủyquyền trực tiếp đã áp dụng riêng develop, GET xác minh toàn bộ trường. PR95 isolated lintFAIL required=true, bốnrequiredchecks khácPASS, mergeBLOCKED, đóngunmerged. Không đổi main. Không dùng configsuccess thay negativegate; bằng chứng tại closeout/protection/.
 
 ```json
 {
@@ -43,3 +43,13 @@ Live16/10: protected=false, protection404, rules/rulesets rỗng. T02 yêu cầu
 ```
 
 Có thể nhờ thuytrang158/admin hoặc thành viên write/admin phù hợp trực tiếp review; chưa có review request được gửi. Không dùng tài khoản đăng nhập sẵn để review thay người đó.
+## Gói review thành viên — tự động hỗ trợ, chưa có approval người thật
+
+Exact head: đọc header PR hiện tại (body được cập nhật sau push cuối); deployed source a2e5f67, harness b50cd9a. Review cả diff/source và nhóm56yêu cầu Sprint1 +2regression của phần sửa, không nhận T31/QR là StorySprint1.
+
+- Thay đổi chính: IP/session/proxy, timezone/draft recovery, dependency patch, pool/PG conflict optimization, isolated Docker/staging/release/backup/watcherguards; giữattribution và UI V1.
+- Finding đã sửa/evidence: bảngF01–12 của report, API/browser/DB/Redis thật, coverage cùngbaseline và audit0. S30 hiện là baselinefailure: same60fixtures/base=head7FAIL, chưa sửaQR; actualruncheckoutmergeSHA được ghi riêng.
+- Người review tự mở diff, kiểm auth/defaultdeny/ownership/UTC, migrationappend-only, đọc role/fixtureguards, nguồn scope và negativeCIgate; chạy các bước phù hợp trong runbook; xem timeline/rollback và các hạn chế. Không chỉ chép lại sốtest.
+- Nội dung review để người đó tự hoàn thiện: “SHA tôi đã đọc: …; bước tôi đã trực tiếp kiểm: …; finding/rủi ro còn lại: …; quyết định và lý do: Request changes/Approve …”. Đây là mẫu trống, không là chữký/approval. Không dùng tài khoản khác để giảreview độclập hoặc tự đóngDoDrow2.
+
+T31 vẫn required theo policy vừa được người dùng duyệt, không trở thành AC Sprint1. S30 không requiredprotection; watcher vẫn failclosed với checkFAIL thực sự tồn tại ởdevelopSHA. Không tắtworkflow/assert/policy để né. Cần người thật review và K01 xác nhận còn thiếu trước merge; T03auto-deploy<10phút chỉ đo sau merge hợp lệ.

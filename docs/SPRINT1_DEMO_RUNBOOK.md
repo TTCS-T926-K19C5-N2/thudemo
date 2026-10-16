@@ -1,6 +1,6 @@
 # Sprint 1 — demo local và laptop staging riêng
 
-**Cập nhật16/10:** source sản phẩm **a2e5f675a371e9a0200b1ab7d2a83ac837d3717d**, web và hai API chạy Docker. Profile đã phục hồi sau ổ C đầy; chỉ READY sau Status kiểm home/health200. Chưa Sprint Done: policy develop/human review/K01/NFR và postmerge auto-deploy là gate riêng. HTTPS2 đăng nhậpAPI thật đo233.14/223.16ms allp95 đạt trong hai lượt cùng laptop; HTTP1.1 cùng phương pháp737.97ms FAIL, không dùng demo chức năng thay nghiệm thu tải.
+**Cập nhật16/10:** source sản phẩm **a2e5f675a371e9a0200b1ab7d2a83ac837d3717d**, web và hai API chạy Docker. Profile đã phục hồi sau ổ C đầy; chỉ READY sau Status kiểm home/health200. Chưa Sprint Done: human review/K01 và postmerge auto-deploy là gate riêng. HTTPS2 đăng nhậpAPI thật đo233.14/223.16ms allp95 đạt trong hai lượt cùng laptop; HTTP1.1 cùng phương pháp737.97ms FAIL, không dùng demo chức năng thay nghiệm thu tải.
 
 Ca hai Wi-Fi peer giữ nguyên nguồn lịch sử b52ba6a: máyWindows10.88.164.22 chạy30wrong→429; serverRedis30/PTTL610giây và laptop10.88.164.155 login/me200 đồng thời. `evidence/sprint1/20261016-two-peer/correlation.json`. Không chạy lại probe chỉ để tăng evidence. HMAC/peer classifier giữ nguyên; regression HTTP2 mới kiểm đúng TCPpeer dù caller giả attestation. Không DEL/rútTTL hoặc khóa lại peer trong lúc teamdemo.
 
@@ -86,6 +86,8 @@ Web3440/API3441, PG15445/Redis16395, credentials `.sprint1-local/config.json`, c
 
 ## 4. Chạy lại kiểm thử có chủ đích
 
+Benchmark endpoint trong mục này là kiểm liên quan/Sprint2 theoủyquyền, không là AC K01/Sprint1. S30 lỗi nền đã được so matchedbase/head; không phát triển QR trong runbookSprint1.
+
 ```powershell
 $sprint1Run = Get-Date -Format 'yyyyMMdd-HHmmss'
 node .\scripts\verify-sprint1-staging.mjs --wait-natural-expiry --skip-peer-probe --output "evidence/sprint1/$sprint1Run/api"
@@ -105,8 +107,8 @@ Test runner dùng DB15446/sprint2_integration,15450/signed_qr_integration,Redis1
 ## 5. Gate để nhóm tiếp tục
 
 - Firewall/certtrust và actualHTTPSUI15ca đãPASS. Hai peer nguồn b52 đãPASS tại20261016-two-peer; không chạy lại IPprobe. Hiện chỉ một laptop, dùng bài tải cùngmáy/processriêng ở§4. Không yêu cầu người dùng có thêm máy.
-- Thànhviên khác trực tiếp review PR91 headcuối; AI scan chỉ hỗ trợ. Full/prod audit hiện0. Develop hiện chưaprotected/rulesets; policy đề xuất trong SPRINT1_FIX_PR_DRAFT.md cần maintainer cho phép. Chưa merge khi review/policy/K01/NFR chưa đạt.
+- Thànhviên khác trực tiếp review PR91 headcuối; AI scan chỉ hỗ trợ. Full/prod audit hiện0. Develop đã protected, negative lintPR95 bịBLOCKED/đóngunmerged; giữ5requiredchecks và humanreview. Chưa merge khi review/K01 hoặc requiredcheck chưa đạt.
 - Sau tíchhợp develop được phêduyệt, kiểm CI exactmergeSHA, watcher/timeline auto-deploy<10phút, failedcheckno-deploy, failure-retains-old/rollback thực; không gọi manualdeploy là auto.
-- K01 cần stagingcomparison/điềukiệnđo/review và NFR liênquan; không miễn300ms bằngCI800ms, không nhận Sprint2Done.
+- K01 cần comparison200/cùng1ghế và quyết định/review. T31/endpoint300ms là phép kiểm story khác, đã tách khỏi nghiệm thuSprint1; không miễnNFR hoặc nhậnSprint2Done.
 - K01 đã bổ sung comparison trong `H/k01-laptop-research`: PG15 và Redis7-AOF trên profile riêng15456/16406,2researchprocess; Redis graceful restart giữ owner khi AOF bật, khác phép đo không persistence trước đó. Đây không là endpoint/TLS/LAN-client benchmark; cần người thật review kiến trúc/điều kiện đo, không tự chấp thuận staging authority. Giữ container/volume nghiên cứu riêng, không chạy script K01 cũ vì nó restart tên container của profile khác.
 - Không provider/payment/email/Cloudflare/production trong phiênnày. MoMoconfig giả disabledendpoint chỉ để productionstartup. Nếu health503, đọcprivatelog/dependencies; không tắtguard/verifier.

@@ -1,0 +1,358 @@
+{
+  "workbook": "..\\Bán vé sự kiện có sơ đồ ghế (1).xlsx",
+  "workbookSha256": "facf46e0c4b64ad47796d3e63fa5232be0a3418233ea107ede0e10a6dc127cff",
+  "scope": "DEC09 overrides older schedule fields; scope not changed",
+  "sources": [
+    {
+      "sheet": "Backlog",
+      "row": 2,
+      "values": [
+        "S-01",
+        "Story",
+        "E-01",
+        "Khung ứng dụng chạy được trên staging",
+        "Ready",
+        "Must",
+        "3",
+        "1",
+        "Todo",
+        "Hạ tầng, CI/CD và môi trường",
+        "Là thành viên phát triển tôi muốn có khung ứng dụng chạy được trên staging để mọi story sau đều có chỗ chạy thật thay vì chỉ chạy trên máy cá nhân",
+        "Giả sử máy chủ staging đã sẵn sàng, Khi merge vào nhánh chính, Thì pipeline build, chạy test và triển khai tự động, và trang chủ trả về HTTP 200\nGiả sử một bài test thất bại, Khi pipeline chạy, Thì dừng lại và không triển khai\nGiả sử thành viên mới lấy mã nguồn về, Khi chạy lệnh khởi động đã ghi trong README, Thì ứng dụng, PostgreSQL và Redis chạy được trên máy cá nhân\nGiả sử lần triển khai mới thất bại giữa chừng, Khi kiểm tra staging, Thì phiên bản cũ vẫn đang chạy",
+        "không",
+        "bí mật nạp từ biến môi trường; log không in chuỗi kết nối cơ sở dữ liệu",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Backlog",
+      "row": 5,
+      "values": [
+        "S-02",
+        "Story",
+        "E-02",
+        "Đăng nhập và phân quyền theo vai trò",
+        "Ready",
+        "Must",
+        "3",
+        "1",
+        "Todo",
+        "Tài khoản và phân quyền",
+        "Là người dùng của hệ thống tôi muốn đăng nhập và chỉ thấy phần việc của vai trò mình để không vô tình chạm vào dữ liệu không thuộc trách nhiệm của tôi",
+        "Giả sử tài khoản có vai trò ban tổ chức, Khi đăng nhập, Thì thấy mục quản lý sự kiện và không thấy mục đối soát kế toán\nGiả sử tài khoản có vai trò người mua vé, Khi gọi thẳng API tạo sự kiện bằng công cụ dòng lệnh, Thì máy chủ trả về 403 và ghi nhật ký lần thử đó\nGiả sử nhập sai mật khẩu 5 lần liên tiếp, Khi thử lần thứ 6, Thì khoá đăng nhập 15 phút và thông báo thời gian còn lại\nGiả sử phiên đăng nhập đã hết hạn, Khi gọi API bất kỳ, Thì trả về 401 và chuyển về trang đăng nhập\nGiả sử một route mới chưa khai báo quyền, Khi có người gọi tới, Thì bị từ chối — mặc định là đóng, không phải mở",
+        "S-01",
+        "mật khẩu hash bằng argon2id; chống dò mật khẩu theo cả IP và theo tài khoản",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Backlog",
+      "row": 8,
+      "values": [
+        "S-04",
+        "Story",
+        "E-03",
+        "Tạo sự kiện và suất diễn",
+        "Ready",
+        "Must",
+        "2",
+        "1",
+        "Todo",
+        "Sự kiện, suất diễn và sơ đồ ghế",
+        "Là ban tổ chức tôi muốn tạo sự kiện và các suất diễn của nó để mở bán vé cho từng khung giờ riêng",
+        "Giả sử đã đăng nhập bằng vai trò ban tổ chức, Khi tạo sự kiện với tên, mô tả và địa điểm hợp lệ, Thì sự kiện được lưu ở trạng thái nháp và chưa hiện với người mua\nGiả sử sự kiện đã tồn tại, Khi thêm một suất diễn có thời điểm bắt đầu trong tương lai, Thì suất diễn được lưu và gắn với sự kiện\nGiả sử nhập thời điểm bắt đầu ở quá khứ, Khi lưu suất diễn, Thì bị chặn kèm thông báo rõ lý do\nGiả sử hai suất diễn cùng sự kiện trùng hoàn toàn thời gian, Khi lưu suất thứ hai, Thì cảnh báo nhưng vẫn cho lưu — một sự kiện có thể diễn song song ở hai phòng\nGiả sử tài khoản ban tổ chức khác, Khi mở sự kiện không phải của mình, Thì bị từ chối",
+        "S-02",
+        "thời gian lưu ở UTC, hiển thị theo múi giờ Việt Nam",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Backlog",
+      "row": 14,
+      "values": [
+        "K-01",
+        "Spike",
+        "E-04",
+        "Chọn cơ chế giữ chỗ có thời hạn",
+        "Ready",
+        "Must",
+        "2",
+        "1",
+        "Todo",
+        "Chọn ghế và giữ chỗ có thời hạn",
+        "Spike timebox 1 ngày, có người hướng dẫn ngồi cùng. So sánh hai cách giữ chỗ có thời hạn: khoá trong Redis có thời hạn tự hết, hay bảng `seat_holds` trong PostgreSQL kèm job dọn. Chạy thử cả hai với 200 yêu cầu đồng thời vào cùng một ghế rồi đếm số lần giữ thành công. Kết quả quyết định cách làm S-10 và S-13.",
+        "Đầu ra là một quyết định có nêu cơ chế đã chọn, con số đo được của cả hai phương án, và lý do loại phương án kia",
+        "S-01",
+        "không viết mã sản phẩm trong spike; kết quả là kiến thức và một đoạn mã thử vứt đi được",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Backlog",
+      "row": 15,
+      "values": [
+        "S-10",
+        "Story",
+        "E-04",
+        "Chọn ghế và hệ thống giữ chỗ trong 10 phút",
+        "Ready",
+        "Must",
+        "3",
+        "2",
+        "Todo",
+        "Chọn ghế và giữ chỗ có thời hạn",
+        "Là người mua vé tôi muốn ghế mình vừa chọn được giữ lại một khoảng thời gian để kịp thanh toán mà không sợ mất ghế giữa chừng",
+        "Giả sử ghế đang trống, Khi tôi bấm chọn, Thì ghế chuyển sang trạng thái tôi đang giữ và màn hình hiện đồng hồ đếm ngược 10 phút\nGiả sử ghế đang có người khác giữ, Khi tôi bấm chọn, Thì bị từ chối kèm thông báo \"ghế vừa có người chọn\" và sơ đồ tự cập nhật\nGiả sử tôi chọn 3 ghế cách nhau vài giây, Khi xem đồng hồ, Thì cả ba ghế dùng chung một thời hạn tính từ ghế đầu tiên — không có ba đồng hồ khác nhau\nGiả sử suất diễn đã đóng bán, Khi tôi bấm chọn, Thì bị từ chối kèm thông báo suất không còn mở bán\nGiả sử đồng hồ máy tôi lệch 5 phút so với máy chủ, Khi xem đồng hồ đếm ngược, Thì thời gian còn lại vẫn đúng theo máy chủ",
+        "S-09, K-01",
+        "thời hạn giữ chỗ là tham số cấu hình, không ghi cứng trong mã; API giữ ghế trả lời dưới 300ms ở p95",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Backlog",
+      "row": 18,
+      "values": [
+        "S-13",
+        "Story",
+        "E-04",
+        "Ghế đã có người giữ thì không ai khác chọn được, kể cả khi bấm cùng lúc",
+        "Ready",
+        "Must",
+        "3",
+        "2",
+        "Todo",
+        "Chọn ghế và giữ chỗ có thời hạn",
+        "Là người mua vé tôi muốn chắc chắn ghế mình giữ được là của mình để không phải nhận thông báo huỷ và hoàn tiền sau khi đã thanh toán",
+        "Giả sử 200 yêu cầu giữ chỗ được bắn đồng thời vào 100 ghế, Khi tất cả xử lý xong, Thì đúng 100 giữ chỗ thành công và 100 yêu cầu nhận lỗi trùng\nGiả sử hai người bấm chọn cùng một ghế trong cùng một khoảnh khắc, Khi cả hai yêu cầu tới máy chủ, Thì đúng một người giữ được và người kia thấy thông báo \"ghế vừa có người chọn\"\nGiả sử yêu cầu giữ 5 ghế mà ghế thứ 3 đã có người giữ, Khi xử lý, Thì không ghế nào bị giữ và trả về danh sách ghế bị từ chối\nGiả sử giữ chỗ bị từ chối, Khi giao diện nhận lỗi, Thì sơ đồ tự làm mới để hiện trạng thái đúng\nGiả sử một giữ chỗ cũ trên ghế đó đã hết hạn, Khi người mới giữ, Thì thành công — ràng buộc chỉ tính giữ chỗ còn hiệu lực",
+        "S-10",
+        "bảo đảm chống trùng nằm ở tầng cơ sở dữ liệu, không dựa vào kiểm tra ở tầng ứng dụng — kiểm tra rồi ghi là sai vì có khoảng trống giữa hai bước",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Tasks",
+      "row": 2,
+      "values": [
+        "T-01",
+        "S-01",
+        "Dựng khung dự án và kết nối cơ sở dữ liệu",
+        "1",
+        "Todo",
+        "Khởi tạo dự án, cấu hình kết nối PostgreSQL, chạy được migration đầu tiên. Viết luôn `docker-compose.yml` cho PostgreSQL và Redis để cả team dùng chung một cấu hình. Migration đầu tiên này là mẫu cho mọi migration sau.",
+        "Chạy `docker compose up` rồi khởi động ứng dụng thì kết nối được cơ sở dữ liệu, migration chạy sạch cả tiến lẫn lùi",
+        "không",
+        "chuỗi kết nối đọc từ biến môi trường, không ghi thẳng trong mã",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Tasks",
+      "row": 3,
+      "values": [
+        "T-02",
+        "S-01",
+        "Pipeline CI chạy build, lint, test",
+        "1",
+        "Todo",
+        "Cấu hình CI chạy ba bước build, lint, test trên mỗi push và mỗi pull request. Đặt bước test chạy song song với lint để phản hồi nhanh.",
+        "Push một commit cố ý sai lint thì pipeline đỏ và chặn merge",
+        "T-01",
+        "pipeline chạy xong dưới 5 phút để không làm chậm nhịp sprint 1 tuần",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Tasks",
+      "row": 4,
+      "values": [
+        "T-03",
+        "S-01",
+        "Triển khai tự động lên staging bằng Docker",
+        "1",
+        "Todo",
+        "Đóng gói ứng dụng thành image, đẩy lên máy chủ riêng, chạy bằng Docker. Nối vào pipeline ở T-02 để merge vào nhánh chính thì tự triển khai. Container mới phải trả lời kiểm tra sức khoẻ rồi mới thay container cũ.",
+        "Merge vào nhánh chính thì staging chạy phiên bản mới trong vòng 10 phút, không cần thao tác tay; image lỗi thì container cũ vẫn chạy",
+        "T-02",
+        "triển khai thất bại thì giữ nguyên phiên bản cũ, không để staging chết",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Tasks",
+      "row": 5,
+      "values": [
+        "T-04",
+        "S-02",
+        "Bảng `users` và `roles` kèm migration",
+        "1",
+        "Todo",
+        "Thêm bảng `users`, `roles` và bảng nối, đủ cột cho năm vai trò ở §1.1. Đặt tên cột theo quy ước đã dùng ở migration đầu tiên trong T-01. Seed một tài khoản quản trị và một tài khoản ban tổ chức để Sprint 1 demo được.",
+        "Migration chạy tiến và lùi được; `users.email` có ràng buộc unique; seed sẵn năm vai trò và hai tài khoản demo",
+        "T-01",
+        "cột mật khẩu đủ dài cho hash argon2id",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Tasks",
+      "row": 6,
+      "values": [
+        "T-05",
+        "S-02",
+        "Đăng nhập bằng email và mật khẩu",
+        "1",
+        "Todo",
+        "Form đăng nhập, kiểm tra thông tin, tạo phiên. Bao gồm cả đếm số lần sai và khoá tạm — bộ đếm lưu ở Redis với thời hạn tự hết, không lưu trong bộ nhớ tiến trình.",
+        "Đăng nhập đúng thì vào được trang chính; sai 5 lần thì lần thứ 6 bị khoá 15 phút; khởi động lại ứng dụng thì khoá vẫn còn",
+        "T-04",
+        "thông báo lỗi không tiết lộ email có tồn tại hay không",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Tasks",
+      "row": 7,
+      "values": [
+        "T-06",
+        "S-02",
+        "Chặn truy cập theo vai trò ở tầng middleware",
+        "1",
+        "Todo",
+        "Một lớp middleware kiểm vai trò trước khi vào handler, thay vì rải lệnh `if` trong từng handler. Áp cho toàn bộ route cần quyền; route không khai báo thì từ chối.",
+        "Gọi API không đúng vai trò bằng curl thì nhận 403, kể cả khi giao diện đã ẩn nút; route chưa khai báo quyền trả về 403",
+        "T-05",
+        "mặc định là từ chối — route mới không khai báo quyền thì bị chặn, không phải được mở",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Tasks",
+      "row": 10,
+      "values": [
+        "T-09",
+        "S-04",
+        "Bảng `events` và `showtimes` kèm migration",
+        "1",
+        "Todo",
+        "Thêm hai bảng và khoá ngoại giữa chúng, cột chủ sở hữu trỏ về `users`. Xem migration bảng `users` ở T-04 làm mẫu quy ước đặt tên và cách viết migration lùi.",
+        "Migration chạy tiến và lùi được; xoá sự kiện thì suất diễn con bị chặn hoặc xoá theo, có chủ đích rõ ràng",
+        "T-04",
+        "cột thời gian dùng kiểu có múi giờ, không dùng kiểu không múi giờ",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Tasks",
+      "row": 11,
+      "values": [
+        "T-10",
+        "S-04",
+        "Màn hình tạo và sửa sự kiện",
+        "1",
+        "Todo",
+        "Form tạo/sửa sự kiện và danh sách suất diễn của nó, chỉ hiện sự kiện của chính người đăng nhập. Dùng lại bố cục và thành phần form đã dựng ở màn hình đăng nhập T-05.",
+        "Tạo, sửa, xem danh sách sự kiện đều chạy; lỗi nhập liệu hiện ngay tại ô sai; mở sự kiện của người khác bằng đường dẫn thì bị 403",
+        "T-09",
+        "form gửi đi phải chặn bấm hai lần liên tiếp",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "Tasks",
+      "row": 32,
+      "values": [
+        "T-31",
+        "S-13",
+        "Kịch bản kiểm thử bắn 200 yêu cầu đồng thời vào 100 ghế",
+        "2",
+        "Todo",
+        "Viết kịch bản bắn 200 yêu cầu song song vào 100 ghế rồi đếm số lần thành công. Đây là bằng chứng cho AC đầu tiên của S-13 — không có kịch bản này thì không ai biết mã có đúng hay không. Chạy trong CI như một bước riêng sau unit test.",
+        "Chạy kịch bản trên staging cho ra đúng 100 thành công; chạy lại 10 lần vẫn ra 100; CI đỏ nếu ra số khác",
+        "T-30",
+        "kịch bản chạy được trong CI để lần sau sửa mã còn biết có phá vỡ bảo đảm không",
+        "cả team"
+      ]
+    },
+    {
+      "sheet": "DoD-DoR",
+      "row": 2,
+      "values": [
+        "DoD",
+        "—",
+        "Code review đã duyệt bởi ít nhất một thành viên khác"
+      ]
+    },
+    {
+      "sheet": "DoD-DoR",
+      "row": 3,
+      "values": [
+        "DoD",
+        "—",
+        "Unit test cho nhánh logic mới; độ phủ trên phần thay đổi không giảm"
+      ]
+    },
+    {
+      "sheet": "DoD-DoR",
+      "row": 4,
+      "values": [
+        "DoD",
+        "—",
+        "CI xanh: build, lint, typecheck, test"
+      ]
+    },
+    {
+      "sheet": "DoD-DoR",
+      "row": 5,
+      "values": [
+        "DoD",
+        "—",
+        "Không có secret trong mã nguồn; quét phụ thuộc sạch"
+      ]
+    },
+    {
+      "sheet": "DoD-DoR",
+      "row": 6,
+      "values": [
+        "DoD",
+        "—",
+        "AC pass trên môi trường staging, không chỉ trên máy cá nhân"
+      ]
+    },
+    {
+      "sheet": "DoD-DoR",
+      "row": 7,
+      "values": [
+        "DoD",
+        "—",
+        "Story chạm tiền hoặc chạm ghế: có test đồng thời chứng minh không bán trùng và không ghi nhận hai lần"
+      ]
+    },
+    {
+      "sheet": "DoD-DoR",
+      "row": 8,
+      "values": [
+        "DoD",
+        "—",
+        "Job nền và webhook: chạy lại nhiều lần cho cùng kết quả"
+      ]
+    },
+    {
+      "sheet": "DoD-DoR",
+      "row": 9,
+      "values": [
+        "DoD",
+        "—",
+        "Không log dữ liệu định danh cá nhân và không log thông tin thanh toán"
+      ]
+    },
+    {
+      "sheet": "DoD-DoR",
+      "row": 10,
+      "values": [
+        "DoD",
+        "—",
+        "README hoặc tài liệu cập nhật nếu đổi hành vi công khai hoặc thêm biến môi trường"
+      ]
+    }
+  ]
+}
