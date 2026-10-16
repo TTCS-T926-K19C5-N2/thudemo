@@ -11,3 +11,4 @@ import { PrismaModule } from '../prisma/prisma.module.js';
   exports: [ScannerService, ScannerCryptoService],
 })
 export class ScannerModule {}
+

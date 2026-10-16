@@ -94,3 +94,59 @@ export async function fetchShowtimeTickets(
     { signal },
   );
 }
+
+export interface OfflineScanItemPayload {
+  scanId: string;
+  showtimeId: string;
+  ticketCode: string;
+  gateId?: string;
+  scannedAt: string;
+  deviceId: string;
+}
+
+export interface SyncOfflineScansResponse {
+  synced: number;
+  conflicts: {
+    scanId: string;
+    ticketCode: string;
+    reason: string;
+    existingCheckedInAt?: string | null;
+  }[];
+  syncedScanIds: string[];
+}
+
+export async function syncOfflineScansApi(
+  scans: OfflineScanItemPayload[],
+): Promise<SyncOfflineScansResponse> {
+  return api(
+    "/scanner/sync-scans",
+    (value: unknown) => {
+      const data = object(value);
+      const conflictsRaw = Array.isArray(data.conflicts) ? data.conflicts : [];
+      const syncedScanIdsRaw = Array.isArray(data.syncedScanIds)
+        ? data.syncedScanIds
+        : [];
+
+      return {
+        synced: Number(data.synced ?? 0),
+        conflicts: conflictsRaw.map((c) => {
+          const item = object(c);
+          return {
+            scanId: String(item.scanId),
+            ticketCode: String(item.ticketCode),
+            reason: String(item.reason),
+            existingCheckedInAt: item.existingCheckedInAt
+              ? String(item.existingCheckedInAt)
+              : null,
+          };
+        }),
+        syncedScanIds: syncedScanIdsRaw.map((id) => String(id)),
+      };
+    },
+    {
+      method: "POST",
+      body: JSON.stringify({ scans }),
+    },
+  );
+}
+

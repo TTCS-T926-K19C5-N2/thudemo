@@ -14,7 +14,7 @@ describe('ScannerController', () => {
         showtimeName: 'Show 1',
         generatedAt: '2026-10-08T00:00:00Z',
         cursor: '2026-10-08T00:00:00Z',
-        publicKey: { keyId: 'k1', key: 'pub-key' },
+        publicKeys: [{ keyId: 'k1', publicKey: 'pub-key', active: true }],
         tickets: [],
       }),
     };
@@ -38,4 +38,26 @@ describe('ScannerController', () => {
     await controller.getShowtimeTickets('st-1', 'cursor-123', req);
     expect(mockService.getShowtimeTickets).toHaveBeenCalledWith('st-1', 'cursor-123', req.user);
   });
+
+  it('delegates syncOfflineScans to service with body and user', async () => {
+    mockService.syncOfflineScans = vi.fn().mockResolvedValue([]);
+    const req = {
+      user: { id: 'user-1', email: 'user@test.com', roles: ['STAFF'] },
+    } as any;
+    const body = {
+      scans: [
+        {
+          scanId: 'scan-1',
+          ticketCode: 'code-1',
+          showtimeId: 'st-1',
+          scannedAt: '2026-10-12T10:00:00Z',
+          deviceId: 'dev-1',
+        },
+      ],
+    };
+
+    await controller.syncOfflineScans(body, req);
+    expect(mockService.syncOfflineScans).toHaveBeenCalledWith(body.scans, req.user);
+  });
 });
+

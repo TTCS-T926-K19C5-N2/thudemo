@@ -28,6 +28,14 @@ services:
           property: connectionString
       - key: WEB_ORIGIN
         sync: false
+      # S-26: ticket QR signing key; API refuses to start in production without it.
+      # Generate with: node scripts/generate-ticket-signing-key.mjs <keyId>
+      - key: TICKET_SIGNING_ACTIVE_KEY_ID
+        sync: false
+      - key: TICKET_SIGNING_PRIVATE_KEY
+        sync: false
+      - key: TICKET_SIGNING_PUBLIC_KEYS
+        value: "{}"
   - type: web
     name: sang-event-web
     runtime: docker

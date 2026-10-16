@@ -4,7 +4,7 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { HoldsService } from './holds.service.js';
+import { HoldsService, parseTicketLimit } from './holds.service.js';
 
 describe('hold driver error translation', () => {
   const seatId = '00000000-0000-4000-8000-000000000001';
@@ -47,7 +47,7 @@ describe('hold driver error translation', () => {
         JSON.stringify((error as ConflictException).getResponse()),
       ).not.toContain('private database detail');
     }
-    expect(db.seatReadQuery).toHaveBeenCalledOnce();
+    expect(db.seatReadQuery).toHaveBeenCalledTimes(2);
     expect(warn).toHaveBeenCalledOnce();
   });
 
@@ -66,7 +66,8 @@ describe('hold driver error translation', () => {
       ).rejects.toMatchObject({
         response: expect.objectContaining({ code: 'HOLD_UNAVAILABLE' }),
       });
-      expect(db.seatReadQuery).not.toHaveBeenCalled();
+      // One S-42 limit lookup, then fail closed without an ownership re-query.
+      expect(db.seatReadQuery).toHaveBeenCalledOnce();
     },
   );
 
@@ -109,27 +110,8 @@ describe('hold driver error translation', () => {
             response: expect.objectContaining({ code: apiCode }),
           });
       }
-      expect(db.seatReadQuery).not.toHaveBeenCalled();
-    },
-  );
-
-  it.each(['not-json', '["private database detail"]', '[]'])(
-    'fails closed for an invalid conflict detail %s',
-    async (detail) => {
-      const { db, holds } = service('routine', 'H0004');
-      db.commitHoldRoutine.mockRejectedValue(
-        Object.assign(Error('private database detail'), {
-          code: 'H0004',
-          detail,
-        }),
-      );
-      await expect(
-        holds.claim(seatId, seatId, 'fixture-session-hash', {
-          seatIds: [seatId],
-        }),
-      ).rejects.toMatchObject({
-        response: expect.objectContaining({ code: 'HOLD_UNAVAILABLE' }),
-      });
+      // One S-42 limit lookup; mapped routine rejections never re-query.
+      expect(db.seatReadQuery).toHaveBeenCalledOnce();
     },
   );
 
@@ -162,7 +144,218 @@ describe('hold driver error translation', () => {
           seatIds: [seatId],
         }),
       ).rejects.toMatchObject(expected);
-      expect(db.seatReadQuery).not.toHaveBeenCalled();
+      // One S-42 limit lookup; routine outcomes never re-query ownership.
+      expect(db.seatReadQuery).toHaveBeenCalledOnce();
     },
   );
+
+  it.each(['not-json', '["private database detail"]', '[]'])(
+    'fails closed for an invalid conflict detail %s',
+    async (detail) => {
+      const { db, holds } = service('routine', 'H0004');
+      db.commitHoldRoutine.mockRejectedValue(
+        Object.assign(Error('private database detail'), {
+          code: 'H0004',
+          detail,
+        }),
+      );
+      await expect(
+        holds.claim(seatId, seatId, 'fixture-session-hash', {
+          seatIds: [seatId],
+        }),
+      ).rejects.toMatchObject({
+        response: expect.objectContaining({ code: 'HOLD_UNAVAILABLE' }),
+      });
+      expect(db.seatReadQuery).toHaveBeenCalledOnce();
+    },
+  );
+});
+
+describe('S-42 per-account ticket limit', () => {
+  const showtimeId = '00000000-0000-4000-8000-000000000001';
+  const userId = '00000000-0000-4000-8000-000000000002';
+  const seatA = '00000000-0000-4000-8000-000000000011';
+  afterEach(() => vi.restoreAllMocks());
+
+  function fixture(
+    limit: number | null,
+    held: string | bigint,
+    bought: string | bigint,
+  ) {
+    vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => {});
+    vi.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+    const db = {
+      seatReadQuery: vi
+        .fn()
+        .mockResolvedValueOnce([{ maxTicketsPerUser: limit }])
+        .mockResolvedValue([{ held, bought }]),
+      commitHoldRoutine: vi.fn().mockResolvedValue([
+        {
+          serverTime: new Date(),
+          id: 'hold-id',
+          expiresAt: new Date(Date.now() + 600000),
+          seatIds: [seatA],
+          failure: null,
+          rejectedSeatIds: [],
+        },
+      ]),
+    };
+    return { db, holds: new HoldsService(db as unknown as PrismaService) };
+  }
+
+  it.each([
+    [{ maxTicketsPerUser: null }, null],
+    [{}, null],
+    [{ maxTicketsPerUser: 1 }, 1],
+    [{ maxTicketsPerUser: 2000 }, 2000],
+  ])('accepts %j as %j', (body, expected) => {
+    expect(parseTicketLimit(body)).toBe(expected);
+  });
+
+  const statusOf = (fn: () => unknown): unknown => {
+    try {
+      fn();
+    } catch (error) {
+      return (error as { status?: unknown }).status;
+    }
+    return undefined;
+  };
+
+  it.each([[0], [-1], [2001], [1.5], ['5'], [[]]])(
+    'rejects invalid limit value %j with 400',
+    (maxTicketsPerUser) => {
+      expect(statusOf(() => parseTicketLimit({ maxTicketsPerUser }))).toBe(400);
+    },
+  );
+
+  it('rejects non-object bodies with 400', () => {
+    expect(statusOf(() => parseTicketLimit(null))).toBe(400);
+    expect(statusOf(() => parseTicketLimit([1]))).toBe(400);
+  });
+
+  it('blocks a claim that would exceed the limit without touching the routine', async () => {
+    const { db, holds } = fixture(2, '1', 1n);
+    await expect(
+      holds.claim(showtimeId, userId, 'fixture-session-hash', {
+        seatIds: [seatA],
+      }),
+    ).rejects.toMatchObject({
+      status: 403,
+      response: expect.objectContaining({
+        code: 'TICKET_LIMIT',
+        limit: 2,
+        owned: 2,
+      }),
+    });
+    expect(db.commitHoldRoutine).not.toHaveBeenCalled();
+  });
+
+  it('allows a claim that exactly reaches the limit', async () => {
+    const { db, holds } = fixture(2, '1', '0');
+    const state = await holds.claim(showtimeId, userId, 'fixture-session-hash', {
+      seatIds: [seatA],
+    });
+    expect(state.hold?.seatIds).toEqual([seatA]);
+    expect(db.commitHoldRoutine).toHaveBeenCalledOnce();
+  });
+
+  it('skips counting when the showtime has no limit', async () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => {});
+    vi.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+    const db = {
+      seatReadQuery: vi.fn().mockResolvedValue([{ maxTicketsPerUser: null }]),
+      commitHoldRoutine: vi.fn().mockResolvedValue([
+        {
+          serverTime: new Date(),
+          id: 'hold-id',
+          expiresAt: new Date(Date.now() + 600000),
+          seatIds: [seatA],
+          failure: null,
+          rejectedSeatIds: [],
+        },
+      ]),
+    };
+    const holds = new HoldsService(db as unknown as PrismaService);
+    const body = { seatIds: [seatA] };
+    await holds.claim(showtimeId, userId, 'fixture-session-hash', body);
+    await holds.claim(showtimeId, userId, 'fixture-session-hash', body);
+    // Limit lookup runs once per TTL window; counting never runs.
+    expect(db.seatReadQuery).toHaveBeenCalledOnce();
+    expect(db.commitHoldRoutine).toHaveBeenCalledTimes(2);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  const limitQueryCount = (db: { seatReadQuery: { mock: { calls: unknown[][] } } }) =>
+    db.seatReadQuery.mock.calls.filter((args: unknown[]) => {
+      const first = args[0] as { text?: unknown };
+      return (
+        typeof first.text === 'string' && first.text.includes('maxTicketsPerUser')
+      );
+    }).length;
+
+  it('refetches the limit after the cache TTL expires', async () => {
+    const { db, holds } = fixture(null, '0', '0');
+    (
+      holds as unknown as { limitCacheTtlMs: number }
+    ).limitCacheTtlMs = 0;
+    const body = { seatIds: [seatA] };
+    await holds.claim(showtimeId, userId, 'fixture-session-hash', body);
+    await holds.claim(showtimeId, userId, 'fixture-session-hash', body);
+    expect(limitQueryCount(db)).toBe(2);
+  });
+
+  it('singleflights concurrent cold-cache lookups into one query', async () => {
+    const { db, holds } = fixture(4, '0', '0');
+    // One deferred limit row shared by 20 concurrent claims (cold container
+    // hit by a burst must not flood the hold pool with lookups).
+    let release!: (rows: unknown[]) => void;
+    db.seatReadQuery.mockReset();
+    db.seatReadQuery.mockImplementationOnce(
+      () =>
+        new Promise<unknown[]>((resolve) => {
+          release = resolve;
+        }),
+    );
+    db.seatReadQuery.mockImplementation(async (sql: { text: string }) =>
+      sql.text.includes('maxTicketsPerUser')
+        ? [{ maxTicketsPerUser: 4 }]
+        : [{ held: '0', bought: '0' }],
+    );
+    const pending = Array.from({ length: 20 }, (_, i) =>
+      holds.claim(showtimeId, `user-${i}`, 'fixture-session-hash', {
+        seatIds: [seatA],
+      }),
+    );
+    await new Promise((r) => setTimeout(r, 10));
+    release([{ maxTicketsPerUser: 4 }]);
+    await Promise.all(pending);
+    expect(limitQueryCount(db)).toBe(1);
+    expect(db.commitHoldRoutine.mock.calls).toHaveLength(20);
+  });
+
+  it('fails closed when the limit lookup errors so the limit is never bypassed', async () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => {});
+    vi.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+    const db = {
+      seatReadQuery: vi.fn().mockRejectedValueOnce(new Error('db down')),
+      commitHoldRoutine: vi.fn().mockResolvedValue([
+        {
+          serverTime: new Date(),
+          id: 'hold-id',
+          expiresAt: new Date(Date.now() + 600000),
+          seatIds: [seatA],
+          failure: null,
+          rejectedSeatIds: [],
+        },
+      ]),
+    };
+    const holds = new HoldsService(db as unknown as PrismaService);
+    await expect(
+      holds.claim(showtimeId, userId, 'fixture-session-hash', {
+        seatIds: [seatA],
+      }),
+    ).rejects.toMatchObject({ status: 503 });
+    expect(db.commitHoldRoutine).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalledOnce();
+  });
 });

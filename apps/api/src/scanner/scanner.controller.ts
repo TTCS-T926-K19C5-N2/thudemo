@@ -1,4 +1,14 @@
-import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import {
   SessionAuthGuard,
   type AuthenticatedRequest,
@@ -36,4 +46,26 @@ export class ScannerController {
   ) {
     return this.scannerService.getShowtimeTickets(showtimeId, since, req.user);
   }
+
+  @Post('sync-scans')
+  @HttpCode(200)
+  @Roles('STAFF', 'ADMIN', 'ORGANIZER')
+  async syncOfflineScans(
+    @Body()
+    body: {
+      scans?: {
+        scanId: string;
+        ticketCode: string;
+        showtimeId: string;
+        gateId?: string;
+        scannedAt: string;
+        deviceId: string;
+      }[];
+    },
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const scans = Array.isArray(body?.scans) ? body.scans : [];
+    return this.scannerService.syncOfflineScans(scans, req.user);
+  }
 }
+

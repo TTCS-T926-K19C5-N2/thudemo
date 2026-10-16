@@ -1,11 +1,16 @@
 import {
   fetchShowtimeTickets,
+  syncOfflineScansApi,
   type ShowtimeTicketsPayload,
+  type OfflineScanItemPayload,
+  type SyncOfflineScansResponse,
 } from "./scanner-api";
 import {
   getShowtimeMeta,
   saveTicketsAtomic,
   mergeTicketsIncremental,
+  getPendingOfflineScans,
+  markOfflineScansSynced,
   type ShowtimeLocalMeta,
 } from "./scanner-db";
 
@@ -101,6 +106,64 @@ export async function syncTicketsIncremental(
   }
 }
 
+export async function syncOfflineScanQueue(
+  showtimeId?: string,
+): Promise<{
+  syncedCount: number;
+  conflictCount: number;
+  conflicts: SyncOfflineScansResponse["conflicts"];
+}> {
+  if (typeof navigator !== "undefined" && !navigator.onLine) {
+    return { syncedCount: 0, conflictCount: 0, conflicts: [] };
+  }
+
+  const pending = await getPendingOfflineScans(showtimeId);
+  if (pending.length === 0) {
+    return { syncedCount: 0, conflictCount: 0, conflicts: [] };
+  }
+
+  const payload: OfflineScanItemPayload[] = pending.map((item) => ({
+    scanId: item.scanId,
+    showtimeId: item.showtimeId,
+    ticketCode: item.ticketCode,
+    gateId: item.gateId,
+    scannedAt: item.scannedAt,
+    deviceId: item.deviceId,
+  }));
+
+  try {
+    const res = await syncOfflineScansApi(payload);
+    const toMarkSynced = [
+      ...res.syncedScanIds,
+      ...res.conflicts.map((c) => c.scanId),
+    ];
+    if (toMarkSynced.length > 0) {
+      await markOfflineScansSynced(toMarkSynced);
+    }
+
+    // Trigger incremental sync after queue sync
+    const distinctShowtimes = Array.from(
+      new Set(pending.map((p) => p.showtimeId)),
+    );
+    for (const sid of distinctShowtimes) {
+      try {
+        await syncTicketsIncremental(sid);
+      } catch (e) {
+        console.warn(`Lỗi đồng bộ vé sau khi đẩy hàng đợi suất ${sid}:`, e);
+      }
+    }
+
+    return {
+      syncedCount: res.synced,
+      conflictCount: res.conflicts.length,
+      conflicts: res.conflicts,
+    };
+  } catch (err) {
+    console.warn("Lỗi đồng bộ hàng đợi quét ngoại tuyến:", err);
+    throw err;
+  }
+}
+
 export function startAutoSync(
   showtimeId: string,
   onMetaUpdated: (meta: ShowtimeLocalMeta) => void,
@@ -111,6 +174,12 @@ export function startAutoSync(
 
   const checkAndSync = async () => {
     if (!navigator.onLine) return;
+    try {
+      await syncOfflineScanQueue(showtimeId);
+    } catch {
+      // ignore
+    }
+
     const meta = await getShowtimeMeta(showtimeId);
     if (!meta) return;
 
@@ -141,3 +210,4 @@ export function startAutoSync(
     window.removeEventListener("online", onOnline);
   };
 }
+
