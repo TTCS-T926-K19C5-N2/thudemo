@@ -66,8 +66,19 @@ export class RegistrationService {
       );
   }
 
-  private async reserveDeliveryCapacity() {
+  private async reserveDeliveryCapacity(peer: string) {
     try {
+      // A single anonymous caller must not spend every other user's shared
+      // provider capacity using nonexistent recipients or rejected resends.
+      const caller = await this.redis.reserveRegistrationCaller(peer);
+      if (caller.count > 30)
+        throw new HttpException(
+          {
+            message: 'Đã đạt giới hạn yêu cầu đăng ký. Vui lòng thử lại sau.',
+            retryAfterSeconds: caller.ttl,
+          },
+          429,
+        );
       const budget = await this.redis.reserveRegistrationDelivery();
       if (budget.count > 120)
         throw new HttpException(
@@ -108,7 +119,7 @@ export class RegistrationService {
     });
   }
 
-  async register(body: unknown) {
+  async register(body: unknown, peer = 'internal-service') {
     const input =
       body && typeof body === 'object' ? (body as Record<string, unknown>) : {};
     const errors: Record<string, string> = {};
@@ -143,7 +154,7 @@ export class RegistrationService {
         errors,
       });
     this.requireDelivery();
-    await this.reserveDeliveryCapacity();
+    await this.reserveDeliveryCapacity(peer);
     // Identical Argon2 work for existing/new addresses avoids the former cheap
     // duplicate fast path. SMTP happens in the durable outbox, never in response.
     const password = await argon2.hash(input.password as string, {
@@ -184,10 +195,10 @@ export class RegistrationService {
     return GENERIC;
   }
 
-  async resend(emailInput: unknown) {
+  async resend(emailInput: unknown, peer = 'internal-service') {
     const email = registrationEmail(emailInput);
     this.requireDelivery();
-    await this.reserveDeliveryCapacity();
+    await this.reserveDeliveryCapacity(peer);
     try {
       const budget = await this.redis.reserveActivationResend(email);
       if (budget.count > 5)

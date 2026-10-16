@@ -12,14 +12,30 @@ import {
   activationHash,
 } from '../src/users/activation-delivery.service.js';
 import { REGISTRATION_NOTICE } from 'shared/registration-notice';
+import { LOGIN_PEER_HEADER, signLoginPeer } from 'shared/login-peer';
+import { Redis } from 'ioredis';
 
 describe('S03 registration, consent and durable activation (real PostgreSQL/Redis)', () => {
   let app: INestApplication;
   let db: PrismaService;
   let delivery: ActivationDeliveryService;
   const prefix = `s03-${randomUUID()}`;
+  const redis = process.env.REDIS_URL
+    ? new Redis(process.env.REDIS_URL, { keyPrefix: `${prefix}:` })
+    : new Redis({
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT),
+        keyPrefix: `${prefix}:`,
+      });
   const sent: OutgoingMail[] = [];
   let failMail = false;
+  const proxySecret = 'fixture-registration-peer-secret-at-least-32';
+  let previousSecret: string | undefined;
+  let peerIndex = 0;
+  let peer = '192.0.2.1';
+  beforeEach(() => {
+    peer = `192.0.2.${++peerIndex}`;
+  });
   const payload = (suffix: string) => ({
     email: `${prefix}-${suffix}@demo.invalid`,
     fullName: 'Người mua giả',
@@ -36,7 +52,10 @@ describe('S03 registration, consent and durable activation (real PostgreSQL/Redi
     return token!;
   };
   const register = (body: object) =>
-    request(app.getHttpServer()).post('/users/register').send(body);
+    request(app.getHttpServer())
+      .post('/users/register')
+      .set(LOGIN_PEER_HEADER, signLoginPeer(peer, proxySecret))
+      .send(body);
   const activate = (token: string, password = 'Activation-fixture-123') =>
     request(app.getHttpServer())
       .post('/users/activate')
@@ -44,10 +63,15 @@ describe('S03 registration, consent and durable activation (real PostgreSQL/Redi
   const resend = (email: string) =>
     request(app.getHttpServer())
       .post('/users/resend-activation')
+      .set(LOGIN_PEER_HEADER, signLoginPeer(peer, proxySecret))
       .send({ email });
 
   beforeAll(async () => {
+    previousSecret = process.env.AUTH_PROXY_SECRET;
+    process.env.AUTH_PROXY_SECRET = proxySecret;
     const module = await Test.createTestingModule({ imports: [AppModule] })
+      .overrideProvider('REDIS_CLIENT')
+      .useValue(redis)
       .overrideProvider(MailService)
       .useValue({
         ready: true,
@@ -77,6 +101,9 @@ describe('S03 registration, consent and durable activation (real PostgreSQL/Redi
   afterAll(async () => {
     await db.user.deleteMany({ where: { email: { startsWith: prefix } } });
     await app.close();
+    await redis.quit();
+    if (previousSecret === undefined) delete process.env.AUTH_PROXY_SECRET;
+    else process.env.AUTH_PROXY_SECRET = previousSecret;
   });
 
   it('publishes the approved notice and refuses invalid or missing consent without writes', async () => {
@@ -100,6 +127,46 @@ describe('S03 registration, consent and durable activation (real PostgreSQL/Redi
       );
     }
     expect(await db.user.count({ where: { email: input.email } })).toBe(0);
+  });
+
+  it('rolls back registration when consent persistence fails, then safely retries', async () => {
+    const input = payload('consent-storage');
+    const before = await db.activationToken.count();
+    // A test-only trigger targets only this suite's fake address.
+    // Keep real Prisma/PostgreSQL writes: a mocked transaction cannot prove rollback.
+    const suffix = randomUUID().replaceAll('-', '');
+    const name = `s03_consent_probe_${suffix}`;
+    const email = input.email.replaceAll("'", "''");
+    await db.$executeRawUnsafe(`CREATE FUNCTION ${name}() RETURNS trigger LANGUAGE plpgsql AS $$
+      BEGIN
+        IF EXISTS (SELECT 1 FROM users WHERE id = NEW."userId" AND email = '${email}') THEN
+          RAISE EXCEPTION 'Simulated consent storage failure';
+        END IF;
+        RETURN NEW;
+      END $$`);
+    try {
+      await db.$executeRawUnsafe(`CREATE TRIGGER ${name} BEFORE INSERT ON registration_consents
+        FOR EACH ROW EXECUTE FUNCTION ${name}()`);
+      const response = await register(input).expect(503);
+      expect(response.body.message).not.toContain(input.email);
+      expect(await db.user.count({ where: { email: input.email } })).toBe(0);
+      expect(await db.activationToken.count()).toBe(before);
+      expect(sent.some((mail) => mail.to === input.email)).toBe(false);
+    } finally {
+      await db.$executeRawUnsafe(
+        `DROP TRIGGER IF EXISTS ${name} ON registration_consents`,
+      );
+      await db.$executeRawUnsafe(`DROP FUNCTION ${name}()`);
+    }
+    await register(input).expect(201);
+    const user = await db.user.findUniqueOrThrow({
+      where: { email: input.email },
+      include: { registrationConsent: true, activationTokens: true },
+    });
+    expect(user.registrationConsent?.noticeVersion).toBe(
+      REGISTRATION_NOTICE.version,
+    );
+    expect(user.activationTokens).toHaveLength(1);
   });
 
   it('atomically creates only a pending BUYER, Argon2id, consent and a 24-hour hashed token', async () => {

@@ -87,6 +87,9 @@ describe('S03 validation and configuration boundaries', () => {
   it('rejects excess global delivery before Argon2/account/outbox work on either public route', async () => {
     const tx = vi.fn();
     const redis = {
+      reserveRegistrationCaller: vi
+        .fn()
+        .mockResolvedValue({ count: 1, ttl: 3600 }),
       reserveRegistrationDelivery: vi
         .fn()
         .mockResolvedValue({ count: 121, ttl: 3550 }),
@@ -113,6 +116,9 @@ describe('S03 validation and configuration boundaries', () => {
   it('fails mail-producing routes closed when shared admission storage is unavailable', async () => {
     const tx = vi.fn();
     const redis = {
+      reserveRegistrationCaller: vi
+        .fn()
+        .mockResolvedValue({ count: 1, ttl: 3600 }),
       reserveRegistrationDelivery: vi
         .fn()
         .mockRejectedValue(new Error('Private provider detail')),
@@ -126,6 +132,38 @@ describe('S03 validation and configuration boundaries', () => {
     await expect(service.register(valid)).rejects.toMatchObject({
       status: 503,
     });
+    expect(tx).not.toHaveBeenCalled();
+  });
+
+  it('rejects a caller before debiting global SMTP capacity and fails closed on caller storage errors', async () => {
+    const tx = vi.fn();
+    const redis = {
+      reserveRegistrationCaller: vi
+        .fn()
+        .mockResolvedValue({ count: 31, ttl: 3500 }),
+      reserveRegistrationDelivery: vi.fn(),
+    };
+    const service = new RegistrationService(
+      { $transaction: tx } as unknown as PrismaService,
+      redis as unknown as RedisService,
+      { available: true } as ActivationDeliveryService,
+      {} as RegistrationSettings,
+    );
+    for (const work of [
+      () => service.register(valid, '192.0.2.1'),
+      () => service.resend(valid.email, '192.0.2.1'),
+    ])
+      await expect(work()).rejects.toMatchObject({
+        status: 429,
+        response: { retryAfterSeconds: 3500 },
+      });
+    redis.reserveRegistrationCaller.mockRejectedValue(
+      new Error('private Redis detail'),
+    );
+    await expect(service.register(valid, '192.0.2.1')).rejects.toMatchObject({
+      status: 503,
+    });
+    expect(redis.reserveRegistrationDelivery).not.toHaveBeenCalled();
     expect(tx).not.toHaveBeenCalled();
   });
 });

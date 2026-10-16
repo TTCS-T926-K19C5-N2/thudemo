@@ -10,6 +10,16 @@ export function isLoginProxyPath(path) {
     "/api/auth/login"
   );
 }
+// Reuse the same transport-owned peer boundary for mail admission. Keep login
+// classification unchanged so existing login lockout evidence remains applicable.
+export function isPeerProtectedProxyPath(path) {
+  return (
+    isLoginProxyPath(path) ||
+    ["/api/users/register", "/api/users/resend-activation"].includes(
+      decodeURIComponent(path).replace(/\/+$/, "").toLowerCase(),
+    )
+  );
+}
 export function canonicalPeer(ip) {
   const value = ip?.startsWith("::ffff:") ? ip.slice(7) : ip;
   if (typeof value !== "string" || value.length > 45 || !isIP(value))

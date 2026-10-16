@@ -7,7 +7,15 @@ import {
   Patch,
   Param,
   HttpCode,
+  Req,
+  ForbiddenException,
 } from '@nestjs/common';
+import type { Request } from 'express';
+import {
+  canonicalPeer,
+  verifyLoginPeer,
+  LOGIN_PEER_HEADER,
+} from 'shared/login-peer';
 import { UsersService } from './users.service.js';
 import { Public, Roles } from '../auth/decorators/roles.decorator.js';
 import { RegistrationService } from './registration.service.js';
@@ -18,6 +26,20 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly registration: RegistrationService,
   ) {}
+
+  private peer(request: Request): string {
+    try {
+      const header = request.headers[LOGIN_PEER_HEADER];
+      return header === undefined
+        ? canonicalPeer(request.socket.remoteAddress)
+        : verifyLoginPeer(
+            typeof header === 'string' ? header : '',
+            process.env.AUTH_PROXY_SECRET,
+          );
+    } catch {
+      throw new ForbiddenException('Nguồn đăng ký không hợp lệ.');
+    }
+  }
 
   @Roles('ADMIN', 'ORGANIZER')
   @Post('staff')
@@ -33,8 +55,8 @@ export class UsersController {
 
   @Public()
   @Post('register')
-  register(@Body() body: unknown) {
-    return this.registration.register(body);
+  register(@Body() body: unknown, @Req() request: Request) {
+    return this.registration.register(body, this.peer(request));
   }
 
   @Public()
@@ -66,7 +88,7 @@ export class UsersController {
 
   @Public()
   @Post('resend-activation')
-  resendActivation(@Body('email') email: unknown) {
-    return this.registration.resend(email);
+  resendActivation(@Body('email') email: unknown, @Req() request: Request) {
+    return this.registration.resend(email, this.peer(request));
   }
 }

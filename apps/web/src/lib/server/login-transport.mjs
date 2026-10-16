@@ -1,7 +1,7 @@
 import {
   signLoginPeer,
   LOGIN_PEER_HEADER,
-  isLoginProxyPath,
+  isPeerProtectedProxyPath,
 } from "shared/login-peer";
 
 /** @param {Record<string, string | undefined>} env @param {string[]} args */
@@ -22,7 +22,7 @@ export function loginTransport(handler, secret) {
     delete request.headers[LOGIN_PEER_HEADER];
     try {
       const path = new URL(request.url ?? "/", "http://localhost").pathname;
-      if (request.method === "POST" && isLoginProxyPath(path)) {
+      if (request.method === "POST" && isPeerProtectedProxyPath(path)) {
         request.headers[LOGIN_PEER_HEADER] = signLoginPeer(
           request.socket.remoteAddress,
           secret,

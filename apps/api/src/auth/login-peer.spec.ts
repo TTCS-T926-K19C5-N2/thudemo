@@ -3,9 +3,23 @@ import {
   signLoginPeer,
   verifyLoginPeer,
   isLoginProxyPath,
+  isPeerProtectedProxyPath,
 } from 'shared/login-peer';
 describe('Login transport peer attestation', () => {
   const secret = 'fixture-only-key-with-at-least-32-random-characters';
+  it('requires transport peer for registration variants while preserving login classification', () => {
+    for (const path of [
+      '/api/users/register',
+      '/api/USERS/REGISTER/',
+      '/api/%75sers/resend-activation',
+    ]) {
+      expect(isPeerProtectedProxyPath(path)).toBe(true);
+      expect(isLoginProxyPath(path)).toBe(false);
+    }
+    expect(isPeerProtectedProxyPath('/api/auth/login')).toBe(true);
+    expect(isPeerProtectedProxyPath('/api/users/activate')).toBe(false);
+    expect(isPeerProtectedProxyPath('/api/users/register/other')).toBe(false);
+  });
   it('classifies all equivalent login spellings before choosing the peer boundary', () => {
     for (const path of [
       '/api/auth/login',

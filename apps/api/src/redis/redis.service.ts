@@ -101,4 +101,15 @@ export class RedisService {
     )) as [number, number];
     return { count: Number(result[0]), ttl: Math.max(1, Number(result[1])) };
   }
+
+  async reserveRegistrationCaller(
+    ip: string,
+  ): Promise<{ count: number; ttl: number }> {
+    const result = (await this.redis.eval(
+      "local n=redis.call('INCR',KEYS[1]); if n==1 then redis.call('EXPIRE',KEYS[1],3600); end; return {n,redis.call('TTL',KEYS[1])}",
+      1,
+      accountKey('registration-caller', ip),
+    )) as [number, number];
+    return { count: Number(result[0]), ttl: Math.max(1, Number(result[1])) };
+  }
 }

@@ -26,7 +26,7 @@ describe("Custom runtime entry boundary", () => {
       runtimeOptions({ AUTH_PROXY_SECRET: secret, PORT: "12345" }, ["--dev"]),
     ).toMatchObject({ port: 3000, dev: true });
   });
-  it("replaces even a valid caller attestation with its actual TCP peer; strips it off non-login routes", async () => {
+  it("replaces caller attestations with its actual TCP peer on login/mail routes; strips them elsewhere", async () => {
     const handler = vi.fn((req, res) =>
       res.end(String(req.headers[LOGIN_PEER_HEADER] ?? "none")),
     );
@@ -67,6 +67,9 @@ describe("Custom runtime entry boundary", () => {
         "/api/Auth/LOGIN",
         "/api/auth/login/",
         "/api/%61uth/login",
+        "/api/users/register",
+        "/api/USERS/REGISTER/",
+        "/api/%75sers/resend-activation",
       ]) {
         expect(verifyLoginPeer(await call(path), secret)).toBe("127.0.0.4");
       }
