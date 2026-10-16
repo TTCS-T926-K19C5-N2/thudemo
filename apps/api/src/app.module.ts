@@ -9,7 +9,6 @@ import { RedisModule } from './redis/redis.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { UsersModule } from './users/users.module.js';
 import { EventsModule } from './events/events.module.js';
-import { SeatsModule as SeatHoldModule } from './modules/seats/seats.module.js';
 import { ShowtimesModule } from './showtimes/showtimes.module.js';
 import { HoldsModule } from './holds/holds.module.js';
 import { OrdersModule } from './orders/orders.module.js';
@@ -19,6 +18,7 @@ import { CheckInModuleS29 } from './check-in/check-in-s29.module.js';
 import { TicketsModule } from './tickets/tickets.module.js';
 import { WebhookSecurityFilter } from './payments/webhook-security.filter.js';
 import { ScannerModule } from './scanner/scanner.module.js';
+import { SeatsModule as SeatHoldModule } from './modules/seats/seats.module.js';
 
 @Module({
   imports: [

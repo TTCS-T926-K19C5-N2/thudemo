@@ -43,7 +43,6 @@ import {
 } from "@/features/seat-selection/server-countdown";
 import { OrderTickets } from "@/features/tickets/order-tickets";
 
-
 export interface OrderReviewProps {
   id: string;
   onPay?: () => void;
