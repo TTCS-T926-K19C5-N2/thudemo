@@ -8,6 +8,7 @@ import {
   Query,
   Request,
   HttpCode,
+  HttpStatus,
   Optional,
   BadRequestException,
   NotFoundException,
@@ -72,7 +73,7 @@ export class SeatHoldController {
 
     return this.seatAvailabilityQueryService.getSeatsAvailability(showtimeId, seatIds);
   }
-
+  /**
    * API Đếm ngược thời gian giữ ghế theo suất chiếu và ghế cụ thể (Task T-24)
    * GET /api/showtimes/:showtimeId/seats/:seatId/countdown
    */
