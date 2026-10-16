@@ -4,6 +4,8 @@
 
 K01 Backlog row14 yêu cầu200request cùng1ghế, cảhai phương án, sốđo và quyết định/lýdo; T31 Tasksrow32 thuộcSprint2,200/100×10. Không có nguồn chuyển T31 vàoSprint1.
 
+**Audit quy trình gốc:** Backlog!K14 còn yêu cầu timebox1ngày/có người hướng dẫn ngồi cùng. Artifact đo không chứng minh điều này; trạng thái NOT RUN, cần xác nhận trung thực quá trình đã diễn ra hoặc quyết định xử lý sai lệch. Không dựng lại lịch sử. K01-A chỉ PASS số đo hai phương án; K01-C chờ chốt/review, K01-D chờ evidence quá trình.
+
 ## A. So sánh kho giữ ghế — tách khỏi endpoint sản phẩm
 
 | Phép đo | PostgreSQL p95 từng lượt (ms) | Redis p95 từng lượt (ms) | Điều kiện và kết quả |

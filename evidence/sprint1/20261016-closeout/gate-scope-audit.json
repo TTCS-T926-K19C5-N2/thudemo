@@ -4,17 +4,18 @@
     "demo_support": 1,
     "future_sprint_acceptance": 3,
     "repair_regression": 2,
-    "sprint1_acceptance": 56
+    "sprint1_acceptance": 55,
+    "scope_control": 1
   },
   "sourceEvidence": "scope-sources.json",
   "entries": [
     {
       "id": "SCOPE",
-      "classification": "sprint1_acceptance",
+      "classification": "scope_control",
       "sprint1RequirementSource": "../docs/decision-log.md DEC09/DEC13",
       "source": "../docs/decision-log.md DEC09/DEC13",
       "formerSourceText": "../docs/decision-log.md DEC09/DEC13",
-      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+      "reason": "Scope metadata, not a standalone acceptance requirement"
     },
     {
       "id": "T01-01",
@@ -504,5 +505,6 @@
       "formerSourceText": "DEC12; architecture; approvedNFR",
       "reason": "T31 and S10 remain Sprint2/future by original backlog/task; preserved NFR is not a Sprint change"
     }
-  ]
+  ],
+  "additionalRecoveredOriginalRequirement": "K01-D timebox/mentor NOT RUN, not part of legacy62"
 }

@@ -1,0 +1,790 @@
+{
+  "candidateAtAudit": "5b3f67bc343729dd6d87140b77af6536ec704086",
+  "result": "PASS audit completed, not Sprint Done",
+  "artifacts": [
+    {
+      "matrixId": "T01-01",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\clean-native.json",
+      "sha256": "14335053eaa3d7f64cebe4fbab7ce59c9c5bfc7a14ffa5e0f971f371226a024c",
+      "exists": true,
+      "assertion": "fresh archive install; versions",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T01-01",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\version-authorization.json",
+      "sha256": "8a21bf184062518151d95f526b5eb3c866c0f07a278a6a9435360a871d3b9501",
+      "exists": true,
+      "assertion": "fresh archive install; versions",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T01-02",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\clean-native.json",
+      "sha256": "14335053eaa3d7f64cebe4fbab7ce59c9c5bfc7a14ffa5e0f971f371226a024c",
+      "exists": true,
+      "assertion": "independent DB/profile start; dependency health",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T01-03",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\clean-native.json",
+      "sha256": "14335053eaa3d7f64cebe4fbab7ce59c9c5bfc7a14ffa5e0f971f371226a024c",
+      "exists": true,
+      "assertion": "full migration on guarded test DB, no reset",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T01-04",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\migration-cycle.json",
+      "sha256": "a0687af0d93fa995433a4e85c50a79ff72e4d09cef3fc20afa921139dfe6c22a",
+      "exists": true,
+      "assertion": "disposable schema cycle",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T01-05",
+      "path": "evidence\\sprint1\\20261016-closeout\\dependency-health-final.json",
+      "sha256": "6370032ef23cf9cb88e2be45f12b7cbeee8e3320afc1609097c38c3757b7a1a6",
+      "exists": true,
+      "assertion": "stop owned PG/Redis then recover",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T01-06",
+      "path": "evidence\\sprint1\\20261016-closeout\\secret-review.json",
+      "sha256": "c7e2d52be4084d4134e26c7bedb5bc2256c0403c018269c05b71c32311ff4cef",
+      "exists": true,
+      "assertion": "literal credential scan + bundle/context audit",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T02-01",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\ci-candidate.json",
+      "sha256": "468d2690b2482bfd01d6506a51eb203212e97f2f096d4202a2b0006dc13855b6",
+      "exists": true,
+      "assertion": "exact SHA check runs + workflow graph",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T02-01",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json",
+      "sha256": "578f6fd3a1656faf568e4e0d6232b71f88428d09b457e8d969d00ca74b20fc62",
+      "exists": true,
+      "assertion": "exact SHA check runs + workflow graph",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T02-02",
+      "path": "evidence\\sprint1\\20261016-closeout\\protection\\negative-gate.json",
+      "sha256": "8b08a66d1711698302cd4cf117642949bca03bf2173d8edbbf24e42e9c232781",
+      "exists": true,
+      "assertion": "read live develop policy + historical red lint",
+      "evidenceSource": "3051bba97a2f08171f6a780ae8fd486fc595b031",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T02-02",
+      "path": "evidence\\sprint1\\20261016-closeout\\protection\\protection-after.json",
+      "sha256": "c1f64898b893d1243c0790b531f43323c0d9dfd929f69e72d9900af8ec9bb2c4",
+      "exists": true,
+      "assertion": "read live develop policy + historical red lint",
+      "evidenceSource": "3051bba97a2f08171f6a780ae8fd486fc595b031",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T02-03",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\ci-candidate.json",
+      "sha256": "468d2690b2482bfd01d6506a51eb203212e97f2f096d4202a2b0006dc13855b6",
+      "exists": true,
+      "assertion": "exact head workflow wall time, no threshold change",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T02-03",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json",
+      "sha256": "578f6fd3a1656faf568e4e0d6232b71f88428d09b457e8d969d00ca74b20fc62",
+      "exists": true,
+      "assertion": "exact head workflow wall time, no threshold change",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T02-04",
+      "path": "evidence\\sprint1\\20261016-closeout\\watcher-gate-rehearsal.json",
+      "sha256": "269339ba3435de2a0b295f5d489abd06be95fb785a9ddc28df92b474641829e6",
+      "exists": true,
+      "assertion": "10 controlled adapters + real deployment child sentinel",
+      "evidenceSource": "cdb7fdbac5594f4831715731dd2b19893cecc9a2",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T03-01",
+      "path": "evidence\\sprint1\\20261016-closeout\\runtime.json",
+      "sha256": "7df93f46bb1ec02ea2c6e7dbda453599dc185a6a89d24617ef0de0e736da9446",
+      "exists": true,
+      "assertion": "build both; non-root/image SHA; health/login smoke",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T03-02",
+      "path": "evidence\\sprint1\\20261016-closeout\\runtime.json",
+      "sha256": "7df93f46bb1ec02ea2c6e7dbda453599dc185a6a89d24617ef0de0e736da9446",
+      "exists": true,
+      "assertion": "full HTTPS home/health/login before promotion",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T03-03",
+      "path": "evidence\\sprint1\\20261016-closeout\\source-provenance.json",
+      "sha256": "2302fd10f0040f74b220686c8440ae90fbc76da3f5222e965b0d2f10eafc093c",
+      "exists": true,
+      "assertion": "merge timestamp→CI→automatic deployment→healthy",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "BLOCKED",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T03-04",
+      "path": "evidence\\sprint1\\20261016-closeout\\timeline.json",
+      "sha256": "d718275c40ef80059fbe64665cb882144f25274c205bc0f9c1f88f363ff0c4a6",
+      "exists": true,
+      "assertion": "bad HMAC candidate rejected while old200",
+      "evidenceSource": "accf832be519d9790845c3590acd3f481c5594ac",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T03-05",
+      "path": "evidence\\sprint1\\20261016-closeout\\rollback-final.json",
+      "sha256": "f9d6ed246d1be77c5c85bb2358cd295b58ab4941ceac5d07e7d5927e92fdd9f9",
+      "exists": true,
+      "assertion": "Actual a2→accf832→a2 rollback, health/data/history/key checks",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T04-01",
+      "path": "evidence\\sprint1\\20261016-closeout\\data-final.json",
+      "sha256": "e8e0bccbe0e510dca389d0b6eda1a414c13cafe84e611add6019100a81772538",
+      "exists": true,
+      "assertion": "check role names/relations",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T04-02",
+      "path": "evidence\\sprint1\\20261016-closeout\\data-final.json",
+      "sha256": "e8e0bccbe0e510dca389d0b6eda1a414c13cafe84e611add6019100a81772538",
+      "exists": true,
+      "assertion": "duplicate insert rejected",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T04-03",
+      "path": "evidence\\sprint1\\20261016-closeout\\data-final.json",
+      "sha256": "e8e0bccbe0e510dca389d0b6eda1a414c13cafe84e611add6019100a81772538",
+      "exists": true,
+      "assertion": "hash verification, no plaintext",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T04-04",
+      "path": "evidence\\sprint1\\20261016-closeout\\data-final.json",
+      "sha256": "e8e0bccbe0e510dca389d0b6eda1a414c13cafe84e611add6019100a81772538",
+      "exists": true,
+      "assertion": "idempotent seed; foreign target refused",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T04-05",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\migration-cycle.json",
+      "sha256": "a0687af0d93fa995433a4e85c50a79ff72e4d09cef3fc20afa921139dfe6c22a",
+      "exists": true,
+      "assertion": "compensate+reapply in disposable DB",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T05-01",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "HTTPS login/me/navigation",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T05-02",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "expire only own fixture session; preserve draft by same owner",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T05-02",
+      "path": "evidence\\sprint1\\20261016-closeout\\browser-a2e5f67\\results.json",
+      "sha256": "5a3097c9b35cdb2753b54b970b205f8367b7990d313ac86ff4543effdc58f9d9",
+      "exists": true,
+      "assertion": "expire only own fixture session; preserve draft by same owner",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T05-03",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "logout then replay401",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T05-04",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "realAPI failures + actualTTL900",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T05-05",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "restart only owned API→429",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T05-06",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "wait real15min, valid login200; no DEL",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T05-07",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\enumeration.json",
+      "sha256": "12902f17814969078aaddc28ff8d76150920ea04090a36ba5e98fdada2a65400",
+      "exists": true,
+      "assertion": "realAPI401 parity",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T05-08",
+      "path": "evidence\\sprint1\\20261016-two-peer\\correlation.json",
+      "sha256": "5998598412d610d18edc26e9f17f00a983270cf723f982c6dff0d3159f209334",
+      "exists": true,
+      "assertion": "two real Wi-Fi peers+Redis610s+laptop200",
+      "evidenceSource": "b52ba6afa07d29444e5e809892e5325f0966625c",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T06-01",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "curl/API spoof directly despite hiddenUI",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T06-01",
+      "path": "evidence\\sprint1\\20261016-closeout\\denial-log.json",
+      "sha256": "b4bfc419bf89d5cb6ab810b662b864c13f201430a659343af3509ea9d0d13415",
+      "exists": true,
+      "assertion": "curl/API spoof directly despite hiddenUI",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T06-02",
+      "path": "evidence\\sprint1\\20261016-closeout\\checks-a2e5f67\\gates.json",
+      "sha256": "0e4adbff9e61c36b2f4d8c4acca5e017b97495d8bf1bfd2ff6301fbbb1cb9463",
+      "exists": true,
+      "assertion": "auth-roles.e2e-spec.ts authenticated undeclared root403 with real Nest HTTP/PG; guard source and full integration suite success",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T06-03",
+      "path": "evidence\\sprint1\\20261016-closeout\\route-inventory.txt",
+      "sha256": "fd94a8634e31aa3b6445ec3bae3cc79f6f6802085a13553868fca90676229986",
+      "exists": true,
+      "assertion": "route inventory; research both-prefix routes404",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T06-03",
+      "path": "evidence\\sprint1\\20261016-closeout\\checks-a2e5f67\\gates.json",
+      "sha256": "0e4adbff9e61c36b2f4d8c4acca5e017b97495d8bf1bfd2ff6301fbbb1cb9463",
+      "exists": true,
+      "assertion": "route inventory; research both-prefix routes404",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T06-04",
+      "path": "evidence\\sprint1\\20261016-closeout\\browser-a2e5f67\\results.json",
+      "sha256": "5a3097c9b35cdb2753b54b970b205f8367b7990d313ac86ff4543effdc58f9d9",
+      "exists": true,
+      "assertion": "UI A nav, direct accountant forbidden",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T06-05",
+      "path": "evidence\\sprint1\\20261016-closeout\\data-final.json",
+      "sha256": "e8e0bccbe0e510dca389d0b6eda1a414c13cafe84e611add6019100a81772538",
+      "exists": true,
+      "assertion": "multi-role allowed appropriate routes; foreignowner403",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T09-01",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "cannot delete event referenced by showtimes/order/ticket history",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T09-01",
+      "path": "evidence\\sprint1\\20261016-closeout\\paid-parent-fk.json",
+      "sha256": "ddefc90ae4a398fc01636a9920599ec2c9b89dfc5a343fe6871f2eaa0b0a87a8",
+      "exists": true,
+      "assertion": "cannot delete event referenced by showtimes/order/ticket history",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T09-02",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\migration-cycle.json",
+      "sha256": "a0687af0d93fa995433a4e85c50a79ff72e4d09cef3fc20afa921139dfe6c22a",
+      "exists": true,
+      "assertion": "fresh migration + dedicated compensation",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T09-03",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "DBtype and roundtrip UTC→VN",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T10-01",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "A create201,draft; buyer catalog omits",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T10-02",
+      "path": "evidence\\sprint1\\20261016-closeout\\browser-a2e5f67\\results.json",
+      "sha256": "5a3097c9b35cdb2753b54b970b205f8367b7990d313ac86ff4543effdc58f9d9",
+      "exists": true,
+      "assertion": "A change/reload/readback",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T10-03",
+      "path": "evidence\\sprint1\\20261016-closeout\\browser-a2e5f67\\results.json",
+      "sha256": "5a3097c9b35cdb2753b54b970b205f8367b7990d313ac86ff4543effdc58f9d9",
+      "exists": true,
+      "assertion": "B manage+PATCH eventA",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T10-04",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "Buyer direct API403",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T10-05",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "future201 correctevent",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T10-06",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "past400 with field feedback",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T10-07",
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "sha256": "6c671944659d41ee45880b506ad7f9cf4fa6745cec38357940159adf6022ea4e",
+      "exists": true,
+      "assertion": "two201 plus duplicatewarning",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T10-08",
+      "path": "evidence\\sprint1\\20261016-closeout\\browser-a2e5f67\\results.json",
+      "sha256": "5a3097c9b35cdb2753b54b970b205f8367b7990d313ac86ff4543effdc58f9d9",
+      "exists": true,
+      "assertion": "rapid clicks/ref disable/count1",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T10-09",
+      "path": "evidence\\sprint1\\20261016-closeout\\browser-a2e5f67\\results.json",
+      "sha256": "5a3097c9b35cdb2753b54b970b205f8367b7990d313ac86ff4543effdc58f9d9",
+      "exists": true,
+      "assertion": "invalid→correct→save, expiry→sameowner restore",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T10-10",
+      "path": "evidence\\sprint1\\20261016-closeout\\browser-a2e5f67\\results.json",
+      "sha256": "5a3097c9b35cdb2753b54b970b205f8367b7990d313ac86ff4543effdc58f9d9",
+      "exists": true,
+      "assertion": "USbrowserTZ+VNinput midnight→UTCstorage→reload",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "K01-A",
+      "path": "evidence\\sprint1\\20261015-handoff\\k01-laptop-research\\k01-candidates.json",
+      "sha256": "16d384f2f7547b7deeb295c092453435d17229a0afda63de9de094b2a40e4568",
+      "exists": true,
+      "assertion": "2process/store200same-seat×3; expiry/stale/retry/restart",
+      "evidenceSource": "b52ba6afa07d29444e5e809892e5325f0966625c",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "K01-C",
+      "path": "docs\\K01_EVIDENCE.md",
+      "sha256": "d753e682bd9e9e2bb09418e231a331cb22ddc3fcad8fa73ceab540c783230a78",
+      "exists": true,
+      "assertion": "Lead reads current research+tradeoff+productNFR",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "BLOCKED",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "DOD-02",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json",
+      "sha256": "578f6fd3a1656faf568e4e0d6232b71f88428d09b457e8d969d00ca74b20fc62",
+      "exists": true,
+      "assertion": "human independent exacthead approval",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "BLOCKED",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "DOD-03",
+      "path": "evidence\\sprint1\\20261016-closeout\\coverage-foundation-final\\comparison.json",
+      "sha256": "1a776d1cc4abfa25dd4f93f28000a2fe37efd28090a78f703a02d82f89415584",
+      "exists": true,
+      "assertion": "07d baseline original; a1a integrated foundation baseline",
+      "evidenceSource": "accf832be519d9790845c3590acd3f481c5594ac",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "DOD-04",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\ci-candidate.json",
+      "sha256": "468d2690b2482bfd01d6506a51eb203212e97f2f096d4202a2b0006dc13855b6",
+      "exists": true,
+      "assertion": "exact final head + integrated head",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "DOD-04",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json",
+      "sha256": "578f6fd3a1656faf568e4e0d6232b71f88428d09b457e8d969d00ca74b20fc62",
+      "exists": true,
+      "assertion": "exact final head + integrated head",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "DOD-05",
+      "path": "evidence\\sprint1\\20261016-closeout\\dependency-audit-all.json",
+      "sha256": "f45bb832b6688027f37756c380f1fa093d6596aeb8c7c4490b3e6707a7fb7a16",
+      "exists": true,
+      "assertion": "prod/full audit0; actual fixture literal scan",
+      "evidenceSource": "accf832be519d9790845c3590acd3f481c5594ac",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "DOD-05",
+      "path": "evidence\\sprint1\\20261016-closeout\\secret-review.json",
+      "sha256": "c7e2d52be4084d4134e26c7bedb5bc2256c0403c018269c05b71c32311ff4cef",
+      "exists": true,
+      "assertion": "prod/full audit0; actual fixture literal scan",
+      "evidenceSource": "accf832be519d9790845c3590acd3f481c5594ac",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "DOD-06",
+      "path": "evidence\\sprint1\\20261016-closeout\\source-provenance.json",
+      "sha256": "2302fd10f0040f74b220686c8440ae90fbc76da3f5222e965b0d2f10eafc093c",
+      "exists": true,
+      "assertion": "functional+NFR+real auto-deploy",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "BLOCKED",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "DOD-09",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\log-probe.json",
+      "sha256": "2060c96588d00a598a8c86a87a76c6f51a18cb7007bd27dd6144fbf7646360a2",
+      "exists": true,
+      "assertion": "inspect/redact actual touched output",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "DOD-09",
+      "path": "evidence\\sprint1\\20261016-closeout\\denial-log.json",
+      "sha256": "b4bfc419bf89d5cb6ab810b662b864c13f201430a659343af3509ea9d0d13415",
+      "exists": true,
+      "assertion": "inspect/redact actual touched output",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "DOD-10",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\documentation.json",
+      "sha256": "e4e0bb8b6fd5f99916c1fb255ec491b39663a51c02170fb5538d8a1cfe490f32",
+      "exists": true,
+      "assertion": "revision/evidence/credentials paths aligned",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "K01-D",
+      "path": "docs\\K01_EVIDENCE.md",
+      "sha256": "d753e682bd9e9e2bb09418e231a331cb22ddc3fcad8fa73ceab540c783230a78",
+      "exists": true,
+      "assertion": "Inspect dated research records and human confirmation",
+      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "resultClaimed": "NOT RUN",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "DOD-07",
+      "path": "evidence\\sprint1\\20261016-closeout\\checks-a2e5f67\\gates.json",
+      "sha256": "0e4adbff9e61c36b2f4d8c4acca5e017b97495d8bf1bfd2ff6301fbbb1cb9463",
+      "exists": true,
+      "assertion": "HTTP100winner/100conflict×10 + multi-seat atomicity",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "DOD-08",
+      "path": "evidence\\sprint1\\20261016-closeout\\checks-a2e5f67\\gates.json",
+      "sha256": "0e4adbff9e61c36b2f4d8c4acca5e017b97495d8bf1bfd2ff6301fbbb1cb9463",
+      "exists": true,
+      "assertion": "stale owner/retry/expired and worker tests",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "T03-06",
+      "path": "evidence\\sprint1\\20261016-closeout\\runtime.json",
+      "sha256": "7df93f46bb1ec02ea2c6e7dbda453599dc185a6a89d24617ef0de0e736da9446",
+      "exists": true,
+      "assertion": "disk below12GiB fails before build; owned resume",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "K01-B",
+      "path": "evidence\\sprint1\\20261016-closeout\\performance-summary.json",
+      "sha256": "0431f949dbe10e74534c32276babb162d00c863f8bc92aa0130315dd4d9a3cce",
+      "exists": true,
+      "assertion": "full HTTPS2000calls including cold and failures",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "FAIL",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "K01-B-H2",
+      "path": "evidence\\sprint1\\20261016-closeout\\load-laptop-h2-cold-api-2\\correlation.json",
+      "sha256": "f4cd6699569fcb3293c11bf49f91fa85601abb79e7a932377abedb00ca3a3776",
+      "exists": true,
+      "assertion": "200 actual-API-authenticated buyers/100seats×10; all200 requests overlap, DB1000 active rights verified",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "K01-B-H1",
+      "path": "evidence\\sprint1\\20261016-closeout\\load-laptop-h1-cold-api-1\\correlation.json",
+      "sha256": "aeeb869d1a4d21557244db25b5d1694db05a46fffc2d8a20ac7903b6c75510b0",
+      "exists": true,
+      "assertion": "200 actual-API-authenticated buyers/100seats×10; all200 requests overlap, DB1000 active rights verified",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "FAIL",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "SCOPE",
+      "path": "evidence\\sprint1\\20261016-closeout\\source-provenance.json",
+      "sha256": "2302fd10f0040f74b220686c8440ae90fbc76da3f5222e965b0d2f10eafc093c",
+      "exists": true,
+      "assertion": "read scope/PR29+34–37 vs actual integration",
+      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    }
+  ],
+  "namedContentChecks": [
+    {
+      "path": "evidence\\sprint1\\20261016-closeout\\api-a2e5f67\\https-api.json",
+      "assertionSelector": "results.name in ['https-home-health-anonymous401', 'production-secure-cookie-contract', 'organizer-draft-created-and-hidden-from-buyer', 'owner-b-and-buyer-server403', 'event-edit-readback-persists', 'future-past-duplicate-warning-utc-storage-and-fk-restrict', 'logout-replay-and-server-expired-session401', 'five-failures-sixth429-real900s-policy', 'owned-api-restart-retains-account-lock-in-redis', 'natural-lock-expiry-valid-login200-no-del-no-shortened-ttl', 'https-case-alias-charges-actual-lan-peer-despite-spoofed-valid-attestation']",
+      "result": "PASS"
+    },
+    {
+      "path": "evidence\\sprint1\\20261016-closeout\\browser-a2e5f67\\results.json",
+      "assertionSelector": "results.name in ['login-desktop-identity-nonblank-keyboard', 'organizer-login-events-no-accounting', 'empty-form-inline-errors', 'double-submit-one-draft', 'edit-reload-persist', 'past-time-inline-error-retains-input', 'future-vietnam-time-in-US-browser-duplicate-warning-two-records-reload', 'real-server400-field-error-input-retained-recovery', 'expired-session401-login-return-restores-same-owner-draft', 'other-organizer-direct-url-denied-mobile', 'mobile390-editor-no-overflow', 'loading-state', 'error-state-reload-recovery', 'no-page-runtime-errors', 'no-unexpected-console-errors']",
+      "result": "PASS"
+    },
+    {
+      "path": "evidence/sprint1/20261015-handoff/k01-laptop-research/k01-candidates.json",
+      "assertionSelector": "Both stores ×3 rounds; winners1/conflicts199/errors0/n200",
+      "result": "PASS"
+    }
+  ],
+  "notes": [
+    "All PASS file references exist; JSON named case success checked, original verifier/test source read for assertions. Hash equality establishes application compatibility, not a rerun.",
+    "K01 mentor/timebox was absent; recovered as NOT RUN. DOD09 secret-only pointer replaced by actual log probe. Historical migration evidence replaced by current staged cycle.",
+    "Head5b core CI+allcheck snapshots updated; no relabeling f774 run. Browser API a2 evidence remains a2."
+  ],
+  "additionalContentChecks": [
+    {
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\enumeration.json",
+      "assertions": "both401, sameResponse=true, fixture recovered200",
+      "result": "PASS"
+    },
+    {
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\clean-native.json",
+      "assertions": "frozen lock unchanged;29migrations; native API/web/proxy200; installed versions checked",
+      "result": "PASS"
+    },
+    {
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\migration-cycle.json",
+      "assertions": "intermediate tables checked after each compensation/reapply",
+      "result": "PASS"
+    },
+    {
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\log-probe.json",
+      "assertions": "actual Sprint1 negative paths; no tested secret/PII/payment sentinels in owned API/web/gateway logs; denial log still present",
+      "result": "PASS"
+    }
+  ]
+}

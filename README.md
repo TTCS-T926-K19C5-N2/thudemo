@@ -4,7 +4,7 @@
 
 > **Hướng dẫn hiện hành cho giao diện, tài khoản và giữ ghế Sprint 2:** [LOCAL_USER_GUIDE](docs/LOCAL_USER_GUIDE.md). Có lệnh build/chạy/test từng bước, tài khoản người tổ chức/người mua, cách đọc mật khẩu giả riêng trên máy và xử lý lỗi. Profile review dùng PostgreSQL 15432/Redis 16379 với database `stitch_fidelity`; các mục T-01 và checkpoint cũ dưới đây được giữ làm lịch sử, dùng profile khác.
 
-Đây là hướng dẫn cho môi trường local theo T-01/TECH-01. Docker Compose chạy PostgreSQL và Redis; API NestJS và web Next.js chạy trực tiếp trên máy. Web dùng cổng **3000**, API dùng cổng **3001**. Các lệnh dưới đây dùng PowerShell và được chạy từ thư mục `thudemo/` chứa file README này.
+Đây là hướng dẫn cho môi trường local theo T-01/TECH-01. Candidate hiện dùng bản vá Next.js16.3.8 theo quyền sửa dependency bảo mật đã cấp; yêu cầu16.3.6 lịch sử được ghi riêng trong báo cáo đối chiếu. Docker Compose chạy PostgreSQL và Redis; API NestJS và web Next.js chạy trực tiếp trên máy. Web dùng cổng **3000**, API dùng cổng **3001**. Các lệnh dưới đây dùng PowerShell và được chạy từ thư mục `thudemo/` chứa file README này.
 
 ## 1. Chuẩn bị
 
@@ -28,7 +28,7 @@ if (-not (Test-Path .env)) { Copy-Item .env.example .env }
 
 Mở `thudemo/.env` và thay **mọi** giá trị dạng `<...>` bằng giá trị thử nghiệm do bạn tự đặt. Dùng cùng tên user, mật khẩu và tên database trong `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` và `DATABASE_URL`. URL của API phải trỏ `localhost:5432`; Redis trỏ `localhost:6379`. Nếu mật khẩu chứa ký tự đặc biệt, phần mật khẩu trong `DATABASE_URL` cần được mã hóa theo URL; dùng ký tự chữ/số cho mật khẩu local sẽ dễ cấu hình hơn.
 
-Giữ `PORT=3001` và `NEXT_PUBLIC_API_URL=http://localhost:3001` như file mẫu. `NEXT_PUBLIC_*` là biến công khai: không đặt mật khẩu, token hoặc chuỗi kết nối vào đó. `.env` đã được Git ignore; không commit hoặc gửi nội dung file này. Các biến JWT trong mẫu thuộc scaffold authentication hiện có, chưa phải bằng chứng tính năng đăng nhập đã hoàn thành.
+Giữ `PORT=3001` và `NEXT_PUBLIC_API_URL=http://localhost:3001` như file mẫu. `NEXT_PUBLIC_*` là biến công khai: không đặt mật khẩu, token hoặc chuỗi kết nối vào đó. `.env` đã được Git ignore; không commit hoặc gửi nội dung file này. Phiên đăng nhập hiện dùng server session theo TECH-02; cookie HttpOnly, Secure trên HTTPS. Không cấu hình JWT thay cho session. `WEB_PORT`, `WEB_ORIGIN` và `AUTH_PROXY_SECRET` phải khớp web/API; dùng entry web `pnpm --filter web dev` để có xác thực TCP peer.
 
 Nếu đã có volume PostgreSQL từ lần chạy trước, đổi `POSTGRES_USER`, `POSTGRES_PASSWORD` hoặc `POSTGRES_DB` trong `.env` không tự đổi tài khoản/database đã khởi tạo trong volume. Hãy dùng lại các giá trị tương ứng hoặc xử lý volume theo quy trình của nhóm; không xóa volume khi còn dữ liệu cần giữ.
 
@@ -41,7 +41,7 @@ pnpm --filter api exec prisma migrate deploy
 pnpm --filter api exec prisma generate
 ```
 
-`--wait` chỉ hoàn tất khi PostgreSQL và Redis đạt healthcheck. Lệnh migration dùng lịch sử Prisma trong repository; chạy lại sẽ báo không có migration chờ nếu database đã cập nhật. Các migration T-01 chỉ là mẫu apply → migration bù → tái áp dụng, chưa tạo các bảng nghiệp vụ User/Event/Showtime. Không dùng `prisma db push` hoặc reset database thay cho migration.
+`--wait` chỉ hoàn tất khi PostgreSQL và Redis đạt healthcheck. Lệnh migration dùng lịch sử Prisma trong repository; chạy lại sẽ báo không có migration chờ nếu database đã cập nhật. Checkout tích hợp hiện có 29 migration, gồm User/Role/Event/Showtime và các module sprint sau. Ba migration probe của T-01 là mẫu apply → migration bù → tái áp dụng; không có nghĩa schema hiện tại chỉ còn scaffold. Không dùng `prisma db push` hoặc reset database thay cho migration.
 
 ## 4. Chạy API và web
 
@@ -57,7 +57,7 @@ pnpm --filter api run start:dev
 pnpm --filter web run dev
 ```
 
-Mở [web](http://localhost:3000) và [API health](http://localhost:3001/health). Health trả HTTP `200` với `status: ok` khi API kết nối được cả PostgreSQL và Redis; nếu một dịch vụ lỗi, API trả `503`. Web hiện vẫn là scaffold của Sprint 1, chưa có luồng bán vé hoàn chỉnh.
+Mở [web](http://localhost:3000) và [API health](http://localhost:3001/health). Health trả HTTP `200` với `status: ok` khi API kết nối được cả PostgreSQL và Redis; nếu một dịch vụ lỗi, API trả `503`. Đăng nhập, phân quyền và quản lý sự kiện nháp/suất diễn thuộc phạm vi Sprint 1; các module sprint sau có trong checkout không tự được nghiệm thu ở Sprint 1.
 
 Để dừng API hoặc web, nhấn `Ctrl+C` trong từng cửa sổ. Có thể dừng hai dịch vụ dữ liệu bằng `docker compose stop postgres redis`; lệnh này giữ nguyên volume PostgreSQL.
 

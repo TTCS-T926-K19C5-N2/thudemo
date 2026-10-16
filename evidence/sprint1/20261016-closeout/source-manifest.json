@@ -1,5 +1,5 @@
 {
-  "head": "a506cdab21ecc89c88d272b26d8fea13c4dcf9ee",
+  "head": "5b3f67bc343729dd6d87140b77af6536ec704086",
   "base": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
   "files": [
     {
@@ -20,7 +20,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "d6b84d780a3276d0128d3578a82245dbef09dddf6a07212482d17329997a766a"
+      "sha256": "d0e45c65aa910ec4ca49110af183b89e329660e0c8043bcddab2928d50abf220"
     },
     {
       "path": "apps/api/prisma/migrations/202610160001_hold_known_conflict/migration.sql",
