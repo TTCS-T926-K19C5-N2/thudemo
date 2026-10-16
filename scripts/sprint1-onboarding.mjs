@@ -482,7 +482,8 @@ try {
   if (process.argv.includes("--skip-build")) {
     if (!state.built || state.fingerprint !== fingerprint())
       fail("SkipBuild requires an unchanged previously built clean checkout");
-  } else runLog("build", "corepack pnpm build", env);
+  } else
+    runLog("build", "corepack pnpm build", { ...env, NODE_ENV: "production" });
   state = {
     source: git("rev-parse", "HEAD"),
     localDiff: !!git("status", "--porcelain"),
