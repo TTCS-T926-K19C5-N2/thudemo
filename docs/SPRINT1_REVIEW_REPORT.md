@@ -1,5 +1,9 @@
 # Sprint 1 — review và nghiệm thu hiện hành (16/10/2026)
 
+## Cập nhật xác nhận PO — DEC-14, 16/10/2026
+
+PostgreSQL authority cho **laptop staging dữ liệu giả đã được Nguyễn Văn Sáng (PO) chấp thuận trực tiếp** sau gói K01; DEC14/k01-approval.json giữ nguyên văn và ngữ cảnh. Đây không còn blocker “chưa quyết định staging authority”. K01-D timebox/mentor vẫn NOT RUN; DoD02 vẫn BLOCKED: user nhận review nhưng PR author và authenticated account đều sangnguyencoder, chưa có approval thành viên khác. Không giả review hoặc suy phê duyệt PO thành miễn quy trình. Các đoạn checkpoint trước dưới đây giữ trạng thái tại thời điểm cũ; trạng thái hiện hành phải đọc cùng cập nhật này.
+
 **Chênh lệch phiên bản đã đối chiếu:** TECH01/T01AC1 lịch sử ghi Next16.3.6; candidate dùng Next/eslint-config-next16.3.8. Đây là bản vá tương thích theo quyền sửa dependency/security được người dùng cấp sau TECH01 (attachment795f…, dòng16/34/79–87), đã frozen-install/build/smoke/audit; không âm thầm nhận16.3.8 là16.3.6. Node24.21/pnpm10.15.1/React19.2.8/Nest12.1/Prisma7.10/Tailwind4 giữ đúng stack. Nguồn và hash tại `version-authorization.json`.
 
 **NOT DONE. Demo chức năng laptop HTTPS sẵn sàng khi Status báo READY; chưa đủ AC/DoD để merge/nghiệm thu Sprint.** Phạm vi DEC09: S01/T01–03, S02/T04–06, S04/T09–10, K01; S03 Sprint3. Giữ giao diện V1. Nguồn gốc tại thư mục cha: `docs/{product,architecture,risk-and-security,ui,decision-log}.md`, `tasks/T-01…06,T-09…10.md`, backlog và DoD-DoR. T09 là schema/FK, T10 là giao diện/API tạo và quản lý sự kiện/suất. Không tính story khác thành Sprint1.
@@ -8,7 +12,7 @@
 
 Audit candidate **5b3f67bc343729dd6d87140b77af6536ec704086**, base develop **80f7a53d752d78ea6b65da3f8c6c08ca23e78176**, staging runtime **a2e5f675a371e9a0200b1ab7d2a83ac837d3717d**. Các commit sau runtime chỉ test/harness/tài liệu; `runtime-equivalence.json` kiểm Git blob và nội dung worktree tương đương cho toàn bộ source sản phẩm/schema/lock/deploy/workflow. Evidence không được đổi nhãn thành đã chạy head mới.
 
-Nguồn: backlog **đã đồng bộ refinement** và bản gốc đối chiếu, DEC09/TECH01/TECH02/DEC11–13, T01–06/T09–10, product§7, risk-and-security§3.1/3.8/3.10/3.11, architecture§14–18, DoD-DoR rows2–10. DEC13 duyệt laptop LAN riêng/develop, không cần VPS. S30/S31 ngoài Sprint1; T31 thuộc Sprint2; NFR endpoint300ms được giữ riêng. Phân tách điều khoản nguồn và phép kiểm trong [ma trận](SPRINT1_ACCEPTANCE_MATRIX.md) và `evidence/sprint1/20261016-acceptance-audit/traceability.json`.
+Nguồn: backlog **đã đồng bộ refinement** và bản gốc đối chiếu, DEC09/TECH01/TECH02/DEC11–14, T01–06/T09–10, product§7, risk-and-security§3.1/3.8/3.10/3.11, architecture§14–18, DoD-DoR rows2–10. DEC13 duyệt laptop LAN riêng/develop, không cần VPS. S30/S31 ngoài Sprint1; T31 thuộc Sprint2; NFR endpoint300ms được giữ riêng. Phân tách điều khoản nguồn và phép kiểm trong [ma trận](SPRINT1_ACCEPTANCE_MATRIX.md) và `evidence/sprint1/20261016-acceptance-audit/traceability.json`.
 
 | Task | Chức năng/ca bắt buộc đã kiểm | Kết quả kỹ thuật, môi trường/source | Còn chờ để Done |
 |---|---|---|---|
@@ -20,7 +24,7 @@ Nguồn: backlog **đã đồng bộ refinement** và bản gốc đối chiếu
 | T-06 | Buyer direct API403+log; default-deny HTTP403; public route inventory; organizer nav/no accounting; multi-role/no implicit owner bypass | PASS — Nest HTTP/PG/Redis integration5b; actual HTTPS/browser a2; role-log probe mới | DoD review/chấp nhận tích hợp |
 | T-09 | FK owner/event/showtime; Restrict parent delete kể cả PAID order/ticket; tiến/bù/reapply; TIMESTAMPTZ/UTC | PASS — PG/HTTPS a2, PAID fixture transaction rollback; cycle5b | DoD review/chấp nhận tích hợp; không thêm delete API |
 | T-10 | A tạo draft/buyer không thấy; owner list/edit/reload; future linked; past server/UI reject; duplicate cảnh báo vẫn lưu; B URL/API403; double-submit1; field validation giữ input; UTC/VN roundtrip | PASS — API a2 +15 ca browser desktop1440/mobile390, TZ US/VN; source sản phẩm bằng candidate | DoD review/chấp nhận tích hợp |
-| K-01 | PG và Redis,200cùng1ghế×3,1winner/199conflict; số đo/điều kiện/expiry/restart/durability/trade-off; research tách sản phẩm | PASS phần kỹ thuật — research laptop b52, source adapted/hash và số đo gốc giữ nguyên. Quyết định/review BLOCKED; timebox/mentor NOT RUN | Xác nhận trung thực quá trình timebox1ngày/mentor hoặc quyết định xử lý sai lệch; Lead/PO đọc evidence/chốt staging, không ký thay |
+| K-01 | PG và Redis,200cùng1ghế×3,1winner/199conflict; số đo/điều kiện/expiry/restart/durability/trade-off; research tách sản phẩm | PASS phần kỹ thuật — research laptop b52, source adapted/hash và số đo gốc giữ nguyên. Quyết định PO PASS theo DEC14; member review BLOCKED; timebox/mentor NOT RUN | Xác nhận trung thực quá trình timebox1ngày/mentor; member review theo DoD. Quyết định authority staging đã PASS DEC14 |
 
 | DoD gốc | Đã kiểm / kết quả | Còn chờ / giới hạn |
 |---|---|---|
@@ -28,7 +32,7 @@ Nguồn: backlog **đã đồng bộ refinement** và bản gốc đối chiếu
 | Row3 — test nhánh mới/coverage không giảm | PASS — regression/coverage cùng Vitest/V8, artifact delta; auth/UTC/guard/pool/claims có ca cụ thể | Không suy tổng test thành độ phủ mọi AC |
 | Row4 — build/lint/typecheck/test CI xanh | PASS — exact5b core209s và required5context; full snapshot có ancillary checks | Head tài liệu mới phải kiểm lại CI trước merge |
 | Row5 — không secret/phụ thuộc sạch | PASS trong diff/review — full+prod audit0; actual private literal/bundle scan | Không tuyên bố mọi dữ liệu lịch sử toàn repo đã được quét PII |
-| Row6 — AC staging | BLOCKED tổng thể; laptop riêng đã được chấp thuận, đa số AC chức năng PASS | T03 hậu merge và K01 review/quyết định chưa đủ; không yêu cầu VPS |
+| Row6 — AC staging | BLOCKED tổng thể; laptop riêng đã được chấp thuận, đa số AC chức năng PASS | T03 hậu merge và K01 bằng chứng quá trình/member review chưa đủ; không yêu cầu VPS |
 | Row7 — tiền/ghế đồng thời | PASS hồi quy có điều kiện cho sửa chung — race/no double claims/orders và2000request invariants | Không là nghiệm thu S13/T31 hoặc kéo benchmark300ms vào Sprint1 |
 | Row8 — job/webhook lặp | PASS hồi quy liên quan qua integration DB, retry/fencing/duplicate/expiry | Không nhận toàn bộ story payment/job sprint sau Done |
 | Row9 — không log PII/thanh toán | PASS đường Sprint1 đã kiểm — probe success/error/role/session, API replicas+web+gateway; generic denial log còn | Baseline AccountantNotifier ở sprint sau còn log amount/reference/email: finding riêng; chưa tuyên bố log toàn repository sạch |
@@ -40,7 +44,7 @@ Nguồn: backlog **đã đồng bộ refinement** và bản gốc đối chiếu
 
 **Đã hoàn thành trong lượt này:** xác minh artifact tồn tại/nội dung named assertions/hash/source/môi trường; clean-native và29migration; migration cycle từng bước; log probe; email enumeration; toàn bộ bảng task/DoD và nguồn trạng thái. Bản audit mới nằm trong `evidence/sprint1/20261016-acceptance-audit/`; credentials vẫn chỉ `.sprint1-staging/config.json`.
 
-**Còn chờ:** K01 xác nhận quá trình/review/quyết định; review thật của người khác; merge đúng policy khi đủ điều kiện; sau đó watcher auto-deploy và đo merge→healthy<10phút trên laptop, smoke integratedSHA. Không ký thay thành viên/Lead, không bypass protection, không manual-deploy để ghi AC tự động PASS. Demo chức năng sẵn sàng sau health200; Sprint1 **chưa Done**.
+**Còn chờ:** K01 xác nhận quá trình và member review (authority đã duyệt DEC14); review thật của người khác; merge đúng policy khi đủ điều kiện; sau đó watcher auto-deploy và đo merge→healthy<10phút trên laptop, smoke integratedSHA. Không ký thay thành viên/Lead, không bypass protection, không manual-deploy để ghi AC tự động PASS. Demo chức năng sẵn sàng sau health200; Sprint1 **chưa Done**.
 
 ## Revision và kết luận
 
@@ -57,7 +61,7 @@ Nguồn: backlog **đã đồng bộ refinement** và bản gốc đối chiếu
 | S01/T03 | BLOCKED tổng thể | Web/API Docker, candidate failure, backup và actual rollback PASS; merge→auto-deploy chỉ kiểm được sau merge hợp lệ |
 | S02/T04–06 | PASS phạm vi chức năng đã kiểm | API/browser/DB/Redis thật; natural expiry đã chờ đủ900s/PTTL và login200, không suy từ mock; hai peer giữ source lịch sử riêng |
 | S04/T09–10 | PASS trên a2e5f67 | Draft/ownership/validation/double-submit/showtime/timezone/FK, desktop/mobile thật |
-| K01 | BLOCKED phần review/quyết định staging | Spike hai datastore và quyết định PG local có evidence; T31/p95300 không phải AC Sprint1 |
+| K01 | BLOCKED phần quy trình/review; quyết định staging PASS DEC14 | Spike hai datastore và PO xác nhận PG staging đã có evidence; timebox/mentor NOT RUN, member review thiếu; T31/p95300 ngoài Sprint1 |
 | Sprint1 AC/DoD | Chưa | Independent human review/K01 staging decision và postmerge T03 còn mở; không dùng S30/T31 làm AC Sprint1 |
 
 62mục cũ gồm55phép kiểmAC/DoD+1metadataSCOPE,2repairregression,1support,3phépđo ngoàiSprint1; audit bổ sung K01-D từ intro gốc: [SPRINT1_ACCEPTANCE_MATRIX.md](SPRINT1_ACCEPTANCE_MATRIX.md), [gates.json](../evidence/sprint1/20261016-closeout/gates.json). Bằng chứng mới dưới `evidence/sprint1/20261016-closeout/` (C bên dưới); file lịch sử giữ source riêng, không đổi SHA cũ.

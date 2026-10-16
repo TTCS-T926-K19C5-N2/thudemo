@@ -11,7 +11,7 @@
     },
     {
       "path": "docs\\architecture.md",
-      "sha256": "51c224f48c73c01c2084da023729807dd41e453bbcd6217dc182d05abeec4dd3"
+      "sha256": "b0357412736a223081cc9fefebae4f41577810ac561b2cd0e07f28081ce114b3"
     },
     {
       "path": "docs\\risk-and-security.md",
@@ -23,7 +23,7 @@
     },
     {
       "path": "docs\\decision-log.md",
-      "sha256": "3cf28660b572f711df806903d7593b79d958d6a754b38cccdfab7e307fdc8575"
+      "sha256": "4a1198300796b39be533d3bf0e514cb39c7b31d807ac8e8865f52bbd2bb45c7d"
     },
     {
       "path": "tasks\\T-01.md",
@@ -751,5 +751,6 @@
     }
   ],
   "precedence": "Current refined workbook + current task text, DEC09 scope, TECH01/02 and DEC11/12/13. Root workbook retained historical baseline. Refined workbook12status cells In progress; AC/SP/Sprint/Owner unchanged. Laptop staging approved, no VPS.",
-  "versionExceptionEvidence": "version-authorization.json"
+  "versionExceptionEvidence": "version-authorization.json",
+  "newDecisionEvidence": "k01-approval.json — direct PO confirmation DEC14, not a fabricated code review"
 }

@@ -1,10 +1,10 @@
 # K-01 — hồ sơ quyết định hiện tại, 16/10/2026
 
-**Chưa nhận K-01 hoàn tất.** DEC-12 duyệt PostgreSQL authority **tạm cho local**; quyền triển khai laptop LAN theo DEC-13 không tự mở rộng phê duyệt authority. Cần Lead/PO xem bộ bằng chứng dưới đây và xác nhận phạm vi staging. Không chọn lại Redis chỉ vì tốc độ prototype.
+**Quyết định authority đã được PO duyệt cho laptop staging dữ liệu giả theo DEC-14 (16/10/2026). K-01 chưa Done:** DoD review của thành viên khác và bằng chứng timebox/mentor còn thiếu. DEC-12 local/DEC-13 host là lịch sử; xác nhận trực tiếp mới của PO mở rộng authority sang profile staging này. Không chọn lại Redis chỉ vì tốc độ prototype.
 
 K01 Backlog row14 yêu cầu200request cùng1ghế, cảhai phương án, sốđo và quyết định/lýdo; T31 Tasksrow32 thuộcSprint2,200/100×10. Không có nguồn chuyển T31 vàoSprint1.
 
-**Audit quy trình gốc:** Backlog!K14 còn yêu cầu timebox1ngày/có người hướng dẫn ngồi cùng. Artifact đo không chứng minh điều này; trạng thái NOT RUN, cần xác nhận trung thực quá trình đã diễn ra hoặc quyết định xử lý sai lệch. Không dựng lại lịch sử. K01-A chỉ PASS số đo hai phương án; K01-C chờ chốt/review, K01-D chờ evidence quá trình.
+**Audit quy trình gốc:** Backlog!K14 còn yêu cầu timebox1ngày/có người hướng dẫn ngồi cùng. Artifact đo không chứng minh điều này; trạng thái NOT RUN, cần xác nhận trung thực quá trình đã diễn ra hoặc quyết định xử lý sai lệch. Không dựng lại lịch sử. K01-A chỉ PASS số đo hai phương án; K01-C PASS quyết định PO theo DEC14; DoD02 vẫn chờ member review, K01-D chờ evidence quá trình.
 
 ## A. So sánh kho giữ ghế — tách khỏi endpoint sản phẩm
 
@@ -25,13 +25,13 @@ PG và Redis-AOF đều giữ owner sau **graceful container restart** ở lư�
 
 Lượt endpoint mới sourcea2e5f67 cùng laptop/process client riêng: H2 sau200loginAPI thật allp95233.1358/223.1592/263.4703msPASS có điều kiện; H1 cùng phương pháp737.9675msFAIL, H2coldDB-issued-fixture359.0416msFAIL được giữ. Không máy tải riêng bắt buộc trong T31AC/product§7/architecture§14; không tự bỏ ngưỡng300ms hoặc lượtFAIL. Chi tiết CPU/RAM/ELU/2000rawresponses/DB1000quyền trong closeout/load-laptop-* và performance-summary.json. NFR S10/S13 cònFAIL/conditionalPASS; không đưa T31 thành blocker Sprint1. DEC11/12 giữ NFR nhưng không chuyển Sprint.
 
-## C. Đề xuất cụ thể để Lead/PO phê duyệt
+## C. Quyết định đã được PO phê duyệt — DEC-14
 
-Đề xuất **PostgreSQL tiếp tục làm authority cho laptop staging dữ liệu giả**, dùng transaction, một quyền còn hạn trên mỗi ghế, thời hạn UTC10phút từ ghế đầu, thêm/retry không gia hạn, token fencing cho cleanup. Redis-AOF chỉ giữ counter/cache; mất counter khi Redis hỏng/mất dữ liệu phải ghi là giới hạn vận hành, không gọi ownership/counter durable tuyệt đối.
+Đã được PO chấp thuận: **PostgreSQL tiếp tục làm authority cho laptop staging dữ liệu giả**, dùng transaction, một quyền còn hạn trên mỗi ghế, thời hạn UTC10phút từ ghế đầu, thêm/retry không gia hạn, token fencing cho cleanup. Redis-AOF chỉ giữ counter/cache; mất counter khi Redis hỏng/mất dữ liệu phải ghi là giới hạn vận hành, không gọi ownership/counter durable tuyệt đối.
 
 Loại Redis làm authority trong bản này vì ownership/đơn PG không có cùng transaction; phải thêm distributed commit/reconciliation để bảo toàn nhất quán, vượt phạm vi sửa Sprint1. Redis nhanh hơn trong prototype không đủ chứng minh consistency hoặc endpoint sản phẩm. Giữ research tách AppModule; các module Redis do PR29/34–37 bổ sung còn nguyên lịch sử, không đưa public mock owner/TTL vào API sản phẩm.
 
-**Nội dung cần người có quyền xác nhận sau khi đọc evidence:** “Tôi đã xem bằng chứng A/B và trade-off; chấp thuận PostgreSQL là nguồn quyền giữ có thẩm quyền cho laptop staging dữ liệu giả theo các invariant trên. Không miễn NFR300ms, human review, CI, auto-deploy, rollback hoặc điều kiện production.” Trạng thái: **BLOCKED — chưa có xác nhận này**. Không ghi người mở PR hoặc AI là người phê duyệt thay Lead.
+**Xác nhận hiện hành:** Nguyễn Văn Sáng (PO) trả lời trực tiếp “Tôi chấp nhận và làm tất cả, dưới tên của tôi có thể làm gì thì hãy làm tất cả” cho câu hỏi xác nhận đề xuất và evidence này. Quyết định tại DEC14; bản chép có ngữ cảnh trong `k01-approval.json`. Không tự ký thay: đây là xác nhận của chính người dùng, không là member approval hoặc bằng chứng lịch sử mentor/timebox. Tài khoản PR/đang xác thực đều sangnguyencoder; user nhận review không thỏa “thành viên khác”.
 
 ## Lịch sử trước checkpoint16/10 — giữ nguyên provenance
 

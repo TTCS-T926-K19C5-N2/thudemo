@@ -554,12 +554,22 @@
     },
     {
       "matrixId": "K01-C",
-      "path": "docs\\K01_EVIDENCE.md",
-      "sha256": "d753e682bd9e9e2bb09418e231a331cb22ddc3fcad8fa73ceab540c783230a78",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\k01-approval.json",
+      "sha256": "ecd8940dd121b7d435203a7457a7ee4aa0e37301aa21e3ad2f7fb3fef6854c12",
       "exists": true,
-      "assertion": "Lead reads current research+tradeoff+productNFR",
-      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "resultClaimed": "BLOCKED",
+      "assertion": "Read actual direct human confirmation against specific reviewed K01 proposal; no proxy signature",
+      "evidenceSource": "ddcb4c1f7b87edf7594353f6060ff5764bd829bf",
+      "resultClaimed": "PASS",
+      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
+    },
+    {
+      "matrixId": "K01-C",
+      "path": "docs\\K01_EVIDENCE.md",
+      "sha256": "fcce5c04a5ff87d9dd8f0f3b0b5aa04986e7907353774abc3b85214923710761",
+      "exists": true,
+      "assertion": "Read actual direct human confirmation against specific reviewed K01 proposal; no proxy signature",
+      "evidenceSource": "ddcb4c1f7b87edf7594353f6060ff5764bd829bf",
+      "resultClaimed": "PASS",
       "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
     },
     {
@@ -665,7 +675,7 @@
     {
       "matrixId": "K01-D",
       "path": "docs\\K01_EVIDENCE.md",
-      "sha256": "d753e682bd9e9e2bb09418e231a331cb22ddc3fcad8fa73ceab540c783230a78",
+      "sha256": "fcce5c04a5ff87d9dd8f0f3b0b5aa04986e7907353774abc3b85214923710761",
       "exists": true,
       "assertion": "Inspect dated research records and human confirmation",
       "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
