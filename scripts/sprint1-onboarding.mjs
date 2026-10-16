@@ -431,6 +431,12 @@ try {
     config = JSON.parse(readFileSync(configFile));
   }
   const env = { ...process.env, ...assertConfig() };
+  const savedBuildMatches = state.built && state.fingerprint === fingerprint();
+  if (process.argv.includes("--skip-build") && !savedBuildMatches)
+    fail("SkipBuild requires an unchanged previously built checkout");
+  const resumeBuild =
+    savedBuildMatches &&
+    (action !== "Restart" || process.argv.includes("--skip-build"));
   if (action === "Stop" || action === "Restart") {
     stopOwned();
     if (action === "Stop") process.exit(0);
@@ -454,12 +460,14 @@ try {
     ),
   );
   if (
-    resources.freeC < 12 * 2 ** 30 ||
-    resources.freeRoot < 5 * 2 ** 30 ||
-    resources.freeRam < 2 * 2 ** 30
+    resources.freeC < (resumeBuild ? 0.5 : 12) * 2 ** 30 ||
+    resources.freeRoot < (resumeBuild ? 0.5 : 5) * 2 ** 30 ||
+    resources.freeRam < (resumeBuild ? 0.5 : 2) * 2 ** 30
   )
     fail(
-      "Need free C>=12GiB, workspace drive>=5GiB and RAM>=2GiB before install/build",
+      resumeBuild
+        ? "Need free system/workspace disk and RAM>=512MiB to resume the verified build"
+        : "Need free C>=12GiB, workspace drive>=5GiB and RAM>=2GiB before install/build",
     );
   jsonWrite(resolve(dir, "resources.json"), {
     time: new Date().toISOString(),
@@ -471,19 +479,20 @@ try {
   }
   validateContainers();
   compose("up", "-d", "--wait", "--wait-timeout", "90");
-  runLog("install", "corepack pnpm install --frozen-lockfile", env);
-  runLog("generate", "corepack pnpm --filter api exec prisma generate", env);
-  runLog(
-    "migrate",
-    "corepack pnpm --filter api exec prisma migrate deploy",
-    env,
-  );
-  runLog("seed", "node apps/api/scripts/seed-sprint1-onboarding.mjs", env);
-  if (process.argv.includes("--skip-build")) {
-    if (!state.built || state.fingerprint !== fingerprint())
-      fail("SkipBuild requires an unchanged previously built clean checkout");
-  } else
+  if (!resumeBuild) {
+    runLog("install", "corepack pnpm install --frozen-lockfile", env);
+    runLog("generate", "corepack pnpm --filter api exec prisma generate", env);
+    runLog(
+      "migrate",
+      "corepack pnpm --filter api exec prisma migrate deploy",
+      env,
+    );
+    runLog("seed", "node apps/api/scripts/seed-sprint1-onboarding.mjs", env);
     runLog("build", "corepack pnpm build", { ...env, NODE_ENV: "production" });
+  } else
+    console.log(
+      "Demo: resuming unchanged verified build; install/migration/seed/build already recorded.",
+    );
   state = {
     source: git("rev-parse", "HEAD"),
     localDiff: !!git("status", "--porcelain"),
