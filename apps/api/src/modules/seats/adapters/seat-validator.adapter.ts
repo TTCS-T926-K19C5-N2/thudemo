@@ -22,6 +22,7 @@ export class SeatValidatorAdapter implements ISeatValidator {
     }
 
     try {
+      // Ép kiểu dynamic client để tương thích hoàn toàn với Prisma Client instance và tránh lỗi TS cache
       const client = this.prisma as any;
       const showtimeModel = client.showtime || client.showTime;
       const seatModel = client.seat || client.seats;
