@@ -434,14 +434,16 @@
       ],
       "test": "Fresh610 clone first command exit0 READY after install/generate/30migrations/seed/build/smoke; private initial failures retained.",
       "evidence": [
-        "clean-clone-browser.json"
+        "fresh-exact-clone-bootstrap.json",
+        "fresh-exact-clone-browser.json",
+        "fresh-exact-clone-lifecycle.json"
       ],
       "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
       "candidateManifest": "current-source-manifest.json",
       "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
       "localResult": "PASS",
-      "result": "NOT RUN",
-      "remaining": "Exact02a clean clone D:/s1demo/02a8e86-clean-20261016 halted at unchanged2GiB RAM guard before install/build; fresh610 then full02a rebuild proves incremental profile only.",
+      "result": "PASS",
+      "remaining": "Final integrated source identity/acceptance; first clean clone02a full pipeline passed after actual resource guard satisfied.",
       "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
       "integratedResult": "NOT RUN"
     },
@@ -458,15 +460,14 @@
       ],
       "test": "Real browser desktop1440/mobile390 and five signup→catcher→activation→RBAC→event/showtime flows at610.",
       "evidence": [
-        "clean-clone-browser.json",
-        "browser-02a8e86/results.json"
+        "fresh-exact-clone-browser.json"
       ],
       "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
       "candidateManifest": "current-source-manifest.json",
       "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
       "localResult": "PASS",
-      "result": "NOT RUN",
-      "remaining": "Final integrated laptop acceptance; localcurrent02a browser PASS.",
+      "result": "PASS",
+      "remaining": "Integrated staging acceptance after merge.",
       "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
       "integratedResult": "NOT RUN"
     },
@@ -483,14 +484,14 @@
       ],
       "test": "Exact610 profile443290698c15: owned stop/start,30migrations,config/key byte equality,event/showtime retained.",
       "evidence": [
-        "clean-clone-lifecycle.json"
+        "fresh-exact-clone-lifecycle.json"
       ],
       "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
       "candidateManifest": "current-source-manifest.json",
       "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
       "localResult": "PASS",
-      "result": "NOT RUN",
-      "remaining": "PASS current fresh profileb257 at02a; retained prior profile443610 artifact separately.",
+      "result": "PASS",
+      "remaining": "No destructive reset; owned profile currently ready and retained.",
       "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
       "integratedResult": "NOT RUN"
     },

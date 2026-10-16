@@ -24,14 +24,14 @@ Ma trận đầy đủ `docs/SPRINT1_ACCEPTANCE_MATRIX.md`; báo cáo `docs/SPRI
 
 Staging thủ công hiện tại **https://10.88.164.155:3470**, exact02a. SMTP đã được người dùng xác nhận nhận/kích hoạt/login ở mạng trước; DB/session đối chiếu PASS. Đổi mạng giữ certificate/key/data, cảAPI+activation origin; firewall readback PASS. Đây chưa là merge→auto-deploy.
 
-Clone610 ban đầu sạch rồi fullrebuild02a đã browser/lifecycle PASS. Clone hoàn toàn mới exact02a còn bị RAMguard2GiB chặn trước install/build; phải hoàn thành riêng, không thay bằng bằng chứng tăng dần.
+Clone610 ban đầu sạch rồi fullrebuild02a đã browser/lifecycle PASS. Clone hoàn toàn mới exact02a đã PASS tại profile19b, đủ2GiB preflight, fullbuild/READY, browser và stop/start giữ dữ liệu/khóa. Evidence `fresh-exact-clone-bootstrap.json`, `fresh-exact-clone-browser.json`, `fresh-exact-clone-lifecycle.json`. Không dùng clone tăng dần thay thế.
 
 ## Checklist người review trực tiếp
 
 - Đọc diff cuối và exacthead/checks trên PR; không approve snapshot cũ.
 - Kiểm auth/ownership/defaultdeny, register/consent/activate/outbox và trustedpeer boundary.
 - Kiểm migration và giới hạn rollback, seedguard, secret placement, owned process/container boundaries.
-- Đối chiếu từng AC/NFR/DoD với artifact/source/environment trong ma trận; kiểm ca clone sạch còn thiếu trước merge.
+- Đối chiếu từng AC/NFR/DoD với artifact/source/environment trong ma trận; đọc evidence clone sạch full pipeline trước merge.
 - Xác nhận rủi ro hoặc yêu cầu sửa bằng nhận xét của chính người review. AI review không thay approval người khác.
 
 Nội dung review gợi ý (thành viên tự sửa theo điều thực sự đã đọc/kiểm): “Tôi đã đọc diff tại <exactSHA>, đối chiếu <các mục đã kiểm> với <artifact>, kiểm trực tiếp <luồng đã thử>. Findings/rủi ro còn lại: <nội dung>. Quyết định: approve/request changes/comment.” Không đăng mẫu này như một review đã xảy ra.

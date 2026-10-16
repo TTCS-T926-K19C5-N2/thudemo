@@ -6,7 +6,7 @@ URL hiện tại **https://10.88.164.155:3470**, candidate thủ công **02a8e86
 
 `rollback-current.json`: rollback thật sang a2 với database30 migrations, smoke/health, rồi khôi phục02a; data counts/history/key bytes giữ nguyên. Old API chỉ tương thích auth/events, không có S03 activation mới. `staging-secret-sweep.json`: actual candidate API/replica/web stdout+stderr không chứa sensitive literal đã chọn; không phải chứng minh không có mọi loại leak. `smtp-product-staging.json`: user nhận/kích hoạt/login, server xác minh BUYER/consent/consumed tokens và login/logout/replay401 PASS.
 
-Chưa Sprint Done: exact02a clean clone mới bị RAMguard trước install/build (RAM khả dụng khoảng1.1GiB); profile clone610→02a đã fullbuild/browser/lifecycle PASS nhưng không thay cho ca clone02a mới. Review người thật, merge develop, CI integrated và watcher auto-deploy <10phút vẫn chưa thực hiện.
+Chưa Sprint Done: exact02a clean clone đã full frozen install/generate/30migrations/seed/build/READY và browser6assertions/lifecycle PASS ở profile19b; các lần RAMguard từ chối trước đó giữ lịch sử. Review người thật, merge develop, CI integrated và watcher auto-deploy <10phút vẫn chưa thực hiện.
 
 ## Trạng thái hiện hành — 16/10/2026, sau DEC17 và sửa admission
 

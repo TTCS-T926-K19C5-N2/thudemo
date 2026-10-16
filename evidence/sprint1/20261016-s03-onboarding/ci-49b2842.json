@@ -1,0 +1,47 @@
+{
+  "conclusion": "success",
+  "createdAt": "2026-10-16T16:18:25Z",
+  "jobs": [
+    {
+      "name": "T-02 / build-and-typecheck",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-16T16:18:29Z",
+      "completedAt": "2026-10-16T16:19:21Z"
+    },
+    {
+      "name": "T-02 / lint",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-16T16:18:29Z",
+      "completedAt": "2026-10-16T16:19:00Z"
+    },
+    {
+      "name": "T-02 / test",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-16T16:18:29Z",
+      "completedAt": "2026-10-16T16:19:41Z"
+    },
+    {
+      "name": "T-31 / hold-concurrency",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-16T16:19:44Z",
+      "completedAt": "2026-10-16T16:22:10Z"
+    },
+    {
+      "name": "K-01 / candidate-research",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-16T16:19:44Z",
+      "completedAt": "2026-10-16T16:20:32Z"
+    }
+  ],
+  "status": "completed",
+  "updatedAt": "2026-10-16T16:22:11Z",
+  "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38930899708",
+  "source": "49b28427aca611e4c171285b68c53184e9941d45",
+  "workflowWallSeconds": 226.0,
+  "thresholdSeconds": 300
+}

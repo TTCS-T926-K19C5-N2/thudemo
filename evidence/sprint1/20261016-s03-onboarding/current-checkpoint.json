@@ -1,6 +1,6 @@
 {
-  "time": "2026-10-16T16:15:51.731849+00:00",
-  "head": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "time": "2026-10-16T16:26:08.147048+00:00",
+  "head": "49b28427aca611e4c171285b68c53184e9941d45",
   "base": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
   "scope": "S01/S02/S03/S04/K01,T01-T10 per DEC15; DEC16 arbitrary valid registration emails",
   "local": {
@@ -41,10 +41,19 @@
     "lint": "PASS"
   },
   "remaining": [
-    "Exact02a new clone one-command run at unchanged resource guard",
-    "Final ops/docs/evidence freeze, push and exact final CI",
-    "Valid other-person review",
+    "Evidence-only final commit CI readback",
+    "Valid other-person review at finalhead",
     "Develop integration/watch auto-deploy/integrated acceptance"
   ],
-  "noSprintDone": true
+  "noSprintDone": true,
+  "ci": {
+    "result": "PASS",
+    "evidence": "ci-49b2842.json",
+    "seconds": 226
+  },
+  "onboarding": {
+    "result": "PASS",
+    "evidence": "fresh-exact-clone-bootstrap.json",
+    "source": "02a8e86a6fea05a49bd27902c08652920e444a10"
+  }
 }

@@ -1,8 +1,8 @@
 {
-  "time": "2026-10-16T16:16:56.348145+00:00",
-  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "time": "2026-10-16T16:26:08.155418+00:00",
+  "source": "49b28427aca611e4c171285b68c53184e9941d45",
   "result": "PASS",
-  "assertion": "Every referenced S03/onboarding evidence artifact exists; hashes identify inspected content. This structural audit alone does not prove assertion semantics.",
+  "assertion": "Every referenced S03/onboarding artifact exists; content hashes identify inspected evidence. Structure alone does not prove assertion semantics.",
   "checks": [
     {
       "gate": "T07-01",
@@ -242,7 +242,7 @@
     {
       "gate": "T08-08",
       "artifact": "staging-secret-sweep.json",
-      "sha256": "a1b467f3f4831dc6324f5317a0cdd80bf81dcd7adeddbe2b465c367de1300a87"
+      "sha256": "243e29044aff82f6fa2f5cc723887df62884eab7d529c7f4c0408b898b877fb5"
     },
     {
       "gate": "T08-08",
@@ -261,23 +261,28 @@
     },
     {
       "gate": "ONBOARD-01",
-      "artifact": "clean-clone-browser.json",
-      "sha256": "9c84ef938a944eef83ca45f044995df7c4e46467d6f529d4dabd0cb590b71e33"
+      "artifact": "fresh-exact-clone-bootstrap.json",
+      "sha256": "bc9835827491cc70a6f65f7faa20ba718639b3fd676561cbf30d2eeea069e477"
+    },
+    {
+      "gate": "ONBOARD-01",
+      "artifact": "fresh-exact-clone-browser.json",
+      "sha256": "98a74b8936bd4af09a7fce15ba3254f5c283b94f8514a398dbb2ca4f6ea01229"
+    },
+    {
+      "gate": "ONBOARD-01",
+      "artifact": "fresh-exact-clone-lifecycle.json",
+      "sha256": "4ae2fa80787efde14d17466e29dc6aa224dee2837050fcb8e3c9af7b03781cb3"
     },
     {
       "gate": "ONBOARD-02",
-      "artifact": "clean-clone-browser.json",
-      "sha256": "9c84ef938a944eef83ca45f044995df7c4e46467d6f529d4dabd0cb590b71e33"
-    },
-    {
-      "gate": "ONBOARD-02",
-      "artifact": "browser-02a8e86/results.json",
-      "sha256": "c7a8ac8e6a69e0f7c672cf53d71e88f0db2e49378deeb13f970c07ebd13f92a2"
+      "artifact": "fresh-exact-clone-browser.json",
+      "sha256": "98a74b8936bd4af09a7fce15ba3254f5c283b94f8514a398dbb2ca4f6ea01229"
     },
     {
       "gate": "ONBOARD-03",
-      "artifact": "clean-clone-lifecycle.json",
-      "sha256": "cf9cf4356b39dcf967114d27358fbcaef22e4a3a3bc328878337aad6842598e8"
+      "artifact": "fresh-exact-clone-lifecycle.json",
+      "sha256": "4ae2fa80787efde14d17466e29dc6aa224dee2837050fcb8e3c9af7b03781cb3"
     },
     {
       "gate": "ONBOARD-04",
@@ -292,7 +297,7 @@
     {
       "gate": "ONBOARD-05",
       "artifact": "../../../docs/SPRINT1_DEMO_RUNBOOK.md",
-      "sha256": "073149a184e8bd02012bb272cec32a2627e7de5a77c121af9e2755613989f9b0"
+      "sha256": "be13be4b3475c7d92b1eaf14c1d0058962ccc212cf3f8dc0b1e9d4c39a406d64"
     }
   ]
 }
