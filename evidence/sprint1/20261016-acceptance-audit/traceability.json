@@ -37,7 +37,8 @@
           ],
           "environment": "Pristine git archive; Windows native web/API, Compose PG15/Redis7; separate empty DB, checked-free alternate ports",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -74,7 +75,8 @@
           ],
           "environment": "Pristine git archive; Windows native web/API, Compose PG15/Redis7; separate empty DB, checked-free alternate ports",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -112,7 +114,8 @@
           ],
           "environment": "Pristine git archive; Windows native web/API, Compose PG15/Redis7; separate empty DB, checked-free alternate ports",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T01-06",
@@ -137,7 +140,8 @@
           ],
           "environment": "isolated local/HTTPS staging as artifact states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -175,7 +179,8 @@
           ],
           "environment": "Pristine git archive; Windows native web/API, Compose PG15/Redis7; separate empty DB, checked-free alternate ports",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T01-05",
@@ -200,7 +205,8 @@
           ],
           "environment": "isolated local/HTTPS staging as artifact states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -237,7 +243,8 @@
           ],
           "environment": "Brand-new empty guarded PG15 verification database; current original SQL; not operational staging downgrade",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -274,7 +281,8 @@
           ],
           "environment": "isolated local/HTTPS staging as artifact states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -306,7 +314,8 @@
           ],
           "environment": "GitHub",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -338,7 +347,8 @@
           ],
           "environment": "GitHub protected develop / isolated negative PR95 closed unmerged",
           "evidenceSourceSha": "3051bba97a2f08171f6a780ae8fd486fc595b031",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -370,7 +380,8 @@
           ],
           "environment": "GitHub",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -404,7 +415,8 @@
           ],
           "environment": "laptop LAN HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T03-02",
@@ -425,7 +437,8 @@
           ],
           "environment": "laptop",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -458,7 +471,8 @@
           ],
           "environment": "integrated develop laptop",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "BLOCKED"
+          "result": "BLOCKED",
+          "externalProcess": null
         }
       ]
     },
@@ -491,7 +505,8 @@
           ],
           "environment": "real staging",
           "evidenceSourceSha": "accf832be519d9790845c3590acd3f481c5594ac",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -525,7 +540,8 @@
           ],
           "environment": "real staging",
           "evidenceSourceSha": "accf832be519d9790845c3590acd3f481c5594ac",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T03-05",
@@ -546,7 +562,8 @@
           ],
           "environment": "real staging",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -578,7 +595,8 @@
           ],
           "environment": "real isolated PostgreSQL",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -610,7 +628,8 @@
           ],
           "environment": "Brand-new empty guarded PG15 verification database; current original SQL; not operational staging downgrade",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -642,7 +661,8 @@
           ],
           "environment": "real isolated PostgreSQL",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -674,7 +694,8 @@
           ],
           "environment": "real isolated PostgreSQL",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -706,7 +727,8 @@
           ],
           "environment": "real isolated PostgreSQL",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -745,7 +767,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T05-04",
@@ -771,7 +794,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -809,7 +833,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -848,7 +873,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T05-06",
@@ -874,7 +900,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -912,7 +939,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -950,7 +978,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -985,7 +1014,8 @@
           ],
           "environment": "unit + real API + browser",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T06-03",
@@ -1007,7 +1037,8 @@
           ],
           "environment": "unit + real API + browser",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1041,7 +1072,8 @@
           ],
           "environment": "unit + real API + browser",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1074,7 +1106,8 @@
           ],
           "environment": "Nest HTTP/supertest + PG15/Redis7 isolated; no public undeclared route added",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1108,7 +1141,8 @@
           ],
           "environment": "Nest HTTP/supertest + PG15/Redis7 isolated; no public undeclared route added",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T06-03",
@@ -1130,7 +1164,8 @@
           ],
           "environment": "unit + real API + browser",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1162,7 +1197,8 @@
           ],
           "environment": "real PG",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1193,7 +1229,8 @@
           ],
           "environment": "Brand-new empty guarded PG15 verification database; current original SQL; not operational staging downgrade",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1225,7 +1262,8 @@
           ],
           "environment": "real PG",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1256,7 +1294,8 @@
           ],
           "environment": "PG/browser",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1291,7 +1330,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T10-02",
@@ -1313,7 +1353,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1348,7 +1389,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T10-02",
@@ -1370,7 +1412,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1405,7 +1448,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T10-09",
@@ -1427,7 +1471,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1461,7 +1506,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1495,7 +1541,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1529,7 +1576,8 @@
           ],
           "environment": "GitHub",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T03-02",
@@ -1550,7 +1598,8 @@
           ],
           "environment": "laptop",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T03-03",
@@ -1571,7 +1620,8 @@
           ],
           "environment": "integrated develop laptop",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "BLOCKED"
+          "result": "BLOCKED",
+          "externalProcess": null
         }
       ]
     },
@@ -1602,7 +1652,8 @@
           ],
           "environment": "isolated Windows rehearsal",
           "evidenceSourceSha": "cdb7fdbac5594f4831715731dd2b19893cecc9a2",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1642,7 +1693,8 @@
           ],
           "environment": "Pristine git archive; Windows native web/API, Compose PG15/Redis7; separate empty DB, checked-free alternate ports",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T01-02",
@@ -1667,7 +1719,8 @@
           ],
           "environment": "Pristine git archive; Windows native web/API, Compose PG15/Redis7; separate empty DB, checked-free alternate ports",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T01-03",
@@ -1692,7 +1745,8 @@
           ],
           "environment": "Pristine git archive; Windows native web/API, Compose PG15/Redis7; separate empty DB, checked-free alternate ports",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1725,7 +1779,8 @@
           ],
           "environment": "real staging",
           "evidenceSourceSha": "accf832be519d9790845c3590acd3f481c5594ac",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1763,17 +1818,19 @@
           ],
           "environment": "isolated local/HTTPS staging as artifact states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "DOD-09",
           "implementationFiles": [
-            "docs/SPRINT1_REVIEW_REPORT.md"
+            "apps/api/src/auth/guards/roles.guard.ts",
+            "deploy/laptop-gateway.mjs"
           ],
           "verificationFiles": [
-            "scripts/sprint1-coverage.mjs",
-            "scripts/sprint1-tests.mjs",
-            "evidence/sprint1/20261016-acceptance-audit/acceptance-log-probe.mjs"
+            "evidence/sprint1/20261016-acceptance-audit/acceptance-log-probe.mjs",
+            "evidence\\sprint1\\20261016-acceptance-audit\\log-probe.json",
+            "evidence\\sprint1\\20261016-closeout\\denial-log.json"
           ],
           "assertion": "inspect/redact actual touched output",
           "evidence": [
@@ -1782,7 +1839,8 @@
           ],
           "environment": "as case states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1815,7 +1873,8 @@
           ],
           "environment": "unit + real API + browser",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1849,7 +1908,8 @@
           ],
           "environment": "unit + real API + browser",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1888,7 +1948,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T05-06",
@@ -1914,7 +1975,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1953,7 +2015,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -1986,7 +2049,8 @@
           ],
           "environment": "Nest HTTP/supertest + PG15/Redis7 isolated; no public undeclared route added",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2018,7 +2082,8 @@
           ],
           "environment": "real isolated PostgreSQL",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2057,7 +2122,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T05-08",
@@ -2083,7 +2149,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "b52ba6afa07d29444e5e809892e5325f0966625c",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2117,7 +2184,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2151,7 +2219,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2185,7 +2254,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2219,7 +2289,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2253,7 +2324,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2285,7 +2357,8 @@
           ],
           "environment": "PG/browser",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T10-10",
@@ -2307,7 +2380,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2323,15 +2397,9 @@
       "verificationGroups": [
         {
           "matrixId": "K01-D",
-          "implementationFiles": [
-            "apps/api/scripts/k01/candidate-stores.mjs",
-            "apps/api/scripts/k01/candidate-server.mjs",
-            "apps/api/scripts/k01/compare-candidates.mjs",
-            "docs/K01_EVIDENCE.md"
-          ],
+          "implementationFiles": [],
           "verificationFiles": [
-            "evidence/sprint1/20261015-handoff/k01-laptop-research/compare-candidates.mjs",
-            "evidence/sprint1/20261015-handoff/k01-laptop-research/k01-candidates.json"
+            "docs\\K01_EVIDENCE.md"
           ],
           "assertion": "Inspect dated research records and human confirmation",
           "evidence": [
@@ -2339,7 +2407,8 @@
           ],
           "environment": "Research process/human review",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "NOT RUN"
+          "result": "NOT RUN",
+          "externalProcess": "Real human confirmation/approval, unavailable; no local implementation substitutes"
         }
       ]
     },
@@ -2371,7 +2440,8 @@
           ],
           "environment": "dedicated laptop research15456/16406",
           "evidenceSourceSha": "b52ba6afa07d29444e5e809892e5325f0966625c",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2404,7 +2474,8 @@
           ],
           "environment": "dedicated laptop research15456/16406",
           "evidenceSourceSha": "b52ba6afa07d29444e5e809892e5325f0966625c",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "K01-C",
@@ -2424,7 +2495,8 @@
           ],
           "environment": "human architecture review",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "BLOCKED"
+          "result": "BLOCKED",
+          "externalProcess": null
         }
       ]
     },
@@ -2456,7 +2528,8 @@
           ],
           "environment": "dedicated laptop research15456/16406",
           "evidenceSourceSha": "b52ba6afa07d29444e5e809892e5325f0966625c",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2472,13 +2545,9 @@
       "verificationGroups": [
         {
           "matrixId": "DOD-02",
-          "implementationFiles": [
-            "docs/SPRINT1_REVIEW_REPORT.md"
-          ],
+          "implementationFiles": [],
           "verificationFiles": [
-            "scripts/sprint1-coverage.mjs",
-            "scripts/sprint1-tests.mjs",
-            "evidence/sprint1/20261016-acceptance-audit/acceptance-log-probe.mjs"
+            "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json"
           ],
           "assertion": "human independent exacthead approval",
           "evidence": [
@@ -2486,7 +2555,8 @@
           ],
           "environment": "as case states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "BLOCKED"
+          "result": "BLOCKED",
+          "externalProcess": "Real human confirmation/approval, unavailable; no local implementation substitutes"
         }
       ]
     },
@@ -2516,7 +2586,8 @@
           ],
           "environment": "as case states",
           "evidenceSourceSha": "accf832be519d9790845c3590acd3f481c5594ac",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2533,12 +2604,11 @@
         {
           "matrixId": "DOD-04",
           "implementationFiles": [
-            "docs/SPRINT1_REVIEW_REPORT.md"
+            ".github/workflows/ci.yml"
           ],
           "verificationFiles": [
-            "scripts/sprint1-coverage.mjs",
-            "scripts/sprint1-tests.mjs",
-            "evidence/sprint1/20261016-acceptance-audit/acceptance-log-probe.mjs"
+            "evidence\\sprint1\\20261016-acceptance-audit\\ci-candidate.json",
+            "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json"
           ],
           "assertion": "exact final head + integrated head",
           "evidence": [
@@ -2547,7 +2617,8 @@
           ],
           "environment": "as case states",
           "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2564,12 +2635,12 @@
         {
           "matrixId": "DOD-05",
           "implementationFiles": [
-            "docs/SPRINT1_REVIEW_REPORT.md"
+            "package.json",
+            "pnpm-lock.yaml"
           ],
           "verificationFiles": [
-            "scripts/sprint1-coverage.mjs",
-            "scripts/sprint1-tests.mjs",
-            "evidence/sprint1/20261016-acceptance-audit/acceptance-log-probe.mjs"
+            "evidence\\sprint1\\20261016-closeout\\dependency-audit-all.json",
+            "evidence\\sprint1\\20261016-closeout\\secret-review.json"
           ],
           "assertion": "prod/full audit0; actual fixture literal scan",
           "evidence": [
@@ -2578,7 +2649,8 @@
           ],
           "environment": "as case states",
           "evidenceSourceSha": "accf832be519d9790845c3590acd3f481c5594ac",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2595,12 +2667,15 @@
         {
           "matrixId": "DOD-06",
           "implementationFiles": [
-            "docs/SPRINT1_REVIEW_REPORT.md"
+            "Dockerfile",
+            "scripts/sprint1-staging.mjs",
+            "scripts/sprint1-staging-watch.mjs",
+            "deploy/laptop-gateway.mjs"
           ],
           "verificationFiles": [
-            "scripts/sprint1-coverage.mjs",
-            "scripts/sprint1-tests.mjs",
-            "evidence/sprint1/20261016-acceptance-audit/acceptance-log-probe.mjs"
+            "scripts/verify-sprint1-staging.mjs",
+            "scripts/verify-sprint1-browser.mjs",
+            "evidence\\sprint1\\20261016-closeout\\source-provenance.json"
           ],
           "assertion": "functional+NFR+real auto-deploy",
           "evidence": [
@@ -2608,7 +2683,8 @@
           ],
           "environment": "as case states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "BLOCKED"
+          "result": "BLOCKED",
+          "externalProcess": null
         }
       ]
     },
@@ -2625,12 +2701,13 @@
         {
           "matrixId": "DOD-09",
           "implementationFiles": [
-            "docs/SPRINT1_REVIEW_REPORT.md"
+            "apps/api/src/auth/guards/roles.guard.ts",
+            "deploy/laptop-gateway.mjs"
           ],
           "verificationFiles": [
-            "scripts/sprint1-coverage.mjs",
-            "scripts/sprint1-tests.mjs",
-            "evidence/sprint1/20261016-acceptance-audit/acceptance-log-probe.mjs"
+            "evidence/sprint1/20261016-acceptance-audit/acceptance-log-probe.mjs",
+            "evidence\\sprint1\\20261016-acceptance-audit\\log-probe.json",
+            "evidence\\sprint1\\20261016-closeout\\denial-log.json"
           ],
           "assertion": "inspect/redact actual touched output",
           "evidence": [
@@ -2639,7 +2716,8 @@
           ],
           "environment": "as case states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2656,12 +2734,12 @@
         {
           "matrixId": "DOD-10",
           "implementationFiles": [
+            "README.md",
+            "docs/SPRINT1_DEMO_RUNBOOK.md",
             "docs/SPRINT1_REVIEW_REPORT.md"
           ],
           "verificationFiles": [
-            "scripts/sprint1-coverage.mjs",
-            "scripts/sprint1-tests.mjs",
-            "evidence/sprint1/20261016-acceptance-audit/acceptance-log-probe.mjs"
+            "evidence\\sprint1\\20261016-acceptance-audit\\documentation.json"
           ],
           "assertion": "revision/evidence/credentials paths aligned",
           "evidence": [
@@ -2669,7 +2747,8 @@
           ],
           "environment": "as case states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2686,12 +2765,13 @@
         {
           "matrixId": "DOD-07",
           "implementationFiles": [
-            "docs/SPRINT1_REVIEW_REPORT.md"
+            "apps/api/src/holds/holds.service.ts",
+            "apps/api/prisma/schema.prisma"
           ],
           "verificationFiles": [
-            "scripts/sprint1-coverage.mjs",
-            "scripts/sprint1-tests.mjs",
-            "evidence/sprint1/20261016-acceptance-audit/acceptance-log-probe.mjs"
+            "apps/api/test/sprint2.e2e-spec.ts",
+            "apps/api/test/orders.e2e-spec.ts",
+            "evidence\\sprint1\\20261016-closeout\\checks-a2e5f67\\gates.json"
           ],
           "assertion": "HTTP100winner/100conflict×10 + multi-seat atomicity",
           "evidence": [
@@ -2699,7 +2779,8 @@
           ],
           "environment": "as case states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2716,12 +2797,12 @@
         {
           "matrixId": "DOD-08",
           "implementationFiles": [
-            "docs/SPRINT1_REVIEW_REPORT.md"
+            "apps/api/src/payments/payments.service.ts"
           ],
           "verificationFiles": [
-            "scripts/sprint1-coverage.mjs",
-            "scripts/sprint1-tests.mjs",
-            "evidence/sprint1/20261016-acceptance-audit/acceptance-log-probe.mjs"
+            "apps/api/test/sprint2.e2e-spec.ts",
+            "apps/api/test/orders.e2e-spec.ts",
+            "evidence\\sprint1\\20261016-closeout\\checks-a2e5f67\\gates.json"
           ],
           "assertion": "stale owner/retry/expired and worker tests",
           "evidence": [
@@ -2729,7 +2810,8 @@
           ],
           "environment": "as case states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2769,7 +2851,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T05-02",
@@ -2796,7 +2879,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T05-03",
@@ -2822,7 +2906,8 @@
           ],
           "environment": "real HTTPS/Redis/browser as evidence states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2839,12 +2924,13 @@
         {
           "matrixId": "DOD-09",
           "implementationFiles": [
-            "docs/SPRINT1_REVIEW_REPORT.md"
+            "apps/api/src/auth/guards/roles.guard.ts",
+            "deploy/laptop-gateway.mjs"
           ],
           "verificationFiles": [
-            "scripts/sprint1-coverage.mjs",
-            "scripts/sprint1-tests.mjs",
-            "evidence/sprint1/20261016-acceptance-audit/acceptance-log-probe.mjs"
+            "evidence/sprint1/20261016-acceptance-audit/acceptance-log-probe.mjs",
+            "evidence\\sprint1\\20261016-acceptance-audit\\log-probe.json",
+            "evidence\\sprint1\\20261016-closeout\\denial-log.json"
           ],
           "assertion": "inspect/redact actual touched output",
           "evidence": [
@@ -2853,7 +2939,8 @@
           ],
           "environment": "as case states",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2888,7 +2975,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         },
         {
           "matrixId": "T10-09",
@@ -2910,7 +2998,8 @@
           ],
           "environment": "real API/DB + desktop/mobile HTTPS",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2943,7 +3032,8 @@
           ],
           "environment": "unit + real API + browser",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     },
@@ -2975,7 +3065,8 @@
           ],
           "environment": "real PG",
           "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-          "result": "PASS"
+          "result": "PASS",
+          "externalProcess": null
         }
       ]
     }
