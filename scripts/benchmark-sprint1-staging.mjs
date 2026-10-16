@@ -1,4 +1,5 @@
 import https from "node:https";
+import { connect as connectHttp2 } from "node:http2";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { createRequire } from "node:module";
@@ -33,6 +34,8 @@ const agent = new https.Agent({
   ca,
   rejectUnauthorized: true,
 });
+const useHttp2 = process.argv.includes("--http2");
+let h2, h2Ready;
 const runId = randomUUID();
 const report = {
   source: release.sha,
@@ -45,6 +48,9 @@ const report = {
     logicalCPUs: cpus().length,
     memoryBytes: totalmem(),
     apiInstances: 1,
+    protocol: useHttp2
+      ? "h2;200concurrent streams; cold TLS establishment included in first-round requests"
+      : "HTTP/1.1;200concurrent connections",
     generator: "same laptop as staging services",
     tls: "exact certificate CA and hostname verified",
   },
@@ -80,9 +86,55 @@ function percentile(values, fraction) {
   const sorted = [...values].sort((a, b) => a - b);
   return sorted[Math.ceil(sorted.length * fraction) - 1];
 }
+async function holdHttp2(showtimeId, seatId, cookie) {
+  const started = performance.now(),
+    timings = {};
+  if (!h2) {
+    h2 = connectHttp2(origin, { ca, rejectUnauthorized: true, servername: "" });
+    h2.on("error", () => {});
+    h2Ready = new Promise((done) => h2.once("connect", done));
+  }
+  return await new Promise((done) => {
+    const connecting = h2.connecting;
+    if (connecting)
+      h2Ready.then(() => {
+        timings.tlsMs = performance.now() - started;
+      });
+    const stream = h2.request({
+      ":method": "POST",
+      ":path": `/api/showtimes/${showtimeId}/holds`,
+      origin,
+      cookie,
+      "content-type": "application/json",
+    });
+    let status = 0;
+    stream.once("response", (headers) => {
+      status = Number(headers[":status"]);
+      timings.ttfbMs = performance.now() - started;
+    });
+    stream.resume();
+    stream.once("end", () =>
+      done({ status, ms: performance.now() - started, timings }),
+    );
+    stream.once("error", (error) =>
+      done({
+        status: 0,
+        error: error.code ?? error.name,
+        ms: performance.now() - started,
+        timings,
+      }),
+    );
+    stream.setTimeout(30000, () =>
+      stream.destroy(new Error("HTTP2 request timeout")),
+    );
+    stream.end(JSON.stringify({ seatIds: [seatId] }));
+  });
+}
 async function hold(showtimeId, seatId, cookie) {
+  if (useHttp2) return holdHttp2(showtimeId, seatId, cookie);
   const started = performance.now();
-  return await new Promise((done, reject) => {
+  const timings = {};
+  return await new Promise((done) => {
     const request = https.request(
       `${origin}/api/showtimes/${showtimeId}/holds`,
       {
@@ -92,22 +144,55 @@ async function hold(showtimeId, seatId, cookie) {
         headers: { origin, cookie, "content-type": "application/json" },
       },
       (response) => {
+        timings.ttfbMs = performance.now() - started;
         response.resume();
         response.once("end", () =>
           done({
             status: response.statusCode,
             ms: performance.now() - started,
+            timings,
+          }),
+        );
+        response.once("error", (error) =>
+          done({
+            status: 0,
+            error: error.code ?? error.name,
+            ms: performance.now() - started,
+            timings,
           }),
         );
       },
     );
-    request.once("error", reject);
+    request.once("socket", (socket) => {
+      timings.socketAssignedMs = performance.now() - started;
+      timings.reusedSocket = !socket.connecting;
+      if (socket.connecting) {
+        socket.once("lookup", () => {
+          timings.lookupMs = performance.now() - started;
+        });
+        socket.once("connect", () => {
+          timings.connectMs = performance.now() - started;
+        });
+        socket.once("secureConnect", () => {
+          timings.tlsMs = performance.now() - started;
+        });
+      }
+    });
+    request.once("error", (error) =>
+      done({
+        status: 0,
+        error: error.code ?? error.name,
+        ms: performance.now() - started,
+        timings,
+      }),
+    );
     request.once("timeout", () =>
       request.destroy(new Error("Benchmark HTTPS timeout")),
     );
     request.end(JSON.stringify({ seatIds: [seatId] }));
   });
 }
+
 try {
   const owner = await db.user.findUniqueOrThrow({
     where: {
@@ -201,6 +286,7 @@ try {
     report.rounds.push({
       round,
       statuses,
+      responses,
       success,
       conflict,
       activeHolds,
@@ -235,6 +321,11 @@ try {
   );
 } catch (error) {
   report.correctness = "FAIL";
+  const collected = report.rounds
+    .flatMap((round) => round.responses ?? [])
+    .map((response) => response.ms);
+  report.samplesCollected = collected.length;
+  if (collected.length) report.allP95Ms = percentile(collected, 0.95);
   report.error = error.code ?? error.name;
   save();
   throw new Error(
@@ -242,5 +333,6 @@ try {
   );
 } finally {
   agent.destroy();
+  h2?.close();
   await db.$disconnect();
 }

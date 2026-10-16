@@ -189,6 +189,34 @@ if (
     "postgres:15-alpine",
   ]);
 }
+// Existing owned containers can be stopped after Docker/host restart.
+// Never interpret their existence as readiness or recreate their data volume.
+run("qr-db-start", "docker", ["start", qrName]);
+let qrReady = false;
+for (let attempt = 0; attempt < 60; attempt++) {
+  if (
+    spawnSync(
+      "docker",
+      [
+        "exec",
+        qrName,
+        "pg_isready",
+        "-U",
+        c.user,
+        "-d",
+        "signed_qr_integration",
+      ],
+      { windowsHide: true, stdio: "ignore" },
+    ).status === 0
+  ) {
+    qrReady = true;
+    break;
+  }
+  await new Promise((done) => setTimeout(done, 500));
+}
+if (!qrReady)
+  throw Error("Owned QR test database did not become ready; data retained");
+
 env.DATABASE_URL = `postgresql://${c.user}:${c.dbPassword}@127.0.0.1:15450/signed_qr_integration?schema=public`;
 run(
   "qr-migration",

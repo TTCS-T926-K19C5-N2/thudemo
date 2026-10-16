@@ -1,4 +1,4 @@
-import https from "node:https";
+import { createSecureServer } from "node:http2";
 import http from "node:http";
 import { readFileSync, appendFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -42,8 +42,63 @@ const hopHeaders = [
   "transfer-encoding",
   "upgrade",
 ];
+// Bound backend socket creation while keeping all incoming requests in flight.
+// Reuse sockets across requests/releases; each target port has its own pool.
+const upstreamAgent = new http.Agent({
+  keepAlive: true,
+  maxSockets: 16,
+  maxFreeSockets: 16,
+});
+export function stagingForwardHeaders(input, port) {
+  const headers = { ...input, host: `127.0.0.1:${port}` };
+  for (const name of Object.keys(headers)) {
+    if (
+      name.startsWith(":") ||
+      hopHeaders.includes(name.toLowerCase()) ||
+      [
+        "forwarded",
+        "x-forwarded-for",
+        "x-forwarded-host",
+        "x-forwarded-proto",
+        "x-forwarded-port",
+        "x-real-ip",
+        "cf-connecting-ip",
+      ].includes(name.toLowerCase())
+    )
+      delete headers[name];
+  }
+  return headers;
+}
+export function holdProxyTarget(request, active) {
+  // Only the existing canonical claim route takes the short network path.
+  // Login and all other routes keep the Next proxy and its attestation verifier.
+  if (
+    active.directHoldProxy !== true ||
+    request.method !== "POST" ||
+    !/^\/api\/showtimes\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\/holds(?:\?.*)?$/.test(
+      request.url ?? "",
+    )
+  )
+    return null;
+  return { port: active.apiPort, path: request.url.slice(4) };
+}
+async function holdBody(request) {
+  const chunks = [];
+  let bytes = 0,
+    oversized = false;
+  for await (const chunk of request) {
+    bytes += chunk.length;
+    if (bytes > 5 * 1024 * 1024) {
+      oversized = true;
+      chunks.length = 0;
+    }
+    if (!oversized) chunks.push(chunk);
+  }
+  if (oversized) throw new RangeError("Body exceeds5MB");
+  return Buffer.concat(chunks);
+}
 export function stagingProxy(activeFile) {
-  return (request, response) => {
+  return async (request, response) => {
     let active;
     try {
       active = stagingRelease(JSON.parse(readFileSync(activeFile, "utf8")));
@@ -53,29 +108,65 @@ export function stagingProxy(activeFile) {
         .end("Staging has no healthy active release");
       return;
     }
-    const headers = { ...request.headers, host: `127.0.0.1:${active.webPort}` };
-    for (const name of [
-      ...hopHeaders,
-      "forwarded",
-      "x-forwarded-for",
-      "x-forwarded-host",
-      "x-forwarded-proto",
-      "x-forwarded-port",
-      "x-real-ip",
-      "cf-connecting-ip",
-    ])
-      delete headers[name];
+    const direct = holdProxyTarget(request, active);
+    let body;
+    if (direct) {
+      try {
+        body = await holdBody(request);
+      } catch (error) {
+        response
+          .writeHead(error instanceof RangeError ? 413 : 400, {
+            "cache-control": "no-store",
+            "content-type": "application/json",
+          })
+          .end(
+            JSON.stringify({
+              message:
+                error instanceof RangeError
+                  ? "Tệp vượt quá 5 MB."
+                  : "Invalid request",
+            }),
+          );
+        return;
+      }
+    }
+    const headers = stagingForwardHeaders(
+      request.headers,
+      direct?.port ?? active.webPort,
+    );
+    if (direct) {
+      for (const name of Object.keys(headers))
+        if (
+          ![
+            "host",
+            "accept",
+            "content-type",
+            "cookie",
+            "origin",
+            "sec-fetch-site",
+          ].includes(name)
+        )
+          delete headers[name];
+      headers["content-length"] = String(body.length);
+    }
     const upstream = http.request(
       {
         hostname: "127.0.0.1",
-        port: active.webPort,
+        port: direct?.port ?? active.webPort,
+        agent: upstreamAgent,
         method: request.method,
-        path: request.url,
+        path: direct?.path ?? request.url,
         headers,
         timeout: 15000,
       },
       (incoming) => {
-        const outgoing = { ...incoming.headers };
+        const outgoing = direct
+          ? { "cache-control": "no-store" }
+          : { ...incoming.headers };
+        if (direct)
+          for (const name of ["content-type", "retry-after", "set-cookie"])
+            if (incoming.headers[name] !== undefined)
+              outgoing[name] = incoming.headers[name];
         for (const name of hopHeaders) delete outgoing[name];
         response.writeHead(incoming.statusCode ?? 502, outgoing);
         incoming.pipe(response);
@@ -89,7 +180,8 @@ export function stagingProxy(activeFile) {
       response.end("Staging upstream unavailable");
     });
     request.once("aborted", () => upstream.destroy());
-    request.pipe(upstream);
+    if (direct) upstream.end(body);
+    else request.pipe(upstream);
   };
 }
 if (
@@ -102,17 +194,21 @@ if (
   );
   // The TLS listener owns the real LAN TCP peer. Backends bind loopback only;
   // they receive this HMAC, never an identity from X-Forwarded-For.
-  const server = https.createServer(
+  const server = createSecureServer(
     {
       key: readFileSync(resolve(dir, "tls/server-key.pem")),
       cert: readFileSync(resolve(dir, "tls/server-cert.pem")),
       minVersion: "TLSv1.2",
+      allowHTTP1: true,
+      settings: { maxConcurrentStreams: 256 },
     },
     loginTransport(
       stagingProxy(resolve(dir, "active.json")),
       c.authProxySecret,
     ),
   );
+  // Client disconnect/protocol errors must not terminate the shared listener.
+  server.on("sessionError", () => {});
   server.listen(c.gatewayPort, c.lanAddress, () =>
     console.log(`Staging HTTPS listening on ${c.lanAddress}:${c.gatewayPort}`),
   );

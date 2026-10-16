@@ -846,6 +846,7 @@ async function deploy() {
       webContainer,
       webImage,
       network,
+      directHoldProxy: true,
       startedAt: new Date().toISOString(),
     };
     let ready = false;
@@ -923,6 +924,16 @@ async function main() {
   }
   if (action === "deploy") {
     await deploy();
+    return;
+  }
+  if (action === "restart-gateway") {
+    const gatewayState = resolve(dir, "gateway-process.json");
+    if (existsSync(gatewayState))
+      stopOwned(JSON.parse(readFileSync(gatewayState)));
+    await startGateway(c);
+    assert.equal((await stagingHttps(c, "/api/health")).status, 200);
+    timeline("gateway-restarted", { sha: git("rev-parse", "HEAD") });
+    console.log("Owned TLS gateway restarted and HTTPS health200 verified");
     return;
   }
   if (action === "resume") {

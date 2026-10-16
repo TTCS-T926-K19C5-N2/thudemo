@@ -4,6 +4,8 @@ import {
   stagingConfig,
   stagingRelease,
   stagingProxy,
+  stagingForwardHeaders,
+  holdProxyTarget,
 } from "./laptop-gateway.mjs";
 const valid = {
   profile: "sprint1-laptop-20261015",
@@ -66,4 +68,49 @@ test("missing active release fails closed without forwarding or leaking a path",
   );
   assert.equal(status, 503);
   assert.equal(body, "Staging has no healthy active release");
+});
+
+test("HTTP2 pseudo/hop/forwarding headers never cross to HTTP1; gateway attestation remains", () => {
+  const headers = stagingForwardHeaders(
+    {
+      ":authority": "evil.invalid",
+      ":path": "/outside",
+      connection: "upgrade",
+      "x-forwarded-for": "198.51.100.1",
+      "X-Real-IP": "198.51.100.2",
+      cookie: "fixture",
+      origin: "https://192.168.1.50:3470",
+      "x-event-login-peer": "gateway-signature",
+    },
+    3473,
+  );
+  assert.deepEqual(headers, {
+    host: "127.0.0.1:3473",
+    cookie: "fixture",
+    origin: "https://192.168.1.50:3470",
+    "x-event-login-peer": "gateway-signature",
+  });
+});
+
+test("direct hold network path is opt-in, exact canonical route and still targets API", () => {
+  const active = { apiPort: 3471, directHoldProxy: true };
+  const request = {
+    method: "POST",
+    url: "/api/showtimes/12345678-1234-1234-1234-123456789abc/holds",
+  };
+  assert.deepEqual(holdProxyTarget(request, active), {
+    port: 3471,
+    path: "/showtimes/12345678-1234-1234-1234-123456789abc/holds",
+  });
+  assert.equal(holdProxyTarget(request, { apiPort: 3471 }), null);
+  for (const url of [
+    "/api/auth/login",
+    "/api/Auth/LOGIN",
+    request.url.replace("holds", "holds/"),
+    request.url.replace("showtimes", "%73howtimes"),
+    request.url + "/../../auth/login",
+    "https://evil.invalid" + request.url,
+  ])
+    assert.equal(holdProxyTarget({ ...request, url }, active), null);
+  assert.equal(holdProxyTarget({ ...request, method: "GET" }, active), null);
 });
