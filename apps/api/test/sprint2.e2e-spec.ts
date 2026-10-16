@@ -166,7 +166,19 @@ describe('Sprint 2 isolated database integration', () => {
         if (cookie) call.set('Cookie', cookie);
         await call.expect(404);
       }
+      await request(app.getHttpServer())
+        .post(`${prefix}/st_101/release-expired-holds`)
+        .set('Cookie', buyerCookie)
+        .expect(404);
     }
+    for (const path of [
+      '/api/showtimes/expired-holds',
+      '/api/showtimes/st_101/expired-holds',
+      '/api/showtimes/st_101/countdown?expiresAt=2099-01-01',
+      '/api/showtimes/st_101/seats/A1/countdown',
+      '/api/showtimes/st_101/holds/hold1/countdown',
+    ])
+      await request(app.getHttpServer()).get(path).expect(404);
     await request(app.getHttpServer())
       .get('/api/showtimes/st_101/seats?seatIds=A1')
       .expect(404);

@@ -41,7 +41,18 @@ const db = new PrismaClient({
 const origin = `https://${c.lanAddress}:${c.gatewayPort}`,
   ca = readFileSync(resolve(dir, "tls/server-cert.pem"));
 const results = [];
-const out = resolve(root, "evidence/sprint1/20261015-laptop");
+const outputAt = process.argv.indexOf("--output");
+const out = resolve(
+  root,
+  outputAt < 0
+    ? "evidence/sprint1/20261015-laptop"
+    : process.argv[outputAt + 1],
+);
+if (
+  !out.startsWith(resolve(root, "evidence/sprint1") + "/") &&
+  !out.startsWith(resolve(root, "evidence/sprint1") + "\\")
+)
+  throw Error("Evidence must stay within Sprint 1 directory");
 mkdirSync(out, { recursive: true });
 function record(name, details = {}) {
   results.push({
@@ -323,65 +334,71 @@ try {
     other = peer.replace(/\.20$/, ".21");
   const peerKey =
     "auth:ip-fail:" + createHash("sha256").update(peer).digest("hex");
-  try {
-    for (let n = 0; n < 30; n++)
+  if (process.argv.includes("--skip-peer-probe")) {
+    record("two-peer-probe-not-repeated", {
+      status: "NOT RUN",
+      priorEvidence: "evidence/sprint1/20261016-two-peer/correlation.json",
+      reason:
+        "Real second-device proof is retained at its original SHA; no repeat brute force authorized merely for new evidence.",
+    });
+  } else
+    try {
+      for (let n = 0; n < 30; n++)
+        assert.equal(
+          (
+            await call(n % 2 ? "/api/Auth/LOGIN" : "/api/auth/login", {
+              method: "POST",
+              peer,
+              body: {
+                email: `ip-${randomUUID()}@sprint1.staging.invalid`,
+                password: "incorrect-fixture-only",
+              },
+              headers: {
+                "x-forwarded-for": `192.0.2.${n + 1}`,
+                [LOGIN_PEER_HEADER]: signLoginPeer(
+                  "192.0.2.250",
+                  c.authProxySecret,
+                ),
+              },
+            })
+          ).status,
+          401,
+        );
       assert.equal(
         (
-          await call(n % 2 ? "/api/Auth/LOGIN" : "/api/auth/login", {
+          await call("/api/Auth/LOGIN", {
             method: "POST",
             peer,
-            body: {
-              email: `ip-${randomUUID()}@sprint1.staging.invalid`,
-              password: "incorrect-fixture-only",
-            },
-            headers: {
-              "x-forwarded-for": `192.0.2.${n + 1}`,
-              [LOGIN_PEER_HEADER]: signLoginPeer(
-                "192.0.2.250",
-                c.authProxySecret,
-              ),
-            },
+            body: account("organizer-a"),
+            headers: { "x-forwarded-for": "192.0.2.251" },
           })
         ).status,
-        401,
+        429,
       );
-    assert.equal(
-      (
-        await call("/api/Auth/LOGIN", {
-          method: "POST",
-          peer,
-          body: account("organizer-a"),
-          headers: { "x-forwarded-for": "192.0.2.251" },
-        })
-      ).status,
-      429,
-    );
-    assert((await redis.ttl(peerKey)) > 800);
-    await login("organizer-a", { peer: other });
-    record(
-      "tls-actual-two-tcp-peers-casing-alias-spoof-resistant-shared-budget",
-      {
-        peerCounterTTL: await redis.ttl(peerKey),
-        limitation:
-          "Two TCP source addresses on this host; second Wi-Fi device still NOT RUN",
-      },
-    );
-  } catch (error) {
-    if (!["ENETUNREACH", "EADDRNOTAVAIL"].includes(error.code)) throw error;
-    record("tls-independent-peer-network-routing", {
-      status: "BLOCKED",
-      reason: error.code,
-      detail:
-        "Windows cannot route this loopback source to the LAN listener; requires a second real Wi-Fi client. No header spoof used as substitute.",
-    });
-  }
+      assert((await redis.ttl(peerKey)) > 800);
+      await login("organizer-a", { peer: other });
+      record(
+        "tls-actual-two-tcp-peers-casing-alias-spoof-resistant-shared-budget",
+        {
+          peerCounterTTL: await redis.ttl(peerKey),
+          limitation:
+            "Two TCP source addresses on this host; second Wi-Fi device still NOT RUN",
+        },
+      );
+    } catch (error) {
+      if (!["ENETUNREACH", "EADDRNOTAVAIL"].includes(error.code)) throw error;
+      record("tls-independent-peer-network-routing", {
+        status: "BLOCKED",
+        reason: error.code,
+        detail:
+          "Windows cannot route this loopback source to the LAN listener; requires a second real Wi-Fi client. No header spoof used as substitute.",
+      });
+    }
   if (process.argv.includes("--wait-natural-expiry")) {
-    let remaining = await redis.ttl(lockKey);
-    while (remaining > 0) {
-      await new Promise((r) =>
-        setTimeout(r, Math.min(remaining * 1000 + 100, 30000)),
-      );
-      remaining = await redis.ttl(lockKey);
+    let remaining = await redis.pttl(lockKey);
+    while (remaining >= 0) {
+      await new Promise((r) => setTimeout(r, Math.min(remaining + 100, 30000)));
+      remaining = await redis.pttl(lockKey);
     }
     assert.equal(
       (await call("/api/auth/login", { method: "POST", body: lock })).status,

@@ -357,9 +357,11 @@ async function resumeActive(c) {
   const activePath = resolve(dir, "active.json");
   const active = stagingRelease(JSON.parse(readFileSync(activePath)));
   await dependencies(c);
-  for (const name of [active.apiContainer, active.webContainer].filter(
-    Boolean,
-  )) {
+  for (const name of [
+    active.apiContainer,
+    active.apiReplicaContainer,
+    active.webContainer,
+  ].filter(Boolean)) {
     if (!ownedContainer(name))
       throw Error(
         "Owned release container is missing; deploy an exact source instead",

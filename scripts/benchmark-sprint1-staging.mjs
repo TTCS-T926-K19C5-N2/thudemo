@@ -6,6 +6,7 @@ import { createRequire } from "node:module";
 import { randomBytes, randomUUID, createHash } from "node:crypto";
 import { cpus, totalmem } from "node:os";
 import assert from "node:assert/strict";
+import { fork } from "node:child_process";
 import { stagingConfig, stagingRelease } from "../deploy/laptop-gateway.mjs";
 
 // Bounded, additive synthetic fixtures only. Never relax another suite's DB guard.
@@ -35,6 +36,10 @@ const agent = new https.Agent({
   rejectUnauthorized: true,
 });
 const useHttp2 = process.argv.includes("--http2");
+const parallelClients = process.argv.includes("--four-clients");
+if (parallelClients && useHttp2)
+  throw Error("Four-client mode is HTTP1.1 only");
+const clients = [];
 let h2, h2Ready;
 const runId = randomUUID();
 const report = {
@@ -48,10 +53,15 @@ const report = {
     logicalCPUs: cpus().length,
     memoryBytes: totalmem(),
     apiInstances: release.apiReplicaPort ? 2 : 1,
+    gatewaySourceSha256: createHash("sha256")
+      .update(readFileSync(resolve(root, "deploy/laptop-gateway.mjs")))
+      .digest("hex"),
     protocol: useHttp2
       ? "h2;200concurrent streams; cold TLS establishment included in first-round requests"
       : "HTTP/1.1;200concurrent connections",
-    generator: "same laptop as staging services",
+    generator: parallelClients
+      ? "four isolated client processes on the same laptop,50concurrent requests each,200total; no excluded warmup"
+      : "same laptop as staging services; one client process",
     tls: "exact certificate CA and hostname verified",
   },
   scenario:
@@ -262,6 +272,26 @@ try {
   };
   save();
   const samples = [];
+  if (parallelClients) {
+    await Promise.all(
+      Array.from({ length: 4 }, async () => {
+        const child = fork(
+          new URL("./staging-benchmark-client.mjs", import.meta.url),
+          [],
+          { stdio: ["ignore", "ignore", "ignore", "ipc"], windowsHide: true },
+        );
+        clients.push(child);
+        await new Promise((done, reject) => {
+          child.once("error", reject);
+          child.once("exit", () => reject(Error("Client exited before ready")));
+          child.once("message", (m) =>
+            m.type === "ready" ? done() : reject(Error("Client protocol")),
+          );
+          child.send({ type: "configure", origin, ca: ca.toString() });
+        });
+      }),
+    );
+  }
   for (let round = 0; round < 10; round++) {
     assert.equal(
       JSON.parse(readFileSync(resolve(dir, "active.json"))).sha,
@@ -269,9 +299,51 @@ try {
       "Source must remain fixed during measurement",
     );
     const ids = seats.slice(round * 100, (round + 1) * 100).map((s) => s.id);
-    const responses = await Promise.all(
-      buyers.map((cookie, n) => hold(show.id, ids[n % 100], cookie)),
-    );
+    const dispatch = performance.timeOrigin + performance.now();
+    const responses = parallelClients
+      ? (
+          await Promise.allSettled(
+            clients.map(
+              (child, clientIndex) =>
+                new Promise((done, reject) => {
+                  const onMessage = (m) => {
+                    if (m.type === "result") {
+                      child.removeListener("exit", onExit);
+                      done(m.responses);
+                    }
+                  };
+                  const onExit = () => {
+                    child.removeListener("message", onMessage);
+                    reject(Error("Client exited during round"));
+                  };
+                  child.once("message", onMessage);
+                  child.once("exit", onExit);
+                  child.send({
+                    type: "round",
+                    requests: buyers
+                      .slice(clientIndex * 50, (clientIndex + 1) * 50)
+                      .map((cookie, index) => ({
+                        cookie,
+                        path: `/api/showtimes/${show.id}/holds`,
+                        seatId: ids[(clientIndex * 50 + index) % 100],
+                      })),
+                  });
+                }),
+            ),
+          )
+        ).flatMap((result) =>
+          result.status === "fulfilled"
+            ? result.value
+            : Array.from({ length: 50 }, () => ({
+                status: 0,
+                error: "ClientProcessFailure",
+                startedUnixMs: dispatch,
+                ms: performance.timeOrigin + performance.now() - dispatch,
+              })),
+        )
+      : await Promise.all(
+          buyers.map((cookie, n) => hold(show.id, ids[n % 100], cookie)),
+        );
     const success = responses.filter((r) => r.status === 200).length;
     const conflict = responses.filter((r) => r.status === 409).length;
     const activeHolds = await db.seatHold.count({
@@ -296,6 +368,12 @@ try {
       ),
     });
     save();
+    if (parallelClients)
+      assert(
+        Math.max(...responses.map((r) => r.startedUnixMs)) <
+          Math.min(...responses.map((r) => r.startedUnixMs + r.ms)),
+        "All200requests must overlap before first completion",
+      );
     assert.equal(success, 100);
     assert.equal(conflict, 100);
     assert.equal(activeHolds, 100);
@@ -334,5 +412,6 @@ try {
 } finally {
   agent.destroy();
   h2?.close();
+  for (const client of clients) client.disconnect();
   await db.$disconnect();
 }
