@@ -37,8 +37,10 @@ describe('S03 registration, consent and durable activation (real PostgreSQL/Redi
   };
   const register = (body: object) =>
     request(app.getHttpServer()).post('/users/register').send(body);
-  const activate = (token: string) =>
-    request(app.getHttpServer()).post('/users/activate').send({ token });
+  const activate = (token: string, password = 'Activation-fixture-123') =>
+    request(app.getHttpServer())
+      .post('/users/activate')
+      .send({ token, password });
   const resend = (email: string) =>
     request(app.getHttpServer())
       .post('/users/resend-activation')
@@ -134,7 +136,7 @@ describe('S03 registration, consent and durable activation (real PostgreSQL/Redi
       .post('/auth/login')
       .send({ email: input.email, password: input.password })
       .expect(401);
-    await delivery.drain();
+    for (let batch = 0; batch < 5; batch++) await delivery.drain();
     const raw = tokenIn(input.email);
     expect(token.tokenHash).toBe(activationHash(raw));
     expect(token.mail!.encryptedToken).not.toContain(raw);
@@ -145,7 +147,7 @@ describe('S03 registration, consent and durable activation (real PostgreSQL/Redi
         })
       ).encryptedToken,
     ).toBe('');
-    await activate(raw).expect(200);
+    await activate(raw, input.password).expect(200);
     await request(app.getHttpServer())
       .post('/auth/login')
       .send({ email: input.email, password: input.password })
@@ -182,7 +184,7 @@ describe('S03 registration, consent and durable activation (real PostgreSQL/Redi
   it('rejects unknown and expired links, then permits resend without concurrent activation replay', async () => {
     const input = payload('expired');
     await register(input).expect(201);
-    await delivery.drain();
+    for (let batch = 0; batch < 5; batch++) await delivery.drain();
     const expired = tokenIn(input.email);
     await db.activationToken.update({
       where: { tokenHash: activationHash(expired) },
@@ -195,7 +197,7 @@ describe('S03 registration, consent and durable activation (real PostgreSQL/Redi
       'ACTIVATION_INVALID',
     );
     await resend(input.email).expect(201);
-    await delivery.drain();
+    for (let batch = 0; batch < 5; batch++) await delivery.drain();
     const fresh = tokenIn(input.email);
     expect(fresh).not.toBe(expired);
     const results = await Promise.all([activate(fresh), activate(fresh)]);
@@ -228,11 +230,11 @@ describe('S03 registration, consent and durable activation (real PostgreSQL/Redi
 
   it('retains a failed mail for bounded retry and clears ciphertext only after delivery', async () => {
     const input = payload('retry');
-    await delivery.drain(); // clear prior suites' queued records before inducing failure
+    for (let batch = 0; batch < 5; batch++) await delivery.drain(); // clear prior suites' queued records before inducing failure
     await register(input).expect(201);
     failMail = true;
     try {
-      await delivery.drain();
+      for (let batch = 0; batch < 5; batch++) await delivery.drain();
     } finally {
       failMail = false;
     }
@@ -246,7 +248,7 @@ describe('S03 registration, consent and durable activation (real PostgreSQL/Redi
       where: { id: mail.id },
       data: { nextAttemptAt: new Date(Date.now() - 1000) },
     });
-    await delivery.drain();
+    for (let batch = 0; batch < 5; batch++) await delivery.drain();
     mail = await db.activationMail.findUniqueOrThrow({
       where: { id: mail.id },
     });
@@ -270,9 +272,26 @@ describe('S03 registration, consent and durable activation (real PostgreSQL/Redi
         leaseUntil: new Date(Date.now() - 1000),
       },
     });
-    await delivery.drain();
+    for (let batch = 0; batch < 5; batch++) await delivery.drain();
     expect(
       await db.activationMail.findUniqueOrThrow({ where: { id: mail.id } }),
     ).toMatchObject({ status: 'FAILED', encryptedToken: '', leaseUntil: null });
+  });
+
+  it('prevents pending-account pre-hijack by binding credentials to mailbox activation', async () => {
+    const input = payload('pre-hijack');
+    const ownerPassword = `Owner-${randomUUID()}`;
+    await register(input).expect(201);
+    await register({ ...input, password: ownerPassword }).expect(201);
+    for (let batch = 0; batch < 5; batch++) await delivery.drain();
+    await activate(tokenIn(input.email), ownerPassword).expect(200);
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: input.email, password: input.password })
+      .expect(401);
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: input.email, password: ownerPassword })
+      .expect(200);
   });
 });

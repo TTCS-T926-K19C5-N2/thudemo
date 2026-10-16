@@ -1,0 +1,18 @@
+{
+  "time": "2026-10-16T14:14:09.033Z",
+  "source": "ef3e4c9cd640f8274741439783c6a7f726e6f265",
+  "workingTreeSecurityFix": true,
+  "result": "PASS",
+  "database": "sprint1_s03_upgrade_1792160041562",
+  "environment": "New isolated PostgreSQL15 database; original29 applied then new30th Prisma migration",
+  "assertions": [
+    "Existing users/roles/links/sessions/event/showtime row counts and FK retained",
+    "Legacy raw activation link migrated to SHA256 hash with original owner/deadline",
+    "Plaintext legacy columns cleared",
+    "No forged consent for historical accounts",
+    "30th migration recorded as applied"
+  ],
+  "limitation": "Old API can still read retained core columns but cannot activate old plaintext-token links after clearing. Rollback must keep new activation handler or registration disabled; no claim full S03 downgrade compatibility.",
+  "reset": false,
+  "stagingTouched": false
+}

@@ -66,6 +66,26 @@ export class RegistrationService {
       );
   }
 
+  private async reserveDeliveryCapacity() {
+    try {
+      const budget = await this.redis.reserveRegistrationDelivery();
+      if (budget.count > 120)
+        throw new HttpException(
+          {
+            message:
+              'Dịch vụ đăng ký đang nhận nhiều yêu cầu. Vui lòng thử lại sau.',
+            retryAfterSeconds: budget.ttl,
+          },
+          429,
+        );
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new ServiceUnavailableException(
+        'Dịch vụ đăng ký tạm thời chưa sẵn sàng.',
+      );
+    }
+  }
+
   private async issue(tx: Prisma.TransactionClient, userId: string) {
     const raw = randomBytes(32).toString('hex');
     const [{ now }] = await tx.$queryRaw<
@@ -123,6 +143,7 @@ export class RegistrationService {
         errors,
       });
     this.requireDelivery();
+    await this.reserveDeliveryCapacity();
     // Identical Argon2 work for existing/new addresses avoids the former cheap
     // duplicate fast path. SMTP happens in the durable outbox, never in response.
     const password = await argon2.hash(input.password as string, {
@@ -166,6 +187,7 @@ export class RegistrationService {
   async resend(emailInput: unknown) {
     const email = registrationEmail(emailInput);
     this.requireDelivery();
+    await this.reserveDeliveryCapacity();
     try {
       const budget = await this.redis.reserveActivationResend(email);
       if (budget.count > 5)
@@ -199,12 +221,23 @@ export class RegistrationService {
     return GENERIC;
   }
 
-  async activate(input: unknown) {
+  async activate(input: unknown, passwordInput?: unknown) {
     if (typeof input !== 'string' || !/^[a-f0-9]{64}$/.test(input))
       throw new BadRequestException({
         message: 'Liên kết không hợp lệ. Bạn có thể yêu cầu gửi lại.',
         code: 'ACTIVATION_INVALID',
       });
+    if (
+      typeof passwordInput !== 'string' ||
+      passwordInput.length < 8 ||
+      passwordInput.length > 1024
+    )
+      throw new BadRequestException({
+        message: 'Đặt mật khẩu từ 8 đến 1024 ký tự để hoàn tất kích hoạt.',
+        errors: { password: 'Nhập mật khẩu mới hợp lệ.' },
+      });
+    // The mailbox holder chooses final credentials. An earlier anonymous
+    // registration can never keep its password after the recipient activates.
     return this.activationTransaction(async (tx) => {
       const token = await tx.activationToken.findUnique({
         where: { tokenHash: activationHash(input) },
@@ -239,13 +272,16 @@ export class RegistrationService {
           message: 'Không thể kích hoạt tài khoản này.',
           code: 'ACTIVATION_INVALID',
         });
+      const password = await argon2.hash(passwordInput, {
+        type: argon2.argon2id,
+      });
       await tx.activationToken.updateMany({
         where: { userId: user.id, consumedAt: null },
         data: { consumedAt: now },
       });
       await tx.user.update({
         where: { id: user.id },
-        data: { isEmailVerified: true },
+        data: { isEmailVerified: true, password },
       });
       return { message: 'Tài khoản đã được kích hoạt. Bạn có thể đăng nhập.' };
     });

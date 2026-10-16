@@ -130,8 +130,8 @@ describe('Existing account input regressions (e2e)', () => {
       ?.text.match(/#token=([a-f0-9]{64})/)?.[1];
     expect(token).toHaveLength(64);
     await request(app.getHttpServer())
-      .get('/users/activate')
-      .query({ token })
+      .post('/users/activate')
+      .send({ token, password })
       .expect(200);
     await request(app.getHttpServer())
       .post('/auth/login')
@@ -164,8 +164,8 @@ describe('Existing account input regressions (e2e)', () => {
       true,
     );
     await request(app.getHttpServer())
-      .get('/users/activate')
-      .query({ token })
+      .post('/users/activate')
+      .send({ token, password: 'Activation-fixture-123' })
       .expect(400);
     expect(
       (await prisma.user.findUniqueOrThrow({ where: { id: user.id } }))
@@ -177,15 +177,17 @@ describe('Existing account input regressions (e2e)', () => {
     const { user, token } = await fixture(`valid-${randomUUID()}@demo.invalid`);
     const responses = await Promise.all(
       Array.from({ length: 2 }, () =>
-        request(app.getHttpServer()).get('/users/activate').query({ token }),
+        request(app.getHttpServer())
+          .post('/users/activate')
+          .send({ token, password: 'Activation-fixture-123' }),
       ),
     );
     expect(
       responses.map((response) => response.status).sort((a, b) => a - b),
     ).toEqual([200, 400]);
     await request(app.getHttpServer())
-      .get('/users/activate')
-      .query({ token })
+      .post('/users/activate')
+      .send({ token, password: 'Activation-fixture-123' })
       .expect(400);
     const current = await prisma.user.findUniqueOrThrow({
       where: { id: user.id },

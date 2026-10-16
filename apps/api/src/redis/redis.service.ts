@@ -80,11 +80,25 @@ export class RedisService {
     return this.redis.ttl(key);
   }
 
-  async reserveActivationResend(email: string): Promise<{ count: number; ttl: number }> {
-    const result = await this.redis.eval(
+  async reserveActivationResend(
+    email: string,
+  ): Promise<{ count: number; ttl: number }> {
+    const result = (await this.redis.eval(
       "local n=redis.call('INCR',KEYS[1]); if n==1 then redis.call('EXPIRE',KEYS[1],3600); end; return {n,redis.call('TTL',KEYS[1])}",
-      1, accountKey('activation-resend', email),
-    ) as [number, number];
+      1,
+      accountKey('activation-resend', email),
+    )) as [number, number];
+    return { count: Number(result[0]), ttl: Math.max(1, Number(result[1])) };
+  }
+
+  // Shared across replicas, recipients and both public mail-producing routes.
+  // Bounds accepted SMTP/outbox/Argon2 work without restricting email domains.
+  async reserveRegistrationDelivery(): Promise<{ count: number; ttl: number }> {
+    const result = (await this.redis.eval(
+      "local n=redis.call('INCR',KEYS[1]); if n==1 then redis.call('EXPIRE',KEYS[1],3600); end; return {n,redis.call('TTL',KEYS[1])}",
+      1,
+      'auth:registration-delivery:hour',
+    )) as [number, number];
     return { count: Number(result[0]), ttl: Math.max(1, Number(result[1])) };
   }
 }

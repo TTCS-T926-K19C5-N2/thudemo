@@ -16,7 +16,7 @@ powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1
 
 Lệnh chọn cổng trống, tạo profile/secret riêng theo đường dẫn checkout, chạy PostgreSQL15/Redis7/Mailpit, frozen install, Prisma generate/migrate, seed giả, build, start, health và login/logout smoke. Chỉ in `READY` sau khi smoke thành công. Địa chỉ thực tế được in ở cuối (ưu tiên web3000/API3001); không mặc định cổng nếu máy đã bận. Credentials nằm tại `.sprint1-demo/config.json`, bị Git ignore; không gửi file này lên PR/chat. Nếu clone đã có `.env` của môi trường khác, launcher từ chối ghi đè: dùng clone riêng.
 
-Mở `/register`, nhập tên/email giả và mật khẩu thử >=8ký tự, đọc thông báo và tự chọn consent. Xem thư ở địa chỉ **mail-catcher** được in, mở liên kết kích hoạt rồi đăng nhập. Mailpit là hộp nhận thử loopback, **không chứng minh thư Internet**. Hai organizer/admin/buyer/lock-test có sẵn trong credentials local; không dùng tài khoản chính cho thử khóa.
+Mở `/register`, nhập tên/email giả và mật khẩu thử >=8ký tự, đọc thông báo và tự chọn consent. Xem thư ở địa chỉ **mail-catcher** được in, mở liên kết kích hoạt, đặt mật khẩu cuối cùng (có thể dùng lại mật khẩu vừa chọn) rồi đăng nhập. Mailpit là hộp nhận thử loopback, **không chứng minh thư Internet**. Hai organizer/admin/buyer/lock-test có sẵn trong credentials local; không dùng tài khoản chính cho thử khóa.
 
 ```powershell
 powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Status

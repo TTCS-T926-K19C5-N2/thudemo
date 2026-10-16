@@ -57,7 +57,11 @@ export class UsersController {
       body && typeof body === 'object'
         ? (body as Record<string, unknown>).token
         : undefined;
-    return this.registration.activate(token);
+    const password =
+      body && typeof body === 'object'
+        ? (body as Record<string, unknown>).password
+        : undefined;
+    return this.registration.activate(token, password);
   }
 
   @Public()

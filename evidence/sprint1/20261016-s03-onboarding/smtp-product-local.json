@@ -1,13 +1,35 @@
 {
-  "time": "2026-10-16T11:54:07.740Z",
-  "source": "13c528e + S03 working diff",
+  "time": "2026-10-16T12:08:40.535Z",
+  "source": "4fec49d90bad55189799a40aa9ada6505c17ba37",
   "environment": "Isolated native product API3491/web3490, real PG/Redis and configured Internet SMTP with certificate verification; NOT staging3470",
-  "allowlistedRecipientCount": 1,
+  "allowlistRequired": false,
+  "testRecipientSelectedByUser": true,
   "recipientRedacted": true,
-  "inboxReceipt": "NOT RUN",
-  "activationByRecipient": "NOT RUN",
-  "cases": [],
-  "smtpAccepted": "NOT RUN",
-  "classification": "Configuration: authorized recipient string fails the same email validation as normal registration; response400 email field; no user/outbox/message created",
-  "result": "BLOCKED"
+  "inboxReceipt": {
+    "result": "PASS",
+    "source": "Direct human confirmation in this thread: đã nhận và kích hoạt",
+    "time": "2026-10-16T12:11:40.317Z"
+  },
+  "activationByRecipient": {
+    "result": "PASS",
+    "serverAssertion": "Verified=true, all issued tokens consumed, SENT outbox, existing password login200, logout200 and old session401",
+    "identityRedacted": true
+  },
+  "cases": [
+    {
+      "assertion": "Real product registration response201, persisted unverified BUYER and consent",
+      "result": "PASS"
+    },
+    {
+      "assertion": "Product outbox status SENT after SMTP accepted user-selected test recipient; encrypted payload cleared",
+      "result": "PASS",
+      "attempts": 1
+    }
+  ],
+  "smtpAccepted": "PASS",
+  "result": "PASS",
+  "limitations": [
+    "Isolated local candidate, not staging3470 or integrated develop",
+    "One user-selected real inbox, no claim all providers always deliver"
+  ]
 }

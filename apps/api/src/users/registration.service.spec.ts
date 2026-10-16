@@ -83,4 +83,49 @@ describe('S03 validation and configuration boundaries', () => {
       encryptionKey: null,
     });
   });
+
+  it('rejects excess global delivery before Argon2/account/outbox work on either public route', async () => {
+    const tx = vi.fn();
+    const redis = {
+      reserveRegistrationDelivery: vi
+        .fn()
+        .mockResolvedValue({ count: 121, ttl: 3550 }),
+      reserveActivationResend: vi.fn(),
+    };
+    const service = new RegistrationService(
+      { $transaction: tx } as unknown as PrismaService,
+      redis as unknown as RedisService,
+      { available: true } as ActivationDeliveryService,
+      {} as RegistrationSettings,
+    );
+    for (const operation of [
+      () => service.register(valid),
+      () => service.resend(valid.email),
+    ])
+      await expect(operation()).rejects.toMatchObject({
+        status: 429,
+        response: { retryAfterSeconds: 3550 },
+      });
+    expect(tx).not.toHaveBeenCalled();
+    expect(redis.reserveActivationResend).not.toHaveBeenCalled();
+  });
+
+  it('fails mail-producing routes closed when shared admission storage is unavailable', async () => {
+    const tx = vi.fn();
+    const redis = {
+      reserveRegistrationDelivery: vi
+        .fn()
+        .mockRejectedValue(new Error('Private provider detail')),
+    };
+    const service = new RegistrationService(
+      { $transaction: tx } as unknown as PrismaService,
+      redis as unknown as RedisService,
+      { available: true } as ActivationDeliveryService,
+      {} as RegistrationSettings,
+    );
+    await expect(service.register(valid)).rejects.toMatchObject({
+      status: 503,
+    });
+    expect(tx).not.toHaveBeenCalled();
+  });
 });
