@@ -11,7 +11,10 @@
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
     "lint": "pnpm -r run lint",
-    "typecheck": "pnpm --filter api run typecheck && pnpm --filter web run typecheck"
+    "typecheck": "pnpm --filter api run typecheck && pnpm --filter web run typecheck",
+    "backup:s55": "node scripts/s55-backup.mjs --keep 14",
+    "restore:s55": "node scripts/s55-restore.mjs",
+    "verify:s55": "node --test scripts/s55-retention.spec.mjs"
   },
   "dependencies": {},
   "devDependencies": {

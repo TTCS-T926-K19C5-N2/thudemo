@@ -141,3 +141,8 @@ apps/api/prisma/*.db-journal
 .keys/
 keys/
 
+# S-55 encrypted backups/evidence (backups belong in private S3, never Git)
+*.dump.gcm
+evidence/s55/runtime/
+.s55-runtime/
+

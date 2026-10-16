@@ -1,0 +1,155 @@
+name: S-55 / encrypted-nightly-backup-and-restore-drill
+
+# 17:00 UTC = 00:00 Asia/Ho_Chi_Minh on the next calendar day.
+on:
+  schedule:
+    - cron: "0 17 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: s55-nightly-backup
+  cancel-in-progress: false
+
+env:
+  S55_POSTGRES_IMAGE: postgres:15-alpine
+  S55_S3_BUCKET: ${{ vars.S55_S3_BUCKET }}
+  S55_S3_PREFIX: ${{ vars.S55_S3_PREFIX || 'postgres/nightly' }}
+  S55_S3_ENDPOINT: ${{ vars.S55_S3_ENDPOINT }}
+  S55_KEY_ID: ${{ vars.S55_KEY_ID || 'primary' }}
+  AWS_DEFAULT_REGION: ${{ vars.S55_AWS_REGION || 'auto' }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.S55_S3_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.S55_S3_SECRET_ACCESS_KEY }}
+  AWS_SESSION_TOKEN: ${{ secrets.S55_S3_SESSION_TOKEN }}
+  S55_ENCRYPTION_KEY_BASE64: ${{ secrets.S55_ENCRYPTION_KEY_BASE64 }}
+
+jobs:
+  backup:
+    name: Backup, upload, retain 14
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      object_key: ${{ steps.backup.outputs.object_key }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+      - name: Validate required secret-backed configuration
+        shell: bash
+        env:
+          S55_DATABASE_URL: ${{ secrets.S55_STAGING_DATABASE_URL }}
+        run: |
+          set -eu
+          test -n "$S55_DATABASE_URL"
+          test -n "$S55_ENCRYPTION_KEY_BASE64"
+          test -n "$S55_S3_BUCKET"
+          test -n "$AWS_ACCESS_KEY_ID"
+          test -n "$AWS_SECRET_ACCESS_KEY"
+          command -v aws >/dev/null
+          docker version >/dev/null
+      - name: Stream pg_dump through AES-256-GCM and upload
+        id: backup
+        env:
+          S55_DATABASE_URL: ${{ secrets.S55_STAGING_DATABASE_URL }}
+        run: node scripts/s55-backup.mjs --keep 14
+
+  restore-drill:
+    name: Restore to temporary PostgreSQL and boot API
+    needs: backup
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: s55_restore
+          POSTGRES_PASSWORD: temporary_restore_only
+          POSTGRES_DB: s55_restore
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd "pg_isready -U s55_restore -d s55_restore"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 56379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Restore authenticated backup into empty temporary database
+        env:
+          S55_RESTORE_TARGET_URL: postgresql://s55_restore:temporary_restore_only@127.0.0.1:55432/s55_restore?schema=public
+          S55_RESTORE_ALLOWED_DATABASE: s55_restore
+          S55_RESTORE_APPROVAL: RESTORE_S55_TO_EMPTY_TEMP_DATABASE
+        run: node scripts/s55-restore.mjs --object-key "${{ needs.backup.outputs.object_key }}"
+      - name: Install, apply any newer additive migrations, and build API
+        env:
+          DATABASE_URL: postgresql://s55_restore:temporary_restore_only@127.0.0.1:55432/s55_restore?schema=public
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --filter api exec prisma generate
+          pnpm --filter api exec prisma migrate deploy
+          pnpm --filter api exec prisma migrate status
+          pnpm --filter api build
+      - name: Boot application against restored data and require health 200
+        shell: bash
+        env:
+          DATABASE_URL: postgresql://s55_restore:temporary_restore_only@127.0.0.1:55432/s55_restore?schema=public
+          REDIS_URL: redis://127.0.0.1:56379
+          PORT: "3001"
+          NODE_ENV: test
+          WEB_ORIGIN: http://localhost:3000
+          PAYMENT_GATEWAY: mock
+          PAYMENT_WEBHOOK_SECRET: s55_restore_drill_only_secret
+          HOLD_EXPIRY_MODE: off
+          ORDER_EXPIRY_MODE: off
+        run: |
+          set -euo pipefail
+          mkdir -p .s55-runtime
+          node apps/api/dist/main.js >.s55-runtime/api.log 2>&1 &
+          api_pid=$!
+          trap 'kill "$api_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3001/health >.s55-runtime/health.json; then
+              break
+            fi
+            if ! kill -0 "$api_pid" 2>/dev/null; then
+              cat .s55-runtime/api.log
+              exit 1
+            fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:3001/health | tee .s55-runtime/health.json
+          grep -q '"status":"ok"' .s55-runtime/health.json
+      - name: Preserve sanitized restore evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: s55-restore-drill-${{ github.run_number }}
+          path: |
+            .s55-runtime/restore-evidence.json
+            .s55-runtime/health.json
+          retention-days: 14
+          if-no-files-found: error
