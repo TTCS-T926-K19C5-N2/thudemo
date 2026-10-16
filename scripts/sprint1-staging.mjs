@@ -6,6 +6,7 @@ import {
   openSync,
   closeSync,
   appendFileSync,
+  statSync,
   unlinkSync,
 } from "node:fs";
 import { resolve } from "node:path";
@@ -700,26 +701,48 @@ async function deploy() {
     ],
     { cwd: resolve(source, "apps/api"), env },
   );
-  const backup = spawnSync(
-    "docker",
-    [
-      "exec",
-      "sprint1-stage-pg-20261015",
-      "pg_dump",
-      "-U",
-      c.user,
-      "-d",
-      c.database,
-      "-Fc",
-    ],
-    { windowsHide: true },
-  );
-  if (backup.status !== 0) throw new Error("Backup failed; migration not run");
   mkdirSync(resolve(dir, "backups"), { recursive: true });
-  writeFileSync(
-    resolve(dir, "backups", `${Date.now()}-${sha}.dump`),
-    backup.stdout,
-  );
+  const backupPath = resolve(dir, "backups", `${Date.now()}-${sha}.dump`);
+  const backupFd = openSync(backupPath, "wx");
+  const backupLog = openSync(resolve(releaseRoot, "backup.log"), "a");
+  let backup;
+  try {
+    // pg_dump can exceed spawnSync's default1MiB buffer as fixtures grow.
+    // Stream directly to a private exclusive file; never truncate data/history.
+    backup = spawnSync(
+      "docker",
+      [
+        "exec",
+        "sprint1-stage-pg-20261015",
+        "pg_dump",
+        "-U",
+        c.user,
+        "-d",
+        c.database,
+        "-Fc",
+      ],
+      { windowsHide: true, stdio: ["ignore", backupFd, backupLog] },
+    );
+  } finally {
+    closeSync(backupFd);
+    closeSync(backupLog);
+  }
+  if (backup.status !== 0 || statSync(backupPath).size === 0)
+    throw Error("Backup failed; migration not run");
+  const verifyFd = openSync(backupPath, "r");
+  let verified;
+  try {
+    verified = spawnSync(
+      "docker",
+      ["exec", "-i", "sprint1-stage-pg-20261015", "pg_restore", "--list"],
+      { windowsHide: true, stdio: [verifyFd, "ignore", "ignore"] },
+    );
+  } finally {
+    closeSync(verifyFd);
+  }
+  if (verified.status !== 0)
+    throw Error("Backup archive validation failed; migration not run");
+  timeline("backup-verified", { sha, bytes: statSync(backupPath).size });
   run(
     "migrate",
     process.execPath,
