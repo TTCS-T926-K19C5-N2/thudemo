@@ -1,0 +1,23 @@
+{
+  "time": "2026-10-16T17:44:43.314Z",
+  "source": "90188e572d41d3f95e1dac13a42256260fd68a22",
+  "environment": "Owned laptop HTTPS staging, PostgreSQL15 with30 migrations",
+  "result": "PASS",
+  "checks": [
+    {
+      "assertion": "Actual rollback to previous API/web with current30-migration database; HTTPS health and authenticated deployment smoke; data counts and key bytes unchanged",
+      "result": "PASS",
+      "source": "02a8e86a6fea05a49bd27902c08652920e444a10"
+    },
+    {
+      "assertion": "Restored final candidate through actual rollback command; trusted HTTPS home/health200; data counts and key bytes unchanged",
+      "result": "PASS",
+      "source": "90188e572d41d3f95e1dac13a42256260fd68a22"
+    }
+  ],
+  "limitations": [
+    "Previous02a includes the same S03 product code and30-migration schema; no down migration performed",
+    "No down migration or volume reset",
+    "Actual integrated develop rollback; separate auto-deploy timing remains FAIL618.856s"
+  ]
+}

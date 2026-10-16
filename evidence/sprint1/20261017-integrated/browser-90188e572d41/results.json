@@ -1,0 +1,75 @@
+{
+  "origin": "https://10.88.164.155:3470",
+  "source": "90188e572d41d3f95e1dac13a42256260fd68a22",
+  "environment": "Real trusted HTTPS laptop Docker staging; no certificate bypass; only own test session expired",
+  "viewports": [
+    "1440x1000 US timezone",
+    "390x844 Vietnam"
+  ],
+  "results": [
+    {
+      "name": "login-desktop-identity-nonblank-keyboard",
+      "status": "PASS"
+    },
+    {
+      "name": "organizer-login-events-no-accounting",
+      "status": "PASS"
+    },
+    {
+      "name": "empty-form-inline-errors",
+      "status": "PASS"
+    },
+    {
+      "name": "double-submit-one-draft",
+      "status": "PASS",
+      "eventId": "ea776131-6bc5-4f35-b3f7-57493efba570"
+    },
+    {
+      "name": "edit-reload-persist",
+      "status": "PASS"
+    },
+    {
+      "name": "past-time-inline-error-retains-input",
+      "status": "PASS"
+    },
+    {
+      "name": "future-vietnam-time-in-US-browser-duplicate-warning-two-records-reload",
+      "status": "PASS"
+    },
+    {
+      "name": "real-server400-field-error-input-retained-recovery",
+      "status": "PASS"
+    },
+    {
+      "name": "expired-session401-login-return-restores-same-owner-draft",
+      "status": "PASS"
+    },
+    {
+      "name": "other-organizer-direct-url-denied-mobile",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile390-editor-no-overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "loading-state",
+      "status": "PASS"
+    },
+    {
+      "name": "error-state-reload-recovery",
+      "status": "PASS"
+    },
+    {
+      "name": "no-page-runtime-errors",
+      "status": "PASS"
+    },
+    {
+      "name": "no-unexpected-console-errors",
+      "status": "PASS",
+      "expectedNegativeHttpErrors": 0
+    }
+  ],
+  "pageErrors": [],
+  "unexpectedConsoleErrors": []
+}
