@@ -1,5 +1,7 @@
 # Sprint 1 — ma trận nghiệm thu đã đối chiếu nguồn (16/10/2026)
 
+> **Scope mới DEC15:** S03/T07/T08 đã được user đưa vào Sprint1; thêm clone sạch/một lệnh đầy đủ. Các kết quả cũ bên dưới chỉ phủ phạm vi trước; S03/onboarding đang review, chưa PASS. `evidence/sprint1/20261016-s03-onboarding/scope-and-plan.json` là ledger khởi đầu, sẽ mở rộng từng AC/NFR/DoD.
+
 ## Cập nhật xác nhận PO — DEC-14, 16/10/2026
 
 PostgreSQL authority cho **laptop staging dữ liệu giả đã được Nguyễn Văn Sáng (PO) chấp thuận trực tiếp** sau gói K01; DEC14/k01-approval.json giữ nguyên văn và ngữ cảnh. Đây không còn blocker “chưa quyết định staging authority”. K01-D timebox/mentor vẫn NOT RUN; DoD02 vẫn BLOCKED: user nhận review nhưng PR author và authenticated account đều sangnguyencoder, chưa có approval thành viên khác. Không giả review hoặc suy phê duyệt PO thành miễn quy trình. Các đoạn checkpoint trước dưới đây giữ trạng thái tại thời điểm cũ; trạng thái hiện hành phải đọc cùng cập nhật này.
@@ -183,3 +185,14 @@ Audit source **5b3f67bc343729dd6d87140b77af6536ec704086**, runtime **a2e5f675a37
 Phân loại: SCOPE là metadata kiểm soát phạm vi; T03-06 là hỗ trợ vận hành. K01-B/B-H1/B-H2 là phép đo story Sprint2; DOD-07/08 là hồi quy có điều kiện của sửa chữa chạm ghế/job. Không cộng chúng thành AC mới Sprint1. T06-05, T10-04/09, bảo toàn lịch sử theo yêu cầu kiểm chứng bổ sung của người dùng.
 
 Khoảng trống đã xử lý: T01 native source sạch mới; migration tiến/bù/tái áp dụng hiện tại; DOD09 log thật; CI exact5b. Khoảng trống còn nguyên: K01 mentor/timebox NOT RUN, quyết định authority PASS DEC14 và member review BLOCKED; T03 auto-deploy sau merge BLOCKED; DoD review và AC hoàn chỉnh BLOCKED. Các dòng PASS kỹ thuật không tự làm task Done.
+
+## Checkpoint S03/onboarding16/10 — candidate chưa tích hợp
+
+Phạm vi hiện hành DEC15 gồm S01–S04/K01, T01–T10. Đối chiếu bổ sung atomic: `evidence/sprint1/20261016-s03-onboarding/traceability-s03.json`; source bytes và Git blob được ghi tại `source-manifest.json`. Không thay kết quả lịch sử bằng head mới. Staging3470 vẫn a2e5f67, chưa có S03 mới.
+
+- Đã sửa phần đăng ký cũ không có form/delivery/consent: API/form V1, exact approved notice, consent atomic, pending BUYER/Argon2id, token hash + outbox mã hóa, kích hoạt một lần, resend Redis5/h, SMTP adapter và Mailpit. Không ghi token vào log.
+- Local: build PASS; unit API358/web123/Node18; focused real-PG/Redis13cases; browser17assertions desktop1440/mobile390 PASS qua SMTP catcher. Đây chưa là nghiệm thu staging hoặc email Internet.
+- Sửa phát hiện khi kiểm: tiêu đề và hướng dẫn kích hoạt bị CSS login ẩn trên mobile; final-attempt crashed lease mắc SENDING; test key file từ ignored .env xung đột key pair fixture; lockfile churn đã thu gọn23dòng, semantic assertion giữ nguyên toàn bộ graph cũ và frozen install PASS. Audit full0advisory.
+- SMTP TLS/auth PASS; allowlist được điền nhưng giá trị không hợp lệ theo validation email, API400 trước mọi write/send. Chờ user sửa local; chưa có bằng chứng SMTP accepted/inbox. Không in recipient/password.
+- Launcher chính thức mới đã triển khai profile riêng/cổng động/owned lifecycle/mail catcher; clone sạch/retention/ownership proof còn NOT RUN, README ghi đúng trạng thái. `-Legacy` giữ đường cũ.
+- Gate còn kiểm: lỗi tải/persist consent, populated upgrade và rollback, token/PII log sweep, restart/resend persistence, coverage/security diff, clean clone, exact-head CI, review thật, merge/deploy/integrated AC. Không đánh Done các task nguồn.

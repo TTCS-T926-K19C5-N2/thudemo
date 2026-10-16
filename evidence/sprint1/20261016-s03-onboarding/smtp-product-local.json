@@ -1,0 +1,13 @@
+{
+  "time": "2026-10-16T11:54:07.740Z",
+  "source": "13c528e + S03 working diff",
+  "environment": "Isolated native product API3491/web3490, real PG/Redis and configured Internet SMTP with certificate verification; NOT staging3470",
+  "allowlistedRecipientCount": 1,
+  "recipientRedacted": true,
+  "inboxReceipt": "NOT RUN",
+  "activationByRecipient": "NOT RUN",
+  "cases": [],
+  "smtpAccepted": "NOT RUN",
+  "classification": "Configuration: authorized recipient string fails the same email validation as normal registration; response400 email field; no user/outbox/message created",
+  "result": "BLOCKED"
+}

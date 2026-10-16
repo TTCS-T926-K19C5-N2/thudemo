@@ -79,4 +79,12 @@ export class RedisService {
     const key = accountKey('lock', email);
     return this.redis.ttl(key);
   }
+
+  async reserveActivationResend(email: string): Promise<{ count: number; ttl: number }> {
+    const result = await this.redis.eval(
+      "local n=redis.call('INCR',KEYS[1]); if n==1 then redis.call('EXPIRE',KEYS[1],3600); end; return {n,redis.call('TTL',KEYS[1])}",
+      1, accountKey('activation-resend', email),
+    ) as [number, number];
+    return { count: Number(result[0]), ttl: Math.max(1, Number(result[1])) };
+  }
 }

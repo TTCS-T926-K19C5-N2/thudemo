@@ -11,6 +11,10 @@
       "types": "./ticket-qr.d.ts",
       "default": "./ticket-qr.js"
     },
+    "./registration-notice": {
+      "types": "./registration-notice.d.ts",
+      "default": "./registration-notice.js"
+    },
     "./login-peer": {
       "types": "./login-peer.d.ts",
       "default": "./login-peer.js"

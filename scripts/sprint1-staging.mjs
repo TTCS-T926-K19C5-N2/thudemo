@@ -19,6 +19,7 @@ import net from "node:net";
 import assert from "node:assert/strict";
 import { stagingConfig, stagingRelease } from "../deploy/laptop-gateway.mjs";
 import { requireBuildResources } from "../deploy/laptop-resources.mjs";
+import { registrationMailEnv } from "../deploy/registration-mail.mjs";
 import {
   prepareTicketKey,
   ticketKeyEnv,
@@ -171,6 +172,7 @@ function stopRelease(release) {
 function apiEnv(c) {
   return {
     ...ticketKeyEnv(dir),
+    ...registrationMailEnv(dir, `https://${c.lanAddress}:${c.gatewayPort}`),
     NODE_ENV: "production",
     APP_ENV: "staging",
     SERVICE_ROLE: "api",

@@ -206,6 +206,8 @@ export function LoginForm({
             </p>
           )}
         </form>
+        <p className="login-account-guidance">Nếu tài khoản chưa kích hoạt, hãy mở liên kết trong hộp thư thử nghiệm hoặc <Link href="/resend-activation">gửi lại liên kết kích hoạt</Link>.</p>
+        <p className="login-account-guidance">Chưa có tài khoản? <Link href="/register">Đăng ký tài khoản thử nghiệm</Link></p>
       </div>
       <Link href={show ? `/shows/${show.id}` : "/"} className="login-back">
         ← Quay lại {show ? "chi tiết sự kiện" : "danh sách sự kiện"}

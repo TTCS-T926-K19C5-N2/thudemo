@@ -1,10 +1,23 @@
-import { Controller, Post, Body, Get, Query, Patch, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Query,
+  Patch,
+  Param,
+  HttpCode,
+} from '@nestjs/common';
 import { UsersService } from './users.service.js';
 import { Public, Roles } from '../auth/decorators/roles.decorator.js';
+import { RegistrationService } from './registration.service.js';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly registration: RegistrationService,
+  ) {}
 
   @Roles('ADMIN', 'ORGANIZER')
   @Post('staff')
@@ -20,19 +33,36 @@ export class UsersController {
 
   @Public()
   @Post('register')
-  register(@Body() body: any) {
-    return this.usersService.register(body.email, body.password);
+  register(@Body() body: unknown) {
+    return this.registration.register(body);
+  }
+
+  @Public()
+  @Get('registration-notice')
+  notice() {
+    return this.registration.notice();
   }
 
   @Public()
   @Get('activate')
   activate(@Query('token') token: unknown) {
-    return this.usersService.activate(token);
+    return this.registration.activate(token);
+  }
+
+  @Public()
+  @Post('activate')
+  @HttpCode(200)
+  activateBody(@Body() body: unknown) {
+    const token =
+      body && typeof body === 'object'
+        ? (body as Record<string, unknown>).token
+        : undefined;
+    return this.registration.activate(token);
   }
 
   @Public()
   @Post('resend-activation')
-  resendActivation(@Body('email') email: string) {
-    return this.usersService.resendActivation(email);
+  resendActivation(@Body('email') email: unknown) {
+    return this.registration.resend(email);
   }
 }

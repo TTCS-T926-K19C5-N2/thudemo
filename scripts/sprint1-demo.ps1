@@ -1,5 +1,11 @@
-param([switch]$SkipBuild,[ValidateSet('Start','Status','Stop')][string]$Action='Start')
+param([switch]$SkipBuild,[ValidateSet('Start','Status','Stop','Restart')][string]$Action='Start',[switch]$Legacy)
 $ErrorActionPreference='Stop'
+if (!$Legacy) {
+  $taskArguments = @((Join-Path $PSScriptRoot 'sprint1-onboarding.mjs'), $Action)
+  if ($SkipBuild) { $taskArguments += '--skip-build' }
+  & node @taskArguments
+  exit $LASTEXITCODE
+}
 $taskRoot=Split-Path -Parent $PSScriptRoot
 Set-Location $taskRoot
 function Check-Exit([string]$Step) { if ($LASTEXITCODE -ne 0) { throw "$Step failed (exit $LASTEXITCODE). See .sprint1-local logs." } }

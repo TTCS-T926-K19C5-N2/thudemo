@@ -6,6 +6,27 @@
 
 Đây là hướng dẫn cho môi trường local theo T-01/TECH-01. Candidate hiện dùng bản vá Next.js16.3.8 theo quyền sửa dependency bảo mật đã cấp; yêu cầu16.3.6 lịch sử được ghi riêng trong báo cáo đối chiếu. Docker Compose chạy PostgreSQL và Redis; API NestJS và web Next.js chạy trực tiếp trên máy. Web dùng cổng **3000**, API dùng cổng **3001**. Các lệnh dưới đây dùng PowerShell và được chạy từ thư mục `thudemo/` chứa file README này.
 
+## Demo Sprint 1 từ clone mới — một lệnh
+
+Entrypoint mới (candidate16/10, **đang kiểm clone sạch**, chưa phải bằng chứng Sprint Done). Prerequisites: Windows PowerShell5.1+, Git, Node24.21.0, Corepack/pnpm10.15.1, Docker Desktop dùng Linux engine/Compose; C trống ít nhất12GiB, ổ checkout5GiB, RAM khả dụng2GiB. Chạy từ clone riêng, không sao chép `.env`/private config từ máy khác.
+
+```powershell
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1
+```
+
+Lệnh chọn cổng trống, tạo profile/secret riêng theo đường dẫn checkout, chạy PostgreSQL15/Redis7/Mailpit, frozen install, Prisma generate/migrate, seed giả, build, start, health và login/logout smoke. Chỉ in `READY` sau khi smoke thành công. Địa chỉ thực tế được in ở cuối (ưu tiên web3000/API3001); không mặc định cổng nếu máy đã bận. Credentials nằm tại `.sprint1-demo/config.json`, bị Git ignore; không gửi file này lên PR/chat. Nếu clone đã có `.env` của môi trường khác, launcher từ chối ghi đè: dùng clone riêng.
+
+Mở `/register`, nhập tên/email giả và mật khẩu thử >=8ký tự, đọc thông báo và tự chọn consent. Xem thư ở địa chỉ **mail-catcher** được in, mở liên kết kích hoạt rồi đăng nhập. Mailpit là hộp nhận thử loopback, **không chứng minh thư Internet**. Hai organizer/admin/buyer/lock-test có sẵn trong credentials local; không dùng tài khoản chính cho thử khóa.
+
+```powershell
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Status
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Stop
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Start
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Restart
+```
+
+Stop chỉ dừng process/container của profile này, giữ volume, lịch sử và secret. Source đổi thì dùng Restart để build lại; không `down -v`, reset DB hoặc dừng Node/Docker dùng chung. Khi lỗi, chưa có READY; đọc log private `.sprint1-demo/*.log` và lỗi ngắn trên terminal. Thiết lập cũ trong worktree15/10 vẫn dùng `-Legacy` và runbook checkpoint cũ. Demo localhost khác bootstrap HTTPS/LAN lần đầu và khác resume staging đã cấu hình; certificate/firewall vẫn cần thao tác OS được nêu trong runbook.
+
 ## 1. Chuẩn bị
 
 Cài và khởi động Docker Desktop. Máy cần có Node.js **24.21.0** và pnpm **10.15.1**. Mở PowerShell tại `thudemo/`, rồi kiểm tra:
