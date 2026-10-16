@@ -1545,5 +1545,12 @@
       "unchanged": true
     }
   ],
-  "rule": "Only documentation/evidence/test/harness changes after runtime SHA; no unchanged evidence is relabelled as executed on candidate. New source/test changes require revalidation."
+  "rule": "Only documentation/evidence/test/harness changes after runtime SHA; no unchanged evidence is relabelled as executed on candidate. New source/test changes require revalidation.",
+  "testOnlyFollowup": {
+    "base": "e8ef7601d00604524bbd8ec752f10dee67028167",
+    "path": "apps/api/src/payments/gateways/momo.gateway.spec.ts",
+    "workingSha256": "02be4bd79a655d0b7da4addc7d40ebfd4e7f07ce797c392f463fc6dcb2da2517",
+    "evidence": "momo-unit-harness.json",
+    "rule": "Earlier a2→5b unchanged blobs remain original. New adapter spec changes verification only; product roots exclude *.spec.ts for final runtime compatibility. Production adapter itself remains byte-identical."
+  }
 }

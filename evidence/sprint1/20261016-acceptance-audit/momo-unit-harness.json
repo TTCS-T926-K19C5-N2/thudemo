@@ -1,0 +1,79 @@
+{
+  "finding": "F16",
+  "severity": "Medium — required CI reliability",
+  "time": "2026-10-16T11:06:10.969190+00:00",
+  "failedRun": {
+    "id": 38890838587,
+    "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38890838587",
+    "head_sha": "e8ef7601d00604524bbd8ec752f10dee67028167",
+    "conclusion": "failure",
+    "run_started_at": "2026-10-16T10:59:38Z",
+    "updated_at": "2026-10-16T11:00:50Z"
+  },
+  "actualCheckout": "eeb2b83c1a43080c5b2c101ead4ded0b94f68d49",
+  "checkoutParents": [
+    "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
+    "e8ef7601d00604524bbd8ec752f10dee67028167"
+  ],
+  "actualStep": "Unit tests in T-02 / test",
+  "failingCase": "MomoGateway Adapter > createPayment generates unique gatewayRef containing orderId",
+  "actual": "Default5000ms Vitest timeout; adapter fetch to external sandbox can wait10000ms",
+  "expected": "Unit test deterministic without external provider availability; existing request/response behavior asserted",
+  "classification": "Existing baseline unit harness network dependency; spec and adapter byte-identical to base develop at failure. No QR or payment production behavior change. Required T02 check must be repaired.",
+  "sourceComparison": [
+    {
+      "path": "apps/api/src/payments/gateways/momo.gateway.spec.ts",
+      "baseAndFailingHeadBlobIdentical": true,
+      "beforeSha256": "4e8b3f0415bca2e148285ec3c49520054b1d30ff1898f6212c68c6533f34290c",
+      "afterWorkingSha256": "02be4bd79a655d0b7da4addc7d40ebfd4e7f07ce797c392f463fc6dcb2da2517",
+      "productionFile": false
+    },
+    {
+      "path": "apps/api/src/payments/gateways/momo.gateway.ts",
+      "baseAndFailingHeadBlobIdentical": true,
+      "beforeSha256": "c88ad50f8e62227748d85512d8a7306ec62cdc40cb490bc70cec2cfe8f7337bc",
+      "afterWorkingSha256": "c88ad50f8e62227748d85512d8a7306ec62cdc40cb490bc70cec2cfe8f7337bc",
+      "productionFile": true
+    }
+  ],
+  "controlledReproduction": {
+    "transport": "Never-resolving fetch stub; no outbound network",
+    "before": "Same existing case fails5000ms;1FAIL/3PASS",
+    "after": "5/5PASS under same stalled global transport; suite overrides fetch with deterministic local response/failure",
+    "unchangedTestTimeoutMs": 5000,
+    "productionAbortMs": 10000,
+    "setupSource": "import { vi } from 'vitest';\n// Controlled transport never reaches an external endpoint. The original test\n// used to hang here until Vitest's unchanged default five-second timeout.\nvi.stubGlobal('fetch', vi.fn(() => new Promise(() => {})));\n",
+    "configSource": "import apiConfig from '../apps/api/vitest.config.ts';\nexport default {\n  ...apiConfig,\n  test: {\n    ...apiConfig.test,\n    setupFiles: ['../../.sprint1-local/momo-stalled-network.ts'],\n  },\n};\n"
+  },
+  "fix": "Only adapter unit spec: stub fetch per test and restore; retain signature/parser assertions and original gatewayRef/redirect assertions; additionally verify two refs differ, wire signature/request fields and existing offline fallback. No CI rerun-to-green substitution.",
+  "testIdentity": {
+    "baseBeforeFix": "e8ef7601d00604524bbd8ec752f10dee67028167",
+    "uncommittedTestPatchSha256": "c7bb8d24581b4a336594ca3df8abc0efde27ed3d024260edab3bec84b1e3b49a",
+    "specWorkingSha256": "02be4bd79a655d0b7da4addc7d40ebfd4e7f07ce797c392f463fc6dcb2da2517"
+  },
+  "validation": {
+    "focusedAdapterSignature": {
+      "files": 2,
+      "tests": 8,
+      "result": "PASS"
+    },
+    "stalledTransportAfter": {
+      "tests": 5,
+      "result": "PASS"
+    },
+    "lint": "PASS",
+    "typecheck": "PASS",
+    "apiUnit": 343,
+    "webUnit": 123,
+    "nodeUnit": 18,
+    "integrationRealPGRedis": 88,
+    "scannerIntegration": 4,
+    "runnerEvidence": "checks-momo-harness/gates.json",
+    "build": "Production source/lock unchanged; required CI build runs after push"
+  },
+  "limits": [
+    "Not real MoMo sandbox acceptance",
+    "No new payment feature, provider call, timeout relaxation, assertion removal or check/policy change",
+    "Failed run retained; future final head must pass own CI"
+  ]
+}

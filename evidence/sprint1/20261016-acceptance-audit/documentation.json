@@ -19,5 +19,6 @@
   ],
   "status": "PASS; reviewed current source text, not inferred from existence",
   "latestReviewedSnapshot": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
-  "DEC14": "PO authority PASS, no old pending-authority blocker in current state"
+  "DEC14": "PO authority PASS, no old pending-authority blocker in current state",
+  "testOnlyFollowup": "F16 adapter unit transport isolated; no production behavior change, final CI required"
 }

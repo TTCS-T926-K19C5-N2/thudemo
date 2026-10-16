@@ -65,7 +65,7 @@
     {
       "matrixId": "T01-06",
       "path": "evidence\\sprint1\\20261016-closeout\\secret-review.json",
-      "sha256": "245fc9be35f63600b32fd1b24d9902ba07ff9ada3ee2502532ce21cb3c674933",
+      "sha256": "a8ec9c4953db320de1ff21d1b99d624524019658fda205fc803f04a5f11bb5e6",
       "exists": true,
       "assertion": "literal credential scan + bundle/context audit",
       "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
@@ -595,7 +595,7 @@
     {
       "matrixId": "DOD-05",
       "path": "evidence\\sprint1\\20261016-closeout\\secret-review.json",
-      "sha256": "245fc9be35f63600b32fd1b24d9902ba07ff9ada3ee2502532ce21cb3c674933",
+      "sha256": "a8ec9c4953db320de1ff21d1b99d624524019658fda205fc803f04a5f11bb5e6",
       "exists": true,
       "assertion": "prod/full audit0; actual fixture literal scan",
       "evidenceSource": "accf832be519d9790845c3590acd3f481c5594ac",
@@ -635,7 +635,7 @@
     {
       "matrixId": "DOD-10",
       "path": "evidence\\sprint1\\20261016-acceptance-audit\\documentation.json",
-      "sha256": "0ea230e6e59ebd6bdf82fcbb857bee376d2584bb48b492b39913a862645a8641",
+      "sha256": "6799ac6da21ab10e64e0633d85d536d3852d75d1f9832a4947206e55a58c1dea",
       "exists": true,
       "assertion": "revision/evidence/credentials paths aligned",
       "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
