@@ -27,7 +27,9 @@ export function stagingRelease(value) {
     !/^[a-f0-9]{40}$/.test(value?.sha) ||
     ![3473, 3474].includes(value.webPort) ||
     ![3471, 3472].includes(value.apiPort) ||
-    value.apiPort !== value.webPort - 2
+    value.apiPort !== value.webPort - 2 ||
+    (value.apiReplicaPort !== undefined &&
+      value.apiReplicaPort !== value.apiPort + 4)
   )
     throw new Error("Invalid active staging release");
   return value;
@@ -69,7 +71,7 @@ export function stagingForwardHeaders(input, port) {
   }
   return headers;
 }
-export function holdProxyTarget(request, active) {
+export function holdProxyTarget(request, active, sequence = 0) {
   // Only the existing canonical claim route takes the short network path.
   // Login and all other routes keep the Next proxy and its attestation verifier.
   if (
@@ -80,7 +82,13 @@ export function holdProxyTarget(request, active) {
     )
   )
     return null;
-  return { port: active.apiPort, path: request.url.slice(4) };
+  return {
+    port:
+      active.apiReplicaPort && sequence % 2
+        ? active.apiReplicaPort
+        : active.apiPort,
+    path: request.url.slice(4),
+  };
 }
 async function holdBody(request) {
   const chunks = [];
@@ -98,6 +106,7 @@ async function holdBody(request) {
   return Buffer.concat(chunks);
 }
 export function stagingProxy(activeFile) {
+  let directSequence = 0;
   return async (request, response) => {
     let active;
     try {
@@ -108,7 +117,8 @@ export function stagingProxy(activeFile) {
         .end("Staging has no healthy active release");
       return;
     }
-    const direct = holdProxyTarget(request, active);
+    const direct = holdProxyTarget(request, active, directSequence);
+    if (direct) directSequence++;
     let body;
     if (direct) {
       try {

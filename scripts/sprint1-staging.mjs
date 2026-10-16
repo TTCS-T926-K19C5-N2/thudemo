@@ -161,7 +161,11 @@ function ensureNetwork() {
 }
 function stopRelease(release) {
   stopOwned(release.webProcess);
-  for (const name of [release.webContainer, release.apiContainer])
+  for (const name of [
+    release.webContainer,
+    release.apiReplicaContainer,
+    release.apiContainer,
+  ])
     if (name && ownedContainer(name)) docker("stop", name);
 }
 function apiEnv(c) {
@@ -363,6 +367,7 @@ async function resumeActive(c) {
     docker("start", name);
   }
   await waitHealth(active.apiPort);
+  if (active.apiReplicaPort) await waitHealth(active.apiReplicaPort);
   if (!active.webContainer) {
     // Legacy pre-container releases retain their verified, archived runtime.
     const record = active.webProcess;
@@ -793,7 +798,8 @@ async function deploy() {
   );
   const slot = active?.webPort === 3473 ? 1 : 0,
     webPort = 3473 + slot,
-    apiPort = 3471 + slot;
+    apiPort = 3471 + slot,
+    apiReplicaPort = 3475 + slot;
   const slotFile = resolve(dir, `slot-${slot}.json`);
   if (existsSync(slotFile)) {
     const stale = JSON.parse(readFileSync(slotFile));
@@ -802,6 +808,7 @@ async function deploy() {
   }
   await free(webPort);
   await free(apiPort);
+  await free(apiReplicaPort);
   const apiContainer = `sprint1-stage-api-${sha.slice(0, 12)}-${Date.now()}`;
   const file = resolve(releaseRoot, "api.env");
   writeEnv(file, apiEnv(c));
@@ -822,11 +829,30 @@ async function deploy() {
     `type=bind,source=${resolve(dir, "scanner-signing.pem")},target=/run/secrets/scanner.pem,readonly`,
     image,
   );
+  const apiReplicaContainer = `sprint1-stage-api-replica-${sha.slice(0, 12)}-${Date.now()}`;
+  docker(
+    "run",
+    "-d",
+    "--name",
+    apiReplicaContainer,
+    "--label",
+    "sprint1.staging=20261015",
+    "--network",
+    network,
+    "--env-file",
+    file,
+    "-p",
+    `127.0.0.1:${apiReplicaPort}:10000`,
+    "--mount",
+    `type=bind,source=${resolve(dir, "scanner-signing.pem")},target=/run/secrets/scanner.pem,readonly`,
+    image,
+  );
   let webContainer;
   let switched = false;
   const pointers = pointerSnapshot(dir);
   try {
     await waitHealth(apiPort);
+    await waitHealth(apiReplicaPort);
     webContainer = `sprint1-stage-web-${sha.slice(0, 12)}-${Date.now()}`;
     const webFile = resolve(releaseRoot, "web.env");
     writeEnv(webFile, {
@@ -865,6 +891,8 @@ async function deploy() {
       webPort,
       apiPort,
       apiContainer,
+      apiReplicaContainer,
+      apiReplicaPort,
       image,
       webContainer,
       webImage,
@@ -924,6 +952,8 @@ async function deploy() {
     if (webContainer && ownedContainer(webContainer))
       docker("stop", webContainer);
     if (ownedContainer(apiContainer)) docker("stop", apiContainer);
+    if (ownedContainer(apiReplicaContainer))
+      docker("stop", apiReplicaContainer);
     timeline("candidate-failed-old-retained", {
       sha,
       activeSha: active?.sha ?? null,

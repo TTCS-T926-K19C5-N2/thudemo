@@ -114,3 +114,25 @@ test("direct hold network path is opt-in, exact canonical route and still target
     assert.equal(holdProxyTarget({ ...request, url }, active), null);
   assert.equal(holdProxyTarget({ ...request, method: "GET" }, active), null);
 });
+
+test("only the owned replica slot can join round-robin claim forwarding", () => {
+  const active = {
+    sha: "a".repeat(40),
+    apiPort: 3471,
+    apiReplicaPort: 3475,
+    webPort: 3473,
+    directHoldProxy: true,
+  };
+  stagingRelease(active);
+  assert.throws(() => stagingRelease({ ...active, apiReplicaPort: 3001 }));
+  const req = {
+    method: "POST",
+    url: "/api/showtimes/12345678-1234-1234-1234-123456789abc/holds",
+  };
+  assert.equal(holdProxyTarget(req, active, 0).port, 3471);
+  assert.equal(holdProxyTarget(req, active, 1).port, 3475);
+  assert.equal(
+    holdProxyTarget(req, { ...active, apiReplicaPort: undefined }, 1).port,
+    3471,
+  );
+});

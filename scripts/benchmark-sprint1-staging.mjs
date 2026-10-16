@@ -47,7 +47,7 @@ const report = {
     cpu: cpus()[0].model,
     logicalCPUs: cpus().length,
     memoryBytes: totalmem(),
-    apiInstances: 1,
+    apiInstances: release.apiReplicaPort ? 2 : 1,
     protocol: useHttp2
       ? "h2;200concurrent streams; cold TLS establishment included in first-round requests"
       : "HTTP/1.1;200concurrent connections",
@@ -60,7 +60,7 @@ const report = {
   thresholdMs: 300,
   rounds: [],
   limitations: [
-    "One API instance and a co-located load generator; not a two-instance or independent-client acceptance environment.",
+    "API instance count is recorded above; co-located load generator, not an independent-device performance environment.",
     "No expiry worker/restart/durability claim from this measurement.",
     "Does not replace PostgreSQL-versus-Redis datastore comparison or full Sprint 2 acceptance.",
     "Additive fake fixtures remain; no reset, history deletion or modification of existing users/holds.",
