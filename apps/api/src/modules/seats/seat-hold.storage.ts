@@ -21,7 +21,7 @@ export interface SaveHoldOptions {
 
 @Injectable()
 export class SeatHoldStorage {
-  readonly defaultTtlSeconds = 600; // 10 minutes
+  readonly defaultTtlSeconds = 600; // 10 minutes (TTL chuẩn của hệ thống)
 
   constructor(@Inject('REDIS_CLIENT') private readonly redis: Redis) {}
 
@@ -30,7 +30,7 @@ export class SeatHoldStorage {
   }
 
   /**
-   * Lưu thông tin giữ ghế vào Redis với Atomic Multi-Lock (SET key payload EX ttl NX)
+   * Lưu thông tin giữ ghế vào Redis với Atomic Multi-Lock (SET ... EX ttl NX)
    * Tự động rollback nếu xảy ra conflict
    */
   async saveHold(options: SaveHoldOptions): Promise<SeatHoldRecord> {
@@ -209,4 +209,3 @@ export class SeatHoldStorage {
     return expired;
   }
 }
-

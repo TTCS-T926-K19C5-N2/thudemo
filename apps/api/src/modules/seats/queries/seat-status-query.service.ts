@@ -17,7 +17,7 @@ export interface SeatCheckResult {
 }
 
 /**
- * Service kiểm tra trạng thái ghế tích hợp từ mô hình Prisma T-19 và Redis
+ * Thực hiện kiểm tra toàn bộ danh sách ghế trước khi tạo Hold
  */
 @Injectable()
 export class SeatStatusQueryService {
@@ -179,6 +179,7 @@ export class SeatStatusQueryService {
             }
           } catch (e: any) {
             if (e instanceof ConflictException) throw e;
+            // Nếu data không phải JSON mà là chuỗi userId thông thường
             if (!currentUserId || data !== currentUserId) {
               throw new ConflictException(`Ghế ${seatId} đã bị người khác chọn`);
             }
