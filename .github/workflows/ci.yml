@@ -188,6 +188,9 @@ jobs:
       DATABASE_URL: postgresql://ci_test_user:ci_test_password@127.0.0.1:15432/sang_holds_local
       REDIS_URL: redis://127.0.0.1:16382
       HOLDS_DOCKER: docker
+      # T-31 isolates the S-13 database invariant with 200 direct hold calls.
+      # Keep S-40's demo gate out of this benchmark; S-40 has dedicated tests.
+      S40_ACTIVE_LIMIT: "100000"
     services:
       postgres:
         image: postgres:15-alpine
