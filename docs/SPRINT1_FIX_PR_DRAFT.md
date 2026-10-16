@@ -53,3 +53,5 @@ Exact head: đọc header PR hiện tại (body được cập nhật sau push c
 - Nội dung review để người đó tự hoàn thiện: “SHA tôi đã đọc: …; bước tôi đã trực tiếp kiểm: …; finding/rủi ro còn lại: …; quyết định và lý do: Request changes/Approve …”. Đây là mẫu trống, không là chữký/approval. Không dùng tài khoản khác để giảreview độclập hoặc tự đóngDoDrow2.
 
 T31 vẫn required theo policy vừa được người dùng duyệt, không trở thành AC Sprint1. S30 không requiredprotection; watcher vẫn failclosed với checkFAIL thực sự tồn tại ởdevelopSHA. Không tắtworkflow/assert/policy để né. Cần người thật review và K01 xác nhận còn thiếu trước merge; T03auto-deploy<10phút chỉ đo sau merge hợp lệ.
+
+T02 harness follow-up: giữFAILa506; suiteorder dùng MoMo thật/timeout10s trongtest5s. Đổi riêng suite sang existingmockprovider và thêm no-external-fetchassert, không sửaAPI/timeout/assertnghiệpvụ. Chạy lại88integration+4scanner; exactheadCI kiểm saupush. Không nhận S24provideracceptance.

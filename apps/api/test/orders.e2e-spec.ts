@@ -2,12 +2,22 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { describe, beforeAll, afterAll, it, expect } from 'vitest';
+import {
+  describe,
+  beforeAll,
+  afterAll,
+  afterEach,
+  it,
+  expect,
+  vi,
+} from 'vitest';
 import { AppModule } from '../src/app.module.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 import { hashSessionToken, SESSION_COOKIE } from '../src/auth/auth.service.js';
 import { OrderStatus } from '@prisma/client';
 import { OrdersService } from '../src/orders/orders.service.js';
+import { PAYMENT_GATEWAY } from '../src/payments/gateways/payment-gateway.interface.js';
+import { MockPaymentGateway } from '../src/payments/gateways/mock.gateway.js';
 
 describe('Orders S-17 E2E Integration', () => {
   let app: INestApplication;
@@ -20,6 +30,12 @@ describe('Orders S-17 E2E Integration', () => {
   let seat1Id: string;
   let seat2Id: string;
   const userIds: string[] = [];
+  let originalFetch: typeof fetch | undefined;
+  const externalFetch = vi
+    .fn<typeof fetch>()
+    .mockRejectedValue(
+      new Error('External HTTP is forbidden in order integration'),
+    );
 
   async function createAccount(role: string) {
     await db.role.createMany({ data: [{ name: role }], skipDuplicates: true });
@@ -58,9 +74,16 @@ describe('Orders S-17 E2E Integration', () => {
       throw new Error('Run only on the isolated sprint2_integration database');
     }
 
+    // Exercise real HTTP/auth/database order behavior without depending on
+    // MoMo DNS/latency. Adapter/provider acceptance is covered separately.
+    originalFetch = globalThis.fetch;
+    globalThis.fetch = externalFetch;
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(PAYMENT_GATEWAY)
+      .useClass(MockPaymentGateway)
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
@@ -135,7 +158,13 @@ describe('Orders S-17 E2E Integration', () => {
     seat2Id = s2.id;
   }, 30000);
 
+  afterEach(() => {
+    expect(externalFetch).not.toHaveBeenCalled();
+    externalFetch.mockClear();
+  });
+
   afterAll(async () => {
+    if (originalFetch) globalThis.fetch = originalFetch;
     if (db) {
       if (eventId) {
         const shows = await db.showtime.findMany({
