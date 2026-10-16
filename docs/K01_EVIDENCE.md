@@ -1,3 +1,36 @@
+# K-01 — hồ sơ quyết định hiện tại, 16/10/2026
+
+**Chưa nhận K-01 hoàn tất.** DEC-12 duyệt PostgreSQL authority **tạm cho local**; quyền triển khai laptop LAN theo DEC-13 không tự mở rộng phê duyệt authority. Cần Lead/PO xem bộ bằng chứng dưới đây và xác nhận phạm vi staging. Không chọn lại Redis chỉ vì tốc độ prototype.
+
+## A. So sánh kho giữ ghế — tách khỏi endpoint sản phẩm
+
+| Phép đo | PostgreSQL p95 từng lượt (ms) | Redis p95 từng lượt (ms) | Điều kiện và kết quả |
+|---|---|---|---|
+| Local04/10, không Redis persistence |458,16 /362,89 /295,33 |85,65 /34,03 /55,92 |Hai process/store;200request/1ghế×3; mỗi lượt1winner/199conflict; Redis mất owner sau restart; PG giữ owner |
+| Laptop research15/10, Redis AOF everysec |644,9619 /326,9403 /308,3991 |85,2419 /50,7857 /40,9145 |PG15/Redis7, hai process/store, poolPG8/process, i5-13500H/16threads/16,8GB, Node24.21.0; generator cùng laptop; mỗi lượt1winner/199conflict/0errors |
+
+Raw và source adapted có hash: `evidence/sprint1/20261015-handoff/k01-laptop-research/`. Cổng15456/16406, named volumes riêng; không dùng database sản phẩm. Checks: overlapping sets all-or-none,10phút theo datastore clock, thêm/retry không gia hạn, concurrent session có một deadline/token, quá hạn thấy trống trước cleanup, stale token không xóa owner mới, cleanup lặp, failure không để partial claims và restart process giữ trạng thái. Các số đo cũ không bị thay.
+
+PG và Redis-AOF đều giữ owner sau **graceful container restart** ở lượt15/10. Điều này **không chứng minh power loss, hard crash hoặc zero-data-loss**. AOF everysec có cửa sổ chưa fsync; ownership Redis vẫn khác transaction của orders trong PG. Redis không persistence ở lượt04/10/CI có failure model khác; không trộn hai profile.
+
+## B. Endpoint sản phẩm — gate độc lập
+
+`evidence/sprint1/20261016-closeout/performance/` giữ cả các lượt FAIL và raw mẫu mới, thông số giao thức/topology. Bài đo giữ200request đồng thời/100ghế×10, cookie/session thật, PGdurable,100winner+100conflict mỗi lượt. Ngưỡng giữ nguyên **all p95<300ms**, gồm lượt đầu; steady chỉ chẩn đoán. CI800ms budget và prototype không thay NFR.
+
+Điều tra16/10: claim request giữ connection từ session guard nhưng quota lookup vay thêm connection cùng pool gây cạn pool; dùng lại connection của request, không tăng pool/giảm auth. PG queries có index; fsync/synchronous_commit vẫn bật. Tiếp tục đo TLS/gateway/Next/API và kiểm correctness sau tối ưu. Kết quả hiện tại theo matrix/report; không tự ký đã đạt NFR trong hồ sơ kiến trúc.
+
+Lượt endpoint mới sourcea2e5f67 cùng laptop/process client riêng: H2 sau200loginAPI thật allp95233.1358/223.1592/263.4703msPASS có điều kiện; H1 cùng phương pháp737.9675msFAIL, H2coldDB-issued-fixture359.0416msFAIL được giữ. Không máy tải riêng bắt buộc trong T31AC/product§7/architecture§14; không tự bỏ ngưỡng300ms hoặc lượtFAIL. Chi tiết CPU/RAM/ELU/2000rawresponses/DB1000quyền trong closeout/load-laptop-* và performance-summary.json. NFR tổngthể vẫnFAIL, tách khỏi phêduyệt authority.
+
+## C. Đề xuất cụ thể để Lead/PO phê duyệt
+
+Đề xuất **PostgreSQL tiếp tục làm authority cho laptop staging dữ liệu giả**, dùng transaction, một quyền còn hạn trên mỗi ghế, thời hạn UTC10phút từ ghế đầu, thêm/retry không gia hạn, token fencing cho cleanup. Redis-AOF chỉ giữ counter/cache; mất counter khi Redis hỏng/mất dữ liệu phải ghi là giới hạn vận hành, không gọi ownership/counter durable tuyệt đối.
+
+Loại Redis làm authority trong bản này vì ownership/đơn PG không có cùng transaction; phải thêm distributed commit/reconciliation để bảo toàn nhất quán, vượt phạm vi sửa Sprint1. Redis nhanh hơn trong prototype không đủ chứng minh consistency hoặc endpoint sản phẩm. Giữ research tách AppModule; các module Redis do PR29/34–37 bổ sung còn nguyên lịch sử, không đưa public mock owner/TTL vào API sản phẩm.
+
+**Nội dung cần người có quyền xác nhận sau khi đọc evidence:** “Tôi đã xem bằng chứng A/B và trade-off; chấp thuận PostgreSQL là nguồn quyền giữ có thẩm quyền cho laptop staging dữ liệu giả theo các invariant trên. Không miễn NFR300ms, human review, CI, auto-deploy, rollback hoặc điều kiện production.” Trạng thái: **BLOCKED — chưa có xác nhận này**. Không ghi người mở PR hoặc AI là người phê duyệt thay Lead.
+
+## Lịch sử trước checkpoint16/10 — giữ nguyên provenance
+
 # Trạng thái đối chiếu 15/10/2026 — không thay lịch sử dưới đây
 
 Review Sprint1 lấy source main `81d1dd9d8f453b32ed0c6956399e5600f71a32d6` và đọc raw artifact của CI run `38695462765`, job `K-01 / candidate-research`. Bản lưu: `evidence/sprint1/20261015/k01-current-ci.json`. PostgreSQL p95 ba lượt200/1:489.41/225.51/177.61ms; Redis:58.09/35.09/30.15ms. Mỗi lượt1winner/199conflict/0errors. Hai process/store, PostgreSQL15/Redis7 thật; pool8/process; AMD EPYC9V45,4threads,Node24.21.0. PG giữ ownership sau restart, Redis không persistence mất ownership. Đây là CI prototype mới; chuỗi mode “not CI” trong producer là nhãn lịch sử, không thay provenance artifact. Recommendation “pending” trong raw cũng không hủy DEC12 đã duyệt tạm local.

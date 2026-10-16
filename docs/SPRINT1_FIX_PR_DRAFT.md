@@ -1,16 +1,43 @@
-Sprint1 login thiếu giới hạn IP, suất diễn lệch múi giờ máy và form mất nội dung khi hết phiên. Repair dùng Redis counter chung + HMAC transportpeer (gồm case/encoded aliases), UTC/VN roundtrip và same-owner draft recovery; giữV1/account5fail-15phút/isActive/STAFF.
+# PR91 — sửa nền tảng và nghiệm thu Sprint 1
 
-Feature→develop theo GitFlow. Tích hợp snapshot97ff917 (PR70/92) vào feature, giữ lịch sử/thay đổi thành viên và regression phần nền bị ảnh hưởng; không nhận các story đó thuộcSprint1. Không sửa migration sản phẩm. Dependency patches có kiểmsoát, vendornguyênbyteCSS MIT shadcn rồi bỏCLI runtime; prodscan0, fullscan còn1highbraces/no upstream patch nênDoDchưađạt.
+Login thiếu IP budget/có alias bypass, giờ suất phụ thuộc timezone máy và form mất nội dung khi hết phiên. Bản sửa dùng shared Redis account+IP counters, HMAC theo TCP peer qua gateway/proxy/API, UTC↔giờ Việt Nam và phục hồi draft đúng chủ. Giữ UI V1, năm lần sai/lần sáu khóa15phút, default deny/RBAC/isActive và các vai trò hiện có.
 
-Laptop staging riêng thayRender: TLSgateway3470 tựxácđịnhTCPpeer, API Docker+Nextloopback slots, separatePG15455/Redis16405, safe seed/backup/persistentkeys, atomic promotion+rollback, exactPID/label guards+deploymentlock. Watcher chỉ deploy develop chứa fix sau mọi CI success; migration mới failclosed cần review/backup+manual exactpriorSHA. Thêm production ticket-key config cần cho incomingdevelop, không tạo lại khóa hiệnhữu.
+Feature → PR91 → develop theo Git Flow; đã nhập develop80f7a53 bằng merge, giữ attribution/lịch sử thành viên. Research Redis module giữ source/spec nhưng tách AppModule để không mở public mock owner/TTL hoặc tạo authority song song. Product PG authority DEC12 tạm local; quyết định staging cần Lead review thật.
 
-Evidence candidate864189e: CI5jobs PASS run38765169156; API220/web105/Node5,85integration,15browser; HTTPSAPI/session/RBAC/event/UTC/FK; lockTTL900+restart. Manualdeploy485.989s, candidatebadHMACbịtừchối/oldhealth200. Coverage giốngVitest/V8_4.1.11: API7.89→76.78% lines,web23.94→77.52% (scopeonly). Integrated source b52ba6a: API284/web116/Node8,88integration,15browser,build/lint/typecheck và CI5job PASS. Staging b52 manual433.533s; rollback thật b52→864→b52; Redis/PG outage503→restore200. Evidence H ghi exactsource; tài liệu sau đó không đổi runtime.
+Full/prod audit0 sau scoped Next lint patch loại chuỗi braces, frozen install và luật ESLint thật được kiểm; không audit ignore. Sửa pool starvation bằng dùng lại connection đã mượn. Additive claim_hold_v4 chỉ read-reject conflict đã biết, mọi grant/retry/race qua v3, giữ migration cũ/fsync/auth/transaction guards.
 
-Endpoint benchmark HTTPSb52:2000calls,100winner/100conflict mỗi vòng; allp951519.9835ms/steadyp95688.0835ms FAIL300ms. Lượt864 giữ riêng; CIb52 all273.3143ms<300 là môi trườngCI, không thay staging. MộtAPI và generatorcùnglaptop; khôngdùngCI800ms thayNFR. Humanreview, independent second-peer rate-limit artifact (OS trust/firewall and15HTTPSUIcases nowPASS; second Windows trustedhomeUSER-ATTESTED), postmergeautodeploy và K01staging còn gate. AIsecurityscan không thay memberapproval; PRgiữDraft,chưa merge.
+Laptop staging riêng: TLSgateway3470, webDocker+2API, privatePG15455/Redis16405, guarded seed/private credentials, backup stream đã xác minh, atomic promotion/rollback, exact label/PID và disk preflight. Resume start cả replica; verifier chờ PTTL hết thật thay vì coi TTL=0 là đã hết. Watcher một instance chỉ deploy develop chứa fix khi mọi check đúng SHA success.
 
-Runbook/acceptancematrix/reviewreport trong docs. URL https://10.88.164.155:3470; credentials chỉ localignored `.sprint1-staging/config.json`. KhôngpublicTunnel/providerpayment/prod. Rollback previouscode giữ DBhistory/khóa; không reset/migrate-down hoặc bypassprotection.
+Source a2e5f67 (runtime), app regression accf832 cùng source ứng dụng: build/lint/typecheck,342API+123web+18Node,88+4integration;15browser desktop/mobile trustedHTTPS; API/DB/Redis thật. Coverage cùng baseline/config: originalauth API76.78/web77.52lines; foundation70.51→85.25lines,79.10→84.31branches; touched executable lines/branches100%. Dependencyoutage503→restore200; badcandidate giữ active; actual rollback a2e5f67→accf832→a2e5f67 giữ DB/migration count/khóa. Exact head CI cuối đọc tại PR; không lấy kết quả SHA cũ thay required checks mới.
 
-Bổ sung16/10: chạy15caUI trên actual HTTPSb52, không bypassTLS. Kiểm lại Windowsrule TCP3470/LANIP/LocalSubnet và trustedroot. Browserverifier expire chính tokenHash của context; phiên A khác vẫn200. Có portablePowerShell second-device probe bounded/no-credential; chưa có artifact thì NOT RUN. K01 laptopresearch riêng PG15/Redis7-AOF, hai process,3×200same-seat mỗi store: đúng1winner; cảhai giữowner sau graceful restart (khác no-persistence cũ), không hardcrash/productendpoint/humanreview. Base develop đã tiến8bceec4(PR71) sau snapshot97ff đang demo; cần exact-head/base review trước merge.
+NFR chưa đóng tổng thể:200concurrent/100seats×10,2000rawsamples,100winner/100conflict mỗi vòng. H2 a2e5f67 cùng laptop/processriêng sau200loginAPI thật đạt allp95233.1358/223.1592/263.4703ms; H1 cùng phương pháp737.9675msFAIL và H2coldDB-issued359.0416msFAIL đều giữ. Không bắt buộc máy tải riêng theo nguồn đã đọc; không dùng steady-only/CI/prototype thay300ms. CLI fail khi vượtNFR, ghi CPU/RAM/ELU/source/Docker/DBownership. Thử nhiều gateway bị loại vì cold chưaổnđịnh. HaiWi-Fi peer nguồn b52 giữ riêng, không lặpIPprobe.
 
+Trước merge: thành viên thật approve exacthead; Lead review K01 authority và NFR/topology; policy chặn merge được maintainer cho phép; required checks xanh/không unresolved. AI scan hỗ trợ, không thay human approval. Sau merge hợp lệ: watcher tự chạy, ghi merge→CI→deploy→healthy<10phút và nghiệm thu integratedSHA; manual230.018s không là auto-deploy. Không main/release/production/publicTunnel/paidhosting.
 
-16/10: đóng ca hai Wi-Fi peer trên sourceb52. Máy10.88.164.22 gửi30wrong→429, artifact tương quan30run-specificaccountcounters và remoteIPcounter30; laptop10.88.164.155 login/me200 khi remotePTTL còn610.349giây, kể cả callerheaders giả. Không DEL/rútTTL/restartRedis; logout đúng session kiểm. Evidence `20261016-two-peer/correlation.json`; S02HTTPSprofile PASS, DoD/auto-deploy/audit/K01 vẫn giữ gate riêng.
+Evidence: evidence/sprint1/20261016-closeout/, ma trận62gate/report/runbook trong docs. Demo https://10.88.164.155:3470; credentials chỉ ignoredlocal .sprint1-staging/config.json. Rollback code giữ DB/history/keys, không reset/migrate-down.
+
+## Đề xuất policy develop — cần maintainer cho phép, chưa áp dụng
+
+Live16/10: protected=false, protection404, rules/rulesets rỗng. T02 yêu cầu pipeline đỏ chặn merge nên FAIL. JSON dưới là đề xuất cụ thể, chỉ PUT sau khi chủ repository cho phép thay protection.
+
+```json
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": ["T-02 / build-and-typecheck", "T-02 / lint", "T-02 / test", "K-01 / candidate-research", "T-31 / hold-concurrency"]
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": false,
+    "required_approving_review_count": 1,
+    "require_last_push_approval": true
+  },
+  "restrictions": null,
+  "required_conversation_resolution": true,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+```
+
+Có thể nhờ thuytrang158/admin hoặc thành viên write/admin phù hợp trực tiếp review; chưa có review request được gửi. Không dùng tài khoản đăng nhập sẵn để review thay người đó.

@@ -1,0 +1,262 @@
+{
+  "productSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "harnessCommit": "b50cd9ae5709de8486b3736c6fa075a64faa89e1",
+  "thresholdMs": 300,
+  "sources": {
+    "concurrency": "../tasks/T-31.md AC",
+    "latency": "../docs/product.md:145-155",
+    "measurementEnvironment": "../docs/architecture.md:303-319"
+  },
+  "separatePhysicalGeneratorMandatory": false,
+  "environment": "One laptop, client separate process, native1TLSgateway, Docker2API+web/PG/Redis. No hold warmup, all samples including first TLS. 200 actual API logins occur before hold measurement; login time recorded separately.",
+  "allRunsRetained": true,
+  "overall": "FAIL: HTTP2 conditional passes do not erase HTTP1 cold/earlier HTTP2 cold failures",
+  "runs": [
+    {
+      "path": "load-laptop-h1-cold-api-1",
+      "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "protocol": "HTTP1.1",
+      "allP95Ms": 737.9674999999988,
+      "correctness": "PASS",
+      "nfr": "FAIL",
+      "rawResponses": 2000,
+      "generatorMetrics": {
+        "cpu": {
+          "user": 672000,
+          "system": 469000
+        },
+        "wallMs": 3198.1007000000027,
+        "eventLoopUtilization": 0.3285507745219923,
+        "eventLoopDelayP95Ms": 20.086783,
+        "eventLoopDelayMaxMs": 36.863999,
+        "maxRssKiB": 106396
+      },
+      "phaseResources": {
+        "auth-setup": {
+          "sampleCount": 67,
+          "cpuMeanPercent": 32.71142489087482,
+          "cpuMaxPercent": 79.63320463320464,
+          "minimumFreeMemoryMiB": 2675.3984375
+        },
+        "complete": {
+          "sampleCount": 1,
+          "cpuMeanPercent": 72.84798534798536,
+          "cpuMaxPercent": 72.84798534798536,
+          "minimumFreeMemoryMiB": 2573.09375
+        },
+        "measured-load": {
+          "sampleCount": 12,
+          "cpuMeanPercent": 58.20407983753875,
+          "cpuMaxPercent": 94.2878156410885,
+          "minimumFreeMemoryMiB": 2472.95703125
+        }
+      },
+      "note": "Retained, including preflight failure"
+    },
+    {
+      "path": "load-laptop-h1-exit-gate",
+      "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "protocol": "HTTP1.1",
+      "allP95Ms": 954.9459999999999,
+      "correctness": "PASS",
+      "nfr": "FAIL",
+      "rawResponses": 2000,
+      "generatorMetrics": {
+        "cpu": {
+          "user": 1094000,
+          "system": 625000
+        },
+        "wallMs": 4754.784,
+        "eventLoopUtilization": 0.309725680121277,
+        "eventLoopDelayP95Ms": 21.594111,
+        "eventLoopDelayMaxMs": 57.409535,
+        "maxRssKiB": 104744
+      },
+      "phaseResources": {
+        "auth-setup": {
+          "sampleCount": 88,
+          "cpuMeanPercent": 44.77774806360062,
+          "cpuMaxPercent": 98.8909426987061,
+          "minimumFreeMemoryMiB": 2011.51953125
+        },
+        "complete": {
+          "sampleCount": 2,
+          "cpuMeanPercent": 62.75181786250032,
+          "cpuMaxPercent": 75.30443253774963,
+          "minimumFreeMemoryMiB": 1825.49609375
+        },
+        "measured-load": {
+          "sampleCount": 18,
+          "cpuMeanPercent": 72.98183005702846,
+          "cpuMaxPercent": 96.64778092540132,
+          "minimumFreeMemoryMiB": 1802.87890625
+        }
+      },
+      "note": "CLI negative gate only; browser verification overlapped part of this run, not isolated performance acceptance"
+    },
+    {
+      "path": "load-laptop-h2-cold-api-1",
+      "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "protocol": "HTTP2",
+      "allP95Ms": null,
+      "correctness": "FAIL",
+      "nfr": null,
+      "rawResponses": 0,
+      "generatorMetrics": null,
+      "phaseResources": {},
+      "note": "Retained, including preflight failure"
+    },
+    {
+      "path": "load-laptop-h2-cold-api-2",
+      "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "protocol": "HTTP2",
+      "allP95Ms": 233.13580000000002,
+      "correctness": "PASS",
+      "nfr": "PASS in this one-laptop/protocol configuration",
+      "rawResponses": 2000,
+      "generatorMetrics": {
+        "cpu": {
+          "user": 531000,
+          "system": 344000
+        },
+        "wallMs": 2138.1281000000017,
+        "eventLoopUtilization": 0.24565738522332706,
+        "eventLoopDelayP95Ms": 16.646143,
+        "eventLoopDelayMaxMs": 24.461311,
+        "maxRssKiB": 85948
+      },
+      "phaseResources": {
+        "auth-setup": {
+          "sampleCount": 65,
+          "cpuMeanPercent": 36.89313595880379,
+          "cpuMaxPercent": 82.58593216480764,
+          "minimumFreeMemoryMiB": 2516.38671875
+        },
+        "complete": {
+          "sampleCount": 1,
+          "cpuMeanPercent": 57.17367853290183,
+          "cpuMaxPercent": 57.17367853290183,
+          "minimumFreeMemoryMiB": 2837.828125
+        },
+        "measured-load": {
+          "sampleCount": 8,
+          "cpuMeanPercent": 60.58765904076065,
+          "cpuMaxPercent": 67.20019111323458,
+          "minimumFreeMemoryMiB": 2796.78125
+        }
+      },
+      "note": "Retained, including preflight failure"
+    },
+    {
+      "path": "load-laptop-h2-cold-api-3",
+      "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "protocol": "HTTP2",
+      "allP95Ms": 223.15920000000187,
+      "correctness": "PASS",
+      "nfr": "PASS in this one-laptop/protocol configuration",
+      "rawResponses": 2000,
+      "generatorMetrics": {
+        "cpu": {
+          "user": 297000,
+          "system": 297000
+        },
+        "wallMs": 1913.4181000000026,
+        "eventLoopUtilization": 0.24564604870577333,
+        "eventLoopDelayP95Ms": 17.154047,
+        "eventLoopDelayMaxMs": 23.068671,
+        "maxRssKiB": 86960
+      },
+      "phaseResources": {
+        "auth-setup": {
+          "sampleCount": 64,
+          "cpuMeanPercent": 31.877388028394055,
+          "cpuMaxPercent": 83.7074583635047,
+          "minimumFreeMemoryMiB": 2691.85546875
+        },
+        "complete": {
+          "sampleCount": 1,
+          "cpuMeanPercent": 50.66354410616706,
+          "cpuMaxPercent": 50.66354410616706,
+          "minimumFreeMemoryMiB": 2694.8671875
+        },
+        "measured-load": {
+          "sampleCount": 7,
+          "cpuMeanPercent": 58.17056922143123,
+          "cpuMaxPercent": 64.38261669349275,
+          "minimumFreeMemoryMiB": 2646.54296875
+        }
+      },
+      "note": "Retained, including preflight failure"
+    },
+    {
+      "path": "load-laptop-h2-final-client",
+      "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "protocol": "HTTP2",
+      "allP95Ms": 263.47030000000086,
+      "correctness": "PASS",
+      "nfr": "PASS in this one-laptop/protocol configuration",
+      "rawResponses": 2000,
+      "generatorMetrics": {
+        "cpu": {
+          "user": 547000,
+          "system": 266000
+        },
+        "wallMs": 2490.487799999999,
+        "eventLoopUtilization": 0.2293292351179343,
+        "eventLoopDelayP95Ms": 20.004863,
+        "eventLoopDelayMaxMs": 24.412159,
+        "maxRssKiB": 86596
+      },
+      "phaseResources": {
+        "auth-setup": {
+          "sampleCount": 73,
+          "cpuMeanPercent": 35.892387130077594,
+          "cpuMaxPercent": 91.69750231267345,
+          "minimumFreeMemoryMiB": 2285.53515625
+        },
+        "complete": {
+          "sampleCount": 1,
+          "cpuMeanPercent": 53.82723639717184,
+          "cpuMaxPercent": 53.82723639717184,
+          "minimumFreeMemoryMiB": 2357.3671875
+        },
+        "measured-load": {
+          "sampleCount": 9,
+          "cpuMeanPercent": 65.29071791924258,
+          "cpuMaxPercent": 70.71272196545853,
+          "minimumFreeMemoryMiB": 2330.28515625
+        }
+      },
+      "note": "Retained, including preflight failure"
+    }
+  ],
+  "priorBenchmarkFiles": [
+    "api-before.json",
+    "api-docker-cdb7fdb.json",
+    "diagnostic-provenance-current.json",
+    "gateway4-trial-provenance.json",
+    "https-docker-cdb7fdb.json",
+    "https-h1-api-logins-fourclients-fourgateways-trial.json",
+    "https-h1-fourclients-gateway8-cold-trial.json",
+    "https-h1-fourclients-gateway8-trial.json",
+    "https-h1-v4-accf832.json",
+    "https-h1-v4-gateway4-agent3-trial.json",
+    "https-h1-v4-gateway4-trial.json",
+    "https-h1-v4-gateway8-agent2-trial.json",
+    "https-h1-v4-gateway8-ready-trial.json",
+    "https-h2-a2e5f67-after-deploy.json",
+    "https-h2-agent10-cold-630745d.json",
+    "https-h2-agent16-cdb7fdb.json",
+    "https-h2-cold-profile-630745d.json",
+    "https-h2-direct-97d15a6.json",
+    "https-h2-profile-630745d.json",
+    "https-h2-two-api-630745d.json",
+    "https-h2-v4-cold-accf832.json",
+    "https-h2-v4-gateway8-ready-trial.json",
+    "https-h2-v4-restart-accf832.json",
+    "inside-api-cdb7fdb.json",
+    "inside-fixture-provenance.json",
+    "next-docker-cdb7fdb.json",
+    "plan-mode-comparison.json"
+  ]
+}

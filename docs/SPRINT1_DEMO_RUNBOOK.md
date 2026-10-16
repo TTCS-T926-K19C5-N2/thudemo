@@ -1,8 +1,10 @@
 # Sprint 1 — demo local và laptop staging riêng
 
-**Cập nhật16/10,00:31:** ca hai Wi-Fi peer đã PASS. MáyWindows10.88.164.22 chạy30wrong→429; serverRedis30/PTTL610giây và laptop10.88.164.155 login/me200 đồng thời. `evidence/sprint1/20261016-two-peer/correlation.json`. Không cần chạy lại probe chỉ để demo; IPmáythứhai giữ khóa tự hết, dự kiến khoảng00:41:38 theoPTTL, chưa nhận đã kiểm login sau hết khóa. Không DEL/rútTTL hoặc khóa lại peer trong lúc teamdemo.
+**Cập nhật16/10:** source sản phẩm **a2e5f675a371e9a0200b1ab7d2a83ac837d3717d**, web và hai API chạy Docker. Profile đã phục hồi sau ổ C đầy; chỉ READY sau Status kiểm home/health200. Chưa Sprint Done: policy develop/human review/K01/NFR và postmerge auto-deploy là gate riêng. HTTPS2 đăng nhậpAPI thật đo233.14/223.16ms allp95 đạt trong hai lượt cùng laptop; HTTP1.1 cùng phương pháp737.97ms FAIL, không dùng demo chức năng thay nghiệm thu tải.
 
-Giữ V1 và dữ liệu giả. Worktree: `D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-sprint1-gitflow-20261015`. Nhánh feature → develop, PR #91 Draft; chưa merge/Sprint Done. `status` in exact source đang chạy; evidence có SHA riêng.
+Ca hai Wi-Fi peer giữ nguyên nguồn lịch sử b52ba6a: máyWindows10.88.164.22 chạy30wrong→429; serverRedis30/PTTL610giây và laptop10.88.164.155 login/me200 đồng thời. `evidence/sprint1/20261016-two-peer/correlation.json`. Không chạy lại probe chỉ để tăng evidence. HMAC/peer classifier giữ nguyên; regression HTTP2 mới kiểm đúng TCPpeer dù caller giả attestation. Không DEL/rútTTL hoặc khóa lại peer trong lúc teamdemo.
+
+Giữ V1 và dữ liệu giả. Worktree: `D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-sprint1-gitflow-20261015`. Nhánh feature → PR #91 → develop; chưa merge/Sprint Done. Trạng thái Draft/review đọc live PR. `status` in exact source đang chạy; evidence có SHA riêng.
 
 ## 1. Laptop staging đang chạy
 
@@ -13,7 +15,7 @@ Set-Location -LiteralPath 'D:\Development\03_Academic\Bán vé sự kiện có s
 node .\scripts\sprint1-staging.mjs status
 ```
 
-Status chỉ READY sau HTTPS home/health200 với CA/hostname được xác minh. Candidate đã kiểm và đang chạy **b52ba6afa07d29444e5e809892e5325f0966625c**, trước đó864189e (xem active.json/status cho source thực tế). Database15455/sprint1_staging_20261015 và Redis16405 riêng, bindloopback; gatewayLAN3470, hai slotAPI3471/3472 và web3473/3474 đều loopback. Không mở DB/Redis ra Wi-Fi.
+Status chỉ READY sau HTTPS home/health200 với CA/hostname được xác minh. Candidate đã kiểm **a2e5f675a371e9a0200b1ab7d2a83ac837d3717d**, previousaccf832 (xem active.json/status cho source thực tế). Database15455/sprint1_staging_20261015 và Redis16405 riêng, bindloopback; gatewayLAN3470, slotAPI3471/3472, replica3475/3476 và web3473/3474 loopback. API liên lạc PG/cache qua bridge riêng, mỗiAPI10DBconnections. Không mở DB/Redis ra Wi-Fi.
 
 **Chủ máy đã hoàn tất các bước dưới đây (xác nhận và kiểm lại 16/10):** rule TCP3470/LANIP/LocalSubnet và CurrentUser Root đúng cert; actual HTTPS15case PASS. Máy Windows thứ hai mở được trustedHTTPS theo người dùng. Giữ lệnh để tái lập cho user/máy mới; không cần chạy lại trên máy đã thiết lập:
 
@@ -23,17 +25,23 @@ Status chỉ READY sau HTTPS home/health200 với CA/hostname được xác minh
 
 SHA256 fingerprint: `7B:43:36:26:D3:E4:E3:0C:4F:D6:66:68:A2:6F:49:CB:95:9F:08:F1:CC:07:73:EC:78:E2:8F:F4:70:8B:40:91`. Hết hạn14/11/2026 15:44:28UTC. Cert SAN IP10.88.164.155; DHCP đổi IP cần cấu hình/cert/WEB_ORIGIN được kiểm lại; không bỏ kiểm TLS. Cloudflare Tunnel chưa triển khai.
 
-Khởi động/tái lập **một lệnh** trên máy đã init profile và có Git/Node24.21.0/pnpm10.15.1/DockerDesktop:
+Khôi phục **một lệnh** trên máy đã init profile và có Git/Node24.21.0/pnpm10.15.1/DockerDesktop đang chạy:
+
+```powershell
+node .\scripts\sprint1-staging.mjs resume
+```
+
+Resume chỉ start container có label đúng phiên, đúng SHA và port; giữ volume/khóa/credential, không cài lại hoặc seed. Nếu cần build một revision mới, kiểm C còn ít nhất12GiB và D còn5GiB; script từ chối thiếu dung lượng trước build. Không dọn cache/volume hoặc dừng app khác để lách lỗi. Build/redeploy:
 
 ```powershell
 node .\scripts\sprint1-staging.mjs deploy --sha <exact-40-character-commit-SHA>
 ```
 
-Script guardđúng profile/port/label/PID, start dependencies, archive source sạch, frozeninstall/generate/backup/migrate/guardedseed/build/DockerAPI, smoke candidate rồi mới chuyểntraffic; READY sau HTTPS smoke. Private logs/backups ở `.sprint1-staging/`; không xóa volume hoặc đổi khóa. Nếu lầnđầu profile chưa tồn tại: `node .\scripts\sprint1-staging.mjs init --lan 10.88.164.155`, rồi `prepare-ticket-key`; init không ghiđè config/khóa hiện hữu. Không dùng init để chữa lỗi profile đang có.
+Script guardđúng profile/port/label/PID, start dependencies, archive source sạch vào shortpath có markerfullSHA, frozeninstall/generate/backup/migrate/guardedseed/build/Dockerweb+2API, smoke cảAPI rồi chuyểntraffic; READY sau HTTPS smoke. Backup stream riêng có archive validation, không giới hạn1MiB. Private logs/backups ở `.sprint1-staging/`; không xóa volume hoặc đổi khóa. Nếu lầnđầu profile chưa tồn tại: `node .\scripts\sprint1-staging.mjs init --lan 10.88.164.155`, rồi `prepare-ticket-key`; init không ghiđè config/khóa hiện hữu. Không dùng init để chữa lỗi profile đang có.
 
 Nếu commit mới có migration: auto-deploy từ chối. Đọc SQL, kiểm compatibility bản cũ, backup và dữ liệu (đặc biệt unique ticket order-seat), rồi mới manual `deploy --sha <newSHA> --reviewed-migrations-from <exact-activeSHA>`. Flag là operator acknowledgement kỹ thuật, không thay humanPRreview. Không migrate-down/reset. Khóa QR ticket riêng được giữ tại `.sprint1-staging/ticket-signing.der.b64`; `prepare-ticket-key` chạy lại giữ nguyên khóa.
 
-Rollback đã kiểm thực tế b52→864→b52, giữ dữ liệu. Hiện previousslot khỏe là864189e:
+Rollback mới đã kiểm thực tế a2e5f67→accf832→a2e5f67, số users/events/orders/tickets/migrations và hashkhóa giữ nguyên; C/rollback-final.json. Previousslotaccf832 được start lại và smoke sau ca candidatefailure. Tra `previous.json` trước khi thao tác:
 
 ```powershell
 node .\scripts\sprint1-staging.mjs rollback
@@ -42,11 +50,11 @@ node .\scripts\sprint1-staging.mjs status
 
 Smoke previous trước switch; không đảo migration/khóa/xóa dữ liệu. `previous.json` sau rollback trỏ bản vừa rời, cho phép chuyển lại bằng rollback lần nữa sau smoke. Chỉ dùng khi chủ động kiểm staging, không giữa buổi demo. `deploy --sha <activeSHA> --exercise-failure` kiểm candidate sai attestation, active giữ200; không phá main/CI. `stop` chỉ dừng process/container app thuộc profile, giữ dependencies/volume/history. `recover-lock` chỉ khi PID/creationtime chứng minh owner đã thoát, không xóa lock bằng tay.
 
-Watcher đã chuẩn bị/chạy: mỗi phút fetch develop, chỉ deploy khi approvedminimumSHA là ancestor và **mọi** check đúngSHA success; corebuild/lint/test phải có. Hiện BLOCKED develop chưa chứa fix; không tự merge. Manual485.989s không là bằng chứng AC merge→auto-deploy<10phút. Muốn bật lại watcher đã dừng: `powershell.exe -NoProfile -File .\scripts\sprint1-staging-access.ps1 -StartWatcher -MinimumSourceSha <approvedSHA>`; không chạy bản thứhai.
+Watcher mỗi phút fetch develop, chỉ deploy khi minimumsourceSHA là ancestor và **mọi** check đúngSHA success; corebuild/lint/test phải có, không chấp nhận truncated response/app giả. Hiện BLOCKED develop chưa chứa fix; không tự merge khi thiếu review/policy/NFR. Manual267.435s không là bằng chứng AC merge→auto-deploy<10phút. Bật watcher: `powershell.exe -NoProfile -File .\scripts\sprint1-staging-access.ps1 -StartWatcher -MinimumSourceSha <approved40hexSHA>`; guard từ chối instance thứhai. File watcher-process.json lưuPID/starttime; xem watcher.jsonl để biết vì sao chưa deploy. ControlledwatchOnce10mode với childsentinel đã kiểm red/missing/pending khôngdeploy, không là live postmerge proof.
 
 ## 2. Kịch bản demo
 
-Dùng profile trình duyệt riêng cho A, B và buyer. Cùng dùng hostname `localhost`; tránh đổi sang `127.0.0.1` giữa phiên vì cookie theo hostname.
+Dùng profile trình duyệt riêng cho A, B và buyer. Trên staging luôn dùng cùng `https://10.88.164.155:3470`; cookie theo hostname, không đổi sang localhost/127.0.0.1 giữa phiên.
 
 | Bước                   | Thao tác và dữ liệu                                                                                          | Kết quả mong đợi                                                         | Cách phục hồi                                                                                               |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
@@ -79,21 +87,25 @@ Web3440/API3441, PG15445/Redis16395, credentials `.sprint1-local/config.json`, c
 ## 4. Chạy lại kiểm thử có chủ đích
 
 ```powershell
-node .\scripts\verify-sprint1-staging.mjs --wait-natural-expiry
-node .\scripts\benchmark-sprint1-staging.mjs --create-synthetic-fixtures
+$sprint1Run = Get-Date -Format 'yyyyMMdd-HHmmss'
+node .\scripts\verify-sprint1-staging.mjs --wait-natural-expiry --skip-peer-probe --output "evidence/sprint1/$sprint1Run/api"
+node .\scripts\verify-sprint1-load-laptop.mjs --cold-api --output "evidence/sprint1/$sprint1Run/load-h2"
+$env:SPRINT1_EVIDENCE_DIR = "evidence/sprint1/$sprint1Run/checks"
 node .\scripts\sprint1-tests.mjs
 ```
 
-API verifier tạo thêm fakeevent/showtime, làm hết hạn đúng session vừa cấp và restart **đúng APIstaging** để kiểm lock; không chạy lúc người khác đang demo. Browser verifier với `node .\scripts\verify-sprint1-browser.mjs --staging` tạo session riêng, chỉ làm hết hạn tokenHash của chính context đó, kiểm phiên A khác vẫn200. Không expire mọi session của tài khoản. Dùng CA pin+rejectUnauthorized:true, không ignoreHTTPSerrors. Khóa đợi15phút thật; IPpeer thứhai Windowsloopback→LAN khôngroute được được ghiBLOCKED. Cần hai máy Wi-Fi thực.
+API verifier tạo thêm fakeevent/showtime, làm hết hạn đúng session vừa cấp và restart **đúng APIstaging** để kiểm lock; không chạy lúc người khác đang demo. Browser verifier với `node .\scripts\verify-sprint1-browser.mjs --staging --output "evidence/sprint1/$sprint1Run/browser"` tạo session riêng, chỉ expire tokenHash của chính context, kiểm phiên A khác vẫn200. Dùng CA pin+rejectUnauthorized:true, không ignoreHTTPSerrors. Khóa đợi15phút thật, đọc PTTL đến khi key đã hết; TTL=0 chưa phải hết khóa. Flag skip-peer tránh lặp brute force máy thứhai; bằng chứng hai Wi-Fi peer thật đã có source riêng.
 
-Benchmark là **endpoint sản phẩm thật quaHTTPS**, 200buyers/100seats×10, fixtureArgon2id+900s hashedsessions và showtime mới quotaNULL theoS42 để tách testcạnhtranh khỏi businessquota; không đổi suất hiện hữu. Không gọi login để tính endpointlatency. Giữ history, thêm dữ liệu giả, khôngcleanup/reset. Generator cùng laptop,1API, không thay twoinstance/datastorespike. NFR300ms giữ nguyên; b52 all1519.9835ms/steady688.0835ms FAIL; lượt864 all1597.9634ms giữ riêng. Invalidfixturetoken lượtđầu nằm JSONriêng và bị loại phépđo.
+Benchmark là **endpoint sản phẩm thật quaHTTPS**,200buyers/100seats×10 trên cùng laptop, process tạo tải riêng. Wrapper chuẩn bị bundle200BUYER/1000ghế mới, loginAPI thật, rồi dùng freshTLS cho pha đo; không tính loginsetup vào hold latency và không holdwarmup. Profile/CA/privateLAN được guard; không chia sẻ bundlepassword, không reset/cleanup dữ liệu. Health/disk/source/Docker/CPU/RAM/ELU và raw2000responses được lưu; DB kiểm1000quyền giữ đúng owner. Ngưỡng300ms,200concurrent vàfsync/auth/TTL giữ nguyên. Lệnh trả exit1 khi NFRFAIL; phải đọc cả correlation.json/client.json. Không chạy benchmark đồng thời build/test/browser.
+
+HTTPS2 các lượt cùng phương pháp đạt233.14/223.16ms, client cuối263.47ms; H1 còn737.97msFAIL. Thêm `--http1` và thư mụcoutput mới để đoH1; giữ toàn mẫu và mọi lượtFAIL. Không yêu cầu máy tải riêng: T31AC,product§7,architecture§14 không bắt buộc; vẫn ghi rõ chung phần cứng. Scriptbenchmark trực tiếp cũ dùng DB-issued sessions là phương pháp khác, giữ cả H2cold359.04FAIL. Nhiều TLSgateway thử nghiệm đã loại; hiện1gateway. Không đổi protocol/sampling hoặc dùng steady-only để tự nhận toànNFRPASS.
 
 Test runner dùng DB15446/sprint2_integration,15450/signed_qr_integration,Redis16396; guardexacttarget+label. Có cleanupfixture của suite, không đưa dữliệu thật vào DBtest. Chạy build/test tuần tự nếu thiếu CPU; không nới assert/NFR để xanh. Evidence lưu đúngsource/môi trường và giữ lượtthấtbại.
 
 ## 5. Gate để nhóm tiếp tục
 
-- Firewall/certtrust và actual HTTPSUI15ca đã PASS. Máy Windows thứ hai trustedhome PASS USER-ATTESTED. Để kiểm IPbudget thật độc lập, chép `scripts/sprint1-staging-client.ps1` sang **máy thứ hai** và chạy `powershell.exe -NoProfile -File .\sprint1-staging-client.ps1`. Script không cần mật khẩu, tối đa31 yêu cầu bằng email giả/XFF/attestation giả, có thể giới hạn IP đó900s. Đợi tự hết, không DEL/rútTTL. JSON không có credential được ghi Desktop/sprint1-wifi-client-evidence.json; chuyển về `.sprint1-staging/incoming/` trên laptop rồi đối chiếu Redis, đồng thời laptop vẫn login200. **Đã thực hiện16/10 và PASS**; chỉ chạy lại có chủ đích, không đánh PASS chỉ từ việc mở trang.
-- Thànhviên khác review PR91 headcuối; AI scan chỉ là hỗ trợ. Chưa merge khi dependencyfullaudit còn braceshigh hoặc các gate cần thiết chưa đạt.
+- Firewall/certtrust và actualHTTPSUI15ca đãPASS. Hai peer nguồn b52 đãPASS tại20261016-two-peer; không chạy lại IPprobe. Hiện chỉ một laptop, dùng bài tải cùngmáy/processriêng ở§4. Không yêu cầu người dùng có thêm máy.
+- Thànhviên khác trực tiếp review PR91 headcuối; AI scan chỉ hỗ trợ. Full/prod audit hiện0. Develop hiện chưaprotected/rulesets; policy đề xuất trong SPRINT1_FIX_PR_DRAFT.md cần maintainer cho phép. Chưa merge khi review/policy/K01/NFR chưa đạt.
 - Sau tíchhợp develop được phêduyệt, kiểm CI exactmergeSHA, watcher/timeline auto-deploy<10phút, failedcheckno-deploy, failure-retains-old/rollback thực; không gọi manualdeploy là auto.
 - K01 cần stagingcomparison/điềukiệnđo/review và NFR liênquan; không miễn300ms bằngCI800ms, không nhận Sprint2Done.
 - K01 đã bổ sung comparison trong `H/k01-laptop-research`: PG15 và Redis7-AOF trên profile riêng15456/16406,2researchprocess; Redis graceful restart giữ owner khi AOF bật, khác phép đo không persistence trước đó. Đây không là endpoint/TLS/LAN-client benchmark; cần người thật review kiến trúc/điều kiện đo, không tự chấp thuận staging authority. Giữ container/volume nghiên cứu riêng, không chạy script K01 cũ vì nó restart tên container của profile khác.

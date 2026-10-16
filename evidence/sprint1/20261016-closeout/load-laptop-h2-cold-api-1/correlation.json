@@ -1,0 +1,71 @@
+{
+  "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "time": "2026-10-16T08:05:08.865Z",
+  "environment": "One laptop: separate native client/gateway processes, Docker web and twoAPI/PG/Redis; not an independent device",
+  "resources": [
+    {
+      "name": "Windows system/Docker Desktop volume",
+      "freeBytes": 39387693056,
+      "minimumBytes": 12884901888
+    },
+    {
+      "name": "Staging source/backup volume",
+      "freeBytes": 116037541888,
+      "minimumBytes": 5368709120
+    }
+  ],
+  "samples": [],
+  "coldApi": true,
+  "protocol": "HTTP2",
+  "before": {
+    "time": "2026-10-16T08:05:08.918Z",
+    "stats": "sprint1-stage-web-a2e5f675a371-1792137272414|0.00%|91.33MiB / 7.576GiB\nsprint1-stage-api-replica-a2e5f675a371-1792137268859|0.00%|112.7MiB / 7.576GiB\nsprint1-stage-api-a2e5f675a371-1792137268858|0.00%|135.8MiB / 7.576GiB\nsprint1-stage-web-accf832be519-1792135689006|0.00%|84.02MiB / 7.576GiB\nsprint1-stage-api-replica-accf832be519-1792135686652|0.00%|90.47MiB / 7.576GiB\nsprint1-stage-api-accf832be519-1792135686652|0.00%|92.52MiB / 7.576GiB\nsprint1-stage-redis-20261015|0.44%|4.945MiB / 7.576GiB\nsprint1-stage-pg-20261015|0.21%|133.9MiB / 7.576GiB\nsprint1-gitflow-tests-qr-pg-20261015|0.00%|20.82MiB / 7.576GiB\nsprint1-gitflow-tests-pg-20261015|4.83%|49.04MiB / 7.576GiB\nsprint1-gitflow-tests-redis-20261015|3.12%|7.555MiB / 7.576GiB\nsupabase_vector_supportai-pro|0.00%|1.977MiB / 7.576GiB",
+    "containers": [
+      {
+        "name": "sprint1-stage-api-a2e5f675a371-1792137268858",
+        "image": "sprint1-staging-api:a2e5f675a371",
+        "revision": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+        "running": true,
+        "user": "node",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      },
+      {
+        "name": "sprint1-stage-api-replica-a2e5f675a371-1792137268859",
+        "image": "sprint1-staging-api:a2e5f675a371",
+        "revision": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+        "running": true,
+        "user": "node",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      },
+      {
+        "name": "sprint1-stage-web-a2e5f675a371-1792137272414",
+        "image": "sprint1-staging-web:a2e5f675a371",
+        "revision": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+        "running": true,
+        "user": "node",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      },
+      {
+        "name": "sprint1-stage-pg-20261015",
+        "image": "postgres:15-alpine",
+        "running": true,
+        "user": "",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      },
+      {
+        "name": "sprint1-stage-redis-20261015",
+        "image": "redis:7-alpine",
+        "running": true,
+        "user": "",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      }
+    ]
+  },
+  "result": "FAIL",
+  "error": "ECONNRESET"
+}

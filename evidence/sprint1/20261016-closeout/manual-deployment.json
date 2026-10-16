@@ -1,0 +1,36 @@
+{
+  "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "events": [
+    {
+      "time": "2026-10-16T07:50:44.522Z",
+      "event": "candidate-start",
+      "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "resources": [
+        {
+          "name": "Windows system/Docker Desktop volume",
+          "freeBytes": 41198538752,
+          "minimumBytes": 12884901888
+        },
+        {
+          "name": "Staging source/backup volume",
+          "freeBytes": 116287016960,
+          "minimumBytes": 5368709120
+        }
+      ]
+    },
+    {
+      "time": "2026-10-16T07:51:09.109Z",
+      "event": "backup-verified",
+      "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "bytes": 2960053
+    },
+    {
+      "time": "2026-10-16T07:54:34.540Z",
+      "event": "promoted",
+      "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "oldSha": "accf832be519d9790845c3590acd3f481c5594ac",
+      "elapsedSeconds": 230.018
+    }
+  ],
+  "method": "Manual candidate deploy; not merge-to-auto-deploy proof"
+}
