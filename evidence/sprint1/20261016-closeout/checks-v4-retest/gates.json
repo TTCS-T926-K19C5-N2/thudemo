@@ -1,0 +1,47 @@
+[
+  {
+    "name": "test-dependencies",
+    "exitCode": 0,
+    "seconds": 1.051
+  },
+  {
+    "name": "test-migration",
+    "exitCode": 0,
+    "seconds": 2.558
+  },
+  {
+    "name": "lint",
+    "exitCode": 0,
+    "seconds": 10.89
+  },
+  {
+    "name": "typecheck",
+    "exitCode": 0,
+    "seconds": 5.208
+  },
+  {
+    "name": "test",
+    "exitCode": 0,
+    "seconds": 10.11
+  },
+  {
+    "name": "integration",
+    "exitCode": 0,
+    "seconds": 37.465
+  },
+  {
+    "name": "qr-db-start",
+    "exitCode": 0,
+    "seconds": 0.186
+  },
+  {
+    "name": "qr-migration",
+    "exitCode": 0,
+    "seconds": 1.592
+  },
+  {
+    "name": "integration-scanner",
+    "exitCode": 0,
+    "seconds": 2.621
+  }
+]

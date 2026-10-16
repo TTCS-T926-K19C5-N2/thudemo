@@ -1,0 +1,23 @@
+{
+  "scope": "Actual isolated Node subprocess rejects wrong profile, public target and prior result before any network login; private synthetic bundle stays ignored",
+  "cases": [
+    {
+      "name": "foreign-profile",
+      "status": "PASS",
+      "exit": 1,
+      "beforeAnyLogin": true
+    },
+    {
+      "name": "public-target",
+      "status": "PASS",
+      "exit": 1,
+      "beforeAnyLogin": true
+    },
+    {
+      "name": "prior-result",
+      "status": "PASS",
+      "exit": 1,
+      "beforeAnyLogin": true
+    }
+  ]
+}

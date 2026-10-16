@@ -1,0 +1,113 @@
+{
+  "time": "2026-10-16T10:04:21.696Z",
+  "source": "5b3f67bc343729dd6d87140b77af6536ec704086",
+  "environment": "Owned local PG15 test container, brand-new empty database; not the staging data",
+  "database": "sprint1_acceptance_cycle_1792145054189",
+  "container": "sprint1-gitflow-tests-pg-20261015",
+  "result": "PASS",
+  "steps": [
+    {
+      "phase": "apply",
+      "state": {
+        "users": true,
+        "roles": true,
+        "user_roles": true,
+        "events": true,
+        "showtimes": true,
+        "probe": false
+      },
+      "result": "PASS"
+    },
+    {
+      "phase": "202610160001_t09_compensate",
+      "state": {
+        "users": true,
+        "roles": true,
+        "user_roles": true,
+        "events": false,
+        "showtimes": false,
+        "probe": false
+      },
+      "result": "PASS"
+    },
+    {
+      "phase": "202610160002_t04_compensate",
+      "state": {
+        "users": false,
+        "roles": false,
+        "user_roles": false,
+        "events": false,
+        "showtimes": false,
+        "probe": false
+      },
+      "result": "PASS"
+    },
+    {
+      "phase": "202610160003_t04_reapply",
+      "state": {
+        "users": true,
+        "roles": true,
+        "user_roles": true,
+        "events": false,
+        "showtimes": false,
+        "probe": false
+      },
+      "result": "PASS"
+    },
+    {
+      "phase": "202610160004_t09_reapply",
+      "state": {
+        "users": true,
+        "roles": true,
+        "user_roles": true,
+        "events": true,
+        "showtimes": true,
+        "probe": false
+      },
+      "result": "PASS"
+    }
+  ],
+  "migrationNames": [
+    "202609290001_t01_probe_apply",
+    "202609290002_t01_probe_compensate",
+    "202609290003_t01_probe_reapply",
+    "202610010001_t04_users_roles",
+    "202610010002_t09_events_showtimes",
+    "202610160001_t09_compensate",
+    "202610160002_t04_compensate",
+    "202610160003_t04_reapply",
+    "202610160004_t09_reapply"
+  ],
+  "originalSqlHashes": [
+    {
+      "name": "202609290001_t01_probe_apply",
+      "sha256": "43b771ee3f6beddaaffe32138fced7b74111734e0a07c5df47111ae5035cbf48"
+    },
+    {
+      "name": "202609290002_t01_probe_compensate",
+      "sha256": "647827c242469a555c58cd985aedfe0427fe01b25e18c6639dec0eb30105a900"
+    },
+    {
+      "name": "202609290003_t01_probe_reapply",
+      "sha256": "0f4a38dc31eeb7ff119029966de462e1799f06652a427cce90a67019cb534192"
+    },
+    {
+      "name": "202610010001_t04_users_roles",
+      "sha256": "a243da28394d282e53da335a2ef85060569111008c668883de81435a35ebb041"
+    },
+    {
+      "name": "202610010002_t09_events_showtimes",
+      "sha256": "3feab45c6e49d5310cda874ee643c98c12286520ce0a4ebeb196a0c707bd53dd"
+    }
+  ],
+  "resetOrDbPushOrDatabaseDrop": false,
+  "appliedProductMigrationFilesEdited": false,
+  "limitation": "Compensation drops only newly created empty business tables in this isolated verification DB; never an operational downgrade of staging or later-story schema. Full 29-migration fresh-chain proof is separate.",
+  "verificationSource": {
+    "path": "evidence\\sprint1\\20261016-acceptance-audit\\acceptance-migration-cycle.mjs",
+    "sha256": "942964dc2833bbc18fceedb3f1b95c9d7b1f90f704c68ccdc1747af190dea327",
+    "executedAs": ".sprint1-local/acceptance-migration-cycle.mjs",
+    "executedSha256": "0480e96a54454d6a5c70499f2d64cea45dd9e9036719dbf168d8de51a5c2e526",
+    "publicationTransform": "Prettier formatting only; executed and published hashes recorded separately"
+  }
+}

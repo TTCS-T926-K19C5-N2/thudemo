@@ -1,0 +1,202 @@
+{
+  "time": "2026-10-16T12:02:20.362601+00:00",
+  "baseline": "13c528e1f09b5b4362451d4caf7d942211dd29db",
+  "candidate": "Uncommitted S03/onboarding source snapshot, not deployed or integrated",
+  "files": [
+    {
+      "path": ".dockerignore",
+      "sha256": "0228b3a3a315e4e49202b1c0e0a82e35220311174f394cd1e88c66172606606e",
+      "gitBlob": "8888a8966a4164f30a2f56f5de07be124af6af85"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "a9c06727c3c833ebdf7ee9e31381cd1be6de8e8010e2391883f4fa7ff03009a8",
+      "gitBlob": "e7f38fadb3c1caf73aba940c31539bb310db5450"
+    },
+    {
+      "path": "README.md",
+      "sha256": "8c9d98c9a09da7bfc264fe945900a2d61b73042f12a4e0ec75431d35afe1f427",
+      "gitBlob": "0e75bd940afd0d0a8c1f2175aabfc9fd8c8b365a"
+    },
+    {
+      "path": "apps/api/package.json",
+      "sha256": "65db09addd17a20bec8f599711d7a6aa28f3763b7e7828eb87b60b91b1b2ee62",
+      "gitBlob": "b1d618c40e4a5881fec5461c091b8fc0bcf44435"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610160001_registration_consent_delivery/migration.sql",
+      "sha256": "e0b7218b76fb4ef95505c8cfec0f3e1b4d5c6d49d35babaeaaf0795d5d106b21",
+      "gitBlob": "2a20805f4563b64185b693cb3a511b439e8875e6"
+    },
+    {
+      "path": "apps/api/prisma/schema.prisma",
+      "sha256": "6133f9aaf2281c94ec0ef48e6cbf9946be71149947cf33da935724a1654a4b6e",
+      "gitBlob": "9f8372ab119ba05597f27d7346d233aab5329ceb"
+    },
+    {
+      "path": "apps/api/scripts/seed-sprint1-onboarding.mjs",
+      "sha256": "4b8110eca487c1ad3178ac480770980620e6812a7a44a10cf10ddd92752cc731",
+      "gitBlob": "d705001c5b7ff01714976bfc74685d1d61ad8f36"
+    },
+    {
+      "path": "apps/api/src/mail/mail.module.ts",
+      "sha256": "f4eff4e8789bc638181ef1c243bc29602d2e4f94bf118ce1ca3bd889c015b96d",
+      "gitBlob": "77f37853d8f76ee9bd3d07b041b51bc642864de7"
+    },
+    {
+      "path": "apps/api/src/mail/mail.service.spec.ts",
+      "sha256": "dc5683414f0d95c32858c2a1c6563e8c95b435817606501c4ee7c8a5b2c65b41",
+      "gitBlob": "797db2c65b71528365c95f9fe98bfe433506ab63"
+    },
+    {
+      "path": "apps/api/src/mail/mail.service.ts",
+      "sha256": "0afd923e752e1a8e0ad0a8bb91422dcc25bb29ffef620fcf85393f423675331e",
+      "gitBlob": "ccf98e06ee7fa7cc7d61e2f3566aff0715fa5050"
+    },
+    {
+      "path": "apps/api/src/redis/redis.service.ts",
+      "sha256": "8e70e0d5bfbd76edb60e09a2aa1601828e98fabf43e23fe7a22e2903d9af6b62",
+      "gitBlob": "1a9043dfa8d3aac15f10b3de3fcc7de6f711027b"
+    },
+    {
+      "path": "apps/api/src/users/activation-delivery.service.ts",
+      "sha256": "eb018acd8b5d042ef9039afb905622f11296f4273c7e76c3cb8ba5d460a868ba",
+      "gitBlob": "594fb6d378c299ecb21309e87b2a31987f80c972"
+    },
+    {
+      "path": "apps/api/src/users/registration-settings.ts",
+      "sha256": "531e9ad48fb10d83719cd916d43a2a6b11234fd8b13c12902594a12667ddf2f5",
+      "gitBlob": "64ec84fd7785cd6d572923a9419c04ea79e3f961"
+    },
+    {
+      "path": "apps/api/src/users/registration.service.spec.ts",
+      "sha256": "8cc1a51172d203531184cf09d24af454687fc9f6586c6e4b6a0f34cd9c58893b",
+      "gitBlob": "3cf135e1bd8b9bb7aa13736570cca9d8739f67c0"
+    },
+    {
+      "path": "apps/api/src/users/registration.service.ts",
+      "sha256": "f6c1d6cc0458327443c5c226252ab2b66f7c74b42175d32dfb2d6ea1121fe5e5",
+      "gitBlob": "8b5b2a82c24a929951dcf717d7f49987b38f9c8f"
+    },
+    {
+      "path": "apps/api/src/users/users.controller.ts",
+      "sha256": "5f8dbc1cb67926f53ca0304c3568b414c388d52f6f50a2541e3bced0ba5d5a5f",
+      "gitBlob": "b7e299ef746bf0b39b9bfad0709dd01e500bb26b"
+    },
+    {
+      "path": "apps/api/src/users/users.module.ts",
+      "sha256": "ffb43c1d07232f03acdd13ff3e2da560758d92df38bd2a5675f6f135fa611d98",
+      "gitBlob": "78c5893ab60f48a31f81b09db740b8e7daf877de"
+    },
+    {
+      "path": "apps/api/src/users/users.service.ts",
+      "sha256": "60cd53140a37259bd0aecb0955d9ca5fc2f9b13e5517f60405964ce994cf0771",
+      "gitBlob": "2561215b24fc358962be9ae6bc1ffd7453d4ed60"
+    },
+    {
+      "path": "apps/api/test/auth-input-regression.e2e-spec.ts",
+      "sha256": "d890615c9a5b708e7c7d589bf58bda6931329b2b87eede8d4b1db3526777f957",
+      "gitBlob": "ecd8e2f7f540e6f0929b5122b3ae7d396ba8c369"
+    },
+    {
+      "path": "apps/api/test/qr-test-config.ts",
+      "sha256": "0ee5d9dd348e033dd63b457e4c354479cf9bc8b31590d8299086cbf67d1faaa0",
+      "gitBlob": "559a0fbad3d43193cf32bb3421bc332479ad9151"
+    },
+    {
+      "path": "apps/api/test/registration.e2e-spec.ts",
+      "sha256": "c8df42f2a4315d0fc9346be8b8af634b006cef68b7a7b3cf54f55f69af42f9a2",
+      "gitBlob": "f4598bdffdba0acec9bc9bad4b3e1a5e76f0522d"
+    },
+    {
+      "path": "apps/web/src/app/activate/page.tsx",
+      "sha256": "6afabd5a3ea9c6858598e324862ea6a8300f805a12d225200165e39a3aa43558",
+      "gitBlob": "4d78792c57aa1ae6ff2d66097ff125677aca4e91"
+    },
+    {
+      "path": "apps/web/src/app/privacy/page.tsx",
+      "sha256": "f4ac5544db9678faffb7b1324a15c2964bae2c546faf354854a0640a3507db5b",
+      "gitBlob": "ec3a94fe3fb9a92f25af182c33b365f33a9c8e34"
+    },
+    {
+      "path": "apps/web/src/app/product.css",
+      "sha256": "488214539a45c2c4b43fc2ccbb268f48d3d8249d2568fe6b20f3253ac70dcb31",
+      "gitBlob": "c7d08ba5f3ff4e5d62429604630628445b60afe1"
+    },
+    {
+      "path": "apps/web/src/app/register/page.tsx",
+      "sha256": "4eb5dff88993f1edd6e1a42ccd5cdb14b6c9193f51cc46bd076ef04d36deca83",
+      "gitBlob": "d8b1169f438a7818825f277fc66213163c1e3634"
+    },
+    {
+      "path": "apps/web/src/app/resend-activation/page.tsx",
+      "sha256": "e139921bd3c260114df96390a1a676cd31ce3d51bf81b69e663b32b889ba63f4",
+      "gitBlob": "d1880fe24bd83f4a24b54b4b30ffcf1cfde5cd96"
+    },
+    {
+      "path": "apps/web/src/components/activation-form.tsx",
+      "sha256": "4fbcfec037013f9a8d9c616d7174c48548c539dd8c295a0d78f318d471d27d31",
+      "gitBlob": "eebf08a9d10c3fa256d9dc8c78fdfba590b70aec"
+    },
+    {
+      "path": "apps/web/src/components/login-form.tsx",
+      "sha256": "3b22faabcd161d57c144db7fe99b7400d07dc8fc22232bfbd0e8cd0a7399f192",
+      "gitBlob": "abe68a4c7b31b0a70c14aeb705e852744f1c2f35"
+    },
+    {
+      "path": "apps/web/src/components/registration-form.tsx",
+      "sha256": "010d71cdbed3d70093524190c0938ebf59c71c8f1f127f947696c5e84db2555d",
+      "gitBlob": "299bcf95d3a7c75ed589b74df1e5fe925c9086f2"
+    },
+    {
+      "path": "apps/web/src/components/registration-notice.tsx",
+      "sha256": "244ba255f23fd142f032283767537ba5ad0f0705abddfa31359041cfc08cb7ab",
+      "gitBlob": "1f6a10952effcfbc1b104a4c9cffa2a983e08d78"
+    },
+    {
+      "path": "deploy/registration-mail.mjs",
+      "sha256": "b884a70202db0b3db44d3db1604e3199b7764cc023f751a4a7cbeb727b05e72e",
+      "gitBlob": "d09089b0aba290587de94df157bfbc771bef6257"
+    },
+    {
+      "path": "packages/shared/package.json",
+      "sha256": "bf08e45937722877962a7d4dbde86840b891416653e15c75d967a218df599e04",
+      "gitBlob": "5fcf4dbf22af0fc4532c9de276dfebd6814185a2"
+    },
+    {
+      "path": "packages/shared/registration-notice.d.ts",
+      "sha256": "c637f125a7d40afc0fdd36691bc65dba388a3206747162666905995b01407b44",
+      "gitBlob": "8f8242bc14608f207b18baca73dab8f4ec2cbe28"
+    },
+    {
+      "path": "packages/shared/registration-notice.js",
+      "sha256": "74dd6b80c1025d315b43e4388c888cc0de6448552c1830cbca81c5c2ded2343c",
+      "gitBlob": "4d12c9c8bb003b609c7faa68aff02f8c6e8debe4"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "c63278e7607ca6e8b8b3ca4d118fae24578ed48786e62880e88f0cd1c561e57a",
+      "gitBlob": "9852a40f16af265594450e7730f43a6d1e75f7f1"
+    },
+    {
+      "path": "scripts/sprint1-demo.ps1",
+      "sha256": "f383ab28948c7504e69ee6007eafb38221e7f329ee67e6dda6340e0d0f506d1d",
+      "gitBlob": "22add9ffca532a85dc2ae2ff7d76e78f0c006026"
+    },
+    {
+      "path": "scripts/sprint1-onboarding-worker.mjs",
+      "sha256": "11d74c24e4ba99d4c63b758aa636e6665f0bdde9a31713d5a67ebf75bb90660a",
+      "gitBlob": "dec1b187975750281f4a78c908a90a833c99c411"
+    },
+    {
+      "path": "scripts/sprint1-onboarding.mjs",
+      "sha256": "b0d6cdc02dfa016a875fbf4ca1656a6ea7f322de87e7eb4f355d5d92b6fa77c1",
+      "gitBlob": "e904d0f64971bda83302b3bd00c4e0dd33c702a8"
+    },
+    {
+      "path": "scripts/sprint1-staging.mjs",
+      "sha256": "0d854d58e1c292eb53e630c305969f1d110b750c3356973c683c4542c78171da",
+      "gitBlob": "eb9b3c0e7b2a4039a084e9de69ca5893c99759cb"
+    }
+  ]
+}

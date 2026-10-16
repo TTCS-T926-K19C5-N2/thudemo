@@ -1,0 +1,73 @@
+{
+  "source": "81d1dd9d8f453b32ed0c6956399e5600f71a32d6 + local diff",
+  "time": "2026-10-15T07:57:13.348Z",
+  "results": [
+    {
+      "name": "anonymous401",
+      "status": "PASS"
+    },
+    {
+      "name": "session-cookie-contract",
+      "status": "PASS"
+    },
+    {
+      "name": "field-validation400",
+      "status": "PASS"
+    },
+    {
+      "name": "create-draft-owner-list-public-hidden",
+      "status": "PASS"
+    },
+    {
+      "name": "edit-persist-read",
+      "status": "PASS"
+    },
+    {
+      "name": "buyer-and-other-organizer-server403",
+      "status": "PASS"
+    },
+    {
+      "name": "multi-role-and-default-deny403",
+      "status": "PASS"
+    },
+    {
+      "name": "past-rejected-utc-roundtrip-duplicate-warning-saved",
+      "status": "PASS"
+    },
+    {
+      "name": "event-delete-fk-restrict-no-history-cascade",
+      "status": "PASS"
+    },
+    {
+      "name": "db-unique-five-roles-six-argon2id-fixtures",
+      "status": "PASS"
+    },
+    {
+      "name": "logout-replay401",
+      "status": "PASS"
+    },
+    {
+      "name": "expired-server-session401-fixture-no-production-ttl-change",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown-email-and-wrong-password-same-error",
+      "status": "PASS"
+    },
+    {
+      "name": "five-failures-sixth429-real-redis-ttl",
+      "status": "PASS",
+      "ttlSeconds": 900
+    },
+    {
+      "name": "real-api-process-restart-retains-redis-lock",
+      "status": "PASS",
+      "remainingSeconds": 899
+    },
+    {
+      "name": "ip-budget-account-rotation-spoofed-forwarded-header-independent-peer",
+      "status": "PASS"
+    }
+  ],
+  "phase": "Initial local IP-budget acceptance before attested web entry. No immutable complete patch digest captured at this initial run; final HTTP rerun and full integration results corroborate unchanged service contracts. Do not treat this as final whole-diff certification."
+}

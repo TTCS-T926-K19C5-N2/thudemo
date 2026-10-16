@@ -1,0 +1,3 @@
+T-02 / lint	UNKNOWN STEP	2026-10-16T09:08:48.6843156Z apps/web lint: /home/runner/work/thudemo/thudemo/apps/web/src/sprint1-ci-lint-probe.tsx
+T-02 / lint	UNKNOWN STEP	2026-10-16T09:08:48.6844613Z apps/web lint:   3:10  error  Do not use an `<a>` element to navigate to `/events/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+T-02 / lint	UNKNOWN STEP	2026-10-16T09:08:48.6849645Z apps/web lint: ✖ 1 problem (1 error, 0 warnings)

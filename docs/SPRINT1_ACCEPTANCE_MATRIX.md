@@ -1,0 +1,262 @@
+# Sprint 1 — ma trận nghiệm thu đã đối chiếu nguồn (16/10/2026)
+
+## Checkpoint mạng và nghiệm thu mới nhất — 2026-10-16T16:12:49.189416+00:00
+
+URL hiện tại **https://10.88.164.155:3470**, candidate thủ công **02a8e86a6fea05a49bd27902c08652920e444a10**. Người dùng xác nhận chuyển lại mạng này; giữ nguyên certificate/key, cập nhật cả API origin và activation-link origin. `network-return-current.json`: HTTPS health200; firewall đã PASS: người dùng chạy Administrator, live readback đúng10.88.164.155/TCP3470/LocalSubnet/InboundAllow. Evidence email thật ở IP trước vẫn đúng thời điểm/môi trường, không đổi nhãn sang mạng mới.
+
+`rollback-current.json`: rollback thật sang a2 với database30 migrations, smoke/health, rồi khôi phục02a; data counts/history/key bytes giữ nguyên. Old API chỉ tương thích auth/events, không có S03 activation mới. `staging-secret-sweep.json`: actual candidate API/replica/web stdout+stderr không chứa sensitive literal đã chọn; không phải chứng minh không có mọi loại leak. `smtp-product-staging.json`: user nhận/kích hoạt/login, server xác minh BUYER/consent/consumed tokens và login/logout/replay401 PASS.
+
+Chưa Sprint Done: exact02a clean clone đã full frozen install/generate/30migrations/seed/build/READY và browser6assertions/lifecycle PASS ở profile19b; các lần RAMguard từ chối trước đó giữ lịch sử. Review người thật, merge develop, CI integrated và watcher auto-deploy <10phút vẫn chưa thực hiện.
+
+Bổ sung audit evidence: `onboarding-boundary-proof.json` kiểm trực tiếp process Node độc lập vẫn sống qua Stop/Start; config/env/signing bytes giữ nguyên, mọi PG/Redis/Mailpit publishedport bind127.0.0.1, credentials được Git ignore. ONBOARD04/05 được cập nhật đúng ca đã kiểm; native API0.0.0.0 vẫn là giới hạn baseline công khai, không đồng nhất với DB/cache binding.
+
+## Trạng thái hiện hành — 16/10/2026, sau DEC17 và sửa admission
+
+**Chưa Sprint Done.** Candidate source `02a8e86a6fea05a49bd27902c08652920e444a10`; develop `80f7a53d752d78ea6b65da3f8c6c08ca23e78176`; laptopHTTPS `https://10.112.63.197:3470` đã chạy candidate thủ công `02a8e86a6fea05a49bd27902c08652920e444a10` với S03; chưa merge develop/auto-deploy. Wi-Fi đổi lại10.88.164.155; đã rebind và kiểm trusted HTTPS, firewall readback PASS theo xác nhận người dùng. Phạm vi hiện tại DEC15: **S01–S04/K01, T01–T10**. DEC09 loạiS03 là lịch sử; S30/S31/T31 vẫn ngoài nghiệm thu. Bảng dưới là kết quả có giới hạn, không thay chứng cứ gốc bằng nhãn head mới.
+
+K01: PO đã trả lời **“Chấp thuận đầu ra, ghi rõ sai lệch timebox/mentor”**. DEC17 ghi nhận đầu ra được chấp thuận hiện tại; không có bằng chứng quá khứ từng timebox1ngày/cómentor. Không hồi tốPASS, không miễn approvalPR/CI/staging.
+
+Evidence tương đối bảng: `evidence/sprint1/20261016-s03-onboarding/` (audit = `20261016-acceptance-audit/`). Ma trận hai chiều gốc72điều khoản giữ trong `audit/traceability.json`; bổ sung22mụcS03/onboarding trong `traceability-s03.json`. Các checkpoint cũ phía dưới giữ lịch sử, không được đọc như trạng thái hiện tại.
+
+| Task / Story | Hành vi bắt buộc và ca đã kiểm | Evidence / revision / môi trường | Kết quả local và điều kiện Done |
+|---|---|---|---|
+| T01 / S01 | Toolchain/lock/rootenv; PG/Redis thật; generate/migrate; dependency outage; apply→bù→reapply; clone mới | audit/clean-native.json + migration-cycle.json (5b); clone610/30migrations; regression hiện tại | PASS các ca local đã nêu; rebuild02a+browser+owned lifecycle đã PASS; review/tích hợp còn chờ |
+| T02 / S01 | Push/PR build/typecheck/lint/test song song; whole pipeline<5phút; lint đỏ chặn merge; checks đúng tên | ci-61030ac.json: run38914308239,253s; negativePR95 lịch sử; regression-admission/gates.json | PASS snapshot610 và negativegate; CIexact02a PASS228giây tại run38918293689, không chuyển S30/T31 thành AC |
+| T03 / S01 | Image chạy thật; staging riêng; health-before-switch; failgiữold; backup/migration/rollback; merge→autohealthy<10phút | a2/accf laptop historical runtime; source/watch/rollback evidence cũ | BLOCKED tổng task: candidateS03 đã deploy thủ công (580.061s), HTTPS/API/browser/email thật PASS ở10.112.63.197; chưa có merge→watcher auto-deploy. Laptop hợp lệ, không cầnVPS |
+| T04 / S02 | users/roles/join đủ5vai trò; DBuniqueemail; Argon2id/TEXT; guardedseed chạy lặp; migration | audit migration-cycle, clean-native; populated-migration.json29→30; clone610fixtures | PASS local; chờ review và bản tích hợp, không tự đổiDone |
+| T05 / S02 | Login/nav; cookies/session/expiry/logout401; 5sai/lần6khóa900s; APIrestart/TTL tự nhiên; emailparity; account+IP | HTTPSa2 +two-peer b52 có provenance; final HTTPregression; login classifier/counter không đổi | PASS ca đã kiểm; không chạy lại probeIP. Final integrated smoke còn chờ |
+| T06 / S02 | Global defaultdeny; unknownroute403; anonymous401; buyer directAPI403+log; ownership/multirole/nav | HTTPSa2 +NestHTTP/PG/Redis; regression-admission98cases; browser610 | PASS local ca liên quan; final integrated và review còn chờ |
+| T07 / S03 | name/email/password validation; normalized unique pendingBUYER; genericduplicate; approvednotice; uncheckedconsent; atomic user/version/purpose/status/time; consentfault503/retry | traceability-s03 T07-01…08; browser-02a8e86; consent-storage-fault.json; current98integration | PASS local assertions; PASS staging candidate02a: trusted HTTPS browser +API, smtp-product-staging.json; chưa phải bản tích hợp |
+| T08 / S03 | SMTPadapter; randomhashed24h/one-use; concurrentactivation; mailbox finalpassword; unverified401; resend5/h; boundedretry; noopenredirect; mailprivacy | browser-02a8e86; smtp-product-local4fec humanreceipt+DB/session; populatedmigration; admission-fix.json current | PASS các ca local/delivery đã nêu; runtime log/key sweep hiện tại PASS; PASS staging02a gửi/nhận/kích hoạt/login thật: smtp-product-staging.json; user trực tiếp xác nhận, server/session đối chiếu |
+| T09 / S04 | owner/event/showtimeFK; deliberateRestrict; PAIDhistory retained; TIMESTAMPTZ/UTC; migrationcycle | audit5b migration-cycle +a2FK/paidfixture; populatedmigration29→30 | PASS local/baselinecompatible; current integrated smoke còn chờ |
+| T10 / S04 | A draft/create/edit/list/reload; buyerhidden/403; BURL/API403; futurelinked; pastfieldreject; duplicatewarn/save; doubleclick1; inputretained; VNtime | a2 realHTTPS15desktop/mobile/TZcases +clean-clone-browser610 +current integration | PASS ca đã kiểm; staging-browser-02a8e86/results.json và staging-api-02a8e86/https-api.json đã kiểm candidate02a mới; final integrated còn chờ |
+| K01 | PG/Redis200cùng1ghế×3; winner/conflict/errors/latency; expiry/restart/persistence/tradeoffs; decision | docs/K01_EVIDENCE.md +research artifacts; DEC14PGauthority; DEC17directPOapproval | PASS đầu ra kỹ thuật có sai lệch quy trình được PO chấp thuận. Timebox1ngày/mentor lịch sử vẫn NOT RUN; không còn chờ quyết định sai lệch; reviewDoD riêng |
+| DoD02 | Người khác trực tiếp review bản cuối | PR91 reviews hiệnrỗng, author sangnguyencoder; review tự động ghi đúng bản chất | BLOCKED; không tựapprove/đổi tài khoản/bypass |
+| DoD03 | Test nhánh mới/coverage không giảm | foundationcomparison lịch sử +new-sourcecoverage API92.13lines/83.01branches, web97.19/88.72 tại610 | PASS snapshot đã đo; coverage-delta/comparison.json cùng config610→02a: API88.41lines/80.74branches, web98.28/90.90; cảline/branch không giảm |
+| DoD04 | CI build/lint/typecheck/test xanh đúng revision | ci-61030ac.json253s; current source mới đã push | PASS head02a; CI phải kiểm riêng khi có commit cuối sau đó |
+| DoD05 | Dependency/secret scan | dependency-delta.json fullaudit0; secret-preflight.json; historicalscan +supplementfa4 | PASS dependencygraph; current runtime-secret-sweep.json PASS; security03 đã sửa; candidate staging API/browser/SMTP/log/restart đã có evidence |
+| DoD06 | AC toàn bộ trên staging | candidate02a với30migrations đã kiểm thủ công; bản tích hợp chưa có | NOT RUN bản tích hợp, không đóng bởi localMailpit/CI |
+| DoD07–08 | Regression đồng thời/idempotence/cleanup khi phần sửa ảnh hưởng | full98PGRedis+4scanner; oldK01research táchendpointT31 | PASS regression hiện tại; không nhận nghiệm thu story ngoàiSprint1 |
+| DoD09 | Secret/token/PII khônglog; deniallog hợp lệ | priora2rolelog +literalpreflight; S03fixedgenericerrors | PASS sweep runtime local cuối theo phạm vi artifact; staging-S03 log sweep còn chờ; baselinepaymentF15 tách riêng |
+| DoD10 | Docs/backlog/task/PR đúng thực tế | DEC15–17 +ma trận này +traceability; parenttasks Inprogress | Đang đồng bộ; không đổi tất cảDone từ báo cáo |
+
+
+### Findings và giới hạn current
+
+- **S03-SEC01 HIGH:** pending pre-registration giữ mật khẩu attacker sau mailboxactivation. Sửa mailboxholder chọn mật khẩu cuối, khóa user/consume mọi token atomic; attacker401/owner200 và concurrent200/400 đã kiểm.
+- **S03-SEC02 MEDIUM:** không chặn tổng công việcSMTP. Sửa sharedRedis120/hour, failclosed503, giữ resend5/hour/email; allowlist trống vẫn mọi email hợp lệ.
+- **S03-SEC03 MEDIUM:** no-opresend dùng hết budget mọi người. Trướcfix31st201; saufix120requests =30admitted/90blocked, shareddebits30, peerkhác201, forged403. Caller30/hour dùng socket/HMAC; XFFkhôngchọnidentity. NAT/IPchung chia sẻbudget; nhiềupeer vẫn có thể dùng hết sharedcap có chủ đích. `admission-fix.json` giữrepro/cause/fix/test.
+- Lỗi persistenceconsent đã chứng minh503/noaccount/notoken/nosend rồiretry201 bằng trigger thử riêng, không sửa migration/staging. `consent-storage-fault.json`.
+- Clone610 firstcommandREADY và lifecycleprofile443 đã PASS; clonefreshprofileb257 đã rebuild02a sau khi RAMguard2GiB đạt; browser17assertions+5flows và stop/start/30migrations/secretbytes/dataretention đã PASS tại chính profile này. Các lần guard từ chối được giữ lịch sử. Không đổinhãn PASS của profile trước. Cache resume512MiB chỉ áp matching source, không attestation compiled artifacts. Không bỏguard hoặc dừng ứng dụng khác.
+- SMTP/inbox thật đã PASS local4fec theo xác nhận user; final password UI610 kiểm bằngcatcher riêng. Chưa gọi đây là stagingreceipt. OldAPIrollback không kích hoạt plaintextlink sau migration30: giữ registrationoff hoặc handler mới, không hứa downgradeS03 đầy đủ.
+
+---
+
+## Các checkpoint trước — giữ lịch sử, đọc trạng thái hiện hành ở trên
+
+
+> **Scope mới DEC15:** S03/T07/T08 đã được user đưa vào Sprint1; thêm clone sạch/một lệnh đầy đủ. Các kết quả cũ bên dưới chỉ phủ phạm vi trước; S03/onboarding đang review, chưa PASS. `evidence/sprint1/20261016-s03-onboarding/scope-and-plan.json` là ledger khởi đầu, sẽ mở rộng từng AC/NFR/DoD.
+
+## Cập nhật xác nhận PO — DEC-14, 16/10/2026
+
+PostgreSQL authority cho **laptop staging dữ liệu giả đã được Nguyễn Văn Sáng (PO) chấp thuận trực tiếp** sau gói K01; DEC14/k01-approval.json giữ nguyên văn và ngữ cảnh. Đây không còn blocker “chưa quyết định staging authority”. K01-D timebox/mentor vẫn NOT RUN; DoD02 vẫn BLOCKED: user nhận review nhưng PR author và authenticated account đều sangnguyencoder, chưa có approval thành viên khác. Không giả review hoặc suy phê duyệt PO thành miễn quy trình. Các đoạn checkpoint trước dưới đây giữ trạng thái tại thời điểm cũ; trạng thái hiện hành phải đọc cùng cập nhật này.
+
+**Chênh lệch phiên bản đã đối chiếu:** TECH01/T01AC1 lịch sử ghi Next16.3.6; candidate dùng Next/eslint-config-next16.3.8. Đây là bản vá tương thích theo quyền sửa dependency/security được người dùng cấp sau TECH01 (attachment795f…, dòng16/34/79–87), đã frozen-install/build/smoke/audit; không âm thầm nhận16.3.8 là16.3.6. Node24.21/pnpm10.15.1/React19.2.8/Nest12.1/Prisma7.10/Tailwind4 giữ đúng stack. Nguồn và hash tại `version-authorization.json`.
+
+Runtime sản phẩm **a2e5f675a371e9a0200b1ab7d2a83ac837d3717d**, PR91→develop80f7a53, UI V1. DEC09 giữ S01/T01–03,S02/T04–06,S04/T09–10,K01. Không chuyển S30/S31 hoặc T31 sang Sprint1.
+
+Rà lại đủ62mục cũ: **55 phép kiểm AC/DoD + 1 metadata SCOPE, 2 hồi quy có điều kiện, 1 hỗ trợ vận hành, 3 phép đo story khác**; audit mới bổ sung K01-D từ yêu cầu gốc, không thêm AC. [gate-scope-audit.json](../evidence/sprint1/20261016-closeout/gate-scope-audit.json) giữ mapping từng ID và nguồn, [scope-sources.json](../evidence/sprint1/20261016-closeout/scope-sources.json) chép đúng workbook rows/hash. Các ID cũ K01-B/B-H1/B-H2 chỉ giữ để truyvết, đã chuyển sang nhóm phépđo story khác. K01 row14 là200yêu cầu/cùng1ghế, đo cảPG/Redis rồi quyết định; T31 Tasks row32 làSprint2,200/100×10. DEC11/12 không miễn NFR nhưng không đổi Sprint. Không tìm thấy quyết định đưa T31 thành AC Sprint1.
+
+Evidence trong bảng tương đối với `evidence/sprint1/20261016-closeout/`. GitHub CI phân biệt PRhead với merge-checkout/tree; không gắn source mới vào run cũ. Gate hậu merge chỉ kiểm sau merge hợp lệ.
+
+SCOPE metadata PASS: DEC09/DEC13, source-provenance và sources.json; không tính là một AC.
+
+## Nghiệm thu Sprint1
+
+| ID / Story-Task | AC/NFR/DoD và nguồn | Implementation | Test case | Môi trường / SHA | Evidence | Kết quả | Điều kiện / giới hạn |
+|---|---|---|---|---|---|---|---|
+| T01-01 S01/T01 | Node24.21/pnpm10.15.1/frozen lock — T01AC1/TECH01 + later user-authorized compatible dependency security patch (version-authorization.json) | Pinned stack; Next/eslint-config-next16.3.8 authorized security patch, not historical16.3.6 | fresh archive install; versions | Pristine git archive; Windows native web/API, Compose PG15/Redis7; separate empty DB, checked-free alternate ports / 5b3f67bc3437 | ../20261016-acceptance-audit/clean-native.json; ../20261016-acceptance-audit/version-authorization.json | PASS | Frozen lock install/generate/full29 migrations/build; native health/home/proxy200. Port isolation recorded explicitly, no existing process stopped. |
+| T01-02 S01/T01 | Root env, separate PG15/Redis7; web/API startup — ../tasks/T-01.md AC1–5; TECH01 | ConfigModule/demo runner | independent DB/profile start; dependency health | Pristine git archive; Windows native web/API, Compose PG15/Redis7; separate empty DB, checked-free alternate ports / 5b3f67bc3437 | ../20261016-acceptance-audit/clean-native.json | PASS | Frozen lock install/generate/full29 migrations/build; native health/home/proxy200. Port isolation recorded explicitly, no existing process stopped. |
+| T01-03 S01/T01 | Generate Prisma/migrate clean database — ../tasks/T-01.md AC1–5; TECH01 | Prisma migrations | full migration on guarded test DB, no reset | Pristine git archive; Windows native web/API, Compose PG15/Redis7; separate empty DB, checked-free alternate ports / 5b3f67bc3437 | ../20261016-acceptance-audit/clean-native.json | PASS | Frozen lock install/generate/full29 migrations/build; native health/home/proxy200. Port isolation recorded explicitly, no existing process stopped. |
+| T01-04 S01/T01 | Forward/compensating/reapply migration cycle — ../tasks/T-01.md AC1–5; TECH01 | append-only migrations | disposable schema cycle | Brand-new empty guarded PG15 verification database; current original SQL; not operational staging downgrade / 5b3f67bc3437 | ../20261016-acceptance-audit/migration-cycle.json | PASS | Prisma records nine migrations; checked table state after each compensation/reapply. Current full29-chain proof separately available. |
+| T01-05 S01/T01 | Health200 with dependencies; outage503 — ../tasks/T-01.md AC1–5; TECH01 | health module | stop owned PG/Redis then recover | isolated local/HTTPS staging as artifact states / a2e5f675a371 | dependency-health-final.json | PASS | Each owned dependency stopped:503; restored:200, persistent volumes retained. |
+| T01-06 S01/T01 | No secrets in frontend/source/config logs — ../tasks/T-01.md AC1–5; TECH01 | private env/HMAC/key paths | literal credential scan + bundle/context audit | isolated local/HTTPS staging as artifact states / a2e5f675a371 | secret-review.json | PASS | Actual private credential/key literals checked across publishable diff/evidence; frontend static files checked separately. Not a whole-product PII audit. |
+| T02-01 S01/T02 | Build/lint/typecheck/test on push and PR; lint/test parallel — ../tasks/T-02.md | ci.yml | exact SHA check runs + workflow graph | GitHub / c7bb13cf8ea2 | ../20261016-acceptance-audit/ci-c7bb13c.json | PASS | Exact c7bb13c core workflow209s and5required contexts success; final subsequent documentation head must be read live, no reuse as exact-head check. |
+| T02-02 S01/T02 | Deliberate red lint prevents merge — ../tasks/T-02.md AC | GitHub protection/rulesets | read live develop policy + historical red lint | GitHub protected develop / isolated negative PR95 closed unmerged / 3051bba97a2f | protection/negative-gate.json; protection/protection-after.json | PASS | Actual lint failure required=true, other four required checks success, PR BLOCKED under enforced-admin protection; no merge endpoint/forged approval. Approval was also missing, recorded explicitly; no claim to isolate internal blocker cause. |
+| T02-03 S01/T02 | Pipeline under5minutes — ../tasks/T-02.md NFR | parallel core jobs + dependent research/hold jobs | exact head workflow wall time, no threshold change | GitHub / c7bb13cf8ea2 | ../20261016-acceptance-audit/ci-c7bb13c.json | PASS | Exact c7bb13c core workflow209s and5required contexts success; final subsequent documentation head must be read live, no reuse as exact-head check. |
+| T02-04 S01/T02 | Red/missing/pending checks do not invoke deploy — S01 backlogrow2/T03 | watchOnce same production orchestration | 10 controlled adapters + real deployment child sentinel | isolated Windows rehearsal / cdb7fdbac559 | watcher-gate-rehearsal.json | PASS | Not a live bad GitHub push or postmerge auto deployment Source hash compatibility of watcher in source-provenance.json; rehearsal is not live GitHub merge enforcement. |
+| T03-01 S01/T03 | Application web/API images run with Docker — ../tasks/T-03.md Nội dung | Dockerfile web/api; loopback slots/private network | build both; non-root/image SHA; health/login smoke | laptop LAN HTTPS / a2e5f675a371 | runtime.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T03-02 S01/T03 | Home200 and candidate health/smoke before switch — T03 + backlog S01 | atomic active/previous pointer | full HTTPS home/health/login before promotion | laptop / a2e5f675a371 | runtime.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T03-03 S01/T03 | Merge develop→healthy under10min, automatic — T03 AC + DEC13 | watcher exactSHA/allchecks/ancestor | merge timestamp→CI→automatic deployment→healthy | integrated develop laptop / a2e5f675a371 | source-provenance.json | BLOCKED | Only after actual approved merge: integratedSHA CI, automatic watcher deploy, merge-to-healthy<10min. No manual substitute. |
+| T03-04 S01/T03 | Failed candidate keeps healthy old release — T03 AC/NFR | pre-switch smoke/atomic restore | bad HMAC candidate rejected while old200 | real staging / accf832be519 | timeline.json | PASS | Controlled bad-attestation candidate accf832 was rejected before traffic switch, active accf832200. Deployment decision code unchanged at a2; evidence remains historical, not a new a2 failure run. |
+| T03-05 S01/T03 | Rollback preserves data/migration history/keys — T03 + architecture | pointer rollback + pg_dump + additive migration review | Actual a2→accf832→a2 rollback, health/data/history/key checks | real staging / a2e5f675a371 | rollback-final.json | PASS | Actual a2→accf832→a2; HTTPS200 both switches, data/migration counts and key hashes unchanged; no down migration/reset. |
+| T04-01 S02/T04 | Five roles and relational user/role schema — ../tasks/T-04.md AC/NFR | Prisma users/roles/join | check role names/relations | real isolated PostgreSQL / a2e5f675a371 | data-final.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T04-02 S02/T04 | Email unique enforced by DB — ../tasks/T-04.md AC/NFR | unique users.email | duplicate insert rejected | real isolated PostgreSQL / a2e5f675a371 | data-final.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T04-03 S02/T04 | Argon2id, adequate password column — ../tasks/T-04.md AC/NFR | AuthService/seed | hash verification, no plaintext | real isolated PostgreSQL / a2e5f675a371 | data-final.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T04-04 S02/T04 | Seed five roles plus admin and organizer; additional A/B/buyer/lock fixtures support requested demo — T04 Nội dung/AC (five roles/two accounts); extra fixtures from user demo request, not new Story AC | guarded seed and private config | idempotent seed; foreign target refused | real isolated PostgreSQL / a2e5f675a371 | data-final.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T04-05 S02/T04 | Forward/back compensation for user schema — ../tasks/T-04.md AC/NFR | append-only migration cycle | compensate+reapply in disposable DB | Brand-new empty guarded PG15 verification database; current original SQL; not operational staging downgrade / 5b3f67bc3437 | ../20261016-acceptance-audit/migration-cycle.json | PASS | Prisma records nine migrations; checked table state after each compensation/reapply. Current full29-chain proof separately available. |
+| T05-01 S02/T05 | Correct login/nav/Secure HttpOnly Lax cookie900s — ../tasks/T-05.md + S02 backlogrow5 + risk-and-security | auth/session/UI | HTTPS login/me/navigation | real HTTPS/Redis/browser as evidence states / a2e5f675a371 | api-a2e5f67/https-api.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T05-02 S02/T05 | Anonymous/expired sessions401; UI return/recovery — ../tasks/T-05.md + S02 backlogrow5 + risk-and-security | session guard/EventEditor/LoginForm | expire only own fixture session; preserve draft by same owner | real HTTPS/Redis/browser as evidence states / a2e5f675a371 | api-a2e5f67/https-api.json; browser-a2e5f67/results.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T05-03 S02/T05 | Logout invalidates old token — ../tasks/T-05.md + S02 backlogrow5 + risk-and-security | server sessions | logout then replay401 | real HTTPS/Redis/browser as evidence states / a2e5f675a371 | api-a2e5f67/https-api.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T05-04 S02/T05 | 5wrong, sixth429, lock15min and remaining time — ../tasks/T-05.md + S02 backlogrow5 + risk-and-security | Redis counters | realAPI failures + actualTTL900 | real HTTPS/Redis/browser as evidence states / a2e5f675a371 | api-a2e5f67/https-api.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T05-05 S02/T05 | RestartAPI while Redis survives keeps lock — ../tasks/T-05.md + S02 backlogrow5 + risk-and-security | Redis shared lock | restart only owned API→429 | real HTTPS/Redis/browser as evidence states / a2e5f675a371 | api-a2e5f67/https-api.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T05-06 S02/T05 | Natural900s expiry releases lock — ../tasks/T-05.md + S02 backlogrow5 + risk-and-security | Redis TTL | wait real15min, valid login200; no DEL | real HTTPS/Redis/browser as evidence states / a2e5f675a371 | api-a2e5f67/https-api.json | PASS | Waited actual900s/PTTL expiry then valid login200. No DEL, shortened TTL or IP brute-force repeat. Earlier TTL=0 harness failure retained at api-final. |
+| T05-07 S02/T05 | Unknown email/wrong password same response — ../tasks/T-05.md + S02 backlogrow5 + risk-and-security | AuthService | realAPI401 parity | real HTTPS/Redis/browser as evidence states / a2e5f675a371 | ../20261016-acceptance-audit/enumeration.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T05-08 S02/T05 | IP/account combined, forged/case alias resistant — ../tasks/T-05.md + S02 backlogrow5 + risk-and-security | gateway HMAC + Redis | two real Wi-Fi peers+Redis610s+laptop200 | real HTTPS/Redis/browser as evidence states / b52ba6afa07d | ../20261016-two-peer/correlation.json | PASS | Final topology compatible source + focused regression; no repeat second-device brute force |
+| T06-01 S02/T06 | Buyer API create/edit403 + denial log — ../tasks/T-06.md AC/NFR; S02AC | RolesGuard/event ownership | curl/API spoof directly despite hiddenUI | unit + real API + browser / a2e5f675a371 | api-a2e5f67/https-api.json; denial-log.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T06-02 S02/T06 | Default deny unannotated route — ../tasks/T-06.md AC/NFR; S02AC | global RolesGuard | auth-roles.e2e-spec.ts authenticated undeclared root403 with real Nest HTTP/PG; guard source and full integration suite success | Nest HTTP/supertest + PG15/Redis7 isolated; no public undeclared route added / a2e5f675a371 | checks-a2e5f67/gates.json | PASS | Verified on the stated source/environment; no postmerge or human approval inferred. |
+| T06-03 S02/T06 | Intentional public routes; inventory — ../tasks/T-06.md AC/NFR; S02AC | decorators + AppModule | route inventory; research both-prefix routes404 | unit + real API + browser / a2e5f675a371 | route-inventory.txt; checks-a2e5f67/gates.json | PASS | Verified on the stated source/environment; no postmerge or human approval inferred. |
+| T06-04 S02/T06 | Organizer navigation/no accountant scope — ../tasks/T-06.md AC/NFR; S02AC | AppShell/roles | UI A nav, direct accountant forbidden | unit + real API + browser / a2e5f675a371 | browser-a2e5f67/results.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T06-05 S02/T06 | Multiple roles; no implicit admin ownership override — ../tasks/T-06.md AC/NFR; S02AC | roles.some/findOwned | multi-role allowed appropriate routes; foreignowner403 | unit + real API + browser / a2e5f675a371 | data-final.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T09-01 S04/T09 | FK users/events/showtimes; deliberate Restrict delete — ../tasks/T-09.md AC | schema/FK | cannot delete event referenced by showtimes/order/ticket history | real PG / a2e5f675a371 | api-a2e5f67/https-api.json; paid-parent-fk.json | PASS | Actual event/showtime delete with fake PAID order/ticket is rejected P2003 and history retained. New fixture transaction rolled back; no deletion API added. |
+| T09-02 S04/T09 | Migration forward/compensate/reapply — ../tasks/T-09.md AC | migration history | fresh migration + dedicated compensation | Brand-new empty guarded PG15 verification database; current original SQL; not operational staging downgrade / 5b3f67bc3437 | ../20261016-acceptance-audit/migration-cycle.json | PASS | Prisma records nine migrations; checked table state after each compensation/reapply. Current full29-chain proof separately available. |
+| T09-03 S04/T09 | timestamptz/UTC storage — ../tasks/T-09.md NFR + S04NFR | Prisma Timestamptz | DBtype and roundtrip UTC→VN | PG/browser / a2e5f675a371 | api-a2e5f67/https-api.json | PASS | Real UTC/timestamptz storage and VN roundtrip verified; paid-parent FK evidence belongs to T09-01. |
+| T10-01 S04/T10 | Create valid event as draft; buyer cannot see — ../tasks/T-10.md + S04 backlogrow8 AC/NFR | event/showtime API + V1 editor | A create201,draft; buyer catalog omits | real API/DB + desktop/mobile HTTPS / a2e5f675a371 | api-a2e5f67/https-api.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T10-02 S04/T10 | Owner lists/edits; reload preserves — ../tasks/T-10.md + S04 backlogrow8 AC/NFR | event/showtime API + V1 editor | A change/reload/readback | real API/DB + desktop/mobile HTTPS / a2e5f675a371 | browser-a2e5f67/results.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T10-03 S04/T10 | Other organizer URL/API denied403 — ../tasks/T-10.md + S04 backlogrow8 AC/NFR | event/showtime API + V1 editor | B manage+PATCH eventA | real API/DB + desktop/mobile HTTPS / a2e5f675a371 | browser-a2e5f67/results.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T10-04 S04/T10 | Buyer cannot create/edit — ../tasks/T-10.md + S04 backlogrow8 AC/NFR | event/showtime API + V1 editor | Buyer direct API403 | real API/DB + desktop/mobile HTTPS / a2e5f675a371 | api-a2e5f67/https-api.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T10-05 S04/T10 | Future showtime linked to event — ../tasks/T-10.md + S04 backlogrow8 AC/NFR | event/showtime API + V1 editor | future201 correctevent | real API/DB + desktop/mobile HTTPS / a2e5f675a371 | api-a2e5f67/https-api.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T10-06 S04/T10 | Past time rejected server/UI clearly — ../tasks/T-10.md + S04 backlogrow8 AC/NFR | event/showtime API + V1 editor | past400 with field feedback | real API/DB + desktop/mobile HTTPS / a2e5f675a371 | api-a2e5f67/https-api.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T10-07 S04/T10 | Exact duplicate time warns but saves — ../tasks/T-10.md + S04 backlogrow8 AC/NFR | event/showtime API + V1 editor | two201 plus duplicatewarning | real API/DB + desktop/mobile HTTPS / a2e5f675a371 | api-a2e5f67/https-api.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T10-08 S04/T10 | No unintentional duplicate UI submit — ../tasks/T-10.md + S04 backlogrow8 AC/NFR | event/showtime API + V1 editor | rapid clicks/ref disable/count1 | real API/DB + desktop/mobile HTTPS / a2e5f675a371 | browser-a2e5f67/results.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T10-09 S04/T10 | Validation keeps input and field errors recover — ../tasks/T-10.md + S04 backlogrow8 AC/NFR | event/showtime API + V1 editor | invalid→correct→save, expiry→sameowner restore | real API/DB + desktop/mobile HTTPS / a2e5f675a371 | browser-a2e5f67/results.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| T10-10 S04/T10 | Vietnam timezone stable across create/read/edit/reload — ../tasks/T-10.md + S04 backlogrow8 AC/NFR | event/showtime API + V1 editor | USbrowserTZ+VNinput midnight→UTCstorage→reload | real API/DB + desktop/mobile HTTPS / a2e5f675a371 | browser-a2e5f67/results.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+| K01-A K01 | Both PG/Redis measured with conditions and concurrency — Backlog K01 row14 (scope DEC09): 200 concurrent/same ONE seat, both stores, figures/conditions; architecture§16 Sprint1 | research separate modules/scripts | 2process/store200same-seat×3; expiry/stale/retry/restart | dedicated laptop research15456/16406 / b52ba6afa07d | ../20261015-handoff/k01-laptop-research/k01-candidates.json | PASS | Graceful restart only; not power-loss or product endpoint |
+| K01-C K01 | Documented mechanism choice, reject rationale and actual PO confirmation — Backlog!L14; DEC03/11/12 updated by direct PO DEC14 | PG authority accepted for fake-data laptop staging, Redis cache/counter | Read actual direct human confirmation against specific reviewed K01 proposal; no proxy signature | PO decision record, not an endpoint benchmark or independent code approval / ddcb4c1f7b87 | ../20261016-acceptance-audit/k01-approval.json; ../../../docs/K01_EVIDENCE.md | PASS | Authority decision gate closed by actual PO confirmation. K01-D process evidence and DoD02 genuine other-member review remain outstanding. |
+| K01-D K01 | Spike timebox1day with mentor present — Backlog!K14; architecture§15 two-person review; risk-and-security§3.1 | Research report records technical runs, not mentor attendance or a one-day timebox | Inspect dated research records and human confirmation | Research process/human review / 5b3f67bc3437 | ../../../docs/K01_EVIDENCE.md | NOT RUN | Obtain truthful confirmation of actual mentorship/timebox, or an explicit approved process deviation. Cannot reconstruct attendance from code/CI or fabricate a signature. |
+| DOD-02 DoD | Approved by another member — DoD-DoR row2 | PR91 | human independent exacthead approval | as case states / c7bb13cf8ea2 | ../20261016-acceptance-audit/ci-c7bb13c.json | BLOCKED | Real other-member approval absent. User chose self, but account/PR author sangnguyencoder cannot meet another-member rule; no approval submitted on behalf. |
+| DOD-03 DoD | New branches tested; changed coverage not lower — DoD-DoR row3 | same Vitest4.1.11/V8 instrumentation | 07d baseline original; a1a integrated foundation baseline | as case states / accf832be519 | coverage-foundation-final/comparison.json | PASS | Same baseline/config/V8:70.51→85.25lines,79.10→84.31branches; touched executable lines/branches100%. Original auth/UI comparison remains separate. |
+| DOD-04 DoD | CI build/lint/typecheck/test green — DoD-DoR row4 | GitHub Actions | exact final head + integrated head | as case states / c7bb13cf8ea2 | ../20261016-acceptance-audit/ci-c7bb13c.json | PASS | Exact c7bb13c core workflow209s and5required contexts success; final subsequent documentation head must be read live, no reuse as exact-head check. |
+| DOD-05 DoD | Secret and dependency scan clean — DoD-DoR row5 | scoped patch + literal scan | prod/full audit0; actual fixture literal scan | as case states / accf832be519 | dependency-audit-all.json; secret-review.json | PASS | Fresh full and prod audits0; scoped patched dependency tested. Literal secret review separately recorded. |
+| DOD-06 DoD | All AC on staging — DoD-DoR row6 | LAN staging/CI | functional+NFR+real auto-deploy | as case states / a2e5f675a371 | source-provenance.json | BLOCKED | Only Sprint1 story AC/K01 research and applicable DoD. Human review and actual T03 postmerge auto-deploy outstanding; T31 latency and QR story completion are separate. |
+| DOD-09 DoD | No PII/payment/secret logs in touched paths — DoD-DoR row9 | auth/role/hold safe logging | inspect/redact actual touched output | as case states / a2e5f675a371 | ../20261016-acceptance-audit/log-probe.json; denial-log.json | PASS | Actual Sprint1 successful/error/role/session paths and API/web/gateway logs checked. Baseline later-sprint AccountantNotifier logging is a separate repository finding; no whole-product clean-log claim. |
+| DOD-10 DoD | README/docs reflect public behavior/config — DoD-DoR row10 | report/matrix/runbook | revision/evidence/credentials paths aligned | as case states / a2e5f675a371 | ../20261016-acceptance-audit/documentation.json | PASS | README native startup, root env, current session/migrations, isolated staging resume/credentials/rollback documented. Historical sections labelled. |
+
+## Hồi quy bắt buộc do phần sửa — không nghiệm thu story sprint khác
+
+| ID / Story-Task | AC/NFR/DoD và nguồn | Implementation | Test case | Môi trường / SHA | Evidence | Kết quả | Điều kiện / giới hạn |
+|---|---|---|---|---|---|---|---|
+| DOD-07 DoD | Seat changes concurrent/no double assignment — DoD-DoR row7 | existing PGholdproc | HTTP100winner/100conflict×10 + multi-seat atomicity | as case states / a2e5f675a371 | checks-a2e5f67/gates.json | PASS | Conditional original DoD applies to the existing hold/payment code touched by this repair. Passing regression does not accept Sprint2 stories or add T31 product NFR to Sprint1. |
+| DOD-08 DoD | Relevant cleanup/retry idempotence — DoD-DoR row8 | token-fenced PG cleanup | stale owner/retry/expired and worker tests | as case states / a2e5f675a371 | checks-a2e5f67/gates.json | PASS | Conditional original DoD applies to the existing hold/payment code touched by this repair. Passing regression does not accept Sprint2 stories or add T31 product NFR to Sprint1. |
+
+## Hỗ trợ vận hành/demo — không thêm AC
+
+| ID / Story-Task | AC/NFR/DoD và nguồn | Implementation | Test case | Môi trường / SHA | Evidence | Kết quả | Điều kiện / giới hạn |
+|---|---|---|---|---|---|---|---|
+| T03-06 S01/T03 | Resource-safe rebuild/restart — User authorized isolated demo/recovery after disk incident; operational prerequisite, not a new T03 AC | laptop-resources + resume | disk below12GiB fails before build; owned resume | Windows laptop / a2e5f675a371 | runtime.json | PASS | Verified on stated source/environment. No human approval or postmerge deployment inferred. |
+
+## Phép đo ngoài Sprint1 — giữ nguyên kết quả và source
+
+| ID / Story-Task | AC/NFR/DoD và nguồn | Implementation | Test case | Môi trường / SHA | Evidence | Kết quả | Điều kiện / giới hạn |
+|---|---|---|---|---|---|---|---|
+| K01-B S10/S13/T31 — Sprint2 / related verification | Product endpoint200concurrent/100seats×10; allp95<300ms — Backlog S10 row15 p95; Tasks T31 row32 Sprint2; product§7/architecture§14; DEC12 preserves these, does not move Sprint | PG authority; cold quota connection reuse | full HTTPS2000calls including cold and failures | laptop real product / a2e5f675a371 | performance-summary.json | FAIL | Retain measured PASS/FAIL for its exact conditions. Not a K01/Sprint1 acceptance criterion; no approved source moves T31 into Sprint1. |
+| K01-B-H2 S10/S13/T31 — Sprint2 / related verification | All p95<300ms, HTTP2 conditional scenario — Backlog S10 row15 p95; Tasks T31 row32 Sprint2; product§7/architecture§14; DEC12 preserves these, does not move Sprint | PG authority; cold quota connection reuse | 200 actual-API-authenticated buyers/100seats×10; all200 requests overlap, DB1000 active rights verified | One laptop, separate client process; twoAPI Docker, one native TLS gateway; cold API then API login setup and fresh load TLS / a2e5f675a371 | load-laptop-h2-cold-api-2/correlation.json | PASS | Retain measured PASS/FAIL for its exact conditions. Not a K01/Sprint1 acceptance criterion; no approved source moves T31 into Sprint1. |
+| K01-B-H1 S10/S13/T31 — Sprint2 / related verification | All p95<300ms, HTTP1.1 conditional scenario — Backlog S10 row15 p95; Tasks T31 row32 Sprint2; product§7/architecture§14; DEC12 preserves these, does not move Sprint | PG authority; cold quota connection reuse | 200 actual-API-authenticated buyers/100seats×10; all200 requests overlap, DB1000 active rights verified | One laptop, separate client process; twoAPI Docker, one native TLS gateway; cold API then API login setup and fresh load TLS / a2e5f675a371 | load-laptop-h1-cold-api-1/correlation.json | FAIL | Retain measured PASS/FAIL for its exact conditions. Not a K01/Sprint1 acceptance criterion; no approved source moves T31 into Sprint1. |
+
+## Policy tích hợp và regression toàn repository
+
+Năm requiredchecks vẫn giữ theo policy đã được người dùng phê duyệt; T31 là required integration check, không thành StorySprint1. S30 không required trong protection; nếu một checkFAIL được báo cho exactdevelopSHA thì watcher hiện hành vẫn chặn. Không tắtcheck/đổiassert/policy để né. S30 cùng60fixture/ảnh/cấu hình: base7FAIL và PR7FAIL, source QR/driver không đổi; theo dõi riêng tại s30-baseline/comparison.json. S30/S31/S43 CI snapshotc7bb13c đãPASS (candidate-checks.json); baseline S30 failure vẫn được lưu, không coi một lượt xanh xóa finding. S31/S43 lịch sử cũng PASS trên snapshotf774, không nhận nghiệm thu hai story đó.
+
+
+## Đối chiếu hai chiều theo từng yêu cầu gốc
+
+Audit source **5b3f67bc343729dd6d87140b77af6536ec704086**, runtime **a2e5f675a371e9a0200b1ab7d2a83ac837d3717d**. Mỗi dòng dưới đây là một điều khoản nguồn; bảng chi tiết phía trên là các phép kiểm hỗ trợ. `traceability.json` giữ cả chiều ngược từng ID và `evidence-validation.json` giữ hash/artifact/assertion. Không dùng tổng số test để thay nghiệm thu.
+
+| Điều khoản | Yêu cầu/hành vi | Nguồn chính xác | Các phép kiểm chi tiết | Kết quả |
+|---|---|---|---|---|
+| T01-AC1 | TECH01 stack/toolchain plus user-authorized Next16.3.8 security patch, frozen lock/workspace | ../tasks/T-01.md §AC1; version-authorization.json | T01-01 | PASS |
+| T01-AC2 | Compose PG15/Redis7 only; API/web native startup | ../tasks/T-01.md §AC2 | T01-02 | PASS |
+| T01-AC3 | Root env shared/private, placeholders, no frontend or log secrets | ../tasks/T-01.md §AC3 | T01-02 / T01-06 | PASS |
+| T01-AC4 | Ordered migration/startup; dependency health true/failure clear | ../tasks/T-01.md §AC4 | T01-03 / T01-05 | PASS |
+| T01-AC5 | Stored migration apply/compensate/new reapply without reset | ../tasks/T-01.md §AC5 | T01-04 | PASS |
+| T01-NFR | Connection strings from environment | ../tasks/T-01.md §NFR; TECH01 | T01-06 | PASS |
+| T02-Content | Push and PR build/lint/test; test parallel with lint | ../tasks/T-02.md §Content | T02-01 | PASS |
+| T02-AC | Intentional lint failure red and merge blocked | ../tasks/T-02.md §AC | T02-02 | PASS |
+| T02-NFR | Pipeline completes under5minutes | ../tasks/T-02.md §NFR | T02-03 | PASS |
+| T03-Content | Docker web/API; candidate healthy before replacing old | ../tasks/T-03.md §Content | T03-01 / T03-02 | PASS |
+| T03-AC1 | Valid merge to integration branch automatically healthy under10min | ../tasks/T-03.md §AC1 | T03-03 | BLOCKED |
+| T03-AC2 | Broken candidate retains old running version | ../tasks/T-03.md §AC2 | T03-04 | PASS |
+| T03-NFR | Failed deploy leaves staging available | ../tasks/T-03.md §NFR | T03-04 / T03-05 | PASS |
+| T04-Content | Relational users/roles/join and five roles | ../tasks/T-04.md §Content | T04-01 | PASS |
+| T04-AC1 | Migration forward/back via current convention | ../tasks/T-04.md §AC1 | T04-05 | PASS |
+| T04-AC2 | DB unique email | ../tasks/T-04.md §AC2 | T04-02 | PASS |
+| T04-AC3 | Seed five roles/admin/organizer | ../tasks/T-04.md §AC3 | T04-04 | PASS |
+| T04-NFR | Password column holds Argon2id hash | ../tasks/T-04.md §NFR | T04-03 | PASS |
+| T05-Content | Login form, server session, Redis expiring counter | ../tasks/T-05.md §Content | T05-01 / T05-04 | PASS |
+| T05-AC1 | Correct credentials reach home | ../tasks/T-05.md §AC1 | T05-01 | PASS |
+| T05-AC2 | Five failures, sixth locked15min | ../tasks/T-05.md §AC2 | T05-04 / T05-06 | PASS |
+| T05-AC3 | API restart retains lock while Redis remains | ../tasks/T-05.md §AC3 | T05-05 | PASS |
+| T05-NFR | Unknown email/wrong password do not disclose existence | ../tasks/T-05.md §NFR | T05-07 | PASS |
+| T06-Content | Central middleware/guard protects all required routes | ../tasks/T-06.md §Content | T06-01 / T06-03 | PASS |
+| T06-AC1 | Wrong role direct API403 despite hidden buttons | ../tasks/T-06.md §AC1 | T06-01 | PASS |
+| T06-AC2 | Undeclared route403 | ../tasks/T-06.md §AC2 | T06-02 | PASS |
+| T06-NFR | New undeclared routes default deny | ../tasks/T-06.md §NFR | T06-02 / T06-03 | PASS |
+| T09-Content | Events/showtimes FK, owner users relation | ../tasks/T-09.md §Content | T09-01 | PASS |
+| T09-AC1 | Migration forward/back | ../tasks/T-09.md §AC1 | T09-02 | PASS |
+| T09-AC2 | Deliberate delete restriction or cascade | ../tasks/T-09.md §AC2 | T09-01 | PASS |
+| T09-NFR | Timezone-aware column | ../tasks/T-09.md §NFR | T09-03 | PASS |
+| T10-Content | Create/edit and showtime list reuse V1; owner-only event list | ../tasks/T-10.md §Content | T10-01 / T10-02 | PASS |
+| T10-AC1 | Create/edit/list work | ../tasks/T-10.md §AC1 | T10-01 / T10-02 | PASS |
+| T10-AC2 | Field-specific input errors | ../tasks/T-10.md §AC2 | T10-06 / T10-09 | PASS |
+| T10-AC3 | Foreign-owner direct URL403 | ../tasks/T-10.md §AC3 | T10-03 | PASS |
+| T10-NFR | Rapid double submit blocked | ../tasks/T-10.md §NFR | T10-08 | PASS |
+| S01-AC1 | Merge→build/test/autodeploy/home200 | Current backlog Backlog!L2; DEC09 | T02-01 / T03-02 / T03-03 | BLOCKED |
+| S01-AC2 | Failed test stops deployment | Current backlog Backlog!L2; DEC09 | T02-04 | PASS |
+| S01-AC3 | Newcomer README startup works | Current backlog Backlog!L2; DEC09 | T01-01 / T01-02 / T01-03 | PASS |
+| S01-AC4 | Old release available after failed deployment | Current backlog Backlog!L2; DEC09 | T03-04 | PASS |
+| S01-NFR | Environment secrets; no DB connection log | Current backlog Backlog!N2; DEC09 | T01-06 / DOD-09 | PASS |
+| S02-AC1 | Organizer events nav, no accounting | Current backlog Backlog!L5; DEC09 | T06-04 | PASS |
+| S02-AC2 | Buyer direct create403 and denial log | Current backlog Backlog!L5; DEC09 | T06-01 | PASS |
+| S02-AC3 | Five failed attempts/sixth lock15min/time remaining | Current backlog Backlog!L5; DEC09 | T05-04 / T05-06 | PASS |
+| S02-AC4 | Expired API401 and UI login recovery | Current backlog Backlog!L5; DEC09 | T05-02 | PASS |
+| S02-AC5 | Undeclared route denied | Current backlog Backlog!L5; DEC09 | T06-02 | PASS |
+| S02-NFR1 | Argon2id password | Current backlog Backlog!N5; DEC09 | T04-03 | PASS |
+| S02-NFR2 | Account and IP brute-force protection | Current backlog Backlog!N5; DEC09 | T05-04 / T05-08 | PASS |
+| S04-AC1 | Valid event draft and hidden from buyer | Current backlog Backlog!L8; DEC09 | T10-01 | PASS |
+| S04-AC2 | Future showtime saved linked to event | Current backlog Backlog!L8; DEC09 | T10-05 | PASS |
+| S04-AC3 | Past time server rejection with clear UI | Current backlog Backlog!L8; DEC09 | T10-06 | PASS |
+| S04-AC4 | Exact duplicate time warns and saves | Current backlog Backlog!L8; DEC09 | T10-07 | PASS |
+| S04-AC5 | Other organizer refused | Current backlog Backlog!L8; DEC09 | T10-03 | PASS |
+| S04-NFR | UTC storage and Vietnam display roundtrip | Current backlog Backlog!N8; DEC09 | T09-03 / T10-10 | PASS |
+| K01-Content1 | Spike timebox1day with mentor present | Current backlog Backlog!K14 | K01-D | NOT RUN |
+| K01-Content2 | Compare both PG/Redis with200concurrent requests same1seat, count winners | Current backlog Backlog!K14; risk-and-security§3.1 | K01-A | PASS |
+| K01-AC | Chosen mechanism, numbers of both stores, reasons reject other, authorized conclusion | Current backlog Backlog!L14; DEC03/11/12/14 | K01-A / K01-C | PASS |
+| K01-NFR | Spike is disposable research, not product implementation | Current backlog Backlog!N14 | K01-A | PASS |
+| DOD-row2 | Approved by another member | Current backlog DoD-DoR!C2 | DOD-02 | BLOCKED |
+| DOD-row3 | New branches tested; changed coverage not lower | Current backlog DoD-DoR!C3 | DOD-03 | PASS |
+| DOD-row4 | CI build/lint/typecheck/test green | Current backlog DoD-DoR!C4 | DOD-04 | PASS |
+| DOD-row5 | Secret and dependency scan clean | Current backlog DoD-DoR!C5 | DOD-05 | PASS |
+| DOD-row6 | All AC on staging | Current backlog DoD-DoR!C6 | DOD-06 | BLOCKED |
+| DOD-row9 | No PII/payment/secret logs in touched paths | Current backlog DoD-DoR!C9 | DOD-09 | PASS |
+| DOD-row10 | README/docs reflect public behavior/config | Current backlog DoD-DoR!C10 | DOD-10 | PASS |
+| DOD-row7 | Seat changes concurrent/no double assignment | Current backlog DoD-DoR!C7 | DOD-07 | PASS |
+| DOD-row8 | Relevant cleanup/retry idempotence | Current backlog DoD-DoR!C8 | DOD-08 | PASS |
+| TECH02-Session | Server-checked session; HttpOnly/Secure HTTPS; logout invalidates token | ../docs/decision-log.md TECH02; architecture session design | T05-01 / T05-02 / T05-03 | PASS |
+| SEC-Logs | No credentials/session/PII/payment contents in Sprint1 operational logs | ../docs/product.md §7; risk-and-security§3.11 | DOD-09 | PASS |
+| USER-Validation | Validation input retention/recovery and buyer cannot edit | User Sprint1 review§6 | T10-04 / T10-09 | PASS |
+| USER-MultiRole | Supported multi-role correct, no invented admin ownership override | User Sprint1 review§5 | T06-05 | PASS |
+| USER-PaidHistory | Preserve order/ticket history when parent deletion attempted | User Sprint1 review§6 | T09-01 | PASS |
+
+Phân loại: SCOPE là metadata kiểm soát phạm vi; T03-06 là hỗ trợ vận hành. K01-B/B-H1/B-H2 là phép đo story Sprint2; DOD-07/08 là hồi quy có điều kiện của sửa chữa chạm ghế/job. Không cộng chúng thành AC mới Sprint1. T06-05, T10-04/09, bảo toàn lịch sử theo yêu cầu kiểm chứng bổ sung của người dùng.
+
+Khoảng trống đã xử lý: T01 native source sạch mới; migration tiến/bù/tái áp dụng hiện tại; DOD09 log thật; CI exact5b. Khoảng trống còn nguyên: K01 mentor/timebox NOT RUN, quyết định authority PASS DEC14 và member review BLOCKED; T03 auto-deploy sau merge BLOCKED; DoD review và AC hoàn chỉnh BLOCKED. Các dòng PASS kỹ thuật không tự làm task Done.
+
+## Checkpoint S03/onboarding16/10 — candidate chưa tích hợp
+
+Phạm vi hiện hành DEC15 gồm S01–S04/K01, T01–T10. Đối chiếu bổ sung atomic: `evidence/sprint1/20261016-s03-onboarding/traceability-s03.json`; source bytes và Git blob được ghi tại `source-manifest.json`. Không thay kết quả lịch sử bằng head mới. Staging3470 vẫn a2e5f67, chưa có S03 mới.
+
+- Đã sửa phần đăng ký cũ không có form/delivery/consent: API/form V1, exact approved notice, consent atomic, pending BUYER/Argon2id, token hash + outbox mã hóa, kích hoạt một lần, resend Redis5/h, SMTP adapter và Mailpit. Không ghi token vào log.
+- Local: build PASS; unit API358/web123/Node18; focused real-PG/Redis13cases; browser17assertions desktop1440/mobile390 PASS qua SMTP catcher. Đây chưa là nghiệm thu staging hoặc email Internet.
+- Sửa phát hiện khi kiểm: tiêu đề và hướng dẫn kích hoạt bị CSS login ẩn trên mobile; final-attempt crashed lease mắc SENDING; test key file từ ignored .env xung đột key pair fixture; lockfile churn đã thu gọn23dòng, semantic assertion giữ nguyên toàn bộ graph cũ và frozen install PASS. Audit full0advisory.
+- SMTP TLS/auth PASS; allowlist được điền nhưng giá trị không hợp lệ theo validation email, API400 trước mọi write/send. Chờ user sửa local; chưa có bằng chứng SMTP accepted/inbox. Không in recipient/password.
+- Launcher chính thức mới đã triển khai profile riêng/cổng động/owned lifecycle/mail catcher; clone sạch/retention/ownership proof còn NOT RUN, README ghi đúng trạng thái. `-Legacy` giữ đường cũ.
+- Gate còn kiểm: lỗi tải/persist consent, populated upgrade và rollback, token/PII log sweep, restart/resend persistence, coverage/security diff, clean clone, exact-head CI, review thật, merge/deploy/integrated AC. Không đánh Done các task nguồn.
+
+### Cập nhật tiếp theo16/10 — DEC16 và kiểm thực tế
+
+- DEC16 theo yêu cầu trực tiếp mới: allowlist SMTP là tùy chọn; bỏ/trống cho phép mọi email hợp lệ đăng ký. `REGISTRATION_TEST_EMAIL` chỉ chọn hộp thư kiểm, không hạn chế sản phẩm.
+- SMTP thật đã gửi qua adapter/outbox; user xác nhận “đã nhận và kích hoạt”; DBverified/tokenconsumed/login200/logout200/replay401 đã đối chiếu. `smtp-product-local.json` ghi đúng môi trường local3490, không gán cho staging3470.
+- Clone sạch ef3e4c9 đã install/generate/30migrations/seed/build/start/health/loginlogoutREADY và trả exit0; browser signup→SMTPMailpit→activate→login/RBAC→organizercreate/edit/reload/showtime PASS. Kết quả có tại `clean-clone-browser.json`; candidate sau sửa security cần kiểm lại luồng bị đổi.
+- Security review phát hiện và đã sửa local hai lỗi trong `security-fixes-local.json`: chiếm trước email pending (HIGH) và không giới hạn tổng công việc SMTP (MEDIUM). Kích hoạt hiện yêu cầu người giữ liên kết đặt mật khẩu cuối cùng (có thể dùng lại mật khẩu đã chọn); liên kết GET không tự kích hoạt. Resend vẫn5/hour/email; tổng admission đăng ký+resend120/hour chia sẻRedis/replicas, trả429/TTL khi đầy. Không khôi phục allowlist bắt buộc.
+- Upgrade29→30 trên DB mới có dữ liệu đã PASS, không reset/staging write. Legacy token được băm giữ owner/deadline; user/role/session/event/showtime giữ nguyên. Old API rollback còn đọc core schema nhưng không dùng lại plaintext activation links; giữ registration off nếu rollback runtime cũ, không tuyên bố downgrade S03 đầy đủ.
+- Toàn Sprint chưa Done: security final/browser mới, coverage/CI exacthead, review thật, merge/deploy tự động và integrated AC còn phải hoàn tất.

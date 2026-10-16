@@ -1,0 +1,28 @@
+{
+  "sourceSha": "81d1dd9d8f453b32ed0c6956399e5600f71a32d6",
+  "scope": "Final patch tests, isolated profiles. Full private logs retained locally; baseline historical performance JSON deliberately not relabeled as new run.",
+  "summaries": {
+    "test": [
+      "apps/web test:  Test Files  11 passed (11)",
+      "apps/web test:       Tests  55 passed (55)",
+      "apps/web test:    Start at  15:40:17",
+      "apps/web test:    Duration  1.59s (transform 3.83s, setup 0ms, import 5.33s, tests 395ms, environment 4ms)",
+      "apps/api test:  Test Files  26 passed (26)",
+      "apps/api test:       Tests  183 passed (183)",
+      "apps/api test:    Start at  15:40:17",
+      "apps/api test:    Duration  4.11s (transform 6.29s, setup 0ms, import 28.63s, tests 1.97s, environment 7ms)"
+    ],
+    "integration": [
+      " Test Files  13 passed (13)",
+      "      Tests  105 passed (105)",
+      "   Start at  15:40:22",
+      "   Duration  35.96s (transform 599ms, setup 156ms, import 9.20s, tests 24.15s, environment 1ms)"
+    ],
+    "integration-scanner": [
+      " Test Files  1 passed (1)",
+      "      Tests  4 passed (4)",
+      "   Start at  15:41:02",
+      "   Duration  2.22s (transform 461ms, setup 30ms, import 1.24s, tests 770ms, environment 0ms)"
+    ]
+  }
+}

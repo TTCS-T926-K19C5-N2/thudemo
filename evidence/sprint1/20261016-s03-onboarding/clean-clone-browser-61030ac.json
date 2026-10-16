@@ -1,0 +1,29 @@
+{
+  "time": "2026-10-16T14:24:06.115Z",
+  "source": "61030acc51b1fd5849b46985432fc5025755a10d",
+  "environment": "Clean clone on D, generated config/new PostgreSQL DB/Redis/Mailpit; no private inputs copied",
+  "cases": [
+    {
+      "assertion": "clean profile browser registration",
+      "result": "PASS"
+    },
+    {
+      "assertion": "product SMTP catcher receive and activation",
+      "result": "PASS"
+    },
+    {
+      "assertion": "activated buyer login and server403",
+      "result": "PASS"
+    },
+    {
+      "assertion": "organizer create/edit/reload draft",
+      "result": "PASS"
+    },
+    {
+      "assertion": "future showtime stored and rendered",
+      "result": "PASS"
+    }
+  ],
+  "eventId": "e43d8102-1c76-44f2-98a1-b0e8806293f4",
+  "result": "PASS"
+}

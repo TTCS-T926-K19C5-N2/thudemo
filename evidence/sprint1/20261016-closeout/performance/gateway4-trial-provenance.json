@@ -1,0 +1,8 @@
+{
+  "source": "accf832be519d9790845c3590acd3f481c5594ac",
+  "gatewaySha256": "3a8007392363e4301a601b79db62217d2ef08dd05a82c8bf2bb630034c5a2da3",
+  "uncommitted": true,
+  "workers": 4,
+  "upstreamSocketsPerTargetPerWorker": 10,
+  "report": "https-h1-v4-gateway4-trial.json"
+}

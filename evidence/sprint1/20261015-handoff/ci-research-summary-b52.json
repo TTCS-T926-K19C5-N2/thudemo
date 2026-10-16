@@ -1,0 +1,231 @@
+{
+  "head": "b52ba6afa07d29444e5e809892e5325f0966625c",
+  "runId": 38769484549,
+  "runUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38769484549",
+  "provenance": "Downloaded GitHub Actions artifacts k01-candidate-research and t31-product-holds; original prototype mode text says notCI, artifact origin controls actual evidence tier.",
+  "datastore": {
+    "date": "2026-10-15T16:32:08.918Z",
+    "machine": {
+      "cpu": "AMD EPYC 7763 64-Core Processor",
+      "threads": 4,
+      "ramBytes": 16766414848
+    },
+    "runtime": "v24.21.0",
+    "stores": [
+      {
+        "name": "PostgreSQL",
+        "rounds": [
+          {
+            "round": 0,
+            "winners": 1,
+            "conflicts": 199,
+            "errors": 0,
+            "all": {
+              "n": 200,
+              "p50": 626.4552090000001,
+              "p95": 744.99811,
+              "p99": 751.1215430000001
+            },
+            "success": {
+              "n": 1,
+              "p50": 336.36704,
+              "p95": 336.36704,
+              "p99": 336.36704
+            },
+            "conflict": {
+              "n": 199,
+              "p50": 628.756473,
+              "p95": 746.5245560000001,
+              "p99": 751.231147
+            }
+          },
+          {
+            "round": 1,
+            "winners": 1,
+            "conflicts": 199,
+            "errors": 0,
+            "all": {
+              "n": 200,
+              "p50": 194.8389319999999,
+              "p95": 293.48597799999993,
+              "p99": 296.8997200000001
+            },
+            "success": {
+              "n": 1,
+              "p50": 82.09622599999989,
+              "p95": 82.09622599999989,
+              "p99": 82.09622599999989
+            },
+            "conflict": {
+              "n": 199,
+              "p50": 196.93181800000002,
+              "p95": 293.50709700000016,
+              "p99": 296.9198570000001
+            }
+          },
+          {
+            "round": 2,
+            "winners": 1,
+            "conflicts": 199,
+            "errors": 0,
+            "all": {
+              "n": 200,
+              "p50": 210.95715199999995,
+              "p95": 304.41293800000017,
+              "p99": 309.2179350000001
+            },
+            "success": {
+              "n": 1,
+              "p50": 83.73299100000008,
+              "p95": 83.73299100000008,
+              "p99": 83.73299100000008
+            },
+            "conflict": {
+              "n": 199,
+              "p50": 210.9888699999999,
+              "p95": 304.8204780000001,
+              "p99": 309.29897600000004
+            }
+          }
+        ],
+        "checks": [
+          "Overlapping sets all-or-none across two processes",
+          "Server clock 10-minute deadline; adding seats does not extend",
+          "Concurrent session requests have one deadline/token",
+          "Lost-response retry does not extend or duplicate",
+          "Expired claims free without worker; stale token cannot remove new owner",
+          "Repeated cleanup retains active owner",
+          "Injected transaction failure leaves no partial claims",
+          "API candidate process restart retains datastore owner/deadline"
+        ],
+        "restart": {
+          "ownerRetained": true,
+          "reason": "Committed ownership survives container restart"
+        }
+      },
+      {
+        "name": "Redis",
+        "rounds": [
+          {
+            "round": 0,
+            "winners": 1,
+            "conflicts": 199,
+            "errors": 0,
+            "all": {
+              "n": 200,
+              "p50": 105.95850000000019,
+              "p95": 116.8392060000001,
+              "p99": 116.89281600000004
+            },
+            "success": {
+              "n": 1,
+              "p50": 82.4022500000001,
+              "p95": 82.4022500000001,
+              "p99": 82.4022500000001
+            },
+            "conflict": {
+              "n": 199,
+              "p50": 105.9672370000003,
+              "p95": 116.8496640000003,
+              "p99": 116.9096569999997
+            }
+          },
+          {
+            "round": 1,
+            "winners": 1,
+            "conflicts": 199,
+            "errors": 0,
+            "all": {
+              "n": 200,
+              "p50": 58.91851299999962,
+              "p95": 76.85987399999976,
+              "p99": 77.24103500000001
+            },
+            "success": {
+              "n": 1,
+              "p50": 48.69454199999973,
+              "p95": 48.69454199999973,
+              "p99": 48.69454199999973
+            },
+            "conflict": {
+              "n": 199,
+              "p50": 59.01610500000015,
+              "p95": 76.898056,
+              "p99": 77.26070200000004
+            }
+          },
+          {
+            "round": 2,
+            "winners": 1,
+            "conflicts": 199,
+            "errors": 0,
+            "all": {
+              "n": 200,
+              "p50": 68.6361280000001,
+              "p95": 72.53120600000011,
+              "p99": 73.41258100000005
+            },
+            "success": {
+              "n": 1,
+              "p50": 67.18489900000031,
+              "p95": 67.18489900000031,
+              "p99": 67.18489900000031
+            },
+            "conflict": {
+              "n": 199,
+              "p50": 68.65790800000013,
+              "p95": 72.64227299999993,
+              "p99": 73.50091500000008
+            }
+          }
+        ],
+        "checks": [
+          "Overlapping sets all-or-none across two processes",
+          "Server clock 10-minute deadline; adding seats does not extend",
+          "Concurrent session requests have one deadline/token",
+          "Lost-response retry does not extend or duplicate",
+          "Expired claims free without worker; stale token cannot remove new owner",
+          "Repeated cleanup retains active owner",
+          "Injected transaction failure leaves no partial claims",
+          "API candidate process restart retains datastore owner/deadline"
+        ],
+        "restart": {
+          "ownerRetained": false,
+          "reason": "Render Free-like Redis no persistence loses confirmed owner"
+        }
+      }
+    ],
+    "failures": [],
+    "limits": [
+      "Redis profile has persistence OFF; do not generalize its owner loss to AOF-enabled laptop experiment",
+      "Research HTTP loopback, not product endpoint"
+    ]
+  },
+  "product": {
+    "start": "2026-10-15T16:32:29.435Z",
+    "finish": "2026-10-15T16:33:39.624Z",
+    "total": {
+      "count": 2000,
+      "p50": 121.67111299999942,
+      "p95": 273.3143110000001,
+      "p99": 359.60631999999987,
+      "max": 364.470585
+    },
+    "steady": {
+      "count": 1800,
+      "p50": 111.33573500000011,
+      "p95": 186.96078099999977,
+      "p99": 195.37126399999988,
+      "max": 204.233878
+    },
+    "buyers": 200,
+    "instances": 2,
+    "ciBudgetMs": 800,
+    "requiredProductNfrMs": 300,
+    "derivedResult": "PASS in this CI environment only",
+    "limits": [
+      "Does not replace laptop staging latency",
+      "Do not equate source boolean budget800ms with product300ms acceptance"
+    ]
+  }
+}

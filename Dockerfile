@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends openssl ca-c
 RUN npm install --global pnpm@10.15.1
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY patches patches
 COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
 COPY packages/shared/package.json packages/shared/package.json
@@ -24,7 +25,9 @@ RUN pnpm --filter api exec prisma generate && pnpm --filter api build \
     && (cd /out/api && /app/apps/api/node_modules/.bin/prisma generate --schema prisma/schema.prisma)
 
 FROM dependencies AS web-build
-RUN pnpm --filter web build
+RUN pnpm --filter web build \
+    && pnpm --filter web deploy --legacy --prod /out/web \
+    && (cd apps/web && tar --exclude=.next/standalone --exclude=.next/cache -cf - .next | tar -xf - -C /out/web)
 
 FROM node:24.21.0-bookworm-slim AS api
 ENV NODE_ENV=production
@@ -41,13 +44,11 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 WORKDIR /app
-COPY --chown=node:node --from=web-build /app/apps/web/.next/standalone /app
-COPY --chown=node:node --from=web-build /app/apps/web/.next/static /app/apps/web/.next/static
-COPY --chown=node:node --from=web-build /app/apps/web/public /app/apps/web/public
-WORKDIR /app/apps/web
+COPY --chown=node:node --from=web-build /out/web /app
+ENV WEB_HOST=0.0.0.0
 EXPOSE 3000
 USER node
-CMD ["node", "server.js"]
+CMD ["node", "server.mjs"]
 
 # Operator-only migration image. Never receives database secrets at build time.
 FROM api-build AS migration
@@ -63,10 +64,9 @@ ENV PORT=10000
 WORKDIR /app
 RUN apt-get update && apt-get install --yes --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 COPY --chown=node:node --from=api-build /out/api /app/api
-COPY --chown=node:node --from=web-build /app/apps/web/.next/standalone /app/web
-COPY --chown=node:node --from=web-build /app/apps/web/.next/static /app/web/apps/web/.next/static
-COPY --chown=node:node --from=web-build /app/apps/web/public /app/web/apps/web/public
+COPY --chown=node:node --from=web-build /out/web /app/web
 COPY --chown=node:node deploy/render-start.mjs /app/render-start.mjs
+ENV WEB_HOST=0.0.0.0
 EXPOSE 10000
 USER node
 CMD ["node", "render-start.mjs"]

@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-16T16:12:49.189416+00:00",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "origin": "https://10.88.164.155:3470",
+  "result": "PASS",
+  "assertions": [
+    "Direct user authorized current assigned10.88.164.155",
+    "Four owned active/previous APIs recreated using exact immutable image IDs; WEB_ORIGIN and current S03 REGISTRATION_PUBLIC_ORIGIN changed; other env preserved",
+    "Existing certificate SAN covers both IPs; certificate and TLS/signing/registration mail key bytes preserved",
+    "DB/history counts unchanged; trusted HTTPS health200 and actual rollback/final restore PASS"
+  ],
+  "firewall": {
+    "result": "PASS",
+    "source": "User admin command plus live Windows rule readback",
+    "localAddress": "10.88.164.155",
+    "remoteAddress": "LocalSubnet",
+    "protocol": "TCP",
+    "port": 3470,
+    "direction": "Inbound",
+    "action": "Allow"
+  },
+  "limitations": [
+    "New network second-device access NOT RUN",
+    "Manual candidate, no merge/auto-deploy proof"
+  ]
+}

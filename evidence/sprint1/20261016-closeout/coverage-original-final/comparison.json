@@ -1,0 +1,360 @@
+{
+  "baseSha": "07d683fcfcfd7d05c8aff1119ab6dc3c63f6e458",
+  "source": "candidate source hashes per file; rerun after runtime edits",
+  "node": "v24.21.0",
+  "vitest": "4.1.11",
+  "provider": "@vitest/coverage-v8@4.1.11",
+  "method": "Original tests on each revision; identical coverage scope/config. Changed-line counters use V8 Istanbul executable statement start lines and branches intersecting diff hunks. New files have no baseline denominator. Unit coverage does not imply endpoint/staging acceptance.",
+  "projects": [
+    {
+      "name": "api",
+      "configSha256": "3b21f3b3ed9a897274bf04ba137d7e808836d61a9837c74684a0d065bd483762",
+      "before": {
+        "lines": {
+          "total": 76,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 7.89
+        },
+        "statements": {
+          "total": 78,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 7.69
+        },
+        "functions": {
+          "total": 20,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 5
+        },
+        "branches": {
+          "total": 40,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 2.5
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "after": {
+        "lines": {
+          "total": 112,
+          "covered": 86,
+          "skipped": 0,
+          "pct": 76.78
+        },
+        "statements": {
+          "total": 115,
+          "covered": 88,
+          "skipped": 0,
+          "pct": 76.52
+        },
+        "functions": {
+          "total": 28,
+          "covered": 16,
+          "skipped": 0,
+          "pct": 57.14
+        },
+        "branches": {
+          "total": 83,
+          "covered": 73,
+          "skipped": 0,
+          "pct": 87.95
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "files": [
+        {
+          "path": "apps/api/src/auth/auth.controller.ts",
+          "newFile": false,
+          "baselineChanged": {
+            "executableLines": 1,
+            "coveredLines": 0,
+            "branches": 0,
+            "coveredBranches": 0,
+            "linePct": 0,
+            "branchPct": null
+          },
+          "candidateChanged": {
+            "executableLines": 5,
+            "coveredLines": 5,
+            "branches": 4,
+            "coveredBranches": 4,
+            "linePct": 100,
+            "branchPct": 100
+          },
+          "sourceSha256": "dc407268e4cacc3e5dec5e8c65e93a97edd843b1eb1215ba5e167888450f9034"
+        },
+        {
+          "path": "apps/api/src/auth/auth.service.ts",
+          "newFile": false,
+          "baselineChanged": {
+            "executableLines": 0,
+            "coveredLines": 0,
+            "branches": 0,
+            "coveredBranches": 0,
+            "linePct": null,
+            "branchPct": null
+          },
+          "candidateChanged": {
+            "executableLines": 4,
+            "coveredLines": 4,
+            "branches": 8,
+            "coveredBranches": 7,
+            "linePct": 100,
+            "branchPct": 87.5
+          },
+          "sourceSha256": "8797311334f066cc8d3b022111749f6130ccddc153a82c33c14468e371eb25c4"
+        },
+        {
+          "path": "apps/api/src/redis/redis.service.ts",
+          "newFile": false,
+          "baselineChanged": {
+            "executableLines": 0,
+            "coveredLines": 0,
+            "branches": 0,
+            "coveredBranches": 0,
+            "linePct": null,
+            "branchPct": null
+          },
+          "candidateChanged": {
+            "executableLines": 4,
+            "coveredLines": 4,
+            "branches": 4,
+            "coveredBranches": 4,
+            "linePct": 100,
+            "branchPct": 100
+          },
+          "sourceSha256": "8a4322c2d04366343c71d941fd834c6a1a855c08a51f6d54621b0fed23cabd3a"
+        },
+        {
+          "path": "packages/shared/login-peer.js",
+          "newFile": true,
+          "baselineChanged": {
+            "executableLines": 0,
+            "coveredLines": 0,
+            "branches": 0,
+            "coveredBranches": 0,
+            "linePct": null,
+            "branchPct": null
+          },
+          "candidateChanged": {
+            "executableLines": 24,
+            "coveredLines": 24,
+            "branches": 29,
+            "coveredBranches": 29,
+            "linePct": 100,
+            "branchPct": 100
+          },
+          "sourceSha256": "e489ca3241aec8b17bdb9175375771b30f1d02594ebe565e7ec81613ed22e56f"
+        }
+      ]
+    },
+    {
+      "name": "web",
+      "configSha256": "887908e023290ce8da9cfc6493e833b141a2bee226ac3d47c12497d6f59c0007",
+      "before": {
+        "lines": {
+          "total": 213,
+          "covered": 51,
+          "skipped": 0,
+          "pct": 23.94
+        },
+        "statements": {
+          "total": 233,
+          "covered": 54,
+          "skipped": 0,
+          "pct": 23.17
+        },
+        "functions": {
+          "total": 42,
+          "covered": 7,
+          "skipped": 0,
+          "pct": 16.66
+        },
+        "branches": {
+          "total": 234,
+          "covered": 43,
+          "skipped": 0,
+          "pct": 18.37
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "after": {
+        "lines": {
+          "total": 267,
+          "covered": 207,
+          "skipped": 0,
+          "pct": 77.52
+        },
+        "statements": {
+          "total": 292,
+          "covered": 220,
+          "skipped": 0,
+          "pct": 75.34
+        },
+        "functions": {
+          "total": 52,
+          "covered": 37,
+          "skipped": 0,
+          "pct": 71.15
+        },
+        "branches": {
+          "total": 294,
+          "covered": 188,
+          "skipped": 0,
+          "pct": 63.94
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "files": [
+        {
+          "path": "apps/web/src/components/event-editor.tsx",
+          "newFile": false,
+          "baselineChanged": {
+            "executableLines": 6,
+            "coveredLines": 0,
+            "branches": 12,
+            "coveredBranches": 0,
+            "linePct": 0,
+            "branchPct": 0
+          },
+          "candidateChanged": {
+            "executableLines": 32,
+            "coveredLines": 27,
+            "branches": 36,
+            "coveredBranches": 31,
+            "linePct": 84.375,
+            "branchPct": 86.11111111111111
+          },
+          "sourceSha256": "90ea3477927dfa4644413decad61aafacdfb8c4d630503965b292aab0e8475d8"
+        },
+        {
+          "path": "apps/web/src/components/login-form.tsx",
+          "newFile": false,
+          "baselineChanged": {
+            "executableLines": 0,
+            "coveredLines": 0,
+            "branches": 14,
+            "coveredBranches": 0,
+            "linePct": null,
+            "branchPct": 0
+          },
+          "candidateChanged": {
+            "executableLines": 0,
+            "coveredLines": 0,
+            "branches": 18,
+            "coveredBranches": 11,
+            "linePct": null,
+            "branchPct": 61.111111111111114
+          },
+          "sourceSha256": "a0c88eb917049b27de7b58d5779777b4b4fb3cbb2f34cb7f255268bca64f15ee"
+        },
+        {
+          "path": "apps/web/src/lib/api.ts",
+          "newFile": false,
+          "baselineChanged": {
+            "executableLines": 0,
+            "coveredLines": 0,
+            "branches": 4,
+            "coveredBranches": 4,
+            "linePct": null,
+            "branchPct": 100
+          },
+          "candidateChanged": {
+            "executableLines": 0,
+            "coveredLines": 0,
+            "branches": 5,
+            "coveredBranches": 5,
+            "linePct": null,
+            "branchPct": 100
+          },
+          "sourceSha256": "51cc622c68cf26f676de4c66947f190c7635dd3175eec829b3a9cfb803fde36e"
+        },
+        {
+          "path": "apps/web/src/lib/formatting/vietnam-input.ts",
+          "newFile": true,
+          "baselineChanged": {
+            "executableLines": 0,
+            "coveredLines": 0,
+            "branches": 0,
+            "coveredBranches": 0,
+            "linePct": null,
+            "branchPct": null
+          },
+          "candidateChanged": {
+            "executableLines": 4,
+            "coveredLines": 4,
+            "branches": 6,
+            "coveredBranches": 6,
+            "linePct": 100,
+            "branchPct": 100
+          },
+          "sourceSha256": "6737e55392713b51ce9bd837d6c147743f1ec04631d504d46cd78b11acf0a19e"
+        },
+        {
+          "path": "apps/web/src/lib/server/api-proxy.ts",
+          "newFile": false,
+          "baselineChanged": {
+            "executableLines": 0,
+            "coveredLines": 0,
+            "branches": 0,
+            "coveredBranches": 0,
+            "linePct": null,
+            "branchPct": null
+          },
+          "candidateChanged": {
+            "executableLines": 4,
+            "coveredLines": 4,
+            "branches": 6,
+            "coveredBranches": 6,
+            "linePct": 100,
+            "branchPct": 100
+          },
+          "sourceSha256": "5e98767619d6331c772c1c06d2c6870d1a6ce835d8b25d715e3d6d6edfff730c"
+        },
+        {
+          "path": "apps/web/src/lib/server/login-transport.mjs",
+          "newFile": true,
+          "baselineChanged": {
+            "executableLines": 0,
+            "coveredLines": 0,
+            "branches": 0,
+            "coveredBranches": 0,
+            "linePct": null,
+            "branchPct": null
+          },
+          "candidateChanged": {
+            "executableLines": 20,
+            "coveredLines": 20,
+            "branches": 23,
+            "coveredBranches": 22,
+            "linePct": 100,
+            "branchPct": 95.65217391304348
+          },
+          "sourceSha256": "d65ed43b0943b92420536baa6468232281b5a0c5628b54ca4c231821dee30258"
+        }
+      ]
+    }
+  ]
+}

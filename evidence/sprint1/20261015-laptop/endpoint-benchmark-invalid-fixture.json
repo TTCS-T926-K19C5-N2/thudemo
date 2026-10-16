@@ -1,0 +1,42 @@
+{
+  "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+  "runId": "c61ef41f-b6b5-4e10-b66e-94ceb0f44c50",
+  "startedAt": "2026-10-15T16:17:50.183Z",
+  "origin": "https://10.88.164.155:3470",
+  "environment": {
+    "node": "v24.21.0",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13500H",
+    "logicalCPUs": 16,
+    "memoryBytes": 16794726400,
+    "apiInstances": 1,
+    "generator": "same laptop as staging services",
+    "tls": "exact certificate CA and hostname verified"
+  },
+  "scenario": "200 authenticated buyers / 100 contested seats per round; 10 disjoint rounds, 2000 real HTTPS endpoint calls",
+  "auth": "Synthetic users have Argon2id hashes; DB-issued fixture sessions have SHA256 tokens and 900s expiry. Login latency excluded.",
+  "thresholdMs": 300,
+  "rounds": [
+    {
+      "round": 0,
+      "success": 0,
+      "conflict": 0,
+      "activeHolds": 0,
+      "p95Ms": 1477.2819999999997
+    }
+  ],
+  "limitations": [
+    "One API instance and a co-located load generator; not a two-instance or independent-client acceptance environment.",
+    "No expiry worker/restart/durability claim from this measurement.",
+    "Does not replace PostgreSQL-versus-Redis datastore comparison or full Sprint 2 acceptance.",
+    "Additive fake fixtures remain; no reset, history deletion or modification of existing users/holds."
+  ],
+  "fixture": {
+    "eventId": "bc84b7b1-ce43-4458-9dac-391f3fe0e732",
+    "showtimeId": "f82e64b3-6b69-4f19-b430-c38f2cdfd4d9",
+    "users": 200,
+    "seats": 1000,
+    "eventStatus": "DRAFT (kept out of buyer catalog)"
+  },
+  "correctness": "FAIL",
+  "error": "ERR_ASSERTION"
+}

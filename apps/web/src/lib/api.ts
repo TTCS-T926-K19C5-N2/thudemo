@@ -63,9 +63,12 @@ export async function loadCurrentUser(): Promise<CurrentUser | null> {
 
 export function safeReturnTo(value: string | null): string | null {
   return value &&
-    /^\/shows\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/seats$/i.test(
+    (/^\/events\/(?:new|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.test(
       value,
-    )
+    ) ||
+      /^\/shows\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/seats$/i.test(
+        value,
+      ))
     ? value
     : null;
 }

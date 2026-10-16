@@ -1,0 +1,37 @@
+{
+  "time": "2026-10-16T16:25:40.596141+00:00",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "root": "D:\\s1demo\\02a8e86-clean-20261016",
+  "profile": "s1demo-19b8f733e0a1",
+  "result": "PASS",
+  "command": ".\\scripts\\sprint1-demo.ps1",
+  "shell": "Windows PowerShell5 via powershell.exe, single existing shell; no nested extra PowerShell host",
+  "readiness": {
+    "web": "http://localhost:3000",
+    "api": "http://localhost:3001",
+    "catcher": "http://127.0.0.1:24931"
+  },
+  "assertions": [
+    "Git clone no hardlinks, clean tracked tree; no ignored config/env/private inputs/build artifacts copied",
+    "Entrypoint generated own config/env/keys/profile; earlier RAM guard refusals occurred before frozen install/build and were preserved",
+    "Full frozen install, Prisma generate, all30 migrations on new independent database, guarded fake seed, API/web production build",
+    "Actual web/API/dependency/mail readiness and login/logout smoke returned READY exit0",
+    "Browser signup/catcher/activation/login/RBAC/event edit/reload/showtime desktop/mobile PASS",
+    "Status Stop Start -SkipBuild passed with byte-identical config/env/signing keys, event/showtime and30migration history retained",
+    "Temporarily paused only inactive previous staging slot for RAM; all three containers restored and both API health200; current HTTPS remained healthy"
+  ],
+  "logSha256": {
+    "install.log": "71a041756896bcd92953216a1bb00592610ef803cff992788468fcec4b26fbad",
+    "generate.log": "7951dcc6520a159230f6cd6a42d04db5c16c9c025809f21b7d241537e86481ef",
+    "migrate.log": "3129b8e75114f2346cccf8b4a573adf20f3e1993023643f2ba6eb4fea67ca322",
+    "seed.log": "0b6dfb5e083f025d7770fa946d2e4edd62985393662c204538a2858f8c6f546f",
+    "build.log": "d1ad1cb398ee2672baed0501f942caee724d1595055ca9c0011cd4b498aed0a5"
+  },
+  "browserEvidence": "fresh-exact-clone-browser.json",
+  "lifecycleEvidence": "fresh-exact-clone-lifecycle.json",
+  "limitations": [
+    "Mailpit local catcher is not Internet email; real SMTP receipt evidence separately recorded",
+    "RAM preflight must remain satisfied for first build; prerequisite/OS certificate steps not automated",
+    "Product tested02a; API/web/schema/lock/launcher unchanged in49b, two staging operations changes separately verified"
+  ]
+}

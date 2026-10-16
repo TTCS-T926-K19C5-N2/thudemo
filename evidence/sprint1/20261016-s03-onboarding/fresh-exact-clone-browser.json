@@ -1,0 +1,39 @@
+{
+  "time": "2026-10-16T16:23:54.380Z",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "environment": "Clean clone on D, generated config/new PostgreSQL DB/Redis/Mailpit; no private inputs copied",
+  "cases": [
+    {
+      "assertion": "clean profile browser registration",
+      "result": "PASS"
+    },
+    {
+      "assertion": "product SMTP catcher receive and activation",
+      "result": "PASS"
+    },
+    {
+      "assertion": "activated buyer login and server403",
+      "result": "PASS"
+    },
+    {
+      "assertion": "organizer create/edit/reload draft",
+      "result": "PASS"
+    },
+    {
+      "assertion": "future showtime stored and rendered",
+      "result": "PASS"
+    },
+    {
+      "assertion": "desktop/mobile rendered with no horizontal overflow",
+      "result": "PASS"
+    }
+  ],
+  "eventId": "03720592-531b-4f83-99ee-f796e84de013",
+  "screenshots": [
+    "D:/s1demo/verification-02a-clean/desktop-event.png",
+    "D:/s1demo/verification-02a-clean/mobile-event.png"
+  ],
+  "browserFallback": "Browser plugin not available; repository Playwright",
+  "pageErrors": [],
+  "result": "PASS"
+}

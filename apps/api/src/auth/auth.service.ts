@@ -27,7 +27,7 @@ export class AuthService {
     private readonly redis: RedisService,
   ) {}
 
-  async login(emailInput: unknown, passwordInput: unknown) {
+  async login(emailInput: unknown, passwordInput: unknown, peerIp?: string) {
     if (
       typeof emailInput !== 'string' ||
       typeof passwordInput !== 'string' ||
@@ -43,6 +43,18 @@ export class AuthService {
     }
 
     try {
+      const ipRetryAfter = peerIp
+        ? await this.redis.loginIpRetryAfter(peerIp)
+        : 0;
+      if (ipRetryAfter > 0) {
+        throw new HttpException(
+          {
+            message: 'Đăng nhập tạm khoá. Thử lại sau ít phút.',
+            retryAfterSeconds: ipRetryAfter,
+          },
+          429,
+        );
+      }
       if (await this.redis.isAccountLocked(email)) {
         const seconds = Math.max(1, await this.redis.getLockTTL(email));
         throw new HttpException(
@@ -73,6 +85,7 @@ export class AuthService {
     );
     if (!user || !isMatch || !user.isEmailVerified || !user.isActive) {
       try {
+        if (peerIp) await this.redis.recordLoginIpFailure(peerIp);
         const failures = await this.redis.incrementLoginFailures(email);
         if (failures >= 5) {
           await this.redis.lockAccount(email);

@@ -1,0 +1,112 @@
+{
+  "total": {
+    "lines": {
+      "total": 76,
+      "covered": 6,
+      "skipped": 0,
+      "pct": 7.89
+    },
+    "statements": {
+      "total": 78,
+      "covered": 6,
+      "skipped": 0,
+      "pct": 7.69
+    },
+    "functions": {
+      "total": 20,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 5
+    },
+    "branches": {
+      "total": 40,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 2.5
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "apps/api/src/auth/auth.controller.ts": {
+    "lines": {
+      "total": 12,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "functions": {
+      "total": 5,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "statements": {
+      "total": 12,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "branches": {
+      "total": 6,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    }
+  },
+  "apps/api/src/auth/auth.service.ts": {
+    "lines": {
+      "total": 39,
+      "covered": 5,
+      "skipped": 0,
+      "pct": 12.82
+    },
+    "functions": {
+      "total": 4,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 25
+    },
+    "statements": {
+      "total": 40,
+      "covered": 5,
+      "skipped": 0,
+      "pct": 12.5
+    },
+    "branches": {
+      "total": 28,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 3.57
+    }
+  },
+  "apps/api/src/redis/redis.service.ts": {
+    "lines": {
+      "total": 25,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 4
+    },
+    "functions": {
+      "total": 11,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    },
+    "statements": {
+      "total": 26,
+      "covered": 1,
+      "skipped": 0,
+      "pct": 3.84
+    },
+    "branches": {
+      "total": 6,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 0
+    }
+  }
+}

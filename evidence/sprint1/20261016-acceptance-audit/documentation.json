@@ -1,0 +1,24 @@
+{
+  "source": "5b3f67bc343729dd6d87140b77af6536ec704086",
+  "files": [
+    "README.md",
+    "docs/SPRINT1_ACCEPTANCE_MATRIX.md",
+    "docs/SPRINT1_REVIEW_REPORT.md",
+    "docs/SPRINT1_DEMO_RUNBOOK.md",
+    "docs/SPRINT1_FIX_PR_DRAFT.md",
+    "docs/K01_EVIDENCE.md"
+  ],
+  "checkedTopics": [
+    "toolchain/root env",
+    "native vs staging profiles",
+    "server sessions not JWT",
+    "29 migration history",
+    "LAN HTTPS / credentials path",
+    "resume / rollback",
+    "source-bound evidence and task states"
+  ],
+  "status": "PASS; reviewed current source text, not inferred from existence",
+  "latestReviewedSnapshot": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
+  "DEC14": "PO authority PASS, no old pending-authority blocker in current state",
+  "testOnlyFollowup": "F16 adapter unit transport isolated; no production behavior change, final CI required"
+}

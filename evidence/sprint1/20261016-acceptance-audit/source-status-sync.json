@@ -1,0 +1,173 @@
+{
+  "time": "2026-10-16T10:15:16.411324+00:00",
+  "source": "D:\\Development\\03_Academic\\Bán vé sự kiện có sơ đồ ghế\\outputs\\01a0d25b-70b6-7cc2-92ac-d4de7dbfadaa\\Bán vé sự kiện có sơ đồ ghế (1) đã đồng bộ refinement.xlsx",
+  "beforeSha256": "92fd5d2f393f961d8d74b39ba577bd73c19ab1063787a9211a3bd74218e91432",
+  "candidateSha256": "9feb1c7f1e2578060b0e2ffa646e09a37fe2c32c3d28274dc7c685bdcc3350ac",
+  "changes": [
+    {
+      "sheet": "Backlog",
+      "cell": "I2",
+      "before": "Todo",
+      "after": "In progress",
+      "id": "S-01"
+    },
+    {
+      "sheet": "Backlog",
+      "cell": "I5",
+      "before": "Todo",
+      "after": "In progress",
+      "id": "S-02"
+    },
+    {
+      "sheet": "Backlog",
+      "cell": "I8",
+      "before": "Todo",
+      "after": "In progress",
+      "id": "S-04"
+    },
+    {
+      "sheet": "Backlog",
+      "cell": "I14",
+      "before": "Todo",
+      "after": "In progress",
+      "id": "K-01"
+    },
+    {
+      "sheet": "Tasks",
+      "cell": "E2",
+      "before": "Todo",
+      "after": "In progress",
+      "id": "T-01"
+    },
+    {
+      "sheet": "Tasks",
+      "cell": "E3",
+      "before": "Todo",
+      "after": "In progress",
+      "id": "T-02"
+    },
+    {
+      "sheet": "Tasks",
+      "cell": "E4",
+      "before": "Todo",
+      "after": "In progress",
+      "id": "T-03"
+    },
+    {
+      "sheet": "Tasks",
+      "cell": "E5",
+      "before": "Todo",
+      "after": "In progress",
+      "id": "T-04"
+    },
+    {
+      "sheet": "Tasks",
+      "cell": "E6",
+      "before": "Todo",
+      "after": "In progress",
+      "id": "T-05"
+    },
+    {
+      "sheet": "Tasks",
+      "cell": "E7",
+      "before": "Todo",
+      "after": "In progress",
+      "id": "T-06"
+    },
+    {
+      "sheet": "Tasks",
+      "cell": "E10",
+      "before": "Todo",
+      "after": "In progress",
+      "id": "T-09"
+    },
+    {
+      "sheet": "Tasks",
+      "cell": "E11",
+      "before": "Todo",
+      "after": "In progress",
+      "id": "T-10"
+    }
+  ],
+  "unrelatedCellValueChanges": 0,
+  "styleDifferences": [],
+  "nativeRender": "Unavailable: artifact-tool Windows native render terminated process -1073740791 twice; bounded import/inspect and whole-workbook value/style audit performed",
+  "applied": true,
+  "backup": ".sprint1-local\\source-backups\\Bán vé sự kiện có sơ đồ ghế (1) đã đồng bộ refinement-before-status.xlsx",
+  "afterSha256": "9feb1c7f1e2578060b0e2ffa646e09a37fe2c32c3d28274dc7c685bdcc3350ac",
+  "taskMarkdown": [
+    {
+      "task": "T-01",
+      "source": "D:\\Development\\03_Academic\\Bán vé sự kiện có sơ đồ ghế\\tasks\\T-01.md",
+      "before": "Done",
+      "after": "In progress",
+      "technicalResult": "PASS",
+      "done": false,
+      "sha256": "7c9dcd445c6a05702178a867aa83e58746cf121ead102b7c3c2dcb8e427f99a1"
+    },
+    {
+      "task": "T-02",
+      "source": "D:\\Development\\03_Academic\\Bán vé sự kiện có sơ đồ ghế\\tasks\\T-02.md",
+      "before": "Todo",
+      "after": "In progress",
+      "technicalResult": "PASS",
+      "done": false,
+      "sha256": "1fabe099902c490725a6facd169337280d54611cb5e17a6be9cd6cff0d2475aa"
+    },
+    {
+      "task": "T-03",
+      "source": "D:\\Development\\03_Academic\\Bán vé sự kiện có sơ đồ ghế\\tasks\\T-03.md",
+      "before": "Todo",
+      "after": "In progress",
+      "technicalResult": "BLOCKED",
+      "done": false,
+      "sha256": "4c3ef94988ddbb3e64a035f7ba7bcfe2d7a23430e171adea1064dd21dbc3469e"
+    },
+    {
+      "task": "T-04",
+      "source": "D:\\Development\\03_Academic\\Bán vé sự kiện có sơ đồ ghế\\tasks\\T-04.md",
+      "before": "Todo",
+      "after": "In progress",
+      "technicalResult": "PASS",
+      "done": false,
+      "sha256": "b65d0fcfcb1c93af84b76c3b38bfbbe36d74338465cb77c4e8c2f784621fb76d"
+    },
+    {
+      "task": "T-05",
+      "source": "D:\\Development\\03_Academic\\Bán vé sự kiện có sơ đồ ghế\\tasks\\T-05.md",
+      "before": "Todo",
+      "after": "In progress",
+      "technicalResult": "PASS",
+      "done": false,
+      "sha256": "9e7039070aca1beb3349f57ce6b61ce7184a7ca4519d43aacd3ce56a9ecc7393"
+    },
+    {
+      "task": "T-06",
+      "source": "D:\\Development\\03_Academic\\Bán vé sự kiện có sơ đồ ghế\\tasks\\T-06.md",
+      "before": "Todo",
+      "after": "In progress",
+      "technicalResult": "PASS",
+      "done": false,
+      "sha256": "f10982c36e0f915a905a010835baac75bc63530c83074be1d0b7f838eceb58ef"
+    },
+    {
+      "task": "T-09",
+      "source": "D:\\Development\\03_Academic\\Bán vé sự kiện có sơ đồ ghế\\tasks\\T-09.md",
+      "before": "Todo",
+      "after": "In progress",
+      "technicalResult": "PASS",
+      "done": false,
+      "sha256": "6d8f14de367f507e213cbf9d37a9fbb5ea0dd860285bbcf091394f2de263a0c9"
+    },
+    {
+      "task": "T-10",
+      "source": "D:\\Development\\03_Academic\\Bán vé sự kiện có sơ đồ ghế\\tasks\\T-10.md",
+      "before": "Todo",
+      "after": "In progress",
+      "technicalResult": "PASS",
+      "done": false,
+      "sha256": "d9ba50da95455670669a9cae4d3a85299ba2257a3062d3b1a3a21046e6c68122"
+    }
+  ],
+  "originalWorkbook": "Original root workbook retained as historical planning baseline; current refined workbook updated only12 status cells. No AC/SP/Sprint/Owner change."
+}

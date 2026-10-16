@@ -1,0 +1,10 @@
+{
+  "branch": "develop",
+  "source": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
+  "protected": false,
+  "applicableRules": [],
+  "rulesets": [],
+  "result": "FAIL",
+  "requirement": "../tasks/T-02.md AC: red lint must prevent merge",
+  "action": "Prepared proposal in SPRINT1_FIX_PR_DRAFT.md; not applied without explicit authorization."
+}

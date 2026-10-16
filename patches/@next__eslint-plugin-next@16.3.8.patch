@@ -1,0 +1,61 @@
+diff --git a/dist/utils/get-root-dirs.js b/dist/utils/get-root-dirs.js
+index 47108c943514a1d7e686c5eb18aad00a59963c83..3f18e831dc046c1859a710063c33dc55687c2ba0 100644
+--- a/dist/utils/get-root-dirs.js
++++ b/dist/utils/get-root-dirs.js
+@@ -8,13 +8,49 @@ Object.defineProperty(exports, "getRootDirs", {
+         return getRootDirs;
+     }
+ });
+-var _fastglob = require("fast-glob");
+-/**
+- * Process a Next.js root directory glob.
+- */ var processRootDir = function(rootDir) {
+-    return (0, _fastglob.globSync)(rootDir.replace(/\\/g, '/'), {
+-        onlyDirectories: true
+-    });
++// Local security patch: Next uses globbing only to locate configured app roots.
++// Avoid the unpatched braces dependency without disabling any lint rule.
++var globSync = require("glob").globSync;
++var expand = require("brace-expansion").expand;
++var statSync = require("node:fs").statSync;
++var processRootDir = function(rootDir) {
++    if (!rootDir.length) throw new TypeError("next.rootDir must not be empty");
++    var pattern = rootDir.replace(/\\/g, '/');
++    var groups = 0, depth = 0, parens = 0;
++    if (pattern.length > 4096) throw new RangeError("next.rootDir is too long");
++    for (var ch of pattern) {
++        if (ch === '{') { groups++; depth++; }
++        if (ch === '}') depth--;
++        if (ch === '(') parens++;
++        if (depth > 64 || groups > 128 || parens > 64)
++            throw new RangeError("next.rootDir pattern nesting exceeds safe limits");
++    }
++    // Fail explicitly on uncommon fast-glob syntax whose interpretation differs
++    // in glob; do not silently broaden the directories checked by Next rules.
++    if ((pattern.includes('{') && /["']/.test(pattern)) ||
++        (/[*!?\[{(]/.test(pattern) && pattern.split('/').includes('..')))
++        throw new TypeError("Unsupported next.rootDir quoted braces or wildcard parent path");
++    var branches = expand(pattern, { max: 1001, maxLength: Infinity });
++    if (branches.length > 1000) throw new RangeError("next.rootDir expands to too many roots");
++    var negative = branches.filter(function(branch) { return branch.startsWith('!') && !branch.startsWith('!('); });
++    if (negative.length) {
++        if (branches.length === 1) return [];
++        throw new TypeError("Unsupported next.rootDir mixed negative brace branches");
++    }
++    var matches = [];
++    for (var branch of new Set(branches)) {
++        branch = branch.replace(/(^|\/)\*\*\/?$/, '$1**/*');
++        for (var match of globSync(branch, {
++            follow: true, nocase: false, dot: false, mark: false, nobrace: true
++        })) {
++            try {
++                if (statSync(match).isDirectory()) matches.push(match);
++            } catch (error) {
++                if (error.code !== 'ENOENT' && error.code !== 'ENOTDIR') throw error;
++            }
++        }
++    }
++    return Array.from(new Set(matches));
+ };
+ var getRootDirs = function(context) {
+     var rootDirs = [

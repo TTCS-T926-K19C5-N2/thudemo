@@ -1,0 +1,416 @@
+[
+  {
+    "time": "2026-10-15T15:44:31.735Z",
+    "event": "initialized"
+  },
+  {
+    "time": "2026-10-15T15:59:35.756Z",
+    "event": "candidate-start",
+    "sha": "864189edcba0b0c112203d8de4ebbfb189ac7148"
+  },
+  {
+    "time": "2026-10-15T16:07:41.745Z",
+    "event": "promoted",
+    "sha": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+    "oldSha": null,
+    "elapsedSeconds": 485.989
+  },
+  {
+    "time": "2026-10-15T16:16:46.001Z",
+    "event": "candidate-start",
+    "sha": "864189edcba0b0c112203d8de4ebbfb189ac7148"
+  },
+  {
+    "time": "2026-10-15T16:17:21.839Z",
+    "event": "controlled-candidate-rejected-old-retained",
+    "sha": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+    "activeSha": "864189edcba0b0c112203d8de4ebbfb189ac7148"
+  },
+  {
+    "time": "2026-10-15T16:29:58.386Z",
+    "event": "candidate-start",
+    "sha": "b52ba6afa07d29444e5e809892e5325f0966625c"
+  },
+  {
+    "time": "2026-10-15T16:30:06.119Z",
+    "event": "manual-migration-compatibility-acknowledged",
+    "from": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+    "to": "b52ba6afa07d29444e5e809892e5325f0966625c"
+  },
+  {
+    "time": "2026-10-15T16:37:11.918Z",
+    "event": "promoted",
+    "sha": "b52ba6afa07d29444e5e809892e5325f0966625c",
+    "oldSha": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+    "elapsedSeconds": 433.533
+  },
+  {
+    "time": "2026-10-15T16:37:41.016Z",
+    "event": "rollback",
+    "sha": "864189edcba0b0c112203d8de4ebbfb189ac7148"
+  },
+  {
+    "time": "2026-10-15T16:37:42.120Z",
+    "event": "rollback",
+    "sha": "b52ba6afa07d29444e5e809892e5325f0966625c"
+  },
+  {
+    "time": "2026-10-15T18:04:35.899Z",
+    "event": "candidate-start",
+    "sha": "85b286ba141d10478168df1512e52686bf6c8509"
+  },
+  {
+    "time": "2026-10-15T18:04:49.176Z",
+    "event": "manual-migration-compatibility-acknowledged",
+    "from": "b52ba6afa07d29444e5e809892e5325f0966625c",
+    "to": "85b286ba141d10478168df1512e52686bf6c8509"
+  },
+  {
+    "time": "2026-10-15T18:06:32.338Z",
+    "event": "candidate-start",
+    "sha": "d89362955e5b3c7a620a5867216f50a56b826a27"
+  },
+  {
+    "time": "2026-10-15T18:06:44.944Z",
+    "event": "manual-migration-compatibility-acknowledged",
+    "from": "b52ba6afa07d29444e5e809892e5325f0966625c",
+    "to": "d89362955e5b3c7a620a5867216f50a56b826a27"
+  },
+  {
+    "time": "2026-10-16T06:49:08.184Z",
+    "event": "active-resumed",
+    "sha": "b52ba6afa07d29444e5e809892e5325f0966625c"
+  },
+  {
+    "time": "2026-10-16T06:49:36.957Z",
+    "event": "candidate-start",
+    "sha": "cdb7fdbac5594f4831715731dd2b19893cecc9a2",
+    "resources": [
+      {
+        "name": "Windows system/Docker Desktop volume",
+        "freeBytes": 45865803776,
+        "minimumBytes": 12884901888
+      },
+      {
+        "name": "Staging source/backup volume",
+        "freeBytes": 117523226624,
+        "minimumBytes": 5368709120
+      }
+    ]
+  },
+  {
+    "time": "2026-10-16T06:49:47.470Z",
+    "event": "manual-migration-compatibility-acknowledged",
+    "from": "b52ba6afa07d29444e5e809892e5325f0966625c",
+    "to": "cdb7fdbac5594f4831715731dd2b19893cecc9a2"
+  },
+  {
+    "time": "2026-10-16T06:53:51.876Z",
+    "event": "promoted",
+    "sha": "cdb7fdbac5594f4831715731dd2b19893cecc9a2",
+    "oldSha": "b52ba6afa07d29444e5e809892e5325f0966625c",
+    "elapsedSeconds": 254.92
+  },
+  {
+    "time": "2026-10-16T06:59:41.774Z",
+    "event": "gateway-restarted",
+    "sha": "cdb7fdbac5594f4831715731dd2b19893cecc9a2"
+  },
+  {
+    "time": "2026-10-16T07:01:59.025Z",
+    "event": "candidate-start",
+    "sha": "3e37403d0a491ad05e4372b0621b467e721f05c3",
+    "resources": [
+      {
+        "name": "Windows system/Docker Desktop volume",
+        "freeBytes": 43987795968,
+        "minimumBytes": 12884901888
+      },
+      {
+        "name": "Staging source/backup volume",
+        "freeBytes": 117275475968,
+        "minimumBytes": 5368709120
+      }
+    ]
+  },
+  {
+    "time": "2026-10-16T07:03:29.715Z",
+    "event": "candidate-start",
+    "sha": "97d15a62d9ce2a49a93f7b02e6a59649f267114e",
+    "resources": [
+      {
+        "name": "Windows system/Docker Desktop volume",
+        "freeBytes": 43988660224,
+        "minimumBytes": 12884901888
+      },
+      {
+        "name": "Staging source/backup volume",
+        "freeBytes": 117053583360,
+        "minimumBytes": 5368709120
+      }
+    ]
+  },
+  {
+    "time": "2026-10-16T07:04:04.043Z",
+    "event": "backup-verified",
+    "sha": "97d15a62d9ce2a49a93f7b02e6a59649f267114e",
+    "bytes": 1062814
+  },
+  {
+    "time": "2026-10-16T07:04:26.318Z",
+    "event": "promoted",
+    "sha": "97d15a62d9ce2a49a93f7b02e6a59649f267114e",
+    "oldSha": "cdb7fdbac5594f4831715731dd2b19893cecc9a2",
+    "elapsedSeconds": 56.604
+  },
+  {
+    "time": "2026-10-16T07:05:02.023Z",
+    "event": "gateway-restarted",
+    "sha": "97d15a62d9ce2a49a93f7b02e6a59649f267114e"
+  },
+  {
+    "time": "2026-10-16T07:06:27.004Z",
+    "event": "candidate-start",
+    "sha": "630745d6b85b5c8ed1dadf184afa338baface518",
+    "resources": [
+      {
+        "name": "Windows system/Docker Desktop volume",
+        "freeBytes": 43991224320,
+        "minimumBytes": 12884901888
+      },
+      {
+        "name": "Staging source/backup volume",
+        "freeBytes": 116819574784,
+        "minimumBytes": 5368709120
+      }
+    ]
+  },
+  {
+    "time": "2026-10-16T07:06:59.910Z",
+    "event": "backup-verified",
+    "sha": "630745d6b85b5c8ed1dadf184afa338baface518",
+    "bytes": 1193649
+  },
+  {
+    "time": "2026-10-16T07:07:18.280Z",
+    "event": "promoted",
+    "sha": "630745d6b85b5c8ed1dadf184afa338baface518",
+    "oldSha": "97d15a62d9ce2a49a93f7b02e6a59649f267114e",
+    "elapsedSeconds": 51.277
+  },
+  {
+    "time": "2026-10-16T07:08:02.427Z",
+    "event": "gateway-restarted",
+    "sha": "630745d6b85b5c8ed1dadf184afa338baface518"
+  },
+  {
+    "time": "2026-10-16T07:13:31.669Z",
+    "event": "gateway-restarted",
+    "sha": "630745d6b85b5c8ed1dadf184afa338baface518"
+  },
+  {
+    "time": "2026-10-16T07:13:40.481Z",
+    "event": "active-resumed",
+    "sha": "630745d6b85b5c8ed1dadf184afa338baface518"
+  },
+  {
+    "time": "2026-10-16T07:23:43.603Z",
+    "event": "candidate-start",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac",
+    "resources": [
+      {
+        "name": "Windows system/Docker Desktop volume",
+        "freeBytes": 43906596864,
+        "minimumBytes": 12884901888
+      },
+      {
+        "name": "Staging source/backup volume",
+        "freeBytes": 116558073856,
+        "minimumBytes": 5368709120
+      }
+    ]
+  },
+  {
+    "time": "2026-10-16T07:23:52.516Z",
+    "event": "manual-migration-compatibility-acknowledged",
+    "from": "630745d6b85b5c8ed1dadf184afa338baface518",
+    "to": "accf832be519d9790845c3590acd3f481c5594ac"
+  },
+  {
+    "time": "2026-10-16T07:24:08.150Z",
+    "event": "backup-verified",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac",
+    "bytes": 1675245
+  },
+  {
+    "time": "2026-10-16T07:28:11.036Z",
+    "event": "promoted",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac",
+    "oldSha": "630745d6b85b5c8ed1dadf184afa338baface518",
+    "elapsedSeconds": 267.435
+  },
+  {
+    "time": "2026-10-16T07:28:24.741Z",
+    "event": "gateway-restarted",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac"
+  },
+  {
+    "time": "2026-10-16T07:28:44.847Z",
+    "event": "active-resumed",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac"
+  },
+  {
+    "time": "2026-10-16T07:31:07.012Z",
+    "event": "candidate-start",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac",
+    "resources": [
+      {
+        "name": "Windows system/Docker Desktop volume",
+        "freeBytes": 41212268544,
+        "minimumBytes": 12884901888
+      },
+      {
+        "name": "Staging source/backup volume",
+        "freeBytes": 116297191424,
+        "minimumBytes": 5368709120
+      }
+    ]
+  },
+  {
+    "time": "2026-10-16T07:31:15.435Z",
+    "event": "backup-verified",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac",
+    "bytes": 1995931
+  },
+  {
+    "time": "2026-10-16T07:31:33.241Z",
+    "event": "controlled-candidate-rejected-old-retained",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac",
+    "activeSha": "accf832be519d9790845c3590acd3f481c5594ac"
+  },
+  {
+    "time": "2026-10-16T07:32:26.273Z",
+    "event": "rollback",
+    "sha": "630745d6b85b5c8ed1dadf184afa338baface518"
+  },
+  {
+    "time": "2026-10-16T07:32:27.025Z",
+    "event": "rollback",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac"
+  },
+  {
+    "time": "2026-10-16T07:42:06.495Z",
+    "event": "gateway-restarted",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac"
+  },
+  {
+    "time": "2026-10-16T07:42:43.482Z",
+    "event": "gateway-restarted",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac"
+  },
+  {
+    "time": "2026-10-16T07:43:01.031Z",
+    "event": "gateway-restarted",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac"
+  },
+  {
+    "time": "2026-10-16T07:43:50.921Z",
+    "event": "gateway-restarted",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac"
+  },
+  {
+    "time": "2026-10-16T07:47:13.505Z",
+    "event": "active-resumed",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac"
+  },
+  {
+    "time": "2026-10-16T07:47:16.141Z",
+    "event": "gateway-restarted",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac"
+  },
+  {
+    "time": "2026-10-16T07:49:56.599Z",
+    "event": "gateway-restarted",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac"
+  },
+  {
+    "time": "2026-10-16T07:50:44.522Z",
+    "event": "candidate-start",
+    "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+    "resources": [
+      {
+        "name": "Windows system/Docker Desktop volume",
+        "freeBytes": 41198538752,
+        "minimumBytes": 12884901888
+      },
+      {
+        "name": "Staging source/backup volume",
+        "freeBytes": 116287016960,
+        "minimumBytes": 5368709120
+      }
+    ]
+  },
+  {
+    "time": "2026-10-16T07:51:09.109Z",
+    "event": "backup-verified",
+    "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+    "bytes": 2960053
+  },
+  {
+    "time": "2026-10-16T07:54:34.540Z",
+    "event": "promoted",
+    "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+    "oldSha": "accf832be519d9790845c3590acd3f481c5594ac",
+    "elapsedSeconds": 230.018
+  },
+  {
+    "time": "2026-10-16T08:05:24.431Z",
+    "event": "active-resumed",
+    "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d"
+  },
+  {
+    "time": "2026-10-16T08:06:39.889Z",
+    "event": "active-resumed",
+    "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d"
+  },
+  {
+    "time": "2026-10-16T08:07:41.710Z",
+    "event": "active-resumed",
+    "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d"
+  },
+  {
+    "time": "2026-10-16T08:08:19.114Z",
+    "event": "active-resumed",
+    "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d"
+  },
+  {
+    "time": "2026-10-16T08:20:46.145Z",
+    "event": "gateway-restarted",
+    "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d"
+  },
+  {
+    "time": "2026-10-16T08:22:49.808Z",
+    "event": "gateway-restarted",
+    "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d"
+  },
+  {
+    "time": "2026-10-16T08:23:48.061Z",
+    "event": "rollback",
+    "sha": "accf832be519d9790845c3590acd3f481c5594ac"
+  },
+  {
+    "time": "2026-10-16T08:23:48.739Z",
+    "event": "rollback",
+    "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d"
+  },
+  {
+    "time": "2026-10-16T08:30:45.569Z",
+    "event": "active-resumed",
+    "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d"
+  },
+  {
+    "time": "2026-10-16T08:32:48.070Z",
+    "event": "active-resumed",
+    "sha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d"
+  }
+]

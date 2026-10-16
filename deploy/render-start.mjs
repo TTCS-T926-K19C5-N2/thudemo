@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 const role = process.env.SERVICE_ROLE;
 const paths = {
   api: ["/app/api", "dist/main.js"],
-  web: ["/app/web/apps/web", "server.js"],
+  web: ["/app/web", "server.mjs"],
 };
 if (!Object.hasOwn(paths, role))
   throw new Error("SERVICE_ROLE must be api or web");

@@ -1,0 +1,14 @@
+{
+  "time": "2026-10-16T14:47:27.034627+00:00",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "result": "PASS",
+  "test": "apps/api/test/registration.e2e-spec.ts: rolls back registration when consent persistence fails, then safely retries",
+  "environment": "Isolated PostgreSQL15/Redis real HTTP; targeted test-only trigger removed in finally",
+  "assertions": [
+    "Consent insert failure returns503, generic response",
+    "No user or activation token persisted; no mail sent",
+    "Remove targeted trigger then same valid registration201 with linked consent/token"
+  ],
+  "gates": "regression-admission/gates.json",
+  "stagingTouched": false
+}

@@ -54,7 +54,9 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
   async function createPendingOrder(seatNumbers: number[]) {
     const seats = await Promise.all(
       seatNumbers.map((seatNumber) =>
-        db.seat.create({ data: { showtimeId, categoryId, row: 'T', seatNumber } }),
+        db.seat.create({
+          data: { showtimeId, categoryId, row: 'T', seatNumber },
+        }),
       ),
     );
     const expiresAt = new Date(Date.now() + 600000);
@@ -103,12 +105,18 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
       responseTime: Date.now(),
       extraData: Buffer.from(JSON.stringify({ orderId })).toString('base64'),
     };
-    payload.signature = buildMomoSignature(payload, momoAccessKey, momoSecretKey);
+    payload.signature = buildMomoSignature(
+      payload,
+      momoAccessKey,
+      momoSecretKey,
+    );
     return payload;
   }
 
   async function scannerKeys() {
-    const res = await request(app.getHttpServer()).get('/tickets/public-keys').expect(200);
+    const res = await request(app.getHttpServer())
+      .get('/tickets/public-keys')
+      .expect(200);
     return new Map<string, ReturnType<typeof decodeTicketKey>>(
       res.body.keys.map((k: { keyId: string; publicKey: string }) => [
         k.keyId,
@@ -121,13 +129,19 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
       target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
+      !(
+        target.port === '15432' ||
+        (process.env.SPRINT1_ISOLATED_TEST === 'true' &&
+          target.port === '15446')
+      ) ||
       target.pathname !== '/sprint2_integration'
     ) {
       throw new Error('Run only on the isolated sprint2_integration database');
     }
 
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
     app = moduleRef.createNestApplication();
     await app.init();
     db = app.get(PrismaService);
@@ -147,7 +161,11 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
     });
     eventId = event.id;
     const showtime = await db.showtime.create({
-      data: { eventId, startTime: new Date('2026-12-01T12:00:00Z'), status: 'ON_SALE' },
+      data: {
+        eventId,
+        startTime: new Date('2026-12-01T12:00:00Z'),
+        status: 'ON_SALE',
+      },
     });
     showtimeId = showtime.id;
     const category = await db.seatCategory.create({
@@ -179,14 +197,25 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
     const webhook = signedWebhook(order.id, gatewayRef, order.totalAmount);
 
     await Promise.all([
-      request(app.getHttpServer()).post('/payments/webhook').send(webhook).expect(200),
-      request(app.getHttpServer()).post('/payments/webhook').send(webhook).expect(200),
+      request(app.getHttpServer())
+        .post('/payments/webhook')
+        .send(webhook)
+        .expect(200),
+      request(app.getHttpServer())
+        .post('/payments/webhook')
+        .send(webhook)
+        .expect(200),
     ]);
-    await request(app.getHttpServer()).post('/payments/webhook').send(webhook).expect(200);
+    await request(app.getHttpServer())
+      .post('/payments/webhook')
+      .send(webhook)
+      .expect(200);
 
     const tickets = await db.ticket.findMany({ where: { orderId: order.id } });
     expect(tickets).toHaveLength(2);
-    expect(new Set(tickets.map((t) => t.seatId))).toEqual(new Set(seats.map((s) => s.id)));
+    expect(new Set(tickets.map((t) => t.seatId))).toEqual(
+      new Set(seats.map((s) => s.id)),
+    );
     expect(new Set(tickets.map((t) => t.code)).size).toBe(2);
     for (const ticket of tickets) {
       expect(ticket.keyId).toBeTruthy();
@@ -237,7 +266,10 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
         valid: true,
         ticket: { code: ticket.code, showtimeId },
       });
-      const tampered = ticket.qrPayload.replace(ticket.code, `${ticket.code.slice(0, -1)}X`);
+      const tampered = ticket.qrPayload.replace(
+        ticket.code,
+        `${ticket.code.slice(0, -1)}X`,
+      );
       expect(verifyTicketQr(tampered, keys).valid).toBe(false);
     }
   });
@@ -258,7 +290,9 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
     for (const ticket of issued) {
       expect(ticketCodes).toContain(ticket.code);
     }
-    const keyIds = (res.body.publicKeys ?? []).map((k: { keyId: string }) => k.keyId);
+    const keyIds = (res.body.publicKeys ?? []).map(
+      (k: { keyId: string }) => k.keyId,
+    );
     if (res.body.publicKey?.keyId) keyIds.push(res.body.publicKey.keyId);
     for (const ticket of issued) {
       if (ticket.keyId) expect(keyIds).toContain(ticket.keyId);

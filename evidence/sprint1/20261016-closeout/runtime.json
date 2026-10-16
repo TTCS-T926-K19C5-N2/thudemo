@@ -1,0 +1,122 @@
+{
+  "time": "2026-10-16T08:40:31.603Z",
+  "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "origin": "https://10.88.164.155:3470",
+  "health": {
+    "status": 200,
+    "body": {
+      "status": "ok",
+      "timestamp": "2026-10-16T08:40:31.676Z"
+    }
+  },
+  "containers": [
+    {
+      "name": "sprint1-stage-api-a2e5f675a371-1792137268858",
+      "running": true,
+      "user": "node",
+      "image": "sprint1-staging-api:a2e5f675a371",
+      "imageId": "sha256:000b3853576eb866a7515540f5b396f571732c742a7d6836b49d6cfd523154e4",
+      "ports": {
+        "10000/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "3471"
+          }
+        ]
+      },
+      "labels": {
+        "org.opencontainers.image.revision": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+        "sprint1.staging": "20261015"
+      }
+    },
+    {
+      "name": "sprint1-stage-api-replica-a2e5f675a371-1792137268859",
+      "running": true,
+      "user": "node",
+      "image": "sprint1-staging-api:a2e5f675a371",
+      "imageId": "sha256:000b3853576eb866a7515540f5b396f571732c742a7d6836b49d6cfd523154e4",
+      "ports": {
+        "10000/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "3475"
+          }
+        ]
+      },
+      "labels": {
+        "org.opencontainers.image.revision": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+        "sprint1.staging": "20261015"
+      }
+    },
+    {
+      "name": "sprint1-stage-web-a2e5f675a371-1792137272414",
+      "running": true,
+      "user": "node",
+      "image": "sprint1-staging-web:a2e5f675a371",
+      "imageId": "sha256:6b07bff8a9ff2eed59fac1240c0c00960dc779b2a095adeb075853895695791d",
+      "ports": {
+        "3000/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "3473"
+          }
+        ]
+      },
+      "labels": {
+        "org.opencontainers.image.revision": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+        "sprint1.staging": "20261015"
+      }
+    },
+    {
+      "name": "sprint1-stage-pg-20261015",
+      "running": true,
+      "user": "",
+      "image": "postgres:15-alpine",
+      "imageId": "sha256:f7d23353e1b15400d22ebe31189f4d314b87a4c129cc400c8c2d8d4ca127bf81",
+      "ports": {
+        "5432/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "15455"
+          }
+        ]
+      },
+      "labels": {
+        "sprint1.staging": "20261015"
+      }
+    },
+    {
+      "name": "sprint1-stage-redis-20261015",
+      "running": true,
+      "user": "",
+      "image": "redis:7-alpine",
+      "imageId": "sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+      "ports": {
+        "6379/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "16405"
+          }
+        ]
+      },
+      "labels": {
+        "sprint1.staging": "20261015"
+      }
+    }
+  ],
+  "staticScan": {
+    "files": 41,
+    "actualProxySecretInStatic": false
+  },
+  "keyHashes": {
+    "scanner-signing.pem": "48c493a7cf50177f1444e182f1574338bf533a48fb6b7bb737e7df9ff5ff9b6c",
+    "ticket-signing.der.b64": "d20550afe90abfabcb3659df95db7c8fb01a47314c88a9599933d92a43b9898a",
+    "tls/server-key.pem": "ddd3f2773ba193d588f73783c38a4f174a102e0c8623273250e6b2b37b3673f4",
+    "tls/server-cert.pem": "e368cd347dccf26e355aecb4a7e1cdce2849efac076244fe6050815fd45f2b1c"
+  },
+  "dataCounts": "6606|44|0|0|29",
+  "postgres": "on|on|100|128MB",
+  "redisAof": "appendonly\nyes",
+  "gatewaySha256": "c3748f0b8471c263d2da6f5163bdc688c09c55794a48dc8cdf16cd1300e9ab82",
+  "result": "PASS"
+}

@@ -1,0 +1,44 @@
+{
+  "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "time": "2026-10-16T08:23:56.265Z",
+  "cases": [
+    {
+      "dependency": "sprint1-stage-redis-20261015",
+      "outage": {
+        "status": 503,
+        "body": {
+          "message": "Dependencies unavailable",
+          "error": "Service Unavailable",
+          "statusCode": 503
+        }
+      },
+      "recovered": {
+        "status": 200,
+        "body": {
+          "status": "ok",
+          "timestamp": "2026-10-16T08:23:52.583Z"
+        }
+      }
+    },
+    {
+      "dependency": "sprint1-stage-pg-20261015",
+      "outage": {
+        "status": 503,
+        "body": {
+          "message": "Dependencies unavailable",
+          "error": "Service Unavailable",
+          "statusCode": 503
+        }
+      },
+      "recovered": {
+        "status": 200,
+        "body": {
+          "status": "ok",
+          "timestamp": "2026-10-16T08:23:56.262Z"
+        }
+      }
+    }
+  ],
+  "result": "PASS",
+  "scope": "Only exact labeled staging dependency containers stopped and restored; persistent volumes retained."
+}

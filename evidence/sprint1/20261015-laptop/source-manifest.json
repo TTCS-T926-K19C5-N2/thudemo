@@ -1,0 +1,83 @@
+{
+  "baseline": "0c1358ef455359ecc8dfa6f9de9fd451582bda84",
+  "branch": "feature/sprint1-acceptance-20261015",
+  "candidate": "source hashes before first Draft PR commit; docs/evidence excluded from self-hash",
+  "sources": [
+    {
+      "path": ".dockerignore",
+      "sha256": "18c8ae1a4dde4feae3f9da6de6ffb1052b94f5707730583de4d307bdd678c3fc"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "993d4cbaeef0658f522fed8f09072c27fa30c8a592f3e23130ba5049bbd95215"
+    },
+    {
+      "path": "apps/api/src/auth/login-peer.spec.ts",
+      "sha256": "7619fce94e898facae3bc7a27def5e1c31d04f97e17a54a1a36ae64b2ab49e78"
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.spec.ts",
+      "sha256": "34ba192139fd9ee65946bb2fb01ab9b4b3690a0070dc3199d9c9695ab616531f"
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.ts",
+      "sha256": "5e98767619d6331c772c1c06d2c6870d1a6ce835d8b25d715e3d6d6edfff730c"
+    },
+    {
+      "path": "apps/web/src/lib/server/login-transport.mjs",
+      "sha256": "d65ed43b0943b92420536baa6468232281b5a0c5628b54ca4c231821dee30258"
+    },
+    {
+      "path": "apps/web/src/lib/server/login-transport.spec.ts",
+      "sha256": "e3421d111cb3aa349fd4597cb08cd609809528c893d7707deaa69b2f27f9e569"
+    },
+    {
+      "path": "package.json",
+      "sha256": "829780650c332d72c11d3a91d0a30a6dfa4e148091a9635117f264e3b4ff721e"
+    },
+    {
+      "path": "packages/shared/login-peer.d.ts",
+      "sha256": "58650e361cb7be728c02b7f03cf6829918a586bd553a60de101343838ddfaf3f"
+    },
+    {
+      "path": "packages/shared/login-peer.js",
+      "sha256": "e489ca3241aec8b17bdb9175375771b30f1d02594ebe565e7ec81613ed22e56f"
+    },
+    {
+      "path": "apps/api/scripts/seed-sprint1-staging.mjs",
+      "sha256": "39bf913e3640e041445775008e9b07fa16e1794ce53f3c008032f013673f6e4a"
+    },
+    {
+      "path": "deploy/laptop-gateway.mjs",
+      "sha256": "be042d4724c916e31f791245da7e183e94225b940e7bda338f4f735bd673f2f1"
+    },
+    {
+      "path": "deploy/laptop-gateway.spec.mjs",
+      "sha256": "f23442ea254815344c86ebe4a7d59fcdcdd8adce066b5416d0082fa55bb4b5ec"
+    },
+    {
+      "path": "deploy/laptop-release.mjs",
+      "sha256": "c9fb1dd4694186a08bc61d7366aa0a3755d7c6c3ce7b0e64a8ee81fb06cf9b47"
+    },
+    {
+      "path": "deploy/laptop-release.spec.mjs",
+      "sha256": "21b5bfc94d7622728ce4e9d2fcad10765be3592bbca1051e2d473287a7718aa0"
+    },
+    {
+      "path": "scripts/sprint1-staging-access.ps1",
+      "sha256": "45b0ba45e686fa91d09c4eeb29d70c9d27393479d33e5479d944e50649d2787c"
+    },
+    {
+      "path": "scripts/sprint1-staging-watch.mjs",
+      "sha256": "6790c8573e3370985ec44675831d3ac2ae3f02c6dbb0743872e93d29e07ad806"
+    },
+    {
+      "path": "scripts/sprint1-staging.mjs",
+      "sha256": "3f0d7289b91553a08b0397c648a8e4e146a219e89c3a6abd666b5ed9394737a0"
+    },
+    {
+      "path": "scripts/sprint1-staging.ps1",
+      "sha256": "660dc3d961f81df4160a65397ab29b55ac452068d7afac611691cb80a59ab815"
+    }
+  ]
+}

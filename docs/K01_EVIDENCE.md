@@ -1,3 +1,50 @@
+# K-01 — hồ sơ quyết định hiện tại, 16/10/2026
+
+> **Quyết định hiện tại DEC17 (16/10):** PO Nguyễn Văn Sáng chấp thuận đầu ra kỹ thuật với sai lệch timebox/mentor được công khai. Không có bằng chứng timebox1ngày/mentor trong quá khứ; không nhận tuân thủ hồi tố. DEC14 PGauthority fake-data laptop staging giữ nguyên. ApprovalPR/người khác/CI/merge/autodeploy vẫn riêng. Evidence `evidence/sprint1/20261016-s03-onboarding/k01-deviation-approval.json`.
+
+**Quyết định authority đã được PO duyệt cho laptop staging dữ liệu giả theo DEC-14 (16/10/2026). K-01 chưa Done:** DoD review của thành viên khác còn chờ. Sai lệch thiếu bằng chứng timebox/mentor được PO chấp thuận theo DEC17, không nhận tuân thủ hồi tố. DEC-12 local/DEC-13 host là lịch sử; xác nhận trực tiếp mới của PO mở rộng authority sang profile staging này. Không chọn lại Redis chỉ vì tốc độ prototype.
+
+K01 Backlog row14 yêu cầu200request cùng1ghế, cảhai phương án, sốđo và quyết định/lýdo; T31 Tasksrow32 thuộcSprint2,200/100×10. Không có nguồn chuyển T31 vàoSprint1.
+
+**Audit quy trình gốc:** Backlog!K14 còn yêu cầu timebox1ngày/có người hướng dẫn ngồi cùng. Artifact đo không chứng minh điều này; trạng thái lịch sử NOT RUN; quyết định xử lý sai lệch hiện tại đã được PO chấp thuận theo DEC17. Không dựng lại lịch sử. K01-A chỉ PASS số đo hai phương án; K01-C PASS quyết định PO theo DEC14; DoD02 vẫn chờ member review, K01-D historical NOT RUN / PO-ACCEPTED-DEVIATION theo DEC17.
+
+## A. So sánh kho giữ ghế — tách khỏi endpoint sản phẩm
+
+| Phép đo | PostgreSQL p95 từng lượt (ms) | Redis p95 từng lượt (ms) | Điều kiện và kết quả |
+|---|---|---|---|
+| Local04/10, không Redis persistence |458,16 /362,89 /295,33 |85,65 /34,03 /55,92 |Hai process/store;200request/1ghế×3; mỗi lượt1winner/199conflict; Redis mất owner sau restart; PG giữ owner |
+| Laptop research15/10, Redis AOF everysec |644,9619 /326,9403 /308,3991 |85,2419 /50,7857 /40,9145 |PG15/Redis7, hai process/store, poolPG8/process, i5-13500H/16threads/16,8GB, Node24.21.0; generator cùng laptop; mỗi lượt1winner/199conflict/0errors |
+
+Raw và source adapted có hash: `evidence/sprint1/20261015-handoff/k01-laptop-research/`. Cổng15456/16406, named volumes riêng; không dùng database sản phẩm. Checks: overlapping sets all-or-none,10phút theo datastore clock, thêm/retry không gia hạn, concurrent session có một deadline/token, quá hạn thấy trống trước cleanup, stale token không xóa owner mới, cleanup lặp, failure không để partial claims và restart process giữ trạng thái. Các số đo cũ không bị thay.
+
+PG và Redis-AOF đều giữ owner sau **graceful container restart** ở lượt15/10. Điều này **không chứng minh power loss, hard crash hoặc zero-data-loss**. AOF everysec có cửa sổ chưa fsync; ownership Redis vẫn khác transaction của orders trong PG. Redis không persistence ở lượt04/10/CI có failure model khác; không trộn hai profile.
+
+## B. Endpoint sản phẩm — bằng chứng Sprint2 liên quan, không là AC K01/Sprint1
+
+`evidence/sprint1/20261016-closeout/performance/` giữ cả các lượt FAIL và raw mẫu mới, thông số giao thức/topology. Bài đo giữ200request đồng thời/100ghế×10, cookie/session thật, PGdurable,100winner+100conflict mỗi lượt. Ngưỡng giữ nguyên **all p95<300ms**, gồm lượt đầu; steady chỉ chẩn đoán. CI800ms budget và prototype không thay NFR.
+
+Điều tra16/10: claim request giữ connection từ session guard nhưng quota lookup vay thêm connection cùng pool gây cạn pool; dùng lại connection của request, không tăng pool/giảm auth. PG queries có index; fsync/synchronous_commit vẫn bật. Tiếp tục đo TLS/gateway/Next/API và kiểm correctness sau tối ưu. Kết quả hiện tại theo matrix/report; không tự ký đã đạt NFR trong hồ sơ kiến trúc.
+
+Lượt endpoint mới sourcea2e5f67 cùng laptop/process client riêng: H2 sau200loginAPI thật allp95233.1358/223.1592/263.4703msPASS có điều kiện; H1 cùng phương pháp737.9675msFAIL, H2coldDB-issued-fixture359.0416msFAIL được giữ. Không máy tải riêng bắt buộc trong T31AC/product§7/architecture§14; không tự bỏ ngưỡng300ms hoặc lượtFAIL. Chi tiết CPU/RAM/ELU/2000rawresponses/DB1000quyền trong closeout/load-laptop-* và performance-summary.json. NFR S10/S13 cònFAIL/conditionalPASS; không đưa T31 thành blocker Sprint1. DEC11/12 giữ NFR nhưng không chuyển Sprint.
+
+## C. Quyết định đã được PO phê duyệt — DEC-14
+
+Đã được PO chấp thuận: **PostgreSQL tiếp tục làm authority cho laptop staging dữ liệu giả**, dùng transaction, một quyền còn hạn trên mỗi ghế, thời hạn UTC10phút từ ghế đầu, thêm/retry không gia hạn, token fencing cho cleanup. Redis-AOF chỉ giữ counter/cache; mất counter khi Redis hỏng/mất dữ liệu phải ghi là giới hạn vận hành, không gọi ownership/counter durable tuyệt đối.
+
+Loại Redis làm authority trong bản này vì ownership/đơn PG không có cùng transaction; phải thêm distributed commit/reconciliation để bảo toàn nhất quán, vượt phạm vi sửa Sprint1. Redis nhanh hơn trong prototype không đủ chứng minh consistency hoặc endpoint sản phẩm. Giữ research tách AppModule; các module Redis do PR29/34–37 bổ sung còn nguyên lịch sử, không đưa public mock owner/TTL vào API sản phẩm.
+
+**Xác nhận hiện hành:** Nguyễn Văn Sáng (PO) trả lời trực tiếp “Tôi chấp nhận và làm tất cả, dưới tên của tôi có thể làm gì thì hãy làm tất cả” cho câu hỏi xác nhận đề xuất và evidence này. Quyết định tại DEC14; bản chép có ngữ cảnh trong `k01-approval.json`. Không tự ký thay: đây là xác nhận của chính người dùng, không là member approval hoặc bằng chứng lịch sử mentor/timebox. Tài khoản PR/đang xác thực đều sangnguyencoder; user nhận review không thỏa “thành viên khác”.
+
+## Lịch sử trước checkpoint16/10 — giữ nguyên provenance
+
+# Trạng thái đối chiếu 15/10/2026 — không thay lịch sử dưới đây
+
+Review Sprint1 lấy source main `81d1dd9d8f453b32ed0c6956399e5600f71a32d6` và đọc raw artifact của CI run `38695462765`, job `K-01 / candidate-research`. Bản lưu: `evidence/sprint1/20261015/k01-current-ci.json`. PostgreSQL p95 ba lượt200/1:489.41/225.51/177.61ms; Redis:58.09/35.09/30.15ms. Mỗi lượt1winner/199conflict/0errors. Hai process/store, PostgreSQL15/Redis7 thật; pool8/process; AMD EPYC9V45,4threads,Node24.21.0. PG giữ ownership sau restart, Redis không persistence mất ownership. Đây là CI prototype mới; chuỗi mode “not CI” trong producer là nhãn lịch sử, không thay provenance artifact. Recommendation “pending” trong raw cũng không hủy DEC12 đã duyệt tạm local.
+
+DEC12 tiếp tục là nguồn quyết định authority tạm local. PR29 report cũ chỉ đo Redis nên chưa đủ so sánh hai phương án; không dùng PR29 OPEN để kết luận main thiếu sản phẩm, không merge implementation khác chỉ để đóng spike. Staging vẫn **BLOCKED**. Artifact sản phẩm T31 cùng CI có overallp95 **368.67ms**, steadyp95 **250.65ms**, checker threshold **800ms**: không nhận PASS300ms cho toàn bộ request. Không trộn datastore/prototype/product endpoint hoặc local/CI/staging. Báo cáo/matrix hiện hành: `SPRINT1_REVIEW_REPORT.md`, `SPRINT1_ACCEPTANCE_MATRIX.md`.
+
+Phần bên dưới giữ nguyên kết quả và trạng thái tại thời điểm04/10, bao gồm các câu “CI chưa chạy”; chúng không mô tả CI mới15/10.
+
 # DEC-12 — checkpoint nghiệm thu sản phẩm local
 
 PO đã chấp thuận tạm thời PostgreSQL authoritative, Redis/Valkey cache/counter cho tám task local; nguyên văn decision-logDEC12. Không K01PASSstaging/NFRwaiver. [Bằng chứng sản phẩm](SEAT_HOLD_LOCAL_EVIDENCE.md):2API thật, authHTTP200/100×10 mỗi lượt100winner/100409, deadline/atomic/expiry/staletoken/APIrestart/worker minute/backlog/shutdown; counter và **loginlock thật** mất khi Valkeyrestart, PGhold giữ nguyên. LatestNFR750,96ms FAIL (lượt trước270,25PASS chỉ lịch sử). CI/Render chưa chạy. Prototype bên dưới giữ nguyên, không thay số đo spike bằng API metrics.
