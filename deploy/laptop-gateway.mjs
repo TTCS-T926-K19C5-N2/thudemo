@@ -48,8 +48,9 @@ const hopHeaders = [
 // Reuse sockets across requests/releases; each target port has its own pool.
 const upstreamAgent = new http.Agent({
   keepAlive: true,
-  maxSockets: 16,
-  maxFreeSockets: 16,
+  // One backend socket per available DB pool slot, per API target.
+  maxSockets: 10,
+  maxFreeSockets: 10,
 });
 export function stagingForwardHeaders(input, port) {
   const headers = { ...input, host: `127.0.0.1:${port}` };

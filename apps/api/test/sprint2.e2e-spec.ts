@@ -458,6 +458,77 @@ describe('Sprint 2 isolated database integration', () => {
     ).toBe(false);
     await request(app.getHttpServer()).get('/showtimes?cursor=bad').expect(400);
   }, 30000);
+  it('known conflicts preserve exact rejected seats, validation precedence, retry deadline and zero partial claims', async () => {
+    const competitor = await account('BUYER');
+    extraBuyerIds.push(competitor.id);
+    const show = await db.showtime.create({
+      data: {
+        eventId,
+        status: 'ON_SALE',
+        startTime: new Date('2099-01-01T00:00:00Z'),
+      },
+    });
+    const category = await db.seatCategory.create({
+      data: { showtimeId: show.id, name: 'fast-rejection-fixture', price: 100 },
+    });
+    const seats = await Promise.all(
+      [1, 2].map((seatNumber) =>
+        db.seat.create({
+          data: {
+            showtimeId: show.id,
+            categoryId: category.id,
+            row: 'FAST',
+            seatNumber,
+          },
+        }),
+      ),
+    );
+    const first = await request(app.getHttpServer())
+      .post(`/showtimes/${show.id}/holds`)
+      .set('Cookie', buyerCookie)
+      .send({ seatIds: [seats[0].id] })
+      .expect(200);
+    const conflict = await request(app.getHttpServer())
+      .post(`/showtimes/${show.id}/holds`)
+      .set('Cookie', competitor.cookie)
+      .send({ seatIds: seats.map((seat) => seat.id) })
+      .expect(409);
+    expect(conflict.body.code).toBe('SEAT_CONFLICT');
+    expect(conflict.body.rejectedSeatIds).toEqual([seats[0].id]);
+    expect(await db.seatHold.count({ where: { seatId: seats[1].id } })).toBe(0);
+    expect(
+      await db.holdSession.count({
+        where: { showtimeId: show.id, userId: competitor.id },
+      }),
+    ).toBe(0);
+    const retry = await request(app.getHttpServer())
+      .post(`/showtimes/${show.id}/holds`)
+      .set('Cookie', buyerCookie)
+      .send({ seatIds: [seats[0].id] })
+      .expect(200);
+    expect(retry.body.hold.id).toBe(first.body.hold.id);
+    expect(retry.body.hold.expiresAt).toBe(first.body.hold.expiresAt);
+    await db.showtime.update({
+      where: { id: show.id },
+      data: { status: 'CLOSED' },
+    });
+    const closed = await request(app.getHttpServer())
+      .post(`/showtimes/${show.id}/holds`)
+      .set('Cookie', competitor.cookie)
+      .send({ seatIds: [seats[0].id] })
+      .expect(409);
+    expect(closed.body.code).toBe('SHOWTIME_CLOSED');
+    await db.showtime.update({
+      where: { id: show.id },
+      data: { status: 'ON_SALE' },
+    });
+    await request(app.getHttpServer())
+      .post(`/showtimes/${show.id}/holds`)
+      .set('Cookie', competitor.cookie)
+      .send({ seatIds: [seats[0].id, randomUUID()] })
+      .expect(400);
+  });
+
   it('creates one pending order from live holds, snapshots prices, extends ten minutes and rejects expired seats', async () => {
     const available = await db.seat.findMany({
       where: { showtimeId: showId },

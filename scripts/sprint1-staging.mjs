@@ -810,47 +810,47 @@ async function deploy() {
   await free(apiPort);
   await free(apiReplicaPort);
   const apiContainer = `sprint1-stage-api-${sha.slice(0, 12)}-${Date.now()}`;
-  const file = resolve(releaseRoot, "api.env");
-  writeEnv(file, apiEnv(c));
-  docker(
-    "run",
-    "-d",
-    "--name",
-    apiContainer,
-    "--label",
-    "sprint1.staging=20261015",
-    "--network",
-    network,
-    "--env-file",
-    file,
-    "-p",
-    `127.0.0.1:${apiPort}:10000`,
-    "--mount",
-    `type=bind,source=${resolve(dir, "scanner-signing.pem")},target=/run/secrets/scanner.pem,readonly`,
-    image,
-  );
   const apiReplicaContainer = `sprint1-stage-api-replica-${sha.slice(0, 12)}-${Date.now()}`;
-  docker(
-    "run",
-    "-d",
-    "--name",
-    apiReplicaContainer,
-    "--label",
-    "sprint1.staging=20261015",
-    "--network",
-    network,
-    "--env-file",
-    file,
-    "-p",
-    `127.0.0.1:${apiReplicaPort}:10000`,
-    "--mount",
-    `type=bind,source=${resolve(dir, "scanner-signing.pem")},target=/run/secrets/scanner.pem,readonly`,
-    image,
-  );
   let webContainer;
   let switched = false;
   const pointers = pointerSnapshot(dir);
+  const file = resolve(releaseRoot, "api.env");
+  writeEnv(file, apiEnv(c));
   try {
+    docker(
+      "run",
+      "-d",
+      "--name",
+      apiContainer,
+      "--label",
+      "sprint1.staging=20261015",
+      "--network",
+      network,
+      "--env-file",
+      file,
+      "-p",
+      `127.0.0.1:${apiPort}:10000`,
+      "--mount",
+      `type=bind,source=${resolve(dir, "scanner-signing.pem")},target=/run/secrets/scanner.pem,readonly`,
+      image,
+    );
+    docker(
+      "run",
+      "-d",
+      "--name",
+      apiReplicaContainer,
+      "--label",
+      "sprint1.staging=20261015",
+      "--network",
+      network,
+      "--env-file",
+      file,
+      "-p",
+      `127.0.0.1:${apiReplicaPort}:10000`,
+      "--mount",
+      `type=bind,source=${resolve(dir, "scanner-signing.pem")},target=/run/secrets/scanner.pem,readonly`,
+      image,
+    );
     await waitHealth(apiPort);
     await waitHealth(apiReplicaPort);
     webContainer = `sprint1-stage-web-${sha.slice(0, 12)}-${Date.now()}`;
@@ -1000,7 +1000,7 @@ async function main() {
     assert.equal((await stagingHttps(c, "/api/health")).status, 200);
     assert.equal((await stagingHttps(c, "/")).status, 200);
     console.log(
-      `STAGING READY https://${c.lanAddress}:${c.gatewayPort} source=${active.sha}; machine2 LAN check still separate`,
+      `STAGING READY https://${c.lanAddress}:${c.gatewayPort} source=${active.sha}; acceptance evidence is revision-specific`,
     );
     return;
   }

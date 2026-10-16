@@ -232,43 +232,46 @@ describe('hold transaction on the existing Prisma pool', () => {
     expect(f.query.mock.calls.map(([sql]) => sql)).toEqual([begin, 'ROLLBACK']);
   });
 
-  it('awaits BEGIN, then submits only server-validated claim and commit together', async () => {
-    const f = fixture();
-    f.client.pipeline = false;
-    let finishBegin!: () => void;
-    let finishClaim!: (value: { rows: unknown[] }) => void;
-    f.query.mockImplementation((sql) => {
-      if (sql === begin)
-        return new Promise((resolve) => {
-          finishBegin = () => resolve({ rows: [] });
-        });
-      if (typeof sql !== 'string')
-        return new Promise((resolve) => {
-          finishClaim = resolve;
-        });
-      expect(f.client.pipeline).toBe(true);
-      return Promise.resolve({ rows: [] });
-    });
-    const pending = holdTransaction(
-      f.pool,
-      (tx) =>
-        tx.$queryRaw(Prisma.sql`SELECT * FROM public.claim_hold_v2(${1})`),
-      holdStatementNames(),
-      { maxWait: 10000, timeout: 10000, validatedRoutine: true },
-    );
-    await vi.waitFor(() => expect(f.query).toHaveBeenCalledOnce());
-    expect(f.query).toHaveBeenCalledWith(begin);
-    expect(f.client.pipeline).toBe(false);
-    finishBegin();
-    await vi.waitFor(() => expect(f.query).toHaveBeenCalledTimes(3));
-    expect(f.query).toHaveBeenLastCalledWith('COMMIT');
-    expect(f.release).not.toHaveBeenCalled();
-    const rows = [{ id: 'fixture-id' }];
-    finishClaim({ rows });
-    await expect(pending).resolves.toBe(rows);
-    expect(f.client.pipeline).toBe(false);
-    expect(f.release).toHaveBeenCalledExactlyOnceWith(false);
-  });
+  it.each(['v2', 'v3', 'v4'])(
+    'awaits BEGIN, then pipelines only validated %s claim and commit',
+    async (version) => {
+      const f = fixture();
+      f.client.pipeline = false;
+      let finishBegin!: () => void;
+      let finishClaim!: (value: { rows: unknown[] }) => void;
+      f.query.mockImplementation((sql) => {
+        if (sql === begin)
+          return new Promise((resolve) => {
+            finishBegin = () => resolve({ rows: [] });
+          });
+        if (typeof sql !== 'string')
+          return new Promise((resolve) => {
+            finishClaim = resolve;
+          });
+        expect(f.client.pipeline).toBe(true);
+        return Promise.resolve({ rows: [] });
+      });
+      const pending = holdTransaction(
+        f.pool,
+        (tx) =>
+          tx.$queryRaw(Prisma.sql`SELECT * FROM public.claim_hold_v2(${1})`),
+        holdStatementNames(),
+        { maxWait: 10000, timeout: 10000, validatedRoutine: true },
+      );
+      await vi.waitFor(() => expect(f.query).toHaveBeenCalledOnce());
+      expect(f.query).toHaveBeenCalledWith(begin);
+      expect(f.client.pipeline).toBe(false);
+      finishBegin();
+      await vi.waitFor(() => expect(f.query).toHaveBeenCalledTimes(3));
+      expect(f.query).toHaveBeenLastCalledWith('COMMIT');
+      expect(f.release).not.toHaveBeenCalled();
+      const rows = [{ id: 'fixture-id' }];
+      finishClaim({ rows });
+      await expect(pending).resolves.toBe(rows);
+      expect(f.client.pipeline).toBe(false);
+      expect(f.release).toHaveBeenCalledExactlyOnceWith(false);
+    },
+  );
 
   it('keeps the routine rejection, drains commit, then rolls back before reuse', async () => {
     const f = fixture();

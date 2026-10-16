@@ -875,7 +875,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
         const [row] = await db.$queryRaw<{ waiting: boolean }[]>`
           SELECT EXISTS(SELECT 1 FROM pg_stat_activity
             WHERE datname=current_database() AND wait_event_type='Lock'
-              AND query LIKE '%public.claim_hold_v3(%') AS waiting`;
+              AND query LIKE '%public.claim_hold_v4(%') AS waiting`;
         if (row.waiting) {
           waiting = true;
           break;

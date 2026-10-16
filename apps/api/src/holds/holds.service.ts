@@ -143,7 +143,8 @@ export class HoldsService {
     await this.enforceTicketLimit(showtimeId, userId, seatIds.length, client);
     const requestId = randomUUID();
     try {
-      // v3 rolls rejected writes back inside its subtransaction; expected
+      // v4 rejects known conflicts without writes; v3 rolls racing rejections
+      // back inside its subtransaction. Expected
       // conflicts are outcomes, not PostgreSQL error/log storms. Await BEGIN
       // and timeout setup before pipelining this validated routine.
       const [result] = await this.db.commitHoldRoutine<
@@ -157,7 +158,7 @@ export class HoldsService {
         }[]
       >(
         Prisma.sql`
-        SELECT * FROM public.claim_hold_v3(
+        SELECT * FROM public.claim_hold_v4(
           ${showtimeId}::uuid, ${userId}::uuid, ${sessionHash}::text,
           ${'{' + seatIds.join(',') + '}'}::uuid[], ${randomUUID()}::uuid, ${randomUUID()}::uuid
         )`,
