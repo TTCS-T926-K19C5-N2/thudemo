@@ -17,5 +17,7 @@
     "resume / rollback",
     "source-bound evidence and task states"
   ],
-  "status": "PASS; reviewed current source text, not inferred from existence"
+  "status": "PASS; reviewed current source text, not inferred from existence",
+  "latestReviewedSnapshot": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
+  "DEC14": "PO authority PASS, no old pending-authority blocker in current state"
 }

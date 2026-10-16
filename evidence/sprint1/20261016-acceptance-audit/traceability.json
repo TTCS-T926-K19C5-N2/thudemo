@@ -309,11 +309,10 @@
           ],
           "assertion": "exact SHA check runs + workflow graph",
           "evidence": [
-            "evidence\\sprint1\\20261016-acceptance-audit\\ci-candidate.json",
-            "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json"
+            "evidence/sprint1/20261016-acceptance-audit/ci-c7bb13c.json"
           ],
           "environment": "GitHub",
-          "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
+          "evidenceSourceSha": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
           "result": "PASS",
           "externalProcess": null
         }
@@ -375,11 +374,10 @@
           ],
           "assertion": "exact head workflow wall time, no threshold change",
           "evidence": [
-            "evidence\\sprint1\\20261016-acceptance-audit\\ci-candidate.json",
-            "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json"
+            "evidence/sprint1/20261016-acceptance-audit/ci-c7bb13c.json"
           ],
           "environment": "GitHub",
-          "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
+          "evidenceSourceSha": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
           "result": "PASS",
           "externalProcess": null
         }
@@ -1571,11 +1569,10 @@
           ],
           "assertion": "exact SHA check runs + workflow graph",
           "evidence": [
-            "evidence\\sprint1\\20261016-acceptance-audit\\ci-candidate.json",
-            "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json"
+            "evidence/sprint1/20261016-acceptance-audit/ci-c7bb13c.json"
           ],
           "environment": "GitHub",
-          "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
+          "evidenceSourceSha": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
           "result": "PASS",
           "externalProcess": null
         },
@@ -2547,14 +2544,14 @@
           "matrixId": "DOD-02",
           "implementationFiles": [],
           "verificationFiles": [
-            "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json"
+            "evidence/sprint1/20261016-acceptance-audit/ci-c7bb13c.json"
           ],
           "assertion": "human independent exacthead approval",
           "evidence": [
-            "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json"
+            "evidence/sprint1/20261016-acceptance-audit/ci-c7bb13c.json"
           ],
           "environment": "as case states",
-          "evidenceSourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+          "evidenceSourceSha": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
           "result": "BLOCKED",
           "externalProcess": "Real human confirmation/approval, unavailable; no local implementation substitutes"
         }
@@ -2612,11 +2609,10 @@
           ],
           "assertion": "exact final head + integrated head",
           "evidence": [
-            "evidence\\sprint1\\20261016-acceptance-audit\\ci-candidate.json",
-            "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json"
+            "evidence/sprint1/20261016-acceptance-audit/ci-c7bb13c.json"
           ],
           "environment": "as case states",
-          "evidenceSourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
+          "evidenceSourceSha": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
           "result": "PASS",
           "externalProcess": null
         }
@@ -3300,5 +3296,7 @@
     ]
   },
   "rule": "Many verification rows may support one original clause; merged clauses are expanded forward. SCOPE is control metadata. Future-story tests do not create Sprint1 acceptance.",
-  "pathsRule": "ImplementationFiles are relevant production/config paths; verificationFiles are exact verifier/spec/evidence locations. External human approval and deployment outcome cannot be proven by implementation alone."
+  "pathsRule": "ImplementationFiles are relevant production/config paths; verificationFiles are exact verifier/spec/evidence locations. External human approval and deployment outcome cannot be proven by implementation alone.",
+  "latestCheckedCandidate": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
+  "currentPOAuthorityDecision": "DEC14 PASS"
 }

@@ -65,7 +65,7 @@
     {
       "matrixId": "T01-06",
       "path": "evidence\\sprint1\\20261016-closeout\\secret-review.json",
-      "sha256": "c7e2d52be4084d4134e26c7bedb5bc2256c0403c018269c05b71c32311ff4cef",
+      "sha256": "245fc9be35f63600b32fd1b24d9902ba07ff9ada3ee2502532ce21cb3c674933",
       "exists": true,
       "assertion": "literal credential scan + bundle/context audit",
       "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
@@ -74,21 +74,11 @@
     },
     {
       "matrixId": "T02-01",
-      "path": "evidence\\sprint1\\20261016-acceptance-audit\\ci-candidate.json",
-      "sha256": "468d2690b2482bfd01d6506a51eb203212e97f2f096d4202a2b0006dc13855b6",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\ci-c7bb13c.json",
+      "sha256": "2fb939b756a0875c498a5e9b0b234ad636ad2d55fc598a737a9117b8bf9b5818",
       "exists": true,
       "assertion": "exact SHA check runs + workflow graph",
-      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
-      "resultClaimed": "PASS",
-      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
-    },
-    {
-      "matrixId": "T02-01",
-      "path": "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json",
-      "sha256": "578f6fd3a1656faf568e4e0d6232b71f88428d09b457e8d969d00ca74b20fc62",
-      "exists": true,
-      "assertion": "exact SHA check runs + workflow graph",
-      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "evidenceSource": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
       "resultClaimed": "PASS",
       "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
     },
@@ -114,21 +104,11 @@
     },
     {
       "matrixId": "T02-03",
-      "path": "evidence\\sprint1\\20261016-acceptance-audit\\ci-candidate.json",
-      "sha256": "468d2690b2482bfd01d6506a51eb203212e97f2f096d4202a2b0006dc13855b6",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\ci-c7bb13c.json",
+      "sha256": "2fb939b756a0875c498a5e9b0b234ad636ad2d55fc598a737a9117b8bf9b5818",
       "exists": true,
       "assertion": "exact head workflow wall time, no threshold change",
-      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
-      "resultClaimed": "PASS",
-      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
-    },
-    {
-      "matrixId": "T02-03",
-      "path": "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json",
-      "sha256": "578f6fd3a1656faf568e4e0d6232b71f88428d09b457e8d969d00ca74b20fc62",
-      "exists": true,
-      "assertion": "exact head workflow wall time, no threshold change",
-      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "evidenceSource": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
       "resultClaimed": "PASS",
       "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
     },
@@ -574,11 +554,11 @@
     },
     {
       "matrixId": "DOD-02",
-      "path": "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json",
-      "sha256": "578f6fd3a1656faf568e4e0d6232b71f88428d09b457e8d969d00ca74b20fc62",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\ci-c7bb13c.json",
+      "sha256": "2fb939b756a0875c498a5e9b0b234ad636ad2d55fc598a737a9117b8bf9b5818",
       "exists": true,
       "assertion": "human independent exacthead approval",
-      "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "evidenceSource": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
       "resultClaimed": "BLOCKED",
       "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
     },
@@ -594,21 +574,11 @@
     },
     {
       "matrixId": "DOD-04",
-      "path": "evidence\\sprint1\\20261016-acceptance-audit\\ci-candidate.json",
-      "sha256": "468d2690b2482bfd01d6506a51eb203212e97f2f096d4202a2b0006dc13855b6",
+      "path": "evidence\\sprint1\\20261016-acceptance-audit\\ci-c7bb13c.json",
+      "sha256": "2fb939b756a0875c498a5e9b0b234ad636ad2d55fc598a737a9117b8bf9b5818",
       "exists": true,
       "assertion": "exact final head + integrated head",
-      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
-      "resultClaimed": "PASS",
-      "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
-    },
-    {
-      "matrixId": "DOD-04",
-      "path": "evidence\\sprint1\\20261016-acceptance-audit\\candidate-checks.json",
-      "sha256": "578f6fd3a1656faf568e4e0d6232b71f88428d09b457e8d969d00ca74b20fc62",
-      "exists": true,
-      "assertion": "exact final head + integrated head",
-      "evidenceSource": "5b3f67bc343729dd6d87140b77af6536ec704086",
+      "evidenceSource": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
       "resultClaimed": "PASS",
       "compatibility": "runtime-equivalence.json / original research profile / exact CI source as applicable; postmerge/human NOT inferred"
     },
@@ -625,7 +595,7 @@
     {
       "matrixId": "DOD-05",
       "path": "evidence\\sprint1\\20261016-closeout\\secret-review.json",
-      "sha256": "c7e2d52be4084d4134e26c7bedb5bc2256c0403c018269c05b71c32311ff4cef",
+      "sha256": "245fc9be35f63600b32fd1b24d9902ba07ff9ada3ee2502532ce21cb3c674933",
       "exists": true,
       "assertion": "prod/full audit0; actual fixture literal scan",
       "evidenceSource": "accf832be519d9790845c3590acd3f481c5594ac",
@@ -665,7 +635,7 @@
     {
       "matrixId": "DOD-10",
       "path": "evidence\\sprint1\\20261016-acceptance-audit\\documentation.json",
-      "sha256": "e4e0bb8b6fd5f99916c1fb255ec491b39663a51c02170fb5538d8a1cfe490f32",
+      "sha256": "0ea230e6e59ebd6bdf82fcbb857bee376d2584bb48b492b39913a862645a8641",
       "exists": true,
       "assertion": "revision/evidence/credentials paths aligned",
       "evidenceSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",

@@ -103,10 +103,10 @@
       "implementation": "ci.yml",
       "testCase": "exact SHA check runs + workflow graph",
       "environment": "GitHub",
-      "evidence": "../20261016-acceptance-audit/ci-candidate.json; ../20261016-acceptance-audit/candidate-checks.json",
+      "evidence": "../20261016-acceptance-audit/ci-c7bb13c.json",
       "result": "PASS",
-      "sourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-      "closureCondition": "Exact source head core CI209s; all five required contexts success on push and PR. Ancillary story checks separately recorded, not accepted as Sprint1 stories.",
+      "sourceSha": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
+      "closureCondition": "Exact c7bb13c core workflow209s and5required contexts success; final subsequent documentation head must be read live, no reuse as exact-head check.",
       "acceptanceScope": "sprint1_acceptance"
     },
     {
@@ -133,10 +133,10 @@
       "implementation": "parallel core jobs + dependent research/hold jobs",
       "testCase": "exact head workflow wall time, no threshold change",
       "environment": "GitHub",
-      "evidence": "../20261016-acceptance-audit/ci-candidate.json; ../20261016-acceptance-audit/candidate-checks.json",
+      "evidence": "../20261016-acceptance-audit/ci-c7bb13c.json",
       "result": "PASS",
-      "sourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-      "closureCondition": "Exact source head core CI209s; all five required contexts success on push and PR. Ancillary story checks separately recorded, not accepted as Sprint1 stories.",
+      "sourceSha": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
+      "closureCondition": "Exact c7bb13c core workflow209s and5required contexts success; final subsequent documentation head must be read live, no reuse as exact-head check.",
       "acceptanceScope": "sprint1_acceptance"
     },
     {
@@ -733,10 +733,10 @@
       "implementation": "PR91",
       "testCase": "human independent exacthead approval",
       "environment": "as case states",
-      "evidence": "../20261016-acceptance-audit/candidate-checks.json",
+      "evidence": "../20261016-acceptance-audit/ci-c7bb13c.json",
       "result": "BLOCKED",
-      "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "A real other member must review final exact PR head; AI review/account rotation cannot satisfy DoD row2.",
+      "sourceSha": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
+      "closureCondition": "Real other-member approval absent. User chose self, but account/PR author sangnguyencoder cannot meet another-member rule; no approval submitted on behalf.",
       "acceptanceScope": "sprint1_acceptance"
     },
     {
@@ -763,10 +763,10 @@
       "implementation": "GitHub Actions",
       "testCase": "exact final head + integrated head",
       "environment": "as case states",
-      "evidence": "../20261016-acceptance-audit/ci-candidate.json; ../20261016-acceptance-audit/candidate-checks.json",
+      "evidence": "../20261016-acceptance-audit/ci-c7bb13c.json",
       "result": "PASS",
-      "sourceSha": "5b3f67bc343729dd6d87140b77af6536ec704086",
-      "closureCondition": "Exact source head core CI209s; all five required contexts success on push and PR. Ancillary story checks separately recorded, not accepted as Sprint1 stories.",
+      "sourceSha": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
+      "closureCondition": "Exact c7bb13c core workflow209s and5required contexts success; final subsequent documentation head must be read live, no reuse as exact-head check.",
       "acceptanceScope": "sprint1_acceptance"
     },
     {
@@ -953,7 +953,7 @@
       "K-01 / candidate-research",
       "T-31 / hold-concurrency"
     ],
-    "humanReview": "Still required, no independent approval exists",
+    "humanReview": "BLOCKED — no genuine other-member approval; PR author/account sangnguyencoder. Direct PO K01 authority decision approved DEC14, no review waiver.",
     "watcher": "All actually reported checks on exact developSHA must succeed. S30/S31/S43 workflows currently PR/main-focused; no develop push trigger. No check or assertion disabled."
   },
   "repositoryRegressions": [
@@ -997,5 +997,6 @@
       "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred.",
       "acceptanceScope": "scope_control"
     }
-  ]
+  ],
+  "latestCheckedCandidate": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1"
 }

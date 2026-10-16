@@ -1,5 +1,7 @@
 # PR91 — sửa nền tảng và nghiệm thu Sprint 1
 
+Snapshot CI hiện hành **c7bb13c**: [run38887699819](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887699819) đủ5required contexts, **209s**. Source/runtime không đổi; head tài liệu sau snapshot phải kiểm CI riêng trước merge.
+
 ## Cập nhật xác nhận PO — DEC-14, 16/10/2026
 
 PostgreSQL authority cho **laptop staging dữ liệu giả đã được Nguyễn Văn Sáng (PO) chấp thuận trực tiếp** sau gói K01; DEC14/k01-approval.json giữ nguyên văn và ngữ cảnh. Đây không còn blocker “chưa quyết định staging authority”. K01-D timebox/mentor vẫn NOT RUN; DoD02 vẫn BLOCKED: user nhận review nhưng PR author và authenticated account đều sangnguyencoder, chưa có approval thành viên khác. Không giả review hoặc suy phê duyệt PO thành miễn quy trình. Các đoạn checkpoint trước dưới đây giữ trạng thái tại thời điểm cũ; trạng thái hiện hành phải đọc cùng cập nhật này.
@@ -9,7 +11,7 @@ PostgreSQL authority cho **laptop staging dữ liệu giả đã được Nguy�
 
 Login thiếu IP budget/có alias bypass, giờ suất phụ thuộc timezone máy và form mất nội dung khi hết phiên. Bản sửa dùng shared Redis account+IP counters, HMAC theo TCP peer qua gateway/proxy/API, UTC↔giờ Việt Nam và phục hồi draft đúng chủ. Giữ UI V1, năm lần sai/lần sáu khóa15phút, default deny/RBAC/isActive và các vai trò hiện có.
 
-Feature → PR91 → develop theo Git Flow; đã nhập develop80f7a53 bằng merge, giữ attribution/lịch sử thành viên. Research Redis module giữ source/spec nhưng tách AppModule để không mở public mock owner/TTL hoặc tạo authority song song. Product PG authority DEC12 tạm local; quyết định staging cần Lead review thật.
+Feature → PR91 → develop theo Git Flow; đã nhập develop80f7a53 bằng merge, giữ attribution/lịch sử thành viên. Research Redis module giữ source/spec nhưng tách AppModule để không mở public mock owner/TTL hoặc tạo authority song song. Product PG authority staging đã được PO chấp thuận DEC14; member review theo DoD và evidence quá trình K01 còn thiếu.
 
 Full/prod audit0 sau scoped Next lint patch loại chuỗi braces, frozen install và luật ESLint thật được kiểm; không audit ignore. Sửa pool starvation bằng dùng lại connection đã mượn. Additive claim_hold_v4 chỉ read-reject conflict đã biết, mọi grant/retry/race qua v3, giữ migration cũ/fsync/auth/transaction guards.
 

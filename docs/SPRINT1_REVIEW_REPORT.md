@@ -1,5 +1,7 @@
 # Sprint 1 — review và nghiệm thu hiện hành (16/10/2026)
 
+Snapshot CI hiện hành **c7bb13c**: [run38887699819](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887699819) đủ5required contexts, **209s**. Source/runtime không đổi; head tài liệu sau snapshot phải kiểm CI riêng trước merge.
+
 ## Cập nhật xác nhận PO — DEC-14, 16/10/2026
 
 PostgreSQL authority cho **laptop staging dữ liệu giả đã được Nguyễn Văn Sáng (PO) chấp thuận trực tiếp** sau gói K01; DEC14/k01-approval.json giữ nguyên văn và ngữ cảnh. Đây không còn blocker “chưa quyết định staging authority”. K01-D timebox/mentor vẫn NOT RUN; DoD02 vẫn BLOCKED: user nhận review nhưng PR author và authenticated account đều sangnguyencoder, chưa có approval thành viên khác. Không giả review hoặc suy phê duyệt PO thành miễn quy trình. Các đoạn checkpoint trước dưới đây giữ trạng thái tại thời điểm cũ; trạng thái hiện hành phải đọc cùng cập nhật này.
@@ -62,7 +64,7 @@ Nguồn: backlog **đã đồng bộ refinement** và bản gốc đối chiếu
 | S02/T04–06 | PASS phạm vi chức năng đã kiểm | API/browser/DB/Redis thật; natural expiry đã chờ đủ900s/PTTL và login200, không suy từ mock; hai peer giữ source lịch sử riêng |
 | S04/T09–10 | PASS trên a2e5f67 | Draft/ownership/validation/double-submit/showtime/timezone/FK, desktop/mobile thật |
 | K01 | BLOCKED phần quy trình/review; quyết định staging PASS DEC14 | Spike hai datastore và PO xác nhận PG staging đã có evidence; timebox/mentor NOT RUN, member review thiếu; T31/p95300 ngoài Sprint1 |
-| Sprint1 AC/DoD | Chưa | Independent human review/K01 staging decision và postmerge T03 còn mở; không dùng S30/T31 làm AC Sprint1 |
+| Sprint1 AC/DoD | Chưa | Independent member review/K01 process evidence và postmerge T03 còn mở; authority đã duyệt DEC14; không dùng S30/T31 làm AC Sprint1 |
 
 62mục cũ gồm55phép kiểmAC/DoD+1metadataSCOPE,2repairregression,1support,3phépđo ngoàiSprint1; audit bổ sung K01-D từ intro gốc: [SPRINT1_ACCEPTANCE_MATRIX.md](SPRINT1_ACCEPTANCE_MATRIX.md), [gates.json](../evidence/sprint1/20261016-closeout/gates.json). Bằng chứng mới dưới `evidence/sprint1/20261016-closeout/` (C bên dưới); file lịch sử giữ source riêng, không đổi SHA cũ.
 
