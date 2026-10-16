@@ -33,6 +33,10 @@
   Valkey restart không chặn bán vé — rủi ro anti-abuse đã ghi, chờ S-41).
 * Quá ngưỡng: `POST /holds` và `POST /showtimes/:id/orders` trả
   `429 {code: WAITING_ROOM, position}`, web chuyển vào phòng chờ.
+* Mở trang chọn ghế (`/shows/:id/seats`) tự `POST /waiting` lấy ticket trước khi
+  tải sơ đồ — xem sơ đồ cũng tính là "đang chọn ghế"; chưa tới lượt thì web
+  chuyển sang `/waiting`. Join lỗi mạng thì fail-open vào xem, guard giữ ghế
+  vẫn chặn như cũ.
 
 ## Kiểm thử
 

@@ -19,6 +19,7 @@ import { MobileShowHeader } from "@/components/layout/product-layout";
 import { api, ApiError } from "@/lib/api/client";
 import { loadCurrentUser } from "@/lib/api";
 import { decodeHoldState, type HoldState } from "@/lib/contracts/holds";
+import { decodeWaitingStatus } from "@/lib/contracts/waiting";
 import { decodePendingOrder } from "@/lib/contracts/orders";
 import {
   decodePublicShowtime,
@@ -102,6 +103,30 @@ export function SeatSelection({ id }: { id: string }) {
       }
       if (!user.roles.includes("BUYER"))
         throw Error("Tài khoản cần vai trò người mua để chọn ghế.");
+      // S-40: mở trang chọn ghế là "đang chọn ghế" — lấy ticket phòng chờ
+      // trước khi tải sơ đồ. Chưa tới lượt thì sang trang phòng chờ xem vị trí.
+      // Join lỗi mạng thì fail-open vào xem như cũ; guard ở POST /holds vẫn chặn.
+      try {
+        const ticket = await api(`/showtimes/${id}/waiting`, decodeWaitingStatus, {
+          method: "POST",
+          body: {},
+          signal: controller.signal,
+        });
+        if (controller.signal.aborted) return;
+        if (ticket.state === "waiting") {
+          router.replace(`/shows/${id}/waiting`);
+          return;
+        }
+      } catch (e) {
+        if (controller.signal.aborted) return;
+        if (e instanceof ApiError && e.status === 401) {
+          router.replace(
+            `/login?returnTo=${encodeURIComponent(`/shows/${id}/seats`)}`,
+          );
+          return;
+        }
+        // Fail-open: lỗi join không chặn xem sơ đồ; giữ ghế vẫn qua guard.
+      }
       const [detail, map, state] = await Promise.all([
         api(`/showtimes/${id}`, decodePublicShowtime, {
           signal: controller.signal,
