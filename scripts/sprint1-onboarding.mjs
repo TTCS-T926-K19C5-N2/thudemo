@@ -178,7 +178,7 @@ function owned(entry) {
     current.name !== "node.exe" ||
     current.created !== entry.created ||
     !current.command?.includes(worker) ||
-    !current.command.endsWith(` ${entry.mode}`)
+    !current.command.trim().endsWith(` ${entry.mode}`)
   )
     fail("Saved PID now belongs to another process; no stop performed");
   return current;
@@ -503,7 +503,7 @@ try {
         "-NoProfile",
         "-NonInteractive",
         "-Command",
-        `$p=Start-Process -FilePath ${quote(process.execPath)} -ArgumentList ${quote('"' + worker + '" ' + mode)} -WorkingDirectory ${quote(root)} -WindowStyle Hidden -PassThru -RedirectStandardOutput ${quote(resolve(dir, mode + ".out.log"))} -RedirectStandardError ${quote(resolve(dir, mode + ".err.log"))};$p.Id`,
+        `$p=Start-Process -FilePath ${quote(process.execPath)} -ArgumentList ${quote('"' + worker + '" ' + mode)} -WorkingDirectory ${quote(root)} -WindowStyle Hidden -PassThru;$p.Id`,
       ],
       { env, encoding: "utf8", windowsHide: true },
     );
