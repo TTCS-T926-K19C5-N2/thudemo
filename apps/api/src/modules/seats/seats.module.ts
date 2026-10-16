@@ -4,6 +4,7 @@ import { PrismaModule } from '../../prisma/prisma.module.js';
 import { SeatHoldService } from './seat-hold.service.js';
 import { SeatHoldStorage } from './seat-hold.storage.js';
 import { SeatHoldController } from './seat-hold.controller.js';
+import { SeatHoldCountdownService } from './services/seat-hold-countdown.service.js';
 import { SEAT_VALIDATOR } from './interfaces/seat-validator.interface.js';
 import { SeatValidatorAdapter } from './adapters/seat-validator.adapter.js';
 import { SeatExpiryJobService } from './jobs/seat-expiry-job.service.js';
@@ -16,6 +17,7 @@ import { SeatStatusQueryService } from './queries/seat-status-query.service.js';
   providers: [
     SeatHoldService,
     SeatHoldStorage,
+    SeatHoldCountdownService,
     SeatExpiryJobService,
     SeatAvailabilityQueryService,
     SeatStatusQueryService,
@@ -27,6 +29,7 @@ import { SeatStatusQueryService } from './queries/seat-status-query.service.js';
   exports: [
     SeatHoldService,
     SeatHoldStorage,
+    SeatHoldCountdownService,
     SeatExpiryJobService,
     SeatAvailabilityQueryService,
     SeatStatusQueryService,
