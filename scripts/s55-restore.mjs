@@ -3,7 +3,9 @@
 // No --clean/drop/reset; source archive is authenticated before any DB write.
 import { spawn, spawnSync } from "node:child_process";
 import { mkdir, rm, stat, writeFile } from "node:fs/promises";
-import { basename, resolve } from "node:path";
+import { rmSync, writeFileSync } from "node:fs";
+import { basename, join, resolve } from "node:path";
+import { tmpdir } from "node:os";
 import {
   decryptToWritable,
   dockerDatabaseUrl,
@@ -54,41 +56,79 @@ function childExit(child, label) {
   });
 }
 
+function dockerEnv() {
+  // PGDATABASE-only contract: never pass the raw URL in argv, never forward
+  // ambient host PG* vars or S55_* source/target URLs into the container env.
+  // The throwaway container shares the target container's network namespace
+  // (--network=container:... via netArgs()), so it reaches PostgreSQL over
+  // loopback with zero DNS dependence.
+  const pgdb = new URL(target);
+  for (const option of ["schema", "connection_limit", "pool_timeout"]) {
+    pgdb.searchParams.delete(option);
+  }
+  pgdb.hostname = "127.0.0.1";
+  // Inside --network=container:<db> only the database's own port answers;
+  // published host ports are invisible there. Normalize to 5432 unless the
+  // caller explicitly overrides with S55_DB_PORT.
+  pgdb.port = String(process.env.S55_DB_PORT ?? "5432");
+  // Only PATH/SystemRoot survive every Windows layer; everything the
+  // container needs travels in argv (-e K=V pairs), never in the host env.
+  void process.env;
+  return pgdb.toString();
+}
+
+function netArgs() {
+  // One argv element per flag: joining ("--network=X") also works, but the
+  // split form below is what the drill verified end-to-end on Windows.
+  return ["--network", `container:${process.env.S55_DB_CONTAINER ?? "s55-full-postgres-1"}`];
+}
+
 function docker(command, { input = false, capture = false } = {}) {
+  const pgdb = dockerEnv();
   return spawn(
     "docker",
     [
       "run", "--rm", "-i",
-      "--add-host=host.docker.internal:host-gateway",
-      "-e", "PGDATABASE",
+      ...netArgs(),
+      "-e", `PGDATABASE=${pgdb}`,
       image,
       ...command,
     ],
     {
-      env: { ...process.env, PGDATABASE: dockerDatabaseUrl(target) },
+      env: { PATH: process.env.PATH, SystemRoot: process.env.SystemRoot },
+      encoding: "utf8",
       stdio: [input ? "pipe" : "ignore", capture ? "pipe" : "inherit", "pipe"],
     },
   );
 }
 
 function dockerQuery(sql) {
+  // Base64 the SQL into PGDATABASE-adjacent env: the table-count query holds
+  // parentheses/spaces that every shell layer (PowerShell argv join, sh -c
+  // word-split) mangles on Windows, while stdin arrives byte-exact. The
+  // container decodes it to a file and runs psql -f. Fixed query text only.
+  const pgdb = dockerEnv();
   const result = spawnSync(
     "docker",
     [
       "run", "--rm",
-      "--add-host=host.docker.internal:host-gateway",
-      "-e", "PGDATABASE",
-      "-e", "S55_SQL",
+      ...netArgs(),
+      "-e", `PGDATABASE=${pgdb}`,
+      "-e", `S55_SQL_B64=${Buffer.from(sql, "utf8").toString("base64")}`,
       image,
       "sh", "-eu", "-c",
-      "psql --dbname=\"$PGDATABASE\" -v ON_ERROR_STOP=1 -tA -c \"$S55_SQL\"",
+      "echo \"$S55_SQL_B64\" | base64 -d > /tmp/s55-query.sql && psql --dbname=\"$PGDATABASE\" -v ON_ERROR_STOP=1 -tA -f /tmp/s55-query.sql",
     ],
     {
-      env: { ...process.env, PGDATABASE: dockerDatabaseUrl(target), S55_SQL: sql },
+      env: { PATH: process.env.PATH, SystemRoot: process.env.SystemRoot },
       encoding: "utf8",
     },
   );
-  if (result.status !== 0) throw new Error("Temporary database query failed");
+  if (result.status !== 0) {
+    throw new Error(
+      `Temporary database query failed (exit ${result.status}): ${(result.stderr || result.stdout || "").trim().slice(-500)}`,
+    );
+  }
   return result.stdout.trim();
 }
 

@@ -97,13 +97,19 @@ export async function sha256File(file) {
   return hash.digest("hex");
 }
 
-export function dockerDatabaseUrl(raw) {
+export function dockerDatabaseUrl(raw, { host } = {}) {
   const url = new URL(raw);
   // Prisma accepts these client-only query options; libpq tools reject them.
   for (const option of ["schema", "connection_limit", "pool_timeout"]) {
     url.searchParams.delete(option);
   }
-  if (["localhost", "127.0.0.1", "::1"].includes(url.hostname)) {
+  const target = host ?? process.env.S55_DB_HOST;
+  if (target) {
+    // Compose services resolve each other by name; the Linux Docker Desktop VM
+    // cannot route host.docker.internal back to published ports in every
+    // setup, so an explicit compose hostname wins when provided.
+    url.hostname = target;
+  } else if (["localhost", "127.0.0.1", "::1"].includes(url.hostname)) {
     url.hostname = "host.docker.internal";
   }
   return url.toString();

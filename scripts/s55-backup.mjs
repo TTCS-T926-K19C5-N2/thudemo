@@ -36,28 +36,54 @@ if (!/^[A-Za-z0-9_.-]{1,64}$/.test(keyId)) throw new Error("S55_KEY_ID is invali
 
 function childExit(child, label) {
   let stderr = "";
+  const stdoutTail = [];
+  child.stdout?.on("data", (chunk) => {
+    stdoutTail.push(chunk.toString("utf8").slice(-200));
+    if (stdoutTail.length > 4) stdoutTail.shift();
+  });
   child.stderr?.on("data", (chunk) => {
     if (stderr.length < 16_384) stderr += chunk.toString("utf8");
   });
   return new Promise((resolveExit, reject) => {
-    child.once("error", () => reject(new Error(`${label} could not start`)));
+    child.once("error", (cause) => reject(new Error(`${label} could not start: ${cause?.message ?? cause}`)));
     child.once("close", (code) =>
-      code === 0 ? resolveExit() : reject(new Error(`${label} failed (exit ${code})`)),
+      code === 0
+        ? resolveExit()
+        : reject(new Error(`${label} failed (exit ${code})${stderr ? `: ${stderr.trim().slice(-500)}` : ""}`)),
     );
   });
 }
 
 function postgresContainer(command, database, stdio = ["ignore", "pipe", "pipe"]) {
+  // pg_dump/pg_restore authenticate only through the PG* environment contract.
+  // Passing --dbname="$PGDATABASE" keeps the URL (and any secret it carries)
+  // out of ps argv AND avoids daemon-side interpolation quirks; PGDATABASE is
+  // exported only inside the throwaway container, never logged.
+  // The throwaway container shares the database container's network namespace
+  // (--network=container:...), so it reaches PostgreSQL over loopback with
+  // zero DNS dependence. S55_DB_PORT selects the container-internal port
+  // (5432); the host-published port in the URL is meaningless in that netns.
+  const pgdb = new URL(databaseUrl);
+  for (const option of ["schema", "connection_limit", "pool_timeout"]) {
+    pgdb.searchParams.delete(option);
+  }
+  pgdb.hostname = "127.0.0.1";
+  pgdb.port = String(process.env.S55_DB_PORT ?? "5432");
+  // Never reuse the ambient Windows PGDATABASE/PGUSER/... (they describe the
+  // host-side local database, not the container target) and never forward the
+  // S55_* source/target URLs into the throwaway container.
+  const { PGDATABASE: _ignore, PGUSER: _u, PGPASSWORD: _p, PGHOST: _h, PGPORT: _port, S55_DATABASE_URL: _s, S55_RESTORE_TARGET_URL: _t, ...cleanEnv } = process.env;
+  const pgEnv = { ...cleanEnv, PGDATABASE: pgdb.toString() };
   return spawn(
     "docker",
     [
       "run", "--rm", "-i",
-      "--add-host=host.docker.internal:host-gateway",
+      `--network=container:${process.env.S55_DB_CONTAINER ?? "s55-full-postgres-1"}`,
       "-e", "PGDATABASE",
       image,
       ...command,
     ],
-    { env: { ...process.env, PGDATABASE: dockerDatabaseUrl(database) }, stdio },
+    { env: pgEnv, stdio },
   );
 }
 
