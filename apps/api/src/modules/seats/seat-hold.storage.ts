@@ -167,7 +167,7 @@ export class SeatHoldStorage {
   /**
    * Quét key an toàn bằng SCAN
    */
-  private async scanHoldKeys(pattern: string): Promise<string[]> {
+  async scanHoldKeys(pattern: string): Promise<string[]> {
     const keys: string[] = [];
     let cursor = '0';
     do {
@@ -178,5 +178,34 @@ export class SeatHoldStorage {
       }
     } while (cursor !== '0');
     return Array.from(new Set(keys));
+  }
+
+  /**
+   * Lấy danh sách các bản ghi giữ ghế đã hết hạn (Task T-28)
+   */
+  async getExpiredHoldRecords(showtimeId?: string): Promise<SeatHoldRecord[]> {
+    const pattern = showtimeId
+      ? `hold:showtime:${showtimeId}:seat:*`
+      : 'hold:showtime:*:seat:*';
+    const keys = await this.scanHoldKeys(pattern);
+    const expired: SeatHoldRecord[] = [];
+    const now = Date.now();
+
+    for (const key of keys) {
+      const raw = await this.redis.get(key);
+      if (!raw) continue;
+      try {
+        const record = JSON.parse(raw) as SeatHoldRecord;
+        const expiryTime = record.expiresAt
+          ? new Date(record.expiresAt).getTime()
+          : (record.heldAt ? record.heldAt + this.defaultTtlSeconds * 1000 : 0);
+        if (expiryTime <= now) {
+          expired.push(record);
+        }
+      } catch {
+        continue;
+      }
+    }
+    return expired;
   }
 }
