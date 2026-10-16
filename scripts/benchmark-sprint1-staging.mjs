@@ -1,9 +1,20 @@
 import https from "node:https";
 import { connect as connectHttp2 } from "node:http2";
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import {
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  copyFileSync,
+  existsSync,
+} from "node:fs";
 import { resolve } from "node:path";
 import { createRequire } from "node:module";
-import { randomBytes, randomUUID, createHash } from "node:crypto";
+import {
+  randomBytes,
+  randomUUID,
+  createHash,
+  X509Certificate,
+} from "node:crypto";
 import { cpus, totalmem } from "node:os";
 import assert from "node:assert/strict";
 import { fork } from "node:child_process";
@@ -36,6 +47,8 @@ const agent = new https.Agent({
   rejectUnauthorized: true,
 });
 const useHttp2 = process.argv.includes("--http2");
+const apiLogins = process.argv.includes("--api-login-fixtures");
+const prepareRemote = process.argv.includes("--prepare-remote");
 const parallelClients = process.argv.includes("--four-clients");
 if (parallelClients && useHttp2)
   throw Error("Four-client mode is HTTP1.1 only");
@@ -77,6 +90,8 @@ const report = {
   ],
 };
 const at = process.argv.indexOf("--output");
+if (prepareRemote && at < 0)
+  throw Error("Explicit new evidence output required for remote preparation");
 const output = resolve(
   root,
   at < 0
@@ -88,6 +103,8 @@ if (
   !output.startsWith(resolve(root, "evidence/sprint1") + "\\")
 )
   throw Error("Benchmark evidence must stay within Sprint 1 directory");
+if (existsSync(output))
+  throw Error("Refuse to overwrite a prior benchmark; choose a new output");
 function save() {
   mkdirSync(resolve(output, ".."), { recursive: true });
   writeFileSync(output, JSON.stringify(report, null, 2));
@@ -202,6 +219,30 @@ async function hold(showtimeId, seatId, cookie) {
     request.end(JSON.stringify({ seatIds: [seatId] }));
   });
 }
+async function apiCookie(email, password) {
+  return new Promise((done, reject) => {
+    const r = https.request(
+      origin + "/api/auth/login",
+      {
+        agent,
+        method: "POST",
+        timeout: 30000,
+        headers: { origin, "content-type": "application/json" },
+      },
+      (res) => {
+        res.resume();
+        res.once("end", () =>
+          res.statusCode === 200
+            ? done(res.headers["set-cookie"][0].split(";")[0])
+            : reject(Error("Fixture login failed")),
+        );
+      },
+    );
+    r.once("error", reject);
+    r.once("timeout", () => r.destroy(Error("Fixture login deadline")));
+    r.end(JSON.stringify({ email, password }));
+  });
+}
 
 try {
   const owner = await db.user.findUniqueOrThrow({
@@ -210,7 +251,8 @@ try {
     },
   });
   const role = await db.role.findUniqueOrThrow({ where: { name: "BUYER" } });
-  const password = await argon2.hash(randomBytes(32).toString("hex"), {
+  const passwordPlain = randomBytes(32).toString("hex");
+  const password = await argon2.hash(passwordPlain, {
     type: argon2.argon2id,
   });
   const buyers = [];
@@ -271,132 +313,188 @@ try {
     eventStatus: "DRAFT (kept out of buyer catalog)",
   };
   save();
-  const samples = [];
-  if (parallelClients) {
-    await Promise.all(
-      Array.from({ length: 4 }, async () => {
-        const child = fork(
-          new URL("./staging-benchmark-client.mjs", import.meta.url),
-          [],
-          { stdio: ["ignore", "ignore", "ignore", "ipc"], windowsHide: true },
+  if (prepareRemote) {
+    const remoteDir = resolve(dir, "load-runs", runId);
+    mkdirSync(remoteDir, { recursive: true });
+    const bundle = {
+      profile: c.profile,
+      runId,
+      source: release.sha,
+      origin,
+      showtimeId: show.id,
+      seats: seats.map((s) => s.id),
+      certificateSha256: new X509Certificate(ca).fingerprint256,
+      accounts: Array.from({ length: 200 }, (_, n) => ({
+        email: `benchmark-${runId}-${n}@sprint1.staging.invalid`,
+        password: passwordPlain,
+      })),
+    };
+    writeFileSync(
+      resolve(remoteDir, "sprint1-remote-benchmark.json"),
+      JSON.stringify(bundle, null, 2),
+      { flag: "wx" },
+    );
+    copyFileSync(
+      resolve(dir, "tls/server-cert.cer"),
+      resolve(remoteDir, "server-cert.cer"),
+    );
+    copyFileSync(
+      resolve(root, "scripts/sprint1-staging-load-client.mjs"),
+      resolve(remoteDir, "sprint1-staging-load-client.mjs"),
+    );
+    report.result = "PREPARED / NOT RUN";
+    report.remoteDirectory = remoteDir;
+    report.clientSha256 = createHash("sha256")
+      .update(
+        readFileSync(resolve(remoteDir, "sprint1-staging-load-client.mjs")),
+      )
+      .digest("hex");
+    save();
+    console.log("Private buyer-only load bundle prepared at " + remoteDir);
+  } else {
+    if (apiLogins) {
+      const started = performance.now();
+      for (let n = 0; n < 200; n++)
+        buyers[n] = await apiCookie(
+          `benchmark-${runId}-${n}@sprint1.staging.invalid`,
+          passwordPlain,
         );
-        clients.push(child);
-        await new Promise((done, reject) => {
-          child.once("error", reject);
-          child.once("exit", () => reject(Error("Client exited before ready")));
-          child.once("message", (m) =>
-            m.type === "ready" ? done() : reject(Error("Client protocol")),
+      agent.destroy();
+      report.auth =
+        "200 successful real HTTPS API logins; fresh measured load connections (no hold warmup); login latency outside endpoint holds";
+      report.authSetupMs = performance.now() - started;
+      save();
+    }
+    const samples = [];
+    if (parallelClients) {
+      await Promise.all(
+        Array.from({ length: 4 }, async () => {
+          const child = fork(
+            new URL("./staging-benchmark-client.mjs", import.meta.url),
+            [],
+            { stdio: ["ignore", "ignore", "ignore", "ipc"], windowsHide: true },
           );
-          child.send({ type: "configure", origin, ca: ca.toString() });
-        });
+          clients.push(child);
+          await new Promise((done, reject) => {
+            child.once("error", reject);
+            child.once("exit", () =>
+              reject(Error("Client exited before ready")),
+            );
+            child.once("message", (m) =>
+              m.type === "ready" ? done() : reject(Error("Client protocol")),
+            );
+            child.send({ type: "configure", origin, ca: ca.toString() });
+          });
+        }),
+      );
+    }
+    for (let round = 0; round < 10; round++) {
+      assert.equal(
+        JSON.parse(readFileSync(resolve(dir, "active.json"))).sha,
+        release.sha,
+        "Source must remain fixed during measurement",
+      );
+      const ids = seats.slice(round * 100, (round + 1) * 100).map((s) => s.id);
+      const dispatch = performance.timeOrigin + performance.now();
+      const responses = parallelClients
+        ? (
+            await Promise.allSettled(
+              clients.map(
+                (child, clientIndex) =>
+                  new Promise((done, reject) => {
+                    const onMessage = (m) => {
+                      if (m.type === "result") {
+                        child.removeListener("exit", onExit);
+                        done(m.responses);
+                      }
+                    };
+                    const onExit = () => {
+                      child.removeListener("message", onMessage);
+                      reject(Error("Client exited during round"));
+                    };
+                    child.once("message", onMessage);
+                    child.once("exit", onExit);
+                    child.send({
+                      type: "round",
+                      requests: buyers
+                        .slice(clientIndex * 50, (clientIndex + 1) * 50)
+                        .map((cookie, index) => ({
+                          cookie,
+                          path: `/api/showtimes/${show.id}/holds`,
+                          seatId: ids[(clientIndex * 50 + index) % 100],
+                        })),
+                    });
+                  }),
+              ),
+            )
+          ).flatMap((result) =>
+            result.status === "fulfilled"
+              ? result.value
+              : Array.from({ length: 50 }, () => ({
+                  status: 0,
+                  error: "ClientProcessFailure",
+                  startedUnixMs: dispatch,
+                  ms: performance.timeOrigin + performance.now() - dispatch,
+                })),
+          )
+        : await Promise.all(
+            buyers.map((cookie, n) => hold(show.id, ids[n % 100], cookie)),
+          );
+      const success = responses.filter((r) => r.status === 200).length;
+      const conflict = responses.filter((r) => r.status === 409).length;
+      const activeHolds = await db.seatHold.count({
+        where: { seatId: { in: ids }, expiresAt: { gt: new Date() } },
+      });
+      const statuses = Object.fromEntries(
+        [...new Set(responses.map((r) => r.status))].map((status) => [
+          status,
+          responses.filter((r) => r.status === status).length,
+        ]),
+      );
+      report.rounds.push({
+        round,
+        statuses,
+        responses,
+        success,
+        conflict,
+        activeHolds,
+        p95Ms: percentile(
+          responses.map((r) => r.ms),
+          0.95,
+        ),
+      });
+      save();
+      if (parallelClients)
+        assert(
+          Math.max(...responses.map((r) => r.startedUnixMs)) <
+            Math.min(...responses.map((r) => r.startedUnixMs + r.ms)),
+          "All200requests must overlap before first completion",
+        );
+      assert.equal(success, 100);
+      assert.equal(conflict, 100);
+      assert.equal(activeHolds, 100);
+      samples.push(...responses.map((r) => r.ms));
+    }
+    report.allP95Ms = percentile(samples, 0.95);
+    report.steadyP95Ms = percentile(samples.slice(200), 0.95);
+    report.correctness = "PASS";
+    report.nfrResult =
+      report.allP95Ms < report.thresholdMs
+        ? "PASS in this bounded environment only"
+        : "FAIL";
+    report.completedAt = new Date().toISOString();
+    save();
+    console.log(
+      JSON.stringify({
+        source: release.sha,
+        correctness: report.correctness,
+        nfrResult: report.nfrResult,
+        allP95Ms: report.allP95Ms,
+        steadyP95Ms: report.steadyP95Ms,
       }),
     );
+    if (report.allP95Ms >= report.thresholdMs) process.exitCode = 1;
   }
-  for (let round = 0; round < 10; round++) {
-    assert.equal(
-      JSON.parse(readFileSync(resolve(dir, "active.json"))).sha,
-      release.sha,
-      "Source must remain fixed during measurement",
-    );
-    const ids = seats.slice(round * 100, (round + 1) * 100).map((s) => s.id);
-    const dispatch = performance.timeOrigin + performance.now();
-    const responses = parallelClients
-      ? (
-          await Promise.allSettled(
-            clients.map(
-              (child, clientIndex) =>
-                new Promise((done, reject) => {
-                  const onMessage = (m) => {
-                    if (m.type === "result") {
-                      child.removeListener("exit", onExit);
-                      done(m.responses);
-                    }
-                  };
-                  const onExit = () => {
-                    child.removeListener("message", onMessage);
-                    reject(Error("Client exited during round"));
-                  };
-                  child.once("message", onMessage);
-                  child.once("exit", onExit);
-                  child.send({
-                    type: "round",
-                    requests: buyers
-                      .slice(clientIndex * 50, (clientIndex + 1) * 50)
-                      .map((cookie, index) => ({
-                        cookie,
-                        path: `/api/showtimes/${show.id}/holds`,
-                        seatId: ids[(clientIndex * 50 + index) % 100],
-                      })),
-                  });
-                }),
-            ),
-          )
-        ).flatMap((result) =>
-          result.status === "fulfilled"
-            ? result.value
-            : Array.from({ length: 50 }, () => ({
-                status: 0,
-                error: "ClientProcessFailure",
-                startedUnixMs: dispatch,
-                ms: performance.timeOrigin + performance.now() - dispatch,
-              })),
-        )
-      : await Promise.all(
-          buyers.map((cookie, n) => hold(show.id, ids[n % 100], cookie)),
-        );
-    const success = responses.filter((r) => r.status === 200).length;
-    const conflict = responses.filter((r) => r.status === 409).length;
-    const activeHolds = await db.seatHold.count({
-      where: { seatId: { in: ids }, expiresAt: { gt: new Date() } },
-    });
-    const statuses = Object.fromEntries(
-      [...new Set(responses.map((r) => r.status))].map((status) => [
-        status,
-        responses.filter((r) => r.status === status).length,
-      ]),
-    );
-    report.rounds.push({
-      round,
-      statuses,
-      responses,
-      success,
-      conflict,
-      activeHolds,
-      p95Ms: percentile(
-        responses.map((r) => r.ms),
-        0.95,
-      ),
-    });
-    save();
-    if (parallelClients)
-      assert(
-        Math.max(...responses.map((r) => r.startedUnixMs)) <
-          Math.min(...responses.map((r) => r.startedUnixMs + r.ms)),
-        "All200requests must overlap before first completion",
-      );
-    assert.equal(success, 100);
-    assert.equal(conflict, 100);
-    assert.equal(activeHolds, 100);
-    samples.push(...responses.map((r) => r.ms));
-  }
-  report.allP95Ms = percentile(samples, 0.95);
-  report.steadyP95Ms = percentile(samples.slice(200), 0.95);
-  report.correctness = "PASS";
-  report.nfrResult =
-    report.allP95Ms < report.thresholdMs
-      ? "PASS in this bounded environment only"
-      : "FAIL";
-  report.completedAt = new Date().toISOString();
-  save();
-  console.log(
-    JSON.stringify({
-      source: release.sha,
-      correctness: report.correctness,
-      nfrResult: report.nfrResult,
-      allP95Ms: report.allP95Ms,
-      steadyP95Ms: report.steadyP95Ms,
-    }),
-  );
 } catch (error) {
   report.correctness = "FAIL";
   const collected = report.rounds
