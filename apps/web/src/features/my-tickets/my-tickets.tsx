@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { QRCodeSVG } from "qrcode.react";
+import { QRCodeCanvas } from "qrcode.react";
 import { PublicLayout } from "@/components/layout/product-layout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -56,6 +56,7 @@ export function MyTickets() {
   const [tickets, setTickets] = useState<MyTicket[] | null>(null);
   const [error, setError] = useState("");
   const [version, setVersion] = useState(0);
+  const [openTicketId, setOpenTicketId] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -136,15 +137,61 @@ export function MyTickets() {
               Ghế {ticket.seatLabel} · {ticket.category} ·{" "}
               {statusText[ticket.status]}
             </p>
-            {ticket.qrPayload && (
-              <div className="bg-white p-4" style={{ width: "fit-content" }}>
-                <QRCodeSVG
-                  value={ticket.qrPayload}
-                  size={200}
-                  marginSize={4}
-                  level="M"
-                  aria-label={`Mã QR vé ghế ${ticket.seatLabel}`}
-                />
+            <Button
+              variant="outline"
+              aria-expanded={openTicketId === ticket.ticketId}
+              aria-controls={`ticket-qr-${ticket.ticketId}`}
+              onClick={() =>
+                setOpenTicketId((current) =>
+                  current === ticket.ticketId ? null : ticket.ticketId,
+                )
+              }
+            >
+              {openTicketId === ticket.ticketId ? "Đóng vé" : "Mở vé"}
+            </Button>
+            {openTicketId === ticket.ticketId && (
+              <div
+                id={`ticket-qr-${ticket.ticketId}`}
+                className="mt-4 flex flex-col items-start gap-3"
+              >
+                {ticket.qrPayload ? (
+                  <>
+                    <div className="bg-white p-4" style={{ width: "fit-content" }}>
+                      <QRCodeCanvas
+                        value={ticket.qrPayload}
+                        size={256}
+                        style={{
+                          width: "min(256px, 100%)",
+                          height: "auto",
+                          aspectRatio: "1",
+                        }}
+                        marginSize={4}
+                        level="M"
+                        aria-label={`Mã QR vé ghế ${ticket.seatLabel}`}
+                      />
+                    </div>
+                    <Button
+                      variant="outline"
+                      aria-label={`Tải ảnh mã QR vé ghế ${ticket.seatLabel}`}
+                      onClick={(event) => {
+                        const canvas =
+                          event.currentTarget.parentElement?.querySelector("canvas");
+                        if (!canvas) return;
+                        const link = document.createElement("a");
+                        link.download = `ve-${ticket.seatLabel.replace(
+                          /[^a-zA-Z0-9_-]/g,
+                          "-",
+                        )}-qr.png`;
+                        link.href = canvas.toDataURL("image/png");
+                        link.click();
+                      }}
+                    >
+                      Tải ảnh QR
+                    </Button>
+                  </>
+                ) : (
+                  <p>Vé đã hủy nên không còn mã QR sử dụng được.</p>
+                )}
               </div>
             )}
           </section>
