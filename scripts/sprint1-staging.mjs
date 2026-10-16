@@ -348,6 +348,98 @@ async function startGateway(c) {
   closeSync(err);
   writeFileSync(state, JSON.stringify(remember(child, entry), null, 2));
 }
+async function resumeActive(c) {
+  const activePath = resolve(dir, "active.json");
+  const active = stagingRelease(JSON.parse(readFileSync(activePath)));
+  await dependencies(c);
+  for (const name of [active.apiContainer, active.webContainer].filter(
+    Boolean,
+  )) {
+    if (!ownedContainer(name))
+      throw Error(
+        "Owned release container is missing; deploy an exact source instead",
+      );
+    docker("start", name);
+  }
+  await waitHealth(active.apiPort);
+  if (!active.webContainer) {
+    // Legacy pre-container releases retain their verified, archived runtime.
+    const record = active.webProcess;
+    const current = record ? processIdentity(record.pid) : null;
+    if (
+      current &&
+      (current.created !== record.created ||
+        !current.command.includes(record.entry))
+    )
+      throw Error(
+        "Legacy runtime process identity mismatch; refusing to replace it",
+      );
+    if (!current) {
+      const archived = resolve(
+        dir,
+        "releases",
+        active.sha,
+        "source",
+        "apps/web",
+      );
+      const entry = resolve(archived, "node_modules/next/dist/bin/next");
+      if (!record || resolve(record.entry) !== entry || !existsSync(entry))
+        throw Error("Archived runtime provenance mismatch");
+      await free(active.webPort);
+      const fd = openSync(resolve(dir, "logs/resume-web.log"), "a");
+      const child = spawn(
+        process.execPath,
+        [
+          entry,
+          "start",
+          "--hostname",
+          "127.0.0.1",
+          "--port",
+          String(active.webPort),
+        ],
+        {
+          cwd: archived,
+          env: {
+            NODE_ENV: "production",
+            API_INTERNAL_URL: `http://127.0.0.1:${active.apiPort}`,
+            AUTH_PROXY_SECRET: c.authProxySecret,
+          },
+          windowsHide: true,
+          detached: true,
+          stdio: ["ignore", fd, fd],
+        },
+      );
+      closeSync(fd);
+      active.webProcess = remember(child, entry);
+      writeFileSync(activePath, JSON.stringify(active, null, 2));
+      const slot = active.webPort - 3473;
+      writeFileSync(
+        resolve(dir, `slot-${slot}.json`),
+        JSON.stringify(active, null, 2),
+      );
+    }
+  }
+  let webReady = false;
+  for (let n = 0; n < 90; n++) {
+    try {
+      if ((await internalCall(active.webPort, "/api/health")).status === 200) {
+        webReady = true;
+        break;
+      }
+    } catch {}
+    await new Promise((done) => setTimeout(done, 500));
+  }
+  if (!webReady)
+    throw Error("Active web did not recover; pointer/data retained");
+  await smoke(c, active);
+  await startGateway(c);
+  assert.equal((await stagingHttps(c, "/api/health")).status, 200);
+  assert.equal((await stagingHttps(c, "/")).status, 200);
+  timeline("active-resumed", { sha: active.sha });
+  console.log(
+    `STAGING READY https://${c.lanAddress}:${c.gatewayPort} source=${active.sha}; existing data and keys retained`,
+  );
+}
 async function init() {
   if (existsSync(resolve(dir, "config.json"))) {
     config();
@@ -833,6 +925,10 @@ async function main() {
     await deploy();
     return;
   }
+  if (action === "resume") {
+    await resumeActive(c);
+    return;
+  }
   if (action === "status") {
     const active = stagingRelease(
       JSON.parse(readFileSync(resolve(dir, "active.json"))),
@@ -874,7 +970,7 @@ async function main() {
     return;
   }
   throw new Error(
-    "Use init --lan <assignedIPv4>, deploy --sha <40hex>, status, rollback or stop",
+    "Use init --lan <assignedIPv4>, deploy --sha <40hex>, status, resume, rollback or stop",
   );
 }
 async function lockedMain() {
