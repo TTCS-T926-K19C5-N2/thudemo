@@ -482,9 +482,10 @@
         "scripts/sprint1-onboarding-worker.mjs",
         "apps/api/scripts/seed-sprint1-onboarding.mjs"
       ],
-      "test": "Exact610 profile443290698c15: owned stop/start,30migrations,config/key byte equality,event/showtime retained.",
+      "test": "Exact02a fresh profile19b8f733e0a1 lifecycle plus a separate harmless Node sentinel before/after Stop/Start;30migrations/keybytes/event/showtime retained.",
       "evidence": [
-        "fresh-exact-clone-lifecycle.json"
+        "fresh-exact-clone-lifecycle.json",
+        "onboarding-boundary-proof.json"
       ],
       "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
       "candidateManifest": "current-source-manifest.json",
@@ -506,17 +507,18 @@
         "scripts/sprint1-onboarding-worker.mjs",
         "apps/api/scripts/seed-sprint1-onboarding.mjs"
       ],
-      "test": "Clean-clone execution pending",
+      "test": "Actual resource guard rejections then successful fresh bootstrap; owned profile/DB source guards and CI seed safety; actual Docker all-bind127.0.0.1, git check-ignore credentials, sentinel lifecycle.",
       "evidence": [
-        "clean-clone-lifecycle.json",
-        "admission-fix.json"
+        "fresh-exact-clone-bootstrap.json",
+        "onboarding-boundary-proof.json",
+        "ci-49b2842.json"
       ],
       "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
       "candidateManifest": "current-source-manifest.json",
       "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
       "localResult": "PASS",
-      "result": "NOT RUN",
-      "remaining": "Current profile runtime PASS; source guards/resource rejection/owned lifecycle reviewed. API0.0.0.0 remains explicit baseline limitation.",
+      "result": "PASS",
+      "remaining": "Native API binding0.0.0.0 remains stated baseline limitation; PG/Redis/mail dependency ports verified loopback-only. Integrated acceptance separate.",
       "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
       "integratedResult": "NOT RUN"
     },
@@ -539,8 +541,8 @@
       "candidateManifest": "current-source-manifest.json",
       "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
       "localResult": "PASS",
-      "result": "NOT RUN",
-      "remaining": "Implementation prepared, not yet accepted",
+      "result": "PASS",
+      "remaining": "Static documentation review PASS for local-demo, OS TLS/bootstrap, staging-resume separation; integrated deployment result still pending.",
       "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
       "integratedResult": "NOT RUN"
     },

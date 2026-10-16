@@ -8,6 +8,8 @@ URL hiện tại **https://10.88.164.155:3470**, candidate thủ công **02a8e86
 
 Chưa Sprint Done: exact02a clean clone đã full frozen install/generate/30migrations/seed/build/READY và browser6assertions/lifecycle PASS ở profile19b; các lần RAMguard từ chối trước đó giữ lịch sử. Review người thật, merge develop, CI integrated và watcher auto-deploy <10phút vẫn chưa thực hiện.
 
+Bổ sung audit evidence: `onboarding-boundary-proof.json` kiểm trực tiếp process Node độc lập vẫn sống qua Stop/Start; config/env/signing bytes giữ nguyên, mọi PG/Redis/Mailpit publishedport bind127.0.0.1, credentials được Git ignore. ONBOARD04/05 được cập nhật đúng ca đã kiểm; native API0.0.0.0 vẫn là giới hạn baseline công khai, không đồng nhất với DB/cache binding.
+
 ## Trạng thái hiện hành — 16/10/2026, sau DEC17 và sửa admission
 
 **Chưa Sprint Done.** Candidate source `02a8e86a6fea05a49bd27902c08652920e444a10`; develop `80f7a53d752d78ea6b65da3f8c6c08ca23e78176`; laptopHTTPS `https://10.112.63.197:3470` đã chạy candidate thủ công `02a8e86a6fea05a49bd27902c08652920e444a10` với S03; chưa merge develop/auto-deploy. Wi-Fi đổi lại10.88.164.155; đã rebind và kiểm trusted HTTPS, firewall readback PASS theo xác nhận người dùng. Phạm vi hiện tại DEC15: **S01–S04/K01, T01–T10**. DEC09 loạiS03 là lịch sử; S30/S31/T31 vẫn ngoài nghiệm thu. Bảng dưới là kết quả có giới hạn, không thay chứng cứ gốc bằng nhãn head mới.

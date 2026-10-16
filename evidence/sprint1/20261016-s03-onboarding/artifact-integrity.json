@@ -1,5 +1,5 @@
 {
-  "time": "2026-10-16T16:26:08.155418+00:00",
+  "time": "2026-10-16T16:35:12.989558+00:00",
   "source": "49b28427aca611e4c171285b68c53184e9941d45",
   "result": "PASS",
   "assertion": "Every referenced S03/onboarding artifact exists; content hashes identify inspected evidence. Structure alone does not prove assertion semantics.",
@@ -285,14 +285,24 @@
       "sha256": "4ae2fa80787efde14d17466e29dc6aa224dee2837050fcb8e3c9af7b03781cb3"
     },
     {
-      "gate": "ONBOARD-04",
-      "artifact": "clean-clone-lifecycle.json",
-      "sha256": "cf9cf4356b39dcf967114d27358fbcaef22e4a3a3bc328878337aad6842598e8"
+      "gate": "ONBOARD-03",
+      "artifact": "onboarding-boundary-proof.json",
+      "sha256": "2d7cdbc192ea76b27ad7beb54bcfc9d8ad44f243159688c792f5e62702d5e8bc"
     },
     {
       "gate": "ONBOARD-04",
-      "artifact": "admission-fix.json",
-      "sha256": "b7bcaab231c2de7d3c4cafdef9a8bc79e8d84f1f9004c2d5016144aeadc4788c"
+      "artifact": "fresh-exact-clone-bootstrap.json",
+      "sha256": "bc9835827491cc70a6f65f7faa20ba718639b3fd676561cbf30d2eeea069e477"
+    },
+    {
+      "gate": "ONBOARD-04",
+      "artifact": "onboarding-boundary-proof.json",
+      "sha256": "2d7cdbc192ea76b27ad7beb54bcfc9d8ad44f243159688c792f5e62702d5e8bc"
+    },
+    {
+      "gate": "ONBOARD-04",
+      "artifact": "ci-49b2842.json",
+      "sha256": "8af74617730601d3704bc195b9a07c1568bf547b9f83ec1dfa6cb0787f96c268"
     },
     {
       "gate": "ONBOARD-05",
