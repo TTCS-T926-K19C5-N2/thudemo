@@ -6,7 +6,7 @@ import { SeatHoldStorage } from './seat-hold.storage.js';
 import { SeatHoldController } from './seat-hold.controller.js';
 import { SeatHoldCountdownService } from './services/seat-hold-countdown.service.js';
 import { SEAT_VALIDATOR } from './interfaces/seat-validator.interface.js';
-import { MockSeatValidatorAdapter } from './adapters/mock-seat-validator.adapter.js';
+import { SeatValidatorAdapter } from './adapters/seat-validator.adapter.js';
 import { SeatExpiryJobService } from './jobs/seat-expiry-job.service.js';
 import { SeatAvailabilityQueryService } from './queries/seat-availability.query.js';
 import { SeatStatusQueryService } from './queries/seat-status-query.service.js';
@@ -23,7 +23,7 @@ import { SeatStatusQueryService } from './queries/seat-status-query.service.js';
     SeatStatusQueryService,
     {
       provide: SEAT_VALIDATOR,
-      useClass: MockSeatValidatorAdapter,
+      useClass: SeatValidatorAdapter,
     },
   ],
   exports: [
