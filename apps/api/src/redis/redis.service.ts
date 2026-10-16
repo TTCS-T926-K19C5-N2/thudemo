@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, OnModuleDestroy } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { createHash } from 'node:crypto';
 
@@ -8,8 +8,18 @@ function accountKey(prefix: string, email: string): string {
 }
 
 @Injectable()
-export class RedisService {
+export class RedisService implements OnModuleDestroy {
   constructor(@Inject('REDIS_CLIENT') private readonly redis: Redis) {}
+
+  // Lets short-lived contexts (expiry worker, tests) exit instead of hanging
+  // on the open cache socket after app.close().
+  async onModuleDestroy(): Promise<void> {
+    try {
+      this.redis.disconnect();
+    } catch {
+      /* Shutdown must never fail because of cache teardown. */
+    }
+  }
 
   async ping(): Promise<void> {
     if (this.redis.status !== 'ready') {
