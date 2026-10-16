@@ -531,10 +531,10 @@
       "implementation": "Prisma Timestamptz",
       "testCase": "DBtype and roundtrip UTC→VN",
       "environment": "PG/browser",
-      "evidence": "api-a2e5f67/https-api.json",
+      "evidence": "api-a2e5f67/https-api.json; paid-parent-fk.json",
       "result": "PASS",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
-      "closureCondition": "Verified on stated source/environment. No human approval or postmerge deployment inferred."
+      "closureCondition": "Real guarded test DB: event/showtime deletion rejected P2003 with PAID order and linked ticket intact; new fixture transaction rolled back. No new deletion API or ticket lifecycle redesign."
     },
     {
       "id": "T10-01",
@@ -713,7 +713,7 @@
       "implementation": "PG temporary LOCAL only until reviewed",
       "testCase": "Lead reads current research+tradeoff+productNFR",
       "environment": "human architecture review",
-      "evidence": "../../../../docs/K01_EVIDENCE.md",
+      "evidence": "../../../docs/K01_EVIDENCE.md",
       "result": "BLOCKED",
       "sourceSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
       "closureCondition": "Lead/PO must approve proposed PG authority for fake-data laptop staging. DEC12 is local-only; no automatic architecture waiver."

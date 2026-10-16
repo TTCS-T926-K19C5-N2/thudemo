@@ -14,6 +14,8 @@ NFR chưa đóng tổng thể:200concurrent/100seats×10,2000rawsamples,100winne
 
 Trước merge: thành viên thật approve exacthead; Lead review K01 authority và NFR/topology; policy chặn merge được maintainer cho phép; required checks xanh/không unresolved. AI scan hỗ trợ, không thay human approval. Sau merge hợp lệ: watcher tự chạy, ghi merge→CI→deploy→healthy<10phút và nghiệm thu integratedSHA; manual230.018s không là auto-deploy. Không main/release/production/publicTunnel/paidhosting.
 
+Bổ sung FK test trên DB riêng: xóa event/showtime có PAID order/ticket bị P2003, lịch sử giữ nguyên; rollback fixture mới. Các CASCADE ticket cũ được ghi riêng trong report, không thêm API xóa hoặc mở rộng lifecycle.
+
 Evidence: evidence/sprint1/20261016-closeout/, ma trận62gate/report/runbook trong docs. Demo https://10.88.164.155:3470; credentials chỉ ignoredlocal .sprint1-staging/config.json. Rollback code giữ DB/history/keys, không reset/migrate-down.
 
 ## Đề xuất policy develop — cần maintainer cho phép, chưa áp dụng
