@@ -156,7 +156,7 @@ describe('S-40 waiting room', () => {
 
   it('config falls back to safe defaults on bad env', () => {
     expect(resolveWaitingConfig({ S40_ACTIVE_LIMIT: 'abc', S40_TURN_TTL_SEC: '-5' } as never))
-      .toEqual({ activeLimit: 200, turnTtlSec: 300 });
+      .toEqual({ activeLimit: 2, turnTtlSec: 600 });
   });
 
   it('S-40b: hold activity extends the turn; an expired turn is lost, not resumed', async () => {

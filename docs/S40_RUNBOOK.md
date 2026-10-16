@@ -1,9 +1,9 @@
 # S-40 — Phòng chờ khi vượt ngưỡng (full: S-40a + S-40b + S-40c)
 
 > Tier Later, ước lượng thô 8 SP. Đã làm đủ 3 lát trong một branch theo yêu cầu.
-> `[CẦN CHỐT]` trước khi lên Next/merge: ngưỡng `S40_ACTIVE_LIMIT` (mặc định 200),
-> thời gian giữ lượt `S40_TURN_TTL_SEC` (mặc định 300s), và hàng đợi đặt ở Redis
-> hay tầng trước ứng dụng (WAF/edge).
+> Cấu hình demo đã chốt: `S40_ACTIVE_LIMIT=2` (người thứ 3 trở đi chờ),
+> `S40_TURN_TTL_SEC=600` (10 phút). Vị trí production của hàng đợi (Redis
+> hay tầng trước ứng dụng/WAF/edge) vẫn `[CẦN CHỐT]`.
 
 ## Đã làm
 
