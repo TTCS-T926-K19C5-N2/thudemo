@@ -1,7 +1,6 @@
 {
   "source": "4033da4dde1484fc777806421006f9c17e831f8b",
   "scope": "DEC15 S01-S04/K01,T01-T10,72 original clauses+23 S03/onboarding; no future Sprint AC",
-  "sprintDone": false,
   "requirements": [
     {
       "id": "T01-AC1",
@@ -4789,12 +4788,16 @@
     "condition": "After explicit DEC18 approval and protection readback: actual automated technical review on exact base/head/diff, required Review / technical-review success plus all original required CI success, no unresolved conversations, scoped develop PR, then merge and integrated CI/automatic staging/AC verification.",
     "acceptedSoftwareSource": "4033da4dde1484fc777806421006f9c17e831f8b",
     "afterVerifiedPublication": "PASS; Sprint1 Done for approved R0 laptop fake-data scope",
-    "noRetroactiveHumanApproval": true
+    "noRetroactiveHumanApproval": true,
+    "finalReadbackLocation": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/100 (final publication receipt comment after actual merge/staging, not a new Git commit solely to retagSHA)"
   },
   "policyProposal": {
     "id": "DEC-18",
-    "status": "APPROVED / APPLYING; enforcement and publication not yet accepted",
-    "effectiveAt": null,
-    "approvedAtRecorded": "2026-10-17T04:00:59.735Z"
-  }
+    "status": "APPROVED / PROTECTION APPLIED; actualreview-error andpositivecontrolPASS on6e; missing/new-head and CIredcontrols stillpending",
+    "effectiveAt": "2026-10-17T04:09:49.705Z",
+    "approvedAtRecorded": "2026-10-17T04:00:59.735Z",
+    "evidence": "evidence/sprint1/20261017-review-policy/review-control.json"
+  },
+  "statusSemantics": "Snapshot before final publication. Current completion requires the exact-head review and postmerge publication receipt linked from PR100; old source proofs keep original SHA/environment.",
+  "sprintDoneAtPreparation": false
 }
