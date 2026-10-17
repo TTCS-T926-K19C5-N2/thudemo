@@ -35,7 +35,12 @@ function readInput(body: unknown) {
   const content = typeof value.content === 'string' ? value.content : '';
   const periodStart = new Date(String(value.periodStart));
   const periodEnd = new Date(String(value.periodEnd));
-  if (!provider || !fileName || !content || Number.isNaN(periodStart.valueOf()) || Number.isNaN(periodEnd.valueOf()) || periodStart >= periodEnd) throw new BadRequestException('provider, fileName, periodStart, periodEnd và content là bắt buộc.');
+  if (!provider) throw new BadRequestException('Thiếu provider.');
+  if (!fileName) throw new BadRequestException('Thiếu fileName.');
+  if (!content) throw new BadRequestException('Thiếu nội dung file sao kê.');
+  if (Number.isNaN(periodStart.valueOf())) throw new BadRequestException('periodStart không hợp lệ.');
+  if (Number.isNaN(periodEnd.valueOf())) throw new BadRequestException('periodEnd không hợp lệ.');
+  if (periodStart >= periodEnd) throw new BadRequestException('periodStart phải trước periodEnd.');
   return { provider, fileName, content, periodStart, periodEnd };
 }
 

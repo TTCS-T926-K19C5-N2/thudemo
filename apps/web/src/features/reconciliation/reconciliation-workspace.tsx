@@ -30,7 +30,12 @@ export function ReconciliationWorkspace() {
   async function submit() {
     setBusy(true); setError('');
     try {
-      const run = await api('/accounting/reconciliations', (value) => object(value) as unknown as Run, { method: 'POST', body: { provider, fileName, periodStart, periodEnd, content } });
+      const start = new Date(periodStart);
+      const end = new Date(periodEnd);
+      if (Number.isNaN(start.valueOf()) || Number.isNaN(end.valueOf())) {
+        throw new Error('Hãy chọn đầy đủ thời gian đối soát.');
+      }
+      const run = await api('/accounting/reconciliations', (value) => object(value) as unknown as Run, { method: 'POST', body: { provider: provider.trim(), fileName: fileName.trim() || 'statement.csv', periodStart: start.toISOString(), periodEnd: end.toISOString(), content } });
       setRuns((current) => [run, ...current]); setContent(''); setFileName('');
     } catch (e) { setError(e instanceof Error ? e.message : 'Không thể đối soát sao kê.'); }
     finally { setBusy(false); }
