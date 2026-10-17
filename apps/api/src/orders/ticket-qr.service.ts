@@ -9,10 +9,13 @@ import { ScannerCryptoService } from '../scanner/scanner-crypto.service.js';
 type TicketRow = {
   id: string;
   showtimeId: string;
+  eventName: string;
+  startTime: Date;
   checkedInAt: Date | null;
   row: string;
   seatNumber: number;
   categoryName: string;
+  tierName: string | null;
   cancelled: boolean;
   used: boolean;
 };
@@ -40,7 +43,7 @@ export class TicketQrService {
           ownerEmail: string | null;
         })[]
       >(Prisma.sql`
-        SELECT oi.id,o."showtimeId",oi."checkedInAt",s.row,s."seatNumber",oi."categoryName",
+        SELECT oi.id,o."showtimeId",e.name AS "eventName",st."startTime",oi."checkedInAt",s.row,s."seatNumber",oi."categoryName",oi."tierName",
           EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CANCELLED') AS cancelled,
           EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CHECKED_IN') AS used,
           (SELECT t.code FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" LIMIT 1) AS code,
@@ -48,6 +51,7 @@ export class TicketQrService {
           (SELECT t."transferredToEmail" FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" LIMIT 1) AS "transferredToEmail",
           (SELECT t."ownerEmail" FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" LIMIT 1) AS "ownerEmail"
         FROM order_items oi JOIN orders o ON o.id=oi."orderId" JOIN seats s ON s.id=oi."seatId"
+          JOIN showtimes st ON st.id=o."showtimeId" JOIN events e ON e.id=st."eventId"
         WHERE o.id=${orderId}::uuid AND s."showtimeId"=o."showtimeId" ORDER BY s.row,s."seatNumber"`);
       return {
         tickets: items.map((item) => ({
@@ -55,8 +59,11 @@ export class TicketQrService {
           id: item.ticketDbId ?? item.id,
           code: item.code ?? item.id,
           showtimeId: item.showtimeId,
+          eventName: item.eventName,
+          startTime: item.startTime.toISOString(),
           seatLabel: `${item.row}-${item.seatNumber}`,
           category: item.categoryName,
+          tier: item.tierName,
           ticketType: item.categoryName,
           status: item.cancelled
             ? 'CANCELLED'
