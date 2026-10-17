@@ -1,5 +1,9 @@
 # Sprint 1 — ma trận nghiệm thu đã đối chiếu nguồn (16/10/2026)
 
+## Phát hiện bổ sung — D18-CACHE-01,17/10/2026
+
+Lần tích hợp PR100/source03c6aa77 đã vượt600giây trước khi staginghealthy: gate thời gian FAIL, không bỏ mẫu. Rootpackage.json chỉ thêm testcommand nhưng làm mất cache Docker dependency/API/web. Bản sửa tối thiểu khôi phục đúng manifest403 và chạy nguyên18guardtests bằng bước riêng trong cùng required CI testjob; không bỏ test/đổi ngưỡng/check/trigger hoặc đổi app/schema/lock. [Bằng chứng](../evidence/sprint1/20261017-review-cache-fix/cold-cache-failure.json). Chưa kết luận SprintDone trước khi source sửa được review/CI/merge và auto-deploy thực tế đạt, có runtime smoke. Các bảng403bên dưới là acceptedsoftware trước lỗi publicationmới, không là PASS cho03.
+
 ## Bản nghiệm thu và điều kiện công bố cuối — 17/10/2026
 
 **Các assertion chức năng Sprint1 S01–S04/K01, T01–T10 đã có bằng chứng theo nguồn; DoD review mới theo DEC-18 còn cần thực thi; bản phần mềm được nghiệm thu là `4033da4dde1484fc777806421006f9c17e831f8b`.** Sau khi DEC-18 được chấp thuận và áp dụng, kết luận Sprint1 Done có hiệu lực khi gói công bố cuối đã qua review kỹ thuật tự động đúng base/head/diff, status Review / technical-review và mọi required CI success, merge develop, rồi xác minh CI/runtime/staging tương thích. Trước khi đủ điều kiện công bố không tuyên bố Sprint Done. Gói công bố ban đầu chỉ tài liệu/evidence; bổ sung DEC-18 hiện thay quy trình review/protection develop, thêm validator/publisher và test vào lệnh test hiện có. Ứng dụng, schema, lockfile, workflow CI, seed và dữ liệu không đổi. Cấu hình GitHub chỉ có hiệu lực sau readback/enforcement; không nhận payload đã duyệt là đã áp dụng.

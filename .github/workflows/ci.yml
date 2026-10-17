@@ -124,6 +124,8 @@ jobs:
         run: pnpm --filter api exec prisma generate
       - name: Unit tests
         run: pnpm test
+      - name: Technical review validation guards
+        run: node --test scripts/technical-review.spec.mjs
       - name: Staging seed safety guards (no remote writes)
         run: node --test apps/api/scripts/render-staging-target.spec.mjs
       - name: API integration test
