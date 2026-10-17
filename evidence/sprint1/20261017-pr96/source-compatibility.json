@@ -1,0 +1,18 @@
+{
+  "source": "038f8baff4c175e88c53b19a553105be15735dec",
+  "priorProductSource": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "result": "PASS",
+  "pathsCompared": 601,
+  "method": "git diff --quiet exact trees for apps/packages/lock/Dockerfile/demo entrypoints; approved head and merge trees equal",
+  "groups": [
+    "Product API/web/shared/schema/mail/session/RBAC/event files unchanged",
+    "Fresh clone02a one-command/bootstrap/browser/lifecycle evidence remains applicable to identical product and launcher sources",
+    "Prior natural900s/Redisrestart/two-peer evidence retained; login counter/classifier unchanged",
+    "Migration/seed/FK/coverage/dependency evidence compatible; no product or lock diff"
+  ],
+  "limitations": [
+    "Current host/watcher source is separately verified",
+    "Historical SMTP receipt stays at original source/network/time; current activated-account session tested independently",
+    "New staged helper does not have CI/review/merge evidence yet"
+  ]
+}

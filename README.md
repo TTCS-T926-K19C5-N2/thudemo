@@ -8,7 +8,7 @@
 
 ## Demo Sprint 1 từ clone mới — một lệnh
 
-Entrypoint mới (candidate16/10, **đang kiểm clone sạch**, chưa phải bằng chứng Sprint Done). Prerequisites: Windows PowerShell5.1+, Git, Node24.21.0, Corepack/pnpm10.15.1, Docker Desktop dùng Linux engine/Compose; C trống ít nhất12GiB, ổ checkout5GiB, RAM khả dụng2GiB. Chạy từ clone riêng, không sao chép `.env`/private config từ máy khác.
+Entrypoint mới (đã kiểm clone sạch02a thực tế; source ứng dụng/launcher giữ nguyên trên038; chưa Sprint Done do gate staging600s). Prerequisites: Windows PowerShell5.1+, Git, Node24.21.0, Corepack/pnpm10.15.1, Docker Desktop dùng Linux engine/Compose; C trống ít nhất12GiB, ổ checkout5GiB, RAM khả dụng2GiB. Chạy từ clone riêng, không sao chép `.env`/private config từ máy khác.
 
 ```powershell
 powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1
@@ -62,7 +62,7 @@ pnpm --filter api exec prisma migrate deploy
 pnpm --filter api exec prisma generate
 ```
 
-`--wait` chỉ hoàn tất khi PostgreSQL và Redis đạt healthcheck. Lệnh migration dùng lịch sử Prisma trong repository; chạy lại sẽ báo không có migration chờ nếu database đã cập nhật. Checkout tích hợp hiện có 29 migration, gồm User/Role/Event/Showtime và các module sprint sau. Ba migration probe của T-01 là mẫu apply → migration bù → tái áp dụng; không có nghĩa schema hiện tại chỉ còn scaffold. Không dùng `prisma db push` hoặc reset database thay cho migration.
+`--wait` chỉ hoàn tất khi PostgreSQL và Redis đạt healthcheck. Lệnh migration dùng lịch sử Prisma trong repository; chạy lại sẽ báo không có migration chờ nếu database đã cập nhật. Checkout tích hợp hiện có 30 migration, gồm User/Role/Event/Showtime và các module sprint sau. Ba migration probe của T-01 là mẫu apply → migration bù → tái áp dụng; không có nghĩa schema hiện tại chỉ còn scaffold. Không dùng `prisma db push` hoặc reset database thay cho migration.
 
 ## 4. Chạy API và web
 
