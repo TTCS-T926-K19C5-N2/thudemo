@@ -1,7 +1,9 @@
-# Sprint1 — công bố kết quả sau tích hợp và đồng bộ nguồn
+# Sprint1 — công bố fullacceptance617 và DEC18verified
 
-Phần mềm được nghiệm thu4033da4dde1484fc777806421006f9c17e831f8b, PR99 exact-head approval/merge, integratedCI225s, auto320,279s. App/schema/lock/scripts/deploy không đổi so với eb53; gói công bố ban đầu chỉ cập nhật tài liệu/evidence. Theo DEC-18 đã duyệt, PR hiện bổ sung validator/publisher review đúng SHA,18ca kiểm fail-closed trong lệnh test, tài liệu policy và payload protection tối thiểu. Không đổi ứng dụng/schema/lock/workflowCI; cấu hình trước/sau và enforcement phải có receipt thật.
+Actualacceptedsource61749f82, reviewed118, CI221s, automatic365.240sPASS;95mapping và9goalconditions đã kiểm, source/backlog/DoD đồng bộ, app/demo/runtimeinputs tương thích và functional617smokePASS.
 
-Actual nguồn:15ô workbookstatus và10taskDone, guarded trước/sau+backup; toàn workbook/hash/styles/formulas/AC/SP/owner giữ. API/desktop/mobile/activatedsession current403PASS; keys/counts preserved; realSMTP/cleanclone/rollback evidence giữ SHA gốc tương thích. K01 sai lệch timebox/mentor được PO nhận DEC17, không hồi tố.
+Gói này chỉ README/3reports/currentmatrix/actualevidence/source-sync; không sửa app/schema/lock/rootmanifest/CI/launcher/deploy/protection/data. Publicactualcontrolproofs bổ sung missing/error/stale review và requiredlintred, source/backlogC2 và independentclone-retention recheck; newDoDrow2 đượcresolve bằng actualreview, giữ history.03FAIL633.743s và cácFAILcũ không bị xóa.
 
-Reviewer kiểm full95source mappings, tableT01–T10/K01/DoD, integration-and-auto-deploy.json, source-status-sync.json, screenshots và source-compatibility.json. Sau thời điểm DEC-18 được chấp thuận và áp dụng, gate công bố cần automated technical review đúng base/head/diff, status Review / technical-review và mọi required CI success, merge develop, integratedCI/runtime compatible. Không dùng approvalPR99 thay review cho head mới hoặc ghi automated review thành human approval. Không thêmAC mới hoặc yêu cầu chạy lại toàn bộ tests/SMTP/physicaldevice khi nguồn tương thích. Sau gate công bố chỉ đọc lại/finalreceipt, không thêm commit sau approval chỉ để thay một SHA tài liệu vào bằng chứng chức năng cũ.
+Reviewer đọc fullmappedrequirements và bằngchứng actual617; noteacceptedK01deviation, no newemail/seconddevice/allrepo security claim. Publisheroperational/app_id=-1notindependent. PRhồsơphải qua exactheadreview/6gates, merge develop và finalCI/runtimecompatible readback; không tạo thêmcommit chỉ đổiSHAoldproof.
+
+[Acceptance617](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229852854)

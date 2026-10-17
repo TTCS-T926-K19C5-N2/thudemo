@@ -1,5 +1,48 @@
 # Sprint 1 — demo local và laptop staging riêng
 
+## Nghiệm thu hiện hành — 17/10/2026
+
+Bản phần mềm được nghiệm thu: `61749f82ccaebc8fa102456b145881f43bd68fcf`, reviewed head `11831c30ce3a3be00e63ffacf5ecc1f525aec00b`. Phạm vi theo DEC15: S01–S04/K01, T01–T10 và NFR/DoD áp dụng; DoD review theo DEC18 đã được người dùng chấp thuận.
+
+[Receipt đã công bố và đọc lại](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229852854), [CI tích hợp](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39003426268), [review đúng SHA](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229717726). Merge 04:40:07Z → healthy 04:46:12.240Z: **365,240 giây <600**; CI **221 giây <300**. Backup **3.904.234 byte** được xác minh trước promotion; ba container đúng source; bốn file khóa giữ nguyên hash, số lượng bản ghi không giảm. Aggregate count không thay chứng minh từng dòng dữ liệu.
+
+Staging đang dùng: **https://10.228.54.197:3470**. Trusted TLS, owned firewall TCP3470/LocalSubnet, tám nhóm API, desktop 1440/mobile 390, activated-account session/logout/replay 401 và bounded secret/log sweep đã kiểm trên 617. Giao diện V1 được giữ. Clone 02a đã chạy toàn bộ một lệnh và lifecycle; lần đọc Status gần nhất vẫn READY. Bằng chứng email thật, hai peer và rollback giữ đúng source/môi trường gốc; không nhận đó là lần chạy mới.
+
+### Khởi động và tài khoản
+
+Clone mới: Windows PowerShell 5.1+, Git, Node 24.21.0, pnpm 10.15.1 và Docker Desktop Linux engine. Lần install/build đầu cần C trống 12 GiB, ổ checkout 5 GiB, RAM khả dụng 2 GiB. Từ root clone riêng chạy:
+
+```powershell
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1
+```
+
+Lệnh tự chọn port trống, tạo config/secret riêng, frozen install, dependency, client/migrate/seed an toàn, build/start rồi health/login/logout smoke. Chỉ báo READY khi đạt. Local credentials: `.sprint1-demo/config.json`; staging credentials: `.sprint1-staging/config.json`; SMTP và email test nằm trong file local ignored. Không copy secret từ profile khác hoặc in lên chat/Git. Mailpit là mail catcher, không phải email Internet. `-Action Status/Stop/Start/Restart` dùng cùng entrypoint; Stop giữ dữ liệu/secret.
+
+Khôi phục staging đã cấu hình: `node scripts/sprint1-staging.mjs resume`, sau đó `powershell.exe -NoProfile -File .\scripts\sprint1-staging.ps1 -Action Status`. Kiểm watcher riêng nếu host đã reboot; helper `sprint1-staging-access.ps1 -StartWatcher -MinimumSourceSha 61749f82ccaebc8fa102456b145881f43bd68fcf` chỉ dùng cho profile đã duyệt. Certificate trust/firewall là bước OS có thể cần người thao tác; không init lại để phục hồi. Giữ nguồn điện, nắp mở và đúng Wi-Fi. Nếu IP đổi, làm quy trình giữ khóa/cấp lại leaf/trust/owned firewall ở phần lịch sử, rồi kiểm lại HTTPS.
+
+### Kịch bản demo và phục hồi
+
+1. Mở home và `/api/health`: mong đợi 200. Nếu không đạt, đọc Status/log của đúng profile; chưa demo và không reset DB.
+2. Đăng nhập organizer A, tạo sự kiện bằng tên/mô tả/địa điểm giả, rồi sửa và reload: mong đợi nháp, đúng owner và dữ liệu còn nguyên. Nếu sai input, sửa trường lỗi; không reseed.
+3. Thêm suất +24 giờ; thử quá khứ; gửi lại đúng thời gian: tương lai được lưu, quá khứ bị chặn, trùng giờ có cảnh báo nhưng vẫn lưu. Kiểm giờ Việt Nam và reload.
+4. Đăng nhập B rồi mở URL sự kiện của A: mong đợi 403. Buyer không thấy nháp và POST tạo/sửa qua API cũng 403; kiểm server bằng script/ca API được dẫn trong ma trận.
+5. Đăng ký email thử của chính người kiểm, tự xác nhận consent; local đọc Mailpit, staging dùng SMTP đã cấu hình. Mở link, đặt mật khẩu >=8 ký tự và đăng nhập. Email đã tồn tại trả thông báo chung; không gửi hàng loạt. Nếu chưa thấy thư, kiểm spam/outbox/SMTP theo runbook; không log token.
+6. Logout rồi truy cập chức năng cần phiên: về login/401. Ca expiry/replay đã có proof; không giảm TTL production để demo.
+7. Nếu cần trình diễn khóa tài khoản, chỉ dùng lock-test fixture, sáu lần theo AC và chờ TTL tự nhiên 15 phút để hồi phục. Không chạy lại probe khóa IP hoặc xóa Redis counter; không dùng tài khoản A/B chính.
+8. Trình bày CI, Docker, K01 và timeline617. Dùng receipt gốc cho các phép đo trước; ghi rõ K01 timebox/mentor lịch sử không có proof.
+
+
+[Ma trận 95 mapping](../evidence/sprint1/20261017-final/acceptance-current.json), [completion audit](../evidence/sprint1/20261017-closeout/completion-audit.json), [enforcement](../evidence/sprint1/20261017-closeout/review-enforcement.json), [source sync](../evidence/sprint1/20261017-closeout/source-status-final.json), [source compatibility](../evidence/sprint1/20261017-closeout/source-compatibility.json). Mỗi yêu cầu giữ implementation, assertion, test, nguồn và evidence; không dùng số test thay coverage. 94 row giữ proof nguyên source, DOD02 được giải quyết bằng review/status/enforcement thật. Backlog năm story/mười task Done và hash workbook C2 đã đọc lại; checkpoint task được append có backup, giữ AC/SP/owner/Sprint.
+
+DEC18 đã áp dụng: approvals=0, last-push=false; giữ năm required CI bind Actions15368, thêm Review / technical-review với app_id=-1; giữ PR bắt buộc, strict/up-to-date, conversation, admin, cấm force-push/xóa develop. Main không đổi. Đã bật capability auto-merge, chỉ arm PR100/104 trong phạm vi sau đủ gate. Publisher vận hành không độc lập hoặc chống giả mạo bởi người có quyền status; commit mới cần review/CI mới.
+
+Các lần **618,856 / 1754,310 / 633,743 giây FAIL** được giữ. D18-CACHE-01 đã sửa bằng cách khôi phục production manifest 403 và chạy nguyên 18 guard test ở bước riêng cùng required job; không bỏ test/check/assertion/ngưỡng. K01 timebox/mentor lịch sử NOT RUN là sai lệch PO đã nhận theo DEC17. F15 payment logger và lỗi nền optional S43 được ghi riêng ngoài phạm vi sửa Sprint1; không nhận toàn repository sạch.
+
+PR hồ sơ cuối công bố kết quả đã xảy ra trên 617; sau merge kiểm CI và runtime tương thích. Không tạo commit tiếp chỉ để đổi SHA của tài liệu/test cũ.
+
+## Các checkpoint trước — lịch sử có source và môi trường riêng
+
+
 ## Phát hiện bổ sung — D18-CACHE-01,17/10/2026
 
 Lần tích hợp PR100/source03c6aa77 đã vượt600giây trước khi staginghealthy: gate thời gian FAIL, không bỏ mẫu. Rootpackage.json chỉ thêm testcommand nhưng làm mất cache Docker dependency/API/web. Bản sửa tối thiểu khôi phục đúng manifest403 và chạy nguyên18guardtests bằng bước riêng trong cùng required CI testjob; không bỏ test/đổi ngưỡng/check/trigger hoặc đổi app/schema/lock. [Bằng chứng](../evidence/sprint1/20261017-review-cache-fix/cold-cache-failure.json). Chưa kết luận SprintDone trước khi source sửa được review/CI/merge và auto-deploy thực tế đạt, có runtime smoke. Các bảng403bên dưới là acceptedsoftware trước lỗi publicationmới, không là PASS cho03.

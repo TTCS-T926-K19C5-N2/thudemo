@@ -1,5 +1,22 @@
 # Chạy dự án bán vé sự kiện trên máy cá nhân
 
+Bản được nghiệm thu: **61749f82**, staging **https://10.228.54.197:3470**. CI 221 giây, tự triển khai sau merge 365,240 giây; T01–T10/K01/DoD được đối chiếu đủ 95 mapping. [Báo cáo](docs/SPRINT1_REVIEW_REPORT.md), [ma trận](docs/SPRINT1_ACCEPTANCE_MATRIX.md), [runbook](docs/SPRINT1_DEMO_RUNBOOK.md), [receipt thực tế](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229852854). Review đúng SHA theo DEC18 đã áp dụng; không phải review độc lập của người khác. K01 có sai lệch timebox/mentor lịch sử đã được PO chấp thuận.
+
+## Demo từ clone mới
+
+Prerequisites đã kiểm: Windows PowerShell 5.1+, Git, Node 24.21.0, pnpm 10.15.1, Docker Desktop Linux engine; C trống 12 GiB, ổ checkout 5 GiB, RAM khả dụng 2 GiB cho install/build đầu. Từ root clone riêng:
+
+```powershell
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1
+```
+
+Chờ READY rồi mở URL được in. Credentials nằm trong `.sprint1-demo/config.json` bị ignore; địa chỉ Mailpit được in để thử đăng ký/kích hoạt. Mailpit không chứng minh email Internet. Không copy `.env` hoặc private config từ máy khác. Dùng cùng lệnh với `-Action Status`, `-Action Stop`, `-Action Start`, `-Action Restart`; dữ liệu/secret của profile được giữ. Staging dùng riêng `.sprint1-staging/config.json`; khôi phục profile đã có theo runbook, không init/reset lại.
+
+Hồ sơ cuối công bố actual617 proof; sau merge chỉ kiểm CI/runtime tương thích, không retag kết quả test cũ. Các checkpoint dưới đây là lịch sử với source/môi trường riêng.
+
+### Checkpoint README trước — lịch sử
+
+
 > **Bản nghiệm thu17/10:** phần mềm `4033da4dde1484fc777806421006f9c17e831f8b`; staging **https://10.228.54.197:3470**, auto merge→healthy320,279s và integratedCI225s PASS. T01–T10/K01/DoD và actual task/backlog sync xem [báo cáo](docs/SPRINT1_REVIEW_REPORT.md)/[ma trận](docs/SPRINT1_ACCEPTANCE_MATRIX.md). Sau khi DEC-18 được chấp thuận và áp dụng, gate công bố là review kỹ thuật tự động đúng SHA + required review status/CI + merge develop và xác minh runtime/staging sau merge; chưa nhận SprintDone trước các gate đó. TLS/owned firewall PASS; không có second-device test mới. Credentials chỉ file local ignored; clone mới chạy một lệnh dưới đây.
 
 > **Checkpoint lịch sử — Sprint 1 review/demo 15/10/2026:** xem [runbook](docs/SPRINT1_DEMO_RUNBOOK.md), [ma trận nghiệm thu](docs/SPRINT1_ACCEPTANCE_MATRIX.md) và [báo cáo](docs/SPRINT1_REVIEW_REPORT.md). Profile này dùng worktree/database/container riêng, web 3440/API 3441; Git Flow feature → develop; staging laptop riêng https://10.88.164.155:3470 (cần certificate trust/firewall để team Wi-Fi truy cập; xem gate trong runbook). Khi chạy web, dùng entry `pnpm --filter web dev` hoặc `start` để xác thực IP đăng nhập qua proxy. Root `.env` cần `WEB_PORT` và `AUTH_PROXY_SECRET` ngẫu nhiên tối thiểu 32 ký tự, cùng giá trị server-only trên web/API. Không dùng `next start` trực tiếp. Các checkpoint cũ bên dưới chỉ phản ánh thời điểm được ghi.
