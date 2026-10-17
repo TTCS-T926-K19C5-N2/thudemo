@@ -1,0 +1,60 @@
+{
+  "finding": "T02-CI-NFR-01",
+  "severity": "P2",
+  "result": "FAIL NFR; functionalCIjobs success",
+  "source": "6d5390713fbb75e3d2b449221dc7d4c6d89b1320",
+  "run": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39004572081",
+  "createdAt": "2026-10-17T04:58:57Z",
+  "finishedAt": "2026-10-17T05:04:03Z",
+  "wholePipelineSeconds": 306,
+  "thresholdSeconds": 300,
+  "initialRunnerQueueSeconds": 72,
+  "queueSubtracted": false,
+  "jobs": [
+    {
+      "name": "T-02 / test",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T05:00:09Z",
+      "completedAt": "2026-10-17T05:01:38Z"
+    },
+    {
+      "name": "T-02 / build-and-typecheck",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T05:00:10Z",
+      "completedAt": "2026-10-17T05:01:09Z"
+    },
+    {
+      "name": "T-02 / lint",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T05:00:09Z",
+      "completedAt": "2026-10-17T05:00:38Z"
+    },
+    {
+      "name": "T-31 / hold-concurrency",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T05:01:41Z",
+      "completedAt": "2026-10-17T05:04:02Z"
+    },
+    {
+      "name": "K-01 / candidate-research",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-10-17T05:01:41Z",
+      "completedAt": "2026-10-17T05:02:20Z"
+    }
+  ],
+  "cause": "Runnerqueue72seconds plus unnecessaryneeds:test barrier. Bothcandidate/holdjobs checkout/install/generate/startownisolatedstores andholdbuildsownAPI; neither consumesunit-jobartifacts.",
+  "fix": "Remove exactly2needs:test orderingedges so all5requiredjobs can runparallel ontheir hostedrunners; allsteps,18guards,workload,assertions,thresholds,triggers,permissions andrequirednames/issuers unchanged.",
+  "unitFailureStillBlocks": "RequiredT-02/test status remainsmandatory and watcher requires all5checks success; parallelbenchmarksuccess cannotbypass redunit/build/lint.",
+  "oldReviewRevoked": {
+    "statusId": 56581739371,
+    "state": "failure",
+    "head": "6d5390713fbb75e3d2b449221dc7d4c6d89b1320",
+    "autoMergeArmed": false
+  },
+  "verification": "ActualnewheadCI fullwalltime includingqueue must be<300 beforearming; actualpostmergeCI/auto/runtime stillrequired."
+}

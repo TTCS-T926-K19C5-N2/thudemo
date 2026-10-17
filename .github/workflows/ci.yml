@@ -133,7 +133,6 @@ jobs:
 
   candidate-research:
     name: K-01 / candidate-research
-    needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
@@ -180,7 +179,6 @@ jobs:
 
   hold-concurrency:
     name: T-31 / hold-concurrency
-    needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:

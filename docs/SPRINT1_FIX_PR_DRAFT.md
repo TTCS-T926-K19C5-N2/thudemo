@@ -1,9 +1,5 @@
-# Sprint1 — công bố fullacceptance617 và DEC18verified
+# Sprint1 — đóng hồ sơ và rút critical path CI
 
-Actualacceptedsource61749f82, reviewed118, CI221s, automatic365.240sPASS;95mapping và9goalconditions đã kiểm, source/backlog/DoD đồng bộ, app/demo/runtimeinputs tương thích và functional617smokePASS.
+Công bố actual617acceptance (95mapping, CI221s/auto365.240s/runtime/source-sync) và sửa T02-CI-NFR-01: PR105head6d53907 có functionalCIxanh nhưng wholewall306sFAIL, giữ nguyênqueue72s. Bỏ đúng2needs:test ở các jobbenchmark tựsetup để chạy song song, không giảm workload/test/assertion/threshold hoặc thayrequiredchecks/permission/trigger. Requiredunit/build/lint đỏ vẫn chặn merge/deploy qua all-checks-success.
 
-Gói này chỉ README/3reports/currentmatrix/actualevidence/source-sync; không sửa app/schema/lock/rootmanifest/CI/launcher/deploy/protection/data. Publicactualcontrolproofs bổ sung missing/error/stale review và requiredlintred, source/backlogC2 và independentclone-retention recheck; newDoDrow2 đượcresolve bằng actualreview, giữ history.03FAIL633.743s và cácFAILcũ không bị xóa.
-
-Reviewer đọc fullmappedrequirements và bằngchứng actual617; noteacceptedK01deviation, no newemail/seconddevice/allrepo security claim. Publisheroperational/app_id=-1notindependent. PRhồsơphải qua exactheadreview/6gates, merge develop và finalCI/runtimecompatible readback; không tạo thêmcommit chỉ đổiSHAoldproof.
-
-[Acceptance617](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229852854)
+Không đổi app/schema/rootmanifest/lock/launcher/deploy/protection/data. CIgraph là thayđổi triểnkhai duy nhất; phải review mới đúngSHA, toànpipeline thực<300 trướcarm, rồi actualpostmergeCI/auto/health/sourcecompatibility. Không tạo thêmcommit chỉ retagdocumentSHA. Accepted617và toànFAILhistory/deviation/limits vẫn giữ; không independenthumanreview.

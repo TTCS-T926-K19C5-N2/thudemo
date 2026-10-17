@@ -1,5 +1,9 @@
 # Sprint 1 — demo local và laptop staging riêng
 
+## Sửa thời gian pipeline công bố — T02-CI-NFR-01
+
+Run PR105/head6d53907 hoàn tất các job thành công nhưng tổng306giây, FAILngưỡng300; giữ nguyên72giây chờrunner, không trừ/loại mẫu. Runpush cùnghead254giây được ghi riêng. Hai benchmarkjob tự checkout/install/generate/setupDB/cache (hold tự buildAPI), không lấy artifactunitjob; bỏ đúnghai cạnh needs:test để chạy song song. Nguyên5requiredCI+review, mọi bước/18guards/tải/ngưỡng/assertion/permission/trigger giữ nguyên. Unit/build/lint đỏ vẫn chặn merge và watcher deploy theo all-checks-success. Sourceứngdụng không đổi. Review cũ đã chuyểnfailure; cần review/CI mới đúngSHA và actualpipeline<300trướcarm. [Bằng chứng](../evidence/sprint1/20261017-closeout/ci306-failure.json). Acceptedsoftware617/CI221/auto365.240 và cácFAILcũ vẫn giữ nguồn gốc.
+
 ## Nghiệm thu hiện hành — 17/10/2026
 
 Bản phần mềm được nghiệm thu: `61749f82ccaebc8fa102456b145881f43bd68fcf`, reviewed head `11831c30ce3a3be00e63ffacf5ecc1f525aec00b`. Phạm vi theo DEC15: S01–S04/K01, T01–T10 và NFR/DoD áp dụng; DoD review theo DEC18 đã được người dùng chấp thuận.
