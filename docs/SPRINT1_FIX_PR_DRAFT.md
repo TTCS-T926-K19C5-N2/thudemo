@@ -1,16 +1,7 @@
-# Sprint1 — chốt bằng chứng nghiệm thu sau PR98
+# Sprint1 — công bố kết quả sau tích hợp và đồng bộ nguồn
 
-PR98 đã review/merge đúng policy. Source phần mềm được nghiệm thu: `eb53a0657b2f1120a057e688084a69f1f518f047`. Auto merge→healthy321,303s<600s, CI226s và functional/current HTTPS evidence đạt. Diff closeout chỉ tài liệu/evidence; không đổi source ứng dụng, schema, lockfile, CI, protection hoặc dữ liệu.
+Phần mềm được nghiệm thu4033da4dde1484fc777806421006f9c17e831f8b, PR99 exact-head approval/merge, integratedCI225s, auto320,279s. App/schema/lock/scripts/deploy không đổi so với eb53; gói này chỉ cập nhật tài liệu/evidence sau khi đã có kết quả thật.
 
-## Thành viên cần kiểm
+Actual nguồn:15ô workbookstatus và10taskDone, guarded trước/sau+backup; toàn workbook/hash/styles/formulas/AC/SP/owner giữ. API/desktop/mobile/activatedsession current403PASS; keys/counts preserved; realSMTP/cleanclone/rollback evidence giữ SHA gốc tương thích. K01 sai lệch timebox/mentor được PO nhận DEC17, không hồi tố.
 
-- Đối chiếu auto-deploy.json với PR98/CI38991565168/timeline; giữ hai FAIL lịch sử.
-- Đọc đủ bảng T01–T10/K01/DoD và95mapping hai chiều; artifact nguồn/môi trường không được gắn nhãn chạy lại.
-- K01 có DEC17 nhận sai lệch timebox/mentor, không sửa lịch sử.
-- Firewall mạng mới PASS exact owned rule readback; chưa có second-device proof mới.
-- Task/workbook vẫn In progress. Candidate chỉ15statuscells, sourcehash guard+backup, whole-workbook preservation PASS; chỉ áp sau closure conditions.
-- F15 payment logger là lỗi nền ngoài phạm vi, không che bằng secret literal sweep.
-
-## Kiểm chứng
-
-Revalidated original artifact digests; current HTTPS API8groups, desktop/mobile trusted TLS owner/403 smoke, scoped current container log/publishable secret sweep. Full tests/coverage/clone/SMTP/rollback gốc áp dụng theo explicit source compatibility. Final documentation PR cần required checks và approval thành viên khác, không self-approve/bypass.
+Reviewer kiểm full95source mappings, tableT01–T10/K01/DoD, integration-and-auto-deploy.json, source-status-sync.json, screenshots và source-compatibility.json. Gate công bố gói này cần memberapproval/requiredchecks/merge develop, integratedCI/runtime compatible. Không sửa code hoặc dùng approvalPR99 thay approval tài liệu này. Không thêmAC mới hoặc yêu cầu chạy lại toàn bộ tests/SMTP/physicaldevice khi nguồn tương thích. Sau gate công bố chỉ đọc lại/finalreceipt, không thêm commit sau approval chỉ để thay một SHA tài liệu vào bằng chứng chức năng cũ.

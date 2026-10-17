@@ -1,0 +1,210 @@
+{
+  "time": "2026-10-17T02:28:15.563Z",
+  "source": "4033da4dde1484fc777806421006f9c17e831f8b",
+  "result": "PASS",
+  "applied": true,
+  "reviewedPlan": "../20261017-accepted/source-status-sync.json",
+  "reviewedPlanPR": 99,
+  "backlog": {
+    "beforeSha256": "4770d7b31eb34d3b055396cca6c457199b4897bc5d404317dc7f584227c6b704",
+    "afterSha256": "3def9ef4b845f3a4374e604cab3f2d646d4826a1abf5e0b595c8419cbe073cac",
+    "cells": 15,
+    "path": "../outputs/01a0d25b-70b6-7cc2-92ac-d4de7dbfadaa/Bán vé sự kiện có sơ đồ ghế (1) đã đồng bộ refinement.xlsx",
+    "changes": [
+      {
+        "sheet": "Backlog",
+        "row": 2,
+        "id": "S-01",
+        "column": 9,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Backlog",
+        "row": 5,
+        "id": "S-02",
+        "column": 9,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Backlog",
+        "row": 6,
+        "id": "S-03",
+        "column": 9,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Backlog",
+        "row": 8,
+        "id": "S-04",
+        "column": 9,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Backlog",
+        "row": 14,
+        "id": "K-01",
+        "column": 9,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Tasks",
+        "row": 2,
+        "id": "T-01",
+        "column": 5,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Tasks",
+        "row": 3,
+        "id": "T-02",
+        "column": 5,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Tasks",
+        "row": 4,
+        "id": "T-03",
+        "column": 5,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Tasks",
+        "row": 5,
+        "id": "T-04",
+        "column": 5,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Tasks",
+        "row": 6,
+        "id": "T-05",
+        "column": 5,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Tasks",
+        "row": 7,
+        "id": "T-06",
+        "column": 5,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Tasks",
+        "row": 8,
+        "id": "T-07",
+        "column": 5,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Tasks",
+        "row": 9,
+        "id": "T-08",
+        "column": 5,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Tasks",
+        "row": 10,
+        "id": "T-09",
+        "column": 5,
+        "before": "In progress",
+        "after": "Done"
+      },
+      {
+        "sheet": "Tasks",
+        "row": 11,
+        "id": "T-10",
+        "column": 5,
+        "before": "In progress",
+        "after": "Done"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "path": "../tasks/T-01.md",
+      "beforeSha256": "4b3465892c997bf44557a57525fa60596d0d73da2fbb7f28dbc34d204e4bdcef",
+      "afterSha256": "dc3094b65a430642c48e7ac20ec8b66e1ca96bcbbd3fdd969d08d9b8bcda4628",
+      "status": "Done"
+    },
+    {
+      "path": "../tasks/T-02.md",
+      "beforeSha256": "6fc49cae5725387565970a4fe08c387a01e37cd2a9641409b8e4654272a3bb1c",
+      "afterSha256": "99cc8b59d0ec11fc7218fcabbe69f29a05aabda08bb6351ee2d1d74782205393",
+      "status": "Done"
+    },
+    {
+      "path": "../tasks/T-03.md",
+      "beforeSha256": "ffe8f32031e8631a09ee3107c47866decb50bfb70cfe66223a28658f19b86ea6",
+      "afterSha256": "0171cd8e2a1b1e1b5d5f963a15651f47444560f2ad710edce06307608229d9bb",
+      "status": "Done"
+    },
+    {
+      "path": "../tasks/T-04.md",
+      "beforeSha256": "53387f473d1fb7e14264e678ff1eadadbc7b734d632adb47e916d7180209c99a",
+      "afterSha256": "d08e407ec6937d0d19e8f5b473a6012af572872bd435e3457402b9f8f5c1a269",
+      "status": "Done"
+    },
+    {
+      "path": "../tasks/T-05.md",
+      "beforeSha256": "30bc6d363974f4d1f8ba2b69d4d6c69e40eb47d572df9e0e3de0016e22ed883b",
+      "afterSha256": "1629cfeeab9114bcf05c7045dbc1ae495ee68f4ce719d5a62116994c1af549a2",
+      "status": "Done"
+    },
+    {
+      "path": "../tasks/T-06.md",
+      "beforeSha256": "9193d1c7b576d26afb20f76adffcdc5907f55159984851280c554857f7670509",
+      "afterSha256": "b928a3ed82df59d8661b9abdbec057ce0498f6819115b5f0cb35bf21bb420ef0",
+      "status": "Done"
+    },
+    {
+      "path": "../tasks/T-07.md",
+      "beforeSha256": "1b217a4540d873b2e06e65a3251325e2ade729cd2782f7341d891f4066cc4a11",
+      "afterSha256": "ec1e6df51b2bbb6989ce01b3e937d74b4d38000fc4a60b7dcb470fbdc41bbfb4",
+      "status": "Done"
+    },
+    {
+      "path": "../tasks/T-08.md",
+      "beforeSha256": "0f1de0c0dae5f9292fd1b70319d2d43fd3dc0219edcad0c39a213614daf423e9",
+      "afterSha256": "34a16f09a4be5f7b166882cb4981459805c17a46e78a5a63828415a7d80ff91c",
+      "status": "Done"
+    },
+    {
+      "path": "../tasks/T-09.md",
+      "beforeSha256": "ddb004b0b6cde4cd0df921b35fb9bbd5914d459b510b86da154abefae3b9b3a1",
+      "afterSha256": "0c7c21edfaaf1d3a42cdf86b304011d507cdf7c8b859f7edfc848f71524e2802",
+      "status": "Done"
+    },
+    {
+      "path": "../tasks/T-10.md",
+      "beforeSha256": "6afe83c1ff86df0d6aa689f4916a5e15bc2e6ec485ed719178117388b7bbd804",
+      "afterSha256": "1ef17a4745bbd85da07863a999494f60c468a7e9021d955565a1eed1f496ea7e",
+      "status": "Done"
+    }
+  ],
+  "preservation": {
+    "candidateVerified": true,
+    "unrelatedValueChanges": 0,
+    "styleOrFeatureDifferences": [],
+    "actualOutputEqualsPrevalidatedCandidate": true,
+    "originalBackupExists": true
+  },
+  "limitations": [
+    "Only15 workbook statuses; original AC/SP/owner/Sprint/formulas/styles retained",
+    "Historical task checkpoints remain historical; latest Status and acceptance checkpoint are Done",
+    "K01 timebox/mentor historical NOT RUN remains accepted deviation DEC17"
+  ]
+}

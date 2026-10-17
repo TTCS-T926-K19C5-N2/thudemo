@@ -1,6 +1,55 @@
 # Sprint 1 — ma trận nghiệm thu đã đối chiếu nguồn (16/10/2026)
 
-## Trạng thái hiện hành — 17/10/2026, sau PR #98
+## Bản nghiệm thu và điều kiện công bố cuối — 17/10/2026
+
+**Toàn bộ assertion Sprint1 S01–S04/K01, T01–T10 và DoD áp dụng đã được kiểm theo nguồn; bản phần mềm được nghiệm thu là `4033da4dde1484fc777806421006f9c17e831f8b`.** Kết luận Sprint1 Done có hiệu lực khi gói công bố cuối này được thành viên khác approval, đủ required CI và merge develop, rồi xác minh CI/runtime tương thích. Trước khi đủ điều kiện công bố không tuyên bố Sprint Done. Gói này chỉ tài liệu/evidence; không thay ứng dụng, schema, lockfile, CI, protection, seed hoặc dữ liệu.
+
+[PR99](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/99) được thuytrang158 APPROVED đúng head `e7db1fa0317ef6cc6e18864102fc17a5c20def8a`, merge02:21:39Z→`4033da4d…`; approved tree bằng merged tree. [CI tích hợp38994612232](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38994612232) SUCCESS **225giây**. Watcher tự chờ CI, deploy02:25:33Z, backup3.903.959bytes02:26:28.986Z trước promotion02:26:59.279Z. **Merge→healthy320,279giây<600 PASS**; candidate84,15giây. Lần PR98 đạt321,303giây vẫn giữ; hai FAIL618,856/1754,310giây không bị xóa hoặc tính lại.
+
+**Demo laptop READY:** https://10.228.54.197:3470. TLS xác minh hostname/certificate thật; CurrentUser trust đúng thumbprint `C47633C185CFE6D564B05C5C8BAACFAB72C770B0`. Owned firewall enabled Inbound Allow TCP3470, LocalAddress10.228.54.197, RemoteAddressLocalSubnet đã đọc lại PASS. PG/Redis chỉ loopback. Chưa chạy lại browser từ thiết bị thứ hai trên mạng mới; bằng chứng twopeer giữ môi trường gốc và classifier/proxy không đổi. Không yêu cầu VPS/Render/Tunnel.
+
+| Task / Story | Hành vi và ca nghiệm thu | Kết quả / evidence có giới hạn |
+|---|---|---|
+| T01 / S01 | Frozen toolchain/lock, env, PG/Redis, Prisma migrate/client, web/API, dependency outage503, clone sạch/một lệnh/stop-start | PASS: clean-native, migration cycle tiến-bù-tái áp dụng, dependency-health; clone02a30migrations/lifecycle; compatibility02a→eb53→403; current HTTPS200 |
+| T02 / S01 | CI build/lint/typecheck/test push+PR, parallel lint/test, whole workflow<300s, lint đỏ chặn merge, checks đúng tên/trigger | PASS: integrated403225s; PR99CI254s; negative lint gate PR95 provenance; protection5checks/strict/last-push1approval/admin/conversation giữ nguyên |
+| T03 / S01 | Docker thật/staging riêng, health/smoke trước switch, lỗi giữ bản cũ, migration/backup/rollback, auto<600s | PASS: actual403320,279s; backup3903959bytes; old/failure/rollback compatible proof; source/image/keys/no-countdecrease checked |
+| T04 / S02 | Users/roles/relations,5roles/emailuniqueDB, Argon2id, safe repeat seed/additive migrations | PASS: schema/hash/constraints/seed/migration proof gốc tương thích;30migrations retained |
+| T05 / S02 | Login/nav, session securecookie/expiry/logout401;5sai/6th15phút account+IP, remainingtime, APIrestart/naturalTTL/twopeer, enumeration | PASS: current API/session; historical900s/restart/twopeer source compatible. Không lặp probe khóa IP hoặc rútTTL |
+| T06 / S02 | Server defaultdeny/public explicit,401/403, role/multirole/nav/ownership/deniallog | PASS: current buyer/B direct API403, ownerB mobileURL403, guard/inventory/log proof gốc; không admin vượtphạmvi |
+| T07 / S03 | Registration/emailnormalize/genericduplicate/validation/uncheckedconsent/versioned atomic consent | PASS: actual product02a unchanged; unit/integration/fullbrowser gốc; current activated BUYER/consent; allowlist trống theo DEC16 |
+| T08 / S03 | Randomhashed24h/oneuse/concurrency/resend5h/retry/privacy/redirect, unverifieddenied; real email→activation→login | PASS: realSMTP+user nhận/kích hoạt02a, code unchanged; current403session/logout/replay401. Không nhận đã gửi mail mới; Mailpit chỉ catcher |
+| T09 / S04 | Event/showtime/owner FK, historyrestrict, UTC/tz, append-only migration | PASS: migrationcycle/paidFK gốc + currentUTC/FK; không reset hoặc cascade lịch sử |
+| T10 / S04 | A create/edit/draft/reload, buyerhidden/Bdenied, future/past, duplicatewarn vẫn lưu, double-submit, field recovery/VNtime/expiredsession | PASS:15fullbrowser038 compatible; current403 API+trustedTLS desktop/mobile; expected403 riêng, no unexpected runtime/console |
+| K01 | PGvsRedis200same-seat research, measured conditions/latency/conflicts/errors, TTL/restart/persistence/tradeoffs/decision | PASS đầu ra PO chấp thuận DEC14/17 cho PGauthority laptop dữ liệu giả; historical timebox/mentor NOT RUN là sai lệch được nhận, không hồi tố. Không dùng T31endpoint thay K01 |
+| DoD02 | Review thành viên khác đúng head | PASS PR99 thuytrang158 exacte7; gói công bố này có gate review/CI/merge riêng như điều kiện đầu trang |
+| DoD03–04 | Relevant tests/new branches/coverage không giảm, fullCI | PASS original coverage/API/web proof unchanged product; watcher20ca/helper lifecycle; current integrated CI225s. Không lấy sốtest thay assertion |
+| DoD05/09 | Dependency/secret, logging touchedpaths không lộ credential/PII | PASS bounded formal0bc diff + manualhelper review + current literal/runtime sweep; graph unchanged. F15 paymentlogger là lỗi nền ngoài scope, không nhận toànrepository sạch |
+| DoD06 | Toàn AC trên staging | PASS technical software403 including realauto320,279s/current functionality/TLS/firewall; gói công bố phải hoàn tất điều kiện đầu trang |
+| DoD07–08 | Concurrency/idempotence/cleanup/retry khi bị ảnh hưởng | PASS bounded regression compatible; S30/S31/S43 giữ riêng, T31requiredpolicy không trở thành Sprint1AC |
+| DoD10 | Backlog/tasks/README/matrix/report/PR đúng mức và bảo toàn yêu cầu | PASS actual guarded sync sau PR99:15workbookstatuscells +10taskDone, backups/hash/styles/formulas/AC/SP/owner preserved. Hiệu lực SprintDone vẫn theo gate công bố đầu trang |
+
+Ma trận `evidence/sprint1/20261017-final/acceptance-current.json` giữ đủ95mapping hai chiều (72original+23S03/onboarding), source→implementation→test→assertion→evidence→kết quả;47artifact gốc duy nhất/174tham chiếu có normalizedhash và snapshot tài liệu lịch sử riêng. Không gắn SHA mới vào test/mail/rollback cũ. `source-compatibility.json` chứng minh exact blobs không đổi; current API/browser/registration receipts và actual integration/deploy tách riêng. DEC15 đưa S03 vào Sprint1; DEC09 giữ lịch sử, không kéo S30/S31/T31 vào AC.
+
+Backlog refined tại `../outputs/01a0d25b-70b6-7cc2-92ac-d4de7dbfadaa/Bán vé sự kiện có sơ đồ ghế (1) đã đồng bộ refinement.xlsx` đã áp candidate được kiểm bảo toàn toàn workbook: chỉ15statuscells S01/S02/S03/S04/K01,T01–T10; taskMarkdown10StatusDone theo kế hoạch đã reviewPR99. Hash/đối chiếu ở `source-status-sync.json`; backup và receipt local `.sprint1-staging/acceptance-final.json` bịignore. Không đổi AC/SP/owner/Sprint/capacity;18SP/12SP là sai lệch năng lực đã công khai, không sửa số để nhận đủ sức chứa.
+
+Giữ nguyên signing/mail/TLS privatekey bytes và dữ liệu. Counts là kiểm không giảm, không chứng minh từngrow bấtbiến; order xuất hiện sau PR98promotion được giữ nguyên, không gán tác giả. API tests chỉ thêm fixtures riêng, không xóa lịch sử. K01 graceful restart không chứng minh chống mất điện. Không có tuyên bố production/provider/VPS hoặc all-mail-providers.
+
+### Một lệnh demo clone sạch
+
+Prerequisites đã kiểm: WindowsPowerShell5.1+, Git, Node24.21.0, pnpm10.15.1, DockerDesktopLinux/Compose; C12GiB, ổcheckout5GiB, RAMavailable2GiB cho fullbuild. Clone riêng và checkout revision gói bàn giao; từ root chạy:
+
+`powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1`
+
+Launcher chọn cổng trống (ưu tiên web3000/API3001), tạo config/secret riêng, dependency→frozen install→Prisma/client/30migrations→guardedfake seed→build/start→health/login/logoutsmoke rồi mới READY. Credentials `.sprint1-demo/config.json` ignored; Mailpit URL in cuối là catcher. Actual cleanclone02a tại D:\s1demo\02a8e86-clean-20261016 đã chạy toàn pipeline, browser registration→Mailpit→activate/finalpassword→BUYER403→organizerdraft/edit/showtime, stop/start giữ data/secret và không dừng sentinelforeign; source tương thích403. `-Action Status`, `-Action Stop`, `-Action Restart` dùng cùngentrypoint/profile; không init/reset/clean.
+
+Staging phục hồi profile hiện hữu: `powershell.exe -NoProfile -File .\scripts\sprint1-staging.ps1 -Action Status` để kiểm rồi dùng thao tác đã tài liệu bên dưới; không gọiinit lại. Trước demo giữ nguồn/nắp mở/đúngWi-Fi; `scripts/sprint1-staging-session.ps1 -DurationSeconds 3600` tạo yêu cầu awake cóhạn, không chặn explicitSleep/lidclose/mấtmạng. IP đổi phải backup/rebindorigin/cert dùngkeyhiệnhữu, trustWindows và ownedfirewallAdmin; không tuyên bố tự động các bướcOS.
+
+Credentials staging chỉ `.sprint1-staging/config.json`; SMTP `.sprint1-staging/registration-mail.env`; account email thử `.sprint1-staging/registration-test-account.json`. Không in secret. Kịch bản UI/API đầy đủ và recovery giữ bên dưới: health→A tạo/sửa nháp→future/past/duplicate→BURLdeny→buyer403/drafthidden→logout/expiry→khóa bằng fixturephụ (không chạy lại probe IP trong lượt này)→CI/Docker/K01/bằngchứng staging. Nếu input sai, sửa field rồi submit; không reseed/reset database để phục hồi.
+
+## Checkpoint PR99 trước công bố cuối — lịch sử
+
+
+### Trạng thái tại checkpoint — 17/10/2026, sau PR #98
 
 **Chức năng và gate triển khai của Sprint 1 đã đạt trên source tích hợp `eb53a0657b2f1120a057e688084a69f1f518f047`; chưa gọi Sprint Done khi hồ sơ cuối và trạng thái nguồn còn chờ.** PR [#98](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/98) được thuytrang158 APPROVED đúng head `5b6d5783b34616fdd2b0c74c2614a5469ab8c996`, merge develop lúc 01:36:09Z. CI tích hợp [38991565168](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38991565168) SUCCESS **226 giây**, đủ năm required checks. Không bypass protection.
 
