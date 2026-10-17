@@ -3312,10 +3312,10 @@
     {
       "id": "DOD-row2",
       "originalMapping": "evidence/sprint1/20261016-acceptance-audit/traceability.json",
-      "requirementSource": "Current backlog DoD-DoR!C2",
-      "requirement": "Approved by another member",
+      "requirementSource": "Approved DEC18 + refined workbook DoD-DoR!C2 (approved17/10; configuration/enforcement pending)",
+      "requirement": "After approved DEC18: actual automated technical review on exact base/head/diff and no blocking findings; required automated review status success; not independent human approval",
       "originalSnapshotResult": "BLOCKED",
-      "result": "PASS",
+      "result": "BLOCKED",
       "evidence": [
         "evidence/sprint1/20261016-acceptance-audit/ci-c7bb13c.json"
       ],
@@ -3328,7 +3328,7 @@
         "../20261017-accepted/network-current.json",
         "../20261017-accepted/source-compatibility.json"
       ],
-      "notes": "PR96 member approval exactly0bc then member merge038; integration-ci.json. Follow-up helper still needs its own review.",
+      "notes": "Existing PR99 human approval remains historical. New head containing approved policy needs fresh automated review/CI/status; none is fabricated in this proposal.",
       "verificationGroups": [
         {
           "matrixId": "DOD-02",
@@ -3348,7 +3348,9 @@
       ],
       "matrixIds": ["DOD-02"],
       "kind": "original",
-      "previousOverlayResult": "PASS"
+      "previousOverlayResult": "PASS",
+      "historicalRequirement": "Approved by another member",
+      "historicalResult": "PASS"
     },
     {
       "id": "DOD-row3",
@@ -4784,8 +4786,15 @@
   ],
   "publicationGate": {
     "statusAtPreparation": "BLOCKED",
-    "condition": "This final documentation publication must have independent member approval and required CI, merge into develop without bypass, then verified integrated CI/runtime source compatibility. Before then no global Sprint Done claim.",
+    "condition": "After explicit DEC18 approval and protection readback: actual automated technical review on exact base/head/diff, required Review / technical-review success plus all original required CI success, no unresolved conversations, scoped develop PR, then merge and integrated CI/automatic staging/AC verification.",
     "acceptedSoftwareSource": "4033da4dde1484fc777806421006f9c17e831f8b",
-    "afterVerifiedPublication": "PASS; Sprint1 Done for approved R0 laptop fake-data scope"
+    "afterVerifiedPublication": "PASS; Sprint1 Done for approved R0 laptop fake-data scope",
+    "noRetroactiveHumanApproval": true
+  },
+  "policyProposal": {
+    "id": "DEC-18",
+    "status": "APPROVED / APPLYING; enforcement and publication not yet accepted",
+    "effectiveAt": null,
+    "approvedAtRecorded": "2026-10-17T04:00:59.735Z"
   }
 }

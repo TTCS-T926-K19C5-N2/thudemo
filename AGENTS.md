@@ -53,3 +53,15 @@ Nếu vẫn cần tự viết, giải thích ngắn gọn vì sao component hi�
 - Chạy build, lint, typecheck và test liên quan khi task có thay đổi triển khai. UI phải được kiểm tra trực tiếp bằng browser.
 - Từ `thudemo/`: `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`; sau khi PostgreSQL và Redis local sẵn sàng, `pnpm --filter api run test:e2e` và kiểm tra `http://localhost:3001/health`.
 - Liệt kê file đã đổi và tóm tắt diff. Không commit khi prompt chưa yêu cầu.
+
+
+## Review tự động và tích hợp — DEC-18
+
+- Chỉ áp dụng sau khi DEC-18 được người dùng chấp thuận và cấu hình được đọc lại thành công. Feature/fix → PR → develop; không push trực tiếp, force-push, xóa develop hoặc bypass.
+- Gate thay thế approval thành viên khác là review kỹ thuật tự động thực sự trên exact base/head/diff, không lấy CI/test PASS hoặc JSON tự khai làm review. Artifact phải ghi loại automated technical review, actor thực thi, thời gian, coverage file/AC/risk, findings và bằng chứng sửa/kiểm lại. Không ghi là human/independent approval.
+- Required status Review / technical-review chỉ success khi report đầy đủ, đúng SHA, không còn finding bắt buộc hoặc coverage/risk chưa kiểm; P0–P2 bắt buộc xử lý; P3 chỉ được để lại nếu không vi phạm AC/NFR/bảo mật/toàn vẹn dữ liệu và có lý do. Code-sensitive diff dùng security review phù hợp; scanner sạch không thay review correctness/concurrency/migration.
+- Giữ nguyên năm required CI checks/app đã chốt, strict branch cập nhật, conversation resolution, enforce admins, cấm force-push/xóa develop. Mỗi push mới mất hiệu lực receipt cũ; base đổi phải revalidate/review theo diff mới.
+- Chỉ arm auto-merge khi exact-head review status và mọi required CI đều success, PR đúng phạm vi/base, không conversation chưa giải quyết, không draft/conflict, môi trường/backup sẵn sàng; dùng exact-head guard. Không arm sớm để chờ CI.
+- Sau khi người dùng duyệt chính sách, được tự thực hiện review→fix→verify→PR/auto-merge→postmerge CI/staging cho các task đã giao, không hỏi lại từng PR. Không tự mở rộng sang task chưa giao, main/release/production, dịch vụ trả phí hoặc quyết định nghiệp vụ mới.
+- Merge/CI trước merge không phải nghiệm thu staging. Sau merge phải xác minh integrated SHA/CI, watcher tự deploy, actual timing/health/smoke/source/data/keys/rollback và AC liên quan trước Done.
+- Giữ tác giả/owner/commit/review lịch sử. Không dùng tài khoản người khác để tạo approval. Bằng chứng đóng góp ghi rõ account thực thi và phần hỗ trợ tự động; không suy commit hoặc automated review thành người khác trực tiếp review hay năng lực cá nhân.
