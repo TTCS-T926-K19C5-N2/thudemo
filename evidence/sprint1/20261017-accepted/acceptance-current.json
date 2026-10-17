@@ -4666,7 +4666,7 @@
     "95 requirement mappings, not95 tests; historical evidence retains exact original source/environment.",
     "K01 technical output accepted under DEC17; historical timebox/mentor remain NOT RUN and disclosed.",
     "Final documentation PR and guarded task/backlog Done application pending.",
-    "Current-LAN firewall is BLOCKED pending Windows Administrator owned-rule update; no current second-device claim.",
+    "Current-LAN TLS and owned firewall readback PASS; no new second-device claim.",
     "S30/S31/S43 are regression; T31 remains required policy check but is not Sprint1 AC."
   ],
   "evidenceDigestPolicy": "SHA256 of UTF8 text with BOM removed and CRLF normalized to LF; source revisions remain explicit. Avoid platform newline-conversion false mismatches.",

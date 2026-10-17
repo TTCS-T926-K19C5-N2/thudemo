@@ -1,5 +1,5 @@
 {
-  "time": "2026-10-17T02:11:42.6109126Z",
+  "time": "2026-10-17T02:16:01.0023259Z",
   "source": "eb53a0657b2f1120a057e688084a69f1f518f047",
   "origin": "https://10.228.54.197:3470",
   "https": {
@@ -13,13 +13,13 @@
   "firewall": {
     "remoteAddress": ["LocalSubnet"],
     "action": "Allow",
-    "reason": "Windows denied update with Access is denied5; awaiting administrator owned-rule address update and readback",
+    "reason": "Read back exact owned rule after Administrator update: Inbound Allow enabled TCP3470 current LAN address only, RemoteAddress LocalSubnet retained; no policy mutation by this verification",
     "port": "3470",
     "enabled": "True",
     "name": "Sprint1LaptopStaging-20261015-3470",
-    "result": "BLOCKED",
+    "result": "PASS",
     "protocol": "TCP",
-    "localAddress": ["10.88.164.155"]
+    "localAddress": ["10.228.54.197"]
   },
   "data": {
     "retainedKeyBytes": true,
@@ -46,8 +46,8 @@
     "minimumSource": "eb53a0657b2f1120a057e688084a69f1f518f047"
   },
   "limitations": [
-    "Laptop HTTPS verified, not second device proof",
-    "Existing rule still uses old IP; LAN readiness not yet accepted",
+    "Laptop HTTPS and owned firewall configuration verified, not a new second-device browser test",
+    "Administrator update verified by actual rule readback; earlier Access is denied5 remains historical",
     "Same private key reused; new leaf certificate is trusted explicitly by user",
     "Original auto-deploy321.303s was measured on10.88.164.155; not re-labelled as new-network run"
   ]

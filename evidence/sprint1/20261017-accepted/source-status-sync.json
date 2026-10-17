@@ -132,7 +132,7 @@
   },
   "conditions": [
     "Final closeout PR approved by another member and integrated with checks",
-    "Current owned firewall rule updated/read back",
+    "Current owned firewall readback PASS recorded in network-current.json",
     "Source hash unchanged; backup before replacement; verify exact15 cells only"
   ],
   "taskMarkdown": "T01-T10 currently In progress; append exact evidence and update only Status after closure conditions. Preserve owner/SP/AC/dependencies and historical checkpoints.",

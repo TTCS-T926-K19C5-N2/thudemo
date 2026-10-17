@@ -23,7 +23,7 @@
       "result": "BLOCKED",
       "assertion": "No mandatory unresolved gate",
       "evidence": ["network-current.json", "source-status-sync.json"],
-      "remaining": "Current-LAN firewall and final documentation/status closure"
+      "remaining": "Final documentation/status closure"
     },
     {
       "id": 3,
@@ -49,7 +49,7 @@
     },
     {
       "id": 6,
-      "result": "BLOCKED",
+      "result": "PASS",
       "assertion": "Integrated staging functionality and current LAN readiness",
       "evidence": [
         "api-current-network/https-api.json",
@@ -57,7 +57,7 @@
         "registration-session.json",
         "network-current.json"
       ],
-      "remaining": "Laptop functional/TLS PASS; owned firewall old address must be updated/read back"
+      "limitation": "Current-laptop trusted HTTPS/API/browser and exact owned firewall readback; historical twopeer retains original environment, no new second-device test"
     },
     {
       "id": 7,
@@ -85,7 +85,7 @@
       "result": "BLOCKED",
       "assertion": "Backlog/task/matrix/README/report/GitHub synchronized",
       "evidence": ["source-status-sync.json"],
-      "remaining": "Prepared candidate only; current source tasks/workbook intentionally In progress until final review/integration and firewall"
+      "remaining": "Prepared candidate only; current source tasks/workbook intentionally In progress until final review/integration and guarded status application"
     }
   ],
   "processDeviation": "DEC17 accepts K01 current technical output; historical timebox/mentor NOT RUN remains disclosed",

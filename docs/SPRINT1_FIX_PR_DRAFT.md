@@ -7,7 +7,7 @@ PR98 đã review/merge đúng policy. Source phần mềm được nghiệm thu:
 - Đối chiếu auto-deploy.json với PR98/CI38991565168/timeline; giữ hai FAIL lịch sử.
 - Đọc đủ bảng T01–T10/K01/DoD và95mapping hai chiều; artifact nguồn/môi trường không được gắn nhãn chạy lại.
 - K01 có DEC17 nhận sai lệch timebox/mentor, không sửa lịch sử.
-- Firewall mạng mới còn BLOCKED; chưa có second-device proof mới.
+- Firewall mạng mới PASS exact owned rule readback; chưa có second-device proof mới.
 - Task/workbook vẫn In progress. Candidate chỉ15statuscells, sourcehash guard+backup, whole-workbook preservation PASS; chỉ áp sau closure conditions.
 - F15 payment logger là lỗi nền ngoài phạm vi, không che bằng secret literal sweep.
 
