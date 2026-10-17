@@ -120,6 +120,12 @@ E2E gọi API với PostgreSQL và Redis local thật. `prisma migrate status` p
 
 CI đầy đủ và chặn merge thuộc T-02. Docker image ứng dụng, staging và rollback khi triển khai thuộc T-03.
 
+## S-55 — Backup mã hóa và khôi phục
+
+Workflow `.github/workflows/s55-backup.yml` chạy **00:00 giờ Việt Nam** mỗi ngày: stream PostgreSQL custom dump qua AES-256-GCM, upload vào bucket S3-compatible private ngoài máy chủ ứng dụng và chỉ giữ 14 bản thành công gần nhất. Mỗi run khôi phục chính bản vừa tạo vào PostgreSQL 15 tạm mới/rỗng, chạy migration, boot API và bắt buộc `/health` trả 200. GitHub Artifact chỉ chứa evidence đã khử secret, không chứa backup.
+
+Operator xem toàn bộ secret/variable, lệnh backup/restore, guard chống ghi đè và quy trình xoay khóa tại [docs/S55_RUNBOOK.md](docs/S55_RUNBOOK.md). Không đưa DB URL/khóa mã hóa vào CLI, source, log hoặc `NEXT_PUBLIC_*`; không restore chồng DB có dữ liệu và không dùng `--clean`, drop, reset hay `prisma db push`.
+
 ## Sprint 2 — triển khai và đo local 04/10/2026
 
 Root ứng dụng vẫn `thudemo/`. Hướng dẫn chạy/seed/demo an toàn: [SPRINT2_HANDOFF](docs/SPRINT2_HANDOFF.md). [AC và bằng chứng](docs/SPRINT2_LOCAL_EVIDENCE.md), [K01 spike](docs/K01_EVIDENCE.md).
