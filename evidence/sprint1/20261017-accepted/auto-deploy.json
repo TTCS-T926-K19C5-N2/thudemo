@@ -1,0 +1,183 @@
+{
+  "time": "2026-10-17T01:43:27.124220+00:00",
+  "source": "eb53a0657b2f1120a057e688084a69f1f518f047",
+  "environment": "https://10.88.164.155:3470, owned Windows laptop Docker staging with bounded awake session",
+  "result": "PASS",
+  "pullRequest": {
+    "mergeCommit": {
+      "oid": "eb53a0657b2f1120a057e688084a69f1f518f047"
+    },
+    "mergedAt": "2026-10-17T01:36:09Z",
+    "mergedBy": {
+      "id": "U_kgDODUlszA",
+      "is_bot": false,
+      "login": "sangnguyencoder",
+      "name": ""
+    },
+    "reviews": [
+      {
+        "id": "PRR_kwDOUttVO88AAAABSyBjFw",
+        "author": {
+          "login": "thuytrang158"
+        },
+        "authorAssociation": "MEMBER",
+        "body": "",
+        "submittedAt": "2026-10-17T01:34:50Z",
+        "includesCreatedEdit": false,
+        "reactionGroups": [],
+        "state": "APPROVED",
+        "commit": {
+          "oid": "5b6d5783b34616fdd2b0c74c2614a5469ab8c996"
+        }
+      }
+    ],
+    "state": "MERGED",
+    "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/98"
+  },
+  "automatic": true,
+  "watcherPid": 14424,
+  "mergeAt": "2026-10-17T01:36:09Z",
+  "healthyAt": "2026-10-17T01:41:30.303Z",
+  "mergeToHealthySeconds": 321.303,
+  "thresholdSeconds": 600,
+  "candidateDeploymentSeconds": 87.745,
+  "ci": {
+    "conclusion": "success",
+    "createdAt": "2026-10-17T01:36:11Z",
+    "headSha": "eb53a0657b2f1120a057e688084a69f1f518f047",
+    "jobs": [
+      {
+        "name": "T-02 / test",
+        "conclusion": "success",
+        "startedAt": "2026-10-17T01:36:14Z",
+        "completedAt": "2026-10-17T01:37:43Z"
+      },
+      {
+        "name": "T-02 / lint",
+        "conclusion": "success",
+        "startedAt": "2026-10-17T01:36:15Z",
+        "completedAt": "2026-10-17T01:36:45Z"
+      },
+      {
+        "name": "T-02 / build-and-typecheck",
+        "conclusion": "success",
+        "startedAt": "2026-10-17T01:36:15Z",
+        "completedAt": "2026-10-17T01:37:12Z"
+      },
+      {
+        "name": "K-01 / candidate-research",
+        "conclusion": "success",
+        "startedAt": "2026-10-17T01:37:46Z",
+        "completedAt": "2026-10-17T01:38:33Z"
+      },
+      {
+        "name": "T-31 / hold-concurrency",
+        "conclusion": "success",
+        "startedAt": "2026-10-17T01:37:46Z",
+        "completedAt": "2026-10-17T01:39:57Z"
+      }
+    ],
+    "status": "completed",
+    "updatedAt": "2026-10-17T01:39:57Z",
+    "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38991565168",
+    "wallSeconds": 226.0
+  },
+  "watcherEvents": [
+    {
+      "time": "2026-10-17T01:37:06.622Z",
+      "status": "BLOCKED_CI_not_all_success",
+      "sha": "eb53a0657b2f1120a057e688084a69f1f518f047"
+    },
+    {
+      "time": "2026-10-17T01:40:01.377Z",
+      "status": "deploy_after_CI",
+      "sha": "eb53a0657b2f1120a057e688084a69f1f518f047"
+    },
+    {
+      "time": "2026-10-17T01:41:30.342Z",
+      "status": "deploy_complete",
+      "sha": "eb53a0657b2f1120a057e688084a69f1f518f047"
+    },
+    {
+      "time": "2026-10-17T01:42:32.279Z",
+      "status": "active",
+      "sha": "eb53a0657b2f1120a057e688084a69f1f518f047"
+    }
+  ],
+  "deploymentTimeline": [
+    {
+      "time": "2026-10-17T01:40:02.559Z",
+      "event": "candidate-start",
+      "sha": "eb53a0657b2f1120a057e688084a69f1f518f047",
+      "resources": [
+        {
+          "name": "Windows system/Docker Desktop volume",
+          "freeBytes": 22740357120,
+          "minimumBytes": 12884901888
+        },
+        {
+          "name": "Staging source/backup volume",
+          "freeBytes": 112948486144,
+          "minimumBytes": 5368709120
+        }
+      ]
+    },
+    {
+      "time": "2026-10-17T01:40:43.799Z",
+      "event": "backup-verified",
+      "sha": "eb53a0657b2f1120a057e688084a69f1f518f047",
+      "bytes": 3902898
+    },
+    {
+      "time": "2026-10-17T01:41:30.303Z",
+      "event": "promoted",
+      "sha": "eb53a0657b2f1120a057e688084a69f1f518f047",
+      "oldSha": "038f8baff4c175e88c53b19a553105be15735dec",
+      "elapsedSeconds": 87.745
+    }
+  ],
+  "runtimeSourceLabelsVerified": true,
+  "dataRetention": {
+    "beforeCounts": {
+      "users": 6608,
+      "events": 50,
+      "showtimes": 67,
+      "orders": 0,
+      "tickets": 0,
+      "migrations": 30
+    },
+    "afterCounts": {
+      "users": 6608,
+      "events": 50,
+      "showtimes": 67,
+      "orders": 1,
+      "tickets": 0,
+      "migrations": 30
+    },
+    "noCountDecrease": true,
+    "countEquality": false,
+    "concurrentOrderCreatedAt": "2026-10-17 01:41:58.562+00",
+    "interpretation": "One new order created after promotion. Actor not attributed; deploy/seed/smoke source has no order-creation path. Record retained untouched. Do not claim all counts unchanged or counts prove row-by-row equality."
+  },
+  "allExistingKeyBytesRetained": true,
+  "privateKeyHashes": "Only in ignored private premerge98.json; no credentials published",
+  "historicalFailures": [
+    {
+      "source": "90188e572d41d3f95e1dac13a42256260fd68a22",
+      "seconds": 618.856,
+      "result": "FAIL"
+    },
+    {
+      "source": "038f8baff4c175e88c53b19a553105be15735dec",
+      "seconds": 1754.31,
+      "result": "FAIL",
+      "cause": "Host Modern Standby"
+    }
+  ],
+  "limitations": [
+    "One observed automatic deployment on this laptop, not an uptime SLA or production proof",
+    "Idle wake request does not prevent explicitSleep/lid close/network or power failure",
+    "No manual deployment or subtraction of sleep time used",
+    "Counts are bounded retention observations; verified backup and unchanged migration/seed/deploy controls provide additional evidence"
+  ]
+}

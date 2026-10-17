@@ -1,0 +1,140 @@
+{
+  "source": "eb53a0657b2f1120a057e688084a69f1f518f047",
+  "status": "PREPARED / NOT APPLIED",
+  "backlogSourceSha256": "4770d7b31eb34d3b055396cca6c457199b4897bc5d404317dc7f584227c6b704",
+  "candidateSha256": "3def9ef4b845f3a4374e604cab3f2d646d4826a1abf5e0b595c8419cbe073cac",
+  "changes": [
+    {
+      "sheet": "Backlog",
+      "row": 2,
+      "id": "S-01",
+      "column": 9,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Backlog",
+      "row": 5,
+      "id": "S-02",
+      "column": 9,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Backlog",
+      "row": 6,
+      "id": "S-03",
+      "column": 9,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Backlog",
+      "row": 8,
+      "id": "S-04",
+      "column": 9,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Backlog",
+      "row": 14,
+      "id": "K-01",
+      "column": 9,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Tasks",
+      "row": 2,
+      "id": "T-01",
+      "column": 5,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Tasks",
+      "row": 3,
+      "id": "T-02",
+      "column": 5,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Tasks",
+      "row": 4,
+      "id": "T-03",
+      "column": 5,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Tasks",
+      "row": 5,
+      "id": "T-04",
+      "column": 5,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Tasks",
+      "row": 6,
+      "id": "T-05",
+      "column": 5,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Tasks",
+      "row": 7,
+      "id": "T-06",
+      "column": 5,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Tasks",
+      "row": 8,
+      "id": "T-07",
+      "column": 5,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Tasks",
+      "row": 9,
+      "id": "T-08",
+      "column": 5,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Tasks",
+      "row": 10,
+      "id": "T-09",
+      "column": 5,
+      "before": "In progress",
+      "after": "Done"
+    },
+    {
+      "sheet": "Tasks",
+      "row": 11,
+      "id": "T-10",
+      "column": 5,
+      "before": "In progress",
+      "after": "Done"
+    }
+  ],
+  "wholeWorkbookValidation": {
+    "candidateVerified": true,
+    "unrelatedValueChanges": 0,
+    "styleOrFeatureDifferences": []
+  },
+  "conditions": [
+    "Final closeout PR approved by another member and integrated with checks",
+    "Current owned firewall rule updated/read back",
+    "Source hash unchanged; backup before replacement; verify exact15 cells only"
+  ],
+  "taskMarkdown": "T01-T10 currently In progress; append exact evidence and update only Status after closure conditions. Preserve owner/SP/AC/dependencies and historical checkpoints.",
+  "limitations": "Candidate is private; authoritative workbook has not been overwritten."
+}
