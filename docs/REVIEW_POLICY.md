@@ -25,3 +25,5 @@ Sau merge phải kiểm CI integrated SHA, watcher tự deploy, merge→healthy 
 ## Lịch sử và đóng góp
 
 Giữ approvals thực tế, author/committer/owner và receipts cũ. Không biến self-review thành approval người khác. Thay đổi này bỏ bảo đảm một thành viên khác đã trực tiếp đọc và quyết định; không chứng minh đóng góp cá nhân hoặc năng lực chỉ qua account/status. Minh chứng cá nhân cần phần việc/file/commit/demo/giải thích có nguồn. Chấp thuận quy trình dự án không chứng minh mentor/chương trình đã miễn rubric ngoài dự án.
+
+Kiểm guard cục bộ: `node --test scripts/technical-review.spec.mjs`. CI chạy cùng18ca trong bước Technical review validation guards của requiredjob T-02 / test; không cần đổi rootmanifest chỉ để nối runner công cụ, tránh vô hiệu cache image sản phẩm. Quy tắc review/P0–P2/requiredCI/staging không đổi.
