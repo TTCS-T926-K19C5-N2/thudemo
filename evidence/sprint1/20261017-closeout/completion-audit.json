@@ -1,0 +1,164 @@
+{
+  "at": "2026-10-17T04:48:55.294Z",
+  "scope": "Approved R0 laptop fake-data Sprint1: S01-S04/K01,T01-T10,NFR/DoD",
+  "result": "PASS",
+  "sprintDone": true,
+  "source": "61749f82ccaebc8fa102456b145881f43bd68fcf",
+  "reviewedHead": "11831c30ce3a3be00e63ffacf5ecc1f525aec00b",
+  "base": "03c6aa7796f17683281cc612fb955976cdf4daae",
+  "review": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229717726",
+  "policy": "DEC-18",
+  "policyNotIndependentHumanReview": true,
+  "protectionGraphql": {
+    "pattern": "develop",
+    "requiresApprovingReviews": true,
+    "requiredApprovingReviewCount": 0,
+    "requiresStatusChecks": true,
+    "requiresStrictStatusChecks": true,
+    "isAdminEnforced": true,
+    "requiresConversationResolution": true,
+    "allowsForcePushes": false,
+    "allowsDeletions": false
+  },
+  "requiredChecks": [
+    {
+      "context": "T-02 / build-and-typecheck",
+      "app_id": 15368
+    },
+    {
+      "context": "T-02 / lint",
+      "app_id": 15368
+    },
+    {
+      "context": "T-02 / test",
+      "app_id": 15368
+    },
+    {
+      "context": "K-01 / candidate-research",
+      "app_id": 15368
+    },
+    {
+      "context": "T-31 / hold-concurrency",
+      "app_id": 15368
+    },
+    {
+      "context": "Review / technical-review",
+      "app_id": null
+    }
+  ],
+  "mainProtectionUnchanged": true,
+  "repoAutoMergeEnabled": true,
+  "onlyArmedPRs": [100, 104],
+  "probe103ClosedUnmerged": true,
+  "ci": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39003426268",
+  "ciSeconds": 221,
+  "automaticDeploy": true,
+  "mergeToHealthySeconds": 365.24,
+  "thresholdSeconds": 600,
+  "stagingUrl": "https://10.228.54.197:3470",
+  "backup": {
+    "time": "2026-10-17T04:45:31.796Z",
+    "event": "backup-verified",
+    "sha": "61749f82ccaebc8fa102456b145881f43bd68fcf",
+    "bytes": 3904234
+  },
+  "data": {
+    "before": [6608, 54, 75, 1, 0, 30],
+    "after": [6608, 55, 77, 1, 0, 30],
+    "noCountDecrease": true,
+    "keysRetained": true,
+    "limitation": "Aggregate counts not row-by-row equality; no reset/delete"
+  },
+  "runtime": {
+    "apiGroups": 8,
+    "browserCases": 2,
+    "session": "PASS",
+    "literalSecretSweep": "PASS bounded",
+    "source": "61749f82ccaebc8fa102456b145881f43bd68fcf"
+  },
+  "coverage": {
+    "originalMappings": 95,
+    "originalArtifactFiles": 47,
+    "resolution": "94compatible accepted rows retained; DOD-row2 resolved by actual118review and policyenforcement; allcurrentpostmergegates verified"
+  },
+  "goalConditions": [
+    {
+      "id": 1,
+      "result": "PASS"
+    },
+    {
+      "id": 2,
+      "result": "PASS"
+    },
+    {
+      "id": 3,
+      "result": "PASS"
+    },
+    {
+      "id": 4,
+      "result": "PASS"
+    },
+    {
+      "id": 5,
+      "result": "PASS"
+    },
+    {
+      "id": 6,
+      "result": "PASS"
+    },
+    {
+      "id": 7,
+      "result": "PASS"
+    },
+    {
+      "id": 8,
+      "result": "PASS"
+    },
+    {
+      "id": 9,
+      "result": "PASS"
+    }
+  ],
+  "backlog": {
+    "result": "PASS",
+    "workbookSha256": "957492ff6cb1b934b4b31b1e1cf73cb0a0438cb297dee752f1f0498816103c73",
+    "stories": {
+      "S-01": "Done",
+      "S-02": "Done",
+      "S-03": "Done",
+      "S-04": "Done",
+      "K-01": "Done"
+    },
+    "tasks": {
+      "T-01": "Done",
+      "T-02": "Done",
+      "T-03": "Done",
+      "T-04": "Done",
+      "T-05": "Done",
+      "T-06": "Done",
+      "T-07": "Done",
+      "T-08": "Done",
+      "T-09": "Done",
+      "T-10": "Done"
+    },
+    "dod": "DEC-18 automated exact-SHA review; no independent-human claim"
+  },
+  "clone": {
+    "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+    "latestObservedStatus": "READY via actual Status command17/10",
+    "credentialsFileBytesUnchanged": true,
+    "currentCompatibility": "Exact apps/runtime/launcher/lock; rootpackage restored403; only separateCIguard placement, reviewedtools/docs differ"
+  },
+  "historicalTimingFailuresPreserved": [618.856, 1754.31, 633.743],
+  "limits": [
+    "K01timebox/mentor historicallyNOTRUN; POaccepteddeviationDEC17, no retrospectiveclaims",
+    "Operationalstatuspublisher/app_id=-1 not independent/tamper-proof; exact-SHAreview still required",
+    "No newphysicalseconddevice/internetmail proof; priororiginalsource receipts remainbounded",
+    "F15paymentlogger and optionalS43baseline finding outsideSprint1, no all-repositorycleanclaim",
+    "Wakehelper startup tool-policyblocked; no alternative retry or sleeptime subtraction"
+  ],
+  "uncommittedCodeChanges": "",
+  "publication": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229852854",
+  "sourceSync": "source-status-final.json",
+  "artifactManifest": "README/matrix/report currentsection + these actual617receipts; publication of finaldocs PR still has exactreview/CI/runtime compatibility gate. No furthercommit solely toretagSHA required."
+}

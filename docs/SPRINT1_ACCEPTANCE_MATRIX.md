@@ -1,5 +1,45 @@
 # Sprint 1 — ma trận nghiệm thu đã đối chiếu nguồn (16/10/2026)
 
+## Sửa thời gian pipeline công bố — T02-CI-NFR-01
+
+Run PR105/head6d53907 hoàn tất các job thành công nhưng tổng306giây, FAILngưỡng300; giữ nguyên72giây chờrunner, không trừ/loại mẫu. Runpush cùnghead254giây được ghi riêng. Hai benchmarkjob tự checkout/install/generate/setupDB/cache (hold tự buildAPI), không lấy artifactunitjob; bỏ đúnghai cạnh needs:test để chạy song song. Nguyên5requiredCI+review, mọi bước/18guards/tải/ngưỡng/assertion/permission/trigger giữ nguyên. Unit/build/lint đỏ vẫn chặn merge và watcher deploy theo all-checks-success. Sourceứngdụng không đổi. Review cũ đã chuyểnfailure; cần review/CI mới đúngSHA và actualpipeline<300trướcarm. [Bằng chứng](../evidence/sprint1/20261017-closeout/ci306-failure.json). Acceptedsoftware617/CI221/auto365.240 và cácFAILcũ vẫn giữ nguồn gốc.
+
+## Nghiệm thu hiện hành — 17/10/2026
+
+Bản phần mềm được nghiệm thu: `61749f82ccaebc8fa102456b145881f43bd68fcf`, reviewed head `11831c30ce3a3be00e63ffacf5ecc1f525aec00b`. Phạm vi theo DEC15: S01–S04/K01, T01–T10 và NFR/DoD áp dụng; DoD review theo DEC18 đã được người dùng chấp thuận.
+
+[Receipt đã công bố và đọc lại](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229852854), [CI tích hợp](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39003426268), [review đúng SHA](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229717726). Merge 04:40:07Z → healthy 04:46:12.240Z: **365,240 giây <600**; CI **221 giây <300**. Backup **3.904.234 byte** được xác minh trước promotion; ba container đúng source; bốn file khóa giữ nguyên hash, số lượng bản ghi không giảm. Aggregate count không thay chứng minh từng dòng dữ liệu.
+
+Staging đang dùng: **https://10.228.54.197:3470**. Trusted TLS, owned firewall TCP3470/LocalSubnet, tám nhóm API, desktop 1440/mobile 390, activated-account session/logout/replay 401 và bounded secret/log sweep đã kiểm trên 617. Giao diện V1 được giữ. Clone 02a đã chạy toàn bộ một lệnh và lifecycle; lần đọc Status gần nhất vẫn READY. Bằng chứng email thật, hai peer và rollback giữ đúng source/môi trường gốc; không nhận đó là lần chạy mới.
+
+Ma trận hiện tại có đủ **95 mapping hai chiều**. Nguồn phạm vi DEC15 và yêu cầu gốc được giữ; S30/S31/S43 là regression riêng, T31 là required policy check, không chuyển thành AC Sprint1. Mỗi PASS có assertion/evidence và source applicability; DOD02 giữ cả lịch sử trước DEC18 và kết quả hiện tại.
+
+| Task / Story | Kết quả và bằng chứng áp dụng |
+|---|---|
+| T01 / S01 | PASS: frozen install, clone sạch, PostgreSQL/Redis, 30 migration, Prisma client, health 503 khi dependency lỗi; một lệnh và lifecycle đã kiểm. |
+| T02 / S01 | PASS: build/lint/typecheck/unit/integration; CI tích hợp 221 giây; sáu gate đúng SHA. Lint đỏ và review thiếu/lỗi/SHA cũ bị chặn. Nguyên 18 guard test chạy trong required job test. |
+| T03 / S01 | PASS trên 617: tự triển khai 365,240 giây <600; backup 3.904.234 byte trước promotion; giữ bản cũ khi lỗi và rollback có proof tương thích. Lần 03 mất 633,743 giây vẫn là FAIL. |
+| T04 / S02 | PASS: năm role, quan hệ, email unique tại DB, Argon2id, seed lặp an toàn và migration; implementation không đổi so với proof gốc. |
+| T05 / S02 | PASS: login, cookie, expiry/logout và replay 401 trên 617. Giữ proof gốc về 5 lần sai/lần 6 khóa 900 giây, account/IP, API restart, TTL tự nhiên và hai peer; không chạy lại probe khóa IP. |
+| T06 / S02 | PASS: server default-deny, public route có khai báo, 401/403, role/ownership, đa vai trò, UI và denial log; buyer/B bị từ chối qua API/UI hiện tại. |
+| T07 / S03 | PASS: đăng ký, chuẩn hóa email, thông báo trùng chung, validation và consent có phiên bản; giữ proof integration/browser gốc trên source tương thích. |
+| T08 / S03 | PASS: token hash 24 giờ dùng một lần, cạnh tranh, resend 5/giờ, phục hồi gửi lỗi, privacy/redirect và chặn tài khoản chưa kích hoạt. Giữ receipt SMTP/hộp thư thật ở 02a; session tài khoản đã kích hoạt được kiểm lại trên 617. |
+| T09 / S04 | PASS: ownership/FK, giữ lịch sử, UTC và chính sách migration. Kiểm FK/UTC hiện tại; 30 migration được giữ. |
+| T10 / S04 | PASS: A tạo/sửa nháp/reload, buyer không thấy nháp, B/buyer 403; suất tương lai, chặn quá khứ, trùng giờ cảnh báo nhưng lưu, submit/validation/giờ Việt Nam/expiry. Giữ 15 ca browser đầy đủ trên source tương thích; bổ sung desktop/mobile trên 617. |
+| K01 | PASS đầu ra: số đo PG/Redis với 200 request cùng một ghế, expiry/restart/persistence và trade-off. DEC14/17 duyệt PG cho laptop dữ liệu giả. Timebox một ngày/mentor trong quá khứ là NOT RUN; PO đã nhận sai lệch, không xác nhận hồi tố. |
+| DoD | PASS theo DEC18: review thật đúng head 118, sáu gate trước merge, CI 221 giây, staging 365,240 giây, coverage/dependency/logging/source/docs có proof. Đây không phải review độc lập của người khác. |
+
+[Ma trận 95 mapping](../evidence/sprint1/20261017-final/acceptance-current.json), [completion audit](../evidence/sprint1/20261017-closeout/completion-audit.json), [enforcement](../evidence/sprint1/20261017-closeout/review-enforcement.json), [source sync](../evidence/sprint1/20261017-closeout/source-status-final.json), [source compatibility](../evidence/sprint1/20261017-closeout/source-compatibility.json). Mỗi yêu cầu giữ implementation, assertion, test, nguồn và evidence; không dùng số test thay coverage. 94 row giữ proof nguyên source, DOD02 được giải quyết bằng review/status/enforcement thật. Backlog năm story/mười task Done và hash workbook C2 đã đọc lại; checkpoint task được append có backup, giữ AC/SP/owner/Sprint.
+
+DEC18 đã áp dụng: approvals=0, last-push=false; giữ năm required CI bind Actions15368, thêm Review / technical-review với app_id=-1; giữ PR bắt buộc, strict/up-to-date, conversation, admin, cấm force-push/xóa develop. Main không đổi. Đã bật capability auto-merge, chỉ arm PR100/104 trong phạm vi sau đủ gate. Publisher vận hành không độc lập hoặc chống giả mạo bởi người có quyền status; commit mới cần review/CI mới.
+
+Các lần **618,856 / 1754,310 / 633,743 giây FAIL** được giữ. D18-CACHE-01 đã sửa bằng cách khôi phục production manifest 403 và chạy nguyên 18 guard test ở bước riêng cùng required job; không bỏ test/check/assertion/ngưỡng. K01 timebox/mentor lịch sử NOT RUN là sai lệch PO đã nhận theo DEC17. F15 payment logger và lỗi nền optional S43 được ghi riêng ngoài phạm vi sửa Sprint1; không nhận toàn repository sạch.
+
+PR hồ sơ cuối công bố kết quả đã xảy ra trên 617; sau merge kiểm CI và runtime tương thích. Không tạo commit tiếp chỉ để đổi SHA của tài liệu/test cũ.
+
+## Các checkpoint trước — lịch sử có source và môi trường riêng
+
+
 ## Phát hiện bổ sung — D18-CACHE-01,17/10/2026
 
 Lần tích hợp PR100/source03c6aa77 đã vượt600giây trước khi staginghealthy: gate thời gian FAIL, không bỏ mẫu. Rootpackage.json chỉ thêm testcommand nhưng làm mất cache Docker dependency/API/web. Bản sửa tối thiểu khôi phục đúng manifest403 và chạy nguyên18guardtests bằng bước riêng trong cùng required CI testjob; không bỏ test/đổi ngưỡng/check/trigger hoặc đổi app/schema/lock. [Bằng chứng](../evidence/sprint1/20261017-review-cache-fix/cold-cache-failure.json). Chưa kết luận SprintDone trước khi source sửa được review/CI/merge và auto-deploy thực tế đạt, có runtime smoke. Các bảng403bên dưới là acceptedsoftware trước lỗi publicationmới, không là PASS cho03.

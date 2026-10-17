@@ -3311,10 +3311,10 @@
     {
       "id": "DOD-row2",
       "originalMapping": "evidence/sprint1/20261016-acceptance-audit/traceability.json",
-      "requirementSource": "Approved DEC18 + refined workbook DoD-DoR!C2 (approved17/10; configuration/enforcement pending)",
+      "requirementSource": "ApprovedDEC18 + actualrefinedDoD-DoR!C2; exact118review/status and verifiedGitHubprotection/enforcement",
       "requirement": "After approved DEC18: actual automated technical review on exact base/head/diff and no blocking findings; required automated review status success; not independent human approval",
       "originalSnapshotResult": "BLOCKED",
-      "result": "BLOCKED",
+      "result": "PASS",
       "evidence": [
         "evidence/sprint1/20261016-acceptance-audit/ci-c7bb13c.json"
       ],
@@ -3327,8 +3327,34 @@
         "../20261017-accepted/network-current.json",
         "../20261017-accepted/source-compatibility.json"
       ],
-      "notes": "PR99 and PR100/749 human approvals remain historical; approved DEC18 replaces the prospective gate. Current policy head requires actual automated review/status/enforcement, not CI-only success.",
+      "notes": "Actualautomatedtechnicalreview118 and6requiredcontexts passed before merge617; nativePRrequiredcount0/mainunchanged verified; not independenthumanapproval. Originalhumanreview/history and policy-preparationBLOCKED retained.",
       "verificationGroups": [
+        {
+          "matrixId": "DOD-02",
+          "implementationFiles": [
+            "AGENTS.md",
+            "docs/REVIEW_POLICY.md",
+            "scripts/technical-review.mjs"
+          ],
+          "verificationFiles": [
+            "scripts/technical-review.spec.mjs",
+            "evidence/sprint1/20261017-closeout/review-enforcement.json",
+            "evidence/sprint1/20261017-closeout/completion-audit.json"
+          ],
+          "assertion": "Exactbase/head/diffactualreview, allfiles/risks covered, no mandatoryfinding; status+5CI; stale/missing/error/requiredlintfailure blocks; postmergeCI/auto/currentruntime verified",
+          "result": "PASS",
+          "source": "11831c30ce3a3be00e63ffacf5ecc1f525aec00b",
+          "evidence": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229717726",
+          "kind": "automated_technical_review; operationalpublisher notindependenthuman"
+        }
+      ],
+      "matrixIds": ["DOD-02"],
+      "kind": "original",
+      "previousOverlayResult": "PASS",
+      "historicalRequirement": "Approved by another member",
+      "historicalResult": "PASS",
+      "historicalResultAtPolicyPreparation": "BLOCKED",
+      "historicalVerificationGroups": [
         {
           "matrixId": "DOD-02",
           "implementationFiles": [],
@@ -3344,12 +3370,7 @@
           "result": "BLOCKED",
           "externalProcess": "Real human confirmation/approval, unavailable; no local implementation substitutes"
         }
-      ],
-      "matrixIds": ["DOD-02"],
-      "kind": "original",
-      "previousOverlayResult": "PASS",
-      "historicalRequirement": "Approved by another member",
-      "historicalResult": "PASS"
+      ]
     },
     {
       "id": "DOD-row3",
@@ -4789,15 +4810,21 @@
     "acceptedSoftwareSource": "4033da4dde1484fc777806421006f9c17e831f8b",
     "afterVerifiedPublication": "PASS; Sprint1 Done for approved R0 laptop fake-data scope",
     "noRetroactiveHumanApproval": true,
-    "finalReadbackLocation": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/100 (final publication receipt comment after actual merge/staging, not a new Git commit solely to retagSHA)"
+    "finalReadbackLocation": "Finalrepositorydocs PR referenced from PR104; aftermerge readback CI/runtime only, no retag-onlycommit",
+    "currentStatus": "PASS foraccepted617",
+    "actualReceipt": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229852854"
   },
   "policyProposal": {
     "id": "DEC-18",
-    "status": "APPROVED / PROTECTION APPLIED; actualreview-error andpositivecontrolPASS on6e; missing/new-head and CIredcontrols stillpending",
+    "status": "APPROVED / APPLIED / ENFORCEMENT VERIFIED",
     "effectiveAt": "2026-10-17T04:09:49.705Z",
     "approvedAtRecorded": "2026-10-17T04:00:59.735Z",
-    "evidence": "evidence/sprint1/20261017-review-policy/review-control.json"
+    "evidence": "evidence/sprint1/20261017-closeout/review-enforcement.json"
   },
-  "statusSemantics": "Snapshot before final publication. Current completion requires the exact-head review and postmerge publication receipt linked from PR100; old source proofs keep original SHA/environment.",
-  "sprintDoneAtPreparation": false
+  "statusSemantics": "Original95source/assertion/evidence rows retain originalrunSHA/environment.94compatibleacceptedrows + currentDOD02 resolution apply to verified617 through exactsourcecompatibility/currentCI/runtime/auto/source-sync proof. Accepted617publication: PR104receipt. Finaldocs publication only verifies newheadreview/CI/compatible runtime; do not create commits merely toretagdocumentSHA.",
+  "sprintDoneAtPreparation": false,
+  "currentVerifiedSource": "61749f82ccaebc8fa102456b145881f43bd68fcf",
+  "currentVerifiedAt": "2026-10-17T04:48:55.294Z",
+  "sprintDone": true,
+  "currentPublicationEvidence": "evidence/sprint1/20261017-closeout/completion-audit.json"
 }
