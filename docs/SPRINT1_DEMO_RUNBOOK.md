@@ -1,5 +1,15 @@
 # Sprint 1 — demo local và laptop staging riêng
 
+## Bản tích hợp hiện tại — 17/10/2026
+
+- Staging **https://10.88.164.155:3470**, source90188e572d41d3f95e1dac13a42256260fd68a22, PR91 đãmerge. Credentials chỉở `.sprint1-staging/config.json`; accountemailtest ở `.sprint1-staging/registration-test-account.json`, SMTP ở `.sprint1-staging/registration-mail.env`. Không chépsecret ra chat/PR.
+- `node scripts/sprint1-staging.mjs status` kiểm trustedHTTPS; `resume` khôi phục đúngprofile đãcấuhình, giữkeys/data. LANIP/certificate/firewall vẫn phải xácminh khi đổiWi-Fi; không chạyinit tạoidentitymới. OS trust/firewall cầnquyềnngười dùng nhưrunbook.
+- Demo clone sạch02a vẫn tại `D:/s1demo/02a8e86-clean-20261016`, entry `.\scripts\sprint1-demo.ps1`, localweb3000/API3001/catcher24931, credentials `.sprint1-demo/config.json`. Đây làlocalMailpit, không phải InternetSMTP; nguồnapp/launcher không đổi trên90188.
+- Auto-deploy vừa chạy thật nhưng merge→healthy618.856s FAIL600s. Không báoSprintDone. Fixwatcher20sdeadline/15spendingretry đangchờPR/review và gate mới. Candidate hostwatcher được restart cókiểmPID/starttime/entry; app vẫn90188. Khôngdeploy tay để giảgate.
+- Rollback90188→02a→90188 thật đãPASS sau khi tạm dừng đúng ownedwatcher rồi khởi động lại; backup/history/key giữ nguyên. Dùng đúngpreviouspointer hiện hành, kiểmhealth trước/sau; không resetDB hoặc downmigration.
+
+## Hồ sơ thao tác/checkpoint cũ (đọc trạng thái ở trên trước)
+
 ## Checkpoint mạng và nghiệm thu mới nhất — 2026-10-16T16:12:49.189416+00:00
 
 URL hiện tại **https://10.88.164.155:3470**, candidate thủ công **02a8e86a6fea05a49bd27902c08652920e444a10**. Người dùng xác nhận chuyển lại mạng này; giữ nguyên certificate/key, cập nhật cả API origin và activation-link origin. `network-return-current.json`: HTTPS health200; firewall đã PASS: người dùng chạy Administrator, live readback đúng10.88.164.155/TCP3470/LocalSubnet/InboundAllow. Evidence email thật ở IP trước vẫn đúng thời điểm/môi trường, không đổi nhãn sang mạng mới.
