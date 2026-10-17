@@ -95,6 +95,12 @@ describe('Ticket check-in integration', () => {
     if (
       target.hostname !== '127.0.0.1' ||
       !(
+        (target.port === '15446' &&
+          process.env.SPRINT1_ISOLATED_TEST === 'true' &&
+          target.pathname === '/sprint2_integration') ||
+        (target.port === '15450' &&
+          process.env.SPRINT1_ISOLATED_TEST === 'true' &&
+          target.pathname === '/signed_qr_integration') ||
         (target.port === '15432' &&
           target.pathname === '/sprint2_integration') ||
         (target.port === '15438' &&

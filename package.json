@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "pnpm --parallel --filter api --filter web run dev",
     "build": "pnpm -r run build",
-    "test": "pnpm -r run test",
+    "test": "pnpm -r run test && node --test deploy/laptop-gateway.spec.mjs deploy/laptop-release.spec.mjs deploy/laptop-compat.spec.mjs deploy/next-root-dirs.spec.mjs deploy/laptop-watcher.spec.mjs deploy/laptop-resources.spec.mjs",
     "lint": "pnpm -r run lint",
     "typecheck": "pnpm --filter api run typecheck && pnpm --filter web run typecheck",
     "backup:s55": "node scripts/s55-backup.mjs --keep 14",

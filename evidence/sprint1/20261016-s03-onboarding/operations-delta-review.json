@@ -1,0 +1,27 @@
+{
+  "time": "2026-10-16T16:17:41.797496+00:00",
+  "base": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "workingTree": true,
+  "result": "PASS",
+  "changes": [
+    {
+      "path": "scripts/sprint1-staging.mjs",
+      "sha256": "316a59ce2021df2bedb1e3e0272ba8edbe12de761fc01d715c8dc717b5d98b7b"
+    },
+    {
+      "path": "scripts/sprint1-staging-access.ps1",
+      "sha256": "dbda33b2466a879f9fbd1fe610bbe363117128a83c8f43fab16e464ac6bf6b82"
+    }
+  ],
+  "assertions": [
+    "Gateway waits for actual assigned socket before mandatory trusted TLS health; wait bounded; transport/certificate checks retained",
+    "Firewall address update validates owned description, assigned IPv4, inbound allow TCP3470/LocalSubnet and readback; current actual user admin change verified",
+    "Actual gateway restart and HTTPS health200; PowerShell parser and Node syntax PASS",
+    "All18 gateway/release/watcher/compat/resources/Next-patch regression checks PASS"
+  ],
+  "limitations": [
+    "No full frozen build rerun for these two operations-only changes",
+    "Firewall disabled/enabled state intentionally preserved; no rule policy expansion",
+    "No independent human review inferred"
+  ]
+}

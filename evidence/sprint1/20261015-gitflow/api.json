@@ -1,0 +1,73 @@
+{
+  "source": "07d683fcfcfd7d05c8aff1119ab6dc3c63f6e458 + candidate runtime hashes",
+  "time": "2026-10-15T09:14:17.836Z",
+  "results": [
+    {
+      "name": "anonymous401",
+      "status": "PASS"
+    },
+    {
+      "name": "session-cookie-contract",
+      "status": "PASS"
+    },
+    {
+      "name": "field-validation400",
+      "status": "PASS"
+    },
+    {
+      "name": "create-draft-owner-list-public-hidden",
+      "status": "PASS"
+    },
+    {
+      "name": "edit-persist-read",
+      "status": "PASS"
+    },
+    {
+      "name": "buyer-and-other-organizer-server403",
+      "status": "PASS"
+    },
+    {
+      "name": "multi-role-and-default-deny403",
+      "status": "PASS"
+    },
+    {
+      "name": "past-rejected-utc-roundtrip-duplicate-warning-saved",
+      "status": "PASS"
+    },
+    {
+      "name": "event-delete-fk-restrict-no-history-cascade",
+      "status": "PASS"
+    },
+    {
+      "name": "db-unique-five-roles-six-argon2id-fixtures",
+      "status": "PASS"
+    },
+    {
+      "name": "logout-replay401",
+      "status": "PASS"
+    },
+    {
+      "name": "expired-server-session401-fixture-no-production-ttl-change",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown-email-and-wrong-password-same-error",
+      "status": "PASS"
+    },
+    {
+      "name": "five-failures-sixth429-real-redis-ttl",
+      "status": "PASS",
+      "ttlSeconds": 900
+    },
+    {
+      "name": "real-api-process-restart-retains-redis-lock",
+      "status": "PASS",
+      "remainingSeconds": 899
+    },
+    {
+      "name": "ip-budget-account-rotation-spoofed-forwarded-header-independent-peer",
+      "status": "PASS"
+    }
+  ],
+  "metadataCorrection": "Copied verifier inherited a hardcoded main SHA; corrected provenance for the actual develop run. Results/time retained. Verifier now reads git HEAD dynamically; no rerun claimed."
+}

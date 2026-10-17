@@ -1,0 +1,32 @@
+{
+  "time": "2026-10-16T17:43:12.425Z",
+  "base": "90188e572d41d3f95e1dac13a42256260fd68a22",
+  "workingTree": true,
+  "sourceSha256": "0f2adf36c0c4d1e6855283d5d46150ddb6f4ec8f7f5d3094ad7cc3853a27ec38",
+  "result": "PASS",
+  "finding": "A check-runs response with only3green corechecks could be accepted before the other2required jobs appeared. Strict5check presence is now enforced, matching unchanged develop protection.",
+  "fixture": "Three GitHub-actions checks green at exactSHA, absent K01/T31; controlled adapters and marker only, no real deploy",
+  "before": {
+    "deployed": true,
+    "events": [
+      {
+        "status": "deploy_after_CI",
+        "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "status": "deploy_complete",
+        "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ]
+  },
+  "after": {
+    "deployed": false,
+    "events": [
+      {
+        "status": "BLOCKED_CI_not_all_success",
+        "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ]
+  },
+  "scope": "Required deployment policy; T31 remains outside Sprint1 acceptance"
+}

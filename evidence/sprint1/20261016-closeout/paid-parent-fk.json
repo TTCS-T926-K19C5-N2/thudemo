@@ -1,0 +1,40 @@
+{
+  "schemaSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "environment": "Owned isolated test DB15446/sprint2_integration; no staging data touched",
+  "time": "2026-10-16T08:54:02.748Z",
+  "cases": [
+    {
+      "name": "event-delete-rejected-P2003-paid-order-ticket-retained",
+      "result": "PASS"
+    },
+    {
+      "name": "showtime-delete-rejected-P2003-paid-order-ticket-retained",
+      "result": "PASS"
+    }
+  ],
+  "limitation": "FK tests use fake PAID order/ticket rows, not a payment issuance or ticket signature acceptance. Existing standalone ticket CASCADE relations are reported separately; no delete route added.",
+  "constraints": [
+    {
+      "conname": "orders_eventId_fkey",
+      "deletion_action": "r"
+    },
+    {
+      "conname": "orders_showtimeId_fkey",
+      "deletion_action": "r"
+    },
+    {
+      "conname": "showtimes_eventId_fkey",
+      "deletion_action": "r"
+    },
+    {
+      "conname": "tickets_orderId_fkey",
+      "deletion_action": "c"
+    },
+    {
+      "conname": "tickets_showtimeId_fkey",
+      "deletion_action": "c"
+    }
+  ],
+  "fixtureRollback": "PASS; only newly created transaction fixtures rolled back",
+  "result": "PASS"
+}

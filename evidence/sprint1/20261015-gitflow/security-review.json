@@ -1,0 +1,16 @@
+{
+  "scanId": "b0fb0ae4-1158-4ce6-affd-34d469c95d6a",
+  "baseline": "07d683fcfcfd7d05c8aff1119ab6dc3c63f6e458",
+  "snapshot": "dbf72ef6a1c1c1154e4f864144ca9ddb0c7f2d096d9605ca7d943eb5bbd4bf7c",
+  "managedItems": 74,
+  "postSnapshotSupplementFiles": 8,
+  "findings": [],
+  "result": "No introduced reportable findings in reviewed scope",
+  "excludedLaterTool": "scripts/sprint1-docker-smoke.mjs reviewed by parent only; no app/auth runtime added",
+  "limits": [
+    "unchanged inactive-session predicate",
+    "unpatched braces development dependency",
+    "staging/LAN/TLS/team/rollout not yet verified",
+    "not human independent review"
+  ]
+}

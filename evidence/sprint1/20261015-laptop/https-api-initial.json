@@ -1,0 +1,49 @@
+{
+  "source": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+  "origin": "https://10.88.164.155:3470",
+  "transport": "Real HTTPS, certificate and hostname verified using this exact staging certificate as trust anchor",
+  "results": [
+    {
+      "name": "https-home-health-anonymous401",
+      "status": "PASS"
+    },
+    {
+      "name": "production-secure-cookie-contract",
+      "status": "PASS"
+    },
+    {
+      "name": "organizer-draft-created-and-hidden-from-buyer",
+      "status": "PASS"
+    },
+    {
+      "name": "owner-b-and-buyer-server403",
+      "status": "PASS"
+    },
+    {
+      "name": "event-edit-readback-persists",
+      "status": "PASS"
+    },
+    {
+      "name": "future-past-duplicate-warning-utc-storage-and-fk-restrict",
+      "status": "PASS"
+    },
+    {
+      "name": "logout-replay-and-server-expired-session401",
+      "status": "PASS"
+    },
+    {
+      "name": "five-failures-sixth429-real900s-policy",
+      "status": "PASS",
+      "remainingSeconds": 900
+    },
+    {
+      "name": "owned-api-restart-retains-account-lock-in-redis",
+      "status": "PASS"
+    }
+  ],
+  "limitations": [
+    "Not an independent second-device test",
+    "Browser/system trust still requires OS confirmation",
+    "Manual candidate deployment does not prove develop auto-deploy AC"
+  ]
+}

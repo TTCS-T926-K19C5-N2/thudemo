@@ -1,0 +1,77 @@
+{
+  "startedSource": "accf832be519d9790845c3590acd3f481c5594ac",
+  "origin": "https://10.88.164.155:3470",
+  "transport": "Real HTTPS, certificate and hostname verified using this exact staging certificate as trust anchor",
+  "results": [
+    {
+      "name": "https-home-health-anonymous401",
+      "source": "accf832be519d9790845c3590acd3f481c5594ac",
+      "status": "PASS"
+    },
+    {
+      "name": "production-secure-cookie-contract",
+      "source": "accf832be519d9790845c3590acd3f481c5594ac",
+      "status": "PASS"
+    },
+    {
+      "name": "organizer-draft-created-and-hidden-from-buyer",
+      "source": "accf832be519d9790845c3590acd3f481c5594ac",
+      "status": "PASS"
+    },
+    {
+      "name": "owner-b-and-buyer-server403",
+      "source": "accf832be519d9790845c3590acd3f481c5594ac",
+      "status": "PASS"
+    },
+    {
+      "name": "event-edit-readback-persists",
+      "source": "accf832be519d9790845c3590acd3f481c5594ac",
+      "status": "PASS"
+    },
+    {
+      "name": "future-past-duplicate-warning-utc-storage-and-fk-restrict",
+      "source": "accf832be519d9790845c3590acd3f481c5594ac",
+      "status": "PASS"
+    },
+    {
+      "name": "logout-replay-and-server-expired-session401",
+      "source": "accf832be519d9790845c3590acd3f481c5594ac",
+      "status": "PASS"
+    },
+    {
+      "name": "five-failures-sixth429-real900s-policy",
+      "source": "accf832be519d9790845c3590acd3f481c5594ac",
+      "status": "PASS",
+      "remainingSeconds": 900,
+      "failuresExecutedThisRun": 5
+    },
+    {
+      "name": "owned-api-restart-retains-account-lock-in-redis",
+      "source": "accf832be519d9790845c3590acd3f481c5594ac",
+      "status": "PASS"
+    },
+    {
+      "name": "https-case-alias-charges-actual-lan-peer-despite-spoofed-valid-attestation",
+      "source": "accf832be519d9790845c3590acd3f481c5594ac",
+      "status": "PASS"
+    },
+    {
+      "name": "two-peer-probe-not-repeated",
+      "source": "accf832be519d9790845c3590acd3f481c5594ac",
+      "status": "NOT RUN",
+      "priorEvidence": "evidence/sprint1/20261016-two-peer/correlation.json",
+      "reason": "Real second-device proof is retained at its original SHA; no repeat brute force authorized merely for new evidence."
+    },
+    {
+      "name": "natural-expiry-harness-TTL-zero-boundary",
+      "source": "accf832be519d9790845c3590acd3f481c5594ac",
+      "status": "FAIL",
+      "reason": "Verifier used TTL seconds and stopped at0 although key still had fractional-second PTTL; final request429 is expected until actual expiry. Corrected verifier waits PTTL<0; no production policy change."
+    }
+  ],
+  "limitations": [
+    "Not an independent second-device test",
+    "Browser/system trust still requires OS confirmation",
+    "Manual candidate deployment does not prove develop auto-deploy AC"
+  ]
+}

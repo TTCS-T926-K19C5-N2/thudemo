@@ -41,6 +41,7 @@ import {
   remainingSeconds,
   type ServerClock,
 } from "@/features/seat-selection/server-countdown";
+import { OrderTickets } from "@/features/tickets/order-tickets";
 
 export interface OrderReviewProps {
   id: string;
@@ -458,7 +459,10 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
             </div>
 
             {order.status === "PAID" && (
-              <SignedTickets key={order.id} orderId={order.id} />
+              <>
+                <SignedTickets key={order.id} orderId={order.id} />
+                <OrderTickets orderId={order.id} />
+              </>
             )}
 
             {/* S-24: Failed previous payment notice */}

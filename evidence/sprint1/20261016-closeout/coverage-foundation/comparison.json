@@ -1,0 +1,143 @@
+{
+  "baseSha": "a1aab98bd50005ae1d910295106f7bacdc201833",
+  "source": "candidate source hashes per file; rerun after runtime edits",
+  "node": "v24.21.0",
+  "vitest": "4.1.11",
+  "provider": "@vitest/coverage-v8@4.1.11",
+  "method": "Original tests on each revision; identical coverage scope/config. Changed-line counters use V8 Istanbul executable statement start lines and branches intersecting diff hunks. New files have no baseline denominator. Unit coverage does not imply endpoint/staging acceptance.",
+  "projects": [
+    {
+      "name": "api",
+      "configSha256": "db9511b3b60e0ae5ea858d871109a1256c4c730468aca9ae6d7ef0c6434f304a",
+      "before": {
+        "lines": {
+          "total": 251,
+          "covered": 177,
+          "skipped": 0,
+          "pct": 70.51
+        },
+        "statements": {
+          "total": 275,
+          "covered": 189,
+          "skipped": 0,
+          "pct": 68.72
+        },
+        "functions": {
+          "total": 46,
+          "covered": 28,
+          "skipped": 0,
+          "pct": 60.86
+        },
+        "branches": {
+          "total": 201,
+          "covered": 159,
+          "skipped": 0,
+          "pct": 79.1
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "after": {
+        "lines": {
+          "total": 251,
+          "covered": 214,
+          "skipped": 0,
+          "pct": 85.25
+        },
+        "statements": {
+          "total": 275,
+          "covered": 228,
+          "skipped": 0,
+          "pct": 82.9
+        },
+        "functions": {
+          "total": 46,
+          "covered": 35,
+          "skipped": 0,
+          "pct": 76.08
+        },
+        "branches": {
+          "total": 203,
+          "covered": 171,
+          "skipped": 0,
+          "pct": 84.23
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "files": [
+        {
+          "path": "apps/api/src/holds/holds.service.ts",
+          "newFile": false,
+          "baselineChanged": {
+            "executableLines": 9,
+            "coveredLines": 9,
+            "branches": 14,
+            "coveredBranches": 14,
+            "linePct": 100,
+            "branchPct": 100
+          },
+          "candidateChanged": {
+            "executableLines": 9,
+            "coveredLines": 9,
+            "branches": 14,
+            "coveredBranches": 14,
+            "linePct": 100,
+            "branchPct": 100
+          },
+          "sourceSha256": "af53eb98b7e43c46bba699bdc873957fb2fde94470ca28089668776b983cc4ca"
+        },
+        {
+          "path": "apps/api/src/prisma/hold-transaction.ts",
+          "newFile": false,
+          "baselineChanged": {
+            "executableLines": 0,
+            "coveredLines": 0,
+            "branches": 0,
+            "coveredBranches": 0,
+            "linePct": null,
+            "branchPct": null
+          },
+          "candidateChanged": {
+            "executableLines": 0,
+            "coveredLines": 0,
+            "branches": 0,
+            "coveredBranches": 0,
+            "linePct": null,
+            "branchPct": null
+          },
+          "sourceSha256": "d46544caac411d844e358efd519c64bcad3e7fe168757a13493e339dc0084e8b"
+        },
+        {
+          "path": "apps/api/src/prisma/prisma.service.ts",
+          "newFile": false,
+          "baselineChanged": {
+            "executableLines": 1,
+            "coveredLines": 0,
+            "branches": 0,
+            "coveredBranches": 0,
+            "linePct": 0,
+            "branchPct": null
+          },
+          "candidateChanged": {
+            "executableLines": 1,
+            "coveredLines": 1,
+            "branches": 2,
+            "coveredBranches": 2,
+            "linePct": 100,
+            "branchPct": 100
+          },
+          "sourceSha256": "f1648081e350b8687cf70a90e286449dbe1fe6bf09d2eacc228e2003c38933cb"
+        }
+      ]
+    }
+  ]
+}

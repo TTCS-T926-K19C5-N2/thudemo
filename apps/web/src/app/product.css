@@ -993,6 +993,20 @@
   font-size: 24px;
 }
 
+/* Registration has a long mandatory notice; the compact login-only mobile
+   display:contents/hidden-heading rules must not remove its instructions. */
+.product-login.registration-form {
+  display: block;
+}
+.product-login.registration-form h1,
+.product-login.registration-form > p,
+.product-login > p.login-account-guidance {
+  display: block;
+}
+.product-login.registration-form form {
+  display: flex;
+}
+
 .product-login > p {
   text-align: left;
   font-size: 12px;

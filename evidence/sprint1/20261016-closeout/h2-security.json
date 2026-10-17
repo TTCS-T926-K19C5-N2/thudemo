@@ -1,0 +1,45 @@
+{
+  "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "gatewaySha256": "c3748f0b8471c263d2da6f5163bdc688c09c55794a48dc8cdf16cd1300e9ab82",
+  "protocol": "HTTP2 over TLS; exact CA+hostname validation",
+  "cases": [
+    {
+      "name": "h2-health200",
+      "result": "PASS"
+    },
+    {
+      "name": "h2-case-alias-login-secure-cookie-me200-caller-HMAC-replaced",
+      "result": "PASS"
+    },
+    {
+      "name": "h2-wrong-login-counts-real-LAN-peer-not-forged-headers",
+      "result": "PASS"
+    },
+    {
+      "name": "direct-claim-anonymous401",
+      "result": "PASS"
+    },
+    {
+      "name": "direct-claim-organizer403",
+      "result": "PASS"
+    },
+    {
+      "name": "direct-claim-cross-origin403",
+      "result": "PASS"
+    },
+    {
+      "name": "direct-claim-valid-buyer-still-server404-for-missing-show",
+      "result": "PASS"
+    },
+    {
+      "name": "direct-body-over5MB413-before-mutation",
+      "result": "PASS"
+    },
+    {
+      "name": "h2-logout-old-cookie401",
+      "result": "PASS"
+    }
+  ],
+  "time": "2026-10-16T08:22:55.571Z",
+  "result": "PASS"
+}

@@ -1,0 +1,24 @@
+{
+  "time": "2026-10-16T09:07:01.291228+00:00",
+  "reviewersWithApprovalPermission": [
+    "quanstratos",
+    "thuytrang158",
+    "dtc245160061-ctrl",
+    "dtc245200269-oss",
+    "duongtrang29",
+    "TeddyCharites",
+    "tienquangbodoi",
+    "hight-87ii",
+    "tovanquyenh-blip"
+  ],
+  "workflow": ".github/workflows/ci.yml on:[push,pull_request] includes develop and feature PR",
+  "requiredContexts": [
+    "T-02 / build-and-typecheck",
+    "T-02 / lint",
+    "T-02 / test",
+    "K-01 / candidate-research",
+    "T-31 / hold-concurrency"
+  ],
+  "existingPolicy": "No protection/applicable rules/rulesets; no existing rule overwritten",
+  "authorization": "User explicitly authorized protection for develop only on2026-10-16; no main change"
+}

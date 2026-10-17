@@ -1,0 +1,80 @@
+{
+  "time": "2026-10-16T10:17:04.648171+00:00",
+  "source": "5b3f67bc343729dd6d87140b77af6536ec704086",
+  "checks": [
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38881792723/job/116910546270",
+      "name": "S-43 / monitoring-integration",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38881792722/job/116910532302",
+      "name": "K-01 / candidate-research",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38881785636/job/116910526698",
+      "name": "T-31 / hold-concurrency",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38881792722/job/116910532445",
+      "name": "T-31 / hold-concurrency",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38881785636/job/116910525990",
+      "name": "K-01 / candidate-research",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38881792722/job/116910024699",
+      "name": "T-02 / lint",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38881792755/job/116910024383",
+      "name": "S-31 / signed QR admission HTTP and browser",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38881792722/job/116910024442",
+      "name": "T-02 / test",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38881792722/job/116910024608",
+      "name": "T-02 / build-and-typecheck",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38881792664/job/116910025086",
+      "name": "S-30 / signed QR HTTP and browser",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38881785636/job/116910000644",
+      "name": "T-02 / test",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38881785636/job/116910000997",
+      "name": "T-02 / lint",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38881785636/job/116910001030",
+      "name": "T-02 / build-and-typecheck",
+      "state": "SUCCESS"
+    }
+  ],
+  "pr": {
+    "baseRefOid": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
+    "headRefOid": "5b3f67bc343729dd6d87140b77af6536ec704086",
+    "mergeStateStatus": "BLOCKED",
+    "reviewDecision": "REVIEW_REQUIRED",
+    "reviews": [],
+    "state": "OPEN",
+    "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/91"
+  }
+}

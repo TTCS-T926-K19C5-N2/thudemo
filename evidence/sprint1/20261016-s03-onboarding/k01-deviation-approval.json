@@ -1,0 +1,17 @@
+{
+  "time": "2026-10-16T14:28:31.682388+00:00",
+  "decision": "DEC17",
+  "actor": "Nguyễn Văn Sáng (PO)",
+  "source": "Direct user answer to explicit bounded deviation proposal in this thread",
+  "exactAnswer": "Chấp thuận đầu ra, ghi rõ sai lệch timebox/mentor",
+  "technicalOutcome": "Accepted at current review with documented historical process deviation",
+  "historicalTimeboxMentorEvidence": "NOT RUN / absent; not retroactively PASS",
+  "pgAuthorityScope": "Fake-data laptop staging, DEC14 retained",
+  "notWaived": [
+    "Other-person PRapproval",
+    "Exact-head CI",
+    "Developintegration",
+    "Watcher auto-deploy<10min",
+    "Other Sprint1 AC/NFR/DoD"
+  ]
+}

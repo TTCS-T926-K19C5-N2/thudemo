@@ -1,0 +1,1556 @@
+{
+  "candidateAtAudit": "5b3f67bc343729dd6d87140b77af6536ec704086",
+  "runtime": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "base": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
+  "result": "PASS",
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "466296f51d3998eee8c4e2d23d0b3cf6b930c4177b8901602b3306d850e5b609",
+      "unchanged": true
+    },
+    {
+      "path": ".github/workflows/hold-profile.yml",
+      "sha256": "3814cffd7b6a072a438011223339a0d7082ee318f1546344787353c9d0419901",
+      "unchanged": true
+    },
+    {
+      "path": ".github/workflows/monitoring.yml",
+      "sha256": "0d1ca237a0293176113e66a26623832c0d6cd7f326e2aa57a0424bbf3f43c430",
+      "unchanged": true
+    },
+    {
+      "path": ".github/workflows/s30-signed-qr.yml",
+      "sha256": "773f1eec2b78ee9e546efae740df6dbc2a5e721c3acb120a5f70063bb9d99832",
+      "unchanged": true
+    },
+    {
+      "path": ".github/workflows/s31-admission.yml",
+      "sha256": "d789bb7a44365e7233aba6e7de6f1370fafd6d87dad2835fe3c1d96c2c0547da",
+      "unchanged": true
+    },
+    {
+      "path": ".github/workflows/s31-storage-proof.yml",
+      "sha256": "960b67aa6a79b23b67693f8e8b0460f815a8bd1065c996548c77745dc9b0f5b2",
+      "unchanged": true
+    },
+    {
+      "path": "Dockerfile",
+      "sha256": "427aaf9e8b1335edebcc0e81127d06edf3f0539de4a5a47128660031f334c4d1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/package.json",
+      "sha256": "7a7d405e8a17d0f43357bdcf555d267eac9d103907f1980819d292e48dfe444f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202609290001_t01_probe_apply/migration.sql",
+      "sha256": "556ee483a51fb94434fa509df8ba48b1b3bfd7c48fb076618597893bf770241d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202609290002_t01_probe_compensate/migration.sql",
+      "sha256": "6b2b7e27f7df87ab4495b727e37cdaf05fc5bbeb2bd9eddcbe57a708db7c7d58",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202609290003_t01_probe_reapply/migration.sql",
+      "sha256": "c264e54c6d13181f234284e34e323644e689bc7ccc5a3dd821a8a646f6706065",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610010001_t04_users_roles/migration.sql",
+      "sha256": "11610e41a83d7b740f761553eb1de420296055a3b02f950ea83902ade3a6e84a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610010001_t04_users_roles/rollback.sql",
+      "sha256": "1b5458b6b9b079fc26f7480f1cb0750bae4748af4d6d7463adac3f93d6d9d14a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610010002_t09_events_showtimes/migration.sql",
+      "sha256": "918c291294b47de20085730bbd51bc8be6a8585acd2f7efafbb364533d9164c1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610010002_t09_events_showtimes/rollback.sql",
+      "sha256": "72492da7482a09ccb3f1b8b845c9cb6c3a1a3ee7391a34e36103305071c258f1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610010003_t05_sessions/migration.sql",
+      "sha256": "f88789066200bc7b34253bdcbf0f5f4c61d2c412360b8b93b3ff2e3628234539",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610010003_t05_sessions/rollback.sql",
+      "sha256": "69d22b747168d7b08e2656f822217b3f6c96770d67f7655f6dd9d554eea0c9af",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/20261003_init_seats_and_seat_categories/migration.sql",
+      "sha256": "64519b4fed1cfdc7b67208898f2cd02fa3320f705f8ac18f37a9657938672d2c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610040001_sprint2_seats/migration.sql",
+      "sha256": "3add07c7a62e1b74c9500cf34a4d3da211348a76755390a37a933385b6917c95",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610040004_event_presentation/migration.sql",
+      "sha256": "e695726b41b79356ad2726c241c34f2a08793df5ba389998b19c6c3617162f0f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610040005_seat_holds/migration.sql",
+      "sha256": "82f26e109b733e5fda4db8eb073e9b1172e54fa027d0e0e42fc5c00b70d9ced9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610050001_pending_orders/migration.sql",
+      "sha256": "571da3f2b077d73f82cbb4f95aa747af1286a74b8288453dc4e5469f0a97797d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610060001_claim_hold_function/migration.sql",
+      "sha256": "7d63b583a88182d960846d050007163d7b0b0d25bab1a4b16f8e2e9d6e8a40f2",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610060001_hold_expected_seats/migration.sql",
+      "sha256": "a7360b785bf61cf75688d21d8cd63bd839e67af5b575013b81be2a366da49d0f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610060002_validated_hold_routine/migration.sql",
+      "sha256": "dfb90933bf091e36072c0c9d73e80bc52141cb0a05faf7490936a2d61719e886",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610060003_hold_outcomes/migration.sql",
+      "sha256": "5df83f439864fc5f85dd2f9d8c535bfb35d6a748ba86624ddf643dea02a96cf4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610070001_s17_orders/migration.sql",
+      "sha256": "661da1a366fd7108cbfc2780feda245f54950558a2687b18c463141eb8c53001",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610070002_s18_payments/migration.sql",
+      "sha256": "4780ebc3636708b94d043acfa1751ea4ddb02889138fd035eb7535fb379222d5",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610070003_s20_idempotent_payments/migration.sql",
+      "sha256": "795f54e4aeedf84793fd01ccaf517e36b1450124c6f86891c3d3ba3239e3b752",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610080001_s24_payment_retry_and_logs/migration.sql",
+      "sha256": "14dda60787dfe3be835e48e80b0dc55fee7ace610f0aa00dd0cc3b7893ca7872",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610080001_s42_ticket_limit/migration.sql",
+      "sha256": "aea39c27ba90c0cceff3998638741d1c5c8cdc39d3fa7454e29dac1aa34b0e0a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610080002_s28_user_is_active/migration.sql",
+      "sha256": "93c77b1877c32281ddb17f205ee78973d450d4d65311ef753664927f9aa4d2f1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610080002_s33_tickets_and_scanner/migration.sql",
+      "sha256": "8b9daa6be13c203443363d7c5f4ff82743b3bce7d286730dcb0480fb35c46b1d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610080002_ticket_checkin/migration.sql",
+      "sha256": "22cb0a7f2dbeda135f3039ebdd0fdf1193f50b175d590df5c273d0e5f82d4f5e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610080003_s31_admission_ledger/migration.sql",
+      "sha256": "44e4d0c76f63805e4819519a0583a9f130aa578dc97a75699ba98261c47dbb4c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610090001_s25_s26_signed_tickets/migration.sql",
+      "sha256": "d857b80426e7177a4438078862d93d259d90905f80ed3203e5bcab390498c62e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610090002_s57_ticket_transfer/migration.sql",
+      "sha256": "bc8ee8f24228d25963ab2f649d3f378fee8636d2cbc8440ef5c7b357b39f14f4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610090002_s61_ticket_reminder/migration.sql",
+      "sha256": "523e8a5fbf992edd241c8bbee020765ab71f62fb853b85eff46e81d0e4285ef8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610120001_s34_offline_scan_queue/migration.sql",
+      "sha256": "942d4c4f257bd6b5204fcfe1d809dcd5378942ad9124aca3a85d871e9bf0b557",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610160001_hold_known_conflict/migration.sql",
+      "sha256": "21c8e8aaaf4660d196bfd344fce2da5451ffaf1072e2b3909e515aefb29a1630",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/migrations/migration_lock.toml",
+      "sha256": "ae490c5db9e9768b1b3b19272b3ca29facbe1bf4ec943e2bc45971a44061e122",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/schema.prisma",
+      "sha256": "4f491106d4d0ddb13e8b10fea1a6d0c4a41d722e31f17678f6d1e5e143ab2a66",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/seed-demo.mjs",
+      "sha256": "398d25b32c37a8fa4c05b40f21dfb6d0a29c520a6e981d8b1127181588a0d5a1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/verification/holds-compensate.sql",
+      "sha256": "f6664f06d72bf08df94dc055397048c01dc71aea103271c820c1dda1085f48ab",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/verification/s31-admission-candidate.sql",
+      "sha256": "22454cd90733d2bd63793dd2fe86065e4a91c3ed3a2499d736c4639b61658297",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/verification/s31-compensate-empty.sql",
+      "sha256": "f044950e08e81b673d2775f9c33aeb0491353a4bad4c093d2f4bbbaacccc274b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/prisma/verification/sprint2-compensate.sql",
+      "sha256": "c06035d6714e0749b032042cc0f1c7153e9bfc92970e486a76705ceb9ae7f756",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/app.controller.spec.ts",
+      "sha256": "0fe062e76f81e4c8a0caf3bc58a9e4aa7fcc35ab9a8462f0794b828758be9dfe",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/app.controller.ts",
+      "sha256": "a20566ccdf84a77242c4f0ca802660159f5306074d3d0c6b3dd3872225209502",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/app.module.ts",
+      "sha256": "3dd481799a81da56b5882a69f3b43abf4d734dde4e888d4063e575614851b13e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/app.service.ts",
+      "sha256": "eaf8514ce110fa428a93a27408df4d06d133dbd9ed0a775c315ddfdd507853a9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/auth/auth.controller.spec.ts",
+      "sha256": "2ebbab2f4cffb0ff903e5d5965d3fec16841047a5f7524eb674ba6eeea630d89",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/auth/auth.controller.ts",
+      "sha256": "dc407268e4cacc3e5dec5e8c65e93a97edd843b1eb1215ba5e167888450f9034",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/auth/auth.module.ts",
+      "sha256": "fba3cf5631b23eca52396bd19303b64d9aec505c158acb877fcf208a0d6b9991",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/auth/auth.service.spec.ts",
+      "sha256": "64bd89f0102fcbd2ee380b659435a0cafe1928d5adc3e60b9158fbd929436269",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/auth/auth.service.ts",
+      "sha256": "8797311334f066cc8d3b022111749f6130ccddc153a82c33c14468e371eb25c4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/auth/decorators/roles.decorator.ts",
+      "sha256": "0fccec36c3d3e9a4bf0ba1a975d7604e31c15e442dcf1cf78824ca17de1d2617",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/auth/guards/roles.guard.ts",
+      "sha256": "4b87a36c307d06e7912d01614c419d123f269114e58ea34c1272a89ee316b878",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/auth/guards/session-auth.guard.spec.ts",
+      "sha256": "14b0ea6876f99ae7474b43d9e21e40ef742a6ab76313afa9adea3a49f8588295",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/auth/guards/session-auth.guard.ts",
+      "sha256": "b79e8d2c9e4d17bf370868762901cacf4628c2c58c59fd16ed5dee8b9e8a776d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/auth/login-peer.spec.ts",
+      "sha256": "7619fce94e898facae3bc7a27def5e1c31d04f97e17a54a1a36ae64b2ab49e78",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/auth/roles.ts",
+      "sha256": "b9e9bb777186fccdb0e6e842247d522a27538deafba9b0313a0885097c7943f0",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/check-in/check-in-s29.controller.ts",
+      "sha256": "84e687fa9256bd821383598a174d6c0e6124baf13e531d9ab4f0b640f029aa82",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/check-in/check-in-s29.module.ts",
+      "sha256": "e57c7e700c3a697b700278a5e467dca2e2f71c64e9b02c1fec83f920e387478d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/check-in/check-in-s29.service.ts",
+      "sha256": "3781023778d77b92ba26fa49765199ce25879e1b8a8d9709d378f4ed8b2c231c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/check-in/check-in-s29.spec.ts",
+      "sha256": "6daad4567d1712f6961fd5390c5950f23278ae8ddb7fbbd895b38c42ef95f7c6",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/events/events.controller.ts",
+      "sha256": "9f35aca10d292be0094a47dd95e5ae4de7d1e6a71a02937be106345be159f307",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/events/events.module.ts",
+      "sha256": "971a885e868efd6a0470ad671bca40580f8b911ceec6193eae0889a997631a9a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/events/events.service.ts",
+      "sha256": "6bed6e09a2c1e7730f25a2ab3e0560dd28c12fd7621dd0c14e2006e578b92532",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/hold-expiry-worker.ts",
+      "sha256": "5649581fa8b4429a64f40ab6897e566b80476b49475305a90bc855e94e86d05c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/holds/hold-expiry.scheduler.spec.ts",
+      "sha256": "fe30a3d3ad356a6b8c2450fb051cfd8fc5b428eec8792ba9becb34876bb9009a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/holds/hold-expiry.scheduler.ts",
+      "sha256": "44dcabaada2b409491ffa0766c98a4783a826c673b94af6facc47f4990f1ff68",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/holds/holds.controller.ts",
+      "sha256": "76f71a7371dffd967938b64f1acecdc115822c5bd5acb253c0c7ad9a2feff3e9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/holds/holds.module.ts",
+      "sha256": "c7e59c3d7d84fc241cc4410564eefbc3d24cb3413635ad55ec34aacd9eeb0770",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/holds/holds.service.spec.ts",
+      "sha256": "923f6708f456957c6ba35d86abd1b6a7b2140057cff5ad82f21707356ab26472",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/holds/holds.service.ts",
+      "sha256": "d87583d84efb9d395e6b2344267095c65ecebd89e786685c7276f17f4f374a68",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/main.ts",
+      "sha256": "1b512d458ceb34110da837f35cd13ee1082077d2a3025aa5ab6f6da327718ad6",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/adapters/mock-seat-validator.adapter.ts",
+      "sha256": "13aa922a0c33b4ce3fc0746caeebee54ec3d88fb5ce0257fea2e09bd9ee17a6e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/adapters/seat-validator.adapter.ts",
+      "sha256": "5a8ad55862502f4dcfb67433002b7de236a9808163ea08a99cd60a1e3b6883f0",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/dto/expired-holds.dto.ts",
+      "sha256": "ee43e24b901f1a8e3f47affe96a75f4d0a0ff691165fe833a393f890bf6c85a6",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/dto/hold-seats.dto.ts",
+      "sha256": "4c129840fed0cb6019411376923add9e48e7efefc2ce746ade1f5ae6b7a54364",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/dto/seat-hold-countdown.dto.ts",
+      "sha256": "948e61d8abde1b41a6873bf4ee6249f4b0db695bb79375a962b29a1ebdf2c3d7",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/interfaces/seat-validator.interface.ts",
+      "sha256": "16939bde8b87961a8415d4c62e45da0c19b3506a9280d3092441f2a59fa20f07",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/jobs/seat-expiry-job.service.spec.ts",
+      "sha256": "236f7f7b3a7322293981bf0a4d190742188ea4702fa8f8796abb7b0a093a2913",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/jobs/seat-expiry-job.service.ts",
+      "sha256": "d18a5de5f774ef07565d080ab929dcda8985258c1defd43c09eacadaef8dfd1c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/queries/seat-availability.query.spec.ts",
+      "sha256": "9bd4e42680a1d77fe63704804bdfdfb443af4b0611c7ed849e12797897d6e813",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/queries/seat-availability.query.ts",
+      "sha256": "421598180c83ba541ba697e611ad816cc70c545a08919702a65cc9178114c4d0",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/queries/seat-status-query.service.spec.ts",
+      "sha256": "a55c77e79f5e587e9f4a2de68306dd0f712587ca1ef453329bc225fab8f0670e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/queries/seat-status-query.service.ts",
+      "sha256": "12e9b723cb889d8fd903df0393d1dab2b95eba155ef9c32b693cc24de04e6509",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.controller.spec.ts",
+      "sha256": "97de4739b35ae2ab311dc7ecfee65e13481122ca2ec702a7c6393141288b4da4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.controller.ts",
+      "sha256": "7aeabcff04d3cbcb10ab38b188c8cef7c46f806c4faa5df857a05a07210ecbc3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.service.spec.js",
+      "sha256": "a69fad455e95787958eac0c3dc965fc9f7e8b7380549bd55e26f2f3e46c58f6c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.service.spec.ts",
+      "sha256": "981033d7bb9cd860456bcaa7ffb649707a8a7234887b6ce9d6975e9398ab0615",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.service.ts",
+      "sha256": "a424dfa32e5e9385b8e1d0a290243de5ecc385d67091a3f8cff5c65b4b9a5105",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.storage.spec.ts",
+      "sha256": "c2e7b6de754fe6ccf92beafc663eea0d2dc1c795fa730e6a605ddf2c2c9d7ec7",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.storage.ts",
+      "sha256": "c87588bcb7d4890c876992a08ddf73d6f2f780e36b96a2bb670c0e5fcc4f8740",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/seats.module.ts",
+      "sha256": "abe8b181fcb70ba28a75646afc8c04a979bbc4742176c2b526eb3bbc11c501f7",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/services/seat-hold-countdown.service.spec.ts",
+      "sha256": "15c100adfa5bda651eb4325559e960fd392266460dc84f043c03316b51ea107f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/modules/seats/services/seat-hold-countdown.service.ts",
+      "sha256": "27069743aa42b24ceb84af6f255f07834eabd40d168305ec13839a9cd0efa11c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/monitoring/metrics.spec.ts",
+      "sha256": "7aa53c8d608ce3937b45514d7507e8ad04daa0f313e9d62402846a06aed7c5ec",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/monitoring/metrics.ts",
+      "sha256": "dce569c9093f7eeeaad629e41f3245db2538535b59c9a2e71e55eebb2b510659",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/monitoring/monitoring.module.ts",
+      "sha256": "43894283955cc5fba8b510f2b48622ebb88f1d03e5d4b13fe2eecb4abd4ee9a8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/admission-contract.spec.ts",
+      "sha256": "1c70bb7ee2971dc9eb2a2235100e512235bb5140c298301da836e0520f35fd0f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/admission-contract.ts",
+      "sha256": "fe794e6bd0d7edf6ab82d916781feedc6c402276cf4cd00c1810ca100b072062",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/admission-policy.ts",
+      "sha256": "75c2e47e7f40e49bc0bb255260a98d5d25277ff0a54579e27dc695fb5f4eb5aa",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/order-expiration.ts",
+      "sha256": "a649db5e1d8585fba38cc99f301c698bec1951cf01a695e6efbca5c59e7940b8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/order-expiry.scheduler.ts",
+      "sha256": "1fc0f109835da1ce6cefe84a4c25cb9e64e07320db065f28aa3e042b159cf208",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/order-expiry.spec.ts",
+      "sha256": "f9bfb0fa120b47df2968246ce7099083ad30564b0038d6f1444ce803ff9bf74e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/orders.controller.ts",
+      "sha256": "ea498dfd2a87887d974471d3526da060626ce554160288f75da18009519b1cc2",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/orders.module.ts",
+      "sha256": "ee516a2b2894077bf35c59937e73d7a6a761c4a47f416c13e7de6e668b223bcf",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/orders.service.spec.ts",
+      "sha256": "ccf4e5868a1dd80366e17b577eaf92bf21a769124d445bac7226d07a45672c89",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/orders.service.ts",
+      "sha256": "91e7467181497cb6735ca3af4207c0d051f6dacaaf8a2d1be51351bd578f939d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/ticket-check-in.controller.ts",
+      "sha256": "87751e6cb577de0ae14108ad49224e340af5c26c25dbdc8e49a310c64585ebc7",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/ticket-check-in.service.ts",
+      "sha256": "7438f063211d35c6a56dd1effabce41ab52f40912cd6917f331ed929dd126c4e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/ticket-qr.controller.ts",
+      "sha256": "fbb7764e392712933aa3d0dd609c20916e292cf2f7867448e481a610e1fa38e6",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/orders/ticket-qr.service.ts",
+      "sha256": "ceeec829ec54b9e3d95f768940d627ec7cdd793bb9e4002d5ff23425ca29e47c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/accountant-notifier.ts",
+      "sha256": "fbbf810feb2c9d959e58150dcc055da5de4162498db1e2e9c3896c283b0bed85",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/gateways/mock.gateway.spec.ts",
+      "sha256": "b11859555e176c33008e7a0cf9a362d876486487a98bd7dad9dfc0779de260f9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/gateways/mock.gateway.ts",
+      "sha256": "d08932032ad5a56c5e7b04ae0106e79b9414cd7da6a91f313d6cf563e55a999d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/gateways/momo-signature.spec.ts",
+      "sha256": "939ccfe5f5f01b5c498ec4d285f8cb53fb0d7d3cc1745aad71e783ba4ffe0d22",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/gateways/momo-signature.ts",
+      "sha256": "70cddceadbf9e6f271365d1705bf85bb1a937d93c80109979a74838da555b007",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/gateways/momo.gateway.spec.ts",
+      "sha256": "4e8b3f0415bca2e148285ec3c49520054b1d30ff1898f6212c68c6533f34290c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/gateways/momo.gateway.ts",
+      "sha256": "c88ad50f8e62227748d85512d8a7306ec62cdc40cb490bc70cec2cfe8f7337bc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/gateways/payment-gateway.interface.ts",
+      "sha256": "324cf8ec26aa9bcf4b54f09d8db6a0ce6d3139ab20a9ba728afc1d6134c788bd",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/mock-gateway.controller.spec.ts",
+      "sha256": "b46a97fbd2cb01c9c788488f4e4366cbb7750393eee5719764b34c293584203e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/mock-gateway.controller.ts",
+      "sha256": "7f781f3826015e93bfe2af16ce5dae7eefbb5545597078825ffa23bdf431d719",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/mock-gateway.service.spec.ts",
+      "sha256": "0d11d6b97716ae1d3362d8770f16b2edbc5694c104c7973d95346be4cb8a08e2",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/mock-gateway.service.ts",
+      "sha256": "a677236133cf3c5ad079a646bb1d8bf92ac89431bd75d8447c9d2a0fa307c526",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/payments-config.validator.spec.ts",
+      "sha256": "352796dc348a366ed8cbb0688b8e8a4722db241036c775104af1f24878ed0329",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/payments-config.validator.ts",
+      "sha256": "2205d4b62224121e440f4873faafc1bd021bd30fa8d0eb07d0a6d7ea98b5f4ad",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/payments.controller.ts",
+      "sha256": "117764d1fb728457efee6ea03b05901624956a0b3e1e300dd973deee0b947680",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/payments.module.ts",
+      "sha256": "00acba477c4b277633cf6298b4177393c7bed4af57308b3fe5485bfbc65cc589",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/payments.service.spec.ts",
+      "sha256": "53dfb49b5061542ea2b870e10ac4aa8f4cbe88ef62e2e50b748ad1e377f21410",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/payments.service.ts",
+      "sha256": "f0cc9f729d89629a44320ca5b9f83ac4a1d6248983f2ff08d17990b175e07002",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/payments/webhook-security.filter.ts",
+      "sha256": "907a43de80f457dd9330b0182e82f7ad4cf175bd6a9eeb58aad639d4d9554e06",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/prisma/hold-statement-names.spec.ts",
+      "sha256": "9b3def1b84e92412790ed81019e2b9af6d4d0871e7190b4ffbc6f4a87830a204",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/prisma/hold-statement-names.ts",
+      "sha256": "a3d670f7dc857b1cc4a8f224a861307507934edfe87a232a502265b44ea52818",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/prisma/hold-transaction.spec.ts",
+      "sha256": "e9082f7a796483432fddd0625405eea83ddb7c72753d88830249f38ab82080b9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/prisma/hold-transaction.ts",
+      "sha256": "989f5017482f9accd05025e97d684f070969b9cc94965be4a2e83b20294bed39",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/prisma/prepare-hold-pool.spec.ts",
+      "sha256": "7c091553c4713d11c84f412ab313e642ba7f0919bdadf20911864dea62e960c8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/prisma/prepare-hold-pool.ts",
+      "sha256": "07f335f6cee8335d024cefcf69d7ec2fd51677b77eff0493757bdb70f1cd8cab",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/prisma/prisma.module.ts",
+      "sha256": "8e32aa6e0aa74ae51df4642cc0da286fe53447e3c66d3609b6689f65b03a4641",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/prisma/prisma.service.spec.ts",
+      "sha256": "bdc6508377227214802e75fc3c65e146f52323440ee6be0677b3eca9122ec897",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/prisma/prisma.service.ts",
+      "sha256": "f1648081e350b8687cf70a90e286449dbe1fe6bf09d2eacc228e2003c38933cb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/redis/redis.module.ts",
+      "sha256": "a7fcc9e3e178eecddd2072c8183377a13a59c1e7387a217f3bb31c3bbe9446e7",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/redis/redis.service.spec.ts",
+      "sha256": "252b6da41bbc29720e595eb772d45638726afa9f6db16b78428642e30bb2eabb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/redis/redis.service.ts",
+      "sha256": "8a4322c2d04366343c71d941fd834c6a1a855c08a51f6d54621b0fed23cabd3a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/scanner/scanner-benchmark.spec.ts",
+      "sha256": "337f33d92593521bcbb36a46b0009584da013cb1954f97fc99a9ee83812f9c3d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/scanner/scanner-crypto.service.spec.ts",
+      "sha256": "3588ff05d9bb2e494aa7638cf28ae0a3285503bc4f7ed52364b21cd948e92844",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/scanner/scanner-crypto.service.ts",
+      "sha256": "881bc4ad9005afc7cceb130ea8e521ed9a2d644b4ac37943e527df8a9d7636c5",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/scanner/scanner.controller.spec.ts",
+      "sha256": "5e75fcd91544ef9104046d2d9bd58d67582b1e324d6bae924fe6aa65158db861",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/scanner/scanner.controller.ts",
+      "sha256": "380711364c98f90202bc0b4ba8b86ed55b3006c87f63705d23c6123fa8ce3bbd",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/scanner/scanner.module.ts",
+      "sha256": "96475263a4ac1a3f5dc2316d339e510cfaa20c0af00616b55a87ed01af34fd6b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/scanner/scanner.service.spec.ts",
+      "sha256": "d048fef3c6faad9b9b9779dd6b65fb879c384ad38c062e5f9dd4cd131470799b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/scanner/scanner.service.ts",
+      "sha256": "51c695eaf4062a7c5bcc27cd8bbcf2d7f9a9c0238008dddf68519b2e1236863b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/showtimes/seat-map.spec.ts",
+      "sha256": "eeeeed4813e9eb1ac5658c48c4751de65a83e979a7818e3fd9b4df53d7e0830f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/showtimes/seat-map.ts",
+      "sha256": "abd36b36c36b4c0bade5c445ea485f4050f659a79e814f42d853b40079cde26d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/showtimes/seat-status.sql.ts",
+      "sha256": "1f8510f92e126b76bb899e7c80dd24bec4b61838f747ad9254e6b71e8bad37bb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/showtimes/showtimes.controller.ts",
+      "sha256": "c876e1dc1c97c14d2d6af99a21c1a4264902d7eeddeb0161982033c847b82c7f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/showtimes/showtimes.module.ts",
+      "sha256": "2b8d4c226207bb02191f7da702dcc0a98f08d07468a29dee25de18a771596b8d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/showtimes/showtimes.service.spec.ts",
+      "sha256": "f866c9edc95ccde86059018130859ec24aceecef8d4738532062b4b9f2bb85b0",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/showtimes/showtimes.service.ts",
+      "sha256": "a2d405737a4e07bfa54d9be7762c429d709fd84e0c911e2c17e5343d261a94f9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-code.ts",
+      "sha256": "bd01eeb514797dda7384a281e2c2844f1a68e5348778120991a4dc3ed935bf91",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-email.service.ts",
+      "sha256": "9842d4d13bf6dfb961b0cfc4948beda69d87db33262c3a2eb681956a7f28cf85",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-qr.spec.ts",
+      "sha256": "86b18af20ea707d871fd07e263f243a03602332d4fce0e192d29a00ec4817929",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-qr.ts",
+      "sha256": "529424d87f8dcb45c36a6996c3239d585c51e9b12356e4bd13b4db6c2a63b11d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-reminder.scheduler.spec.ts",
+      "sha256": "461bf88bef263f97a52cbbcd91c31e34d7797ef56e522aeaa5305a2726caa389",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-reminder.scheduler.ts",
+      "sha256": "00264a95126384746fb0c25c7b29f31961842de533588385cfc76d7d3f582632",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-signing-keys.spec.ts",
+      "sha256": "246a3fd5343f059b995215d91262300e0d2f10ea390958ef8b6ad261432592fd",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-signing-keys.ts",
+      "sha256": "621d942abdbef604b42dd0e2a65f0ea9d3bfa27e960489db05b17f7f0d5590aa",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-signing.service.ts",
+      "sha256": "6a9b197b8bd5d8aa7f29a8aba717cfe202dcadfaf03fff352277e825d38d5502",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/tickets/tickets.controller.ts",
+      "sha256": "8af8d66c0701843e5cdc148ff8d34b4f86621fb90a364e4febe3986792d94538",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/tickets/tickets.module.ts",
+      "sha256": "d325ad3b610584f3128a1d1dd7e6c1d7389dcbd8fea2d7a6e9323fea599e846d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/tickets/tickets.service.spec.ts",
+      "sha256": "3742bc1f9eece4bb577c622215ded3b8645784a9667e4be268e44edd769aba1c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/tickets/tickets.service.ts",
+      "sha256": "acbc9c9ba0d15d0b29397fed616b1cc93843cfbf99f17aa811b64e1410441987",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/users/users.controller.ts",
+      "sha256": "44236b919b72169e1b6b565574041fa1f438655541a1acc3006ce8e5edab9ce3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/users/users.module.ts",
+      "sha256": "f0172cea0eb9e44d4fc75ffca87fac7618c446aab53b32c65a705963e19edccd",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/users/users.service.spec.ts",
+      "sha256": "ca803b193334ad5923c60c8d39bd919e0f0f32af2e0d5c7a5e9e4ca48ebee70b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/api/src/users/users.service.ts",
+      "sha256": "997a57a4348a29e8aa4453cf363ffe71d4d40995aafcab4d097c614c62af7812",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/package.json",
+      "sha256": "c9eae5bdf6418af97ec5db5c07accd631e52b942e56f92db4331cb3f8dbc6c1e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/server.mjs",
+      "sha256": "a2e56f663cfb59738726faa10b60b15a8fe451449e18a5c6b36e98d87da59c39",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/account/page.tsx",
+      "sha256": "02b93410f7e44d26497543034ae6c7c8141baca10d316f47edbdca93c9e6d1c3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/api/[...path]/route.ts",
+      "sha256": "a975a529cd755240f5de2a9a8aff6176d16cbbe031981dc2b3d8948c1d73370a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/check-in/page.tsx",
+      "sha256": "f243740bd2ca32cbbd905da3d9513f46b79a06a7a61cdf7050c21a0ee119c707",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/events/[id]/page.tsx",
+      "sha256": "2e8c0cdff0a50021172eb28f19423cb82c18e3c243e2b69ef372ff3243dc70f3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/events/new/page.tsx",
+      "sha256": "1352579eb2033a81fb4bd656674e20c0e528f738ff011a8e7ebaee94e5827d5b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/events/page.tsx",
+      "sha256": "7dc89e22fd77c94d8e0977de35017c2a87f74f2809fa124997791d9cba0423ae",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/favicon.ico",
+      "sha256": "2b8ad2d33455a8f736fc3a8ebf8f0bdea8848ad4c0db48a2833bd0f9cd775932",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/globals.css",
+      "sha256": "09befb0f2d144ab69112aa6c2e0fe43f4699aca3f07191677e6c870e39430778",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/layout.tsx",
+      "sha256": "06aa3d2a43b36229d87b9c32732cdb3b5b67f7ac011a7cac373c775265c1879d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/login/page.tsx",
+      "sha256": "3d82c4d8cee337347d2e3880b0e505dc9885dd89c16bd64331c2a2440519c1ab",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/mock-gateway/pay/page.tsx",
+      "sha256": "6c9d102eec79f0e08981cffa7069ceb319bc1ae522e5a255ed44546ede1c73d4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/orders/[id]/page.tsx",
+      "sha256": "543473282240898bbf642f8f058a4993b4ba2055536ad96f05bba34f3f14bfb7",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/page.tsx",
+      "sha256": "bc4e6f04d0e4514ea3d44c57105c7e00e4de6391693a8be088d7100898383e20",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/payment/result/[orderId]/page.tsx",
+      "sha256": "fce84b0bcec9243004f6380be1e3797876d1fbab416c40d922d3148f9afd37b1",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/payment/result/page.tsx",
+      "sha256": "2e1b565f9bef6d2c0c4bcabe807d1785316e388a3c03d34cb0bc1821681744e0",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/product.css",
+      "sha256": "411d5ccdcbd3c06f976aea876029178728883aba900562ea552105fad2778481",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/scanner/page.tsx",
+      "sha256": "fdb5e35bbce635f9a99b942cb9d4761c82e4b586170e516325ef97cf3fe37691",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/scanner/snapshot/page.tsx",
+      "sha256": "0060b3e3a915052fc428af58136276fabf89ff9f67bc92b624cd770bef6ff944",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/shows/[id]/page.tsx",
+      "sha256": "bc86c81cd329393e8d58431979231ac935cb49689df09e9fd9d7fbac0065f961",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/shows/[id]/seats/page.tsx",
+      "sha256": "641ca674efc9739b04888cbc046f94e5145b10b845b7a6c297476c52f3eab859",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/app/showtimes/[id]/[mode]/page.tsx",
+      "sha256": "0991d9f77d918d2b9691af924fb0f322ea2825c14dc53b29b73a313f5077f69f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/event-editor.spec.tsx",
+      "sha256": "758e1280b1af729a23dfad8b67cea500061087df71ee5ac507f04866dae5e661",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/event-editor.tsx",
+      "sha256": "90ea3477927dfa4644413decad61aafacdfb8c4d630503965b292aab0e8475d8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/layout/product-layout.tsx",
+      "sha256": "a786ff0bf558d578e5f67635be42d891e2deb7cac3646eb3811b12235b7f3f87",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/layout/session-actions.tsx",
+      "sha256": "659b33fb6aa3589f0d508f1f203bb0a39701a7eb96d3336f768d7893bcff59cc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/login-form.spec.tsx",
+      "sha256": "8ae62762648e1c710d543913a0d49e697ee6a65d6bb31fd233d1adccae7c13e3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/login-form.tsx",
+      "sha256": "a0c88eb917049b27de7b58d5779777b4b4fb3cbb2f34cb7f255268bca64f15ee",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/seat-map/seat-map.tsx",
+      "sha256": "8dd3cb17f5bfe3c2f726d4cf4f334eec7b588e6d8a6857527202d6b8c9439e38",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/ui/alert.tsx",
+      "sha256": "06a660b95f39686d352ad44d1caa3f18a3744bf1615dac6df2d7fffd712aa56d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/ui/badge.tsx",
+      "sha256": "0d47e91e316f4204140bed3197b00d8b40e90be0d2caa2d2792849a73f4a2359",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/ui/button.tsx",
+      "sha256": "08e5f87833c5db8436e89337ebde0f776bcdbf649d3de69fb89be6441ca2e366",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/ui/dialog.tsx",
+      "sha256": "c8d0766d03668e250d2f58acb1f321480cf11db185083609325b5de9260acdce",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/ui/field.tsx",
+      "sha256": "57161acd69be864c67da168c275c0a8578ac08e2789134eaf946b410942f0cd9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/ui/input.tsx",
+      "sha256": "75418e030b2a54dd017ac0f4588db4bbdbabca7525e88bbc9d84cb3e18bcb905",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/ui/label.tsx",
+      "sha256": "344bde38b8531615dbf8e14af3895517c24d8ef6ce56ddeda7e2e6fe4b5d0c00",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/ui/material-icon.tsx",
+      "sha256": "cc5899d5ca8c0fbcda005ca8c0feb0debd17e33c7cba286c053b7bfec315df1a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/ui/separator.tsx",
+      "sha256": "703d48f0e86396fc467ac8ec4635b7b8b0443e8bcbae47c4dcf07a2a35e993c9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/ui/skeleton.tsx",
+      "sha256": "335c31b596ede04677158102adbc7c541998e708623815ac20f6ed4f59129564",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/ui/table.tsx",
+      "sha256": "77239066498ff81075f50b076cf1256ea2683cbe1847b2af2fb851b206c10f61",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/ui/textarea.tsx",
+      "sha256": "82601c91ffc6c727d924162c78d7cb853114bcced4e2eb922a68ca12d4239c0f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/check-in/check-in.spec.ts",
+      "sha256": "6ddce96fd2753fbec2cc90caede25d2323828a6dc5b413c0c905c2d88eb5ecbc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/event-catalog/event-catalog.tsx",
+      "sha256": "00b0817fb6aa58d97e4fa40fd7081bee6cbc39844698fbf7d238979effdac0a8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/event-catalog/event-poster.tsx",
+      "sha256": "e0f53bcdc8d648232b7d443c0b45cc3b7bc5cde8b6a50e6318248cfa1c627942",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/event-catalog/public-showtime.tsx",
+      "sha256": "67550a81adc156ba3845740996cbc3040851390a1423f97648851297ba0f48c9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/mock-gateway/mock-gateway-payment.tsx",
+      "sha256": "dc8f51c78b5d6a366a2dcd39290b48ecc1cc9a74eb76e9f26232363f26f1c8d4",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/mock-gateway/mock-gateway.spec.ts",
+      "sha256": "f379d16de546b6c2c98c8576050de8d22f36ef3499584b5945fbc5f755abe580",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/order-review/order-review.spec.ts",
+      "sha256": "612ac3451688564b57aa85833e9d658f963a8149aa99bee48a341f9e756dac5d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/order-review/order-review.tsx",
+      "sha256": "915db271534f553c9bad14d4d6a38bc54f4c1890e487d77378934f0902f99ebe",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/order-review/signed-tickets.tsx",
+      "sha256": "5d0a16e041986aba85a68dad0d4dfac631b56cae75dfdc6016808a8879e0862b",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/orders/order-status.tsx",
+      "sha256": "16bb0fe9601a0d290940606d8594caa1b44f4796dc27aff7cd785e9a36409f39",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/payment-result/payment-result.spec.ts",
+      "sha256": "a490dff2d2e58c22d4041392cb9d9eaa0e43a79f57f632e0bf4529c2a6e50cd2",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/payment-result/payment-result.tsx",
+      "sha256": "d3b73579e68886a7f6135709995c3ec2720c1d451000c91c01af12199d0f0aa9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/scanner/offline-scanner.spec.ts",
+      "sha256": "a9de6864f55cb8bbc4443b125f474df57cf7b584f62f0227883a11f3b0c5d200",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/scanner/offline-scanner.ts",
+      "sha256": "becf062de0589ef64c79744a0e12a80f3201b7c83263ca8bef634a656472bbef",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-api.ts",
+      "sha256": "9940b8ed0a3d0640ebb9cf0efe881c37e466200dd974c37e7b32f66a44f76c4a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-db.ts",
+      "sha256": "00ecc443527b5f460876dc0254f08bf108abf76cd14ed6e4d8863b7ec3e18733",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-showtime-selector.tsx",
+      "sha256": "1243e469a27dfbbf3d957233360d18bc4e4a0a591dd58fe11245e991cb36fccb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-sync.ts",
+      "sha256": "cd81598eb5b3b3c2cb130feb4e2edcae86c582cecbb81f48da3bbdea0eeeff4a",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-tickets-view.tsx",
+      "sha256": "33f1f748d279fab1df47f21ec120a42c1f63d42ccfcca92a80bbd603d82e9708",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner.spec.ts",
+      "sha256": "6a21d4659077a93d6a0f15749a004ff457d1d74791182c6c957529aa9edef5bc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/seat-map-import/seat-map-import-form.tsx",
+      "sha256": "c61113e291ca6cf9365d961295f0492bb84cfa0d099ee90d27c106e7b5f8fbb5",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/seat-pricing/seat-pricing-form.tsx",
+      "sha256": "94f9837d4b7b59cb0b66f82dc4c0cfe7fd00b9049014c9a758e952a1df761f78",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/seat-selection/seat-selection.tsx",
+      "sha256": "cb09a01d8346faf2a008debca80f43c27e9ab7f2ca442a8ae69561c90691b014",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/seat-selection/server-countdown.spec.ts",
+      "sha256": "23faa4547066ea65d5098222445cb77f3176bafd9297e225f094221fd4a81537",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/seat-selection/server-countdown.ts",
+      "sha256": "1c9baaf83ceb8489896614559b4807c315d8eb4cc9d51eba82bd460b385774aa",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/showtime-management/sale-status-control.tsx",
+      "sha256": "42dc06abe1cd8b60e9d67fa0453794ec391cbe5081c8591b97d8073d69e2a433",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/showtime-management/showtime-workspace.tsx",
+      "sha256": "0f2b5f54ce428472f5c0a54cabd08248e8fc165ca48ed2e05f9dec5e0aa521bd",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/showtime-management/ticket-limit-control.tsx",
+      "sha256": "0e4e4a7d6ba7ab4744caa0515a8ee12ec566dc020d74dd1caaaa73d2f190088d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/admission-override.tsx",
+      "sha256": "646783c7ea52c8a7264de29957cbe47f82b1c5589b6fd915f2183ebc22f41a98",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/admission-response.spec.ts",
+      "sha256": "612c2dbf69390bebc4d647da95e7738830de6fe51bb0e82e4c505c3310410982",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/admission-response.ts",
+      "sha256": "9fbe495500b244e1bb0d0a92caf29006ffa6e3bb17485ff234f7d22b735d19f3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/check-in-request.spec.ts",
+      "sha256": "a37c83783c3167989e0fac91ec022d1fa9eba7d8d8f97f2b607a0052a75cf0fb",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/check-in-request.ts",
+      "sha256": "065b1385bc7483b771e176d6a14ef9846afae9f1f0adfa1fe84a3f3f30808023",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/network-status.ts",
+      "sha256": "e17830b6c9d1f2ccdd2c9f1792558179963842f14139cced12d4e6e49dde7988",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/offline-banner.spec.ts",
+      "sha256": "40c3b9fec6ab8d58f90dd31efc9bdccdefbc2f36c03e384dcf877a3b13be866d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/offline-banner.tsx",
+      "sha256": "a8c3c5dcf28a4888e66f3d0ff13bb4d222e75d76be66657c6dfe1b7aabf51c28",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/offline-queue.ts",
+      "sha256": "b49e446b404057a5a431a799acb83b6ff72644ffe253553e6ae474aa7d8ed482",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/offline-sync.spec.ts",
+      "sha256": "6b3383a2c322c4434d1ed24bd0959d6d764b3b9040ea7e3cad536ffce8e8ab54",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/sync-manager.ts",
+      "sha256": "dd5850bc66bcce269b9e24f9fa152ef2c713588cbd688de5a2439a91d124c7e8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/ticket-scanner.tsx",
+      "sha256": "6c1b696e7328cb663bcc12cfc6017e284a06391592a3bd0fadd15564e65191d3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/verify-ticket-qr.ts",
+      "sha256": "3dd4dbcc37064037edc943253b58c0ad6096aa38554ef4e24279cf15d5585e23",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/tickets/order-tickets-api.spec.ts",
+      "sha256": "4aa417c237d3955cc4dda9b57cd607f173a6df7eb57ba87e45ad03100a40662c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/tickets/order-tickets-api.ts",
+      "sha256": "92e41ea39645a078cedb630b918b40933c9b567da08fc4abb82e4e8ae09bf44d",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/tickets/order-tickets.tsx",
+      "sha256": "340d3808cf5013a7c5a41bdebcfab6ae10226e57249a1e3416c5f02f0494f26f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/tickets/ticket-qr.spec.ts",
+      "sha256": "b5e92beb31fe9d79560436d172e3de97e61d44fb9f2ad553432bcc2866a319b3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/features/tickets/ticket-qr.ts",
+      "sha256": "1b4aa4afef8c969da8441c5b5d6327c6c38240aa1ff7ff625c9167eb288da296",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/hooks/useSeatHoldTimer.ts",
+      "sha256": "4fa3c82d4455b831dba815cef353417ec250703c3995c0546db1c642d82c3a60",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/api-check-in-s29.ts",
+      "sha256": "54d39e79cae139cb6fcc8d478ac70acee61bb222cfaa3a0cd80cace02c5461ed",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/api.spec.ts",
+      "sha256": "d2206e18ad96477019f5183af0f7b9ed467df771fc86a340ed4b83b852982362",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/api.ts",
+      "sha256": "51cc622c68cf26f676de4c66947f190c7635dd3175eec829b3a9cfb803fde36e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/api/client.spec.ts",
+      "sha256": "679ea2f2ea180f97dc178a7c4f4f292c6fbb149c04716c8df5d9f31eb7878116",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/api/client.ts",
+      "sha256": "d4d61c22b16125fd0a7faaadac30f384a73fdfa146f861935fb1d08384d0bda9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/contracts/holds.ts",
+      "sha256": "a4a01376fce3489f558b03b83df5f03a3b6ed1650a23deae4d72f9bc785195dc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/contracts/orders.spec.ts",
+      "sha256": "47d9e6828e693fed39d9220520a18ac9c310e7c0d08ae53e24b7c65a2179b160",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/contracts/orders.ts",
+      "sha256": "f2d6ec6ea8070a86e4237145bc8476f4acb10b7d8034b3b9a8c6ad1e03ec93f6",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/contracts/showtimes.ts",
+      "sha256": "2acdfc59cd66f97becb9cf2058b821c03144e8d971909c64401e569e29b2e727",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/formatting/index.ts",
+      "sha256": "24693d0d3aa914b2a943d4e641d6cf0e41284b2ddd0318c2b1be012ac87215bf",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/formatting/vietnam-input.spec.ts",
+      "sha256": "965c73fdca253495a678c1892357284a199913a0c23c6d7af468299dc11817a3",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/formatting/vietnam-input.ts",
+      "sha256": "6737e55392713b51ce9bd837d6c147743f1ec04631d504d46cd78b11acf0a19e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/presentation/seat-category.ts",
+      "sha256": "a33d0bbf847a43437f00a03fedcd0e7964fefbef65f3784199a46b13728f1c5e",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.spec.ts",
+      "sha256": "34ba192139fd9ee65946bb2fb01ab9b4b3690a0070dc3199d9c9695ab616531f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.ts",
+      "sha256": "5e98767619d6331c772c1c06d2c6870d1a6ce835d8b25d715e3d6d6edfff730c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/server/login-transport.mjs",
+      "sha256": "d65ed43b0943b92420536baa6468232281b5a0c5628b54ca4c231821dee30258",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/server/login-transport.spec.ts",
+      "sha256": "e3421d111cb3aa349fd4597cb08cd609809528c893d7707deaa69b2f27f9e569",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/utils.ts",
+      "sha256": "55bbdc94cef3e0c8a8bba386e94f97228dd2c967fe61466fc565378890550c08",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/styles/vendor/shadcn-LICENSE.md",
+      "sha256": "1564074e13439397221ffd522e2e504d56561994a23d371aa5e3ad43e4f5423f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/styles/vendor/shadcn-tailwind.css",
+      "sha256": "bc7d83425702955b4cb67cb14ede9d603f9d912376d57a2d81d661094d2a782a",
+      "unchanged": true
+    },
+    {
+      "path": "deploy/laptop-compat.mjs",
+      "sha256": "0507d8b88e7350fd18d817be84d712afbdc1c681504b99cc1419662c3cc2d1fb",
+      "unchanged": true
+    },
+    {
+      "path": "deploy/laptop-compat.spec.mjs",
+      "sha256": "3fae8ffc90e84d5b96558968fc67dcf8950e1666e61faddfec7637e8d0720191",
+      "unchanged": true
+    },
+    {
+      "path": "deploy/laptop-gateway.mjs",
+      "sha256": "c3748f0b8471c263d2da6f5163bdc688c09c55794a48dc8cdf16cd1300e9ab82",
+      "unchanged": true
+    },
+    {
+      "path": "deploy/laptop-gateway.spec.mjs",
+      "sha256": "4c76726db47fb79a9817f5ac76de5f18958a0f6210d58217552bbf1da6a43fc0",
+      "unchanged": true
+    },
+    {
+      "path": "deploy/laptop-release.mjs",
+      "sha256": "c9fb1dd4694186a08bc61d7366aa0a3755d7c6c3ce7b0e64a8ee81fb06cf9b47",
+      "unchanged": true
+    },
+    {
+      "path": "deploy/laptop-release.spec.mjs",
+      "sha256": "21b5bfc94d7622728ce4e9d2fcad10765be3592bbca1051e2d473287a7718aa0",
+      "unchanged": true
+    },
+    {
+      "path": "deploy/laptop-resources.mjs",
+      "sha256": "fc309b1aa4afb68632dba196625ddfce15e6db858eb9a755efebe2d841d11a10",
+      "unchanged": true
+    },
+    {
+      "path": "deploy/laptop-resources.spec.mjs",
+      "sha256": "2daf71d906ecab046ba3ffc4514b0f3e33d463db780be269bac82caa59d458a0",
+      "unchanged": true
+    },
+    {
+      "path": "deploy/laptop-watcher.spec.mjs",
+      "sha256": "9bb073d3635da6f3b8b99f2fe38c6928a549aa0533a19b364d3d850dcf7d3da0",
+      "unchanged": true
+    },
+    {
+      "path": "deploy/next-root-dirs.spec.mjs",
+      "sha256": "71d5e7522e46a235527c84f235ce28271bfd6c82b7993d1403c8589fe76d0fec",
+      "unchanged": true
+    },
+    {
+      "path": "deploy/render-start.mjs",
+      "sha256": "770f98a6f37a11b6aabfc9d6546c93f2e2e5d1528f809daa556b2c6973408a9e",
+      "unchanged": true
+    },
+    {
+      "path": "package.json",
+      "sha256": "2aeb280b8a82252509148729cd36e42ff97fb5e91586729cf7e6cc867b4e76b2",
+      "unchanged": true
+    },
+    {
+      "path": "packages/shared/index.ts",
+      "sha256": "3c209c996dd56201e7d4d7be5dddd28830c4e06e5452093ab414272a3217aa54",
+      "unchanged": true
+    },
+    {
+      "path": "packages/shared/login-peer.d.ts",
+      "sha256": "58650e361cb7be728c02b7f03cf6829918a586bd553a60de101343838ddfaf3f",
+      "unchanged": true
+    },
+    {
+      "path": "packages/shared/login-peer.js",
+      "sha256": "e489ca3241aec8b17bdb9175375771b30f1d02594ebe565e7ec81613ed22e56f",
+      "unchanged": true
+    },
+    {
+      "path": "packages/shared/package.json",
+      "sha256": "185c156494af0e555489ecd65c38199ec447510ba11ff454ece8b8a37d928144",
+      "unchanged": true
+    },
+    {
+      "path": "packages/shared/ticket-qr.d.ts",
+      "sha256": "600861542af4e34730d591ce4e561801cf7105c02d80b5474c7ae85199b219b5",
+      "unchanged": true
+    },
+    {
+      "path": "packages/shared/ticket-qr.js",
+      "sha256": "2583920da8187eccf3ec54374ca1f619a3946ed88faad8c5fd04b6221911e530",
+      "unchanged": true
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "3fc3d783096a0ba01b13a26dcecf5f2dc628bcc6504215142bcefb82a508d30f",
+      "unchanged": true
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "sha256": "9dab76ebacf40d9d8502837afc35f6cc64154e5e5baf207da9cc04a6e980a687",
+      "unchanged": true
+    }
+  ],
+  "rule": "Only documentation/evidence/test/harness changes after runtime SHA; no unchanged evidence is relabelled as executed on candidate. New source/test changes require revalidation.",
+  "testOnlyFollowup": {
+    "base": "e8ef7601d00604524bbd8ec752f10dee67028167",
+    "path": "apps/api/src/payments/gateways/momo.gateway.spec.ts",
+    "workingSha256": "02be4bd79a655d0b7da4addc7d40ebfd4e7f07ce797c392f463fc6dcb2da2517",
+    "evidence": "momo-unit-harness.json",
+    "rule": "Earlier a2→5b unchanged blobs remain original. New adapter spec changes verification only; product roots exclude *.spec.ts for final runtime compatibility. Production adapter itself remains byte-identical."
+  }
+}

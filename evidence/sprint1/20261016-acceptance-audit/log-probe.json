@@ -1,0 +1,75 @@
+{
+  "time": "2026-10-16T10:05:23.980Z",
+  "since": "2026-10-16T10:05:22.549Z",
+  "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "candidate": "5b3f67bc343729dd6d87140b77af6536ec704086",
+  "origin": "https://10.88.164.155:3470",
+  "result": "PASS",
+  "cases": [
+    {
+      "case": "validation-error-with-fake-sensitive-input",
+      "status": 400,
+      "result": "PASS"
+    },
+    {
+      "case": "role-denial-with-fake-sensitive-input",
+      "status": 403,
+      "result": "PASS"
+    },
+    {
+      "case": "invalid-session",
+      "status": 401,
+      "result": "PASS"
+    }
+  ],
+  "scans": [
+    {
+      "container": "sprint1-stage-api-a2e5f675a371-1792137268858",
+      "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "bytes": 147,
+      "sha256": "44b6664c4712f2d67eb80d98e2eb86dfaa6b5f9bc9024e622c9bfd78e5e32474",
+      "sensitiveLiteralMatches": 0
+    },
+    {
+      "container": "sprint1-stage-api-replica-a2e5f675a371-1792137268859",
+      "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "sensitiveLiteralMatches": 0
+    },
+    {
+      "container": "sprint1-stage-web-a2e5f675a371-1792137272414",
+      "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "sensitiveLiteralMatches": 0
+    }
+  ],
+  "gatewayScans": [
+    {
+      "path": ".sprint1-staging/logs/gateway.out.log",
+      "bytes": 2070,
+      "sha256": "d6f62b8d6a42a224b458efd00c49e6f028e99071c1b267adee849db71e0ff755",
+      "sensitiveLiteralMatches": 0
+    },
+    {
+      "path": ".sprint1-staging/logs/gateway.err.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sensitiveLiteralMatches": 0
+    }
+  ],
+  "denialLogPresent": true,
+  "markersPublished": false,
+  "limitations": [
+    "Sprint1 login/logout, validation/denial and session paths only; no acceptance of future payment/QR/email workflows",
+    "No failed-login/IP-lock probe, no external telemetry configured; no claim of exhaustive whole-product PII assurance"
+  ],
+  "verificationSource": {
+    "path": "evidence\\sprint1\\20261016-acceptance-audit\\acceptance-log-probe.mjs",
+    "sha256": "1e40a6545290e071d0b61669baafe80ecf72461a724f006855ef531dfcb78522",
+    "executedAs": ".sprint1-local/acceptance-log-probe.mjs",
+    "executedSha256": "b26e5054c2c57aad39a7762c18129172f7c4b9f8bb2207513b7367c4b8f172e0",
+    "publicationTransform": "Prettier formatting only; executed and published hashes recorded separately"
+  }
+}

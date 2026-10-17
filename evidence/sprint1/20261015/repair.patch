@@ -1,0 +1,2447 @@
+diff --git a/.dockerignore b/.dockerignore
+index ac6f543..d00113d 100644
+--- a/.dockerignore
++++ b/.dockerignore
+@@ -1,4 +1,5 @@
+ .git
++.sprint1-local
+ .env
+ .env.*
+ **/.env
+diff --git a/.env.example b/.env.example
+index 0513ed7..c8390bd 100644
+--- a/.env.example
++++ b/.env.example
+@@ -6,10 +6,14 @@ DATABASE_URL=postgresql://<LOCAL_DB_USER>:<LOCAL_DB_PASSWORD>@localhost:5432/<LO
+ REDIS_HOST=localhost
+ REDIS_PORT=6379
+ PORT=3001
++WEB_PORT=3000
+ NEXT_PUBLIC_API_URL=http://localhost:3001
+ 
+ # Browser origin allowed to send state-changing requests with a session cookie.
+ WEB_ORIGIN=http://localhost:3000
++# Server-only key shared by the custom web entry and API, >=32 random characters.
++# Use pnpm dev/start; plain next start has no transport-peer attestation.
++AUTH_PROXY_SECRET=<LOCAL_RANDOM_AUTH_PROXY_SECRET>
+ 
+ # Local fake accounts only; required when running pnpm --filter api seed:demo.
+ DEMO_ADMIN_PASSWORD=<LOCAL_DEMO_ADMIN_PASSWORD>
+diff --git a/.gitignore b/.gitignore
+index 592006a..d80057e 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -74,6 +74,7 @@ web_modules/
+ 
+ # dotenv environment variable files
+ .env
++.sprint1-local/
+ .env.development.local
+ .env.test.local
+ .env.production.local
+diff --git a/Dockerfile b/Dockerfile
+index 67ef9f7..a348b88 100644
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -24,7 +24,9 @@ RUN pnpm --filter api exec prisma generate && pnpm --filter api build \
+     && (cd /out/api && /app/apps/api/node_modules/.bin/prisma generate --schema prisma/schema.prisma)
+ 
+ FROM dependencies AS web-build
+-RUN pnpm --filter web build
++RUN pnpm --filter web build \
++    && pnpm --filter web deploy --legacy --prod /out/web \
++    && (cd apps/web && tar --exclude=.next/standalone --exclude=.next/cache -cf - .next | tar -xf - -C /out/web)
+ 
+ FROM node:24.21.0-bookworm-slim AS api
+ ENV NODE_ENV=production
+@@ -41,13 +43,11 @@ ENV NODE_ENV=production
+ ENV PORT=3000
+ ENV HOSTNAME=0.0.0.0
+ WORKDIR /app
+-COPY --chown=node:node --from=web-build /app/apps/web/.next/standalone /app
+-COPY --chown=node:node --from=web-build /app/apps/web/.next/static /app/apps/web/.next/static
+-COPY --chown=node:node --from=web-build /app/apps/web/public /app/apps/web/public
+-WORKDIR /app/apps/web
++COPY --chown=node:node --from=web-build /out/web /app
++ENV WEB_HOST=0.0.0.0
+ EXPOSE 3000
+ USER node
+-CMD ["node", "server.js"]
++CMD ["node", "server.mjs"]
+ 
+ # Operator-only migration image. Never receives database secrets at build time.
+ FROM api-build AS migration
+@@ -63,10 +63,9 @@ ENV PORT=10000
+ WORKDIR /app
+ RUN apt-get update && apt-get install --yes --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+ COPY --chown=node:node --from=api-build /out/api /app/api
+-COPY --chown=node:node --from=web-build /app/apps/web/.next/standalone /app/web
+-COPY --chown=node:node --from=web-build /app/apps/web/.next/static /app/web/apps/web/.next/static
+-COPY --chown=node:node --from=web-build /app/apps/web/public /app/web/apps/web/public
++COPY --chown=node:node --from=web-build /out/web /app/web
+ COPY --chown=node:node deploy/render-start.mjs /app/render-start.mjs
++ENV WEB_HOST=0.0.0.0
+ EXPOSE 10000
+ USER node
+ CMD ["node", "render-start.mjs"]
+diff --git a/README.md b/README.md
+index 9dabed5..2697391 100644
+--- a/README.md
++++ b/README.md
+@@ -1,5 +1,7 @@
+ # Chạy dự án bán vé sự kiện trên máy cá nhân
+ 
++> **Sprint 1 review/demo 15/10/2026:** xem [runbook](docs/SPRINT1_DEMO_RUNBOOK.md), [ma trận nghiệm thu](docs/SPRINT1_ACCEPTANCE_MATRIX.md) và [báo cáo](docs/SPRINT1_REVIEW_REPORT.md). Profile này dùng worktree/database/container riêng, web 3400/API 3401; chưa commit/push/deploy. Khi chạy web, dùng entry `pnpm --filter web dev` hoặc `start` để xác thực IP đăng nhập qua proxy. Root `.env` cần `WEB_PORT` và `AUTH_PROXY_SECRET` ngẫu nhiên tối thiểu 32 ký tự, cùng giá trị server-only trên web/API. Không dùng `next start` trực tiếp. Các checkpoint cũ bên dưới chỉ phản ánh thời điểm được ghi.
++
+ > **Hướng dẫn hiện hành cho giao diện, tài khoản và giữ ghế Sprint 2:** [LOCAL_USER_GUIDE](docs/LOCAL_USER_GUIDE.md). Có lệnh build/chạy/test từng bước, tài khoản người tổ chức/người mua, cách đọc mật khẩu giả riêng trên máy và xử lý lỗi. Profile review dùng PostgreSQL 15432/Redis 16379 với database `stitch_fidelity`; các mục T-01 và checkpoint cũ dưới đây được giữ làm lịch sử, dùng profile khác.
+ 
+ Đây là hướng dẫn cho môi trường local theo T-01/TECH-01. Docker Compose chạy PostgreSQL và Redis; API NestJS và web Next.js chạy trực tiếp trên máy. Web dùng cổng **3000**, API dùng cổng **3001**. Các lệnh dưới đây dùng PowerShell và được chạy từ thư mục `thudemo/` chứa file README này.
+diff --git a/apps/api/src/auth/auth.controller.ts b/apps/api/src/auth/auth.controller.ts
+index d0e9e79..d3c0287 100644
+--- a/apps/api/src/auth/auth.controller.ts
++++ b/apps/api/src/auth/auth.controller.ts
+@@ -5,6 +5,7 @@ import {
+   HttpCode,
+   HttpStatus,
+   Get,
++  ForbiddenException,
+   Req,
+   Res,
+ } from '@nestjs/common';
+@@ -14,6 +15,11 @@ import { SESSION_COOKIE, SESSION_TTL_SECONDS } from './auth.service.js';
+ import { Public, Roles } from './decorators/roles.decorator.js';
+ import { ROLE_NAMES } from './roles.js';
+ import type { AuthenticatedRequest } from './guards/session-auth.guard.js';
++import {
++  canonicalPeer,
++  verifyLoginPeer,
++  LOGIN_PEER_HEADER,
++} from 'shared/login-peer';
+ 
+ @Controller('auth')
+ export class AuthController {
+@@ -24,11 +30,29 @@ export class AuthController {
+   @HttpCode(HttpStatus.OK)
+   async login(
+     @Body() body: unknown,
++    @Req() request: AuthenticatedRequest,
+     @Res({ passthrough: true }) response: Response,
+   ) {
+     const input =
+       body && typeof body === 'object' ? (body as Record<string, unknown>) : {};
+-    const session = await this.authService.login(input.email, input.password);
++    let peer: string;
++    try {
++      const attestation = request.headers[LOGIN_PEER_HEADER];
++      peer =
++        attestation === undefined
++          ? canonicalPeer(request.socket.remoteAddress)
++          : verifyLoginPeer(
++              typeof attestation === 'string' ? attestation : '',
++              process.env.AUTH_PROXY_SECRET,
++            );
++    } catch {
++      throw new ForbiddenException('Nguồn đăng nhập không hợp lệ.');
++    }
++    const session = await this.authService.login(
++      input.email,
++      input.password,
++      peer,
++    );
+     response.cookie(SESSION_COOKIE, session.token, {
+       httpOnly: true,
+       secure: process.env.NODE_ENV === 'production',
+diff --git a/apps/api/src/auth/auth.service.ts b/apps/api/src/auth/auth.service.ts
+index abfc094..7dd9c5f 100644
+--- a/apps/api/src/auth/auth.service.ts
++++ b/apps/api/src/auth/auth.service.ts
+@@ -27,7 +27,7 @@ export class AuthService {
+     private readonly redis: RedisService,
+   ) {}
+ 
+-  async login(emailInput: unknown, passwordInput: unknown) {
++  async login(emailInput: unknown, passwordInput: unknown, peerIp?: string) {
+     if (
+       typeof emailInput !== 'string' ||
+       typeof passwordInput !== 'string' ||
+@@ -43,6 +43,18 @@ export class AuthService {
+     }
+ 
+     try {
++      const ipRetryAfter = peerIp
++        ? await this.redis.loginIpRetryAfter(peerIp)
++        : 0;
++      if (ipRetryAfter > 0) {
++        throw new HttpException(
++          {
++            message: 'Đăng nhập tạm khoá. Thử lại sau ít phút.',
++            retryAfterSeconds: ipRetryAfter,
++          },
++          429,
++        );
++      }
+       if (await this.redis.isAccountLocked(email)) {
+         const seconds = Math.max(1, await this.redis.getLockTTL(email));
+         throw new HttpException(
+@@ -73,6 +85,7 @@ export class AuthService {
+     );
+     if (!user || !isMatch || !user.isEmailVerified) {
+       try {
++        if (peerIp) await this.redis.recordLoginIpFailure(peerIp);
+         const failures = await this.redis.incrementLoginFailures(email);
+         if (failures >= 5) {
+           await this.redis.lockAccount(email);
+diff --git a/apps/api/src/redis/redis.service.ts b/apps/api/src/redis/redis.service.ts
+index bb9e44e..0c1438f 100644
+--- a/apps/api/src/redis/redis.service.ts
++++ b/apps/api/src/redis/redis.service.ts
+@@ -11,6 +11,22 @@ function accountKey(prefix: string, email: string): string {
+ export class RedisService {
+   constructor(@Inject('REDIS_CLIENT') private readonly redis: Redis) {}
+ 
++  // A separate shared budget prevents rotating email addresses from bypassing
++  // account lockout. Use the transport peer only; forwarded headers are untrusted.
++  async loginIpRetryAfter(ip: string): Promise<number> {
++    const key = accountKey('ip-fail', ip);
++    const count = Number((await this.redis.get(key)) ?? 0);
++    return count >= 30 ? Math.max(1, await this.redis.ttl(key)) : 0;
++  }
++
++  async recordLoginIpFailure(ip: string): Promise<void> {
++    await this.redis.eval(
++      "local n = redis.call('INCR', KEYS[1]); if n == 1 then redis.call('EXPIRE', KEYS[1], 900); end; return n",
++      1,
++      accountKey('ip-fail', ip),
++    );
++  }
++
+   async ping(): Promise<void> {
+     if (this.redis.status !== 'ready') {
+       throw new Error('Redis is unavailable');
+diff --git a/apps/web/package.json b/apps/web/package.json
+index 1f3d6cd..445130d 100644
+--- a/apps/web/package.json
++++ b/apps/web/package.json
+@@ -3,9 +3,9 @@
+   "version": "0.1.0",
+   "private": true,
+   "scripts": {
+-    "dev": "next dev",
++    "dev": "node --env-file=../../.env server.mjs --dev",
+     "build": "next build",
+-    "start": "next start",
++    "start": "node --env-file=../../.env server.mjs",
+     "lint": "eslint",
+     "typecheck": "tsc --noEmit",
+     "test": "vitest run"
+diff --git a/apps/web/src/components/event-editor.tsx b/apps/web/src/components/event-editor.tsx
+index 9cb4336..09721f5 100644
+--- a/apps/web/src/components/event-editor.tsx
++++ b/apps/web/src/components/event-editor.tsx
+@@ -12,6 +12,10 @@ import { OrganizerLayout } from "@/components/layout/product-layout";
+ import { Badge } from "@/components/ui/badge";
+ import { Skeleton } from "@/components/ui/skeleton";
+ import { loadCurrentUser, readApiError } from "@/lib/api";
++import {
++  vietnamInputToUtc,
++  vietnamInputFromUtc,
++} from "@/lib/formatting/vietnam-input";
+ 
+ type EventDetails = {
+   id: string;
+@@ -50,6 +54,22 @@ export function EventEditor({ eventId }: EventEditorProps) {
+ 
+   const submitting = useRef(false);
+   const showtimeSubmitting = useRef(false);
++  const ownerId = useRef("");
++  const draftKey = `event-draft:${eventId ?? "new"}`;
++
++  function recoverSession() {
++    try {
++      sessionStorage.setItem(
++        draftKey,
++        JSON.stringify({ ownerId: ownerId.current, draft, startTime }),
++      );
++    } catch {
++      /* Storage may be unavailable. */
++    }
++    router.replace(
++      `/login?returnTo=${encodeURIComponent(eventId ? `/events/${eventId}` : "/events/new")}`,
++    );
++  }
+ 
+   useEffect(() => {
+     let mounted = true;
+@@ -64,8 +84,10 @@ export function EventEditor({ eventId }: EventEditorProps) {
+           setForbidden(true);
+           return;
+         }
++        ownerId.current = user.id;
+ 
+         if (!eventId) {
++          restoreDraft(user.id);
+           if (mounted) setLoading(false);
+           return;
+         }
+@@ -73,6 +95,10 @@ export function EventEditor({ eventId }: EventEditorProps) {
+         const response = await fetch(`/api/events/${eventId}/manage`, {
+           cache: "no-store",
+         });
++        if (response.status === 401) {
++          router.replace("/login");
++          return;
++        }
+         if (response.status === 403) {
+           setForbidden(true);
+           return;
+@@ -86,17 +112,43 @@ export function EventEditor({ eventId }: EventEditorProps) {
+           description: result.description,
+           location: result.location,
+         });
++        restoreDraft(user.id);
+       } catch {
+         if (mounted) setError("Không tải được sự kiện. Hãy thử lại.");
+       } finally {
+         if (mounted) setLoading(false);
+       }
+     }
++    function restoreDraft(userId: string) {
++      try {
++        const saved = sessionStorage.getItem(draftKey);
++        sessionStorage.removeItem(draftKey);
++        if (!saved) return;
++        const value = JSON.parse(saved) as {
++          ownerId?: string;
++          draft?: typeof empty;
++          startTime?: string;
++        };
++        if (value.ownerId !== userId) return;
++        if (
++          value.draft &&
++          [
++            value.draft.name,
++            value.draft.description,
++            value.draft.location,
++          ].every((v) => typeof v === "string")
++        )
++          setDraft(value.draft);
++        if (typeof value.startTime === "string") setStartTime(value.startTime);
++      } catch {
++        /* Ignore unavailable storage or malformed drafts. */
++      }
++    }
+     void load();
+     return () => {
+       mounted = false;
+     };
+-  }, [eventId, router]);
++  }, [eventId, router, draftKey]);
+ 
+   function update(field: keyof typeof empty, value: string) {
+     setDraft((current) => ({ ...current, [field]: value }));
+@@ -128,6 +180,10 @@ export function EventEditor({ eventId }: EventEditorProps) {
+           body: JSON.stringify(draft),
+         },
+       );
++      if (response.status === 401) {
++        recoverSession();
++        return;
++      }
+       if (response.status === 403) {
+         setForbidden(true);
+         return;
+@@ -159,7 +215,8 @@ export function EventEditor({ eventId }: EventEditorProps) {
+   async function addShowtime(event: FormEvent<HTMLFormElement>) {
+     event.preventDefault();
+     if (showtimeSubmitting.current) return;
+-    if (!startTime || new Date(startTime) <= new Date()) {
++    const startTimeUtc = vietnamInputToUtc(startTime);
++    if (!startTimeUtc || new Date(startTimeUtc) <= new Date()) {
+       setFieldErrors((current) => ({
+         ...current,
+         startTime: "Vui lòng chọn thời gian bắt đầu trong tương lai.",
+@@ -174,8 +231,12 @@ export function EventEditor({ eventId }: EventEditorProps) {
+       const response = await fetch(`/api/events/${eventId}/showtimes`, {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+-        body: JSON.stringify({ startTime: new Date(startTime).toISOString() }),
++        body: JSON.stringify({ startTime: startTimeUtc }),
+       });
++      if (response.status === 401) {
++        recoverSession();
++        return;
++      }
+       if (response.status === 403) {
+         setForbidden(true);
+         return;
+@@ -213,13 +274,9 @@ export function EventEditor({ eventId }: EventEditorProps) {
+ 
+   function setPresetTime(hoursAhead: number) {
+     const d = new Date();
+-    d.setHours(d.getHours() + hoursAhead);
+-    d.setMinutes(0);
+-    d.setSeconds(0);
+-    const localIso = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+-      .toISOString()
+-      .slice(0, 16);
+-    setStartTime(localIso);
++    d.setTime(d.getTime() + hoursAhead * 60 * 60 * 1000);
++    d.setUTCMinutes(0, 0, 0);
++    setStartTime(vietnamInputFromUtc(d));
+   }
+ 
+   return (
+@@ -379,7 +436,9 @@ export function EventEditor({ eventId }: EventEditorProps) {
+                   noValidate
+                 >
+                   <div>
+-                    <Label htmlFor="showtime-start">Thời gian bắt đầu *</Label>
++                    <Label htmlFor="showtime-start">
++                      Thời gian bắt đầu (giờ Việt Nam) *
++                    </Label>
+                     <Input
+                       id="showtime-start"
+                       type="datetime-local"
+@@ -433,6 +492,7 @@ export function EventEditor({ eventId }: EventEditorProps) {
+                         <div>
+                           <time dateTime={st.startTime}>
+                             {new Intl.DateTimeFormat("vi-VN", {
++                              timeZone: "Asia/Ho_Chi_Minh",
+                               dateStyle: "full",
+                               timeStyle: "short",
+                             }).format(new Date(st.startTime))}
+diff --git a/apps/web/src/components/login-form.tsx b/apps/web/src/components/login-form.tsx
+index 26debb8..c4c675e 100644
+--- a/apps/web/src/components/login-form.tsx
++++ b/apps/web/src/components/login-form.tsx
+@@ -85,11 +85,13 @@ export function LoginForm({
+     >
+       <div className="product-login">
+         <h1>
+-          {returnTo?.startsWith("/orders")
+-            ? "Đăng nhập để xem đơn hàng"
+-            : returnTo
+-              ? "Đăng nhập để tiếp tục chọn ghế"
+-              : "Đăng nhập"}
++          {returnTo?.startsWith("/events/")
++            ? "Đăng nhập để tiếp tục sửa sự kiện"
++            : returnTo?.startsWith("/orders")
++              ? "Đăng nhập để xem đơn hàng"
++              : returnTo
++                ? "Đăng nhập để tiếp tục chọn ghế"
++                : "Đăng nhập"}
+         </h1>
+         <p>
+           {returnTo
+@@ -108,9 +110,11 @@ export function LoginForm({
+                 </strong>
+               )}
+               <p>
+-                {returnTo?.startsWith("/orders")
+-                  ? "Sau khi đăng nhập thành công, bạn sẽ quay lại đơn hàng đang xem."
+-                  : `Sau khi đăng nhập thành công, bạn sẽ quay lại chọn ghế ${show ? `cho ${show.event.name}` : "cho đúng suất diễn"}.`}
++                {returnTo?.startsWith("/events/")
++                  ? "Sau khi đăng nhập, bạn sẽ quay lại biểu mẫu sự kiện. Nội dung đang nhập được khôi phục cho cùng tài khoản trên thẻ này."
++                  : returnTo?.startsWith("/orders")
++                    ? "Sau khi đăng nhập thành công, bạn sẽ quay lại đơn hàng đang xem."
++                    : `Sau khi đăng nhập thành công, bạn sẽ quay lại chọn ghế ${show ? `cho ${show.event.name}` : "cho đúng suất diễn"}.`}
+               </p>
+             </div>
+           </div>
+diff --git a/apps/web/src/lib/api.ts b/apps/web/src/lib/api.ts
+index a23b327..3b47e2b 100644
+--- a/apps/web/src/lib/api.ts
++++ b/apps/web/src/lib/api.ts
+@@ -63,9 +63,12 @@ export async function loadCurrentUser(): Promise<CurrentUser | null> {
+ 
+ export function safeReturnTo(value: string | null): string | null {
+   return value &&
+-    (/^\/shows\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/seats$/i.test(
++    (/^\/events\/(?:new|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.test(
+       value,
+     ) ||
++      /^\/shows\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/seats$/i.test(
++        value,
++      ) ||
+       /^\/orders(?:\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?(?:\?page=[1-9]\d{0,8})?$/i.test(
+         value,
+       ))
+diff --git a/apps/web/src/lib/server/api-proxy.spec.ts b/apps/web/src/lib/server/api-proxy.spec.ts
+index a463b50..071f6d7 100644
+--- a/apps/web/src/lib/server/api-proxy.spec.ts
++++ b/apps/web/src/lib/server/api-proxy.spec.ts
+@@ -1,5 +1,6 @@
+ import { afterEach, describe, expect, it, vi } from "vitest";
+ import { proxyApi, upstreamUrl } from "./api-proxy";
++import { signLoginPeer, LOGIN_PEER_HEADER } from "shared/login-peer";
+ afterEach(() => {
+   vi.unstubAllGlobals();
+   vi.unstubAllEnvs();
+@@ -20,6 +21,8 @@ describe("Runtime same-origin API proxy", () => {
+     ).toThrow();
+   });
+   it("forwards cookie and real origin, strips spoofed headers and preserves errors/cookies", async () => {
++    const secret = "test-only-peer-attestation-secret-32-characters";
++    vi.stubEnv("AUTH_PROXY_SECRET", secret);
+     vi.stubEnv("API_INTERNAL_URL", "https://sang-api.onrender.com");
+     const headers = new Headers({
+       "content-type": "application/json",
+@@ -39,6 +42,7 @@ describe("Runtime same-origin API proxy", () => {
+       new Request("https://sang-web.onrender.com/api/auth/login", {
+         method: "POST",
+         headers: {
++          [LOGIN_PEER_HEADER]: signLoginPeer("192.0.2.10", secret),
+           origin: "https://sang-web.onrender.com",
+           cookie: "session=fixture",
+           "x-forwarded-host": "spoof",
+@@ -57,6 +61,26 @@ describe("Runtime same-origin API proxy", () => {
+     expect(forwarded.has("x-forwarded-host")).toBe(false);
+     expect(res.headers.get("cache-control")).toBe("no-store");
+   });
++  it("fails closed on missing or forged transport identity before forwarding login", async () => {
++    vi.stubEnv(
++      "AUTH_PROXY_SECRET",
++      "test-only-peer-attestation-secret-32-characters",
++    );
++    const fetchMock = vi.fn();
++    vi.stubGlobal("fetch", fetchMock);
++    for (const value of ["", "forged"]) {
++      const res = await proxyApi(
++        new Request("http://localhost/api/auth/login", {
++          method: "POST",
++          headers: { [LOGIN_PEER_HEADER]: value },
++          body: "{}",
++        }),
++        ["auth", "login"],
++      );
++      expect(res.status).toBe(503);
++    }
++    expect(fetchMock).not.toHaveBeenCalled();
++  });
+   it("fails closed without exposing upstream credentials and bounds body before forwarding", async () => {
+     vi.stubGlobal(
+       "fetch",
+diff --git a/apps/web/src/lib/server/api-proxy.ts b/apps/web/src/lib/server/api-proxy.ts
+index ac3cd16..63f530f 100644
+--- a/apps/web/src/lib/server/api-proxy.ts
++++ b/apps/web/src/lib/server/api-proxy.ts
+@@ -1,4 +1,5 @@
+ const BODY_LIMIT = 5 * 1024 * 1024;
++import { verifyLoginPeer, LOGIN_PEER_HEADER } from "shared/login-peer";
+ 
+ export function upstreamUrl(base: string, path: string[], search: string): URL {
+   const url = new URL(base);
+@@ -66,6 +67,11 @@ export async function proxyApi(
+       new URL(request.url).search,
+     );
+     const headers = new Headers();
++    if (request.method === "POST" && path.join("/") === "auth/login") {
++      const attestation = request.headers.get(LOGIN_PEER_HEADER) ?? "";
++      verifyLoginPeer(attestation, process.env.AUTH_PROXY_SECRET);
++      headers.set(LOGIN_PEER_HEADER, attestation);
++    }
+     for (const name of [
+       "accept",
+       "content-type",
+diff --git a/deploy/render-start.mjs b/deploy/render-start.mjs
+index 170c5b1..ca91dd9 100644
+--- a/deploy/render-start.mjs
++++ b/deploy/render-start.mjs
+@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
+ const role = process.env.SERVICE_ROLE;
+ const paths = {
+   api: ["/app/api", "dist/main.js"],
+-  web: ["/app/web/apps/web", "server.js"],
++  web: ["/app/web", "server.mjs"],
+ };
+ if (!Object.hasOwn(paths, role))
+   throw new Error("SERVICE_ROLE must be api or web");
+diff --git a/docs/K01_EVIDENCE.md b/docs/K01_EVIDENCE.md
+index 325dc39..c10d2bb 100644
+--- a/docs/K01_EVIDENCE.md
++++ b/docs/K01_EVIDENCE.md
+@@ -1,3 +1,11 @@
++# Trạng thái đối chiếu 15/10/2026 — không thay lịch sử dưới đây
++
++Review Sprint1 lấy source main `81d1dd9d8f453b32ed0c6956399e5600f71a32d6` và đọc raw artifact của CI run `38695462765`, job `K-01 / candidate-research`. Bản lưu: `evidence/sprint1/20261015/k01-current-ci.json`. PostgreSQL p95 ba lượt200/1:489.41/225.51/177.61ms; Redis:58.09/35.09/30.15ms. Mỗi lượt1winner/199conflict/0errors. Hai process/store, PostgreSQL15/Redis7 thật; pool8/process; AMD EPYC9V45,4threads,Node24.21.0. PG giữ ownership sau restart, Redis không persistence mất ownership. Đây là CI prototype mới; chuỗi mode “not CI” trong producer là nhãn lịch sử, không thay provenance artifact. Recommendation “pending” trong raw cũng không hủy DEC12 đã duyệt tạm local.
++
++DEC12 tiếp tục là nguồn quyết định authority tạm local. PR29 report cũ chỉ đo Redis nên chưa đủ so sánh hai phương án; không dùng PR29 OPEN để kết luận main thiếu sản phẩm, không merge implementation khác chỉ để đóng spike. Staging vẫn **BLOCKED**. Artifact sản phẩm T31 cùng CI có overallp95 **368.67ms**, steadyp95 **250.65ms**, checker threshold **800ms**: không nhận PASS300ms cho toàn bộ request. Không trộn datastore/prototype/product endpoint hoặc local/CI/staging. Báo cáo/matrix hiện hành: `SPRINT1_REVIEW_REPORT.md`, `SPRINT1_ACCEPTANCE_MATRIX.md`.
++
++Phần bên dưới giữ nguyên kết quả và trạng thái tại thời điểm04/10, bao gồm các câu “CI chưa chạy”; chúng không mô tả CI mới15/10.
++
+ # DEC-12 — checkpoint nghiệm thu sản phẩm local
+ 
+ PO đã chấp thuận tạm thời PostgreSQL authoritative, Redis/Valkey cache/counter cho tám task local; nguyên văn decision-logDEC12. Không K01PASSstaging/NFRwaiver. [Bằng chứng sản phẩm](SEAT_HOLD_LOCAL_EVIDENCE.md):2API thật, authHTTP200/100×10 mỗi lượt100winner/100409, deadline/atomic/expiry/staletoken/APIrestart/worker minute/backlog/shutdown; counter và **loginlock thật** mất khi Valkeyrestart, PGhold giữ nguyên. LatestNFR750,96ms FAIL (lượt trước270,25PASS chỉ lịch sử). CI/Render chưa chạy. Prototype bên dưới giữ nguyên, không thay số đo spike bằng API metrics.
+diff --git a/packages/shared/package.json b/packages/shared/package.json
+index 5e9b52e..da8a931 100644
+--- a/packages/shared/package.json
++++ b/packages/shared/package.json
+@@ -7,6 +7,7 @@
+   "type": "module",
+   "exports": {
+     ".": "./index.ts",
+-    "./ticket-qr": "./ticket-qr.js"
++    "./ticket-qr": "./ticket-qr.js",
++    "./login-peer": "./login-peer.js"
+   }
+ }
+diff --git a/render.yaml b/render.yaml
+index f2306c3..f53aa2f 100644
+--- a/render.yaml
++++ b/render.yaml
+@@ -28,6 +28,8 @@ services:
+           property: connectionString
+       - key: WEB_ORIGIN
+         sync: false
++      - key: AUTH_PROXY_SECRET
++        sync: false
+   - type: web
+     name: sang-event-web
+     runtime: docker
+@@ -44,6 +46,8 @@ services:
+         value: production
+       - key: API_INTERNAL_URL
+         sync: false
++      - key: AUTH_PROXY_SECRET
++        sync: false
+   - type: keyvalue
+     name: sang-event-cache
+     plan: free
+diff --git a/apps/api/scripts/seed-sprint1.mjs b/apps/api/scripts/seed-sprint1.mjs
+new file mode 100644
+index 0000000..45ebe25
+--- /dev/null
++++ b/apps/api/scripts/seed-sprint1.mjs
+@@ -0,0 +1,74 @@
++import { config } from 'dotenv';
++import { resolve } from 'node:path';
++import { readFileSync } from 'node:fs';
++import { PrismaClient } from '@prisma/client';
++import { PrismaPg } from '@prisma/adapter-pg';
++import * as argon2 from 'argon2';
++const root = resolve(import.meta.dirname, '../../..');
++config({ path: resolve(root, '.env'), quiet: true });
++const c = JSON.parse(readFileSync(resolve(root, '.sprint1-local/config.json')));
++let url;
++try {
++  url = new URL(process.env.DATABASE_URL);
++} catch {
++  throw new Error('Invalid local DATABASE_URL configuration');
++}
++if (
++  process.env.NODE_ENV === 'production' ||
++  url.hostname !== '127.0.0.1' ||
++  url.port !== String(c.pgPort) ||
++  url.pathname !== '/sprint1_demo_20261015' ||
++  c.database !== 'sprint1_demo_20261015'
++)
++  throw new Error('Seed denied: exact isolated database required');
++const db = new PrismaClient({
++  adapter: new PrismaPg({ connectionString: url.toString() }),
++});
++try {
++  await db.$transaction(
++    async (tx) => {
++      for (const name of ['BUYER', 'ORGANIZER', 'STAFF', 'ACCOUNTANT', 'ADMIN'])
++        await tx.role.upsert({ where: { name }, update: {}, create: { name } });
++      for (const a of c.accounts) {
++        if (
++          !a.email.endsWith('@sprint1.demo.invalid') ||
++          a.password.length < 20
++        )
++          throw new Error('Invalid fixture');
++        const old = await tx.user.findUnique({
++          where: { email: a.email },
++          include: { userRoles: { include: { role: true } } },
++        });
++        if (old) {
++          if (
++            !(await argon2.verify(old.password, a.password)) ||
++            old.userRoles
++              .map((r) => r.role.name)
++              .sort()
++              .join() !== [...a.roles].sort().join()
++          )
++            throw new Error(
++              'Existing fixture differs; refuse password or role overwrite',
++            );
++          continue;
++        }
++        await tx.user.create({
++          data: {
++            email: a.email,
++            password: await argon2.hash(a.password, { type: argon2.argon2id }),
++            isEmailVerified: true,
++            userRoles: {
++              create: a.roles.map((name) => ({ role: { connect: { name } } })),
++            },
++          },
++        });
++      }
++    },
++    { timeout: 30000 },
++  );
++  console.log(
++    'Five roles and six isolated fixtures ready; existing accounts/history preserved.',
++  );
++} finally {
++  await db.$disconnect();
++}
+diff --git a/apps/api/src/auth/login-peer.spec.ts b/apps/api/src/auth/login-peer.spec.ts
+new file mode 100644
+index 0000000..572836e
+--- /dev/null
++++ b/apps/api/src/auth/login-peer.spec.ts
+@@ -0,0 +1,32 @@
++import {
++  canonicalPeer,
++  signLoginPeer,
++  verifyLoginPeer,
++} from 'shared/login-peer';
++describe('Login transport peer attestation', () => {
++  const secret = 'fixture-only-key-with-at-least-32-random-characters';
++  it('canonicalizes mapped IPv4 and verifies a fresh signed peer', () => {
++    const now = 1800000000000;
++    expect(canonicalPeer('::ffff:127.0.0.1')).toBe('127.0.0.1');
++    expect(
++      verifyLoginPeer(
++        signLoginPeer('::ffff:127.0.0.1', secret, now),
++        secret,
++        now,
++      ),
++    ).toBe('127.0.0.1');
++  });
++  it('rejects spoofing, replay after 30 seconds and invalid transport values', () => {
++    const now = 1800000000000,
++      token = signLoginPeer('192.0.2.1', secret, now);
++    expect(() => verifyLoginPeer(token, secret, now + 31000)).toThrow();
++    expect(() => verifyLoginPeer(token, secret + 'different', now)).toThrow();
++    expect(() =>
++      verifyLoginPeer(token.replace(/.$/, '!'), secret, now),
++    ).toThrow();
++    expect(() =>
++      signLoginPeer('arbitrary forwarded text', secret, now),
++    ).toThrow();
++    expect(() => signLoginPeer('127.0.0.1', 'placeholder', now)).toThrow();
++  });
++});
+diff --git a/apps/api/test/sprint1-ip.e2e-spec.ts b/apps/api/test/sprint1-ip.e2e-spec.ts
+new file mode 100644
+index 0000000..1c5e2aa
+--- /dev/null
++++ b/apps/api/test/sprint1-ip.e2e-spec.ts
+@@ -0,0 +1,46 @@
++import { randomUUID, createHash } from 'node:crypto';
++import { Test } from '@nestjs/testing';
++import type { INestApplication } from '@nestjs/common';
++import { Redis } from 'ioredis';
++import { AppModule } from '../src/app.module.js';
++import { AuthService } from '../src/auth/auth.service.js';
++
++describe('Sprint1 shared login IP budget (real Redis)', () => {
++  let app: INestApplication;
++  let redis: Redis;
++  beforeAll(async () => {
++    const module = await Test.createTestingModule({
++      imports: [AppModule],
++    }).compile();
++    app = module.createNestApplication();
++    await app.init();
++    redis = app.get<Redis>('REDIS_CLIENT');
++  });
++  afterAll(async () => app.close());
++  it('counts rotated accounts, expires in Redis and isolates peer budgets', async () => {
++    const service = app.get(AuthService),
++      peer = `fixture-ip-${randomUUID()}`;
++    const key =
++      'auth:ip-fail:' + createHash('sha256').update(peer).digest('hex');
++    try {
++      for (let n = 0; n < 30; n++)
++        await expect(
++          service.login(`${randomUUID()}@demo.invalid`, 'incorrect', peer),
++        ).rejects.toMatchObject({ status: 401 });
++      await expect(
++        service.login(`${randomUUID()}@demo.invalid`, 'incorrect', peer),
++      ).rejects.toMatchObject({ status: 429 });
++      expect(await redis.ttl(key)).toBeGreaterThan(850);
++      expect(await redis.ttl(key)).toBeLessThanOrEqual(900);
++      await expect(
++        service.login(
++          `${randomUUID()}@demo.invalid`,
++          'incorrect',
++          `${peer}-other`,
++        ),
++      ).rejects.toMatchObject({ status: 401 });
++    } finally {
++      await redis.del(key);
++    }
++  });
++});
+diff --git a/apps/web/server.mjs b/apps/web/server.mjs
+new file mode 100644
+index 0000000..d8b3408
+--- /dev/null
++++ b/apps/web/server.mjs
+@@ -0,0 +1,38 @@
++import { createServer } from "node:http";
++import next from "next";
++import { signLoginPeer, LOGIN_PEER_HEADER } from "shared/login-peer";
++
++const dev = process.argv.includes("--dev");
++const hostname = process.env.WEB_HOST ?? "127.0.0.1";
++const port = Number(
++  process.env.WEB_PORT ?? (dev ? 3000 : (process.env.PORT ?? 3000)),
++);
++const secret = process.env.AUTH_PROXY_SECRET;
++// Fail before listening if the attestation key is absent or a placeholder.
++signLoginPeer("127.0.0.1", secret);
++const app = next({ dev, dir: import.meta.dirname, hostname, port });
++await app.prepare();
++const handler = app.getRequestHandler();
++createServer((request, response) => {
++  // Own the TCP peer boundary. Never trust inbound X-Forwarded-For or an
++  // attestation supplied by the caller, even when its signature is otherwise valid.
++  delete request.headers[LOGIN_PEER_HEADER];
++  try {
++    const path = new URL(request.url ?? "/", "http://localhost").pathname;
++    if (request.method === "POST" && path === "/api/auth/login") {
++      request.headers[LOGIN_PEER_HEADER] = signLoginPeer(
++        request.socket.remoteAddress,
++        secret,
++      );
++    }
++  } catch {
++    response.writeHead(400).end("Invalid request");
++    return;
++  }
++  void Promise.resolve(handler(request, response)).catch(() => {
++    if (!response.headersSent) response.writeHead(500);
++    response.end();
++  });
++}).listen(port, hostname, () =>
++  console.log(`Web listening on ${hostname}:${port}`),
++);
+diff --git a/apps/web/src/lib/formatting/vietnam-input.test.ts b/apps/web/src/lib/formatting/vietnam-input.test.ts
+new file mode 100644
+index 0000000..51fe616
+--- /dev/null
++++ b/apps/web/src/lib/formatting/vietnam-input.test.ts
+@@ -0,0 +1,13 @@
++import { describe, expect, it } from "vitest";
++import { vietnamInputFromUtc, vietnamInputToUtc } from "./vietnam-input";
++describe("Vietnam organizer datetime input", () => {
++  it("preserves midnight and date over UTC round trips independent of host timezone", () => {
++    const utc = vietnamInputToUtc("2026-12-01T00:30");
++    expect(utc).toBe("2026-11-30T17:30:00.000Z");
++    expect(vietnamInputFromUtc(new Date(utc!))).toBe("2026-12-01T00:30");
++  });
++  it("rejects missing or malformed input", () => {
++    expect(vietnamInputToUtc("")).toBeNull();
++    expect(vietnamInputToUtc("2026-12-01T00:30Z")).toBeNull();
++  });
++});
+diff --git a/apps/web/src/lib/formatting/vietnam-input.ts b/apps/web/src/lib/formatting/vietnam-input.ts
+new file mode 100644
+index 0000000..d77b822
+--- /dev/null
++++ b/apps/web/src/lib/formatting/vietnam-input.ts
+@@ -0,0 +1,13 @@
++// datetime-local has no zone. Its values in the organizer form always mean
++// Vietnam civil time, independently of the browser/device's configured zone.
++export function vietnamInputToUtc(value: string): string | null {
++  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) return null;
++  const date = new Date(`${value}:00+07:00`);
++  return Number.isFinite(date.getTime()) ? date.toISOString() : null;
++}
++
++export function vietnamInputFromUtc(date: Date): string {
++  return new Date(date.getTime() + 7 * 60 * 60 * 1000)
++    .toISOString()
++    .slice(0, 16);
++}
+diff --git a/docs/SPRINT1_ACCEPTANCE_MATRIX.md b/docs/SPRINT1_ACCEPTANCE_MATRIX.md
+new file mode 100644
+index 0000000..ee3bfe5
+--- /dev/null
++++ b/docs/SPRINT1_ACCEPTANCE_MATRIX.md
+@@ -0,0 +1,59 @@
++# Sprint 1 acceptance matrix — 15/10/2026
++
++Source SHA: `81d1dd9d8f453b32ed0c6956399e5600f71a32d6` (fetched origin/main) + uncommitted fixes; final source manifest in `evidence/sprint1/20261015/`. Initial matrix was written before acceptance execution. F-01/F-02/F-03 initially FAIL; results below follow fixes. Only PASS / FAIL / BLOCKED / NOT RUN are used.
++
++DEC-09 scope: S-01/T-01..03, S-02/T-04..06, S-04/T-09..10, K-01. S-03/T-07/T-08 belongs to Sprint 3. DEC-12 permits PostgreSQL authority locally, without waiving staging/NFR. Sources: approved `đã đồng bộ refinement.xlsx`, Backlog rows2/5/8/14; DoD-DoR rows2–10; parent product/architecture/security/UI/decision/task docs.
++
++Evidence shorthand: **E**=`evidence/sprint1/20261015/`; **A**=`api.json`; **B**=`browser/results.json`; **G**=`gates.json`; **I**=`infrastructure.json`; **C**=`source-ci.json`; **P**=`proxy-ip-final.json`. Sensitive configuration/logs stay Git-ignored under `.sprint1-local/`. Local results do not certify staging.
++
++| Story/task | AC/NFR | Implementation | Test case | Environment | Evidence | Result | Finding/gap |
++|---|---|---|---|---|---|---|---|
++| S-01/T-01 | Exact toolchain/frozen lock | package/lock/workspace | Fresh worktree install/versions | Node24.21.0/pnpm10.15.1 | setup-summary.json | PASS | Lockfile unchanged |
++| T-01 | Root env/PG/Redis/migration/client/start | ConfigModule/Prisma/demo script | New containers/volumes/database, full migrations, start | isolated PG15/Redis7/API/web | G/I/readiness.json | PASS | No manual schema repair/db push/reset |
++| T-01 | Dependency-aware health | AppController | Stop owned PG then Redis→503; restore→200 | real API | I | PASS | No false success |
++| T-01/T-04/T-09 | Apply/compensate/reapply | original SQL in new migration cycle | 9 Prisma history rows, users/roles/events/showtimes restored | disposable sprint1_migration_cycle | I | PASS | No applied product migration edited |
++| T-01/S-01 | No source/browser/log secrets | ignore/env/proxy | Literal-secret + bundle/build-context review | files/images | secret-review.json/I | PASS | Private credentials/keys ignored |
++| T-02 | Build/lint/typecheck/test | ci.yml | Exact-SHA run38695462765 | GitHub read-only | C | PASS | Baseline CI; patch has local checks only |
++| T-02 | Failed lint blocks normal merge | required checks | Red-lint proof36827889536 + live strict checks | GitHub | ci-lint-negative-proof.json/main-protection.json | PASS | Admin bypass/review gap separately |
++| T-02 | Parallel lint/test, pipeline<5min | job graph | All core jobs start06:56:21Z, test ends06:57:34Z; full workflow06:59:46Z | GitHub | C | PASS | Core73s; full205s |
++| T-02/S-01 | Failed test prevents staging deploy | no active deploy workflow | Actual failure-to-deploy gate | staging | absent | BLOCKED | Render autoDeployTrigger off; CI-only workflow |
++| T-03 | API/web images/non-root/no secret | Dockerfile/custom web entry | Builds, health/home/proxy200, signed-peer login | local Docker | I/docker-images.json | PASS | Local packaging only |
++| T-03 | Bad candidate keeps old version | separate local containers | Candidate fails, old ID unchanged/home200 | local Docker | I | PASS | Isolation simulation, no traffic-switch proof |
++| T-03 | Merge→staging<10min/HTTP200/health/rollback | Render profile/runbook | Real auto deployment and failed candidate rollout | Render staging | runbook checklist | BLOCKED | No remote deploy authorized/access/evidence |
++| S-02/T-04 | Five roles, seed admin/organizer | schema/guarded seed | Five roles/six fake accounts; repeat seed preserves data | isolated demo DB | A/setup-summary.json | PASS | Includes A/B/buyer/lock/multi; role/password mismatch refuses overwrite |
++| T-04 | Unique email, Argon2id, relations | schema/migrations | Duplicate email insert fails; hashes Argon2id | PostgreSQL | A | PASS | No plaintext DB password |
++| T-05 | Correct login/nav/cookie/expiry | AuthService/guard/UI | Login; event nav/no accounting; HttpOnly/Lax/900s; Docker Secure | real HTTP/browser/images | A/B/I | PASS | HTTP-local API dev mode; production cookie unchanged |
++| T-05 | Five wrong/sixth429/15min/remaining time | RedisService/AuthService | 5 actual401→429, TTL900; UI retry minutes | real HTTP/Redis | A/lock-natural-expiry.json | PASS | Dedicated fixture; natural expiry, no shortening |
++| T-05 | API restart retains lock | shared Redis | Kill/relaunch verification API process→429 | real processes | A | PASS | Not only service mock |
++| T-05 NFR | Per-account + IP brute-force defense | Redis + transport-peer HMAC | Rotating emails peerA429; peerB200; XFF/attestation spoof rejected | API + real TCP through web proxy | A/P | PASS | F-01 fixed locally; cloud-edge identity remains staging gate |
++| T-05 | Unknown/wrong error generic | dummy hash/AuthService | Compare real401 body/status | API | A | PASS | Timing equivalence not claimed |
++| T-05 | Anonymous/expired401/logout revocation | sessionQuery/controller/UI | Replay logout cookie401; expired fixture401; UI login+draft recovery | API/browser | A/B | PASS | F-03 fixed;15min contract retained |
++| T-06 | Buyer direct create/edit403 + safe log | RolesGuard/events | Create/patch/showtime denied; role mismatch safe log | API | A/rbac-inventory.md | PASS | Server guard independent of UI |
++| T-06 | Default deny/intentional public | global guards/decorators | Undeclared root403 with session + guard tests/inventory | API/source | A/G/rbac-inventory.md | PASS | Mock controller intentionally public with enabled guard; no blanket public event controller |
++| T-06 | Multi-role/no blanket admin bypass | requiredRoles.some/relations | Buyer+organizer own management; ADMIN alone no implicit organizer | API | A/supplemental.json | PASS | No invented superscope |
++| S-04/T-10 | A creates draft/hidden from buyer | EventsService/editor | Create/list/public404+omission | API/browser | A/B | PASS | Database DRAFT |
++| T-10 | Edit/read/reload persistence | owner service/editor | PATCH then UI reload exact fields | API/browser | A/B | PASS | V1 preserved |
++| T-10 | Future show correct event/FK | addShowtime | Future201 + exact eventId | API/browser/DB | A/B | PASS | |
++| T-10 | Past blocked server and UI reason | date validation/editor | API400, inline field error/input retained | API/browser | A/B | PASS | Both layers |
++| T-10 | Duplicate same event/time warns and saves | count+create | Second201/warning; exactly two intentional shows | API/browser/DB | A/B | PASS | No unique time constraint |
++| T-10 | B and buyer denied URL/API | findOwned/RolesGuard | B manage/patch/add403; mobile direct URL denied | API/browser | A/B | PASS | No unauthorized resource data |
++| T-10 | Double-submit no extra record | ref gate+disabled | Two submit events same turn; database exactly one event | browser/DB | B | PASS | Not universal API POST idempotency |
++| T-10 | Validation fields/input recovery | editor | Empty form + actual server400→retained input→corrected save | browser/API | B | PASS | Loading/empty/error/success exercised |
++| S-04 NFR/T-09 | UTC/timestamptz/Vietnam display | schema/helper/formatter | US browser Jan1 00:30VN→Dec31 17:30Z→reload00:30VN | DB/desktop/mobile | A/B/G | PASS | F-02 fixed; no schema rewrite |
++| T-09 | Deliberate delete/FK/history protection | RESTRICT relations | Event with shows delete fails; order/ticket restrictions inspected | DB/source | A/report | PASS | No delete feature/cascade history |
++| K-01 | Both measured/conditions/concurrency/restart | scripts/k01/raw artifact | 200/1×3 each;2 processes; invariants/restart | exact-SHA CI artifact | k01-current-ci.json/C | PASS | PR29 Redis-only report insufficient alone |
++| K-01 | Selection/reason/review chronology | DEC-12/K01 docs | PG temporary authority; Redis TTL-only restart loses owner | docs/history | K01_EVIDENCE.md/report | PASS | Not permanent/staging approval |
++| K-01 | Disposable spike separate product code | scripts/k01 vs src/holds | Source separation | source | report | PASS | Candidate benchmark not endpoint evidence |
++| K-01 | Staging comparison/relevant endpoint NFR | no staging evidence | Staging2backend spike/product endpoint measurement | staging | absent | BLOCKED |300ms unchanged; CI green800ms budget not300ms acceptance |
++| DoD C2 | Another member independent approval | review metadata | PR39 approval exists but handoff says automated account review | GitHub/docs | pr-39.json/report | BLOCKED | No human independent approval of current patch |
++| DoD C3 | New logic branch regression | helper/proxy/IP tests |238 unit +109 integration + real HTTP/browser | local patch | G/A/B/P | PASS | Counts do not prove coverage percentage |
++| DoD C3 | Changed-line coverage nondecreasing | no baseline coverage artifact | Baseline/patch equal instrumentation | local/CI | absent | NOT RUN | No inferred percentage |
++| DoD C4 | Final repair CI green | uncommitted diff | Remote CI for repair revision | GitHub | publication not authorized | NOT RUN | Source CI green/local patch checks pass |
++| DoD C5 | Dependency scan clean | TECH01 pinned deps | pnpm audit --prod --json | registry/local lock | dependency-audit.json | FAIL |12 signals:6high/5moderate/1low; exploitability not validated; upgrade/remediation needed |
++| DoD C5/C9 | No new secret/PII/payment logs | source/evidence | Literal-secret/bundle/diff/log review | local | secret-review.json | PASS | No repository-wide certification of historic unrelated logs |
++| DoD C6 | AC pass staging | no staged repair | All story AC on staging | Render | absent | BLOCKED | Local is distinct |
++| DoD C7/C8 | Concurrent/idempotent regressions | existing later modules | Full orders/payments/holds/scanner E2E suites | isolated databases | G | PASS | Regression only; no new later-sprint NFR/staging worker acceptance |
++| DoD C10 | Docs/env updated | README/env/runbook/report/matrix | SourceSHA/commands/paths checked | local | documents | PASS | No credential content |
++| UI QA | Real desktop/mobile/focus/runtime/console | V1/primitives reused |15 checks/screenshots1440x1000,390x844 | Chromium local | B | PASS | Physical phone/other browsers NOT RUN |
++
++Overall: local demonstration ready when live readiness passes. S-01 BLOCKED; S-02 PASS local/BLOCKED staging; S-04 PASS local/BLOCKED staging; K-01 BLOCKED overall (local comparison/decision PASS). Sprint1 AC/DoD chưa đủ. Publish chưa sẵn sàng: dependency remediation/review/final CI and external gates remain; diff/draft PR prepared without commit/push.
+\ No newline at end of file
+diff --git a/docs/SPRINT1_DEMO_RUNBOOK.md b/docs/SPRINT1_DEMO_RUNBOOK.md
+new file mode 100644
+index 0000000..c74246b
+--- /dev/null
++++ b/docs/SPRINT1_DEMO_RUNBOOK.md
+@@ -0,0 +1,109 @@
++# Sprint 1 — hướng dẫn kiểm thử và demo local
++
++Ngày kiểm: 15/10/2026. Nguồn: main `81d1dd9d8f453b32ed0c6956399e5600f71a32d6` cộng diff chưa commit trong worktree riêng. Giữ UI V1, chỉ dùng dữ liệu giả. Lệnh dưới đây không commit, push hoặc deploy.
++
++## 1. Mở đúng phiên
++
++Mở PowerShell và chạy:
++
++```powershell
++Set-Location -LiteralPath 'D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-sprint1-review-20261015'
++powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Status
++```
++
++Nếu chưa chạy, khởi động bằng **một lệnh**:
++
++```powershell
++powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1
++```
++
++Lệnh kiểm Node 24.21.0, pnpm 10.15.1, Docker Linux engine, cổng và container; khởi động dependency; cài bằng lockfile; áp migration; seed an toàn; build và start. Chỉ in **READY** khi health của API, trang chủ web và health qua proxy đều thực sự trả 200.
++
++- Web: **http://localhost:3400**
++- API health: **http://localhost:3401/health**
++- Proxy health: **http://localhost:3400/api/health**
++- Credentials: **`.sprint1-local/config.json`**. Mở file trên máy để lấy email/password; không chép nội dung vào chat, báo cáo hoặc PR.
++- Cấu hình app: root `.env`; khóa ký và log: `.sprint1-local/`. Cả hai bị Git ignore; thư mục private cũng bị Docker ignore.
++
++| Tài khoản trong config | Dùng để |
++|---|---|
++| admin | Kiểm vai trò quản trị; không tự có quyền organizer |
++| organizer-a | Demo tạo/sửa sự kiện |
++| organizer-b | Kiểm từ chối truy cập sự kiện của A |
++| buyer | Kiểm API trái quyền và sự kiện nháp |
++| lock-test | Bài khóa đăng nhập; không dùng tài khoản demo chính |
++| multi-role | Kiểm BUYER + ORGANIZER, không tạo vai trò mới |
++
++Phiên mới dùng PostgreSQL 15435, database `sprint1_demo_20261015`, Redis 16385. Phiên S-32 tại 3300/3301, PostgreSQL 15432 và Redis 16381 được giữ nguyên.
++
++Nếu script báo cổng bận hoặc container khác label, hãy dừng và đọc lỗi. Không kill tiến trình khác, không xóa volume. Dừng riêng phiên này:
++
++```powershell
++powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Stop
++```
++
++Sau đó có thể Start lại. Dữ liệu và container được giữ. Khóa ký chỉ tạo lần đầu cho profile riêng; không tái tạo khóa hiện hữu. `-SkipBuild` chỉ dành cho lần chạy lại đúng bản đã build; kiểm thử tái lập nên dùng lệnh mặc định có build.
++
++## 2. Kịch bản demo
++
++Dùng profile trình duyệt riêng cho A, B và buyer. Cùng dùng hostname `localhost`; tránh đổi sang `127.0.0.1` giữa phiên vì cookie theo hostname.
++
++| Bước | Thao tác và dữ liệu | Kết quả mong đợi | Cách phục hồi |
++|---|---|---|---|
++| 1. Health | Chạy Status, mở hai URL health ở trên | READY, HTTP 200, status ok | Mở Docker, đọc log private, chờ dependency healthy; không sửa dữ liệu |
++| 2. Login A | Mở `/login`, dùng organizer-a từ config | Vào `/events`, thấy quản lý sự kiện, không thấy mục kế toán | Nhập lại từ config; không dùng lock-test |
++| 3. Tạo draft | `/events/new`; thử submit trống, rồi nhập tên `Demo Sprint 1 <giờ>`, mô tả `Dữ liệu giả`, địa điểm `Phòng A` | Lỗi ngay trường sai; tạo đúng một sự kiện nháp | Sửa trường báo lỗi rồi lưu; tránh reload khi chưa lưu |
++| 4. Sửa và reload | Đổi địa điểm thành `Phòng A đã sửa`, lưu rồi reload | Dữ liệu đã sửa còn nguyên | Mở lại sự kiện của A từ danh sách, không sửa DB bằng tay |
++| 5. Suất tương lai | Chọn ngày mai 19:30 hoặc nút +24 giờ | Lưu một suất gắn đúng sự kiện; hiển thị giờ Việt Nam | Nhập lại ngày tương lai hợp lệ; không cần xóa suất đã lưu |
++| 6. Quá khứ | Nhập 01/01/2020 10:00, thêm suất | Lỗi rõ thời điểm phải ở tương lai; không tạo record; input còn | Đổi sang tương lai rồi lưu |
++| 7. Trùng giờ | Nhập lại chính xác ngày/giờ bước 5 | Cảnh báo nhưng vẫn lưu; có hai suất cùng thời điểm | Đây là AC mong đợi, không sửa thành unique constraint |
++| 8. Ownership B | Login B ở profile khác, paste `/events/<idA>`; gọi manage/PATCH bằng phiên B | API 403, UI báo không có quyền, không hiện dữ liệu A | Quay về danh sách của B; không nâng quyền để vượt |
++| 9. Buyer | Login buyer, xem catalog công khai; gọi POST `/api/events` hoặc PATCH bằng phiên buyer | Không thấy draft A; API 403, có log role mismatch | Xác nhận đúng profile buyer; không chỉ dựa vào nút bị ẩn |
++| 10. Logout | A bấm Đăng xuất, truy cập trang/API cần phiên | Về login/401; cookie cũ không dùng lại được | Đăng nhập A lại; không chép token vào tài liệu |
++| 11. Hết phiên | Để form mở hơn 15 phút; nhập sửa rồi lưu | 401 → login; cùng A đăng nhập lại → về form, khôi phục nội dung chưa lưu | Giữ cùng tab và cùng tài khoản. Đóng tab không bảo đảm giữ draft; tài khoản khác không được restore draft A |
++| 12. Khóa phụ | Sau khi lock-test hết khóa, nhập sai 5 lần, lần thứ 6 thử mật khẩu đúng | 5 lần 401, lần 6 trả 429 và thời gian còn lại, khóa 15 phút | Chờ đúng thời gian; không rút TTL hoặc DEL lock; không khóa A |
++| 13. Restart | Khi lock-test đang khóa: Stop rồi Start riêng phiên app, Redis vẫn chạy | Khóa còn, TTL giảm; hết 15 phút tự mở và login đúng thành công | Không restart Redis hoặc task khác để làm mất khóa |
++| 14. Trình bày evidence | Mở report, matrix và thư mục evidence | Phân biệt source CI, local repair, prototype, endpoint, staging | Không nói CI xanh nghĩa là Sprint Done; staging vẫn BLOCKED |
++
++Bài kiểm đầu đã chờ khóa tự hết **900 giây thật**. Bài UI bổ sung đã khóa lại tài khoản phụ; xem thời gian còn lại trên UI trước khi chạy lại bước 12. Tài khoản chính vẫn dùng được. Budget IP là 30 lần sai/15 phút; không tiếp tục dò nhiều tài khoản từ cùng máy trong demo. Bằng chứng hai TCP peer thật nằm trong `proxy-ip-final.json`.
++
++## 3. Kiểm API và chạy lại regression
++
++Có thể dùng DevTools Network để xem status, method và route. Không lưu hoặc chia sẻ cookie/token. Verifier đọc credential local và chỉ cho đúng database/cache demo:
++
++```powershell
++node .\scripts\verify-sprint1-api.mjs
++node .\scripts\verify-sprint1-browser.mjs
++```
++
++API verifier kiểm cổng 3402 trống, tự mở/tắt tiến trình verification riêng, tạo thêm sự kiện/suất giả và khóa lock-test 15 phút. Nó không xóa lịch sử. Browser verifier tạo thêm dữ liệu giả và chủ động làm hết hạn session của **organizer-a fixture** để kiểm recovery. Chỉ chạy khi đang chủ động kiểm expiry, không chạy lúc người khác demo cùng tài khoản.
++
++Bộ kiểm hồi quy dùng database riêng:
++
++```powershell
++node .\scripts\sprint1-tests.mjs
++```
++
++Runner chạy lint/typecheck/unit/integration. Profile chính: PostgreSQL 15434, database `sprint2_integration`, Redis 16386. Suite scanner chạy đủ ở PostgreSQL 15440, database `signed_qr_integration`, đúng guard sẵn có. Nếu cổng bận hoặc label khác thì dừng. Không chạy E2E mù vào database demo hoặc môi trường khác. Các suite có cleanup fixture của chúng; không đưa dữ liệu thật vào database test.
++
++## 4. Khắc phục môi trường
++
++- **Migration lỗi:** xem private `migrate.log`, kiểm DB/port/label và history. Không sửa migration đã áp dụng, `db push` hoặc reset DB. Chuỗi migration bù đã kiểm trong database riêng.
++- **Login 503:** kiểm `AUTH_PROXY_SECRET` server-only giống nhau ở web/API và dùng entry hỗ trợ qua `pnpm --filter web dev/start` hoặc script này. Bare `next start` không có attestation. Không bật tin cậy XFF tùy ý. Giữ khóa hiện có.
++- **Browser 401:** dùng đúng hostname/profile; phiên hết sau 15 phút là contract. API production qua HTTP có Secure cookie không gửi lại là đúng. Demo HTTP dùng API development mode; không tắt Secure trên production.
++- **Health 503:** dependency thực sự lỗi; chờ healthy rồi Status. Tiến trình còn sống không đủ để nhận READY.
++- **Đổi source:** Stop phiên này rồi Start mặc định để build lại. Tránh build đè trong lúc demo. SHA cộng diff/hash manifest xác định bản kiểm.
++- **Secret/log:** chỉ chia sẻ evidence đã lọc ở `evidence/sprint1/20261015/`. Không upload `.env`, config.json, PEM, Docker env hoặc raw log.
++
++## 5. Gate staging cho phase được cấp quyền sau
++
++1. Xử lý advisory dependency, review phiên bản và final diff. Chỉ publish sau khi được ủy quyền; chạy CI trên final SHA. CI của main cũ không chứng minh patch mới.
++2. Xác minh Render project, region/Free plan, retention dữ liệu giả theo DEC-08/11; cấp secret runtime riêng và kiểm durability PostgreSQL/Redis. Không đưa secret vào image hoặc browser.
++3. Cấu hình CI → deploy sau checks; profile hiện giữ `autoDeployTrigger: off`. Chứng minh test thất bại không triển khai. Không tự bật deployment bằng runbook local.
++4. Đo merge → phiên bản mới hoạt động dưới 10 phút; health dependency và smoke HTTPS trước chuyển traffic; kiểm cookie Secure, assets, proxy, role và owner.
++5. Kiểm client IP qua edge Render với ít nhất hai client thật và spoof header. TCP peer local không chứng minh identity sau load balancer; không để mọi người dùng chung budget của edge.
++6. Migration phải tương thích bản cũ trong lúc rollout, có hướng dẫn backup/compensation. Không đảo schema phá lịch sử để rollback image.
++7. Kiểm candidate lỗi trong staging được phép: bản cũ vẫn 200, không switch khi health lỗi; rollback đúng SHA rồi smoke. Lưu run URL, URL staging, SHA và thời gian.
++8. Chạy AC trên staging, so sánh K-01 và NFR endpoint đúng ngưỡng. Ghi giới hạn sleep/worker/Redis restart/retention của Free plan; không tự miễn DoD.
++
++**Local READY không đồng nghĩa staging PASS, Sprint 1 Done hoặc được phép publish.**
+\ No newline at end of file
+diff --git a/docs/SPRINT1_FIX_PR_DRAFT.md b/docs/SPRINT1_FIX_PR_DRAFT.md
+new file mode 100644
+index 0000000..a512f09
+--- /dev/null
++++ b/docs/SPRINT1_FIX_PR_DRAFT.md
+@@ -0,0 +1,13 @@
++# PR draft — chưa gửi GitHub
++
++**Title:** `fix(sprint1): isolate login IP budgets and recover organizer event editing`
++
++Sprint1 login lacked an IP failure budget, organizer times depended on the device timezone, and expired sessions left the event form unable to recover. Add Redis IP limits with an authenticated transport-peer boundary through the web proxy, explicit Vietnam event times, and login return/draft recovery for the same user. Keep V1 presentation and the existing five-failure/15-minute account contract.
++
++Provide a guarded, isolated PowerShell demo profile, fake accounts, real API/browser regression and Docker runtime packaging for the custom web entry. Preserve existing migrations, source/WIP and data. New server-only `AUTH_PROXY_SECRET` must match web/API; `WEB_PORT` separates the web from API port. Use the supported web entry, not bare next start.
++
++Validation: Node24.21.0/pnpm10.15.1 frozen install; targeted format, lint/typecheck/build;238unit tests;109integration tests over two guarded isolated profiles;15desktop/mobile browser checks; real API/Redis lock/restart/natural900s expiry; proxy multi-peer/spoof checks; dependency health503/recovery; compensating migration cycle; Docker runtime smoke. See Sprint1 report/matrix and exact source manifest.
++
++**Not ready to publish:** dependency audit has12 unresolved advisory signals; finalSHA remoteCI and independent review absent; staging deploy/rollback/client-IP edge and AC/DoD remain BLOCKED. Source mainCI is evidence for81d1dd9 only. No deployment or new Sprint scope implied. Resolve these gates before publishing.
++
++Rollback: stop owned local processes, preserve data; future code revert through reviewed PR. No product migration changed. Never reset shared database, regenerate existing signing keys or disable guards to recover demo.
+diff --git a/docs/SPRINT1_REVIEW_REPORT.md b/docs/SPRINT1_REVIEW_REPORT.md
+new file mode 100644
+index 0000000..5746a96
+--- /dev/null
++++ b/docs/SPRINT1_REVIEW_REPORT.md
+@@ -0,0 +1,108 @@
++# Sprint 1 — DISCOVER → REVIEW → FIX → VERIFY → DEMO HANDOFF
++
++Ngày kiểm: **15/10/2026, giờ Việt Nam**. Đây là review và sửa local, chưa commit/push/tạo GitHub review/merge/deploy. Giao diện V1 được giữ nguyên.
++
++## 1. Kết luận theo tầng bằng chứng
++
++| Kết luận | Trạng thái | Ranh giới |
++|---|---|---|
++| Sẵn sàng demo local | **Có**, khi lệnh Status báo READY | Web `http://localhost:3400`, API `http://localhost:3401`, dữ liệu giả/database riêng; credentials trong `.sprint1-local/config.json` |
++| S-01 | **BLOCKED** | Local scaffold/CI nguồn/Docker được kiểm riêng; chưa có staging tự triển khai, giữ bản cũ và rollback đúng AC |
++| S-02 | **PASS local / BLOCKED staging** | Đã kiểm API/browser/Redis thật, phiên/RBAC/lock/IP; chưa chứng minh HTTPS và client IP qua edge Render |
++| S-04 | **PASS local / BLOCKED staging** | Tạo/sửa/nháp/ownership/validation/suất/timezone được kiểm UI+API+DB |
++| K-01 | **BLOCKED tổng thể** | So sánh hai phương án và quyết định tạm local PASS; staging/endpoint NFR chưa đủ |
++| Sprint 1 đủ AC/DoD | **Chưa** | Staging, dependency audit, final remote CI, review độc lập và coverage delta còn thiếu |
++| Sẵn sàng publish bản sửa | **Chưa** | Có diff/test/nội dung PR đề xuất; cần giải quyết dependency audit và các gate quy trình, sau đó xin quyền remote |
++
++Ma trận chi tiết: [SPRINT1_ACCEPTANCE_MATRIX.md](SPRINT1_ACCEPTANCE_MATRIX.md). Kịch bản thao tác/khôi phục: [SPRINT1_DEMO_RUNBOOK.md](SPRINT1_DEMO_RUNBOOK.md).
++
++## 2. Revision, WIP và phạm vi
++
++- Repository gốc `D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo` ở `task/T-03-docker-packaging`, HEAD `88d8bfd38712f293a5794069c69cfdc3d7b8860c`, nhiều modified/untracked WIP. Không checkout/reset/clean/ghi đè tại đó.
++- Fetch `origin` rồi chọn `origin/main`: **`81d1dd9d8f453b32ed0c6956399e5600f71a32d6`**, PR60 S-32 đã tích hợp. `develop` cũng tồn tại với công việc khác, không tự gom vào lần nghiệm thu này.
++- Worktree sửa riêng, detached HEAD: `D:\Development\03_Academic\Bán vé sự kiện có sơ đồ ghế\thudemo-sprint1-review-20261015`. App-managed create_worktree trả `Not a git repository` do chat ở thư mục cha; sau đó dùng `git -C thudemo worktree add --detach ... origin/main`, thành công. Không có policy rejection hay thao tác bị cấm được né tránh.
++- Source nghiệm thu là SHA trên **cộng diff local chưa commit**. `source-manifest.json` và `repair.patch` trong evidence xác định file/hash; SHA main một mình không đại diện cho bản sửa.
++- Giữ phiên S-32 đang chạy tại3300/3301, PostgreSQL15432, Redis16381. Phiên mới: web3400/API3401; PostgreSQL15435/database`sprint1_demo_20261015`; Redis16385; các container mang label`sprint1.review=20261015`.
++- Đọc AGENTS.md, parent docs/product/architecture/UI/security/decision-log, T01/02/03/04/05/06/09/10, backlog workbook hiện hành và DoD. DEC09 vẫn xếp S01/S02/S04/K01 vào Sprint1; S03/T07/T08 ở Sprint3. DEC11 chọn Render Free; DEC12 cho PostgreSQL authority tạm local. Không đổi Sprint/SP/AC/NFR/stack hay áp AfterglowV2.
++
++## 3. Review đóng góp và lịch sử tích hợp
++
++Owner trong task nguồn vẫn là **cả team**. Bảng này ghi metadata commit/phần thay đổi quan sát được, không quy lỗi cho người mở PR hay suy chủ tài khoản đã tự review.
++
++| Phần | Nguồn đã đọc | Đóng góp quan sát được / kết luận |
++|---|---|---|
++| Scaffold T01 | `e6dacde...`, README, migrations | Commit ghi Quang Sáng Dev; scaffold gốc còn lịch sử `c6bd1ab` của Thuy Trang. Kiểm lại fresh setup hiện tại thay vì dùng kết quả30/09 làm PASS mới |
++| CI T02 | PR1 commits285e9aa/470990c/32ac726; PR2 proof | Quang Sáng Dev trong metadata; PR1 OPEN nhưng nội dung đã có trên main qua tích hợp. PR2 CLOSED, cố ý sai lint, không được merge |
++| Auth/events T04–06/T09–10 | PR3 f5731b9/60b800b/dd4ff55/a5df54b/993b2da; current files | Metadata Quang Sáng Dev và Nguyễn Văn Sáng; sửa mixed-case identity/activation đã giữ trên main. PR3 OPEN không đồng nghĩa main thiếu chức năng |
++| Docker T03 | PR4 193d971/88d8bfd; current Dockerfile/Render profile | Quang Sáng Dev trong metadata; main có profile tích hợp mới hơn. Không merge PR cũ để gom code |
++| K01 thành viên | PR29, `docs/k01-seat-holding-report.md`, `k01-benchmark.ts` | Metadata Tien và merge của tài khoản tương ứng. Report đo Redis200/1, p95~5.243ms ở datastore client, chưa đo PostgreSQL; đề xuất Redis+PG không tự đủ AC so sánh hai cách |
++| Tích hợp hiện hành | PR39→`bae2771...`; PR60→sourceSHA | PR39 có APPROVED metadata nhưng `SPRINT2_MAIN_INTEGRATION.md` ghi review kỹ thuật tự động qua tài khoản được ủy quyền. Không biến thành review độc lập của người thật |
++
++PR1/3/4 không phải ancestor nguyên vẹn sau squash/tích hợp; đã so nội dung main và các commit/file tương ứng. Raw metadata read-only ở evidence/pr-*.json. Không đề nghị merge lại PR29 chứa cả implementation các sprint sau.
++
++## 4. Findings ban đầu và cách sửa
++
++| ID / mức ảnh hưởng | File/route, tái hiện, expected → actual | Nguyên nhân và sửa | Regression/evidence |
++|---|---|---|---|
++| F01 — cao, thiếu NFR chống dò IP | POST `/auth/login`: đổi email mỗi lần từ cùng IP; expected giới hạn IP+tài khoản → baseline chỉ có account Redis lock | AuthService không nhận transport peer, RedisService không có IP budget. Thêm budget30 lần sai/900s độc lập tài khoản; key hash, Redis shared/TTL, account5+15phút giữ nguyên | A/P; integration IP real Redis; fake XFF không thay IP; peer khác vẫn login200 |
++| F02 — trung bình, sai giờ suất | Browser timezone Mỹ nhập `2099-01-01T00:30`; expected00:30VN→17:30Z ngày trước → baseline lấy timezone trình duyệt và formatter thiếu timeZone | Thêm helper input VN+07:00→UTC, presets theo VN, formatter Asia/Ho_Chi_Minh; ghi label giờ Việt Nam. Schema đã Timestamptz nên không migration | Unit qua mốc ngày; UI US timezone + DB exact UTC + reload + mobile |
++| F03 — trung bình, phiên hết hạn làm kẹt form | Mở editor, hết hạn session rồi Save; expected401→login có recovery → baseline generic lỗi, không hướng dẫn quay lại đúng form | Xử lý401; sessionStorage chỉ giữ nội dung sự kiện/startTime/userId theo tab, restore một lần cho cùng user; allowlist returnTo `/events/new` hoặc UUID; login copy theo sự kiện | Browser expire session thật→login→return→draft restored→save; logout/replay401; không lưu credential/token |
++| F04 — trung bình, phát hiện trong bản sửa đầu | API lấy socket peer sau Next proxy:30 lần sai có thể khóa mọi browser user qua cùng web peer | Security scan đầu xác nhận dataflow. Custom HTTP web entry sở hữu TCP peer và ghi đè header caller; HMAC SHA256 server-only ký peer+timestamp+POST/path; proxy/API verify30s/timing-safe; missing/forged proxy metadata fail closed | Real TCP127.0.0.4→web→API→Redis429, peer127.0.0.5 login200; caller gửi cả signed header khác vẫn bị overwrite; directAPI forged403; unit expiry/signature |
++| F05 — trung bình, demo không tái lập | Script cũ hardcode profile/ports; native stderr PowerShell5 bị coi lỗi; process-state JSON array xử lý sai; inherited DB/RedisURL có thể đổi target | Script mới kiểm port/containerlabel, exact .env/db/cache trước migration, override isolated DB và bỏ RedisURL inherited, đúng PowerShell5 native exit; stop chỉ launcher/path/creation time và cây con sở hữu | Full Start→READY/Stop/Start/Status; wrong-target guards; dependency outage recovery |
++| F06 — trung bình, Docker chỉ build chưa đủ | Custom entry trên host chạy nhưng image standalone thiếu shared rồi thiếu Next custom-server runtime; webcontainer exited | Build web production deployment có đủ dependency + .next, loại cache/standalone duplicate; runtime nonroot, root private files excluded. Cập nhật Render entrypath | Docker build **và chạy**, health/home/proxy/login; không dùng image build làm staging proof |
++
++Các lỗi nền sau không bị che giấu hay tự triển khai thành sprint mới:
++
++- **D01 dependency DoD FAIL:** `pnpm audit --prod --json` báo12 advisory (6high/5moderate/1low). Paths: Prisma config→deepmerge-ts/source-map-js; Prisma→mysql2; shadcnCLI→braces; Next→sharp; Next16.3.6. Đây là tín hiệu registry, chưa PoC/đánh giá khả năng khai thác từng advisory. Chưa nâng version ghim TECH01 hay sửa lockfile để tự thay quyết định. Cần lập patch dependency riêng, ưu tiên runtime Next/sharp, bỏ CLI khỏi runtime nếu phù hợp, rồi audit/test lại. `dependency-audit.json` giữ range/patched versions/source URL; không coi diff scan không có finding là dependency scan sạch.
++- **D02 T03 staging BLOCKED:** Render profile vẫn `autoDeployTrigger: off`; chưa có deployment gate sau CI, smoke HTTPS, thời gian<10phút hay traffic/rollback bằng chứng. Chưa được phép upload/deploy.
++- **D03 cloud IP BLOCKED:** local custom entry xác thực peer thực của web; nếu Render/edge đặt reverse proxy trước web, peer có thể là edge dùng chung. Cần contract client-IP từ edge đáng tin và kiểm chống spoof/multi-client trên staging; tuyệt đối không bật trust proxy cho header client tùy ý.
++- **D04 process:** main strict ba required checks nhưng `required_pull_request_reviews=null`, `enforce_admins=false`; historical report nói một approval là trạng thái cũ. Có develop/main và nhiều PR cũ chưa đóng; không thay branching/protection trong nhiệm vụ này.
++- **D05 NFR ngoài phạm vi Sprint1:** artifact current CI T31 overallp95 **368.67ms**, steadyp95 **250.65ms**, checker dùng **800ms** nên xanh. Không đạt mục tiêu300ms cho toàn mẫu, không dùng xanhCI hoặc datastore spike để nhận PASS NFR endpoint. Tách thành issue hiệu năng giữ ghế; không viết lại Sprint1 hay thay ngưỡng.
++
++## 5. Kiểm chứng thực hiện
++
++| Kiểm | Kết quả/bằng chứng |
++|---|---|
++| Fresh install/toolchain | Frozen install PASS, lockfile không đổi; Node24.21.0,pnpm10.15.1,Next16.3.6,React19.2.8,Nest12.1.0,Prisma7.10.0,Tailwind4.3.3 |
++| Format/lint/typecheck/build | Prettier theo file thay đổi (không format toàn repo), project lint/typecheck/build PASS; warnings gateway có trước và pg deprecation ghi riêng |
++| Unit | API183 + web55 = **238 PASS**; helper VN/HMAC/proxy negative cases có test |
++| Integration | **105 PASS/13files** trên sprint2_integration15434 + **4 PASS** scanner trên signed_qr_integration15440. Không đổi hoặc bỏ assert guard scanner; chạy suite đầy đủ bằng đúng profile của nó |
++| HTTP/DB |16 acceptance groups API; role/default-deny/ownership/time/FK/unique/hash/logout/expiry/realAPIrestart; supplemental admin/seed/lock checks |
++| Lock thời gian thật | Lần sai1–5 là401; lần6 là429, TTL900; restartAPI còn429. Sau original900s tự hết, valid login200. Không DEL lock hoặc rút TTL để nhận kết quả |
++| Browser |15 checks;1440×1000 timezone Mỹ và390×844 VN; create/edit/reload/past/duplicate/double-submit/B403/server400/recovery/expired login/loading/error/empty/focus; không runtime error/console bất ngờ; screenshot đã xem |
++| Health/fresh migrations | PG stop503/restore200, Redis stop503/restore200;9-row apply/compensate/reapply bằng Prisma, DB test riêng |
++| Docker | API/web builds và runtime smoke/logincookie; usernode; no `/app/.env` hoặc `.sprint1-local`; candidate fail không thay old container. Local only |
++| CI | SourceSHA run38695462765 xanh; lint proof36827889536 đỏ lint, build/test xanh; currentrequired checks checked. Bản sửa chưa remoteCI |
++| K01 | Exact source CI artifact bothstores200/1×3, invariant checks/restart; không chạy lại benchmark lên DB đang dùng |
++| Security diff | Scan đầu phát hiệnF04; scan tiếp theo review attestation; source snapshot và packaging/script supplements phân biệt rõ trong security-review.json. Không phải human independent review |
++| Secret review | Sensitive values/PEM không có trong diff/public evidence/browser JS; credential path ignored; raw logs giữ local |
++
++**Các thất bại trong quá trình kiểm cũng được giữ:** lint purity ở Date.now preset đã sửa; tests bị ambient demo QR keys và payment mode ảnh hưởng đã tách config; scanner guard bắt wrong testport nên chuyển đúng profile; Docker missingruntime đã được sửa rồi kiểm lại. Không nới assert, không continue-on-error để tạo PASS. Các log của lần thất bại ở private .sprint1-local; final summaries ghi đúng lượt đạt sau sửa.
++
++## 6. K-01: trạng thái hiện tại và lịch sử
++
++1. PR29 report chỉ đo Redis client, đề xuất hybrid. Không đủ đầu ra so sánh PostgreSQL và Redis; không merge PR này chỉ vì nhãn K01.
++2. Lượt04/10 trong K01_EVIDENCE có hai store, hai prototype process, overlap/expiry/fencing/restart; PG giữ quyền đã commit, Redis không persistence mất quyền. Đó là prototype local, không endpoint application.
++3. DEC12 có xác nhận Nguyễn Văn Sáng: PostgreSQL authority tạm local, Redis cache/counter; không miễn staging/NFR.
++4. Artifact **run38695462765, job K01/candidate-research,15/10/2026** đã đọc raw mới: PGp95 **489.41/225.51/177.61ms**, Redisp95 **58.09/35.09/30.15ms**, mỗi lượt1winner/199conflict/0errors; AMD EPYC9V45,4threads,16.77GB,Node24.21.0,2process/store,pool8/process. PG restart retains; Redis no persistence loses owner. File có chuỗi mode lịch sử “not CI”/recommendation pending; provenance thực là downloaded CI artifact, chuỗi đó không thay được runner metadata hay DEC12.
++5. T31 artifact khác: productHTTP p95all368.67ms/threshold800, không nhận300ms. Không gộp benchmark K01, endpoint, local và staging.
++
++Prototype ở `apps/api/scripts/k01`; application ở `apps/api/src/holds`. Không sửa report cũ thành đã có evidence mới từ trước. [K01_EVIDENCE.md](K01_EVIDENCE.md) có note hiện hành và giữ phần lịch sử.
++
++## 7. Diff, ảnh hưởng và phục hồi
++
++Thay đổi tập trung auth/Redis/proxy/entryweb, helpertimezone/editor/login, package export nội bộ, packaging/Renderenv, seed/demo/verifier/test/docs. **Không migration/schema mới, không đổi lockfile, không xóa event/order/ticket lịch sử, không thay V1 layout/CSS/primitives.** Danh sách/hash chính xác ở source-manifest.json và repair.patch; không liệt kê private credentials vào patch.
++
++Ảnh hưởng cần reviewer lưu ý: web khởi động qua custom entry để có transport peer; thêm server-only `AUTH_PROXY_SECRET` giống nhau web/API; `WEB_PORT` tách khỏi API `PORT`; Docker dùng production package thay trace-only standalone. Plain `next start` thiếu attestation sẽ fail503 ở login. Kiểm E2E toàn bộ các module hiện có sau đổi auth/proxy, không tự nhận nghiệm thu các sprint sau.
++
++Rollback local: `scripts/sprint1-demo.ps1 -Action Stop` chỉ dừng launcher của phiên này; giữ containers/volumes/db. Giữ bản sửa để chẩn đoán; trước khi bỏ diff phải lưu patch/source manifest. Không reset checkout gốc hoặc tự xóa volume. Nếu publish sau này, rollback code bằng reviewed revert; database hiện tại không cần rollback schema. Không đưa lại verifier/unsignedQR hay tắt guard.
++
++## 8. Gate trước publish và staging
++
++- Review diff + bổ sung remediation dependency, audit lại; quyết định thay version TECH01 cần trace riêng.
++- Sau khi được quyền remote: commit theo attribution đúng, chạy CI ở finalSHA, người khác review thật nếu yêu cầu DoD chưa được thay; không dùng đổi GitHub account như chứng cứ độc lập.
++- Bổ sung gate CI→Render, env/secret server-only, HTTPS/cookie/client-IP edge, migrations trước switch, health/smoke, failcandidate oldalive, rollback; đo thời gian và lưu URL/runSHA. Không tự bật autodeploy trong lần này.
++- Chạy AC lên staging bằng dữ liệu giả, K01 stage/endpoints/NFR nguyên ngưỡng. Render Free expiry/sleep/durability/worker limit không được tự miễn.
++- Coverage delta chưa đo; sourceCI có nhưng finalpatchCI chưa chạy; dependencyaudit chưa sạch. Không ghi Sprint1Done.
++
++Nội dung PR sửa đề xuất: [SPRINT1_FIX_PR_DRAFT.md](SPRINT1_FIX_PR_DRAFT.md). Không có PR mới được tạo trong lượt này.
+diff --git a/packages/shared/login-peer.d.ts b/packages/shared/login-peer.d.ts
+new file mode 100644
+index 0000000..4abca84
+--- /dev/null
++++ b/packages/shared/login-peer.d.ts
+@@ -0,0 +1,12 @@
++export const LOGIN_PEER_HEADER: string;
++export function canonicalPeer(ip: string | undefined): string;
++export function signLoginPeer(
++  ip: string,
++  secret: string | undefined,
++  now?: number,
++): string;
++export function verifyLoginPeer(
++  header: string,
++  secret: string | undefined,
++  now?: number,
++): string;
+diff --git a/packages/shared/login-peer.js b/packages/shared/login-peer.js
+new file mode 100644
+index 0000000..5f924bf
+--- /dev/null
++++ b/packages/shared/login-peer.js
+@@ -0,0 +1,51 @@
++import { createHmac, timingSafeEqual } from "node:crypto";
++import { isIP } from "node:net";
++
++export const LOGIN_PEER_HEADER = "x-event-login-peer";
++export function canonicalPeer(ip) {
++  const value = ip?.startsWith("::ffff:") ? ip.slice(7) : ip;
++  if (typeof value !== "string" || value.length > 45 || !isIP(value))
++    throw new Error("Invalid transport peer");
++  return value.toLowerCase();
++}
++function key(secret) {
++  if (
++    typeof secret !== "string" ||
++    secret.length < 32 ||
++    secret.startsWith("<")
++  )
++    throw new Error("AUTH_PROXY_SECRET must contain at least 32 characters");
++  return secret;
++}
++function mac(value, secret) {
++  return createHmac("sha256", key(secret))
++    .update(`POST\n/auth/login\n${value}`)
++    .digest();
++}
++export function signLoginPeer(ip, secret, now = Date.now()) {
++  const value = `${Math.floor(now / 1000)}|${canonicalPeer(ip)}`;
++  return `${Buffer.from(value).toString("base64url")}.${mac(value, secret).toString("base64url")}`;
++}
++export function verifyLoginPeer(header, secret, now = Date.now()) {
++  if (
++    typeof header !== "string" ||
++    header.length > 200 ||
++    !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/.test(header)
++  )
++    throw new Error("Invalid peer attestation");
++  const [encoded, signature] = header.split(".");
++  const value = Buffer.from(encoded, "base64url").toString("utf8");
++  if (Buffer.from(value).toString("base64url") !== encoded)
++    throw new Error("Invalid peer encoding");
++  const [timestamp, ip, extra] = value.split("|");
++  if (
++    extra !== undefined ||
++    !/^\d{10}$/.test(timestamp) ||
++    Math.abs(now / 1000 - Number(timestamp)) > 30 ||
++    canonicalPeer(ip) !== ip
++  )
++    throw new Error("Expired or invalid peer attestation");
++  if (!timingSafeEqual(mac(value, secret), Buffer.from(signature, "base64url")))
++    throw new Error("Invalid peer signature");
++  return ip;
++}
+diff --git a/scripts/sprint1-demo.ps1 b/scripts/sprint1-demo.ps1
+new file mode 100644
+index 0000000..397c347
+--- /dev/null
++++ b/scripts/sprint1-demo.ps1
+@@ -0,0 +1,92 @@
++param([switch]$SkipBuild,[ValidateSet('Start','Status','Stop')][string]$Action='Start')
++$ErrorActionPreference='Stop'
++$taskRoot=Split-Path -Parent $PSScriptRoot
++Set-Location $taskRoot
++function Check-Exit([string]$Step) { if ($LASTEXITCODE -ne 0) { throw "$Step failed (exit $LASTEXITCODE). See .sprint1-local logs." } }
++function Invoke-NativeLog([string]$Exe,[string[]]$NativeArguments,[string]$Log) {
++  # Windows PowerShell 5 treats native stderr as ErrorRecords even on exit 0.
++  # Capture both streams and judge the actual process exit code.
++  $taskPreviousPreference=$ErrorActionPreference
++  try {
++    $ErrorActionPreference='Continue'
++    & $Exe @NativeArguments 2>&1 | Out-File -LiteralPath $Log -Encoding utf8
++    $taskExit=$LASTEXITCODE
++  } finally { $ErrorActionPreference=$taskPreviousPreference }
++  if ($taskExit -ne 0) { throw "$Exe failed (exit $taskExit); see $Log" }
++}
++if ((& node --version) -ne 'v24.21.0') { throw 'Node 24.21.0 required' }
++if ((& corepack pnpm --version) -ne '10.15.1') { throw 'Run from this worktree with pnpm 10.15.1' }
++& docker info --format '{{.OSType}}'; Check-Exit 'Docker Linux engine'
++& node scripts/sprint1-setup.mjs; Check-Exit 'Local config'
++$taskDir=Join-Path $taskRoot '.sprint1-local'
++$taskConfig=Get-Content -LiteralPath (Join-Path $taskDir 'config.json') -Raw | ConvertFrom-Json
++# Override inherited service targets before Prisma/seed. This process belongs
++# only to this demo; do not let a caller's production DATABASE_URL take priority.
++$env:DATABASE_URL="postgresql://$($taskConfig.user):$($taskConfig.dbPassword)@127.0.0.1:$($taskConfig.pgPort)/sprint1_demo_20261015?schema=public"
++$env:REDIS_HOST='127.0.0.1'
++$env:REDIS_PORT="$($taskConfig.redisPort)"
++Remove-Item Env:REDIS_URL -ErrorAction SilentlyContinue
++if ($Action -eq 'Stop') {
++  $taskRunner=Join-Path $PSScriptRoot 'sprint1-process.ps1'
++  function Stop-OwnedChild([int]$TaskProcessId) {
++    foreach ($taskChild in @(Get-CimInstance Win32_Process -Filter "ParentProcessId=$TaskProcessId")) { Stop-OwnedChild $taskChild.ProcessId }
++    Stop-Process -Id $TaskProcessId -ErrorAction SilentlyContinue
++  }
++  $taskProcessState=Get-Content -LiteralPath (Join-Path $taskDir 'processes.json') -Raw | ConvertFrom-Json
++  foreach ($taskEntry in $taskProcessState) {
++    $taskLauncher=Get-CimInstance Win32_Process -Filter "ProcessId=$($taskEntry.pid)" -ErrorAction SilentlyContinue
++    if ($taskLauncher -and $taskLauncher.Name -eq 'powershell.exe' -and $taskLauncher.CommandLine.Contains($taskRunner) -and (!$taskEntry.created -or $taskLauncher.CreationDate.ToUniversalTime().ToString('o') -eq $taskEntry.created)) { Stop-OwnedChild $taskLauncher.ProcessId }
++  }
++  Write-Host 'Stopped only verified Sprint1 launcher trees. Containers, volumes and data retained.'
++  exit 0
++}
++function Confirm-Ready {
++  $taskHealth=Invoke-RestMethod "http://127.0.0.1:$($taskConfig.apiPort)/health" -TimeoutSec 3
++  $taskWeb=Invoke-WebRequest "http://127.0.0.1:$($taskConfig.webPort)/" -UseBasicParsing -TimeoutSec 3
++  $taskProxy=Invoke-WebRequest "http://127.0.0.1:$($taskConfig.webPort)/api/health" -UseBasicParsing -TimeoutSec 3
++  return ($taskHealth.status -eq 'ok' -and $taskWeb.StatusCode -eq 200 -and $taskProxy.StatusCode -eq 200)
++}
++function Write-Ready {
++  Write-Host "READY web=http://localhost:$($taskConfig.webPort) API=http://localhost:$($taskConfig.apiPort) source=$(& git rev-parse HEAD) + local diff"
++  Write-Host 'Credentials: .sprint1-local/config.json (private, Git ignored)'
++}
++if ($Action -eq 'Status') {
++  if (!(Confirm-Ready)) { throw 'Health/web/proxy not ready' }
++  Write-Ready
++  exit 0
++}
++foreach ($taskService in @(@{name='sprint1-review-pg-20261015';port=$taskConfig.pgPort},@{name='sprint1-review-redis-20261015';port=$taskConfig.redisPort})) {
++  $taskNames=@(& docker ps -a --format '{{.Names}}'); Check-Exit 'Container inventory'
++  if ($taskNames -contains $taskService.name) {
++    $taskInspect=(& docker inspect $taskService.name | ConvertFrom-Json)[0]
++    if ($taskInspect.Config.Labels.'sprint1.review' -ne '20261015') { throw 'Refuse foreign container' }
++  } elseif (Get-NetTCPConnection -State Listen -LocalPort $taskService.port -ErrorAction SilentlyContinue) { throw "Port $($taskService.port) busy; no process stopped" }
++}
++foreach ($taskPort in @($taskConfig.apiPort,$taskConfig.webPort)) {
++  if (Get-NetTCPConnection -State Listen -LocalPort $taskPort -ErrorAction SilentlyContinue) { throw "Port $taskPort already listening. Use runbook health/status; no process stopped." }
++}
++& docker compose -p sprint1-review-20261015 -f .sprint1-local/compose.json up -d --wait; Check-Exit 'Dependencies'
++Invoke-NativeLog 'corepack.cmd' @('pnpm','install','--frozen-lockfile') '.sprint1-local/install.log'
++Push-Location apps/api
++try {
++  Invoke-NativeLog 'corepack.cmd' @('pnpm','exec','prisma','migrate','deploy') '../../.sprint1-local/migrate.log'
++  Invoke-NativeLog 'corepack.cmd' @('pnpm','exec','prisma','generate') '../../.sprint1-local/generate.log'
++} finally { Pop-Location }
++& node apps/api/scripts/seed-sprint1.mjs; Check-Exit 'Guarded seed'
++if (!$SkipBuild) { Invoke-NativeLog 'corepack.cmd' @('pnpm','build') '.sprint1-local/build.log' }
++$taskRunner=Join-Path $PSScriptRoot 'sprint1-process.ps1'
++$taskOwned=@()
++foreach ($taskMode in @('api','web')) {
++  $taskProcess=Start-Process -FilePath powershell.exe -ArgumentList "-NoProfile -File `"$taskRunner`" -Mode $taskMode" -WorkingDirectory $taskRoot -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $taskDir "$taskMode.out.log") -RedirectStandardError (Join-Path $taskDir "$taskMode.err.log")
++  $taskInfo=Get-CimInstance Win32_Process -Filter "ProcessId=$($taskProcess.Id)"
++  $taskOwned+=@{mode=$taskMode;pid=$taskProcess.Id;runner=$taskRunner;created=$taskInfo.CreationDate.ToUniversalTime().ToString('o')}
++}
++$taskOwned | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskDir 'processes.json')
++$taskReady=$false
++for ($taskAttempt=0;$taskAttempt -lt 90;$taskAttempt++) {
++  try {
++    if (Confirm-Ready) { $taskReady=$true;break }
++  } catch { Start-Sleep -Milliseconds 500 }
++}
++if (!$taskReady) { throw 'Health/web/proxy failed. Inspect .sprint1-local/*.log; READY not reached.' }
++Write-Ready
+diff --git a/scripts/sprint1-process.ps1 b/scripts/sprint1-process.ps1
+new file mode 100644
+index 0000000..1197bd6
+--- /dev/null
++++ b/scripts/sprint1-process.ps1
+@@ -0,0 +1,17 @@
++param([ValidateSet('api','web')][string]$Mode)
++$ErrorActionPreference='Stop'
++$taskRoot=Split-Path -Parent $PSScriptRoot
++Set-Location $taskRoot
++$taskConfig=Get-Content -LiteralPath (Join-Path $taskRoot '.sprint1-local/config.json') -Raw | ConvertFrom-Json
++foreach ($taskVariable in @('DATABASE_URL','REDIS_URL','REDIS_HOST','REDIS_PORT','AUTH_PROXY_SECRET','SCANNER_KEY_ID','SCANNER_SIGNING_PRIVATE_KEY','SCANNER_SIGNING_PRIVATE_KEY_FILE','SCANNER_PUBLIC_KEYS','SCANNER_PUBLIC_KEY','PORT','WEB_PORT','WEB_ORIGIN','API_INTERNAL_URL','PAYMENT_GATEWAY','PAYMENT_WEBHOOK_SECRET','NODE_ENV','APP_ENV','HOLD_EXPIRY_MODE','ORDER_EXPIRY_MODE')) { Remove-Item "Env:$taskVariable" -ErrorAction SilentlyContinue }
++if ($Mode -eq 'api') {
++  Set-Location (Join-Path $taskRoot 'apps/api')
++  & node --env-file=../../.env dist/main.js
++} else {
++  $env:API_INTERNAL_URL="http://127.0.0.1:$($taskConfig.apiPort)"
++  $env:PORT="$($taskConfig.webPort)"
++  $env:NODE_ENV='production'
++  Set-Location (Join-Path $taskRoot 'apps/web')
++  & node --env-file=../../.env server.mjs
++}
++exit $LASTEXITCODE
+diff --git a/scripts/sprint1-setup.mjs b/scripts/sprint1-setup.mjs
+new file mode 100644
+index 0000000..39c6afa
+--- /dev/null
++++ b/scripts/sprint1-setup.mjs
+@@ -0,0 +1,143 @@
++import { randomBytes, generateKeyPairSync } from "node:crypto";
++import { mkdirSync, existsSync, writeFileSync, readFileSync } from "node:fs";
++import { resolve } from "node:path";
++import { parseEnv } from "node:util";
++const root = resolve(import.meta.dirname, "..");
++const dir = resolve(root, ".sprint1-local");
++mkdirSync(dir, { recursive: true });
++const file = resolve(dir, "config.json");
++if (!existsSync(file)) {
++  if (existsSync(resolve(root, ".env")))
++    throw new Error("Existing .env: refuse to overwrite");
++  const secret = () => randomBytes(24).toString("base64url");
++  const config = {
++    database: "sprint1_demo_20261015",
++    user: "sprint1_local",
++    dbPassword: secret(),
++    webPort: 3400,
++    apiPort: 3401,
++    pgPort: 15435,
++    redisPort: 16385,
++    accounts: [
++      "admin",
++      "organizer-a",
++      "organizer-b",
++      "buyer",
++      "lock-test",
++      "multi-role",
++    ].map((name) => ({
++      email: `${name}@sprint1.demo.invalid`,
++      password: secret(),
++      roles:
++        name === "admin"
++          ? ["ADMIN"]
++          : name.startsWith("organizer")
++            ? ["ORGANIZER"]
++            : name === "multi-role"
++              ? ["BUYER", "ORGANIZER"]
++              : ["BUYER"],
++    })),
++  };
++  writeFileSync(file, JSON.stringify(config, null, 2));
++  const keys = generateKeyPairSync("ed25519");
++  writeFileSync(
++    resolve(dir, "signing.pem"),
++    keys.privateKey.export({ type: "pkcs8", format: "pem" }),
++  );
++  const publicKeys = JSON.stringify({
++    "sprint1-local": keys.publicKey.export({ type: "spki", format: "pem" }),
++  });
++  writeFileSync(
++    resolve(root, ".env"),
++    [
++      `DATABASE_URL=postgresql://${config.user}:${config.dbPassword}@127.0.0.1:${config.pgPort}/${config.database}?schema=public`,
++      `REDIS_HOST=127.0.0.1`,
++      `REDIS_PORT=${config.redisPort}`,
++      `PORT=${config.apiPort}`,
++      `WEB_PORT=${config.webPort}`,
++      `WEB_ORIGIN=http://localhost:${config.webPort}`,
++      `API_INTERNAL_URL=http://127.0.0.1:${config.apiPort}`,
++      "PAYMENT_GATEWAY=mock",
++      `PAYMENT_WEBHOOK_SECRET=${secret()}`,
++      `AUTH_PROXY_SECRET=${secret()}`,
++      "HOLD_EXPIRY_MODE=off",
++      "ORDER_EXPIRY_MODE=off",
++      "SCANNER_KEY_ID=sprint1-local",
++      `SCANNER_SIGNING_PRIVATE_KEY_FILE=${resolve(dir, "signing.pem").replaceAll("\\", "/")}`,
++      `SCANNER_PUBLIC_KEYS='${publicKeys}'`,
++    ].join("\n") + "\n",
++  );
++}
++const c = JSON.parse(readFileSync(file));
++if (c.database !== "sprint1_demo_20261015")
++  throw new Error("Unexpected database");
++const localEnv = parseEnv(readFileSync(resolve(root, ".env"), "utf8"));
++let target;
++try {
++  target = new URL(localEnv.DATABASE_URL ?? "");
++} catch {
++  throw new Error("Invalid local DATABASE_URL configuration");
++}
++if (
++  target.hostname !== "127.0.0.1" ||
++  target.port !== String(c.pgPort) ||
++  target.pathname !== "/sprint1_demo_20261015" ||
++  decodeURIComponent(target.username) !== c.user ||
++  decodeURIComponent(target.password) !== c.dbPassword ||
++  localEnv.REDIS_URL ||
++  localEnv.REDIS_HOST !== "127.0.0.1" ||
++  localEnv.REDIS_PORT !== String(c.redisPort) ||
++  !localEnv.AUTH_PROXY_SECRET ||
++  localEnv.AUTH_PROXY_SECRET.length < 32
++) {
++  throw new Error(
++    "Refuse mismatched local database/cache/proxy configuration; existing files retained",
++  );
++}
++writeFileSync(
++  resolve(dir, "compose.json"),
++  JSON.stringify(
++    {
++      services: {
++        postgres: {
++          image: "postgres:15-alpine",
++          container_name: "sprint1-review-pg-20261015",
++          ports: [`127.0.0.1:${c.pgPort}:5432`],
++          environment: {
++            POSTGRES_USER: c.user,
++            POSTGRES_PASSWORD: c.dbPassword,
++            POSTGRES_DB: c.database,
++          },
++          volumes: ["sprint1-review-data:/var/lib/postgresql/data"],
++          labels: { "sprint1.review": "20261015" },
++          healthcheck: {
++            test: ["CMD-SHELL", `pg_isready -U ${c.user} -d ${c.database}`],
++            interval: "2s",
++            timeout: "3s",
++            retries: 30,
++          },
++        },
++        redis: {
++          image: "redis:7-alpine",
++          container_name: "sprint1-review-redis-20261015",
++          ports: [`127.0.0.1:${c.redisPort}:6379`],
++          command: ["redis-server", "--appendonly", "yes"],
++          volumes: ["sprint1-review-cache:/data"],
++          labels: { "sprint1.review": "20261015" },
++          healthcheck: {
++            test: ["CMD", "redis-cli", "ping"],
++            interval: "2s",
++            timeout: "3s",
++            retries: 30,
++          },
++        },
++      },
++      volumes: { "sprint1-review-data": {}, "sprint1-review-cache": {} },
++    },
++    null,
++    2,
++  ),
++);
++console.log(
++  "Local configuration ready; credentials: .sprint1-local/config.json",
++);
+diff --git a/scripts/sprint1-sources.py b/scripts/sprint1-sources.py
+new file mode 100644
+index 0000000..309c152
+--- /dev/null
++++ b/scripts/sprint1-sources.py
+@@ -0,0 +1,32 @@
++"""Read-only extraction of the approved workbook's scope and DoD."""
++from pathlib import Path
++import zipfile
++import xml.etree.ElementTree as E
++
++root = Path(__file__).resolve().parents[2]
++path = next(root.glob('outputs/**/*đã đồng bộ refinement.xlsx'))
++ns = {'m': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
++with zipfile.ZipFile(path) as z:
++    strings = []
++    if 'xl/sharedStrings.xml' in z.namelist():
++        strings = [''.join(t.itertext()) for t in E.fromstring(z.read('xl/sharedStrings.xml')).findall('m:si', ns)]
++    book = E.fromstring(z.read('xl/workbook.xml'))
++    rels = {r.attrib['Id']: r.attrib['Target'] for r in E.fromstring(z.read('xl/_rels/workbook.xml.rels'))}
++    print('SOURCE', path)
++    for sheet in book.find('m:sheets', ns):
++        name = sheet.attrib['name']
++        if name not in ['Backlog', 'DoD-DoR', 'K01']:
++            continue
++        target = rels[sheet.attrib['{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id']]
++        target = target.lstrip('/') if target.startswith('/') else 'xl/' + target
++        print('SHEET', name)
++        for row in E.fromstring(z.read(target)).findall('.//m:row', ns):
++            vals = []
++            for c in row.findall('m:c', ns):
++                val = c.find('m:v', ns)
++                text = val.text if val is not None else ''.join(c.find('m:is', ns).itertext()) if c.find('m:is', ns) is not None else ''
++                if c.attrib.get('t') == 's': text = strings[int(text)]
++                vals.append(c.attrib['r'] + '=' + (text or ''))
++            line = ' | '.join(vals)
++            if name != 'Backlog' or any('='+v+' |' in line for v in ['S-01', 'S-02', 'S-04', 'K-01']):
++                print(line)
+diff --git a/scripts/sprint1-tests.mjs b/scripts/sprint1-tests.mjs
+new file mode 100644
+index 0000000..82609d2
+--- /dev/null
++++ b/scripts/sprint1-tests.mjs
+@@ -0,0 +1,197 @@
++import { createRequire } from "node:module";
++import { resolve } from "node:path";
++import {
++  readFileSync,
++  writeFileSync,
++  openSync,
++  closeSync,
++  mkdirSync,
++} from "node:fs";
++import { spawnSync } from "node:child_process";
++import net from "node:net";
++const root = resolve(import.meta.dirname, ".."),
++  c = JSON.parse(readFileSync(resolve(root, ".sprint1-local/config.json")));
++const dir = resolve(root, ".sprint1-local"),
++  out = resolve(root, "evidence/sprint1/20261015");
++mkdirSync(out, { recursive: true });
++const require = createRequire(resolve(root, "apps/api/package.json"));
++require("dotenv").config({ path: resolve(root, ".env"), quiet: true });
++async function free(port) {
++  await new Promise((done, reject) => {
++    const s = net.createServer();
++    s.once("error", reject);
++    s.listen(port, "127.0.0.1", () => s.close(done));
++  });
++}
++const env = {
++  ...process.env,
++  DATABASE_URL: `postgresql://${c.user}:${c.dbPassword}@127.0.0.1:15434/sprint2_integration?schema=public`,
++  REDIS_HOST: "127.0.0.1",
++  REDIS_PORT: "16386",
++  S32_ISOLATED_TEST: "true",
++  HOLD_EXPIRY_MODE: "off",
++  ORDER_EXPIRY_MODE: "off",
++};
++// Unit tests supply independent key configurations; do not inject demo keys.
++for (const key of Object.keys(env))
++  if (key.startsWith("SCANNER_")) delete env[key];
++env.SCANNER_SIGNING_PRIVATE_KEY_FILE = "";
++delete env.REDIS_URL;
++env.WEB_ORIGIN = "http://localhost:3000";
++env.PAYMENT_GATEWAY = "momo";
++const results = [];
++function run(name, cmd, args, options = {}) {
++  const fd = openSync(resolve(dir, `${name}.log`), "w"),
++    start = Date.now();
++  const result = spawnSync(cmd, args, {
++    cwd: root,
++    env,
++    stdio: ["ignore", fd, fd],
++    windowsHide: true,
++    ...options,
++  });
++  closeSync(fd);
++  results.push({
++    name,
++    exitCode: result.status,
++    seconds: (Date.now() - start) / 1000,
++  });
++  writeFileSync(resolve(out, "gates.json"), JSON.stringify(results, null, 2));
++  console.log(name, result.status === 0 ? "PASS" : "FAIL");
++  if (result.status !== 0) throw Error(`${name} failed; see private log`);
++}
++const existing = spawnSync("docker", ["ps", "-a", "--format", "{{.Names}}"], {
++  encoding: "utf8",
++}).stdout;
++if (!existing.includes("sprint1-tests-pg-20261015")) await free(15434);
++if (!existing.includes("sprint1-tests-redis-20261015")) await free(16386);
++for (const name of [
++  "sprint1-tests-pg-20261015",
++  "sprint1-tests-redis-20261015",
++  "sprint1-tests-qr-pg-20261015",
++]) {
++  if (existing.split(/\r?\n/).includes(name)) {
++    const item = JSON.parse(
++      spawnSync("docker", ["inspect", name], { encoding: "utf8" }).stdout,
++    )[0];
++    if (item.Config.Labels["sprint1.review"] !== "20261015")
++      throw Error("Refuse foreign test container");
++  }
++}
++writeFileSync(
++  resolve(dir, "tests-compose.json"),
++  JSON.stringify(
++    {
++      services: {
++        postgres: {
++          image: "postgres:15-alpine",
++          container_name: "sprint1-tests-pg-20261015",
++          ports: ["127.0.0.1:15434:5432"],
++          environment: {
++            POSTGRES_USER: c.user,
++            POSTGRES_PASSWORD: c.dbPassword,
++            POSTGRES_DB: "sprint2_integration",
++          },
++          labels: { "sprint1.review": "20261015" },
++          volumes: ["test-db:/var/lib/postgresql/data"],
++          healthcheck: {
++            test: [
++              "CMD-SHELL",
++              `pg_isready -U ${c.user} -d sprint2_integration`,
++            ],
++            interval: "2s",
++            timeout: "3s",
++            retries: 30,
++          },
++        },
++        redis: {
++          image: "redis:7-alpine",
++          container_name: "sprint1-tests-redis-20261015",
++          ports: ["127.0.0.1:16386:6379"],
++          labels: { "sprint1.review": "20261015" },
++          healthcheck: {
++            test: ["CMD", "redis-cli", "ping"],
++            interval: "2s",
++            timeout: "3s",
++            retries: 30,
++          },
++        },
++      },
++      volumes: { "test-db": {} },
++    },
++    null,
++    2,
++  ),
++);
++run("test-dependencies", "docker", [
++  "compose",
++  "-p",
++  "sprint1-tests-20261015",
++  "-f",
++  ".sprint1-local/tests-compose.json",
++  "up",
++  "-d",
++  "--wait",
++]);
++run(
++  "test-migration",
++  "corepack",
++  ["pnpm", "--filter", "api", "exec", "prisma", "migrate", "deploy"],
++  { shell: true },
++);
++for (const name of ["lint", "typecheck", "test"])
++  run(name, "corepack", ["pnpm", name], { shell: true });
++run(
++  "integration",
++  "corepack",
++  [
++    "pnpm",
++    "--filter",
++    "api",
++    "run",
++    "test:e2e",
++    "--exclude",
++    "**/ticket-check-in.e2e-spec.ts",
++  ],
++  { shell: true },
++);
++// Scanner's existing guard allows a separate exact database/port, not 15434.
++// Keep that guard intact and run its entire suite under its accepted profile.
++const qrName = "sprint1-tests-qr-pg-20261015";
++if (
++  !spawnSync("docker", ["ps", "-a", "--format", "{{.Names}}"], {
++    encoding: "utf8",
++  }).stdout.includes(qrName)
++) {
++  await free(15440);
++  writeFileSync(
++    resolve(dir, "qr-postgres.env"),
++    `POSTGRES_USER=${c.user}\nPOSTGRES_PASSWORD=${c.dbPassword}\nPOSTGRES_DB=signed_qr_integration\n`,
++  );
++  run("qr-db-create", "docker", [
++    "run",
++    "-d",
++    "--name",
++    qrName,
++    "--label",
++    "sprint1.review=20261015",
++    "--env-file",
++    ".sprint1-local/qr-postgres.env",
++    "-p",
++    "127.0.0.1:15440:5432",
++    "postgres:15-alpine",
++  ]);
++}
++env.DATABASE_URL = `postgresql://${c.user}:${c.dbPassword}@127.0.0.1:15440/signed_qr_integration?schema=public`;
++run(
++  "qr-migration",
++  "corepack",
++  ["pnpm", "--filter", "api", "exec", "prisma", "migrate", "deploy"],
++  { shell: true },
++);
++run(
++  "integration-scanner",
++  "corepack",
++  ["pnpm", "--filter", "api", "run", "test:e2e", "ticket-check-in.e2e-spec.ts"],
++  { shell: true },
++);
+diff --git a/scripts/verify-sprint1-api.mjs b/scripts/verify-sprint1-api.mjs
+new file mode 100644
+index 0000000..d230d09
+--- /dev/null
++++ b/scripts/verify-sprint1-api.mjs
+@@ -0,0 +1,364 @@
++import assert from "node:assert/strict";
++import { createRequire } from "node:module";
++import {
++  readFileSync,
++  writeFileSync,
++  mkdirSync,
++  createWriteStream,
++} from "node:fs";
++import { resolve } from "node:path";
++import { spawn } from "node:child_process";
++import http from "node:http";
++import net from "node:net";
++import { createHash } from "node:crypto";
++const root = resolve(import.meta.dirname, ".."),
++  req = createRequire(resolve(root, "apps/api/package.json"));
++req("dotenv").config({ path: resolve(root, ".env"), quiet: true });
++const c = JSON.parse(readFileSync(resolve(root, ".sprint1-local/config.json")));
++let target;
++try {
++  target = new URL(process.env.DATABASE_URL ?? "");
++} catch {
++  throw new Error("Invalid local DATABASE_URL configuration");
++}
++assert(!process.env.REDIS_URL, "Refuse inherited REDIS_URL in API verifier");
++assert(
++  target.hostname === "127.0.0.1" &&
++    target.port === String(c.pgPort) &&
++    target.pathname === "/sprint1_demo_20261015" &&
++    process.env.REDIS_HOST === "127.0.0.1" &&
++    process.env.REDIS_PORT === String(c.redisPort),
++  "Exact isolated demo database/cache required",
++);
++const { PrismaClient } = req("@prisma/client"),
++  { PrismaPg } = req("@prisma/adapter-pg");
++const Redis = req("ioredis").default;
++const db = new PrismaClient({
++  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
++});
++const redis = new Redis(Number(process.env.REDIS_PORT), process.env.REDIS_HOST);
++const out = resolve(root, "evidence/sprint1/20261015");
++mkdirSync(out, { recursive: true });
++const results = [];
++const check = (name, detail = {}) => {
++  results.push({ name, status: "PASS", ...detail });
++  console.log("PASS", name);
++};
++const delay = (ms) => new Promise((r) => setTimeout(r, ms));
++const port = 3402;
++let child;
++function call(
++  path,
++  { method = "GET", body, cookie, ip = "127.0.0.1", headers = {} } = {},
++) {
++  return new Promise((done, reject) => {
++    const r = http.request(
++      {
++        hostname: "127.0.0.1",
++        port,
++        path,
++        method,
++        localAddress: ip,
++        headers: {
++          ...(body ? { "content-type": "application/json" } : {}),
++          ...(cookie ? { cookie } : {}),
++          ...headers,
++        },
++      },
++      (res) => {
++        let data = "";
++        res.on("data", (s) => (data += s));
++        res.on("end", () => {
++          let json;
++          try {
++            json = JSON.parse(data);
++          } catch {}
++          done({ status: res.statusCode, json, headers: res.headers });
++        });
++      },
++    );
++    r.on("error", reject);
++    if (body) r.write(JSON.stringify(body));
++    r.end();
++  });
++}
++async function start() {
++  await new Promise((done, reject) => {
++    const probe = net.createServer();
++    probe.once("error", reject);
++    probe.listen(port, "0.0.0.0", () => probe.close(done));
++  });
++  const logs = createWriteStream(
++    resolve(root, ".sprint1-local/api-verification.log"),
++    { flags: "a" },
++  );
++  child = spawn(process.execPath, ["--env-file=../../.env", "dist/main.js"], {
++    cwd: resolve(root, "apps/api"),
++    env: { ...process.env, PORT: String(port) },
++    stdio: ["ignore", "pipe", "pipe"],
++    windowsHide: true,
++  });
++  child.stdout.pipe(logs);
++  child.stderr.pipe(logs);
++  for (let n = 0; n < 80; n++) {
++    if (child.exitCode !== null)
++      throw Error("Owned verification API exited before readiness");
++    try {
++      if ((await call("/health")).status === 200) return;
++    } catch {}
++    await delay(250);
++  }
++  throw Error("Verification API failed startup");
++}
++async function stop() {
++  if (child && child.exitCode === null) {
++    const wait = new Promise((r) => child.once("exit", r));
++    child.kill();
++    await wait;
++  }
++}
++const account = (name) =>
++  c.accounts.find((a) => a.email.startsWith(name + "@"));
++async function login(a, opts = {}) {
++  const r = await call("/auth/login", { method: "POST", body: a, ...opts });
++  assert.equal(r.status, 200);
++  return r.headers["set-cookie"][0].split(";")[0];
++}
++try {
++  await start();
++  assert.equal((await call("/auth/me")).status, 401);
++  check("anonymous401");
++  const a = account("organizer-a"),
++    b = account("organizer-b"),
++    buyer = account("buyer");
++  const ca = await login(a),
++    cb = await login(b),
++    cu = await login(buyer),
++    cm = await login(account("multi-role"));
++  const full = await call("/auth/login", { method: "POST", body: a });
++  const rawCookie = full.headers["set-cookie"][0];
++  assert.match(rawCookie, /HttpOnly/);
++  assert.match(rawCookie, /SameSite=Lax/);
++  assert.match(rawCookie, /Max-Age=900/);
++  check("session-cookie-contract");
++  const payload = {
++    name: "Sprint1 API " + Date.now(),
++    description: "Dữ liệu giả kiểm nghiệm",
++    location: "Phòng thử A",
++  };
++  const invalid = await call("/events", {
++    method: "POST",
++    cookie: ca,
++    body: { name: "", description: "", location: "" },
++  });
++  assert.equal(invalid.status, 400);
++  assert.equal(Object.keys(invalid.json.errors).length, 3);
++  check("field-validation400");
++  const created = await call("/events", {
++    method: "POST",
++    cookie: ca,
++    body: payload,
++  });
++  assert.equal(created.status, 201);
++  assert.equal(created.json.status, "DRAFT");
++  const id = created.json.id;
++  const mine = await call("/events/mine", { cookie: ca });
++  assert(mine.json.some((e) => e.id === id));
++  assert(!(await call("/events")).json.some((e) => e.id === id));
++  assert.equal((await call("/events/" + id)).status, 404);
++  check("create-draft-owner-list-public-hidden");
++  assert.equal(
++    (
++      await call("/events/" + id, {
++        method: "PATCH",
++        cookie: ca,
++        body: { ...payload, name: payload.name + " sửa" },
++      })
++    ).status,
++    200,
++  );
++  assert.match(
++    (await call("/events/" + id + "/manage", { cookie: ca })).json.name,
++    /sửa$/,
++  );
++  check("edit-persist-read");
++  for (const cookie of [cb, cu]) {
++    assert.equal(
++      (await call("/events/" + id + "/manage", { cookie })).status,
++      403,
++    );
++    assert.equal(
++      (await call("/events/" + id, { method: "PATCH", cookie, body: payload }))
++        .status,
++      403,
++    );
++    assert.equal(
++      (
++        await call("/events/" + id + "/showtimes", {
++          method: "POST",
++          cookie,
++          body: { startTime: "2099-01-01T10:00:00+07:00" },
++        })
++      ).status,
++      403,
++    );
++  }
++  assert.equal(
++    (await call("/events", { method: "POST", cookie: cu, body: payload }))
++      .status,
++    403,
++  );
++  check("buyer-and-other-organizer-server403");
++  assert.equal((await call("/events/mine", { cookie: cm })).status, 200);
++  assert.equal((await call("/", { cookie: ca })).status, 403);
++  check("multi-role-and-default-deny403");
++  const endpoint = "/events/" + id + "/showtimes";
++  for (const startTime of ["2020-01-01T10:00:00+07:00", "2099-01-01T10:00"])
++    assert.equal(
++      (
++        await call(endpoint, {
++          method: "POST",
++          cookie: ca,
++          body: { startTime },
++        })
++      ).status,
++      400,
++    );
++  const startTime = "2099-01-01T00:30:00+07:00";
++  const st = await call(endpoint, {
++    method: "POST",
++    cookie: ca,
++    body: { startTime },
++  });
++  assert.equal(st.status, 201);
++  assert.equal(st.json.startTime, "2098-12-31T17:30:00.000Z");
++  assert.equal(st.json.eventId, id);
++  const dup = await call(endpoint, {
++    method: "POST",
++    cookie: ca,
++    body: { startTime },
++  });
++  assert.equal(dup.status, 201);
++  assert.match(dup.json.warning, /cùng giờ/);
++  assert.equal(await db.showtime.count({ where: { eventId: id } }), 2);
++  check("past-rejected-utc-roundtrip-duplicate-warning-saved");
++  await assert.rejects(db.event.delete({ where: { id } }));
++  check("event-delete-fk-restrict-no-history-cascade");
++  await assert.rejects(
++    db.user.create({ data: { email: a.email, password: "not-inserted" } }),
++  );
++  const hashes = await db.user.findMany({
++    where: { email: { in: c.accounts.map((x) => x.email) } },
++    select: { password: true },
++  });
++  assert.equal(hashes.length, 6);
++  assert(hashes.every((u) => u.password.startsWith("$argon2id$")));
++  assert.equal(await db.role.count(), 5);
++  check("db-unique-five-roles-six-argon2id-fixtures");
++  await call("/auth/logout", { method: "POST", cookie: ca });
++  assert.equal((await call("/auth/me", { cookie: ca })).status, 401);
++  check("logout-replay401");
++  const exp = await login(a),
++    hash = createHash("sha256").update(exp.split("=")[1]).digest("hex");
++  await db.session.update({
++    where: { tokenHash: hash },
++    data: { expiresAt: new Date(Date.now() - 1000) },
++  });
++  assert.equal((await call("/auth/me", { cookie: exp })).status, 401);
++  check("expired-server-session401-fixture-no-production-ttl-change");
++  const no = await call("/auth/login", {
++    method: "POST",
++    body: {
++      email: "unknown-" + Date.now() + "@sprint1.demo.invalid",
++      password: "wrong",
++    },
++  });
++  const bad = await call("/auth/login", {
++    method: "POST",
++    body: { email: b.email, password: "wrong" },
++  });
++  assert.equal(no.status, 401);
++  assert.deepEqual(no.json, bad.json);
++  check("unknown-email-and-wrong-password-same-error");
++  const lock = account("lock-test");
++  const key =
++    "auth:lock:" + createHash("sha256").update(lock.email).digest("hex");
++  const existing = await redis.ttl(key);
++  if (existing <= 0) {
++    for (let n = 0; n < 5; n++)
++      assert.equal(
++        (
++          await call("/auth/login", {
++            method: "POST",
++            body: { email: lock.email, password: "wrong" },
++          })
++        ).status,
++        401,
++      );
++  }
++  const locked = await call("/auth/login", { method: "POST", body: lock });
++  assert.equal(locked.status, 429);
++  const ttl = await redis.ttl(key);
++  assert(ttl > 0 && ttl <= 900);
++  check("five-failures-sixth429-real-redis-ttl", { ttlSeconds: ttl });
++  writeFileSync(
++    resolve(root, ".sprint1-local/lock-start.json"),
++    JSON.stringify({
++      startedAt: new Date().toISOString(),
++      expiresAfterSeconds: ttl,
++      key,
++    }),
++  );
++  await stop();
++  await start();
++  const retained = await call("/auth/login", { method: "POST", body: lock });
++  assert.equal(retained.status, 429);
++  assert(retained.json.retryAfterSeconds <= ttl);
++  check("real-api-process-restart-retains-redis-lock", {
++    remainingSeconds: retained.json.retryAfterSeconds,
++  });
++  for (let n = 0; n < 30; n++)
++    assert.equal(
++      (
++        await call("/auth/login", {
++          method: "POST",
++          ip: "127.0.0.2",
++          body: {
++            email: `rotated-${n}-${Date.now()}@sprint1.demo.invalid`,
++            password: "wrong",
++          },
++          headers: { "x-forwarded-for": "127.0.0." + (n + 10) },
++        })
++      ).status,
++      401,
++    );
++  const blocked = await call("/auth/login", {
++    method: "POST",
++    ip: "127.0.0.2",
++    body: a,
++    headers: { "x-forwarded-for": "192.0.2.1" },
++  });
++  assert.equal(blocked.status, 429);
++  await login(a, { ip: "127.0.0.3" });
++  check("ip-budget-account-rotation-spoofed-forwarded-header-independent-peer");
++  writeFileSync(
++    resolve(out, "api.json"),
++    JSON.stringify(
++      {
++        source: "81d1dd9d8f453b32ed0c6956399e5600f71a32d6 + local diff",
++        time: new Date().toISOString(),
++        results,
++      },
++      null,
++      2,
++    ),
++  );
++  writeFileSync(
++    resolve(root, ".sprint1-local/api-fixture.json"),
++    JSON.stringify({ eventId: id }),
++  );
++} finally {
++  await stop();
++  redis.disconnect();
++  await db.$disconnect();
++}
+diff --git a/scripts/verify-sprint1-browser.mjs b/scripts/verify-sprint1-browser.mjs
+new file mode 100644
+index 0000000..b32cd07
+--- /dev/null
++++ b/scripts/verify-sprint1-browser.mjs
+@@ -0,0 +1,309 @@
++import assert from "node:assert/strict";
++import { createRequire } from "node:module";
++import { resolve } from "node:path";
++import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
++const root = resolve(import.meta.dirname, ".."),
++  apiRequire = createRequire(resolve(root, "apps/api/package.json"));
++apiRequire("dotenv").config({ path: resolve(root, ".env"), quiet: true });
++let target;
++try {
++  target = new URL(process.env.DATABASE_URL ?? "");
++} catch {
++  throw new Error("Invalid local DATABASE_URL configuration");
++}
++assert(
++  target.hostname === "127.0.0.1" &&
++    target.port === "15435" &&
++    target.pathname === "/sprint1_demo_20261015",
++  "Exact isolated demo database required",
++);
++const { chromium } = createRequire(resolve(root, "apps/web/package.json"))(
++  "playwright",
++);
++const { PrismaClient } = apiRequire("@prisma/client"),
++  { PrismaPg } = apiRequire("@prisma/adapter-pg");
++const db = new PrismaClient({
++  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
++});
++const config = JSON.parse(
++    readFileSync(resolve(root, ".sprint1-local/config.json")),
++  ),
++  origin = `http://localhost:${config.webPort}`;
++const out = resolve(root, "evidence/sprint1/20261015/browser");
++mkdirSync(out, { recursive: true });
++const browser = await chromium.launch({ headless: true }),
++  results = [],
++  errors = [],
++  consoleErrors = [],
++  expectedHttp = [];
++const a = config.accounts.find((x) => x.email.startsWith("organizer-a@")),
++  b = config.accounts.find((x) => x.email.startsWith("organizer-b@"));
++let injection = false;
++function observe(page) {
++  page.on("pageerror", (e) => errors.push(e.message));
++  page.on("console", (m) => {
++    if (m.type() === "error" && !injection) consoleErrors.push(m.text());
++  });
++}
++const pass = (name, extra = {}) => {
++  results.push({ name, status: "PASS", ...extra });
++  console.log("PASS", name);
++};
++async function login(page, account) {
++  await page.locator("#login-email").fill(account.email);
++  await page.locator("#login-password").fill(account.password);
++  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
++  await page.waitForURL("**/events");
++}
++async function stable(page) {
++  await page.waitForLoadState("networkidle");
++  await page.waitForFunction(() => document.title.length > 0);
++  assert(
++    !(await page.locator("body").innerText()).includes("Application error"),
++  );
++  assert(await page.title());
++  assert((await page.locator("body").innerText()).length > 100);
++}
++try {
++  const ctx = await browser.newContext({
++      viewport: { width: 1440, height: 1000 },
++      timezoneId: "America/Los_Angeles",
++    }),
++    page = await ctx.newPage();
++  observe(page);
++  await page.goto(origin + "/login");
++  await stable(page);
++  await page.screenshot({ path: resolve(out, "desktop-login.png") });
++  await page.locator("#login-email").focus();
++  await page.keyboard.press("Tab");
++  assert.equal(
++    await page
++      .locator("#login-password")
++      .evaluate((e) => e === document.activeElement),
++    true,
++  );
++  pass("login-desktop-identity-nonblank-keyboard");
++  await login(page, a);
++  await stable(page);
++  assert.equal(
++    await page.getByRole("link", { name: /đối soát|kế toán/i }).count(),
++    0,
++  );
++  pass("organizer-login-events-no-accounting");
++  await page.goto(origin + "/events/new");
++  await page.locator("#event-name").waitFor();
++  await page.getByRole("button", { name: "Tạo sự kiện", exact: true }).click();
++  await page.locator("#name-error").waitFor();
++  assert.equal(
++    await page.locator("#event-name").getAttribute("aria-invalid"),
++    "true",
++  );
++  pass("empty-form-inline-errors");
++  const name = "Sprint1 UI " + Date.now();
++  await page.locator("#event-name").fill(name);
++  await page.locator("#event-location").fill("Phòng demo Việt Nam");
++  await page.locator("#event-description").fill("Dữ liệu giả cho Sprint 1");
++  // Two submit events in one turn exercise the synchronous useRef lock, beyond disabled styling.
++  await page
++    .locator('form[aria-labelledby="event-form-title"]')
++    .evaluate((form) => {
++      form.requestSubmit();
++      form.requestSubmit();
++    });
++  await page.waitForURL(/\/events\/[0-9a-f-]{36}$/);
++  const id = new URL(page.url()).pathname.split("/")[2];
++  await page.locator("#showtime-start").waitFor();
++  assert.equal(await db.event.count({ where: { name } }), 1);
++  pass("double-submit-one-draft", { eventId: id });
++  await page.locator("#event-name").fill(name + " sửa");
++  await page.getByRole("button", { name: "Lưu thay đổi", exact: true }).click();
++  await page.getByRole("status").filter({ hasText: "Đã lưu" }).waitFor();
++  await page.reload();
++  await page.locator("#showtime-start").waitFor();
++  assert.equal(await page.locator("#event-name").inputValue(), name + " sửa");
++  pass("edit-reload-persist");
++  await page.locator("#showtime-start").fill("2020-01-01T10:00");
++  await page
++    .getByRole("button", { name: "Thêm suất diễn", exact: true })
++    .click();
++  await page.locator("#start-error").waitFor();
++  assert.equal(
++    await page.locator("#showtime-start").inputValue(),
++    "2020-01-01T10:00",
++  );
++  pass("past-time-inline-error-retains-input");
++  const time = "2099-01-01T00:30";
++  await page.locator("#showtime-start").fill(time);
++  await page
++    .getByRole("button", { name: "Thêm suất diễn", exact: true })
++    .click();
++  await page.getByRole("status").filter({ hasText: "Đã thêm" }).waitFor();
++  assert.equal(
++    (
++      await db.showtime.findFirstOrThrow({ where: { eventId: id } })
++    ).startTime.toISOString(),
++    "2098-12-31T17:30:00.000Z",
++  );
++  await page.locator("#showtime-start").fill(time);
++  await page
++    .getByRole("button", { name: "Thêm suất diễn", exact: true })
++    .click();
++  await page.getByRole("status").filter({ hasText: "cùng giờ" }).waitFor();
++  assert.equal(await db.showtime.count({ where: { eventId: id } }), 2);
++  await page.reload();
++  await page.locator(".operations-showtimes li").first().waitFor();
++  assert.match(
++    await page.locator(".operations-showtimes").innerText(),
++    /00:30/,
++  );
++  pass(
++    "future-vietnam-time-in-US-browser-duplicate-warning-two-records-reload",
++  );
++  await page.screenshot({
++    path: resolve(out, "desktop-event.png"),
++    fullPage: true,
++  });
++  // A real server-side validation error must preserve the entered event fields.
++  const inputBefore = await page.locator("#event-name").inputValue();
++  await page.route("**/api/events/" + id, async (route) => {
++    if (route.request().method() === "PATCH") {
++      const body = route.request().postDataJSON();
++      await route.continue({
++        postData: JSON.stringify({ ...body, location: "" }),
++      });
++    } else await route.continue();
++  });
++  injection = true;
++  await page.getByRole("button", { name: "Lưu thay đổi", exact: true }).click();
++  await page.locator("#location-error").waitFor();
++  assert.equal(await page.locator("#event-name").inputValue(), inputBefore);
++  assert.equal(
++    await page.locator("#event-location").inputValue(),
++    "Phòng demo Việt Nam",
++  );
++  await page.unroute("**/api/events/" + id);
++  injection = false;
++  await page.locator("#event-location").fill("Phòng demo đã phục hồi");
++  await page.getByRole("button", { name: "Lưu thay đổi", exact: true }).click();
++  await page.getByRole("status").filter({ hasText: "Đã lưu" }).waitFor();
++  pass("real-server400-field-error-input-retained-recovery");
++  await page.locator("#event-name").fill(name + " khôi phục phiên");
++  const owner = await db.user.findUniqueOrThrow({ where: { email: a.email } });
++  await db.session.updateMany({
++    where: { userId: owner.id },
++    data: { expiresAt: new Date(Date.now() - 1000) },
++  });
++  injection = true;
++  await page.getByRole("button", { name: "Lưu thay đổi", exact: true }).click();
++  await page.waitForURL("**/login?returnTo=*");
++  await page.locator("#login-email").fill(a.email);
++  await page.locator("#login-password").fill(a.password);
++  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
++  await page.waitForURL("**/events/" + id);
++  await page.locator("#showtime-start").waitFor();
++  assert.equal(
++    await page.locator("#event-name").inputValue(),
++    name + " khôi phục phiên",
++  );
++  injection = false;
++  pass("expired-session401-login-return-restores-same-owner-draft");
++  await page.getByRole("button", { name: "Lưu thay đổi", exact: true }).click();
++  await page.getByRole("status").filter({ hasText: "Đã lưu" }).waitFor();
++  const other = await browser.newContext({
++      viewport: { width: 390, height: 844 },
++      timezoneId: "Asia/Ho_Chi_Minh",
++    }),
++    p = await other.newPage();
++  observe(p);
++  await p.goto(origin + "/login");
++  await login(p, b);
++  await p.goto(origin + "/events/" + id);
++  injection = true;
++  await p
++    .getByRole("heading", { name: "Bạn không có quyền sửa sự kiện này" })
++    .waitFor();
++  await p.screenshot({
++    path: resolve(out, "mobile-owner-denied.png"),
++    fullPage: true,
++  });
++  injection = false;
++  pass("other-organizer-direct-url-denied-mobile");
++  const mobile = await browser.newContext({
++      viewport: { width: 390, height: 844 },
++      timezoneId: "Asia/Ho_Chi_Minh",
++    }),
++    m = await mobile.newPage();
++  observe(m);
++  await m.goto(origin + "/login");
++  await login(m, a);
++  await m.goto(origin + "/events/" + id);
++  await m.locator("#showtime-start").waitFor();
++  await stable(m);
++  assert(
++    await m.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
++  );
++  await m.screenshot({
++    path: resolve(out, "mobile-event.png"),
++    fullPage: true,
++  });
++  pass("mobile390-editor-no-overflow");
++  // Loading and API outage are real rendered states; no fixture content is shown as success.
++  await m.route("**/api/events/" + id + "/manage", async (route) => {
++    await new Promise((r) => setTimeout(r, 1200));
++    await route.continue();
++  });
++  await m.reload({ waitUntil: "domcontentloaded" });
++  await m.getByRole("status", { name: "Đang tải sự kiện" }).waitFor();
++  await m.locator("#showtime-start").waitFor();
++  await m.unroute("**/api/events/" + id + "/manage");
++  pass("loading-state");
++  injection = true;
++  await m.route("**/api/events/" + id + "/manage", (route) =>
++    route.fulfill({
++      status: 503,
++      contentType: "application/json",
++      body: JSON.stringify({ message: "Injected isolated outage" }),
++    }),
++  );
++  await m.reload();
++  await m.getByRole("alert").filter({ hasText: "Không tải được" }).waitFor();
++  await m.unroute("**/api/events/" + id + "/manage");
++  await m.reload();
++  await m.locator("#showtime-start").waitFor();
++  injection = false;
++  pass("error-state-reload-recovery");
++  assert.deepEqual(errors, []);
++  pass("no-page-runtime-errors");
++  // Browser logs include expected 400/401/403 from deliberately negative tests.
++  const unexpected = consoleErrors.filter(
++    (e) =>
++      !/^Failed to load resource: the server responded with a status of (400|401|403)/.test(
++        e,
++      ),
++  );
++  assert.deepEqual(unexpected, []);
++  pass("no-unexpected-console-errors", {
++    expectedNegativeHttpErrors: consoleErrors.length,
++  });
++  writeFileSync(
++    resolve(out, "results.json"),
++    JSON.stringify(
++      {
++        origin,
++        viewports: ["1440x1000 US timezone", "390x844 Vietnam"],
++        results,
++        pageErrors: errors,
++        unexpectedConsoleErrors: unexpected,
++      },
++      null,
++      2,
++    ),
++  );
++  writeFileSync(
++    resolve(root, ".sprint1-local/browser-fixture.json"),
++    JSON.stringify({ eventId: id }),
++  );
++} finally {
++  await browser.close();
++  await db.$disconnect();
++}

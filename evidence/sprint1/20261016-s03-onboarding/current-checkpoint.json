@@ -1,0 +1,59 @@
+{
+  "time": "2026-10-16T16:26:08.147048+00:00",
+  "head": "49b28427aca611e4c171285b68c53184e9941d45",
+  "base": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
+  "scope": "S01/S02/S03/S04/K01,T01-T10 per DEC15; DEC16 arbitrary valid registration emails",
+  "local": {
+    "activationPassword": "Mail token holder chooses final password; original attacker credential rejected",
+    "registrationMail": "Optional allowlist; shared120requests/hour registration+resend admission, per-email resend5/hour retained"
+  },
+  "staging": {
+    "sha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+    "origin": "https://10.88.164.155:3470",
+    "mode": "manual candidate",
+    "health": "PASS",
+    "firewall": "PASS",
+    "realMailReceiptActivationLogin": "PASS",
+    "rollbackRestore": "PASS"
+  },
+  "review": "REQUIRED; no fake approval/account rotation",
+  "security": {
+    "scanId": "9ffaf2f2-6886-4ee7-9534-21c2d8e26888",
+    "immutableRange": "13c528e..4fec49d",
+    "status": "completed",
+    "findings": [
+      {
+        "severity": "high",
+        "class": "pending-account pre-hijack"
+      },
+      {
+        "severity": "medium",
+        "class": "unbounded SMTP admission"
+      }
+    ],
+    "localFix": "61030ac",
+    "finalSupplement": "Completed fa4c01dc-e651-453f-8628-c2acc32da263,4fec..ac39; medium caller budget issue fixed02a with real HTTP regression. Final ops WIP separately reviewed."
+  },
+  "regression": {
+    "integrationFocused14": "PASS",
+    "securityUnit17": "PASS",
+    "typecheck": "PASS",
+    "lint": "PASS"
+  },
+  "remaining": [
+    "Evidence-only final commit CI readback",
+    "Valid other-person review at finalhead",
+    "Develop integration/watch auto-deploy/integrated acceptance"
+  ],
+  "noSprintDone": true,
+  "ci": {
+    "result": "PASS",
+    "evidence": "ci-49b2842.json",
+    "seconds": 226
+  },
+  "onboarding": {
+    "result": "PASS",
+    "evidence": "fresh-exact-clone-bootstrap.json",
+    "source": "02a8e86a6fea05a49bd27902c08652920e444a10"
+  }
+}

@@ -5,7 +5,7 @@ import {
   readFileSync,
   chmodSync,
 } from "node:fs";
-import { randomBytes } from "node:crypto";
+import { generateKeyPairSync, randomBytes } from "node:crypto";
 import { resolve } from "node:path";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
@@ -56,9 +56,19 @@ secret("smtp-password", "local-unused");
 secret("telegram-token", "1000:local_fixture_only");
 secret("external-smtp-password", "external-not-configured");
 secret("external-telegram-token", "external-not-configured");
-writeFileSync(resolve(dir, "compose.env"), `S43_DB_PASSWORD=${password}\n`, {
-  mode: 0o600,
-});
+// The API image runs with NODE_ENV=production and refuses to start without a
+// ticket QR signing key (S-26). Local fixture key, never used outside this stack.
+const ticketSigningKey = secret(
+  "ticket-signing-key",
+  generateKeyPairSync("ed25519")
+    .privateKey.export({ type: "pkcs8", format: "der" })
+    .toString("base64"),
+);
+writeFileSync(
+  resolve(dir, "compose.env"),
+  `S43_DB_PASSWORD=${password}\nS43_TICKET_SIGNING_PRIVATE_KEY=${ticketSigningKey}\n`,
+  { mode: 0o600 },
+);
 export const targets = [
   {
     targets: ["api-a:9464", "api-b:9464"],

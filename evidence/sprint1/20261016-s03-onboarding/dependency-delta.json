@@ -1,0 +1,21 @@
+{
+  "time": "2026-10-16T12:00:05.962Z",
+  "baseline": "13c528e1f09b5b4362451d4caf7d942211dd29db",
+  "result": "PASS",
+  "assertion": "Parsed lock unchanged except two direct API imports and their package/snapshot entries; no existing version, override, peer graph or patch changed",
+  "additions": {
+    "dependency": {
+      "specifier": "10.1.2",
+      "version": "10.1.2"
+    },
+    "types": {
+      "specifier": "8.0.2",
+      "version": "8.0.2"
+    },
+    "packageKeys": [
+      "nodemailer@10.1.2",
+      "@types/nodemailer@8.0.2"
+    ]
+  },
+  "frozenInstall": "PASS"
+}

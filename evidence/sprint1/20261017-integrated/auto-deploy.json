@@ -1,0 +1,86 @@
+{
+  "source": "90188e572d41d3f95e1dac13a42256260fd68a22",
+  "result": "FAIL",
+  "functionalDeployment": "PASS",
+  "mergeAt": "2026-10-16T17:21:45Z",
+  "healthyAt": "2026-10-16T17:32:03.856Z",
+  "mergeToHealthySeconds": 618.856,
+  "thresholdSeconds": 600,
+  "candidateDeploymentSeconds": 71.259,
+  "automatic": true,
+  "watcherProcess": 15788,
+  "ci": {
+    "conclusion": "success",
+    "createdAt": "2026-10-16T17:21:47Z",
+    "headSha": "90188e572d41d3f95e1dac13a42256260fd68a22",
+    "jobs": [
+      {
+        "name": "T-02 / build-and-typecheck",
+        "conclusion": "success",
+        "startedAt": "2026-10-16T17:21:51Z",
+        "completedAt": "2026-10-16T17:22:55Z"
+      },
+      {
+        "name": "T-02 / lint",
+        "conclusion": "success",
+        "startedAt": "2026-10-16T17:21:51Z",
+        "completedAt": "2026-10-16T17:22:28Z"
+      },
+      {
+        "name": "T-02 / test",
+        "conclusion": "success",
+        "startedAt": "2026-10-16T17:21:52Z",
+        "completedAt": "2026-10-16T17:23:34Z"
+      },
+      {
+        "name": "T-31 / hold-concurrency",
+        "conclusion": "success",
+        "startedAt": "2026-10-16T17:23:38Z",
+        "completedAt": "2026-10-16T17:25:57Z"
+      },
+      {
+        "name": "K-01 / candidate-research",
+        "conclusion": "success",
+        "startedAt": "2026-10-16T17:23:37Z",
+        "completedAt": "2026-10-16T17:24:17Z"
+      }
+    ],
+    "updatedAt": "2026-10-16T17:25:58Z",
+    "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38939094453",
+    "workflowWallSeconds": 251
+  },
+  "watcherEvents": [
+    {
+      "time": "2026-10-16T17:22:37.986Z",
+      "status": "BLOCKED_CI_not_all_success",
+      "sha": "90188e572d41d3f95e1dac13a42256260fd68a22"
+    },
+    {
+      "time": "2026-10-16T17:29:49.128Z",
+      "status": "BLOCKED_watcher_error",
+      "reason": "fetch_failed"
+    },
+    {
+      "time": "2026-10-16T17:30:51.429Z",
+      "status": "deploy_after_CI",
+      "sha": "90188e572d41d3f95e1dac13a42256260fd68a22"
+    },
+    {
+      "time": "2026-10-16T17:32:03.880Z",
+      "status": "deploy_complete",
+      "sha": "90188e572d41d3f95e1dac13a42256260fd68a22"
+    },
+    {
+      "time": "2026-10-16T17:33:05.268Z",
+      "status": "active",
+      "sha": "90188e572d41d3f95e1dac13a42256260fd68a22"
+    }
+  ],
+  "backup": {
+    "time": "2026-10-16T17:31:35.386Z",
+    "event": "backup-verified",
+    "sha": "90188e572d41d3f95e1dac13a42256260fd68a22",
+    "bytes": 3902027
+  },
+  "finding": "Watcher network calls have no deadline. Repeated fetch_failed and independent gh TLS handshake timeout observed; CI green→deploy decision delayed. Exact individual stalled command duration was not instrumented; do not infer it from deduplicated event gaps."
+}

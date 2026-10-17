@@ -1,0 +1,42 @@
+{
+  "baseline": "07d683fcfcfd7d05c8aff1119ab6dc3c63f6e458",
+  "source": "source-manifest.json",
+  "unit": {
+    "api": 219,
+    "web": 104,
+    "status": "PASS",
+    "provider": "Vitest4.1.11/V8"
+  },
+  "integration": {
+    "general": 81,
+    "scanner": 4,
+    "status": "PASS",
+    "environment": "15446/sprint2_integration,15450/signed_qr_integration,Redis16396"
+  },
+  "browser": {
+    "checks": 15,
+    "status": "PASS",
+    "report": "browser/results.json"
+  },
+  "docker": "docker-smoke.json",
+  "commands": [
+    "pnpm install --frozen-lockfile",
+    "pnpm --filter api exec prisma generate/validate/migrate deploy",
+    "pnpm build",
+    "pnpm lint",
+    "pnpm typecheck",
+    "node scripts/sprint1-tests.mjs",
+    "pnpm --filter api exec vitest run --config vitest.sprint1-coverage.config.ts --coverage",
+    "pnpm --filter web exec vitest run --config vitest.sprint1-coverage.config.ts --coverage",
+    "node scripts/verify-sprint1-api.mjs",
+    "node scripts/verify-sprint1-browser.mjs",
+    "docker build --target render -t sprint1-gitflow-render:20261015 .",
+    "node scripts/sprint1-docker-smoke.mjs"
+  ],
+  "limits": [
+    "No remote CI claimed before push",
+    "No laptop staging claimed",
+    "Initial copied verifier SHA metadata corrected explicitly",
+    "Old natural900s expiry remains historical main evidence"
+  ]
+}

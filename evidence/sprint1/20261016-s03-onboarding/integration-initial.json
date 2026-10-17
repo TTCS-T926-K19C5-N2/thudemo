@@ -1,0 +1,8 @@
+{
+  "time": "2026-10-16T11:36:49.214Z",
+  "source": "13c528e1f09b5b4362451d4caf7d942211dd29db",
+  "workingTree": true,
+  "database": "sprint1_s03_1792150602270",
+  "environment": "Fresh isolated PG15 DB, Redis database12, captured in-memory mail adapter (not SMTP proof)",
+  "result": "FAIL"
+}

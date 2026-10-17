@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Get,
+  ForbiddenException,
   Req,
   Res,
 } from '@nestjs/common';
@@ -14,6 +15,11 @@ import { SESSION_COOKIE, SESSION_TTL_SECONDS } from './auth.service.js';
 import { Public, Roles } from './decorators/roles.decorator.js';
 import { ROLE_NAMES } from './roles.js';
 import type { AuthenticatedRequest } from './guards/session-auth.guard.js';
+import {
+  canonicalPeer,
+  verifyLoginPeer,
+  LOGIN_PEER_HEADER,
+} from 'shared/login-peer';
 
 @Controller('auth')
 export class AuthController {
@@ -24,11 +30,29 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() body: unknown,
+    @Req() request: AuthenticatedRequest,
     @Res({ passthrough: true }) response: Response,
   ) {
     const input =
       body && typeof body === 'object' ? (body as Record<string, unknown>) : {};
-    const session = await this.authService.login(input.email, input.password);
+    let peer: string;
+    try {
+      const attestation = request.headers[LOGIN_PEER_HEADER];
+      peer =
+        attestation === undefined
+          ? canonicalPeer(request.socket.remoteAddress)
+          : verifyLoginPeer(
+              typeof attestation === 'string' ? attestation : '',
+              process.env.AUTH_PROXY_SECRET,
+            );
+    } catch {
+      throw new ForbiddenException('Nguồn đăng nhập không hợp lệ.');
+    }
+    const session = await this.authService.login(
+      input.email,
+      input.password,
+      peer,
+    );
     response.cookie(SESSION_COOKIE, session.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

@@ -1,12 +1,9 @@
-import { Injectable, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import * as argon2 from 'argon2';
-import * as crypto from 'crypto';
 
 @Injectable()
 export class UsersService {
-  private readonly logger = new Logger(UsersService.name);
-
   constructor(private prisma: PrismaService) {}
 
   async createStaff(email: string, pass: string) {
@@ -44,102 +41,5 @@ export class UsersService {
       data: { isActive: false },
     });
     return { message: 'Account disabled successfully' };
-  }
-
-  async register(email: string, pass: string) {
-    if (pass.length < 8) {
-      throw new BadRequestException('Password must be at least 8 characters');
-    }
-
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email },
-    });
-    if (existingUser) {
-      // Do not reveal that email exists, just return success
-      this.logger.log('Registration attempt for an existing account');
-      return {
-        message: 'If the email is valid, you will receive instructions.',
-      };
-    }
-
-    const hashedPassword = await argon2.hash(pass);
-    const activationToken = crypto.randomBytes(32).toString('hex');
-    const expires = new Date();
-    expires.setHours(expires.getHours() + 24); // 24 hours
-
-    await this.prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        activationToken,
-        activationExpires: expires,
-        isEmailVerified: false,
-        userRoles: {
-          create: { role: { connect: { name: 'BUYER' } } },
-        },
-      },
-    });
-
-    // T-07 will connect an approved delivery flow; never write tokens to logs.
-    this.logger.log('Account activation delivery is not configured');
-
-    return { message: 'If the email is valid, you will receive instructions.' };
-  }
-
-  async activate(token: unknown) {
-    if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) {
-      throw new BadRequestException('Invalid activation token');
-    }
-    // Consume the token and verify its deadline in the same write. A missing
-    // token cannot omit the Prisma filter; a replay cannot verify another row.
-    const result = await this.prisma.user.updateMany({
-      where: {
-        activationToken: token,
-        activationExpires: { gt: new Date() },
-        isEmailVerified: false,
-      },
-      data: {
-        isEmailVerified: true,
-        activationToken: null,
-        activationExpires: null,
-      },
-    });
-
-    if (result.count !== 1) {
-      throw new BadRequestException('Invalid or expired activation token');
-    }
-
-    return { message: 'Account activated successfully.' };
-  }
-
-  async resendActivation(email: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
-
-    // Do not reveal email existence
-    if (!user || user.isEmailVerified) {
-      return {
-        message:
-          'If the email is valid and unverified, you will receive a new link.',
-      };
-    }
-
-    const activationToken = crypto.randomBytes(32).toString('hex');
-    const expires = new Date();
-    expires.setHours(expires.getHours() + 24);
-
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: {
-        activationToken,
-        activationExpires: expires,
-      },
-    });
-
-    this.logger.log('Account activation delivery is not configured');
-
-    return {
-      message:
-        'If the email is valid and unverified, you will receive a new link.',
-    };
   }
 }

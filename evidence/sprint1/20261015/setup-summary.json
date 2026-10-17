@@ -1,0 +1,29 @@
+{
+  "source": "81d1dd9d8f453b32ed0c6956399e5600f71a32d6",
+  "worktree": "D:\\Development\\03_Academic\\Bán vé sự kiện có sơ đồ ghế\\thudemo-sprint1-review-20261015",
+  "versions": {
+    "node": "v24.21.0",
+    "pnpm": "10.15.1",
+    "next": "16.3.6",
+    "react": "19.2.8",
+    "nest": "12.1.0",
+    "prisma": "7.10.0"
+  },
+  "frozenInstall": true,
+  "lockfileChanged": false,
+  "containers": [
+    "sprint1-review-pg-20261015",
+    "sprint1-review-redis-20261015"
+  ],
+  "ports": {
+    "web": 3400,
+    "api": 3401,
+    "postgres": 15435,
+    "redis": 16385
+  },
+  "database": "sprint1_demo_20261015",
+  "credentials": "private .sprint1-local/config.json",
+  "originalWorktreePreserved": true,
+  "fullReproduction": "Windows PowerShell5 Stop -> install/migrate/seed/build/start -> READY; private repro-full-start.log",
+  "testConfigIsolation": "Final full regression rerun with inherited REDIS_URL=unreachable local target still passed; runner deletes inherited URL"
+}
