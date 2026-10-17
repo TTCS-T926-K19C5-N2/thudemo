@@ -1,0 +1,53 @@
+{
+  "startedSource": "eb53a0657b2f1120a057e688084a69f1f518f047",
+  "origin": "https://10.88.164.155:3470",
+  "transport": "Real HTTPS, certificate and hostname verified using this exact staging certificate as trust anchor",
+  "results": [
+    {
+      "name": "https-home-health-anonymous401",
+      "source": "eb53a0657b2f1120a057e688084a69f1f518f047",
+      "status": "PASS"
+    },
+    {
+      "name": "production-secure-cookie-contract",
+      "source": "eb53a0657b2f1120a057e688084a69f1f518f047",
+      "status": "PASS"
+    },
+    {
+      "name": "organizer-draft-created-and-hidden-from-buyer",
+      "source": "eb53a0657b2f1120a057e688084a69f1f518f047",
+      "status": "PASS"
+    },
+    {
+      "name": "owner-b-and-buyer-server403",
+      "source": "eb53a0657b2f1120a057e688084a69f1f518f047",
+      "status": "PASS"
+    },
+    {
+      "name": "event-edit-readback-persists",
+      "source": "eb53a0657b2f1120a057e688084a69f1f518f047",
+      "status": "PASS"
+    },
+    {
+      "name": "future-past-duplicate-warning-utc-storage-and-fk-restrict",
+      "source": "eb53a0657b2f1120a057e688084a69f1f518f047",
+      "status": "PASS"
+    },
+    {
+      "name": "logout-replay-and-server-expired-session401",
+      "source": "eb53a0657b2f1120a057e688084a69f1f518f047",
+      "status": "PASS"
+    },
+    {
+      "name": "bounded-regression-finished-no-login-lockout-probe",
+      "source": "eb53a0657b2f1120a057e688084a69f1f518f047",
+      "status": "PASS",
+      "limitations": "Rate-limit/restart/naturalTTL/two-peer assertions retain prior versioned evidence; not rerun here"
+    }
+  ],
+  "limitations": [
+    "Not an independent second-device test",
+    "Current laptop trust/firewall verified separately; no new second-device test",
+    "Automatic merge-to-healthy proof is separate auto-deploy.json; these API checks do not themselves prove timing."
+  ]
+}

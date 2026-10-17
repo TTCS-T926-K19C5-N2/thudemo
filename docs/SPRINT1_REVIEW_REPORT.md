@@ -1,6 +1,44 @@
 # Sprint 1 — review và nghiệm thu hiện hành (16/10/2026)
 
-## Trạng thái hiện hành — 17/10/2026, sau PR #96
+## Trạng thái hiện hành — 17/10/2026, sau PR #98
+
+**Chức năng và gate triển khai của Sprint 1 đã đạt trên source tích hợp `eb53a0657b2f1120a057e688084a69f1f518f047`; chưa gọi Sprint Done khi hồ sơ cuối và trạng thái nguồn còn chờ.** PR [#98](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/98) được thuytrang158 APPROVED đúng head `5b6d5783b34616fdd2b0c74c2614a5469ab8c996`, merge develop lúc 01:36:09Z. CI tích hợp [38991565168](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38991565168) SUCCESS **226 giây**, đủ năm required checks. Không bypass protection.
+
+**T03 auto-deploy PASS: 321,303 giây <600 giây**, từ merge đến healthy01:41:30.303Z; watcher tự phát hiện sau CI, candidate87,745s, backup3.902.898bytes trước promotion. Bằng chứng `evidence/sprint1/20261017-accepted/auto-deploy.json` giữ timeline/approval/CI/OCI labels. Hai lần618,856s và1754,310s vẫn FAIL trong lịch sử. Không trừ sleep, dùng deploy thủ công hoặc đổi ngưỡng.
+
+URL hiện tại **https://10.228.54.197:3470**. HTTPS đã trust trên laptop, desktop/mobile browser và API thật PASS; chứng chỉ đổi SAN theo IP mới, giữ private key, dữ liệu và signing/mail keys. **Firewall PASS readback:** đúng rule thuộc phiên, enabled Inbound Allow, LocalAddress10.228.54.197, TCP3470/LocalSubnet được giữ nguyên sau cập nhật Administrator. Lỗi Access is denied5 trước đó giữ lịch sử; không dùng cấu hình rule thay bằng chứng browser từ thiết bị thứ hai. Xem `network-current.json`.
+
+| Task / Story | Hành vi phải đạt và ca đã kiểm | Kết quả / bằng chứng áp dụng | Phần còn chờ |
+|---|---|---|---|
+| T01 / S01 | Toolchain/lockfile, env, PG/Redis, migrate/client, startup/health thật; dependency hỏng→503; clone sạch một lệnh và stop/start giữ dữ liệu | PASS: clean-native/migration-cycle/dependency-health; full clone02a + lifecycle, source compatibility02a→038→eb53; current HTTPS200 | Không chạy lại build nặng vì source demo/app/lock không đổi; prerequisites phải đủ |
+| T02 / S01 | Build/lint/typecheck/test, CI<300s, required checks/review, lint đỏ chặn merge | PASS: integratedeb53 CI226s; negative gate PR95 giữ SHA/fixture; protection5checks vẫn bật | Hồ sơ closeout PR phải có checks/review riêng |
+| T03 / S01 | Docker/staging, smoke trước switch, deploy lỗi giữ bản cũ, migration/backup/rollback, merge→healthy<600s | PASS assertion gốc: real321,303s, backup+compatible rollback; auto-deploy.json | TLS/current owned firewall readback PASS; không có thử thiết bị thứ hai mới; không cần VPS |
+| T04 / S02 | Users/5roles, DB emailunique, Argon2id, guarded seed/additive migrations | PASS: schema/constraint/hash/seed evidence gốc + source compatibility;30migrations | Không reset, không đổi khóa/historical rows |
+| T05 / S02 | Login/role landing, cookie/expiry/logout401;5sai/6th900s account+IP, restart/naturalTTL/twopeer | PASS: current API/session + evidence TTL/restart/twopeer lịch sử tương thích | Không chạy lại probe khóa IP; không nhận twopeer đã chạy trên mạng mới |
+| T06 / S02 | Global default deny;401/403; role/multirole/nav/log; A/B ownership server | PASS: current buyer/B API403, B URL desktop/mobile, guard/inventory/log gốc | Không tạo admin vượt phạm vi |
+| T07 / S03 | Email đăng ký/normalize/duplicate generic, validation giữ input, consent không chọn sẵn và versioned atomic record | PASS: implementation02a không đổi; API/unit/integration/browser gốc + activated BUYER/consent current | Allowlist trống cho mọi email hợp lệ theo DEC16 |
+| T08 / S03 | Token hash24h/one-use, concurrency, resend/rate limit/outbox/privacy; gửi/nhận/kích hoạt Internet email | PASS: SMTP+user nhận/kích hoạt trên02a; source tương thích; current login/logout/replay401 | Không nhận đã gửi thư mới trêneb53; Mailpit chỉ catcher |
+| T09 / S04 | Event/showtime/owner FK, UTC, additive migration, Restrict khi có lịch sử đơn/vé | PASS: migration/paidFK gốc + current UTC/FK; api-current-network | Không thêm xóa sự kiện hoặc cascade lịch sử |
+| T10 / S04 | A tạo nháp/sửa/reload, buyerhidden, Bdenied, tương lai/quá khứ, trùng cảnh báo vẫn lưu, double-submit, field recovery/VN time | PASS:15 full browser cases038 tương thích; current API + desktop/mobile/newTLS smoke | Bounded browser smoke mới không thay provenance15ca cũ |
+| K01 | PG/Redis same-seat research, số đo/điều kiện, conflict/TTL/restart/durability/tradeoff/quyết định | PASS đầu ra được PO nhận DEC14/17, PostgreSQL authority staging dữ liệu giả | Historical timebox1ngày/mentor NOT RUN, sai lệch được nhận công khai; không lấy T31 endpoint làm AC K01 |
+| DoD02 review | Thành viên khác review đúng bản cuối | PASS PR98 exact head thuytrang158 | Closeout docs cần review riêng |
+| DoD03–04 tests/CI | Branch/coverage không giảm; build/lint/typecheck/test | PASS evidence coverage/touched-source compatibility; watcher20ca/helper lifecycle; eb53 CI226s | Không lấy tổng test thay assertion |
+| DoD05/09 security/logs | Dependency/secret, denial logging, touched-path không lộ credential/PII | PASS bounded scan0bc + manual helper review; current log/literal sweep/dependency graph unchanged | F15 payment logger là lỗi nền ngoài scope, task riêng; không nhận whole-repo sạch |
+| DoD06 staging | Toàn AC Sprint1 trên staging | PASS technical overlay; T03 đã đạt thật | TLS/current owned firewall đã readback PASS; không gắn nhãn twopeer cũ thành lần chạy mới |
+| DoD07–08 regression | Concurrency/idempotence/cleanup trong phần ảnh hưởng | PASS bounded regression tương thích; PR98 S30/S31/S43 green | Không nghiệm thu S30/S31/T31/S43 như Sprint1 |
+| DoD10 docs/status | Task/backlog/README/matrix/report/PR nhất quán | BLOCKED: closeout diff đang chuẩn bị; candidate workbook chỉ15 ôstatus, toàn workbook bảo toàn đã kiểm | Review/integrate hồ sơ rồi áp guarded Done vào task/workbook; chưa ghi Done sớm |
+
+Ma trận hai chiều hiện hành: `evidence/sprint1/20261017-accepted/acceptance-current.json`,95 yêu cầu duy nhất (72điều khoản gốc +23S03/onboarding); mỗi dòng giữ nguồn, implementation, test, assertion, source/môi trường và evidence gốc. Artifact gốc được kiểm tồn tại/hash theo UTF8/BOM/CRLF policy; compatibility chỉ dùng với file thực sự không đổi. DEC15 đưa S03 vào Sprint1; DEC09 giữ lịch sử. T31 là required deployment check hiện hành, **không AC Sprint1**. Không thêm yêu cầu máy tạo tải riêng/VPS.
+
+Một order PENDING_PAYMENT xuất hiện sau promotion01:41:58.562Z; giữ nguyên, không gán tác giả. Không giảm counts/keys, nhưng không nhận so sánh counts là bằng chứng từng row bất biến. Network rebind giữ cả active/previous API origins và private key; các API test tạo fixture riêng có chủ đích.
+
+**Handoff:** demo staging trên laptop Có; rule LAN mới đã xác minh TCP3470/LocalSubnet. Credentials chỉ tại `.sprint1-staging/config.json`, mail/env và tài khoản email thử trong file ignored tương ứng. Demo từ clone mới: `powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1`; frozen install/generate/30migrations/seed/build/health/smoke rồi mới READY. Clone sạch02a thật ở D:\s1demo\02a8e86-clean-20261016; launcher/app/lock tương thícheb53. Prerequisites WindowsPowerShell5.1+, Git, Node24.21.0, pnpm10.15.1, DockerDesktopLinux; C12GiB/checkout5GiB/RAMavailable2GiB. Web/API chọn cổng trống (ưu tiên3000/3001), Mailpit không thay Internet SMTP.
+
+**Chưa hoàn tất toàn Sprint:** firewall thực tế đã PASS; việc còn lại là review/integrate hồ sơ và guarded task/backlog status sync. Source workbook candidate đã xác minh15status cells only, không đổi AC/SP/owner/Sprint/style/formula; chưa ghi đè nguồn. Không gọi tất cả task Done từ báo cáo local.
+
+## Checkpoint PR96 — lịch sử, không phải trạng thái hiện hành
+
+### Trạng thái tại checkpoint — 17/10/2026, sau PR #96
 
 **Chưa Sprint 1 Done.** Thuytrang158 đã APPROVED đúng head `0bc47dc54c3977d4598da8c7d6e48a23a7c6f15e`, tự merge PR96 vào develop lúc 00:46:15Z (07:46:15 Việt Nam), merge/deployed **038f8baff4c175e88c53b19a553105be15735dec**. Cây được review bằng cây merge; không đổi protection/main. CI tích hợp [38987895447](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38987895447) đủ5checks SUCCESS, whole workflow233s<300s.
 

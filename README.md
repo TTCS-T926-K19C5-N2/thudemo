@@ -1,6 +1,8 @@
 # Chạy dự án bán vé sự kiện trên máy cá nhân
 
-> **Sprint 1 review/demo 15/10/2026:** xem [runbook](docs/SPRINT1_DEMO_RUNBOOK.md), [ma trận nghiệm thu](docs/SPRINT1_ACCEPTANCE_MATRIX.md) và [báo cáo](docs/SPRINT1_REVIEW_REPORT.md). Profile này dùng worktree/database/container riêng, web 3440/API 3441; Git Flow feature → develop; staging laptop riêng https://10.88.164.155:3470 (cần certificate trust/firewall để team Wi-Fi truy cập; xem gate trong runbook). Khi chạy web, dùng entry `pnpm --filter web dev` hoặc `start` để xác thực IP đăng nhập qua proxy. Root `.env` cần `WEB_PORT` và `AUTH_PROXY_SECRET` ngẫu nhiên tối thiểu 32 ký tự, cùng giá trị server-only trên web/API. Không dùng `next start` trực tiếp. Các checkpoint cũ bên dưới chỉ phản ánh thời điểm được ghi.
+> **Hiện hành17/10:** source tích hợp `eb53a0657b2f1120a057e688084a69f1f518f047`; HTTPS laptop **https://10.228.54.197:3470**. Auto merge→healthy321,303s PASS, CI226s PASS; TLS và owned firewall LAN mới đã readback PASS (TCP3470/LocalSubnet), chưa thử lại thiết bị thứ hai. [Bảng đầy đủ T01–T10/K01/DoD](docs/SPRINT1_REVIEW_REPORT.md) và [runbook](docs/SPRINT1_DEMO_RUNBOOK.md) ghi phần còn chờ; chưa Sprint Done trước review/integrate hồ sơ và status sync. Clone mới chạy một lệnh bên dưới, không copy private config.
+
+> **Checkpoint lịch sử — Sprint 1 review/demo 15/10/2026:** xem [runbook](docs/SPRINT1_DEMO_RUNBOOK.md), [ma trận nghiệm thu](docs/SPRINT1_ACCEPTANCE_MATRIX.md) và [báo cáo](docs/SPRINT1_REVIEW_REPORT.md). Profile này dùng worktree/database/container riêng, web 3440/API 3441; Git Flow feature → develop; staging laptop riêng https://10.88.164.155:3470 (cần certificate trust/firewall để team Wi-Fi truy cập; xem gate trong runbook). Khi chạy web, dùng entry `pnpm --filter web dev` hoặc `start` để xác thực IP đăng nhập qua proxy. Root `.env` cần `WEB_PORT` và `AUTH_PROXY_SECRET` ngẫu nhiên tối thiểu 32 ký tự, cùng giá trị server-only trên web/API. Không dùng `next start` trực tiếp. Các checkpoint cũ bên dưới chỉ phản ánh thời điểm được ghi.
 
 > **Hướng dẫn hiện hành cho giao diện, tài khoản và giữ ghế Sprint 2:** [LOCAL_USER_GUIDE](docs/LOCAL_USER_GUIDE.md). Có lệnh build/chạy/test từng bước, tài khoản người tổ chức/người mua, cách đọc mật khẩu giả riêng trên máy và xử lý lỗi. Profile review dùng PostgreSQL 15432/Redis 16379 với database `stitch_fidelity`; các mục T-01 và checkpoint cũ dưới đây được giữ làm lịch sử, dùng profile khác.
 
@@ -8,7 +10,7 @@
 
 ## Demo Sprint 1 từ clone mới — một lệnh
 
-Entrypoint mới (đã kiểm clone sạch02a thực tế; source ứng dụng/launcher giữ nguyên trên038; chưa Sprint Done do gate staging600s). Prerequisites: Windows PowerShell5.1+, Git, Node24.21.0, Corepack/pnpm10.15.1, Docker Desktop dùng Linux engine/Compose; C trống ít nhất12GiB, ổ checkout5GiB, RAM khả dụng2GiB. Chạy từ clone riêng, không sao chép `.env`/private config từ máy khác.
+Entrypoint đã kiểm clone sạch02a thực tế; source ứng dụng/launcher/lock giữ nguyên trêneb53. Auto staging321,303s đã đạt; hồ sơ/status closure còn chờ; firewall IP mới đã readback PASS. Prerequisites: Windows PowerShell5.1+, Git, Node24.21.0, Corepack/pnpm10.15.1, Docker Desktop dùng Linux engine/Compose; C trống ít nhất12GiB, ổ checkout5GiB, RAM khả dụng2GiB. Chạy từ clone riêng, không sao chép `.env`/private config từ máy khác.
 
 ```powershell
 powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1
