@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-17T02:27:46.344Z",
+  "source": "4033da4dde1484fc777806421006f9c17e831f8b",
+  "origin": "https://10.228.54.197:3470",
+  "transport": "Chromium Windows trusted certificate; no HTTPS bypass",
+  "viewports": ["1440x1000", "390x844"],
+  "results": [
+    {
+      "assertion": "Trusted current-LAN HTTPS login→owner event form on integrated deployment",
+      "result": "PASS"
+    },
+    {
+      "assertion": "Current-LAN organizerB direct owner URL denied; mobile390 no horizontal overflow",
+      "result": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "unexpectedConsoleErrors": [],
+  "expected403ConsoleMessages": 1,
+  "compatibleFullBrowserProof": "../20261017-pr96/browser-038f8baff4c1/results.json",
+  "limitations": [
+    "Bounded current-network smoke;15 prior full assertions retain identical product-source proof",
+    "Not a second device test"
+  ],
+  "screenshots": ["desktop-current.png", "mobile-owner-denied.png"]
+}

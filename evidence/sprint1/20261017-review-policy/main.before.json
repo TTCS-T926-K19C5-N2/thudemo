@@ -1,0 +1,81 @@
+{
+  "url": "https://api.github.com/repos/TTCS-T926-K19C5-N2/thudemo/branches/main/protection",
+  "required_status_checks": {
+    "url": "https://api.github.com/repos/TTCS-T926-K19C5-N2/thudemo/branches/main/protection/required_status_checks",
+    "strict": true,
+    "contexts": ["T-02 / build-and-typecheck", "T-02 / lint", "T-02 / test"],
+    "contexts_url": "https://api.github.com/repos/TTCS-T926-K19C5-N2/thudemo/branches/main/protection/required_status_checks/contexts",
+    "checks": [
+      { "context": "T-02 / build-and-typecheck", "app_id": 15368 },
+      { "context": "T-02 / lint", "app_id": 15368 },
+      { "context": "T-02 / test", "app_id": 15368 }
+    ]
+  },
+  "restrictions": {
+    "url": "https://api.github.com/repos/TTCS-T926-K19C5-N2/thudemo/branches/main/protection/restrictions",
+    "users_url": "https://api.github.com/repos/TTCS-T926-K19C5-N2/thudemo/branches/main/protection/restrictions/users",
+    "teams_url": "https://api.github.com/repos/TTCS-T926-K19C5-N2/thudemo/branches/main/protection/restrictions/teams",
+    "apps_url": "https://api.github.com/repos/TTCS-T926-K19C5-N2/thudemo/branches/main/protection/restrictions/apps",
+    "users": [
+      {
+        "login": "thuytrang158",
+        "id": 215138869,
+        "node_id": "U_kgDODNLCNQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/215138869?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/thuytrang158",
+        "html_url": "https://github.com/thuytrang158",
+        "followers_url": "https://api.github.com/users/thuytrang158/followers",
+        "following_url": "https://api.github.com/users/thuytrang158/following{/other_user}",
+        "gists_url": "https://api.github.com/users/thuytrang158/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/thuytrang158/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/thuytrang158/subscriptions",
+        "organizations_url": "https://api.github.com/users/thuytrang158/orgs",
+        "repos_url": "https://api.github.com/users/thuytrang158/repos",
+        "events_url": "https://api.github.com/users/thuytrang158/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/thuytrang158/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      {
+        "login": "duongtrang29",
+        "id": 273282018,
+        "node_id": "U_kgDOEEnz4g",
+        "avatar_url": "https://avatars.githubusercontent.com/u/273282018?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/duongtrang29",
+        "html_url": "https://github.com/duongtrang29",
+        "followers_url": "https://api.github.com/users/duongtrang29/followers",
+        "following_url": "https://api.github.com/users/duongtrang29/following{/other_user}",
+        "gists_url": "https://api.github.com/users/duongtrang29/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/duongtrang29/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/duongtrang29/subscriptions",
+        "organizations_url": "https://api.github.com/users/duongtrang29/orgs",
+        "repos_url": "https://api.github.com/users/duongtrang29/repos",
+        "events_url": "https://api.github.com/users/duongtrang29/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/duongtrang29/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      }
+    ],
+    "teams": [],
+    "apps": []
+  },
+  "required_signatures": {
+    "url": "https://api.github.com/repos/TTCS-T926-K19C5-N2/thudemo/branches/main/protection/required_signatures",
+    "enabled": false
+  },
+  "enforce_admins": {
+    "url": "https://api.github.com/repos/TTCS-T926-K19C5-N2/thudemo/branches/main/protection/enforce_admins",
+    "enabled": false
+  },
+  "required_linear_history": { "enabled": false },
+  "allow_force_pushes": { "enabled": false },
+  "allow_deletions": { "enabled": false },
+  "block_creations": { "enabled": true },
+  "required_conversation_resolution": { "enabled": true },
+  "lock_branch": { "enabled": false },
+  "allow_fork_syncing": { "enabled": false }
+}

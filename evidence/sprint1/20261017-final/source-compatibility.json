@@ -1,0 +1,12 @@
+{
+  "source": "4033da4dde1484fc777806421006f9c17e831f8b",
+  "result": "PASS",
+  "method": "git diff --exit-code eb53..403 for apps/packages/pnpm-lock.yaml/Dockerfile/scripts/deploy: identical product, schema, runtime, launchers and operations. PR99 only docs/evidence.",
+  "productBaseline": "eb53a0657b2f1120a057e688084a69f1f518f047",
+  "priorProof": "../20261017-accepted/source-compatibility.json",
+  "freshCloneSource": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "limitations": [
+    "No claim all original tests were rerun on403",
+    "This final publication changes documentation/evidence only; actual future merge/runtime SHA verified separately, never invented in this artifact"
+  ]
+}

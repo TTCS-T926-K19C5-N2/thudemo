@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-17T04:13:49.116Z",
+  "policy": "DEC-18",
+  "head": "6e4bb4986c0660eb70d6e372375fbcc0f9bc66b2",
+  "configuration": "PASS readback; main unchanged;6threview added before approvals0",
+  "negativeReviewControl": {
+    "result": "PASS",
+    "head": "6e4bb4986c0660eb70d6e372375fbcc0f9bc66b2",
+    "base": "4033da4dde1484fc777806421006f9c17e831f8b",
+    "requiredCIAllSuccess": true,
+    "humanApprovalsRequired": 0,
+    "statusId": 56580380701,
+    "state": "error",
+    "mergeStateStatus": "BLOCKED",
+    "mergeAttempted": false,
+    "autoMergeEnabled": false,
+    "meaning": "Controlledreview-error blocks despite5CIgreen; not productfinding"
+  },
+  "positiveReviewControl": {
+    "result": "PASS",
+    "head": "6e4bb4986c0660eb70d6e372375fbcc0f9bc66b2",
+    "statusId": 56580384460,
+    "reviewUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/100#issuecomment-6229461383",
+    "mergeStateStatus": "UNSTABLE",
+    "requiredCIAllSuccess": true,
+    "meaning": "Actual completed review republished through validator/publisher; no longerBLOCKED; optionalS43 status may beUNSTABLE"
+  },
+  "remaining": [
+    "Actual missing/new-head review enforcement on nextdocscommit",
+    "RequiredCIred probe103, nevermerge; closeaftercapture",
+    "Exactfinalhead review/CI/auto-enable/guardedmerge and postmerge staging"
+  ],
+  "autoMergeEnabled": false,
+  "stagingAcceptedForThisPublication": false
+}
