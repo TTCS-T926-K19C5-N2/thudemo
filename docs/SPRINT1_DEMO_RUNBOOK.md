@@ -1,12 +1,29 @@
 # Sprint 1 — demo local và laptop staging riêng
 
-## Bản tích hợp hiện tại — 17/10/2026
+## Bản tích hợp hiện tại — 17/10/2026 sau PR96
 
-- Staging **https://10.88.164.155:3470**, source90188e572d41d3f95e1dac13a42256260fd68a22, PR91 đãmerge. Credentials chỉở `.sprint1-staging/config.json`; accountemailtest ở `.sprint1-staging/registration-test-account.json`, SMTP ở `.sprint1-staging/registration-mail.env`. Không chépsecret ra chat/PR.
-- `node scripts/sprint1-staging.mjs status` kiểm trustedHTTPS; `resume` khôi phục đúngprofile đãcấuhình, giữkeys/data. LANIP/certificate/firewall vẫn phải xácminh khi đổiWi-Fi; không chạyinit tạoidentitymới. OS trust/firewall cầnquyềnngười dùng nhưrunbook.
-- Demo clone sạch02a vẫn tại `D:/s1demo/02a8e86-clean-20261016`, entry `.\scripts\sprint1-demo.ps1`, localweb3000/API3001/catcher24931, credentials `.sprint1-demo/config.json`. Đây làlocalMailpit, không phải InternetSMTP; nguồnapp/launcher không đổi trên90188.
-- Auto-deploy vừa chạy thật nhưng merge→healthy618.856s FAIL600s. Không báoSprintDone. Fixwatcher20sdeadline/15spendingretry đangchờPR/review và gate mới. Candidate hostwatcher được restart cókiểmPID/starttime/entry; app vẫn90188. Khôngdeploy tay để giảgate.
-- Rollback90188→02a→90188 thật đãPASS sau khi tạm dừng đúng ownedwatcher rồi khởi động lại; backup/history/key giữ nguyên. Dùng đúngpreviouspointer hiện hành, kiểmhealth trước/sau; không resetDB hoặc downmigration.
+URL **https://10.88.164.155:3470**, deployed038f8baff4c175e88c53b19a553105be15735dec, CI233sPASS. PR96thuytrang158 approved/merged; watcher tựdeploy. T03vẫnFAIL1754.310s, hostModernStandbyđến08:10ViệtNam; không trừsleep. API/browser/sessionPASS; key/data giữ nguyên. Credentials `.sprint1-staging/config.json`; tài khoản activatedemail `.sprint1-staging/registration-test-account.json`; SMTP `.sprint1-staging/registration-mail.env`. Chỉ mở file local, không chépsecret.
+
+### Phiên staging laptop
+
+Giữ nắp mở, máy có nguồn và đúngWi-Fi trong suốt phiên; kiểm LANIP/cert/firewall khi mạng đổi. Không tự đổi powerplan/lidpolicy. Mở PowerShell thứhai tại root và chạy yêu cầu giữ máy thức tối đa1giờ (Ctrl+C để kết thúc):
+
+```powershell
+powershell.exe -NoProfile -File .\scripts\sprint1-staging-session.ps1 -DurationSeconds 3600
+```
+
+Helper chỉ chặn idle sleep theo [Windows SetThreadExecutionState](https://learn.microsoft.com/windows/win32/api/winbase/nf-winbase-setthreadexecutionstate); không ngăn explicitSleep/đóngnắp, không mở firewall và không chứng minhREADY. Hết hạn tựclear; process kết thúc cũng kết thúc yêu cầu của thread. Journal `.sprint1-staging/awake-session.jsonl` không chứasecret. Không cần Administrator. Không dùngawaymode hoặc khóa màn hình để thay phiênmáy thức. Nếu host ngủ/mất mạng, gate600s phải giữFAIL và đo trên merge đượcreview tiếp theo; không sửa timestamp/redeploy tay để nhậnPASS.
+
+Kiểm/khôi phục profile đã cấu hình (không tạo khóa haydatabase mới):
+
+```powershell
+node scripts/sprint1-staging.mjs status
+node scripts/sprint1-staging.mjs resume
+```
+
+WatcherownedPID14424 hiện chạy từscriptđãreview; minimum90188. Không khởi tạo duplicate hoặc dừng appkhác. Lệnhstartwatcher chính thức trong checkpoint bên dưới; verifyPID/starttime/entry trướcstop. Rollback90188→02a→90188 đãkiểm thực tế, source deploy/rollback không đổi trên038; priorpointer hiện90188, backup3902634bytes đãverified trướcpromote038. Khôngxóa volume/downmigration. Nếu cầnrollback, dừng đúngwatcher trước, dùng `node scripts/sprint1-staging.mjs rollback`, health/smoke vàrestorebảncuối; không đểwatcherđấu vớirollback.
+
+Clone demo sạch đãPASS tại `D:/s1demo/02a8e86-clean-20261016`: WindowsPowerShell5.1/Node24.21.0/pnpm10.15.1/DockerDesktopLinux; C>=12GiB, checkout>=5GiB, RAMavailable>=2GiBcho build. Từclone riêng chạy `powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1`; chọnporttrống, frozeninstall/migrate/seed/build/health/smoke. Credentials `.sprint1-demo/config.json`; Mailpitloopback chỉmailcatcher. Trìnhduyệt đãkiểm register→catcher→activate(finalpassword)→loginBUYER403→organizerdraft/edit/showtime; stop/startgiữdata/keys. Blobapp/launcher không đổi trên038 nên không copyartifact/env/DBtừprofilekhác để kiểm lại.
 
 ## Hồ sơ thao tác/checkpoint cũ (đọc trạng thái ở trên trước)
 

@@ -1,0 +1,99 @@
+{
+  "source": "038f8baff4c175e88c53b19a553105be15735dec",
+  "result": "FAIL",
+  "automatic": true,
+  "mergeAt": "2026-10-17T00:46:15Z",
+  "healthyAt": "2026-10-17T01:15:29.310Z",
+  "mergeToHealthySeconds": 1754.31,
+  "thresholdSeconds": 600,
+  "candidateDeploymentSeconds": 281.142,
+  "functionalDeployment": "PASS",
+  "watcherPid": 14424,
+  "watcherEvents": [
+    {
+      "time": "2026-10-17T01:10:23.197Z",
+      "status": "command_failed",
+      "tool": "git",
+      "operation": "fetch",
+      "elapsedMs": 4573,
+      "timedOut": false
+    },
+    {
+      "time": "2026-10-17T01:10:23.198Z",
+      "status": "BLOCKED_watcher_error",
+      "reason": "fetch_failed"
+    },
+    {
+      "time": "2026-10-17T01:10:43.444Z",
+      "status": "deploy_after_CI",
+      "sha": "038f8baff4c175e88c53b19a553105be15735dec"
+    },
+    {
+      "time": "2026-10-17T01:15:29.466Z",
+      "status": "deploy_complete",
+      "sha": "038f8baff4c175e88c53b19a553105be15735dec"
+    },
+    {
+      "time": "2026-10-17T01:16:31.171Z",
+      "status": "active",
+      "sha": "038f8baff4c175e88c53b19a553105be15735dec"
+    }
+  ],
+  "timeline": [
+    {
+      "time": "2026-10-17T01:10:48.171Z",
+      "event": "candidate-start",
+      "sha": "038f8baff4c175e88c53b19a553105be15735dec",
+      "resources": [
+        {
+          "name": "Windows system/Docker Desktop volume",
+          "freeBytes": 22749507584,
+          "minimumBytes": 12884901888
+        },
+        {
+          "name": "Staging source/backup volume",
+          "freeBytes": 113191612416,
+          "minimumBytes": 5368709120
+        }
+      ]
+    },
+    {
+      "time": "2026-10-17T01:14:14.489Z",
+      "event": "backup-verified",
+      "sha": "038f8baff4c175e88c53b19a553105be15735dec",
+      "bytes": 3902634
+    },
+    {
+      "time": "2026-10-17T01:15:29.310Z",
+      "event": "promoted",
+      "sha": "038f8baff4c175e88c53b19a553105be15735dec",
+      "oldSha": "90188e572d41d3f95e1dac13a42256260fd68a22",
+      "elapsedSeconds": 281.142
+    }
+  ],
+  "powerEvents": [
+    {
+      "time": "2026-10-17T01:10:19.0387327Z",
+      "id": 507,
+      "provider": "Microsoft-Windows-Kernel-Power",
+      "message": "The system is exiting Modern Standby \r\n\r\nReason: Lid."
+    },
+    {
+      "time": "2026-10-16T20:54:54.4173796Z",
+      "id": 506,
+      "provider": "Microsoft-Windows-Kernel-Power",
+      "message": "The system is entering Modern Standby \r\n\r\nReason: Restricted Standby Battery Drain Budget Exceeded."
+    },
+    {
+      "time": "2026-10-16T20:54:54.4146158Z",
+      "id": 507,
+      "provider": "Microsoft-Windows-Kernel-Power",
+      "message": "The system is exiting Modern Standby \r\n\r\nReason: Restricted Standby Battery Drain Budget Exceeded."
+    }
+  ],
+  "finding": "Host exited Modern Standby at01:10:19Z after merge00:46:15Z; watcher resumed and deployed exact approved revision. Keep total elapsed FAIL; do not subtract sleep.20s CLI timeout does not keep a sleeping host running.",
+  "limitations": [
+    "No new merge-to-healthy PASS measured",
+    "A bounded wake request prevents idle sleep only; explicit Sleep/lid/power/network interruptions remain operator prerequisites"
+  ]
+}

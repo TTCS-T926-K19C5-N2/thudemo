@@ -1,25 +1,21 @@
-# Sửa T-03 sau nghiệm thu tích hợp PR #91
+# T-03: phiên staging laptop và bằng chứng sau PR96
 
-PR #91 đã được thuytrang158 APPROVED đúng a829 và merge vào develop 90188. Auto-deploy hoạt động nhưng mất 618.856 giây từ merge đến healthy, vượt ngưỡng 600 giây. Sprint 1 chưa Done.
+PR96 đã được thuytrang158 review đúng head0bc47dc và merge thành038f8baff4c175e88c53b19a553105be15735dec. CI bản tích hợp xanh trong233giây. Watcher tự deploy thành công, nhưng merge→healthy1754.310giây vượt600giây: Windows ghi nhận thoát Modern Standby sau thời điểm merge. Không trừ thời gian ngủ hoặc nhận deploy-only281.142giây là đạt AC.
 
-Bản sửa này chỉ chạm watcher, test và tài liệu/evidence; không thay API, web, auth, schema, UI, AC hay protection.
+## Thay đổi
 
-## Thay đổi và kiểm chứng
+- Thêm `scripts/sprint1-staging-session.ps1`: yêu cầu Windows giữ hệ thống hoạt động trong một phiên có thời hạn1–7200giây; mặc định3600giây. Kiểm đúng profile trước khi gọi kernel32; clear trongfinally. Không đổi power plan, registry, firewall, authentication, policy GitHub hoặc dữ liệu. Người vận hành vẫn phải giữ nắp mở, nguồn và mạng; explicitSleep vẫn được tôn trọng.
+- Cập nhật README (clone sạch đã kiểm,30migration), runbook và trạng thái toàn bộT01–T10/K01/DoD theo bản tích hợp038. Giữ các lần618.856/1754.310giây làFAIL.
+- Thêm95mapping yêu cầu hiện tại với174tham chiếu evidence cóhash; không sửa lịch sử hoặc dùng sốtest thay assertion. Source API/web/shared/lock/demoentry không đổi so với02a đã kiểm clone sạch.
 
-- Giới hạn mỗi lệnh Git/GitHub CLI ở 20 giây; tắt credential prompts. Timeout từ chối deploy và ghi metadata lỗi, không log raw output hay secret.
-- Khi CI còn pending hoặc gặp lỗi, thử lại sau 15 giây; khi bản hiện hành khỏe, giữ chu kỳ 60 giây. Không dùng SHA cũ hoặc coi check chưa phát sinh là thành công.
-- Đòi đủ cả 5 required checks và mọi check bổ sung phải SUCCESS. T-31 là deployment policy hiện hành, vẫn ngoài AC Sprint 1.
-- 20 checks gateway/release/compat/resource/watcher PASS. Git HTTP thật bị treo đã trả timeout ở mặc định 20.009 giây; ca thử lại và đối chứng thiếu check PASS. Lint/typecheck PASS.
-- Trên bản tích hợp 90188: 15 ca browser, 8 nhóm API, phiên của tài khoản đã kích hoạt và rollback đều PASS. Bằng chứng email thật cũ giữ nguyên revision và thời điểm, không nhận là vừa gửi thư mới.
+## Kiểm chứng
 
-## Evidence
+PowerShell5 gọi API Windows thật: nhận yêu cầu2giây rồi clear, exit0; duration0 bị từ chối trước khi có yêu cầu. Parse PowerShell thành công.12test Node watcher/release/compat/resources PASS. Trên038:15ca browser desktop/mobile,7nhóm API chức năng, phiên activatedBUYER/login/logout/replay401 và secretliteral sweep PASS. Không chạy lại probeIP, không gửi email mới. Evidence email thật giữsource02a/thờiđiểm gốc.
 
-Trong `evidence/sprint1/20261017-integrated/`: `auto-deploy.json`, `integration.json`, `watcher-deadline-rehearsal.json`, `watcher-required-checks-regression.json`, `watcher-gate-rehearsal.json`, `rollback-90188e5.json`, `browser-90188e572d41/results.json`, `api-90188e5/https-api.json`, `registration-session.json`, `secret-sweep.json`.
+Rà kỹ thuật helper: chỉ đọc profile cố định tại repo, P/Invoke tênAPI/flags cố định, không shell/userinput/network/secret, journal metadata trong thư mục ignored, không stopprocess hay xóa file. Thời hạn hợp lệ dùngmonotonic Stopwatch; finally chỉ clear quyền của thread hiện tại. Đây không phải cơ chế chặn explicitSleep, không cam kết hoạt động khi máy tắt/mất mạng, và chưa chứng minh gate600s sau sửa vận hành.
 
-## Review và điều kiện hoàn thành
+## Điều kiện tích hợp và hoàn thành
 
-Đọc diff `scripts/sprint1-staging-watch.mjs` và `deploy/laptop-watcher.spec.mjs`; kiểm argv không qua shell, timeout không mở guard, cleanup chỉ xóa repository tạm của test, và các gate SHA/ancestor/5 required checks/extra failure vẫn mặc định từ chối.
+CI đúng head mới và một thành viên khác review helper/runbook. Không dùng approvalPR96 thay approval cho PR này. Trong phiên laptop thức, sau merge để watcher hiện có tự phát hiện/deploy; thu timestamp merge/CI/candidate/promote và xác minh source đang chạy. Chỉ đóngT03/Sprint khi merge→healthy<600giây và toàn bộDoD đã có evidence. Không deploy tay, không đổi ngưỡng, không đẩy trực tiếpdevelop hoặc bypass.
 
-CI phải xanh đúng head hiện tại. Approval PR #91 không thay approval cho bản sửa mới. Sau merge được review vào develop, để watcher tự deploy và đo lại merge→healthy dưới 600 giây. Giữ nguyên lần 618.856 giây là FAIL trong lịch sử; không lấy rehearsal hoặc deploy thủ công thay gate thật.
-
-Sau đó kiểm source, health, các luồng bị ảnh hưởng trên bản cuối và đồng bộ task/backlog/DoD khi đủ bằng chứng.
+Evidence: `evidence/sprint1/20261017-pr96/` gồm integration-ci, auto-deploy/power events, source-compatibility, acceptance-current, API/browser, registration-session, secret-sweep và session-lifecycle. Không có credentials hoặc rawactivationtoken.

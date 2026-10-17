@@ -1,0 +1,32 @@
+{
+  "time": "2026-10-17T01:26:09.875Z",
+  "source": "038f8baff4c175e88c53b19a553105be15735dec",
+  "environment": "https://10.88.164.155:3470",
+  "assertions": [
+    {
+      "assertion": "Previously activated account remains verified; all tokens consumed, affirmative consent and only BUYER retained on integrated staging",
+      "result": "PASS"
+    },
+    {
+      "assertion": "Actual activated account TLS login/me200, Secure HttpOnly cookie, event-create403, logout200 and old-session replay401",
+      "result": "PASS"
+    }
+  ],
+  "priorReceipt": {
+    "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+    "artifact": "../20261016-s03-onboarding/smtp-product-staging.json",
+    "inboxReceipt": {
+      "result": "PASS",
+      "source": "Direct user confirmation: đã nhận, kích hoạt và đăng nhập",
+      "observedAt": "2026-10-16T15:29:43.732Z"
+    }
+  },
+  "inboxReceipt": "Previously confirmed receipt; not a new send or new human confirmation",
+  "activationAndLogin": "PASS",
+  "result": "PASS",
+  "limitations": [
+    "No new mail sent; prior real SMTP/human receipt evidence remains tied to02a and its original network",
+    "Approved and merged trees identical; product registration files unchanged from tested02a",
+    "One user-selected real inbox; not all mail providers; no raw token or recipient retained"
+  ]
+}
