@@ -227,3 +227,40 @@ export function decodeSeatDocument(v: unknown): SeatDocument {
     }),
   };
 }
+export type SalesFigures = {
+  totalSeats: number;
+  sold: number;
+  held: number;
+  available: number;
+  revenue: number;
+};
+export type ShowtimeSales = {
+  showtimeId: string;
+  generatedAt: string;
+  totals: SalesFigures;
+  categories: (SalesFigures & { name: string; price: number | null })[];
+};
+const count = (v: unknown): number =>
+  Number.isInteger(v) && number(v) >= 0 ? number(v) : invalid();
+const figures = (v: unknown): SalesFigures => {
+  const f = object(v);
+  return {
+    totalSeats: count(f.totalSeats),
+    sold: count(f.sold),
+    held: count(f.held),
+    available: count(f.available),
+    revenue: count(f.revenue),
+  };
+};
+export function decodeShowtimeSales(v: unknown): ShowtimeSales {
+  const d = object(v);
+  return {
+    showtimeId: string(d.showtimeId),
+    generatedAt: time(d.generatedAt),
+    totals: figures(d.totals),
+    categories: array(d.categories).map((item) => {
+      const c = object(item);
+      return { name: string(c.name), price: price(c.price), ...figures(c) };
+    }),
+  };
+}

@@ -23,6 +23,21 @@ type SeatRow = {
   price: number | null;
   status: 'AVAILABLE' | 'HELD' | 'SOLD';
 };
+type SalesCategory = {
+  name: string;
+  price: number | null;
+  totalSeats: number;
+  sold: number;
+  held: number;
+  available: number;
+  revenue: number;
+};
+export type ShowtimeSales = {
+  showtimeId: string;
+  generatedAt: string;
+  totals: Omit<SalesCategory, 'name' | 'price'>;
+  categories: SalesCategory[];
+};
 type PublicRow = {
   id: string;
   eventId: string;
@@ -333,6 +348,64 @@ export class ShowtimesService {
     if (show.organizerId !== owner)
       throw new ForbiddenException('Bạn không có quyền sửa suất diễn này.');
     return this.querySeats(id);
+  }
+  // S-50: sold/held/available per category plus revenue, for the owner.
+  // Held compares with the database clock like the seat map; an expired hold
+  // not yet cleaned up counts as available. Revenue sums the price snapshot
+  // of PAID orders (NEEDS_REVIEW late payments are excluded until resolved).
+  async sales(id: string, owner: string): Promise<ShowtimeSales> {
+    const [show] = await this.db.seatReadQuery<{ organizerId: string }[]>(
+      Prisma.sql`SELECT e."organizerId" FROM showtimes s JOIN events e ON e.id=s."eventId" WHERE s.id=${id}::uuid`,
+    );
+    if (!show) throw new NotFoundException('Không tìm thấy suất diễn.');
+    if (show.organizerId !== owner)
+      throw new ForbiddenException('Bạn không có quyền xem suất diễn này.');
+    const [row] = await this.db.seatReadQuery<
+      { generatedAt: Date | string; categories: SalesCategory[] }[]
+    >(Prisma.sql`WITH seat_state AS (
+        SELECT s."categoryId",
+          COUNT(*) AS total,
+          COUNT(*) FILTER (WHERE s."isSold") AS sold,
+          COUNT(*) FILTER (WHERE NOT s."isSold" AND h."expiresAt" > clock_timestamp()) AS held
+        FROM seats s LEFT JOIN seat_holds h ON h."seatId"=s.id
+        WHERE s."showtimeId"=${id}::uuid GROUP BY s."categoryId"
+      ), paid AS (
+        SELECT s."categoryId", SUM(oi."unitPrice") AS revenue
+        FROM order_items oi
+        JOIN orders o ON o.id=oi."orderId"
+        JOIN seats s ON s.id=oi."seatId"
+        WHERE o."showtimeId"=${id}::uuid AND o.status='PAID'
+        GROUP BY s."categoryId"
+      )
+      SELECT clock_timestamp() AS "generatedAt",
+        COALESCE(json_agg(json_build_object(
+          'name', c.name,
+          'price', c.price,
+          'totalSeats', COALESCE(st.total, 0),
+          'sold', COALESCE(st.sold, 0),
+          'held', COALESCE(st.held, 0),
+          'available', COALESCE(st.total - st.sold - st.held, 0),
+          'revenue', COALESCE(p.revenue, 0)
+        ) ORDER BY c.name), '[]'::json) AS categories
+      FROM seat_categories c
+      LEFT JOIN seat_state st ON st."categoryId"=c.id
+      LEFT JOIN paid p ON p."categoryId"=c.id
+      WHERE c."showtimeId"=${id}::uuid`);
+    const categories = row.categories;
+    const sum = (key: keyof Omit<SalesCategory, 'name' | 'price'>) =>
+      categories.reduce((total, c) => total + Number(c[key]), 0);
+    return {
+      showtimeId: id,
+      generatedAt: new Date(row.generatedAt).toISOString(),
+      totals: {
+        totalSeats: sum('totalSeats'),
+        sold: sum('sold'),
+        held: sum('held'),
+        available: sum('available'),
+        revenue: sum('revenue'),
+      },
+      categories,
+    };
   }
   private async querySeats(id: string) {
     const [result] = await this.db.seatReadQuery<{ seats: SeatRow[] }[]>(
