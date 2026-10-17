@@ -2,7 +2,7 @@
 
 ## Bản nghiệm thu và điều kiện công bố cuối — 17/10/2026
 
-**Toàn bộ assertion Sprint1 S01–S04/K01, T01–T10 và DoD áp dụng đã được kiểm theo nguồn; bản phần mềm được nghiệm thu là `4033da4dde1484fc777806421006f9c17e831f8b`.** Sau khi DEC-18 được chấp thuận và áp dụng, kết luận Sprint1 Done có hiệu lực khi gói công bố cuối đã qua review kỹ thuật tự động đúng base/head/diff, status Review / technical-review và mọi required CI success, merge develop, rồi xác minh CI/runtime/staging tương thích. Trước khi đủ điều kiện công bố không tuyên bố Sprint Done. Gói này chỉ tài liệu/evidence; không thay ứng dụng, schema, lockfile, CI, protection, seed hoặc dữ liệu.
+**Các assertion chức năng Sprint1 S01–S04/K01, T01–T10 đã có bằng chứng theo nguồn; DoD review mới theo DEC-18 còn cần thực thi; bản phần mềm được nghiệm thu là `4033da4dde1484fc777806421006f9c17e831f8b`.** Sau khi DEC-18 được chấp thuận và áp dụng, kết luận Sprint1 Done có hiệu lực khi gói công bố cuối đã qua review kỹ thuật tự động đúng base/head/diff, status Review / technical-review và mọi required CI success, merge develop, rồi xác minh CI/runtime/staging tương thích. Trước khi đủ điều kiện công bố không tuyên bố Sprint Done. Gói công bố ban đầu chỉ tài liệu/evidence; bổ sung DEC-18 hiện thay quy trình review/protection develop, thêm validator/publisher và test vào lệnh test hiện có. Ứng dụng, schema, lockfile, workflow CI, seed và dữ liệu không đổi. Cấu hình GitHub chỉ có hiệu lực sau readback/enforcement; không nhận payload đã duyệt là đã áp dụng.
 
 [PR99](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/99) được thuytrang158 APPROVED đúng head `e7db1fa0317ef6cc6e18864102fc17a5c20def8a`, merge02:21:39Z→`4033da4d…`; approved tree bằng merged tree. [CI tích hợp38994612232](https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38994612232) SUCCESS **225giây**. Watcher tự chờ CI, deploy02:25:33Z, backup3.903.959bytes02:26:28.986Z trước promotion02:26:59.279Z. **Merge→healthy320,279giây<600 PASS**; candidate84,15giây. Lần PR98 đạt321,303giây vẫn giữ; hai FAIL618,856/1754,310giây không bị xóa hoặc tính lại.
 
@@ -11,7 +11,7 @@
 | Task / Story | Hành vi và ca nghiệm thu | Kết quả / evidence có giới hạn |
 |---|---|---|
 | T01 / S01 | Frozen toolchain/lock, env, PG/Redis, Prisma migrate/client, web/API, dependency outage503, clone sạch/một lệnh/stop-start | PASS: clean-native, migration cycle tiến-bù-tái áp dụng, dependency-health; clone02a30migrations/lifecycle; compatibility02a→eb53→403; current HTTPS200 |
-| T02 / S01 | CI build/lint/typecheck/test push+PR, parallel lint/test, whole workflow<300s, lint đỏ chặn merge, checks đúng tên/trigger | PASS: integrated403225s; PR99CI254s; negative lint gate PR95 provenance; protection5checks/strict/last-push1approval/admin/conversation giữ nguyên |
+| T02 / S01 | CI build/lint/typecheck/test push+PR, parallel lint/test, whole workflow<300s, lint đỏ chặn merge, checks đúng tên/trigger | PASS: integrated403225s; PR99CI254s; negative lint gate PR95 provenance; protection5CI/strict/admin/conversation được giữ; DEC-18 thêm Review / technical-review và đổi approvals0/last-pushfalse sau readback/enforcement |
 | T03 / S01 | Docker thật/staging riêng, health/smoke trước switch, lỗi giữ bản cũ, migration/backup/rollback, auto<600s | PASS: actual403320,279s; backup3903959bytes; old/failure/rollback compatible proof; source/image/keys/no-countdecrease checked |
 | T04 / S02 | Users/roles/relations,5roles/emailuniqueDB, Argon2id, safe repeat seed/additive migrations | PASS: schema/hash/constraints/seed/migration proof gốc tương thích;30migrations retained |
 | T05 / S02 | Login/nav, session securecookie/expiry/logout401;5sai/6th15phút account+IP, remainingtime, APIrestart/naturalTTL/twopeer, enumeration | PASS: current API/session; historical900s/restart/twopeer source compatible. Không lặp probe khóa IP hoặc rútTTL |
@@ -45,6 +45,10 @@ Launcher chọn cổng trống (ưu tiên web3000/API3001), tạo config/secret 
 Staging phục hồi profile hiện hữu: `powershell.exe -NoProfile -File .\scripts\sprint1-staging.ps1 -Action Status` để kiểm rồi dùng thao tác đã tài liệu bên dưới; không gọiinit lại. Trước demo giữ nguồn/nắp mở/đúngWi-Fi; `scripts/sprint1-staging-session.ps1 -DurationSeconds 3600` tạo yêu cầu awake cóhạn, không chặn explicitSleep/lidclose/mấtmạng. IP đổi phải backup/rebindorigin/cert dùngkeyhiệnhữu, trustWindows và ownedfirewallAdmin; không tuyên bố tự động các bướcOS.
 
 Credentials staging chỉ `.sprint1-staging/config.json`; SMTP `.sprint1-staging/registration-mail.env`; account email thử `.sprint1-staging/registration-test-account.json`. Không in secret. Kịch bản UI/API đầy đủ và recovery giữ bên dưới: health→A tạo/sửa nháp→future/past/duplicate→BURLdeny→buyer403/drafthidden→logout/expiry→khóa bằng fixturephụ (không chạy lại probe IP trong lượt này)→CI/Docker/K01/bằngchứng staging. Nếu input sai, sửa field rồi submit; không reseed/reset database để phục hồi.
+
+### Thực thi DEC-18 hiện tại
+
+Đã có chấp thuận trực tiếp; [quy tắc](REVIEW_POLICY.md) và [bản quyết định](../evidence/sprint1/20261017-review-policy/decision-18.md) giữ rõ giới hạn publisher account vận hành/app_id=-1, không độc lập. DoD-DoR!C2 đã sửa có backup, chỉ đổi C2 và chiều cao dòng2; các ô khác được đối chiếu bảo toàn. Ma trận hiện giữ DOD-row2 BLOCKED đến khi actual exact-SHA review/status/enforcement đạt, không đổi nó thành PASS dựa vào CI. Hồ sơ cũ giữ SHA/môi trường/thời điểm gốc. Kết quả cấu hình trước/sau, kiểm enforcement và bản tích hợp sau cùng được công bố trong [nhật ký PR100](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/100); chỉ receipt cuối có kiểm chứng mới đóng điều kiện công bố.
 
 ## Checkpoint PR99 trước công bố cuối — lịch sử
 

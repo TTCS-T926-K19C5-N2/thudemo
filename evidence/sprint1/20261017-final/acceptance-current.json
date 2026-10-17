@@ -3328,7 +3328,7 @@
         "../20261017-accepted/network-current.json",
         "../20261017-accepted/source-compatibility.json"
       ],
-      "notes": "Existing PR99 human approval remains historical. New head containing approved policy needs fresh automated review/CI/status; none is fabricated in this proposal.",
+      "notes": "PR99 and PR100/749 human approvals remain historical; approved DEC18 replaces the prospective gate. Current policy head requires actual automated review/status/enforcement, not CI-only success.",
       "verificationGroups": [
         {
           "matrixId": "DOD-02",

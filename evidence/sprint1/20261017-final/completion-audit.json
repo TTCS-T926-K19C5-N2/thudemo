@@ -2,7 +2,8 @@
   "time": "2026-10-17T02:31:15.093Z",
   "acceptedSoftware": "4033da4dde1484fc777806421006f9c17e831f8b",
   "assertionResults": {
-    "PASS": 95
+    "PASS": 94,
+    "BLOCKED": 1
   },
   "scope": "DEC15 S01-S04/K01,T01-T10,72 original clauses+23 S03/onboarding; no future Sprint AC",
   "sourceStatus": {
@@ -76,19 +77,24 @@
   ],
   "publicationGate": {
     "statusAtPreparation": "BLOCKED",
-    "condition": "This final documentation publication must have independent member approval and required CI, merge into develop without bypass, then verified integrated CI/runtime source compatibility. Before then no global Sprint Done claim.",
+    "condition": "After explicit DEC18 approval and protection readback: actual automated technical review on exact base/head/diff, required Review / technical-review success plus all original required CI success, no unresolved conversations, scoped develop PR, then merge and integrated CI/automatic staging/AC verification.",
     "acceptedSoftwareSource": "4033da4dde1484fc777806421006f9c17e831f8b",
-    "afterVerifiedPublication": "PASS; Sprint1 Done for approved R0 laptop fake-data scope"
+    "afterVerifiedPublication": "PASS; Sprint1 Done for approved R0 laptop fake-data scope",
+    "noRetroactiveHumanApproval": true
   },
   "sprintDoneAtPreparation": false,
   "artifactJsonParsed": 9,
   "originalArtifactFilesValidated": 47,
   "limits": [
-    "95 requirement assertions PASS on accepted software/source-sync evidence; final publication gate remains separate until actual review/CI/integration.",
+    "94 requirement assertions retain accepted-software evidence; DOD-row2 now BLOCKED pending actual exact-SHA DEC18 review/enforcement. Final publication and postmerge staging remain required.",
     "All old artifacts retain original source/environment; compatibility proved by exact unchanged app/schema/lock/demo/deploy inputs.",
     "K01 current technical output accepted DEC17; historical1day timebox/mentor NOT RUN remains disclosed.",
     "No new second-device browser test; historical twopeer original source remains applicable to unchanged classifier/proxy.",
     "No new Internet mail claimed; actual SMTP/inbox receipt remains at02a and activated-session regression at403.",
     "S30/S31/S43 regression and required T31 policy are not Sprint1 AC; existing F15 payment logger remains separate."
-  ]
+  ],
+  "status": "Historical accepted-software audit at403 with prospective DEC18 publication overlay; not a new runtime run",
+  "assertionResultsAtOriginalPreparation": {
+    "PASS": 95
+  }
 }
