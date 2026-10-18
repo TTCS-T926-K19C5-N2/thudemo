@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
 import { OrdersService } from './orders.service.js';
 import { isOrderExpired } from './order-expiration.js';
@@ -23,16 +27,16 @@ describe('OrdersService & isOrderExpired', () => {
 
     it('returns true for EXPIRED order regardless of expiresAt', () => {
       const future = new Date(Date.now() + 60000);
-      expect(isOrderExpired({ status: OrderStatus.EXPIRED, expiresAt: future })).toBe(
-        true,
-      );
+      expect(
+        isOrderExpired({ status: OrderStatus.EXPIRED, expiresAt: future }),
+      ).toBe(true);
     });
 
     it('returns false for PAID order even after original expiresAt', () => {
       const past = new Date(Date.now() - 60000);
-      expect(isOrderExpired({ status: OrderStatus.PAID, expiresAt: past })).toBe(
-        false,
-      );
+      expect(
+        isOrderExpired({ status: OrderStatus.PAID, expiresAt: past }),
+      ).toBe(false);
     });
   });
 
@@ -50,7 +54,20 @@ describe('OrdersService & isOrderExpired', () => {
 
     beforeEach(() => {
       mockPrisma = {
-        $transaction: vi.fn(async (cb) => cb(mockPrisma)),
+        $transaction: vi.fn(async (cb) => {
+          const tx = {
+            ...mockPrisma,
+            order: {
+              ...mockPrisma.order,
+              findUnique: vi
+                .fn()
+                .mockImplementation((args: any) =>
+                  mockPrisma.order.findUnique(args),
+                ),
+            },
+          };
+          return cb(tx);
+        }),
         holdSession: {
           findFirst: vi.fn(),
         },
@@ -61,10 +78,16 @@ describe('OrdersService & isOrderExpired', () => {
           create: vi.fn(),
           findUnique: vi.fn(),
           update: vi.fn(),
+          updateMany: vi.fn().mockResolvedValue({ count: 1 }),
         },
         orderLog: {
           count: vi.fn().mockResolvedValue(0),
+          create: vi.fn().mockResolvedValue({ id: 'log-id' }),
+          createMany: vi.fn().mockResolvedValue({ count: 0 }),
         },
+        ticketAdmission: { findMany: vi.fn().mockResolvedValue([]) },
+        orderItem: { findMany: vi.fn().mockResolvedValue([]) },
+        holdLog: { findMany: vi.fn().mockResolvedValue([]) },
       };
       service = new OrdersService(mockPrisma as unknown as PrismaService);
     });
@@ -164,6 +187,18 @@ describe('OrdersService & isOrderExpired', () => {
         expect(result.items[0].unitPrice).toBe(500000);
         expect(result.remainingSeconds).toBeGreaterThan(0);
         expect(result.isExpired).toBe(false);
+        expect(mockPrisma.orderLog.create).toHaveBeenCalledWith({
+          data: {
+            orderId: mockOrderId,
+            type: 'ORDER_CREATED',
+            detail: {
+              actorType: 'USER',
+              actorId: mockUserId,
+              fromStatus: null,
+              toStatus: OrderStatus.PENDING,
+            },
+          },
+        });
       });
 
       it('AC 2: strictly ignores client-submitted totalAmount and unit prices, computing from DB tier price', async () => {
@@ -302,6 +337,136 @@ describe('OrdersService & isOrderExpired', () => {
         expect(result.isExpired).toBe(true);
         expect(result.status).toBe(OrderStatus.EXPIRED);
         expect(result.remainingSeconds).toBe(0);
+        expect(mockPrisma.order.updateMany).toHaveBeenCalledWith({
+          where: { id: mockOrderId, status: OrderStatus.PENDING },
+          data: { status: OrderStatus.EXPIRED },
+        });
+        expect(mockPrisma.orderLog.create).toHaveBeenCalledWith({
+          data: {
+            orderId: mockOrderId,
+            type: 'ORDER_STATUS_CHANGED',
+            detail: {
+              actorType: 'SYSTEM',
+              fromStatus: OrderStatus.PENDING,
+              toStatus: OrderStatus.EXPIRED,
+              reason: 'ORDER_EXPIRED_ON_READ',
+            },
+          },
+        });
+      });
+
+      it('does not append an expiry log when another transition wins concurrently', async () => {
+        const past = new Date(Date.now() - 5000);
+        mockPrisma.order.findUnique.mockResolvedValue({
+          id: mockOrderId,
+          userId: mockUserId,
+          status: OrderStatus.PENDING,
+          totalAmount: 0,
+          expiresAt: past,
+          createdAt: new Date(),
+          event: {},
+          showtime: { id: mockShowtimeId, startTime: new Date() },
+          items: [],
+        });
+        mockPrisma.order.updateMany.mockResolvedValue({ count: 0 });
+        mockPrisma.order.findUnique
+          .mockResolvedValueOnce({
+            id: mockOrderId,
+            userId: mockUserId,
+            status: OrderStatus.PENDING,
+            totalAmount: 0,
+            expiresAt: past,
+            createdAt: new Date(),
+            event: {},
+            showtime: { id: mockShowtimeId, startTime: new Date() },
+            items: [],
+          })
+          .mockResolvedValueOnce({ status: OrderStatus.PAID });
+
+        const result = await service.getOrderById(mockOrderId, mockUserId);
+
+        expect(result.status).toBe(OrderStatus.PAID);
+        expect(mockPrisma.orderLog.create).not.toHaveBeenCalled();
+      });
+
+      it('returns order, ticket and admission audit events to administrators', async () => {
+        const at = new Date('2026-10-18T10:00:00Z');
+        mockPrisma.order.findUnique.mockResolvedValue({
+          id: mockOrderId,
+          eventId: mockEventId,
+          showtimeId: mockShowtimeId,
+          holdSessionId: 'hold-session-id',
+          logs: [
+            {
+              id: 'order-log',
+              type: 'ORDER_CREATED',
+              attemptNo: null,
+              detail: {
+                actorType: 'USER',
+                actorId: mockUserId,
+                email: 'private@example.test',
+              },
+              createdAt: at,
+            },
+          ],
+          tickets: [
+            {
+              id: 'ticket-id',
+              seatLabel: 'A-1',
+              logs: [
+                {
+                  id: 'ticket-log',
+                  action: 'TRANSFERRED',
+                  actorId: mockUserId,
+                  detail: { toEmail: 'private@example.test' },
+                  createdAt: at,
+                },
+              ],
+            },
+          ],
+        });
+        mockPrisma.orderItem.findMany.mockResolvedValue([
+          { id: 'item-id', seatId: mockSeatId1 },
+        ]);
+        mockPrisma.ticketAdmission.findMany.mockResolvedValue([
+          {
+            id: 'admission-id',
+            ticketId: 'item-id',
+            staffId: 'staff-id',
+            kind: 'NORMAL',
+            reason: null,
+            enteredAt: at,
+            gateName: 'Gate A',
+          },
+        ]);
+        mockPrisma.holdLog.findMany.mockResolvedValue([
+          {
+            id: 'hold-log',
+            actorId: mockUserId,
+            seatIds: [mockSeatId1],
+            action: 'CLAIMED',
+            fromExpiresAt: null,
+            toExpiresAt: at,
+            createdAt: at,
+          },
+        ]);
+
+        const result = await service.getOrderAuditLog(mockOrderId, true);
+
+        expect(result.events.map((event) => event.source).sort()).toEqual([
+          'ADMISSION',
+          'HOLD',
+          'ORDER',
+          'TICKET',
+        ]);
+        expect(JSON.stringify(result)).not.toContain('private@example.test');
+      });
+
+      it('rejects audit access for non-administrators', async () => {
+        mockPrisma.order.findUnique.mockResolvedValue({ id: mockOrderId });
+        await expect(
+          service.getOrderAuditLog(mockOrderId, false),
+        ).rejects.toBeInstanceOf(ForbiddenException);
       });
 
       it('recalculates total amount from stored item price snapshots and logs warning if mismatch', async () => {

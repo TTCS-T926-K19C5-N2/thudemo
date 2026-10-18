@@ -7,6 +7,7 @@ import {
   type ServerClock,
 } from "@/features/seat-selection/server-countdown";
 
+
 describe("Order Review contracts and countdown (S-17)", () => {
   const validOrderPayload = {
     id: "55555555-5555-4555-8555-555555555555",

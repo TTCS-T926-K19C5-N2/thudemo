@@ -23,14 +23,29 @@ describe('TicketsService', () => {
     tx = {
       ticket: {
         createMany: vi.fn().mockResolvedValue({ count: 0 }),
+        createManyAndReturn: vi.fn().mockImplementation(({ data }: any) =>
+          Promise.resolve(
+            data.map((ticket: any, index: number) => ({
+              id: `issued-${index}`,
+              orderId: ticket.orderId,
+              status: ticket.status,
+              seatId: ticket.seatId,
+            })),
+          ),
+        ),
         update: vi.fn(),
         updateMany: vi.fn().mockResolvedValue({ count: 1 }),
         create: vi.fn().mockResolvedValue({ id: 'new-ticket-1' }),
       },
-      ticketLog: { create: vi.fn() },
+      ticketLog: {
+        create: vi.fn(),
+        createMany: vi.fn().mockResolvedValue({ count: 0 }),
+      },
     };
     db = {
-      user: { findUnique: vi.fn().mockResolvedValue({ email: 'owner@example.com' }) },
+      user: {
+        findUnique: vi.fn().mockResolvedValue({ email: 'owner@example.com' }),
+      },
       order: { findUnique: vi.fn() },
       ticket: { findMany: vi.fn(), findUnique: vi.fn() },
       $transaction: vi.fn((cb) => cb(tx)),
@@ -44,16 +59,27 @@ describe('TicketsService', () => {
       id: ORDER_ID,
       showtimeId: SHOWTIME_ID,
       items: [
-        { seatId: 'seat-a1', categoryName: 'VIP', unitPrice: 300000, seat: { row: 'A', seatNumber: 1 } },
-        { seatId: 'seat-a2', categoryName: 'VIP', unitPrice: 300000, seat: { row: 'A', seatNumber: 2 } },
+        {
+          seatId: 'seat-a1',
+          categoryName: 'VIP',
+          unitPrice: 300000,
+          seat: { row: 'A', seatNumber: 1 },
+        },
+        {
+          seatId: 'seat-a2',
+          categoryName: 'VIP',
+          unitPrice: 300000,
+          seat: { row: 'A', seatNumber: 2 },
+        },
       ],
     };
 
     it('creates one signed ticket per seat, skipping duplicates on replay', async () => {
       await service.issueForPaidOrder(tx, order);
 
-      expect(tx.ticket.createMany).toHaveBeenCalledTimes(1);
-      const { data, skipDuplicates } = tx.ticket.createMany.mock.calls[0][0];
+      expect(tx.ticket.createManyAndReturn).toHaveBeenCalledTimes(1);
+      const { data, skipDuplicates } =
+        tx.ticket.createManyAndReturn.mock.calls[0][0];
       expect(skipDuplicates).toBe(true);
       expect(data).toHaveLength(2);
       expect(data.map((t: any) => t.seatLabel)).toEqual(['A-1', 'A-2']);
@@ -65,11 +91,29 @@ describe('TicketsService', () => {
         status: TicketStatus.VALID,
         price: 300000,
       });
+      expect(tx.ticketLog.createMany).toHaveBeenCalledWith({
+        data: [
+          expect.objectContaining({
+            ticketId: 'issued-0',
+            action: 'ISSUED',
+            detail: expect.objectContaining({
+              actorType: 'SYSTEM',
+              fromStatus: null,
+              toStatus: TicketStatus.VALID,
+              orderId: ORDER_ID,
+              seatId: 'seat-a1',
+            }),
+          }),
+          expect.objectContaining({ ticketId: 'issued-1', action: 'ISSUED' }),
+        ],
+      });
+      expect(tx.ticketLog.createMany.mock.calls[0][0].data).toHaveLength(2);
     });
 
     it('stores a signature that verifies against the stored code and showtime', async () => {
       await service.issueForPaidOrder(tx, order);
-      const [first, second] = tx.ticket.createMany.mock.calls[0][0].data;
+      const [first, second] =
+        tx.ticket.createManyAndReturn.mock.calls[0][0].data;
 
       expect(first.code).not.toBe(second.code);
       const qr = `v1.${first.keyId}.${first.code}.${SHOWTIME_ID}.${first.signature}`;
@@ -77,11 +121,12 @@ describe('TicketsService', () => {
       // A signature cannot be moved onto another ticket's code.
       const moved = `v1.${first.keyId}.${second.code}.${SHOWTIME_ID}.${first.signature}`;
       expect(signing.verify(moved)).toMatchObject({ valid: false });
+      expect(tx.ticketLog.createMany).toHaveBeenCalledTimes(1);
     });
 
     it('does nothing for an order without items', async () => {
       await service.issueForPaidOrder(tx, { ...order, items: [] });
-      expect(tx.ticket.createMany).not.toHaveBeenCalled();
+      expect(tx.ticket.createManyAndReturn).not.toHaveBeenCalled();
     });
   });
 
@@ -92,42 +137,77 @@ describe('TicketsService', () => {
         status: OrderStatus.PAID,
         showtimeId: SHOWTIME_ID,
       });
-      await expect(service.listForOrder(ORDER_ID, OWNER_ID)).rejects.toThrow(NotFoundException);
+      await expect(service.listForOrder(ORDER_ID, OWNER_ID)).rejects.toThrow(
+        NotFoundException,
+      );
       expect(db.ticket.findMany).not.toHaveBeenCalled();
     });
 
     it('throws NotFound for a missing order', async () => {
       db.order.findUnique.mockResolvedValue(null);
-      await expect(service.listForOrder(ORDER_ID, OWNER_ID)).rejects.toThrow(NotFoundException);
+      await expect(service.listForOrder(ORDER_ID, OWNER_ID)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
-    it.each([OrderStatus.PENDING_PAYMENT, OrderStatus.EXPIRED, OrderStatus.NEEDS_REVIEW])(
-      'returns no tickets while the order is %s',
-      async (status) => {
-        db.order.findUnique.mockResolvedValue({ userId: OWNER_ID, status, showtimeId: SHOWTIME_ID });
-        await expect(service.listForOrder(ORDER_ID, OWNER_ID)).resolves.toEqual([]);
-        expect(db.ticket.findMany).not.toHaveBeenCalled();
-      },
-    );
+    it.each([
+      OrderStatus.PENDING_PAYMENT,
+      OrderStatus.EXPIRED,
+      OrderStatus.NEEDS_REVIEW,
+    ])('returns no tickets while the order is %s', async (status) => {
+      db.order.findUnique.mockResolvedValue({
+        userId: OWNER_ID,
+        status,
+        showtimeId: SHOWTIME_ID,
+      });
+      await expect(service.listForOrder(ORDER_ID, OWNER_ID)).resolves.toEqual(
+        [],
+      );
+      expect(db.ticket.findMany).not.toHaveBeenCalled();
+    });
 
     it('returns tickets of a PAID order with a verifiable QR payload', async () => {
       await service.issueForPaidOrder(tx, {
         id: ORDER_ID,
         showtimeId: SHOWTIME_ID,
-        items: [{ seatId: 'seat-a1', categoryName: 'VIP', unitPrice: 1, seat: { row: 'A', seatNumber: 1 } }],
+        items: [
+          {
+            seatId: 'seat-a1',
+            categoryName: 'VIP',
+            unitPrice: 1,
+            seat: { row: 'A', seatNumber: 1 },
+          },
+        ],
       });
-      const stored = tx.ticket.createMany.mock.calls[0][0].data[0];
-      db.order.findUnique.mockResolvedValue({ userId: OWNER_ID, status: OrderStatus.PAID, showtimeId: SHOWTIME_ID });
+      const stored = tx.ticket.createManyAndReturn.mock.calls[0][0].data[0];
+      db.order.findUnique.mockResolvedValue({
+        userId: OWNER_ID,
+        status: OrderStatus.PAID,
+        showtimeId: SHOWTIME_ID,
+      });
       db.ticket.findMany.mockResolvedValue([
         { ...stored, id: 'ticket-1' },
-        { ...stored, id: 'legacy', code: 'TK-00001', keyId: null, signature: null },
+        {
+          ...stored,
+          id: 'legacy',
+          code: 'TK-00001',
+          keyId: null,
+          signature: null,
+        },
       ]);
 
       const tickets = await service.listForOrder(ORDER_ID, OWNER_ID);
 
-      expect(tickets[0]).toMatchObject({ id: 'ticket-1', code: stored.code, seatLabel: 'A-1' });
-      expect(signing.verify(tickets[0].qrPayload!)).toMatchObject({ valid: true });
+      expect(tickets[0]).toMatchObject({
+        id: 'ticket-1',
+        code: stored.code,
+        seatLabel: 'A-1',
+      });
+      expect(signing.verify(tickets[0].qrPayload!)).toMatchObject({
+        valid: true,
+      });
       expect(tickets[1].qrPayload).toBeNull();
+      expect(tx.ticketLog.createMany).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -136,36 +216,60 @@ describe('TicketsService', () => {
     const EMAIL = 'newowner@example.com';
 
     it('throws BadRequest on invalid email format', async () => {
-      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, '')).rejects.toThrow(BadRequestException);
-      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, 'invalid-email')).rejects.toThrow(BadRequestException);
+      await expect(
+        service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, ''),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, 'invalid-email'),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('throws BadRequest if transferring to own email', async () => {
       db.user.findUnique.mockResolvedValue({ email: 'owner@example.com' });
-      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, 'owner@example.com')).rejects.toThrow(BadRequestException);
+      await expect(
+        service.transferTicket(
+          ORDER_ID,
+          TICKET_ID,
+          OWNER_ID,
+          'owner@example.com',
+        ),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('throws NotFound if order not found or user is not owner', async () => {
       db.order.findUnique.mockResolvedValue(null);
-      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL),
+      ).rejects.toThrow(NotFoundException);
 
       db.order.findUnique.mockResolvedValue({ userId: 'other' });
-      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('throws NotFound if ticket not found or does not belong to order', async () => {
       db.order.findUnique.mockResolvedValue({ userId: OWNER_ID });
       db.ticket.findUnique.mockResolvedValue(null);
-      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL),
+      ).rejects.toThrow(NotFoundException);
 
       db.ticket.findUnique.mockResolvedValue({ orderId: 'other' });
-      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('throws BadRequest if ticket is not VALID', async () => {
       db.order.findUnique.mockResolvedValue({ userId: OWNER_ID });
-      db.ticket.findUnique.mockResolvedValue({ orderId: ORDER_ID, status: TicketStatus.CANCELLED });
-      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(BadRequestException);
+      db.ticket.findUnique.mockResolvedValue({
+        orderId: ORDER_ID,
+        status: TicketStatus.CANCELLED,
+      });
+      await expect(
+        service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('throws BadRequest if concurrent request already invalidated the ticket', async () => {
@@ -183,7 +287,9 @@ describe('TicketsService', () => {
       // Simulate race condition: updateMany returns count 0
       tx.ticket.updateMany.mockResolvedValue({ count: 0 });
 
-      await expect(service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL)).rejects.toThrow(BadRequestException);
+      await expect(
+        service.transferTicket(ORDER_ID, TICKET_ID, OWNER_ID, EMAIL),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('cancels old ticket and issues a new one with atomic update and audit logs', async () => {
@@ -221,6 +327,10 @@ describe('TicketsService', () => {
           ticketId: TICKET_ID,
           action: 'TRANSFERRED',
           actorId: OWNER_ID,
+          detail: expect.objectContaining({
+            fromStatus: TicketStatus.VALID,
+            toStatus: TicketStatus.CANCELLED,
+          }),
         }),
       });
       expect(tx.ticketLog.create).toHaveBeenNthCalledWith(2, {

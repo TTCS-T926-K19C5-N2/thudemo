@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   HttpException,
   Injectable,
   Logger,
@@ -157,15 +158,37 @@ export class OrdersService {
             Prisma.sql`SELECT clock_timestamp() AS "serverTime"`,
           );
 
-          await tx.order.updateMany({
-            where: {
-              userId,
-              showtimeId,
-              status: { in: ['PENDING', 'PENDING_PAYMENT'] },
-              paymentExpiresAt: { lte: lookupClock.serverTime },
-            },
-            data: { status: 'EXPIRED' },
-          });
+          const expiredOrders = await tx.$queryRaw<
+            { id: string; previousStatus: OrderStatus }[]
+          >(Prisma.sql`
+            WITH candidates AS MATERIALIZED (
+              SELECT id, status FROM orders
+              WHERE "userId" = ${userId}::uuid AND "showtimeId" = ${showtimeId}::uuid
+                AND status IN ('PENDING'::"OrderStatus", 'PENDING_PAYMENT'::"OrderStatus")
+                AND "paymentExpiresAt" <= ${lookupClock.serverTime}
+              FOR UPDATE
+            ), changed AS (
+              UPDATE orders o SET status = 'EXPIRED'::"OrderStatus", "updatedAt" = clock_timestamp()
+              FROM candidates c WHERE o.id = c.id
+              RETURNING o.id
+            )
+            SELECT changed.id, candidates.status AS "previousStatus"
+            FROM changed JOIN candidates USING (id)
+          `);
+          if (expiredOrders.length) {
+            await tx.orderLog.createMany({
+              data: expiredOrders.map((expiredOrder) => ({
+                orderId: expiredOrder.id,
+                type: 'ORDER_STATUS_CHANGED',
+                detail: {
+                  actorType: 'SYSTEM',
+                  fromStatus: expiredOrder.previousStatus,
+                  toStatus: OrderStatus.EXPIRED,
+                  reason: 'ORDER_EXPIRED_DURING_CREATE',
+                },
+              })),
+            });
+          }
 
           const existing = await tx.order.findFirst({
             where: {
@@ -246,10 +269,7 @@ export class OrdersService {
               message: 'Một hoặc nhiều ghế chưa có giá. Hãy tải lại sơ đồ.',
             });
 
-          const totalAmount = seats.reduce(
-            (sum, seat) => sum + seat.price!,
-            0,
-          );
+          const totalAmount = seats.reduce((sum, seat) => sum + seat.price!, 0);
           const order = await tx.order.create({
             data: {
               userId,
@@ -271,6 +291,19 @@ export class OrdersService {
               },
             },
             select: orderProjection,
+          });
+
+          await tx.orderLog.create({
+            data: {
+              orderId: order.id,
+              type: 'ORDER_CREATED',
+              detail: {
+                actorType: 'USER',
+                actorId: userId,
+                fromStatus: null,
+                toStatus: order.status,
+              },
+            },
           });
 
           await tx.holdSession.update({
@@ -440,8 +473,22 @@ export class OrdersService {
         },
       });
 
+      await tx.orderLog.create({
+        data: {
+          orderId: order.id,
+          type: 'ORDER_CREATED',
+          detail: {
+            actorType: 'USER',
+            actorId: userId,
+            fromStatus: null,
+            toStatus: order.status,
+          },
+        },
+      });
+
       const serverNow = new Date();
-      const effectiveExpiry = order.expiresAt ?? order.paymentExpiresAt ?? serverNow;
+      const effectiveExpiry =
+        order.expiresAt ?? order.paymentExpiresAt ?? serverNow;
       const remainingSeconds = Math.max(
         0,
         Math.ceil((effectiveExpiry.getTime() - serverNow.getTime()) / 1000),
@@ -508,29 +555,64 @@ export class OrdersService {
     orderId: string,
     userId: string,
   ): Promise<OrderDetailResponse> {
-    const order = await this.db.order.findUnique({
-      where: { id: orderId },
-      include: {
-        event: true,
-        showtime: true,
-        items: {
-          include: {
-            seat: {
-              include: {
-                category: true,
+    const order = await this.db.$transaction(async (tx) => {
+      const found = await tx.order.findUnique({
+        where: { id: orderId },
+        include: {
+          event: true,
+          showtime: true,
+          items: {
+            include: {
+              seat: {
+                include: {
+                  category: true,
+                },
               },
             },
           },
+          payments: {
+            orderBy: { createdAt: 'asc' },
+          },
         },
-        payments: {
-          orderBy: { createdAt: 'asc' },
-        },
-      },
-    });
+      });
 
-    if (!order || order.userId !== userId) {
-      throw new NotFoundException('Không tìm thấy đơn hàng.');
-    }
+      if (!found || found.userId !== userId) {
+        throw new NotFoundException('Không tìm thấy đơn hàng.');
+      }
+
+      if (
+        isOrderExpired(found, new Date()) &&
+        (found.status === OrderStatus.PENDING ||
+          found.status === OrderStatus.PENDING_PAYMENT)
+      ) {
+        const changed = await tx.order.updateMany({
+          where: { id: found.id, status: found.status },
+          data: { status: OrderStatus.EXPIRED },
+        });
+        if (changed.count === 1) {
+          await tx.orderLog.create({
+            data: {
+              orderId: found.id,
+              type: 'ORDER_STATUS_CHANGED',
+              detail: {
+                actorType: 'SYSTEM',
+                fromStatus: found.status,
+                toStatus: OrderStatus.EXPIRED,
+                reason: 'ORDER_EXPIRED_ON_READ',
+              },
+            },
+          });
+          found.status = OrderStatus.EXPIRED;
+        } else {
+          const latest = await tx.order.findUnique({
+            where: { id: found.id },
+            select: { status: true },
+          });
+          if (latest) found.status = latest.status;
+        }
+      }
+      return found;
+    });
 
     // Prices are the snapshots captured server-side when the order was created
     // (S-16); a later category price change must not alter a pending order.
@@ -554,23 +636,7 @@ export class OrdersService {
       Math.ceil((effectiveExpiresAt.getTime() - serverNow.getTime()) / 1000),
     );
 
-    if (
-      expired &&
-      (order.status === OrderStatus.PENDING ||
-        order.status === OrderStatus.PENDING_PAYMENT)
-    ) {
-      await this.db.order.update({
-        where: { id: order.id },
-        data: { status: OrderStatus.EXPIRED },
-      });
-    }
-
-    const resolvedStatus =
-      expired &&
-      (order.status === OrderStatus.PENDING ||
-        order.status === OrderStatus.PENDING_PAYMENT)
-        ? OrderStatus.EXPIRED
-        : order.status;
+    const resolvedStatus = order.status;
 
     const expiresIso = effectiveExpiresAt.toISOString();
     const serverTimeIso = serverNow.toISOString();
@@ -707,6 +773,175 @@ export class OrdersService {
     };
   }
 
+  async getOrderAuditLog(orderId: string, isAdmin: boolean) {
+    const order = await this.db.order.findUnique({
+      where: { id: orderId },
+      select: {
+        id: true,
+        showtimeId: true,
+        holdSessionId: true,
+        logs: {
+          orderBy: { createdAt: 'asc' },
+          select: {
+            id: true,
+            type: true,
+            attemptNo: true,
+            detail: true,
+            createdAt: true,
+          },
+        },
+        tickets: {
+          select: {
+            id: true,
+            seatLabel: true,
+            logs: {
+              orderBy: { createdAt: 'asc' },
+              select: {
+                id: true,
+                action: true,
+                actorId: true,
+                detail: true,
+                createdAt: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!order) throw new NotFoundException('Không tìm thấy đơn hàng.');
+    if (!isAdmin)
+      throw new ForbiddenException('Không có quyền xem nhật ký đơn hàng này.');
+
+    const sanitize = (value: unknown): unknown => {
+      if (Array.isArray(value)) return value.map(sanitize);
+      if (!value || typeof value !== 'object') return value;
+      return Object.fromEntries(
+        Object.entries(value)
+          .filter(
+            ([key]) => !/(email|token|secret|signature|password|qr)/i.test(key),
+          )
+          .map(([key, nested]) => [key, sanitize(nested)]),
+      );
+    };
+    const sanitizeObject = (value: unknown): Record<string, unknown> => {
+      const sanitized = sanitize(value);
+      return sanitized &&
+        typeof sanitized === 'object' &&
+        !Array.isArray(sanitized)
+        ? (sanitized as Record<string, unknown>)
+        : {};
+    };
+    const events: {
+      id: string;
+      source: string;
+      action: string;
+      actorId: string | null;
+      at: Date;
+      detail: unknown;
+      attemptNo: number | null;
+    }[] = [
+      ...order.logs.map((log) => ({
+        id: log.id,
+        source: 'ORDER',
+        action: log.type,
+        actorId:
+          log.detail &&
+          typeof log.detail === 'object' &&
+          'actorId' in log.detail &&
+          typeof log.detail.actorId === 'string'
+            ? log.detail.actorId
+            : null,
+        at: log.createdAt,
+        detail: sanitize(log.detail),
+        attemptNo: log.attemptNo,
+      })),
+      ...order.tickets.flatMap((ticket) =>
+        ticket.logs.map((log) => ({
+          id: log.id,
+          source: 'TICKET',
+          action: log.action,
+          actorId: log.actorId,
+          at: log.createdAt,
+          detail: {
+            ...sanitizeObject(log.detail),
+            seat: ticket.seatLabel,
+          },
+          attemptNo: null,
+        })),
+      ),
+    ].sort((a, b) => a.at.getTime() - b.at.getTime());
+    const orderItems = await this.db.orderItem.findMany({
+      where: { orderId },
+      select: { id: true, seatId: true },
+    });
+    const holdLogs = order.holdSessionId
+      ? await this.db.holdLog.findMany({
+          where: { holdSessionId: order.holdSessionId },
+          orderBy: { createdAt: 'asc' },
+          select: {
+            id: true,
+            actorId: true,
+            seatIds: true,
+            action: true,
+            fromExpiresAt: true,
+            toExpiresAt: true,
+            createdAt: true,
+          },
+        })
+      : [];
+    events.push(
+      ...holdLogs.map((log) => ({
+        id: log.id,
+        source: 'HOLD',
+        action: log.action,
+        actorId: log.actorId,
+        at: log.createdAt,
+        detail: {
+          seats: log.seatIds,
+          fromExpiresAt: log.fromExpiresAt,
+          toExpiresAt: log.toExpiresAt,
+        },
+        attemptNo: null,
+      })),
+    );
+    const itemIds = orderItems.map((item) => item.id);
+    if (itemIds.length) {
+      const admissions = await this.db.ticketAdmission.findMany({
+        where: { ticketId: { in: itemIds } },
+        orderBy: { enteredAt: 'asc' },
+        select: {
+          id: true,
+          ticketId: true,
+          staffId: true,
+          kind: true,
+          reason: true,
+          enteredAt: true,
+          gateName: true,
+        },
+      });
+      for (const admission of admissions) {
+        events.push({
+          id: admission.id,
+          source: 'ADMISSION',
+          action:
+            admission.kind === 'EXCEPTION' ? 'CHECK_IN_EXCEPTION' : 'CHECK_IN',
+          actorId: admission.staffId,
+          at: admission.enteredAt,
+          detail: {
+            gateName: admission.gateName,
+            reason: admission.reason,
+          },
+          attemptNo: null,
+        });
+      }
+      events.sort((a, b) => a.at.getTime() - b.at.getTime());
+    }
+    return {
+      orderId: order.id,
+      events,
+    };
+  }
+
   async current(orderId: string, userId: string) {
     return this.getOrderById(orderId, userId);
   }
@@ -740,14 +975,27 @@ export class OrdersService {
     return this.db.$transaction(async (tx) => {
       // 1. Conditional atomic update: only PENDING / PENDING_PAYMENT, expiresAt <= clock_timestamp()
       const updated = await tx.$queryRaw<
-        { id: string; userId: string; holdSessionId: string | null }[]
+        {
+          id: string;
+          userId: string;
+          holdSessionId: string | null;
+          previousStatus: OrderStatus;
+        }[]
       >(Prisma.sql`
-        UPDATE orders
-        SET status = 'EXPIRED'::"OrderStatus", "updatedAt" = clock_timestamp()
-        WHERE id = ${orderId}::uuid
-          AND status IN ('PENDING'::"OrderStatus", 'PENDING_PAYMENT'::"OrderStatus")
-          AND COALESCE("paymentExpiresAt", "expiresAt") <= clock_timestamp()
-        RETURNING id, "userId", "holdSessionId"
+        WITH candidate AS MATERIALIZED (
+          SELECT id, status, "userId", "holdSessionId" FROM orders
+          WHERE id = ${orderId}::uuid
+            AND status IN ('PENDING'::"OrderStatus", 'PENDING_PAYMENT'::"OrderStatus")
+            AND COALESCE("paymentExpiresAt", "expiresAt") <= clock_timestamp()
+          FOR UPDATE
+        ), changed AS (
+          UPDATE orders o SET status = 'EXPIRED'::"OrderStatus", "updatedAt" = clock_timestamp()
+          FROM candidate c WHERE o.id = c.id
+          RETURNING o.id
+        )
+        SELECT changed.id, candidate."userId", candidate."holdSessionId",
+          candidate.status AS "previousStatus"
+        FROM changed JOIN candidate USING (id)
       `);
 
       if (!updated || updated.length === 0) {
@@ -759,6 +1007,19 @@ export class OrdersService {
       }
 
       const order = updated[0];
+
+      await tx.orderLog.create({
+        data: {
+          orderId,
+          type: 'ORDER_STATUS_CHANGED',
+          detail: {
+            actorType: 'SYSTEM',
+            fromStatus: order.previousStatus,
+            toStatus: OrderStatus.EXPIRED,
+            reason: 'PAYMENT_WINDOW_EXPIRED',
+          },
+        },
+      });
 
       // Simulated failure hook for testing rollback behavior
       if (testHooks?.failOnRelease) {

@@ -66,4 +66,13 @@ export class OrdersController {
   ) {
     return this.service.getOrderStatus(id, req.user.id);
   }
+
+  @Get(':id/audit-log')
+  @Roles('ADMIN')
+  getOrderAuditLog(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.service.getOrderAuditLog(id, req.user.roles.includes('ADMIN'));
+  }
 }

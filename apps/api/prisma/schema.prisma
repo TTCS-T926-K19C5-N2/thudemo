@@ -21,6 +21,7 @@ model User {
   sessions            Session[]
   events              Event[]              @relation("OrganizerEvents")
   holdSessions        HoldSession[]
+  holdActions         HoldLog[]             @relation("HoldLogActor")
   orders              Order[]
   showtimeStaff       ShowtimeStaff[]
   checkInPermissions  CheckInPermission[]
@@ -138,6 +139,7 @@ model Showtime {
   seats             Seat[]
   categories        SeatCategory[]
   holdSessions      HoldSession[]
+  holdLogs          HoldLog[]
   orders            Order[]
   tickets           Ticket[]
   staffAssignments  ShowtimeStaff[]
@@ -203,6 +205,7 @@ model HoldSession {
   createdAt       DateTime   @default(now()) @db.Timestamptz(3)
   seats           SeatHold[]
   orders          Order[]
+  logs            HoldLog[]
 
   @@unique([showtimeId, userId, sessionHash])
   @@unique([id, showtimeId])
@@ -395,6 +398,24 @@ model TicketLog {
 
   @@index([ticketId])
   @@map("ticket_logs")
+}
+
+model HoldLog {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  showtimeId    String    @db.Uuid
+  showtime      Showtime  @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+  holdSessionId String?   @db.Uuid
+  holdSession   HoldSession? @relation(fields: [holdSessionId], references: [id], onDelete: SetNull)
+  actorId       String?   @db.Uuid
+  actor         User?     @relation("HoldLogActor", fields: [actorId], references: [id], onDelete: SetNull)
+  seatIds       String[]  @db.Uuid
+  action        String
+  fromExpiresAt DateTime? @db.Timestamptz(3)
+  toExpiresAt   DateTime? @db.Timestamptz(3)
+  createdAt     DateTime  @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+
+  @@index([showtimeId, createdAt])
+  @@map("hold_logs")
 }
 
 model CheckInGate {

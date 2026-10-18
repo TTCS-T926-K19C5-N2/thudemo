@@ -107,7 +107,8 @@ export class PaymentsService {
     const payment = await this.db.$transaction(async (tx) => {
       // Lock order to serialize concurrent attempt creations
       if (typeof (tx as any).$executeRaw === 'function') {
-        await (tx as any).$executeRaw`SELECT id FROM orders WHERE id = ${order.id}::uuid FOR UPDATE`;
+        await (tx as any)
+          .$executeRaw`SELECT id FROM orders WHERE id = ${order.id}::uuid FOR UPDATE`;
       }
 
       const previousPayment = await tx.payment.findFirst({
@@ -325,10 +326,34 @@ export class PaymentsService {
             ${order.holdSessionId ? Prisma.sql`AND "holdSessionId" = ${order.holdSessionId}::uuid` : Prisma.empty}
           `);
 
-          await tx.order.update({
+          const currentOrder = await tx.order.findUnique({
             where: { id: order.id },
-            data: { status: OrderStatus.NEEDS_REVIEW },
+            select: { status: true },
           });
+          const changed =
+            currentOrder && currentOrder.status !== OrderStatus.NEEDS_REVIEW
+              ? await tx.order.updateMany({
+                  where: {
+                    id: order.id,
+                    status: currentOrder.status,
+                  },
+                  data: { status: OrderStatus.NEEDS_REVIEW },
+                })
+              : { count: 0 };
+          if (changed.count === 1 && currentOrder) {
+            await tx.orderLog.create({
+              data: {
+                orderId: order.id,
+                type: 'ORDER_STATUS_CHANGED',
+                detail: {
+                  actorType: 'SYSTEM',
+                  fromStatus: currentOrder.status,
+                  toStatus: OrderStatus.NEEDS_REVIEW,
+                  reason: 'LATE_PAYMENT',
+                },
+              },
+            });
+          }
 
           const payment = await tx.payment.findFirst({
             where: { gatewayRef: event.gatewayRef },
@@ -436,10 +461,27 @@ export class PaymentsService {
     // 5. Amount mismatch check
     if (event.status === 'SUCCESS' && event.amount !== orderTotal) {
       await this.db.$transaction(async (tx) => {
-        await tx.order.update({
-          where: { id: order.id },
+        const changed = await tx.order.updateMany({
+          where: {
+            id: order.id,
+            status: order.status,
+          },
           data: { status: OrderStatus.NEEDS_REVIEW },
         });
+        if (changed.count === 1) {
+          await tx.orderLog.create({
+            data: {
+              orderId: order.id,
+              type: 'ORDER_STATUS_CHANGED',
+              detail: {
+                actorType: 'SYSTEM',
+                fromStatus: order.status,
+                toStatus: OrderStatus.NEEDS_REVIEW,
+                reason: 'PAYMENT_AMOUNT_MISMATCH',
+              },
+            },
+          });
+        }
 
         const payment = await tx.payment.findFirst({
           where: { gatewayRef: event.gatewayRef },
@@ -486,7 +528,8 @@ export class PaymentsService {
         return await this.db.$transaction(async (tx) => {
           // Advisory lock using gatewayRef to prevent race conditions
           if (typeof (tx as any).$executeRaw === 'function') {
-            await (tx as any).$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${event.gatewayRef}))`;
+            await (tx as any)
+              .$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${event.gatewayRef}))`;
           }
 
           // Check if order was already updated to PAID while waiting for lock
@@ -503,7 +546,9 @@ export class PaymentsService {
           const updateResult = await tx.order.updateMany({
             where: {
               id: order.id,
-              status: { in: [OrderStatus.PENDING, OrderStatus.PENDING_PAYMENT] },
+              status: {
+                in: [OrderStatus.PENDING, OrderStatus.PENDING_PAYMENT],
+              },
               ...(order.paymentExpiresAt
                 ? { paymentExpiresAt: { gt: serverNow } }
                 : order.expiresAt
@@ -536,10 +581,27 @@ export class PaymentsService {
             `);
 
             // Mark order as NEEDS_REVIEW
-            await tx.order.update({
-              where: { id: order.id },
-              data: { status: OrderStatus.NEEDS_REVIEW },
-            });
+            const lateTransition =
+              postCheck && postCheck.status !== OrderStatus.NEEDS_REVIEW
+                ? await tx.order.updateMany({
+                    where: { id: order.id, status: postCheck.status },
+                    data: { status: OrderStatus.NEEDS_REVIEW },
+                  })
+                : { count: 0 };
+            if (lateTransition.count === 1 && postCheck) {
+              await tx.orderLog.create({
+                data: {
+                  orderId: order.id,
+                  type: 'ORDER_STATUS_CHANGED',
+                  detail: {
+                    actorType: 'SYSTEM',
+                    fromStatus: postCheck.status,
+                    toStatus: OrderStatus.NEEDS_REVIEW,
+                    reason: 'LATE_PAYMENT',
+                  },
+                },
+              });
+            }
 
             // Mark payment as LATE
             const existingPayment = await tx.payment.findFirst({
@@ -579,6 +641,19 @@ export class PaymentsService {
 
             return { received: true, status: 'LATE' };
           }
+
+          await tx.orderLog.create({
+            data: {
+              orderId: order.id,
+              type: 'ORDER_STATUS_CHANGED',
+              detail: {
+                actorType: 'SYSTEM',
+                fromStatus: freshOrder.status,
+                toStatus: OrderStatus.PAID,
+                reason: 'PAYMENT_SUCCEEDED',
+              },
+            },
+          });
 
           // (b) Seats -> SOLD (isSold = true) & release holds (executed strictly ONCE)
           const seatIds = order.items.map((item) => item.seatId);

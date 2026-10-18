@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { OrderStatus, TicketStatus, type Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { generateTicketCode } from './ticket-code.js';
@@ -44,7 +48,7 @@ export class TicketsService {
     order: PaidOrderForIssue,
   ): Promise<void> {
     if (order.items.length === 0) return;
-    await tx.ticket.createMany({
+    const tickets = await tx.ticket.createManyAndReturn({
       data: order.items.map((item) => {
         const code = generateTicketCode();
         const { keyId, signature } = this.signing.sign({
@@ -67,10 +71,29 @@ export class TicketsService {
         };
       }),
       skipDuplicates: true,
+      select: { id: true, orderId: true, status: true, seatId: true },
     });
+    if (tickets.length > 0) {
+      await tx.ticketLog.createMany({
+        data: tickets.map((ticket) => ({
+          ticketId: ticket.id,
+          action: 'ISSUED',
+          detail: {
+            actorType: 'SYSTEM',
+            fromStatus: null,
+            toStatus: ticket.status,
+            orderId: ticket.orderId,
+            seatId: ticket.seatId,
+          },
+        })),
+      });
+    }
   }
 
-  async listForOrder(orderId: string, userId: string): Promise<OrderTicketItem[]> {
+  async listForOrder(
+    orderId: string,
+    userId: string,
+  ): Promise<OrderTicketItem[]> {
     const order = await this.db.order.findUnique({
       where: { id: orderId },
       select: { userId: true, status: true, showtimeId: true },
@@ -122,7 +145,9 @@ export class TicketsService {
       select: { email: true },
     });
     if (user?.email && user.email.toLowerCase() === normalizedEmail) {
-      throw new BadRequestException('Không thể chuyển nhượng vé cho chính mình.');
+      throw new BadRequestException(
+        'Không thể chuyển nhượng vé cho chính mình.',
+      );
     }
 
     const order = await this.db.order.findUnique({
@@ -142,7 +167,10 @@ export class TicketsService {
     if (ticket.status !== TicketStatus.VALID) {
       throw new BadRequestException('Chỉ có thể chuyển nhượng vé hợp lệ.');
     }
-    if (ticket.ownerEmail && ticket.ownerEmail.toLowerCase() === normalizedEmail) {
+    if (
+      ticket.ownerEmail &&
+      ticket.ownerEmail.toLowerCase() === normalizedEmail
+    ) {
       throw new BadRequestException('Vé đã thuộc về người nhận này.');
     }
 
@@ -162,7 +190,9 @@ export class TicketsService {
       });
 
       if (updated.count === 0) {
-        throw new BadRequestException('Vé đã bị huỷ hoặc chuyển nhượng trước đó.');
+        throw new BadRequestException(
+          'Vé đã bị huỷ hoặc chuyển nhượng trước đó.',
+        );
       }
 
       const code = generateTicketCode();
@@ -191,7 +221,11 @@ export class TicketsService {
           ticketId: ticket.id,
           action: 'TRANSFERRED',
           actorId: userId,
-          detail: { toEmail: normalizedEmail, newTicketId: newTicket.id },
+          detail: {
+            fromStatus: TicketStatus.VALID,
+            toStatus: TicketStatus.CANCELLED,
+            newTicketId: newTicket.id,
+          },
         },
       });
       await tx.ticketLog.create({
@@ -199,7 +233,11 @@ export class TicketsService {
           ticketId: newTicket.id,
           action: 'ISSUED_FROM_TRANSFER',
           actorId: userId,
-          detail: { fromTicketId: ticket.id, fromOwner: user?.email },
+          detail: {
+            fromTicketId: ticket.id,
+            fromStatus: null,
+            toStatus: TicketStatus.VALID,
+          },
         },
       });
     });

@@ -90,7 +90,9 @@ describe('PaymentsService Unit Tests', () => {
     };
 
     mockOrdersService = {
-      expireOrder: vi.fn().mockResolvedValue({ status: 'expired', releasedSeatsCount: 1 }),
+      expireOrder: vi
+        .fn()
+        .mockResolvedValue({ status: 'expired', releasedSeatsCount: 1 }),
     };
 
     mockTickets = {
@@ -116,9 +118,9 @@ describe('PaymentsService Unit Tests', () => {
         expiresAt: new Date(Date.now() + 600000),
       });
 
-      await expect(
-        service.initiatePayment(orderId, userId),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.initiatePayment(orderId, userId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('throws BadRequestException if order is expired', async () => {
@@ -130,9 +132,9 @@ describe('PaymentsService Unit Tests', () => {
         items: [],
       });
 
-      await expect(
-        service.initiatePayment(orderId, userId),
-      ).rejects.toThrow(BadRequestException);
+      await expect(service.initiatePayment(orderId, userId)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('calculates total strictly from DB seat prices and creates INITIATED payment', async () => {
@@ -227,9 +229,24 @@ describe('PaymentsService Unit Tests', () => {
       const res = await service.handleWebhook({}, {});
 
       expect(res.status).toBe('AMOUNT_MISMATCH');
-      expect(mockPrisma.order.update).toHaveBeenCalledWith({
-        where: { id: orderId },
+      expect(mockPrisma.order.updateMany).toHaveBeenCalledWith({
+        where: {
+          id: orderId,
+          status: OrderStatus.PENDING,
+        },
         data: { status: OrderStatus.NEEDS_REVIEW },
+      });
+      expect(mockPrisma.orderLog.create).toHaveBeenCalledWith({
+        data: {
+          orderId,
+          type: 'ORDER_STATUS_CHANGED',
+          detail: expect.objectContaining({
+            actorType: 'SYSTEM',
+            fromStatus: OrderStatus.PENDING,
+            toStatus: OrderStatus.NEEDS_REVIEW,
+            reason: 'PAYMENT_AMOUNT_MISMATCH',
+          }),
+        },
       });
       expect(mockPrisma.payment.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -305,6 +322,18 @@ describe('PaymentsService Unit Tests', () => {
         mockPrisma,
         expect.objectContaining({ id: orderId }),
       );
+      expect(mockPrisma.orderLog.create).toHaveBeenCalledWith({
+        data: {
+          orderId,
+          type: 'ORDER_STATUS_CHANGED',
+          detail: expect.objectContaining({
+            actorType: 'SYSTEM',
+            fromStatus: OrderStatus.PENDING,
+            toStatus: OrderStatus.PAID,
+            reason: 'PAYMENT_SUCCEEDED',
+          }),
+        },
+      });
     });
 
     it('handles 5 sequential duplicate webhooks idempotently (only 1 state change, returns 200 for all)', async () => {
@@ -375,10 +404,24 @@ describe('PaymentsService Unit Tests', () => {
       const res = await service.handleWebhook({}, {});
 
       expect(res.status).toBe('LATE');
-      expect(mockPrisma.order.update).toHaveBeenCalledWith({
-        where: { id: orderId },
+      expect(mockPrisma.order.updateMany).toHaveBeenCalledWith({
+        where: expect.objectContaining({
+          id: orderId,
+          status: OrderStatus.PENDING,
+        }),
         data: { status: OrderStatus.NEEDS_REVIEW },
       });
+      expect(mockPrisma.orderLog.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            orderId,
+            type: 'ORDER_STATUS_CHANGED',
+            detail: expect.objectContaining({
+              toStatus: OrderStatus.NEEDS_REVIEW,
+            }),
+          }),
+        }),
+      );
       expect(mockPrisma.seat.updateMany).not.toHaveBeenCalled();
       expect(mockPrisma.payment.update).toHaveBeenCalledWith({
         where: { id: 'pay_init' },
@@ -414,7 +457,9 @@ describe('PaymentsService Unit Tests', () => {
       });
 
       // Simulate concurrent transaction throwing P2002 Unique constraint failed
-      const p2002Error: any = new Error('Unique constraint failed on the fields: (`gatewayRef`)');
+      const p2002Error: any = new Error(
+        'Unique constraint failed on the fields: (`gatewayRef`)',
+      );
       p2002Error.code = 'P2002';
       mockPrisma.$transaction = vi.fn().mockRejectedValue(p2002Error);
 
@@ -442,9 +487,13 @@ describe('PaymentsService Unit Tests', () => {
       });
 
       // Simulate a failure in DB connection inside transaction
-      mockPrisma.$transaction = vi.fn().mockRejectedValue(new Error('DB connection failure'));
+      mockPrisma.$transaction = vi
+        .fn()
+        .mockRejectedValue(new Error('DB connection failure'));
 
-      await expect(service.handleWebhook({}, {})).rejects.toThrow('DB connection failure');
+      await expect(service.handleWebhook({}, {})).rejects.toThrow(
+        'DB connection failure',
+      );
     });
 
     it('marks payment FAILED and leaves order PENDING when webhook event is FAILED', async () => {
@@ -499,6 +548,14 @@ describe('PaymentsService Unit Tests', () => {
           expiresAt: new Date(Date.now() - 60000), // 1 min ago
           items: [{ seatId, seat: { category: { price: 100000 } } }],
         });
+        mockPrisma.order.findUnique
+          .mockResolvedValueOnce({
+            id: orderId,
+            status: OrderStatus.PENDING,
+            expiresAt: new Date(Date.now() - 60000),
+            items: [{ seatId, seat: { category: { price: 100000 } } }],
+          })
+          .mockResolvedValueOnce({ status: OrderStatus.EXPIRED });
 
         const res = await service.handleWebhook({}, {});
 
@@ -508,10 +565,19 @@ describe('PaymentsService Unit Tests', () => {
         // Deletes remaining seat holds via raw SQL
         expect(mockPrisma.$executeRaw).toHaveBeenCalled();
         // Marks order as NEEDS_REVIEW
-        expect(mockPrisma.order.update).toHaveBeenCalledWith(
+        expect(mockPrisma.order.updateMany).toHaveBeenCalledWith({
+          where: { id: orderId, status: OrderStatus.EXPIRED },
+          data: { status: OrderStatus.NEEDS_REVIEW },
+        });
+        expect(mockPrisma.orderLog.create).toHaveBeenCalledWith(
           expect.objectContaining({
-            where: { id: orderId },
-            data: { status: OrderStatus.NEEDS_REVIEW },
+            data: expect.objectContaining({
+              orderId,
+              type: 'ORDER_STATUS_CHANGED',
+              detail: expect.objectContaining({
+                toStatus: OrderStatus.NEEDS_REVIEW,
+              }),
+            }),
           }),
         );
         // Notifies accountant
@@ -533,12 +599,18 @@ describe('PaymentsService Unit Tests', () => {
           status: 'SUCCESS',
         });
 
-        mockPrisma.order.findUnique.mockResolvedValueOnce({
-          id: orderId,
-          status: OrderStatus.PENDING,
-          expiresAt: new Date(Date.now() + 1000), // looks valid initially
-          items: [{ seatId, seat: { category: { price: 100000 } } }],
-        });
+        mockPrisma.order.findUnique
+          .mockResolvedValueOnce({
+            id: orderId,
+            status: OrderStatus.PENDING,
+            expiresAt: new Date(Date.now() + 1000), // looks valid initially
+            items: [{ seatId, seat: { category: { price: 100000 } } }],
+          })
+          .mockResolvedValueOnce({
+            id: orderId,
+            status: OrderStatus.PENDING,
+          })
+          .mockResolvedValueOnce({ id: orderId, status: OrderStatus.EXPIRED });
 
         // In transaction: advisory lock succeeds ($executeRaw), but atomic updateMany returns 0 rows (job expired it right before)
         mockPrisma.$executeRaw
@@ -555,10 +627,20 @@ describe('PaymentsService Unit Tests', () => {
         const res = await service.handleWebhook({}, {});
 
         expect(res.status).toBe('LATE');
-        expect(mockPrisma.order.update).toHaveBeenCalledWith(
+        expect(mockPrisma.order.updateMany).toHaveBeenCalledWith({
+          where: { id: orderId, status: OrderStatus.EXPIRED },
+          data: { status: OrderStatus.NEEDS_REVIEW },
+        });
+        expect(mockPrisma.orderLog.create).toHaveBeenCalledWith(
           expect.objectContaining({
-            where: { id: orderId },
-            data: { status: OrderStatus.NEEDS_REVIEW },
+            data: expect.objectContaining({
+              orderId,
+              type: 'ORDER_STATUS_CHANGED',
+              detail: expect.objectContaining({
+                fromStatus: OrderStatus.EXPIRED,
+                toStatus: OrderStatus.NEEDS_REVIEW,
+              }),
+            }),
           }),
         );
       });
@@ -708,9 +790,9 @@ describe('PaymentsService Unit Tests', () => {
           items: [{ seatId, seat: { category: { price: 100000 } } }],
         });
 
-        await expect(
-          service.initiatePayment(orderId, userId),
-        ).rejects.toThrow(BadRequestException);
+        await expect(service.initiatePayment(orderId, userId)).rejects.toThrow(
+          BadRequestException,
+        );
 
         expect(mockGateway.createPayment).not.toHaveBeenCalled();
         expect(mockPrisma.payment.create).not.toHaveBeenCalled();
@@ -744,7 +826,11 @@ describe('PaymentsService Unit Tests', () => {
           expiresAt: new Date(Date.now() + 600000),
           items: [{ seatId, seat: { category: { price: 100000 } } }],
         });
-        mockPrisma.payment.findFirst.mockResolvedValueOnce({ id: 'p1', attemptNo: 1, status: 'FAILED' });
+        mockPrisma.payment.findFirst.mockResolvedValueOnce({
+          id: 'p1',
+          attemptNo: 1,
+          status: 'FAILED',
+        });
         await service.initiatePayment(orderId, userId);
 
         // Attempt 3
@@ -755,13 +841,19 @@ describe('PaymentsService Unit Tests', () => {
           expiresAt: new Date(Date.now() + 600000),
           items: [{ seatId, seat: { category: { price: 100000 } } }],
         });
-        mockPrisma.payment.findFirst.mockResolvedValueOnce({ id: 'p2', attemptNo: 2, status: 'FAILED' });
+        mockPrisma.payment.findFirst.mockResolvedValueOnce({
+          id: 'p2',
+          attemptNo: 2,
+          status: 'FAILED',
+        });
         await service.initiatePayment(orderId, userId);
 
         const logCalls = mockPrisma.orderLog.create.mock.calls;
         expect(logCalls.length).toBeGreaterThanOrEqual(3);
 
-        const attemptCalls = logCalls.filter((c: any) => c[0]?.data?.type === 'PAYMENT_ATTEMPT');
+        const attemptCalls = logCalls.filter(
+          (c: any) => c[0]?.data?.type === 'PAYMENT_ATTEMPT',
+        );
         expect(attemptCalls).toHaveLength(3);
         expect(attemptCalls[0][0].data.attemptNo).toBe(1);
         expect(attemptCalls[1][0].data.attemptNo).toBe(2);
@@ -892,4 +984,3 @@ describe('PaymentsService Unit Tests', () => {
     });
   });
 });
-

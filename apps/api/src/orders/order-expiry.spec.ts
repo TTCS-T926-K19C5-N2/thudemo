@@ -20,6 +20,7 @@ describe('S-23 Order Expiry & Seat Release', () => {
         findUnique: vi.fn(),
         update: vi.fn(),
       },
+      orderLog: { create: vi.fn().mockResolvedValue({ id: 'log-id' }) },
       seatHold: {
         deleteMany: vi.fn(),
       },
@@ -35,6 +36,7 @@ describe('S-23 Order Expiry & Seat Release', () => {
           id: mockOrderId,
           userId: mockUserId,
           holdSessionId: mockHoldSessionId,
+          previousStatus: 'PENDING',
         },
       ]);
       // 2. DELETE FROM seat_holds returns count of deleted holds
@@ -49,6 +51,18 @@ describe('S-23 Order Expiry & Seat Release', () => {
       });
       expect(mockPrisma.$queryRaw).toHaveBeenCalledTimes(1);
       expect(mockPrisma.$executeRaw).toHaveBeenCalledTimes(1);
+      expect(mockPrisma.orderLog.create).toHaveBeenCalledWith({
+        data: {
+          orderId: mockOrderId,
+          type: 'ORDER_STATUS_CHANGED',
+          detail: {
+            actorType: 'SYSTEM',
+            fromStatus: 'PENDING',
+            toStatus: 'EXPIRED',
+            reason: 'PAYMENT_WINDOW_EXPIRED',
+          },
+        },
+      });
     });
 
     it('AC 1: rollbacks order status to PENDING if seat release step fails', async () => {
@@ -57,6 +71,7 @@ describe('S-23 Order Expiry & Seat Release', () => {
           id: mockOrderId,
           userId: mockUserId,
           holdSessionId: mockHoldSessionId,
+          previousStatus: 'PENDING',
         },
       ]);
 
@@ -66,6 +81,7 @@ describe('S-23 Order Expiry & Seat Release', () => {
 
       // Verify transaction callback was called and threw, triggering rollback in DB
       expect(mockPrisma.$queryRaw).toHaveBeenCalledTimes(1);
+      expect(mockPrisma.orderLog.create).toHaveBeenCalledTimes(1);
     });
 
     it('AC 2: skips order if not yet expired (atomic update returns empty array)', async () => {
@@ -81,6 +97,7 @@ describe('S-23 Order Expiry & Seat Release', () => {
       });
       // seat holds are untouched
       expect(mockPrisma.$executeRaw).not.toHaveBeenCalled();
+      expect(mockPrisma.orderLog.create).not.toHaveBeenCalled();
     });
 
     it('AC 3: skips order if already PAID, seats remain sold and holds untouched', async () => {
@@ -91,6 +108,7 @@ describe('S-23 Order Expiry & Seat Release', () => {
 
       expect(result.status).toBe('skipped');
       expect(mockPrisma.$executeRaw).not.toHaveBeenCalled();
+      expect(mockPrisma.orderLog.create).not.toHaveBeenCalled();
     });
 
     it('AC 4: running 3 consecutive times yields idempotent result without error', async () => {
@@ -100,6 +118,7 @@ describe('S-23 Order Expiry & Seat Release', () => {
           id: mockOrderId,
           userId: mockUserId,
           holdSessionId: mockHoldSessionId,
+          previousStatus: 'PENDING',
         },
       ]);
       mockPrisma.$executeRaw.mockResolvedValueOnce(2);
@@ -118,6 +137,7 @@ describe('S-23 Order Expiry & Seat Release', () => {
       expect(run3.status).toBe('skipped');
 
       expect(run2).toEqual(run3);
+      expect(mockPrisma.orderLog.create).toHaveBeenCalledTimes(1);
     });
 
     it('AC 5: skips order in NEEDS_REVIEW status (e.g. amount mismatch)', async () => {
@@ -128,6 +148,7 @@ describe('S-23 Order Expiry & Seat Release', () => {
 
       expect(result.status).toBe('skipped');
       expect(mockPrisma.$executeRaw).not.toHaveBeenCalled();
+      expect(mockPrisma.orderLog.create).not.toHaveBeenCalled();
     });
 
     it('AC 6: does not release holds when seats have already been acquired by another user (different holdSessionId)', async () => {
