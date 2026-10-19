@@ -280,11 +280,11 @@ try {
   await status(ordinary)
     .filter({
       hasText:
-        "Mất kết nối máy chủ. Lượt quét đã được lưu ngoại tuyến để đồng bộ sau.",
+        "Chưa nhận xác nhận từ máy chủ. Chưa cho vào; yêu cầu được giữ để kiểm tra lại khi có mạng.",
     })
     .waitFor();
   check(
-    (await status(ordinary).getAttribute("data-state")) === "RECORDED",
+    (await status(ordinary).getAttribute("data-state")) === "ERROR",
     "Network failure saves the signed scan locally without claiming server confirmation",
   );
   await ordinary.getByTestId("offline-status-banner").waitFor();
@@ -326,11 +326,11 @@ try {
   await status(ordinary)
     .filter({
       hasText:
-        "Mất kết nối máy chủ. Lượt quét đã được lưu ngoại tuyến để đồng bộ sau.",
+        "Chưa nhận xác nhận từ máy chủ. Chưa cho vào; yêu cầu được giữ để kiểm tra lại khi có mạng.",
     })
     .waitFor();
   check(
-    (await status(ordinary).getAttribute("data-state")) === "RECORDED",
+    (await status(ordinary).getAttribute("data-state")) === "ERROR",
     "Lost scan response keeps the committed request queued without premature confirmation",
   );
   await ordinary.getByTestId("offline-status-banner").waitFor();
