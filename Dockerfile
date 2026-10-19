@@ -66,10 +66,8 @@ ENV HOSTNAME=0.0.0.0
 ENV PORT=10000
 WORKDIR /app
 RUN apt-get update && apt-get install --yes --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
-COPY --chown=node:node --from=api-build /out/api /app
-COPY --chown=node:node deploy/demo/demo.mjs /app/demo.mjs/api
-COPY --chown=node:node --from=web-build /out/web /app
-COPY --chown=node:node deploy/demo/demo.mjs /app/demo.mjs/web
+COPY --chown=node:node --from=api-build /out/api /app/api
+COPY --chown=node:node --from=web-build /out/web /app/web
 COPY --chown=node:node deploy/render-start.mjs /app/render-start.mjs
 ENV WEB_HOST=0.0.0.0
 EXPOSE 10000
