@@ -17,7 +17,7 @@ if(mode==='init'){
   const pair=generateKeyPairSync('ed25519'),c={version:1,password,authProxySecret:randomBytes(48).toString('base64url'),paymentWebhookSecret:randomBytes(48).toString('base64url'),keyId:'demo-k1',privatePem:pair.privateKey.export({type:'pkcs8',format:'pem'}).toString(),createdAt:new Date().toISOString()};
   writeFileSync(file,JSON.stringify(c),{flag:'wx',mode:0o600});
  }
- assert.equal(config().password,password,'Existing demo password differs: retain original .env; no automatic password reset');
+ if(config().password!==password)throw Error('Existing demo password differs: retain original .env; no automatic password reset');
  chownSync(file,1000,1000);chmodSync(file,0o600);chownSync(state,1000,1000);chmodSync(state,0o700);
  console.log('Demo key/config volume ready; existing keys preserved.');
 }else if(mode==='prepare'){
