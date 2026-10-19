@@ -1,0 +1,37 @@
+{
+  "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "runId": "2041d00c-cd46-46c1-8a6e-1bd3cf463b68",
+  "startedAt": "2026-10-16T08:07:29.314Z",
+  "origin": "https://10.88.164.155:3470",
+  "environment": {
+    "node": "v24.21.0",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13500H",
+    "logicalCPUs": 16,
+    "memoryBytes": 16794726400,
+    "apiInstances": 2,
+    "gatewaySourceSha256": "c3748f0b8471c263d2da6f5163bdc688c09c55794a48dc8cdf16cd1300e9ab82",
+    "protocol": "HTTP/1.1;200concurrent connections",
+    "generator": "same laptop as staging services; one client process",
+    "tls": "exact certificate CA and hostname verified"
+  },
+  "scenario": "200 authenticated buyers / 100 contested seats per round; 10 disjoint rounds, 2000 real HTTPS endpoint calls",
+  "auth": "Synthetic users have Argon2id hashes; DB-issued fixture sessions have SHA256 tokens and 900s expiry. Login latency excluded.",
+  "thresholdMs": 300,
+  "rounds": [],
+  "limitations": [
+    "API instance count is recorded above; co-located load generator, not an independent-device performance environment.",
+    "No expiry worker/restart/durability claim from this measurement.",
+    "Does not replace PostgreSQL-versus-Redis datastore comparison or full Sprint 2 acceptance.",
+    "Additive fake fixtures remain; no reset, history deletion or modification of existing users/holds."
+  ],
+  "fixture": {
+    "eventId": "a02a758b-f61f-4629-ae81-0c2353224e56",
+    "showtimeId": "3bd87b74-3424-4ba2-9cfd-034e07f787bb",
+    "users": 200,
+    "seats": 1000,
+    "eventStatus": "DRAFT (kept out of buyer catalog)"
+  },
+  "result": "PREPARED / NOT RUN",
+  "remoteDirectory": "D:\\Development\\03_Academic\\Bán vé sự kiện có sơ đồ ghế\\thudemo-sprint1-gitflow-20261015\\.sprint1-staging\\load-runs\\2041d00c-cd46-46c1-8a6e-1bd3cf463b68",
+  "clientSha256": "93aeec270b92345c7fbff489718ff045be4415d25874fcd5de1ac3cf6a0ed8d3"
+}

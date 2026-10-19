@@ -1,0 +1,89 @@
+{
+  "source": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
+  "pr": {
+    "baseRefOid": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
+    "headRefOid": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
+    "mergeStateStatus": "BLOCKED",
+    "reviewDecision": "REVIEW_REQUIRED",
+    "reviews": [],
+    "state": "OPEN",
+    "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/91"
+  },
+  "checks": [
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887692604/job/116929906783",
+      "name": "T-31 / hold-concurrency",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887692604/job/116929906820",
+      "name": "K-01 / candidate-research",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887699819/job/116929875942",
+      "name": "K-01 / candidate-research",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887699819/job/116929875873",
+      "name": "T-31 / hold-concurrency",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887699270/job/116929868727",
+      "name": "S-43 / monitoring-integration",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887699819/job/116929369897",
+      "name": "T-02 / lint",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887699283/job/116929367659",
+      "name": "S-31 / signed QR admission HTTP and browser",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887699819/job/116929369444",
+      "name": "T-02 / test",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887699819/job/116929369797",
+      "name": "T-02 / build-and-typecheck",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887699228/job/116929367218",
+      "name": "S-30 / signed QR HTTP and browser",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887692604/job/116929346848",
+      "name": "T-02 / lint",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887692604/job/116929346489",
+      "name": "T-02 / test",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887692604/job/116929346722",
+      "name": "T-02 / build-and-typecheck",
+      "state": "SUCCESS"
+    }
+  ],
+  "workflow": {
+    "id": 38887699819,
+    "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38887699819",
+    "head_sha": "c7bb13cf8ea2e53b083e0c4b2658fc01b2d7a1b1",
+    "run_started_at": "2026-10-16T10:30:38Z",
+    "updated_at": "2026-10-16T10:34:07Z",
+    "conclusion": "success"
+  },
+  "wallSeconds": 209.0,
+  "interpretation": "Exact snapshot all checks success,5 required unique contexts. Subsequent documentation-only commit still requires its own live CI before merge; no acceptance of S30/S31/T31 inferred."
+}

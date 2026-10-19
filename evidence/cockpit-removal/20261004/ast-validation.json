@@ -1,0 +1,55 @@
+{
+  "results": [
+    {
+      "file": "apps/web/src/components/event-editor.tsx",
+      "syntax": "PASS",
+      "hexClassCount": 0,
+      "interfaces": [
+        "EventEditorProps"
+      ],
+      "nextRoute": false
+    },
+    {
+      "file": "apps/web/src/components/layout/product-layout.tsx",
+      "syntax": "PASS",
+      "hexClassCount": 0,
+      "interfaces": [
+        "MobileShowHeaderProps",
+        "PublicLayoutProps",
+        "OrganizerLayoutProps"
+      ],
+      "nextRoute": false
+    },
+    {
+      "file": "apps/web/src/components/layout/session-actions.tsx",
+      "syntax": "PASS",
+      "hexClassCount": 0,
+      "interfaces": [
+        "SessionActionsProps"
+      ],
+      "nextRoute": false
+    },
+    {
+      "file": "apps/web/src/app/events/page.tsx",
+      "syntax": "PASS",
+      "hexClassCount": 0,
+      "interfaces": [],
+      "nextRoute": true
+    },
+    {
+      "file": "apps/web/src/app/account/page.tsx",
+      "syntax": "PASS",
+      "hexClassCount": 0,
+      "interfaces": [],
+      "nextRoute": true
+    },
+    {
+      "file": "apps/web/src/app/layout.tsx",
+      "syntax": "PASS",
+      "hexClassCount": 0,
+      "interfaces": [],
+      "nextRoute": true
+    }
+  ],
+  "adapter": "TypeScript compiler AST; upstream SWC unavailable. Next route files keep framework props; no Vite/router/mockData replacement."
+}

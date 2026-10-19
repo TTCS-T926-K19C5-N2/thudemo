@@ -1,0 +1,19 @@
+{
+  "time": "2026-10-16T08:23:49.024Z",
+  "from": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "to": "accf832be519d9790845c3590acd3f481c5594ac",
+  "restored": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "result": "PASS",
+  "health": [
+    200,
+    200
+  ],
+  "dataCountsBeforeAndAfter": "6206|41|0|0|29",
+  "keyHashes": {
+    "scanner-signing.pem": "48c493a7cf50177f1444e182f1574338bf533a48fb6b7bb737e7df9ff5ff9b6c",
+    "ticket-signing.der.b64": "d20550afe90abfabcb3659df95db7c8fb01a47314c88a9599933d92a43b9898a",
+    "tls/server-key.pem": "ddd3f2773ba193d588f73783c38a4f174a102e0c8623273250e6b2b37b3673f4",
+    "tls/server-cert.pem": "e368cd347dccf26e355aecb4a7e1cdce2849efac076244fe6050815fd45f2b1c"
+  },
+  "noMigrationDownOrRestore": true
+}

@@ -1,0 +1,510 @@
+{
+  "reviewed": 62,
+  "counts": {
+    "demo_support": 1,
+    "future_sprint_acceptance": 3,
+    "repair_regression": 2,
+    "sprint1_acceptance": 55,
+    "scope_control": 1
+  },
+  "sourceEvidence": "scope-sources.json",
+  "entries": [
+    {
+      "id": "SCOPE",
+      "classification": "scope_control",
+      "sprint1RequirementSource": "../docs/decision-log.md DEC09/DEC13",
+      "source": "../docs/decision-log.md DEC09/DEC13",
+      "formerSourceText": "../docs/decision-log.md DEC09/DEC13",
+      "reason": "Scope metadata, not a standalone acceptance requirement"
+    },
+    {
+      "id": "T01-01",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-01.md AC1–5; TECH01",
+      "source": "../tasks/T-01.md AC1–5; TECH01",
+      "formerSourceText": "../tasks/T-01.md AC1–5; TECH01",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T01-02",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-01.md AC1–5; TECH01",
+      "source": "../tasks/T-01.md AC1–5; TECH01",
+      "formerSourceText": "../tasks/T-01.md AC1–5; TECH01",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T01-03",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-01.md AC1–5; TECH01",
+      "source": "../tasks/T-01.md AC1–5; TECH01",
+      "formerSourceText": "../tasks/T-01.md AC1–5; TECH01",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T01-04",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-01.md AC1–5; TECH01",
+      "source": "../tasks/T-01.md AC1–5; TECH01",
+      "formerSourceText": "../tasks/T-01.md AC1–5; TECH01",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T01-05",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-01.md AC1–5; TECH01",
+      "source": "../tasks/T-01.md AC1–5; TECH01",
+      "formerSourceText": "../tasks/T-01.md AC1–5; TECH01",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T01-06",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-01.md AC1–5; TECH01",
+      "source": "../tasks/T-01.md AC1–5; TECH01",
+      "formerSourceText": "../tasks/T-01.md AC1–5; TECH01",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T02-01",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-02.md",
+      "source": "../tasks/T-02.md",
+      "formerSourceText": "../tasks/T-02.md",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T02-02",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-02.md AC",
+      "source": "../tasks/T-02.md AC",
+      "formerSourceText": "../tasks/T-02.md AC",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T02-03",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-02.md NFR",
+      "source": "../tasks/T-02.md NFR",
+      "formerSourceText": "../tasks/T-02.md NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T02-04",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "S01 backlogrow2/T03",
+      "source": "S01 backlogrow2/T03",
+      "formerSourceText": "S01 backlogrow2/T03",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T03-01",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-03.md Nội dung",
+      "source": "../tasks/T-03.md Nội dung",
+      "formerSourceText": "../tasks/T-03.md Nội dung",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T03-02",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "T03 + backlog S01",
+      "source": "T03 + backlog S01",
+      "formerSourceText": "T03 + backlog S01",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T03-03",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "T03 AC + DEC13",
+      "source": "T03 AC + DEC13",
+      "formerSourceText": "T03 AC + DEC13",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T03-04",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "T03 AC/NFR",
+      "source": "T03 AC/NFR",
+      "formerSourceText": "T03 AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T03-05",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "T03 + architecture",
+      "source": "T03 + architecture",
+      "formerSourceText": "T03 + architecture",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T03-06",
+      "classification": "demo_support",
+      "sprint1RequirementSource": null,
+      "source": "User authorized isolated demo/recovery after disk incident; operational prerequisite, not a new T03 AC",
+      "formerSourceText": "direct prerequisite after disk incident",
+      "reason": "Requested safe operations support, not independent Story AC"
+    },
+    {
+      "id": "T04-01",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-04.md AC/NFR",
+      "source": "../tasks/T-04.md AC/NFR",
+      "formerSourceText": "../tasks/T-04.md AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T04-02",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-04.md AC/NFR",
+      "source": "../tasks/T-04.md AC/NFR",
+      "formerSourceText": "../tasks/T-04.md AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T04-03",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-04.md AC/NFR",
+      "source": "../tasks/T-04.md AC/NFR",
+      "formerSourceText": "../tasks/T-04.md AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T04-04",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "T04 Nội dung/AC (five roles/two accounts); extra fixtures from user demo request, not new Story AC",
+      "source": "T04 Nội dung/AC (five roles/two accounts); extra fixtures from user demo request, not new Story AC",
+      "formerSourceText": "../tasks/T-04.md AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T04-05",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-04.md AC/NFR",
+      "source": "../tasks/T-04.md AC/NFR",
+      "formerSourceText": "../tasks/T-04.md AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T05-01",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "source": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "formerSourceText": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T05-02",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "source": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "formerSourceText": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T05-03",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "source": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "formerSourceText": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T05-04",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "source": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "formerSourceText": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T05-05",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "source": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "formerSourceText": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T05-06",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "source": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "formerSourceText": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T05-07",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "source": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "formerSourceText": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T05-08",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "source": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "formerSourceText": "../tasks/T-05.md + S02 backlogrow5 + risk-and-security",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T06-01",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-06.md AC/NFR; S02AC",
+      "source": "../tasks/T-06.md AC/NFR; S02AC",
+      "formerSourceText": "../tasks/T-06.md AC/NFR; S02AC",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T06-02",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-06.md AC/NFR; S02AC",
+      "source": "../tasks/T-06.md AC/NFR; S02AC",
+      "formerSourceText": "../tasks/T-06.md AC/NFR; S02AC",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T06-03",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-06.md AC/NFR; S02AC",
+      "source": "../tasks/T-06.md AC/NFR; S02AC",
+      "formerSourceText": "../tasks/T-06.md AC/NFR; S02AC",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T06-04",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-06.md AC/NFR; S02AC",
+      "source": "../tasks/T-06.md AC/NFR; S02AC",
+      "formerSourceText": "../tasks/T-06.md AC/NFR; S02AC",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T06-05",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-06.md AC/NFR; S02AC",
+      "source": "../tasks/T-06.md AC/NFR; S02AC",
+      "formerSourceText": "../tasks/T-06.md AC/NFR; S02AC",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T09-01",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-09.md AC",
+      "source": "../tasks/T-09.md AC",
+      "formerSourceText": "../tasks/T-09.md AC",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T09-02",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-09.md AC",
+      "source": "../tasks/T-09.md AC",
+      "formerSourceText": "../tasks/T-09.md AC",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T09-03",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-09.md NFR + S04NFR",
+      "source": "../tasks/T-09.md NFR + S04NFR",
+      "formerSourceText": "../tasks/T-09.md NFR + S04NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T10-01",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "source": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "formerSourceText": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T10-02",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "source": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "formerSourceText": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T10-03",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "source": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "formerSourceText": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T10-04",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "source": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "formerSourceText": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T10-05",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "source": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "formerSourceText": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T10-06",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "source": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "formerSourceText": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T10-07",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "source": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "formerSourceText": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T10-08",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "source": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "formerSourceText": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T10-09",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "source": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "formerSourceText": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "T10-10",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "source": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "formerSourceText": "../tasks/T-10.md + S04 backlogrow8 AC/NFR",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "K01-A",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "Backlog K01 row14 (scope DEC09): 200 concurrent/same ONE seat, both stores, figures/conditions; architecture§16 Sprint1",
+      "source": "Backlog K01 row14 (scope DEC09): 200 concurrent/same ONE seat, both stores, figures/conditions; architecture§16 Sprint1",
+      "formerSourceText": "Backlogrow14; K01spike",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "K01-B",
+      "classification": "future_sprint_acceptance",
+      "sprint1RequirementSource": null,
+      "source": "Backlog S10 row15 p95; Tasks T31 row32 Sprint2; product§7/architecture§14; DEC12 preserves these, does not move Sprint",
+      "formerSourceText": "DEC12; architecture; approvedNFR",
+      "reason": "T31 and S10 remain Sprint2/future by original backlog/task; preserved NFR is not a Sprint change"
+    },
+    {
+      "id": "K01-C",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "Backlog K01 row14 decision/chosen mechanism/reason; DEC11 PO confirms after evidence; DEC12 local-only; DoD row2",
+      "source": "Backlog K01 row14 decision/chosen mechanism/reason; DEC11 PO confirms after evidence; DEC12 local-only; DoD row2",
+      "formerSourceText": "Backlogrow14; DEC12",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "DOD-02",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "DoD-DoR row2",
+      "source": "DoD-DoR row2",
+      "formerSourceText": "DoD-DoR row2",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "DOD-03",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "DoD-DoR row3",
+      "source": "DoD-DoR row3",
+      "formerSourceText": "DoD-DoR row3",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "DOD-04",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "DoD-DoR row4",
+      "source": "DoD-DoR row4",
+      "formerSourceText": "DoD-DoR row4",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "DOD-05",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "DoD-DoR row5",
+      "source": "DoD-DoR row5",
+      "formerSourceText": "DoD-DoR row5",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "DOD-06",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "DoD-DoR row6",
+      "source": "DoD-DoR row6",
+      "formerSourceText": "DoD-DoR row6",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "DOD-07",
+      "classification": "repair_regression",
+      "sprint1RequirementSource": null,
+      "source": "DoD-DoR row7",
+      "formerSourceText": "DoD-DoR row7",
+      "reason": "Original DoD is conditional on touched repair code"
+    },
+    {
+      "id": "DOD-08",
+      "classification": "repair_regression",
+      "sprint1RequirementSource": null,
+      "source": "DoD-DoR row8",
+      "formerSourceText": "DoD-DoR row8",
+      "reason": "Original DoD is conditional on touched repair code"
+    },
+    {
+      "id": "DOD-09",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "DoD-DoR row9",
+      "source": "DoD-DoR row9",
+      "formerSourceText": "DoD-DoR row9",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "DOD-10",
+      "classification": "sprint1_acceptance",
+      "sprint1RequirementSource": "DoD-DoR row10",
+      "source": "DoD-DoR row10",
+      "formerSourceText": "DoD-DoR row10",
+      "reason": "Original Sprint1 task/Story, applicable general DoD or direct test of that requirement"
+    },
+    {
+      "id": "K01-B-H2",
+      "classification": "future_sprint_acceptance",
+      "sprint1RequirementSource": null,
+      "source": "Backlog S10 row15 p95; Tasks T31 row32 Sprint2; product§7/architecture§14; DEC12 preserves these, does not move Sprint",
+      "formerSourceText": "DEC12; architecture; approvedNFR",
+      "reason": "T31 and S10 remain Sprint2/future by original backlog/task; preserved NFR is not a Sprint change"
+    },
+    {
+      "id": "K01-B-H1",
+      "classification": "future_sprint_acceptance",
+      "sprint1RequirementSource": null,
+      "source": "Backlog S10 row15 p95; Tasks T31 row32 Sprint2; product§7/architecture§14; DEC12 preserves these, does not move Sprint",
+      "formerSourceText": "DEC12; architecture; approvedNFR",
+      "reason": "T31 and S10 remain Sprint2/future by original backlog/task; preserved NFR is not a Sprint change"
+    }
+  ],
+  "additionalRecoveredOriginalRequirement": "K01-D timebox/mentor NOT RUN, not part of legacy62"
+}

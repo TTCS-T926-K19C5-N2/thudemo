@@ -1,0 +1,17 @@
+{
+  "redisWriteReadDelete": "PASS: SET unique verification key EX60 -> GET ok -> DEL1",
+  "remoteCI": false,
+  "database": "local isolated 127.0.0.1:15432",
+  "frontendMode": "Next standalone production",
+  "staging": false,
+  "compose": "5.1.4",
+  "pnpm": "10.15.1",
+  "logicalCPU": 16,
+  "memoryBytes": 16794726400,
+  "date": "2026-10-04T14:18:52.3282458+07:00",
+  "cpu": "13th Gen Intel(R) Core(TM) i5-13500H",
+  "docker": "29.5.3",
+  "backendMode": "Nest compiled for browser; Vitest Nest test harness for integration/performance",
+  "redis": "local isolated 127.0.0.1:16379",
+  "node": "24.21.0"
+}

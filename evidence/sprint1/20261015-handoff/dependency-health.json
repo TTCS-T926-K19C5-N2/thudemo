@@ -1,0 +1,28 @@
+{
+  "time": "2026-10-15T16:37:48.851Z",
+  "source": "b52ba6afa07d29444e5e809892e5325f0966625c",
+  "transport": "Real HTTPS with exact certificate verification",
+  "results": [
+    {
+      "dependency": "sprint1-stage-redis-20261015",
+      "unavailableStatus": 503,
+      "status": "PASS"
+    },
+    {
+      "dependency": "sprint1-stage-redis-20261015",
+      "restored200": true,
+      "status": "PASS"
+    },
+    {
+      "dependency": "sprint1-stage-pg-20261015",
+      "unavailableStatus": 503,
+      "status": "PASS"
+    },
+    {
+      "dependency": "sprint1-stage-pg-20261015",
+      "restored200": true,
+      "status": "PASS"
+    }
+  ],
+  "scope": "Controlled outage of owned fake-data staging dependencies only, no deletion/volume removal"
+}

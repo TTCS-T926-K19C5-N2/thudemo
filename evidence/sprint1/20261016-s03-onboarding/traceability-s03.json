@@ -1,0 +1,570 @@
+{
+  "time": "2026-10-16T16:15:51.728428+00:00",
+  "scope": "DEC15 S01-S04/K01, DEC16optional allowlist, DEC17accepted process deviation; local results never imply integrated acceptance.",
+  "items": [
+    {
+      "id": "T07-01",
+      "task": "T07",
+      "source": "../tasks/T-07.md AC and sections4–7",
+      "expected": "Required name/email/password and field validation at browser/server",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/web/src/components/registration-form.tsx"
+      ],
+      "test": "apps/api/test/registration.e2e-spec.ts / apps/api/src/users/registration.service.spec.ts / publishes approved notice/refuses invalid; unit invalid fields",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T07-02",
+      "task": "T07",
+      "source": "../tasks/T-07.md AC and sections4–7",
+      "expected": "Normalize email and create exactly one pending BUYER for concurrent duplicate registration",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/web/src/components/registration-form.tsx"
+      ],
+      "test": "apps/api/test/registration.e2e-spec.ts / apps/api/src/users/registration.service.spec.ts / normalizes and serializes concurrent duplicates",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T07-03",
+      "task": "T07",
+      "source": "../tasks/T-07.md AC and sections4–7",
+      "expected": "Generic response for existing email, no overwrite or account enumeration",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/web/src/components/registration-form.tsx"
+      ],
+      "test": "apps/api/test/registration.e2e-spec.ts / apps/api/src/users/registration.service.spec.ts / duplicate responses equal/one token/existing credentials unchanged",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T07-04",
+      "task": "T07",
+      "source": "../tasks/T-07.md AC and sections4–7",
+      "expected": "Argon2id hash and no plaintext password",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/web/src/components/registration-form.tsx"
+      ],
+      "test": "apps/api/test/registration.e2e-spec.ts / apps/api/src/users/registration.service.spec.ts / atomic pending BUYER test verifies Argon2id",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T07-05",
+      "task": "T07",
+      "source": "../tasks/T-07.md AC and sections4–7",
+      "expected": "Full exact approved privacy notice, withdrawal channel, no marketing",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/web/src/components/registration-form.tsx"
+      ],
+      "test": "apps/api/test/registration.e2e-spec.ts / apps/api/src/users/registration.service.spec.ts / notice endpoint equality + desktop/mobile notice",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T07-06",
+      "task": "T07",
+      "source": "../tasks/T-07.md AC and sections4–7",
+      "expected": "Unchecked active consent required; absent/stale version creates no account",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/web/src/components/registration-form.tsx"
+      ],
+      "test": "apps/api/test/registration.e2e-spec.ts / apps/api/src/users/registration.service.spec.ts / unit + e2e missing consent + browser unchecked/no write",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T07-07",
+      "task": "T07",
+      "source": "../tasks/T-07.md AC and sections4–7",
+      "expected": "Consent user/purpose/version/status/timezone saved atomically with account",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/web/src/components/registration-form.tsx"
+      ],
+      "test": "apps/api/test/registration.e2e-spec.ts / apps/api/src/users/registration.service.spec.ts / atomic pending BUYER consent assertion",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T07-08",
+      "task": "T07",
+      "source": "../tasks/T-07.md AC and sections4–7",
+      "expected": "Wrong/unavailable notice version fails closed, consent persistence failure cannot return success",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/web/src/components/registration-form.tsx"
+      ],
+      "test": "apps/api/test/registration.e2e-spec.ts / apps/api/src/users/registration.service.spec.ts / wrong version API proven; fetch/persistence fault injection outstanding",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json",
+        "consent-storage-fault.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T08-01",
+      "task": "T08",
+      "source": "../tasks/T-08.md AC/NFR; S03 source backlog; goal§6; DEC15",
+      "expected": "Cryptographic random token, hash at rest, 24-hour expiry, persistent encrypted outbox",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/api/src/users/activation-delivery.service.ts",
+        "apps/api/src/mail/mail.service.ts"
+      ],
+      "test": "token64hex/hash/expiry assertion",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T08-02",
+      "task": "T08",
+      "source": "../tasks/T-08.md AC/NFR; S03 source backlog; goal§6; DEC15",
+      "expected": "Valid activation once, invalid/expired/used distinguished, concurrent activation only one success",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/api/src/users/activation-delivery.service.ts",
+        "apps/api/src/mail/mail.service.ts"
+      ],
+      "test": "expired/replay/concurrent API tests + browser success/reuse",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T08-03",
+      "task": "T08",
+      "source": "../tasks/T-08.md AC/NFR; S03 source backlog; goal§6; DEC15",
+      "expected": "Unverified cannot login; UI gives generic activation guidance; verified can login",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/api/src/users/activation-delivery.service.ts",
+        "apps/api/src/mail/mail.service.ts"
+      ],
+      "test": "browser both viewports + API pending login401/activated200",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T08-04",
+      "task": "T08",
+      "source": "../tasks/T-08.md AC/NFR; S03 source backlog; goal§6; DEC15",
+      "expected": "At most five resends/email/hour, shared Redis, generic unknown-email behavior",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/api/src/users/activation-delivery.service.ts",
+        "apps/api/src/mail/mail.service.ts"
+      ],
+      "test": "known/unknown five201 then429 retry3500..3600s",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T08-05",
+      "task": "T08",
+      "source": "../tasks/T-08.md AC/NFR; S03 source backlog; goal§6; DEC15",
+      "expected": "Real product SMTP catcher delivery; privacy link and no marketing",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/api/src/users/activation-delivery.service.ts",
+        "apps/api/src/mail/mail.service.ts"
+      ],
+      "test": "product outbox -> Mailpit SMTP/browser activation",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T08-06",
+      "task": "T08",
+      "source": "../tasks/T-08.md AC/NFR; S03 source backlog; goal§6; DEC15",
+      "expected": "Recover provider failures and crashed lease without losing account/creating false SENT",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/api/src/users/activation-delivery.service.ts",
+        "apps/api/src/mail/mail.service.ts"
+      ],
+      "test": "bounded retry/SENT ciphertext clear/final crashed lease FAILED",
+      "evidence": [
+        "regression-admission/gates.json",
+        "regression-admission/summary.json",
+        "browser-02a8e86/results.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "T08-07",
+      "task": "T08",
+      "source": "../tasks/T-08.md AC/NFR; S03 source backlog; goal§6; DEC15",
+      "expected": "Real configured Internet SMTP acceptance and inbox receipt kept separate",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/api/src/users/activation-delivery.service.ts",
+        "apps/api/src/mail/mail.service.ts"
+      ],
+      "test": "TLS/auth PASS; supplied allowlist currently invalid; no message sent",
+      "evidence": [
+        "smtp-product-local.json",
+        "smtp-product-staging.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated develop staging acceptance after valid human review/merge/CI/watch deploy. Per-assertion local and manual staging evidence kept separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN",
+      "manualStagingResult": "PASS"
+    },
+    {
+      "id": "T08-08",
+      "task": "T08",
+      "source": "../tasks/T-08.md AC/NFR; S03 source backlog; goal§6; DEC15",
+      "expected": "No token/password/identity log leaks or open redirect; persistent mail key across restart",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/api/src/users/activation-delivery.service.ts",
+        "apps/api/src/mail/mail.service.ts"
+      ],
+      "test": "fixed-origin config unit; all-path log/secret/restart probes pending",
+      "evidence": [
+        "runtime-secret-sweep.json",
+        "clean-clone-lifecycle.json",
+        "staging-secret-sweep.json",
+        "staging-replica-restart.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated staging smoke; log sweeps cover selected actual literals, not universal leakage proof.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN",
+      "manualStagingResult": "PASS"
+    },
+    {
+      "id": "T08-09",
+      "task": "T08",
+      "source": "../tasks/T-08.md AC/NFR; S03 source backlog; goal§6; DEC15",
+      "expected": "Legacy links survive forward migration; new/old runtime rollback compatible where claimed",
+      "implementation": [
+        "apps/api/src/users/registration.service.ts",
+        "apps/api/src/users/activation-delivery.service.ts",
+        "apps/api/src/mail/mail.service.ts"
+      ],
+      "test": "new empty30 migrations PASS; populated upgrade/rollback probe pending",
+      "evidence": [
+        "populated-migration.json",
+        "rollback-current.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Actual rollback preserves core auth/events and data, not old S03 activation feature; detailed limitation retained in populated-migration.json.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "ONBOARD-01",
+      "task": "T01/T03",
+      "source": "Goal§9–10",
+      "expected": "Clean git clone with no ignored inputs -> one command install/generate/migrate/seed/build/readiness",
+      "implementation": [
+        "scripts/sprint1-demo.ps1",
+        "scripts/sprint1-onboarding.mjs",
+        "scripts/sprint1-onboarding-worker.mjs",
+        "apps/api/scripts/seed-sprint1-onboarding.mjs"
+      ],
+      "test": "Fresh610 clone first command exit0 READY after install/generate/30migrations/seed/build/smoke; private initial failures retained.",
+      "evidence": [
+        "fresh-exact-clone-bootstrap.json",
+        "fresh-exact-clone-browser.json",
+        "fresh-exact-clone-lifecycle.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Final integrated source identity/acceptance; first clean clone02a full pipeline passed after actual resource guard satisfied.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "ONBOARD-02",
+      "task": "T01/T03",
+      "source": "Goal§9–10",
+      "expected": "Clean-profile real browser signup/catcher/activate/login/RBAC/event/showtime",
+      "implementation": [
+        "scripts/sprint1-demo.ps1",
+        "scripts/sprint1-onboarding.mjs",
+        "scripts/sprint1-onboarding-worker.mjs",
+        "apps/api/scripts/seed-sprint1-onboarding.mjs"
+      ],
+      "test": "Real browser desktop1440/mobile390 and five signup→catcher→activation→RBAC→event/showtime flows at610.",
+      "evidence": [
+        "fresh-exact-clone-browser.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Integrated staging acceptance after merge.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "ONBOARD-03",
+      "task": "T01/T03",
+      "source": "Goal§9–10",
+      "expected": "Owned repeat start/stop/restart preserves secrets/accounts/event/showtime/volume; foreign process survives",
+      "implementation": [
+        "scripts/sprint1-demo.ps1",
+        "scripts/sprint1-onboarding.mjs",
+        "scripts/sprint1-onboarding-worker.mjs",
+        "apps/api/scripts/seed-sprint1-onboarding.mjs"
+      ],
+      "test": "Exact02a fresh profile19b8f733e0a1 lifecycle plus a separate harmless Node sentinel before/after Stop/Start;30migrations/keybytes/event/showtime retained.",
+      "evidence": [
+        "fresh-exact-clone-lifecycle.json",
+        "onboarding-boundary-proof.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "No destructive reset; owned profile currently ready and retained.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "ONBOARD-04",
+      "task": "T01/T03",
+      "source": "Goal§9–10",
+      "expected": "Resource/port/DB/profile guards, credentials ignored, dependencies bound loopback",
+      "implementation": [
+        "scripts/sprint1-demo.ps1",
+        "scripts/sprint1-onboarding.mjs",
+        "scripts/sprint1-onboarding-worker.mjs",
+        "apps/api/scripts/seed-sprint1-onboarding.mjs"
+      ],
+      "test": "Actual resource guard rejections then successful fresh bootstrap; owned profile/DB source guards and CI seed safety; actual Docker all-bind127.0.0.1, git check-ignore credentials, sentinel lifecycle.",
+      "evidence": [
+        "fresh-exact-clone-bootstrap.json",
+        "onboarding-boundary-proof.json",
+        "ci-49b2842.json"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Native API binding0.0.0.0 remains stated baseline limitation; PG/Redis/mail dependency ports verified loopback-only. Integrated acceptance separate.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "ONBOARD-05",
+      "task": "T01/T03",
+      "source": "Goal§9–10",
+      "expected": "README/runbook distinguish localhost demo, HTTPS bootstrap and existing staging resume",
+      "implementation": [
+        "scripts/sprint1-demo.ps1",
+        "scripts/sprint1-onboarding.mjs",
+        "scripts/sprint1-onboarding-worker.mjs",
+        "apps/api/scripts/seed-sprint1-onboarding.mjs"
+      ],
+      "test": "README/root launcher/runbook inspected: new clone, trusted TLS bootstrap and staging resume are distinct.",
+      "evidence": [
+        "../../../docs/SPRINT1_DEMO_RUNBOOK.md"
+      ],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "PASS",
+      "result": "PASS",
+      "remaining": "Static documentation review PASS for local-demo, OS TLS/bootstrap, staging-resume separation; integrated deployment result still pending.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "NOT RUN"
+    },
+    {
+      "id": "INTEGRATED-S03",
+      "task": "T02/T03/T07/T08/DoD",
+      "source": "Goal§12/14; DoD review/CI/staging",
+      "expected": "Exact-head CI and real approval -> develop merge -> watcher auto-deploy<10min -> integrated S03 acceptance",
+      "implementation": [
+        ".github/workflows/ci.yml",
+        "scripts/sprint1-staging-watch.mjs"
+      ],
+      "test": "Pending valid review/integration",
+      "evidence": [],
+      "sourceSha": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "candidateManifest": "current-source-manifest.json",
+      "environment": "Each evidence retains exact source/environment: current02a local PG/Redis/browser; current02a Docker HTTPS manual staging at10.112.63.197 then authorized10.88.164.155 rebind; historical SMTP4fec local3490 kept separate. No merged develop acceptance inferred.",
+      "localResult": "NOT RUN",
+      "result": "BLOCKED",
+      "remaining": "PR91 exact02a CI passed; other-person approval absent; no merge/develop watcher deployment/integrated acceptance.",
+      "currentCandidate": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "integratedResult": "BLOCKED"
+    }
+  ]
+}

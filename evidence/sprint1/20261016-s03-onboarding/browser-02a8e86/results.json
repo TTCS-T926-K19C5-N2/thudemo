@@ -1,0 +1,78 @@
+{
+  "time": "2026-10-16T14:50:14.705Z",
+  "environment": "Clean clone native build localhost3001/API3002, real PG15/Redis and Mailpit SMTP catcher; not staging or Internet delivery",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "browserFallback": "Browser plugin not available",
+  "cases": [
+    {
+      "name": "1440 identity/notice/unchecked-consent/no-overlay/no-horizontal-overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "1440 short-password-and-consent-field-errors-preserve-input-no-write",
+      "status": "PASS"
+    },
+    {
+      "name": "1440 keyboard-submit-registration-generic-success",
+      "status": "PASS"
+    },
+    {
+      "name": "1440 actual-product-outbox-to-SMTP-catcher",
+      "status": "PASS"
+    },
+    {
+      "name": "1440 pending-login-rejected-with-generic-activation-guidance",
+      "status": "PASS"
+    },
+    {
+      "name": "1440 activation-success-removes-fragment-from-history",
+      "status": "PASS"
+    },
+    {
+      "name": "1440 activated-login-to-account-and-server-denies-buyer-event-create",
+      "status": "PASS"
+    },
+    {
+      "name": "1440 used-token-UI-error-and-recovery-link",
+      "status": "PASS"
+    },
+    {
+      "name": "390 identity/notice/unchecked-consent/no-overlay/no-horizontal-overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "390 short-password-and-consent-field-errors-preserve-input-no-write",
+      "status": "PASS"
+    },
+    {
+      "name": "390 keyboard-submit-registration-generic-success",
+      "status": "PASS"
+    },
+    {
+      "name": "390 actual-product-outbox-to-SMTP-catcher",
+      "status": "PASS"
+    },
+    {
+      "name": "390 pending-login-rejected-with-generic-activation-guidance",
+      "status": "PASS"
+    },
+    {
+      "name": "390 activation-success-removes-fragment-from-history",
+      "status": "PASS"
+    },
+    {
+      "name": "390 activated-login-to-account-and-server-denies-buyer-event-create",
+      "status": "PASS"
+    },
+    {
+      "name": "390 used-token-UI-error-and-recovery-link",
+      "status": "PASS"
+    },
+    {
+      "name": "both-viewports-no-unexpected-console-or-runtime-errors",
+      "status": "PASS"
+    }
+  ],
+  "console": [],
+  "result": "PASS"
+}

@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "transport": "real TCP peers through custom web -> runtime proxy -> real API -> Redis",
+  "tests": [
+    "30 email rotations same peer -> 429",
+    "other peer same valid account ->200",
+    "web overwrites even a valid caller attestation",
+    "spoofed XFF ignored",
+    "direct API invalid attestation ->403"
+  ],
+  "ttlSeconds": 898
+}

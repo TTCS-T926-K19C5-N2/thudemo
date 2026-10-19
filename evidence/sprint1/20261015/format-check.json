@@ -1,0 +1,5 @@
+{
+  "command": "pnpm --filter api exec prettier --check <changed source/test/script files>",
+  "exitCode": 0,
+  "logSummary": "Checking formatting... All matched files use Prettier code style!"
+}

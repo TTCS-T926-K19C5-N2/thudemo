@@ -1,0 +1,537 @@
+<!DOCTYPE html><html class="light" lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Vé Sự Kiện - Chọn vị trí ghế ngồi</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-low": "#f3f3fd",
+            "on-secondary-container": "#415381",
+            "background": "#faf8ff",
+            "surface-tint": "#0957ce",
+            "primary-fixed-dim": "#b1c5ff",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-primary-container": "#d7e0ff",
+            "tertiary-fixed-dim": "#ffb597",
+            "surface-dim": "#d9d9e3",
+            "inverse-on-surface": "#f0f0fa",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "inverse-surface": "#2e3038",
+            "tertiary-fixed": "#ffdbcd",
+            "tertiary": "#853000",
+            "on-surface": "#191b23",
+            "on-error-container": "#93000a",
+            "secondary": "#4c5d8b",
+            "surface-container": "#ededf7",
+            "surface": "#faf8ff",
+            "surface-bright": "#faf8ff",
+            "surface-container-high": "#e7e7f2",
+            "primary-fixed": "#dae2ff",
+            "error": "#ba1a1a",
+            "primary": "#0045a9",
+            "outline-variant": "#c3c6d6",
+            "on-error": "#ffffff",
+            "secondary-container": "#b6c8fd",
+            "primary-container": "#175cd3",
+            "on-background": "#191b23",
+            "on-primary-fixed": "#001847",
+            "on-secondary-fixed-variant": "#344572",
+            "on-secondary": "#ffffff",
+            "secondary-fixed-dim": "#b4c5fa",
+            "surface-variant": "#e1e2ec",
+            "on-tertiary-container": "#ffd8c9",
+            "tertiary-container": "#ac4100",
+            "inverse-primary": "#b1c5ff",
+            "outline": "#737785",
+            "on-tertiary-fixed": "#360f00",
+            "on-primary": "#ffffff",
+            "on-surface-variant": "#424654",
+            "secondary-fixed": "#dae2ff",
+            "on-secondary-fixed": "#031944",
+            "surface-container-highest": "#e1e2ec",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface font-body antialiased min-h-screen flex flex-col justify-between">
+<!-- Top Navigation Anchor from Shared JSON -->
+<header class="w-full bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-30">
+<div class="flex justify-between items-center w-full px-6 md:px-8 max-w-7xl mx-auto h-16">
+<!-- Brand & Left Details -->
+<div class="flex items-center gap-6">
+<a class="font-headline text-lg font-bold text-primary flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="confirmation_number">confirmation_number</span>
+<span>Vé Sự Kiện</span>
+</a>
+<!-- Global Navigation Links -->
+<nav class="hidden md:flex items-center gap-6 font-body text-sm font-medium tracking-normal ml-4">
+<a class="text-primary border-b-2 border-primary font-semibold pb-1" href="#">Sự kiện</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Nhà hát</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Vé của tôi</a>
+</nav>
+</div>
+<!-- Trailing Controls -->
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center gap-1.5 text-xs font-medium text-on-surface-variant bg-surface-container px-3 py-1.5 rounded-lg border border-outline-variant/60">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+<span>TP. Hồ Chí Minh</span>
+</div>
+<button class="text-xs font-medium text-primary hover:bg-surface-container px-3.5 py-1.5 rounded transition-colors duration-150" type="button">
+          Đăng nhập
+        </button>
+</div>
+</div>
+</header>
+<!-- Secondary Context Breadcrumb Banner -->
+<div class="w-full bg-surface-container-lowest border-b border-outline-variant/70 shadow-sm">
+<div class="max-w-7xl mx-auto px-6 md:px-8 py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<span class="px-2 py-0.5 rounded text-[11px] font-semibold tracking-wide bg-primary/10 text-primary uppercase border border-primary/20">Sự kiện chính</span>
+<h2 class="font-headline text-sm md:text-base font-bold text-on-surface tracking-tight">
+          Đêm nhạc Tháng Mười · 16/10/2026 19:30 · Nhà hát Ánh Dương
+        </h2>
+</div>
+<div class="flex items-center gap-2 self-start md:self-auto">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-container text-on-surface-variant border border-outline-variant">
+          Demo Sprint 2 · dữ liệu giả
+        </span>
+</div>
+</div>
+</div>
+<!-- Main Content Layout -->
+<main class="max-w-7xl mx-auto w-full px-6 md:px-8 py-8 flex-1">
+<!-- Step Header -->
+<div class="mb-8">
+<div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary mb-1">
+<span>Tiến trình đặt vé</span>
+<span class="material-symbols-outlined text-xs" data-icon="chevron_right">chevron_right</span>
+<span>Phòng vé trực tuyến</span>
+</div>
+<h1 class="font-headline text-2xl md:text-3xl font-bold text-on-surface tracking-tight">
+        Bước 03: Chọn vị trí ghế ngồi
+      </h1>
+<p class="text-sm text-on-surface-variant mt-1.5 font-normal">
+        Chọn ghế trống trên sơ đồ và bấm Giữ ghế để gửi yêu cầu lên máy chủ.
+      </p>
+</div>
+<!-- Sơ đồ và Cột sidebar -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Cột Trái: Sơ đồ ghế (8 Cols) -->
+<section class="lg:col-span-8 bg-surface-container-lowest rounded-lg border border-outline-variant/80 p-6 md:p-8 flex flex-col">
+<!-- Sân khấu Minh hoạ -->
+<div class="w-full flex flex-col items-center mb-10">
+<div class="w-3/4 max-w-lg h-9 bg-surface-container-high border border-outline-variant rounded flex items-center justify-center text-xs font-bold uppercase tracking-widest text-on-surface-variant shadow-inner">
+            SÂN KHẤU CHÍNH (Ánh Dương Hall)
+          </div>
+<div class="w-1/2 h-1 bg-primary/20 rounded-full mt-2"></div>
+</div>
+<!-- Legend Chú giải Trạng thái -->
+<div class="flex flex-wrap items-center justify-center gap-6 py-3.5 mb-8 bg-surface-container-low rounded-lg border border-outline-variant/50 text-xs">
+<!-- Còn trống -->
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded border border-outline-variant bg-surface-container-lowest inline-block"></span>
+<span class="text-on-surface-variant">Còn trống</span>
+</div>
+<!-- Đang chọn (Chưa giữ) -->
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded border-2 border-primary-container bg-surface-container-lowest text-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-sm font-bold" data-icon="check">check</span>
+</span>
+<span class="font-semibold text-primary">Đang chọn (chưa giữ)</span>
+</div>
+<!-- Đang được giữ -->
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded bg-surface-container-high border border-outline-variant flex items-center justify-center text-outline">
+<span class="material-symbols-outlined text-xs" data-icon="lock">lock</span>
+</span>
+<span class="text-on-surface-variant">Đang được giữ</span>
+</div>
+<!-- Đã bán -->
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 rounded bg-surface-dim border border-outline flex items-center justify-center text-outline">
+<span class="material-symbols-outlined text-xs" data-icon="close">close</span>
+</span>
+<span class="text-on-surface-variant">Đã bán</span>
+</div>
+</div>
+<!-- Phân vùng giá vé -->
+<div class="flex items-center justify-between text-xs text-on-surface-variant mb-4 px-2">
+<div class="flex items-center gap-3">
+<span class="inline-flex items-center gap-1 font-medium text-tertiary">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span> VIP (1.200.000 ₫)
+            </span>
+<span class="inline-flex items-center gap-1 font-medium text-secondary">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span> Tiêu chuẩn (650.000 ₫)
+            </span>
+<span class="inline-flex items-center gap-1 font-medium text-outline">
+<span class="w-2.5 h-2.5 rounded-full bg-outline"></span> Ban công (350.000 ₫)
+            </span>
+</div>
+<span class="text-[11px] text-outline font-normal">Hàng A &amp; B: VIP · Hàng C-F: Tiêu chuẩn · Hàng G-H: Ban công</span>
+</div>
+<!-- Lưới Ma trận ghế (A to H, 16 ghế mỗi hàng) -->
+<div class="overflow-x-auto pb-4">
+<div class="min-w-[620px] flex flex-col gap-2.5 items-center">
+<!-- Row A (VIP) - Ghế A12 và A13 ĐANG CHỌN NHÁP -->
+<div class="flex items-center gap-2">
+<span class="w-6 text-xs font-bold text-tertiary text-center">A</span>
+<div class="flex items-center gap-1.5">
+<!-- A1-A6 (Sold / Available) -->
+<button class="w-7 h-7 rounded border border-outline bg-surface-dim text-outline flex items-center justify-center cursor-not-allowed" title="Ghế A01 - Đã bán" type="button"><span class="material-symbols-outlined text-xs" data-icon="close">close</span></button>
+<button class="w-7 h-7 rounded border border-outline bg-surface-dim text-outline flex items-center justify-center cursor-not-allowed" title="Ghế A02 - Đã bán" type="button"><span class="material-symbols-outlined text-xs" data-icon="close">close</span></button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium transition-colors" title="Ghế A03 - Trống" type="button">03</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium transition-colors" title="Ghế A04 - Trống" type="button">04</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium transition-colors" title="Ghế A05 - Trống" type="button">05</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium transition-colors" title="Ghế A06 - Trống" type="button">06</button>
+<!-- Lối đi giữa -->
+<div class="w-4"></div>
+<!-- A7-A10 (Held / Available) -->
+<button class="w-7 h-7 rounded bg-surface-container-high border border-outline-variant text-outline flex items-center justify-center cursor-not-allowed" title="Ghế A07 - Đang được giữ bởi người khác" type="button"><span class="material-symbols-outlined text-xs" data-icon="lock">lock</span></button>
+<button class="w-7 h-7 rounded bg-surface-container-high border border-outline-variant text-outline flex items-center justify-center cursor-not-allowed" title="Ghế A08 - Đang được giữ bởi người khác" type="button"><span class="material-symbols-outlined text-xs" data-icon="lock">lock</span></button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium transition-colors" title="Ghế A09 - Trống" type="button">09</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium transition-colors" title="Ghế A10 - Trống" type="button">10</button>
+<!-- Lối đi giữa -->
+<div class="w-4"></div>
+<!-- A11-A16 -->
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium transition-colors" title="Ghế A11 - Trống" type="button">11</button>
+<!-- ACTIVE DRAFT SELECTION: A12 -->
+<button class="w-7 h-7 rounded border-2 border-primary-container bg-surface-container-lowest text-primary-container font-bold flex items-center justify-center ring-2 ring-primary-container/20 shadow-sm" title="Ghế A12 - Đang chọn (Chưa giữ)" type="button">
+<span class="material-symbols-outlined text-sm font-bold" data-icon="check">check</span>
+</button>
+<!-- ACTIVE DRAFT SELECTION: A13 -->
+<button class="w-7 h-7 rounded border-2 border-primary-container bg-surface-container-lowest text-primary-container font-bold flex items-center justify-center ring-2 ring-primary-container/20 shadow-sm" title="Ghế A13 - Đang chọn (Chưa giữ)" type="button">
+<span class="material-symbols-outlined text-sm font-bold" data-icon="check">check</span>
+</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium transition-colors" title="Ghế A14 - Trống" type="button">14</button>
+<button class="w-7 h-7 rounded border border-outline bg-surface-dim text-outline flex items-center justify-center cursor-not-allowed" title="Ghế A15 - Đã bán" type="button"><span class="material-symbols-outlined text-xs" data-icon="close">close</span></button>
+<button class="w-7 h-7 rounded border border-outline bg-surface-dim text-outline flex items-center justify-center cursor-not-allowed" title="Ghế A16 - Đã bán" type="button"><span class="material-symbols-outlined text-xs" data-icon="close">close</span></button>
+</div>
+<span class="w-6 text-xs font-bold text-tertiary text-center">A</span>
+</div>
+<!-- Row B (VIP) -->
+<div class="flex items-center gap-2">
+<span class="w-6 text-xs font-bold text-tertiary text-center">B</span>
+<div class="flex items-center gap-1.5">
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">01</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">02</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">03</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">04</button>
+<button class="w-7 h-7 rounded border border-outline bg-surface-dim text-outline flex items-center justify-center cursor-not-allowed" type="button"><span class="material-symbols-outlined text-xs" data-icon="close">close</span></button>
+<button class="w-7 h-7 rounded border border-outline bg-surface-dim text-outline flex items-center justify-center cursor-not-allowed" type="button"><span class="material-symbols-outlined text-xs" data-icon="close">close</span></button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">07</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">08</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">09</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">10</button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded bg-surface-container-high border border-outline-variant text-outline flex items-center justify-center cursor-not-allowed" type="button"><span class="material-symbols-outlined text-xs" data-icon="lock">lock</span></button>
+<button class="w-7 h-7 rounded bg-surface-container-high border border-outline-variant text-outline flex items-center justify-center cursor-not-allowed" type="button"><span class="material-symbols-outlined text-xs" data-icon="lock">lock</span></button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">13</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">14</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">15</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">16</button>
+</div>
+<span class="w-6 text-xs font-bold text-tertiary text-center">B</span>
+</div>
+<!-- Row C (Standard) -->
+<div class="flex items-center gap-2">
+<span class="w-6 text-xs font-bold text-secondary text-center">C</span>
+<div class="flex items-center gap-1.5">
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">01</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">02</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">03</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">04</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">05</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">06</button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded border border-outline bg-surface-dim text-outline flex items-center justify-center cursor-not-allowed" type="button"><span class="material-symbols-outlined text-xs" data-icon="close">close</span></button>
+<button class="w-7 h-7 rounded border border-outline bg-surface-dim text-outline flex items-center justify-center cursor-not-allowed" type="button"><span class="material-symbols-outlined text-xs" data-icon="close">close</span></button>
+<button class="w-7 h-7 rounded border border-outline bg-surface-dim text-outline flex items-center justify-center cursor-not-allowed" type="button"><span class="material-symbols-outlined text-xs" data-icon="close">close</span></button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">10</button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">11</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">12</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">13</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">14</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">15</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">16</button>
+</div>
+<span class="w-6 text-xs font-bold text-secondary text-center">C</span>
+</div>
+<!-- Row D (Standard) -->
+<div class="flex items-center gap-2">
+<span class="w-6 text-xs font-bold text-secondary text-center">D</span>
+<div class="flex items-center gap-1.5">
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">01</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">02</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">03</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">04</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">05</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">06</button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">07</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">08</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">09</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">10</button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">11</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">12</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">13</button>
+<button class="w-7 h-7 rounded border border-outline bg-surface-dim text-outline flex items-center justify-center cursor-not-allowed" type="button"><span class="material-symbols-outlined text-xs" data-icon="close">close</span></button>
+<button class="w-7 h-7 rounded border border-outline bg-surface-dim text-outline flex items-center justify-center cursor-not-allowed" type="button"><span class="material-symbols-outlined text-xs" data-icon="close">close</span></button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">16</button>
+</div>
+<span class="w-6 text-xs font-bold text-secondary text-center">D</span>
+</div>
+<!-- Row E (Standard) -->
+<div class="flex items-center gap-2">
+<span class="w-6 text-xs font-bold text-secondary text-center">E</span>
+<div class="flex items-center gap-1.5">
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">01</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">02</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">03</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">04</button>
+<button class="w-7 h-7 rounded bg-surface-container-high border border-outline-variant text-outline flex items-center justify-center cursor-not-allowed" type="button"><span class="material-symbols-outlined text-xs" data-icon="lock">lock</span></button>
+<button class="w-7 h-7 rounded bg-surface-container-high border border-outline-variant text-outline flex items-center justify-center cursor-not-allowed" type="button"><span class="material-symbols-outlined text-xs" data-icon="lock">lock</span></button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">07</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">08</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">09</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">10</button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">11</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">12</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">13</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">14</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">15</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">16</button>
+</div>
+<span class="w-6 text-xs font-bold text-secondary text-center">E</span>
+</div>
+<!-- Row F (Standard) -->
+<div class="flex items-center gap-2">
+<span class="w-6 text-xs font-bold text-secondary text-center">F</span>
+<div class="flex items-center gap-1.5">
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">01</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">02</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">03</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">04</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">05</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">06</button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">07</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">08</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">09</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">10</button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded border border-outline bg-surface-dim text-outline flex items-center justify-center cursor-not-allowed" type="button"><span class="material-symbols-outlined text-xs" data-icon="close">close</span></button>
+<button class="w-7 h-7 rounded border border-outline bg-surface-dim text-outline flex items-center justify-center cursor-not-allowed" type="button"><span class="material-symbols-outlined text-xs" data-icon="close">close</span></button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">13</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">14</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">15</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">16</button>
+</div>
+<span class="w-6 text-xs font-bold text-secondary text-center">F</span>
+</div>
+<!-- Divider Ban Công -->
+<div class="w-full flex items-center gap-2 my-2 opacity-60">
+<div class="h-px bg-outline-variant flex-1"></div>
+<span class="text-[10px] font-medium tracking-wider text-outline uppercase">Khu vực Ban công</span>
+<div class="h-px bg-outline-variant flex-1"></div>
+</div>
+<!-- Row G (Balcony) -->
+<div class="flex items-center gap-2">
+<span class="w-6 text-xs font-bold text-outline text-center">G</span>
+<div class="flex items-center gap-1.5">
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">01</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">02</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">03</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">04</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">05</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">06</button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">07</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">08</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">09</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">10</button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">11</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">12</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">13</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">14</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">15</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">16</button>
+</div>
+<span class="w-6 text-xs font-bold text-outline text-center">G</span>
+</div>
+<!-- Row H (Balcony) -->
+<div class="flex items-center gap-2">
+<span class="w-6 text-xs font-bold text-outline text-center">H</span>
+<div class="flex items-center gap-1.5">
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">01</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">02</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">03</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">04</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">05</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">06</button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">07</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">08</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">09</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">10</button>
+<div class="w-4"></div>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">11</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">12</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">13</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">14</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">15</button>
+<button class="w-7 h-7 rounded border border-outline-variant bg-surface-container-lowest hover:border-primary text-[10px] font-medium" type="button">16</button>
+</div>
+<span class="w-6 text-xs font-bold text-outline text-center">H</span>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant flex items-center justify-between text-xs text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm text-outline" data-icon="info">info</span>
+<span>Ghế đang chọn có thể thay đổi trước khi bấm nút Giữ ghế.</span>
+</div>
+<span class="text-xs text-outline">Quy mô: 128 chỗ ngồi</span>
+</div>
+</section>
+<!-- Cột Phải: Sidebar Summary Card (4 Cols, ~340px) -->
+<aside class="lg:col-span-4 bg-surface-container-lowest rounded-lg border border-outline-variant p-6 flex flex-col gap-6 shadow-sm">
+<!-- Header Sidebar -->
+<div class="border-b border-outline-variant pb-4">
+<h2 class="font-headline text-sm font-bold tracking-wider text-on-surface uppercase">
+            THÔNG TIN GHẾ ĐANG CHỌN
+          </h2>
+<p class="text-xs text-on-surface-variant mt-1">
+            Đêm nhạc Tháng Mười · 16/10/2026
+          </p>
+</div>
+<!-- Trạng thái xác nhận Server Hold (Chưa kích hoạt đếm ngược) -->
+<div class="bg-surface-container-low border border-outline-variant rounded-md p-4">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-lg mt-0.5" data-icon="pending">pending</span>
+<div class="flex-1">
+<div class="text-xs font-semibold text-primary">
+                Trạng thái: Chưa được giữ (Đang chọn nháp)
+              </div>
+<p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
+                Thời gian giữ chỗ 10 phút chỉ bắt đầu đếm sau khi máy chủ xác nhận giữ ghế.
+              </p>
+</div>
+</div>
+</div>
+<!-- Danh sách ghế đã chọn (Selected items list) -->
+<div>
+<div class="text-xs font-semibold text-on-surface-variant mb-2.5 flex justify-between items-center">
+<span>DANH SÁCH GHẾ (02)</span>
+<span class="text-[11px] text-primary font-medium">Bản nháp</span>
+</div>
+<div class="space-y-2">
+<!-- Item 1: Ghế A12 -->
+<div class="p-3 bg-surface-container-lowest border border-outline-variant rounded-md flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/10 border border-primary/20 text-primary font-bold text-xs flex items-center justify-center">
+                  A12
+                </div>
+<div>
+<div class="text-xs font-bold text-on-surface">Ghế A12 · Hạng VIP</div>
+<div class="text-[11px] text-tertiary font-medium">1.200.000 ₫</div>
+</div>
+</div>
+<span class="text-xs text-primary font-semibold">Đang chọn</span>
+</div>
+<!-- Item 2: Ghế A13 -->
+<div class="p-3 bg-surface-container-lowest border border-outline-variant rounded-md flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/10 border border-primary/20 text-primary font-bold text-xs flex items-center justify-center">
+                  A13
+                </div>
+<div>
+<div class="text-xs font-bold text-on-surface">Ghế A13 · Hạng VIP</div>
+<div class="text-[11px] text-tertiary font-medium">1.200.000 ₫</div>
+</div>
+</div>
+<span class="text-xs text-primary font-semibold">Đang chọn</span>
+</div>
+</div>
+</div>
+<!-- Chi tiết tạm tính -->
+<div class="border-t border-outline-variant pt-4 space-y-2 text-xs">
+<div class="flex justify-between text-on-surface-variant">
+<span>Tạm tính (02 vé)</span>
+<span class="font-medium text-on-surface">2.400.000 ₫</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span>Phí xử lý kỹ thuật</span>
+<span class="font-medium text-on-surface">0 ₫</span>
+</div>
+<div class="border-t border-dashed border-outline-variant pt-3 flex justify-between items-baseline">
+<span class="font-headline font-bold text-sm text-on-surface">Tổng cộng</span>
+<span class="font-headline text-lg font-bold text-primary">2.400.000 ₫</span>
+</div>
+</div>
+<!-- Primary Action CTA -->
+<div class="space-y-3 pt-2">
+<!-- Button Giữ ghế (02 vé) - Prominent Primary Blue -->
+<button class="w-full h-11 bg-primary-container text-on-primary font-medium text-sm rounded hover:bg-primary transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-[0.99]" type="button">
+<span class="material-symbols-outlined text-base" data-icon="lock_clock">lock_clock</span>
+<span>Giữ ghế (02 vé)</span>
+</button>
+<!-- Disabled control notice for Sprint 2 demo scope -->
+<div class="p-2.5 bg-surface-container rounded border border-outline-variant/60 text-[11px] text-on-surface-variant text-center leading-normal">
+            Hệ thống áp dụng nguyên tắc toàn bộ hoặc không (all-or-none). Các tính năng thanh toán &amp; hoàn vé không khả dụng trong demo Sprint 2.
+          </div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer Anchor from Shared JSON -->
+<footer class="w-full bg-surface border-t border-outline-variant mt-16">
+<div class="w-full py-8 px-6 md:px-8 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-on-surface-variant leading-relaxed">
+<div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+<span class="font-headline text-sm font-bold text-on-surface">Vé Sự Kiện</span>
+<span class="hidden sm:inline text-outline">•</span>
+<span>© 2026 Vé Sự Kiện · Demo Sprint 2 · dữ liệu giả. Fictional events only.</span>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-6">
+<a class="hover:text-primary transition-colors duration-150" href="#">Điều khoản dịch vụ</a>
+<a class="hover:text-primary transition-colors duration-150" href="#">Chính sách hoàn vé</a>
+<a class="hover:text-primary transition-colors duration-150" href="#">Quy định sơ đồ ghế</a>
+<a class="hover:text-primary transition-colors duration-150" href="#">Hỗ trợ kỹ thuật</a>
+</div>
+</div>
+</footer>
+</body></html>

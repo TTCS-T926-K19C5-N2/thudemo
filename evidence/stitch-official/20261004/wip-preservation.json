@@ -1,0 +1,28 @@
+{
+  "baselineFiles": 204,
+  "deleted": [],
+  "modifiedSinceStart": [
+    "scripts/verify-stitch-correction.ps1",
+    "scripts/verify-stitch-browser.ps1",
+    "scripts/verify-hold-browser.ps1",
+    "scripts/hold-expired-browser-flow.js",
+    "scripts/hold-browser-flow.js",
+    "scripts/correction-browser-flow.js",
+    "docs/STITCH_FIDELITY_LEDGER.md",
+    "apps/api/scripts/hold-browser-fixture.mjs",
+    "apps/web/src/features/showtime-management/showtime-workspace.tsx",
+    "apps/web/src/features/showtime-management/sale-status-control.tsx",
+    "apps/web/src/features/seat-selection/seat-selection.tsx",
+    "apps/web/src/features/seat-pricing/seat-pricing-form.tsx",
+    "apps/web/src/features/seat-map-import/seat-map-import-form.tsx",
+    "apps/web/src/components/seat-map/seat-map.tsx",
+    "apps/web/src/components/login-form.tsx",
+    "apps/web/src/features/event-catalog/public-showtime.tsx",
+    "apps/web/src/features/event-catalog/event-poster.tsx",
+    "apps/web/src/features/event-catalog/event-catalog.tsx",
+    "apps/web/src/components/layout/product-layout.tsx",
+    "apps/web/src/app/product.css"
+  ],
+  "protectedBackendSchemaMigrationsDependenciesDeploymentUnchanged": true,
+  "note": "Diff compared against beginning-of-task WIP, not HEAD. Backend changes limited to allowlisted run-scoped test fixture helper."
+}

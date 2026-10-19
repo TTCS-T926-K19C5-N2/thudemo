@@ -1,0 +1,51 @@
+{
+  "time": "2026-10-15T17:03:25.533Z",
+  "activeSource": "b52ba6afa07d29444e5e809892e5325f0966625c",
+  "origin": "https://10.88.164.155:3470",
+  "image": {
+    "name": "sprint1-staging-api:b52ba6afa07d",
+    "id": "sha256:577d9dad23dc65da404926bc0781a95d29bdfa9fc57eb6dd8593c8d9bb2f755b",
+    "source": "b52ba6afa07d29444e5e809892e5325f0966625c"
+  },
+  "ports": {
+    "pg": 15455,
+    "redis": 16405,
+    "publicTLS": 3470,
+    "apiLoopback": 3472,
+    "webLoopback": 3474
+  },
+  "certificate": {
+    "sha256": "7B:43:36:26:D3:E4:E3:0C:4F:D6:66:68:A2:6F:49:CB:95:9F:08:F1:CC:07:73:EC:78:E2:8F:F4:70:8B:40:91",
+    "expires": "Nov 14 15:44:28 2026 GMT",
+    "publicFile": ".sprint1-staging/tls/server-cert.cer"
+  },
+  "backups": [
+    {
+      "file": "1792080009939-864189edcba0b0c112203d8de4ebbfb189ac7148.dump",
+      "bytes": 896
+    },
+    {
+      "file": "1792081013703-864189edcba0b0c112203d8de4ebbfb189ac7148.dump",
+      "bytes": 72214
+    },
+    {
+      "file": "1792081824560-b52ba6afa07d29444e5e809892e5325f0966625c.dump",
+      "bytes": 252613
+    }
+  ],
+  "watcher": {
+    "time": "2026-10-15T17:00:15.258Z",
+    "status": "BLOCKED_develop_missing_approved_fix",
+    "sha": "8bceec45c7c22fe3cdacb25a18d772c5688bf034"
+  },
+  "access": {
+    "windows": "PASS actual rule/filter/trusted root in windows-access.json",
+    "browser": "PASS system-trusted TLS home and 15 full staging UI cases; no verification bypass",
+    "secondWifiDevice": "PASS client artifact correlated with live Redis IP30/PTTL610s while laptop200; see ../20261016-two-peer/correlation.json"
+  },
+  "limits": [
+    "Manual candidate deployment is not postmerge auto deployment",
+    "API Docker + native loopback Next web behind owned TLS gateway; not full web Docker staging",
+    "No public tunnel, real payment/provider, production or independent human review"
+  ]
+}

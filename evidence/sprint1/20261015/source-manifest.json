@@ -1,0 +1,192 @@
+{
+  "sourceSha": "81d1dd9d8f453b32ed0c6956399e5600f71a32d6",
+  "generatedAt": "2026-10-15T08:47:16.875Z",
+  "scope": "changed source/config/docs; evidence files indexed separately",
+  "files": [
+    {
+      "path": ".dockerignore",
+      "bytes": 196,
+      "sha256": "7dc62a8726d3481ff616628df652844c472fb0a6410f0bf45b9fb5065c477614"
+    },
+    {
+      "path": ".env.example",
+      "bytes": 2181,
+      "sha256": "810c836c0a3951caac5bc808c8cd62af187d23b01cb885abe9a30929c1be307a"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 2211,
+      "sha256": "944744d9e2963545022e60213d853f74f83072f3a75a18e9746c336dccf54882"
+    },
+    {
+      "path": "Dockerfile",
+      "bytes": 2719,
+      "sha256": "b9a4146e9c776051467d6c7260aa747be6ed37807ecc19bcaf418d9983540395"
+    },
+    {
+      "path": "README.md",
+      "bytes": 12083,
+      "sha256": "943c06c10040ed10618b7dc7d0eda0176c1c5d6c422dabbe20dd6f29e1986809"
+    },
+    {
+      "path": "apps/api/scripts/seed-sprint1.mjs",
+      "bytes": 2429,
+      "sha256": "9339c2eb37c921cf92fbe7bd36f7363c8712f04b847a4b3b935d3a9aede1d872"
+    },
+    {
+      "path": "apps/api/src/auth/auth.controller.ts",
+      "bytes": 2436,
+      "sha256": "dc407268e4cacc3e5dec5e8c65e93a97edd843b1eb1215ba5e167888450f9034"
+    },
+    {
+      "path": "apps/api/src/auth/auth.service.ts",
+      "bytes": 4035,
+      "sha256": "9e1a143eaf7f04397adefc636e8c4fc48765841f9929c37f020999899e34d05e"
+    },
+    {
+      "path": "apps/api/src/auth/login-peer.spec.ts",
+      "bytes": 1149,
+      "sha256": "4a85c1f2d5fe02834655306d14aa00c5de665aa691e22668099fc8a1430cbe7b"
+    },
+    {
+      "path": "apps/api/src/redis/redis.service.ts",
+      "bytes": 2628,
+      "sha256": "8a4322c2d04366343c71d941fd834c6a1a855c08a51f6d54621b0fed23cabd3a"
+    },
+    {
+      "path": "apps/api/test/sprint1-ip.e2e-spec.ts",
+      "bytes": 1652,
+      "sha256": "f7fd154cce7fd3393ae5eaeeee380adfd8e4c1e6e13b4f075c1360416e2ab71f"
+    },
+    {
+      "path": "apps/web/package.json",
+      "bytes": 1002,
+      "sha256": "faa0c9c418e3a75bdf260feee9bce4f5d35f35f07a2a474c2dd57da01429b7b4"
+    },
+    {
+      "path": "apps/web/server.mjs",
+      "bytes": 1454,
+      "sha256": "61f401ef66185483b018a0e28fb409775b8731ab4d48eead52f2caa394a4a921"
+    },
+    {
+      "path": "apps/web/src/components/event-editor.tsx",
+      "bytes": 18120,
+      "sha256": "90ea3477927dfa4644413decad61aafacdfb8c4d630503965b292aab0e8475d8"
+    },
+    {
+      "path": "apps/web/src/components/login-form.tsx",
+      "bytes": 8340,
+      "sha256": "91c498f0edd1aced47ec2013d5675ce57252f3a491768b6a03d7ea6a41909419"
+    },
+    {
+      "path": "apps/web/src/lib/api.ts",
+      "bytes": 2416,
+      "sha256": "dd5255e871cdaaeb9649861beb3f72526c788f99ba0b788904ac80d065a90f13"
+    },
+    {
+      "path": "apps/web/src/lib/formatting/vietnam-input.test.ts",
+      "bytes": 623,
+      "sha256": "b2727b75997679b4d3f1efce42d722239d1e86ddbfb8951f76f88cfbd2ca7cce"
+    },
+    {
+      "path": "apps/web/src/lib/formatting/vietnam-input.ts",
+      "bytes": 559,
+      "sha256": "a7cd2e44b9425f34ec331a47df60885ddcd7edce439f8dcb40383169106736f7"
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.spec.ts",
+      "bytes": 3771,
+      "sha256": "64a824a2fa75d5f704b51f95dcf4b6fc947aefb3c0759c42800b8e0fd9da852f"
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.ts",
+      "bytes": 3559,
+      "sha256": "b33d27335cdf52b1f5372c3ac6cdc4d0112d8576caee8a0b09d948e57d4f5da4"
+    },
+    {
+      "path": "deploy/render-start.mjs",
+      "bytes": 770,
+      "sha256": "4e60d4ee053d2de61b3429b42c38062b57e1dbff0b9f29e6084b2908f11b4dad"
+    },
+    {
+      "path": "docs/K01_EVIDENCE.md",
+      "bytes": 9425,
+      "sha256": "b6524a54bce917fabd0a194efd94e63ba1dd818c632c160aef229873a81c45d4"
+    },
+    {
+      "path": "docs/SPRINT1_ACCEPTANCE_MATRIX.md",
+      "bytes": 10506,
+      "sha256": "242307d7aad923f64796601b6d2fcff03e05813eb87ac2cfdf064db45face6b1"
+    },
+    {
+      "path": "docs/SPRINT1_DEMO_RUNBOOK.md",
+      "bytes": 10728,
+      "sha256": "92d5f2e3f7539293262153e0f72be2848af83e1b3cbf2371b6472d44cd04c587"
+    },
+    {
+      "path": "docs/SPRINT1_FIX_PR_DRAFT.md",
+      "bytes": 1827,
+      "sha256": "638bc4701ac8df17f88f9feb79fe875c2c5ef8b2b3d26f0cabf0f8dda75fc089"
+    },
+    {
+      "path": "docs/SPRINT1_REVIEW_REPORT.md",
+      "bytes": 17194,
+      "sha256": "04647c8986fc256510a3feb44754076181d728465ca2525eb07878fc75fbd0d3"
+    },
+    {
+      "path": "packages/shared/login-peer.d.ts",
+      "bytes": 313,
+      "sha256": "cd7b8097bc68823012a204fba88de64a505850f54068d50de0c593ec4c202b5c"
+    },
+    {
+      "path": "packages/shared/login-peer.js",
+      "bytes": 1854,
+      "sha256": "571c478f108bfc82adf5c7398b3b61b1283dd63d8556b6a9b5dca318e6e364a5"
+    },
+    {
+      "path": "packages/shared/package.json",
+      "bytes": 260,
+      "sha256": "73c23d87234b4d799d12c5b25999fd449efccfb0fe87d1b6b9f2a609d0b71c77"
+    },
+    {
+      "path": "render.yaml",
+      "bytes": 1726,
+      "sha256": "6c742274fbfe77036a3f62260e703856923c683d27ddc2576f9d2ea2a105b158"
+    },
+    {
+      "path": "scripts/sprint1-demo.ps1",
+      "bytes": 6180,
+      "sha256": "e62f05a74e49b01806443a783fa10d7df1360b896314fd8b747bb88d6a47451d"
+    },
+    {
+      "path": "scripts/sprint1-process.ps1",
+      "bytes": 1069,
+      "sha256": "c0b56c0bb9777170b43c9a8b97a4d38fc46d80db5da6c2a2a323e9a17bdce66f"
+    },
+    {
+      "path": "scripts/sprint1-setup.mjs",
+      "bytes": 4725,
+      "sha256": "8f4621e41024303983e365eb4d872e1a58a75fd8455ca0d4219632975997ffdf"
+    },
+    {
+      "path": "scripts/sprint1-sources.py",
+      "bytes": 1725,
+      "sha256": "3adc699e23f68b8b6265fb6b1ee59ab39f1a90bf4990b76f5eb6ed012b82fe27"
+    },
+    {
+      "path": "scripts/sprint1-tests.mjs",
+      "bytes": 5705,
+      "sha256": "12d14b84ac060b74473e90b63aef7d315108ce2c0869f6f884226fe2b13db179"
+    },
+    {
+      "path": "scripts/verify-sprint1-api.mjs",
+      "bytes": 11443,
+      "sha256": "0d820fc7e2ec706ce399aa87873ed77b57cd16206146e103fe8d08899d917ab3"
+    },
+    {
+      "path": "scripts/verify-sprint1-browser.mjs",
+      "bytes": 11636,
+      "sha256": "1cb528e1d22e66a0988d16067080f3b2e84f37a8bd8ad4070fe8c3a8bfa61aac"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "source": "61749f82ccaebc8fa102456b145881f43bd68fcf",
+  "result": "PASS",
+  "functionalBaseline": "4033da4dde1484fc777806421006f9c17e831f8b",
+  "freshCloneSource": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "method": "Git exactproductioninput comparison apps/packages/patches/lock/workspace/Dockerfile/deploy and restoredpackage403; exactdemo/app/lock comparison02..617. Publisherunchanged03..617. OnlyCIguard placement/reviewtools/docs differ fromoriginalclone.",
+  "limits": [
+    "No oldtestrun or email/peer/rollback proof relabelled as runon617",
+    "CurrentCI/API/browser/session/timing/source/keys verified separately",
+    "K01timebox/mentor remains historicalNOTRUN acceptedDEC17"
+  ],
+  "actualDemoEntryPoints": [
+    {
+      "path": "scripts/sprint1-demo.ps1",
+      "originalSource": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "currentSource": "61749f82ccaebc8fa102456b145881f43bd68fcf",
+      "blob": "22add9ffca532a85dc2ae2ff7d76e78f0c006026",
+      "exactEqual": true
+    },
+    {
+      "path": "scripts/sprint1-onboarding.mjs",
+      "originalSource": "02a8e86a6fea05a49bd27902c08652920e444a10",
+      "currentSource": "61749f82ccaebc8fa102456b145881f43bd68fcf",
+      "blob": "d3f053c2e2fc2395e0627ea7ffbeb7c004144a38",
+      "exactEqual": true
+    }
+  ]
+}

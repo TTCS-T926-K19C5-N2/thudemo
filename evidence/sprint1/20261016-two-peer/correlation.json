@@ -1,0 +1,80 @@
+{
+  "startedUtc": "2026-10-15T17:31:27.699Z",
+  "source": "b52ba6afa07d29444e5e809892e5325f0966625c",
+  "featureHead": "6c5891c54939c9fbee01d885b0964d0cfce6cdc1",
+  "origin": "https://10.88.164.155:3470",
+  "remoteIP": "10.88.164.22",
+  "laptopIP": "10.88.164.155",
+  "input": {
+    "file": ".sprint1-staging/incoming/sprint1-wifi-client-evidence.json",
+    "sha256": "d5d8521d5384543deb03979e45a3c3507c920bee8b067ad43f0539127a5a75b5"
+  },
+  "clientEvidenceTier": "User-executed Windows probe artifact, correlated with live server Redis state",
+  "results": [
+    {
+      "name": "client30fail-next429-correlates-real-remote-ip-and-run-specific-account-counters",
+      "status": "PASS"
+    },
+    {
+      "name": "laptop-login-and-me200-while-other-real-wifi-peer-remains-locked-despite-spoofed-headers",
+      "status": "PASS",
+      "remoteRemainingMsAtLaptopSuccess": 610349
+    }
+  ],
+  "status": "PASS",
+  "limits": [
+    "Not a packet capture or cryptographic client attestation",
+    "No remote credential used; remote429 from client artifact, laptop200 independently observed",
+    "Verifier uses read-only Redis commands; no change/DEL/TTL shortening of the remote IP or probe-account counters, and no Redis restart. Normal successful login/logout uses the existing application contract.",
+    "Does not satisfy independent human PR review or postmerge auto-deploy"
+  ],
+  "client": {
+    "runId": "7190b4db6b2f49698bad3b4c6fdc782c",
+    "startedUtc": "2026-10-15T17:26:36.0240737Z",
+    "completedUtc": "2026-10-15T17:26:45.0475150Z",
+    "clientIPv4": [
+      "10.88.164.22"
+    ],
+    "wrongAttempts": 30,
+    "nextStatus": 429,
+    "homeStatus": 200,
+    "healthStatus": 200,
+    "tls": "Windows certificate and hostname verification enabled; no bypass",
+    "redaction": "Unrelated virtual adapter IPv4 addresses omitted; original private file SHA256 retained."
+  },
+  "remoteBefore": {
+    "count": 30,
+    "remainingMs": 610524,
+    "observedUtc": "2026-10-15T17:31:27.721Z"
+  },
+  "laptopBefore": {
+    "count": null,
+    "remainingMs": -2,
+    "observedUtc": "2026-10-15T17:31:27.723Z"
+  },
+  "fixtureCorrelation": {
+    "attemptedAccounts": 30,
+    "allFailureCountersEqualOne": true,
+    "blocked31stAccountCounterAbsent": true
+  },
+  "spoofedIPCountersAbsent": true,
+  "laptopLogin": {
+    "observedUtc": "2026-10-15T17:31:27.880Z",
+    "status": 200,
+    "route": "/api/Auth/LOGIN",
+    "callerSpoofIP": "10.88.164.22",
+    "transport": "Actual laptop LAN TCP source bound explicitly; exact TLS certificate and hostname verified"
+  },
+  "remoteAfterLogin": {
+    "count": 30,
+    "remainingMs": 610349,
+    "observedUtc": "2026-10-15T17:31:27.894Z"
+  },
+  "laptopAfterLogin": {
+    "count": null,
+    "remainingMs": -2,
+    "observedUtc": "2026-10-15T17:31:27.895Z"
+  },
+  "completedUtc": "2026-10-15T17:31:27.895Z",
+  "ownVerificationSessionLogoutStatus": 200
+}

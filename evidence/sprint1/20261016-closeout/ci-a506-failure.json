@@ -1,0 +1,34 @@
+{
+  "source": "a506cdab21ecc89c88d272b26d8fea13c4dcf9ee",
+  "runs": [
+    {
+      "name": "T-31 / hold-concurrency",
+      "head_sha": "a506cdab21ecc89c88d272b26d8fea13c4dcf9ee",
+      "status": "completed",
+      "conclusion": "skipped",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38880885392/job/116907625588",
+      "started_at": "2026-10-16T09:31:39Z",
+      "completed_at": "2026-10-16T09:31:39Z"
+    },
+    {
+      "name": "K-01 / candidate-research",
+      "head_sha": "a506cdab21ecc89c88d272b26d8fea13c4dcf9ee",
+      "status": "completed",
+      "conclusion": "skipped",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38880885392/job/116907625165",
+      "started_at": "2026-10-16T09:31:39Z",
+      "completed_at": "2026-10-16T09:31:39Z"
+    },
+    {
+      "name": "T-02 / test",
+      "head_sha": "a506cdab21ecc89c88d272b26d8fea13c4dcf9ee",
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38880885392/job/116907067466",
+      "started_at": "2026-10-16T09:30:14Z",
+      "completed_at": "2026-10-16T09:31:38Z"
+    }
+  ],
+  "failure": "orders.e2e retry test timed out5000ms; default MoMo adapter can call external network with10000ms timeout; late write after fixture cleanup caused P2003",
+  "classification": "Pre-existing integration harness dependency; T02 CI repair uses existing mock provider, preserves business assertions and timeouts. Not Sprint3 payment feature acceptance."
+}

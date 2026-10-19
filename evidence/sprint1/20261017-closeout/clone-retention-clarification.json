@@ -1,0 +1,12 @@
+{
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "result": "PASS independent actualStop/Start recheck",
+  "credentialsFileBytesUnchanged": true,
+  "reportDigest": "c5585d369877ce355fde8a2774936073b994369cac8e418a6e2aebb841078713",
+  "latestStatusObserved": "17/10/2026 READY weblocalhost3000/API3001/Mailpit24931",
+  "historicalMetadataAnomaly": "Originalfresh-exact-clone-lifecycle.json hardcodedcredentialsRetainedfalse while its harness assertedcombinedconfig/env/signing hashunchanged. Originalreceipt remains untouched; subsequent independentactualStop/Start verifiedindividualfilebytes and retainedevent/showtime/migrations.",
+  "limitations": [
+    "Not a new bootstrap on617; originalfullcleanbootstrap and lifecycle evidence retain02source",
+    "Exactunchangedproduction/demo inputs and currentfrozeninstallCI establish applicability; no newInternetemail claim"
+  ]
+}

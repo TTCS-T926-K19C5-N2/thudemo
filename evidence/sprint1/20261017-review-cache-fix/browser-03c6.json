@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-17T04:34:24.214Z",
+  "source": "03c6aa7796f17683281cc612fb955976cdf4daae",
+  "origin": "https://10.228.54.197:3470",
+  "transport": "Chromium Windows trusted certificate; no HTTPS bypass",
+  "browserRouting": "Browser plugin not available in listed skills; existing regular Playwright used",
+  "viewports": ["1440x1000", "390x844"],
+  "results": [
+    {
+      "assertion": "Trusted current-LAN HTTPS login→owner event form on integrated deployment",
+      "result": "PASS"
+    },
+    {
+      "assertion": "Current-LAN organizerB direct owner URL denied; mobile390 no horizontal overflow",
+      "result": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "unexpectedConsoleErrors": [],
+  "expected403ConsoleMessages": 1,
+  "compatibleFullBrowserProof": "../20261017-pr96/browser-038f8baff4c1/results.json",
+  "limitations": [
+    "Bounded current-network smoke;15 prior full assertions retain identical product-source proof",
+    "Not a second device test"
+  ]
+}

@@ -1,0 +1,267 @@
+{
+  "policy": "DEC-18",
+  "result": "PASS",
+  "reviewErrorWith5CIGreen": {
+    "head": "6e4bb4986c0660eb70d6e372375fbcc0f9bc66b2",
+    "statusId": 56580380701,
+    "state": "error",
+    "mergeState": "BLOCKED",
+    "humanApprovals": 0
+  },
+  "missingNewHeadWith5CIGreen": {
+    "at": "2026-10-17T04:18:23.297Z",
+    "result": "PASS",
+    "policy": "DEC-18",
+    "head": "547017e856b9eb9d7cd978dd2b4ddd04211819ff",
+    "base": "4033da4dde1484fc777806421006f9c17e831f8b",
+    "oldReviewedHead": "6e4bb4986c0660eb70d6e372375fbcc0f9bc66b2",
+    "oldReviewStatus": {
+      "id": 56580384460,
+      "state": "success"
+    },
+    "newHeadReviewStatus": "MISSING",
+    "requiredCIAllSuccess": true,
+    "requiredApprovals": 0,
+    "mergeStateStatus": "BLOCKED",
+    "autoMergeRequest": null,
+    "repoAutoMergeEnabled": false,
+    "stalePublisherExit": 1,
+    "stalePublisherReason": "Technical review refused: Stale or wrong base/head",
+    "mergeAttempted": false,
+    "meaning": "Newhead with all5CIgreen remainsBLOCKED because reviewmissing; success onoldhead not reused; publisher refuses oldreport and creates no newheadstatus",
+    "requiredChecks": [
+      {
+        "id": 117306372737,
+        "name": "T-31 / hold-concurrency",
+        "appId": 15368,
+        "head": "547017e856b9eb9d7cd978dd2b4ddd04211819ff",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001779931/job/117306372737"
+      },
+      {
+        "id": 117306372714,
+        "name": "K-01 / candidate-research",
+        "appId": 15368,
+        "head": "547017e856b9eb9d7cd978dd2b4ddd04211819ff",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001779931/job/117306372714"
+      },
+      {
+        "id": 117306367348,
+        "name": "T-31 / hold-concurrency",
+        "appId": 15368,
+        "head": "547017e856b9eb9d7cd978dd2b4ddd04211819ff",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001782484/job/117306367348"
+      },
+      {
+        "id": 117306367347,
+        "name": "K-01 / candidate-research",
+        "appId": 15368,
+        "head": "547017e856b9eb9d7cd978dd2b4ddd04211819ff",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001782484/job/117306367347"
+      },
+      {
+        "id": 117306059757,
+        "name": "T-02 / lint",
+        "appId": 15368,
+        "head": "547017e856b9eb9d7cd978dd2b4ddd04211819ff",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001782484/job/117306059757"
+      },
+      {
+        "id": 117306059747,
+        "name": "T-02 / build-and-typecheck",
+        "appId": 15368,
+        "head": "547017e856b9eb9d7cd978dd2b4ddd04211819ff",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001782484/job/117306059747"
+      },
+      {
+        "id": 117306059656,
+        "name": "T-02 / test",
+        "appId": 15368,
+        "head": "547017e856b9eb9d7cd978dd2b4ddd04211819ff",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001782484/job/117306059656"
+      },
+      {
+        "id": 117306052486,
+        "name": "T-02 / test",
+        "appId": 15368,
+        "head": "547017e856b9eb9d7cd978dd2b4ddd04211819ff",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001779931/job/117306052486"
+      },
+      {
+        "id": 117306052425,
+        "name": "T-02 / lint",
+        "appId": 15368,
+        "head": "547017e856b9eb9d7cd978dd2b4ddd04211819ff",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001779931/job/117306052425"
+      },
+      {
+        "id": 117306052294,
+        "name": "T-02 / build-and-typecheck",
+        "appId": 15368,
+        "head": "547017e856b9eb9d7cd978dd2b4ddd04211819ff",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001779931/job/117306052294"
+      }
+    ]
+  },
+  "requiredLintFailureOther4CIAndReviewGreen": {
+    "at": "2026-10-17T04:14:46.452Z",
+    "policy": "DEC-18",
+    "kind": "Isolated CI negative control, not Sprint1 productFAIL",
+    "result": "PASS",
+    "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/103",
+    "head": "620bafae34f7819d73124358bb3c2b4edf1300cb",
+    "base": "4033da4dde1484fc777806421006f9c17e831f8b",
+    "mergeStateStatus": "BLOCKED",
+    "requiredApprovals": 0,
+    "technicalReviewStatus": {
+      "id": 56580367543,
+      "state": "success",
+      "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/103#issuecomment-6229485131"
+    },
+    "requiredChecks": [
+      {
+        "id": 117305796437,
+        "name": "K-01 / candidate-research",
+        "appId": 15368,
+        "head": "620bafae34f7819d73124358bb3c2b4edf1300cb",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001591531/job/117305796437"
+      },
+      {
+        "id": 117305796284,
+        "name": "T-31 / hold-concurrency",
+        "appId": 15368,
+        "head": "620bafae34f7819d73124358bb3c2b4edf1300cb",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001591531/job/117305796284"
+      },
+      {
+        "id": 117305730334,
+        "name": "T-31 / hold-concurrency",
+        "appId": 15368,
+        "head": "620bafae34f7819d73124358bb3c2b4edf1300cb",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001588357/job/117305730334"
+      },
+      {
+        "id": 117305730287,
+        "name": "K-01 / candidate-research",
+        "appId": 15368,
+        "head": "620bafae34f7819d73124358bb3c2b4edf1300cb",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001588357/job/117305730287"
+      },
+      {
+        "id": 117305474657,
+        "name": "T-02 / test",
+        "appId": 15368,
+        "head": "620bafae34f7819d73124358bb3c2b4edf1300cb",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001591531/job/117305474657"
+      },
+      {
+        "id": 117305474552,
+        "name": "T-02 / build-and-typecheck",
+        "appId": 15368,
+        "head": "620bafae34f7819d73124358bb3c2b4edf1300cb",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001591531/job/117305474552"
+      },
+      {
+        "id": 117305474408,
+        "name": "T-02 / lint",
+        "appId": 15368,
+        "head": "620bafae34f7819d73124358bb3c2b4edf1300cb",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001591531/job/117305474408"
+      },
+      {
+        "id": 117305464846,
+        "name": "T-02 / lint",
+        "appId": 15368,
+        "head": "620bafae34f7819d73124358bb3c2b4edf1300cb",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001588357/job/117305464846"
+      },
+      {
+        "id": 117305464814,
+        "name": "T-02 / build-and-typecheck",
+        "appId": 15368,
+        "head": "620bafae34f7819d73124358bb3c2b4edf1300cb",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001588357/job/117305464814"
+      },
+      {
+        "id": 117305464665,
+        "name": "T-02 / test",
+        "appId": 15368,
+        "head": "620bafae34f7819d73124358bb3c2b4edf1300cb",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/39001588357/job/117305464665"
+      }
+    ],
+    "actualLintEvidence": [
+      "2026-10-17T04:11:23.3673620Z apps/web lint: /home/runner/work/thudemo/thudemo/apps/web/src/sprint1-ci-lint-probe.tsx",
+      "2026-10-17T04:11:23.3699260Z apps/web lint:   3:10  error  Do not use an `<a>` element to navigate to `/events/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages"
+    ],
+    "workflowUnmodified": true,
+    "assertionsUnmodified": true,
+    "autoMergeRequest": null,
+    "repoAutoMergeEnabled": false,
+    "mergeAttempted": false,
+    "neverMerged": true,
+    "meaning": "Only requiredlint is red; other4requiredCIgreen and technicalreview success; actual GitHub stateBLOCKED. This verifies current policy without attempting to integrate intentionallyfailing fixture."
+  },
+  "positiveFinalReview": {
+    "head": "11831c30ce3a3be00e63ffacf5ecc1f525aec00b",
+    "review": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229717726",
+    "all6GatesBeforeMerge": true,
+    "mergedSource": "61749f82ccaebc8fa102456b145881f43bd68fcf"
+  },
+  "nativePRRequiredReadback": {
+    "pattern": "develop",
+    "requiresApprovingReviews": true,
+    "requiredApprovingReviewCount": 0,
+    "requiresStatusChecks": true,
+    "requiresStrictStatusChecks": true,
+    "isAdminEnforced": true,
+    "requiresConversationResolution": true,
+    "allowsForcePushes": false,
+    "allowsDeletions": false
+  },
+  "mainUnchanged": true,
+  "repoAutoMergeEnabled": true,
+  "onlyArmedAssignedPRs": [100, 104],
+  "probe103ClosedNeverMerged": true,
+  "controlEvidence": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/100#issuecomment-6229548461",
+  "limits": "Operationalpublisher/app_id=-1 does not ensure independence or resist maliciousstatuswriters; no directdeveloppush/force/delete probe attempted."
+}

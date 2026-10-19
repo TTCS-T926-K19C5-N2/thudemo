@@ -1,0 +1,2 @@
+{"BlockIO":"5.69MB / 0B","CPUPerc":"0.03%","Container":"sang-render-api-20261004","ID":"5b1ce7bf846a","MemPerc":"22.30%","MemUsage":"114.2MiB / 512MiB","Name":"sang-render-api-20261004","NetIO":"12.5MB / 16.3MB","PIDs":"18"}
+{"BlockIO":"246kB / 73.7kB","CPUPerc":"0.02%","Container":"sang-render-web-20261004","ID":"7e56f95838ec","MemPerc":"19.38%","MemUsage":"99.25MiB / 512MiB","Name":"sang-render-web-20261004","NetIO":"16.5MB / 20MB","PIDs":"18"}

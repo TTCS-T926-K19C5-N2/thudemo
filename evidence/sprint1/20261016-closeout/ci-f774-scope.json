@@ -1,0 +1,143 @@
+{
+  "prHead": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+  "base": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
+  "requiredChecks": [
+    "T-02 / build-and-typecheck",
+    "T-02 / lint",
+    "T-02 / test",
+    "K-01 / candidate-research",
+    "T-31 / hold-concurrency"
+  ],
+  "requiredChecksAllSuccess": true,
+  "coreCIWorkflowRun": {
+    "id": 38877028685,
+    "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877028685",
+    "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+    "run_started_at": "2026-10-16T08:56:19Z",
+    "updated_at": "2026-10-16T08:59:56Z",
+    "conclusion": "success"
+  },
+  "wallSeconds": 217.0,
+  "allChecks": [
+    {
+      "name": "T-31 / hold-concurrency",
+      "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877028685/job/116894949966",
+      "started_at": "2026-10-16T08:57:49Z",
+      "completed_at": "2026-10-16T08:59:55Z"
+    },
+    {
+      "name": "K-01 / candidate-research",
+      "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877028685/job/116894949829",
+      "started_at": "2026-10-16T08:57:49Z",
+      "completed_at": "2026-10-16T08:58:29Z"
+    },
+    {
+      "name": "T-31 / hold-concurrency",
+      "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877021932/job/116894898719",
+      "started_at": "2026-10-16T08:57:41Z",
+      "completed_at": "2026-10-16T08:59:40Z"
+    },
+    {
+      "name": "K-01 / candidate-research",
+      "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877021932/job/116894898635",
+      "started_at": "2026-10-16T08:57:41Z",
+      "completed_at": "2026-10-16T08:58:16Z"
+    },
+    {
+      "name": "S-43 / monitoring-integration",
+      "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877028510/job/116894601276",
+      "started_at": "2026-10-16T08:56:51Z",
+      "completed_at": "2026-10-16T09:06:52Z"
+    },
+    {
+      "name": "S-31 / signed QR admission HTTP and browser",
+      "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877031411/job/116894436999",
+      "started_at": "2026-10-16T08:56:24Z",
+      "completed_at": "2026-10-16T08:58:13Z"
+    },
+    {
+      "name": "T-02 / lint",
+      "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877028685/job/116894427940",
+      "started_at": "2026-10-16T08:56:22Z",
+      "completed_at": "2026-10-16T08:56:55Z"
+    },
+    {
+      "name": "T-02 / test",
+      "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877028685/job/116894427838",
+      "started_at": "2026-10-16T08:56:22Z",
+      "completed_at": "2026-10-16T08:57:46Z"
+    },
+    {
+      "name": "T-02 / build-and-typecheck",
+      "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877028685/job/116894427594",
+      "started_at": "2026-10-16T08:56:23Z",
+      "completed_at": "2026-10-16T08:57:21Z"
+    },
+    {
+      "name": "S-30 / signed QR HTTP and browser",
+      "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877028565/job/116894426986",
+      "started_at": "2026-10-16T08:56:22Z",
+      "completed_at": "2026-10-16T08:58:20Z"
+    },
+    {
+      "name": "T-02 / lint",
+      "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877021932/job/116894404919",
+      "started_at": "2026-10-16T08:56:19Z",
+      "completed_at": "2026-10-16T08:56:57Z"
+    },
+    {
+      "name": "T-02 / build-and-typecheck",
+      "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877021932/job/116894404771",
+      "started_at": "2026-10-16T08:56:18Z",
+      "completed_at": "2026-10-16T08:57:04Z"
+    },
+    {
+      "name": "T-02 / test",
+      "head_sha": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877021932/job/116894404354",
+      "started_at": "2026-10-16T08:56:18Z",
+      "completed_at": "2026-10-16T08:57:38Z"
+    }
+  ],
+  "failedS30ActualCheckout": "7c356abd0868cf61e20e4e8502022f1cab85b64c",
+  "headAndTestMergeTreeEqual": "c02f171b29055ef272b9ad24494fd253a77441dd",
+  "interpretation": "Required merge policy checks pass. S30 baseline image-decoder failure retained separately; it is not a Sprint1 AC. Do not claim every repository check green."
+}

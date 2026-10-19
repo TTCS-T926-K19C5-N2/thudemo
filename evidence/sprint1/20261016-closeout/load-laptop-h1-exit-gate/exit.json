@@ -1,0 +1,4 @@
+{
+  "exitCode": 1,
+  "expected": "nonzero when p95 >=300; all raw samples preserved"
+}

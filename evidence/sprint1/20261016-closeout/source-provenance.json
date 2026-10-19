@@ -1,0 +1,53 @@
+{
+  "productSource": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "prHeadAtCapture": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "base": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
+  "mergeSha": null,
+  "integratedDeployedSha": null,
+  "manualDeployedSha": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "scope": "DEC09 S01/T01-03,S02/T04-06,S04/T09-10,K01; V1",
+  "applicationDiffAccf832ToA2e5f67": [
+    "apps/api/test/sprint2.e2e-spec.ts"
+  ],
+  "twoPeerEvidenceSource": "b52ba6afa07d29444e5e809892e5325f0966625c",
+  "twoPeerCompatibility": [
+    {
+      "path": "apps/api/src/auth/auth.service.ts",
+      "unchanged": true,
+      "oldSha256": "8797311334f066cc8d3b022111749f6130ccddc153a82c33c14468e371eb25c4",
+      "newSha256": "8797311334f066cc8d3b022111749f6130ccddc153a82c33c14468e371eb25c4"
+    },
+    {
+      "path": "apps/api/src/redis/redis.service.ts",
+      "unchanged": true,
+      "oldSha256": "8a4322c2d04366343c71d941fd834c6a1a855c08a51f6d54621b0fed23cabd3a",
+      "newSha256": "8a4322c2d04366343c71d941fd834c6a1a855c08a51f6d54621b0fed23cabd3a"
+    },
+    {
+      "path": "packages/shared/login-peer.js",
+      "unchanged": true,
+      "oldSha256": "e489ca3241aec8b17bdb9175375771b30f1d02594ebe565e7ec81613ed22e56f",
+      "newSha256": "e489ca3241aec8b17bdb9175375771b30f1d02594ebe565e7ec81613ed22e56f"
+    },
+    {
+      "path": "apps/web/src/lib/server/login-transport.mjs",
+      "unchanged": true,
+      "oldSha256": "d65ed43b0943b92420536baa6468232281b5a0c5628b54ca4c231821dee30258",
+      "newSha256": "d65ed43b0943b92420536baa6468232281b5a0c5628b54ca4c231821dee30258"
+    }
+  ],
+  "legacyMigrationEvidence": {
+    "source": "81d1dd9d8f453b32ed0c6956399e5600f71a32d6",
+    "modifier": "plus original local repair patch/source-manifest in evidence/sprint1/20261015; not a b52 or a2 runtime run"
+  },
+  "postmerge": "BLOCKED pending valid human approval/premerge gates; manual deployment does not prove automatic deployment",
+  "harnessCommit": "b50cd9ae5709de8486b3736c6fa075a64faa89e1",
+  "watcherRehearsalCompatibility": {
+    "path": "scripts/sprint1-staging-watch.mjs",
+    "from": "cdb7fdb",
+    "to": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+    "unchanged": true,
+    "beforeSha256": "7ab177f927af0c75d2c966b5616490045be51ab6caec42437e48717a2e246224",
+    "afterSha256": "7ab177f927af0c75d2c966b5616490045be51ab6caec42437e48717a2e246224"
+  }
+}

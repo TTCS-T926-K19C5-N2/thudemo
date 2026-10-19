@@ -1,0 +1,25 @@
+{
+  "time": "2026-10-16T10:12:36.828Z",
+  "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "origin": "https://10.88.164.155:3470",
+  "result": "PASS",
+  "case": "unknown-email-and-wrong-password-same-error",
+  "wrongStatus": 401,
+  "unknownStatus": 401,
+  "response": {
+    "message": "Email hoặc mật khẩu không đúng.",
+    "error": "Unauthorized",
+    "statusCode": 401
+  },
+  "sameResponse": true,
+  "existingAccountRecoveredLogin200": true,
+  "failures": 2,
+  "scope": "One wrong-password and one nonexistent-email request, only the dedicated fixture. No repeated IP limit probe or lockout test; real account counter recovered by successful login.",
+  "verificationSource": {
+    "path": "evidence\\sprint1\\20261016-acceptance-audit\\acceptance-enumeration.mjs",
+    "sha256": "4a86a0f5c0e62db8b736d45cd41ddc126fdc65dc46c8dfa201437884467e50e1",
+    "executedAs": ".sprint1-local/acceptance-enumeration.mjs",
+    "executedSha256": "e519707ae7e103d01f7de088e1c610030d445937f2ee2424ac1bd775cc291c71",
+    "publicationTransform": "Prettier formatting only; executed and published hashes recorded separately"
+  }
+}

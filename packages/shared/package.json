@@ -1,0 +1,23 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "types": "index.ts",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./ticket-qr": {
+      "types": "./ticket-qr.d.ts",
+      "default": "./ticket-qr.js"
+    },
+    "./registration-notice": {
+      "types": "./registration-notice.d.ts",
+      "default": "./registration-notice.js"
+    },
+    "./login-peer": {
+      "types": "./login-peer.d.ts",
+      "default": "./login-peer.js"
+    }
+  }
+}

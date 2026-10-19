@@ -1,0 +1,604 @@
+<!DOCTYPE html><html lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>M04 Quản lý suất diễn - Vé Sự Kiện</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface": "#191b23",
+            "inverse-surface": "#2e3038",
+            "on-secondary": "#ffffff",
+            "on-primary": "#ffffff",
+            "secondary": "#4c5d8b",
+            "primary": "#0045a9",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed": "#031944",
+            "on-secondary-container": "#415381",
+            "tertiary-fixed": "#ffdbcd",
+            "surface-variant": "#e1e2ec",
+            "on-tertiary-container": "#ffd8c9",
+            "inverse-primary": "#b1c5ff",
+            "surface-container": "#ededf7",
+            "surface-bright": "#faf8ff",
+            "primary-container": "#175cd3",
+            "on-primary-fixed": "#001847",
+            "outline": "#737785",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "outline-variant": "#c3c6d6",
+            "on-primary-fixed-variant": "#0040a0",
+            "on-error-container": "#93000a",
+            "surface-dim": "#d9d9e3",
+            "on-primary-container": "#d7e0ff",
+            "surface-container-low": "#f3f3fd",
+            "on-tertiary": "#ffffff",
+            "inverse-on-surface": "#f0f0fa",
+            "secondary-fixed-dim": "#b4c5fa",
+            "surface-tint": "#0957ce",
+            "on-tertiary-fixed": "#360f00",
+            "surface-container-highest": "#e1e2ec",
+            "on-secondary-fixed-variant": "#344572",
+            "surface": "#faf8ff",
+            "primary-fixed-dim": "#b1c5ff",
+            "surface-container-high": "#e7e7f2",
+            "on-surface-variant": "#424654",
+            "on-tertiary-fixed-variant": "#7d2d00",
+            "background": "#faf8ff",
+            "tertiary-container": "#ac4100",
+            "secondary-container": "#b6c8fd",
+            "secondary-fixed": "#dae2ff",
+            "tertiary-fixed-dim": "#ffb597",
+            "primary-fixed": "#dae2ff",
+            "tertiary": "#853000",
+            "on-background": "#191b23",
+            "error": "#ba1a1a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Geist", "sans-serif"],
+            "display": ["Geist", "sans-serif"],
+            "body": ["Geist", "sans-serif"],
+            "label": ["Geist", "sans-serif"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined[data-weight="fill"] {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body {
+      font-family: 'Geist', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased flex justify-center min-h-screen">
+<!-- Mobile Viewport Canvas 390px -->
+<div class="w-full max-w-[390px] min-h-screen bg-surface-container-lowest flex flex-col relative pb-20 shadow-2xl">
+<!-- Top Admin Header -->
+<header class="sticky top-0 z-40 bg-surface border-b border-outline-variant flex items-center justify-between px-4 h-14 w-full">
+<div class="flex items-center gap-2">
+<button aria-label="Mở menu ban tổ chức" class="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-surface-container text-on-surface transition-colors active:opacity-80" id="btnOpenDrawer">
+<span class="material-symbols-outlined text-[24px]">menu</span>
+</button>
+<div>
+<h1 class="font-headline text-base font-bold text-primary tracking-tight leading-tight">04 Quản lý suất diễn</h1>
+<p class="font-label text-[10px] text-on-surface-variant leading-none">Nhà hát Ánh Dương · Đêm nhạc Tháng Mười</p>
+</div>
+</div>
+<div class="flex items-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-surface-container-high text-on-surface-variant border border-outline-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+          Ops Admin
+        </span>
+</div>
+</header>
+<!-- Environment Watermark Sub-header -->
+<div class="bg-surface-container-low px-4 py-1.5 border-b border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">format_image_left</span>
+<span class="text-[11px] font-medium tracking-tight">Demo Sprint 2 · dữ liệu giả</span>
+</div>
+<span class="text-[10px] text-outline font-normal">Fictional events only</span>
+</div>
+<!-- Organizer Navigation Quick Tabs -->
+<nav class="bg-surface px-4 pt-2 border-b border-outline-variant overflow-x-auto no-scrollbar"><div class="flex gap-4 min-w-max text-xs font-medium"><button class="pb-2.5 border-b-2 border-transparent text-on-surface-variant hover:text-primary flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">theater_comedy</span>Sự kiện</button><button class="pb-2.5 border-b-2 border-primary-container text-primary-container font-semibold flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">schedule</span>Suất diễn</button><button class="pb-2.5 border-b-2 border-transparent text-on-surface-variant hover:text-primary flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">map</span>Sơ đồ ghế</button><button class="pb-2.5 border-b-2 border-transparent text-on-surface-variant hover:text-primary flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">sell</span>Giá vé</button><button class="pb-2.5 border-b-2 border-transparent text-on-surface-variant hover:text-primary flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">person</span>Tài khoản</button></div></nav>
+<!-- Main Content Area with 16px gutters -->
+<main class="flex-1 px-4 py-3 space-y-4">
+<!-- Show Selector Horizontal Strip -->
+<section>
+<div class="flex items-center justify-between mb-2">
+<h2 class="text-xs font-bold text-on-surface uppercase tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">calendar_month</span>
+            Chọn suất diễn kiểm tra
+          </h2>
+<span class="text-[11px] text-outline">4 suất trong hệ thống</span>
+</div>
+<div class="flex gap-2.5 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4">
+<!-- Card Suất 01 (Active) -->
+<div class="slot-card flex-shrink-0 w-[240px] p-3 rounded-lg border-2 border-primary-container bg-surface-container-low shadow-sm cursor-pointer transition-all" id="card-slot-1" onclick="selectSlot(1)" role="button" tabindex="0">
+<div class="flex items-start justify-between">
+<span class="text-[11px] font-semibold text-primary px-1.5 py-0.5 rounded bg-surface-container-highest">Suất 01</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-primary-fixed text-on-primary-fixed">
+                Sẵn sàng mở
+              </span>
+</div>
+<div class="mt-2">
+<p class="text-xs font-bold text-on-surface">Thứ Sáu, 16/10/2026</p>
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[13px]">alarm</span>
+<span>19:30 · 2.000 chỗ</span>
+</div>
+</div>
+<div class="mt-2.5 pt-2 border-t border-outline-variant flex items-center justify-between text-[11px]">
+<span class="text-on-surface-variant">Trạng thái:</span>
+<span class="font-medium text-primary">Nháp (Hoàn tất 2/2)</span>
+</div>
+</div>
+<!-- Card Suất 02 -->
+<div class="slot-card flex-shrink-0 w-[240px] p-3 rounded-lg border border-outline-variant bg-surface-container-lowest hover:border-outline cursor-pointer transition-all" id="card-slot-2" onclick="selectSlot(2)" role="button" tabindex="0">
+<div class="flex items-start justify-between">
+<span class="text-[11px] font-semibold text-on-surface-variant px-1.5 py-0.5 rounded bg-surface-container">Suất 02</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-surface-container-high text-on-surface">
+                Đang bán (92%)
+              </span>
+</div>
+<div class="mt-2">
+<p class="text-xs font-bold text-on-surface">Thứ Bảy, 17/10/2026</p>
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[13px]">alarm</span>
+<span>19:30 · 1.840 đã đặt</span>
+</div>
+</div>
+<div class="mt-2.5 pt-2 border-t border-outline-variant flex items-center justify-between text-[11px]">
+<span class="text-on-surface-variant">Khóa cấu hình:</span>
+<span class="font-medium text-on-surface">Đã khóa</span>
+</div>
+</div>
+<!-- Card Suất 03 -->
+<div class="slot-card flex-shrink-0 w-[240px] p-3 rounded-lg border border-outline-variant bg-surface-container-lowest hover:border-outline cursor-pointer transition-all" id="card-slot-3" onclick="selectSlot(3)" role="button" tabindex="0">
+<div class="flex items-start justify-between">
+<span class="text-[11px] font-semibold text-on-surface-variant px-1.5 py-0.5 rounded bg-surface-container">Suất 03</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-surface-dim text-on-surface-variant">
+                Đã đóng
+              </span>
+</div>
+<div class="mt-2">
+<p class="text-xs font-bold text-on-surface">Chủ Nhật, 18/10/2026</p>
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[13px]">alarm</span>
+<span>15:00 · Kết thúc bán</span>
+</div>
+</div>
+<div class="mt-2.5 pt-2 border-t border-outline-variant flex items-center justify-between text-[11px]">
+<span class="text-on-surface-variant">Hoàn tất:</span>
+<span class="font-medium text-outline">Lưu kho</span>
+</div>
+</div>
+<!-- Card Suất 04 -->
+<div class="slot-card flex-shrink-0 w-[240px] p-3 rounded-lg border border-error bg-surface-container-lowest hover:border-error cursor-pointer transition-all" id="card-slot-4" onclick="selectSlot(4)" role="button" tabindex="0">
+<div class="flex items-start justify-between">
+<span class="text-[11px] font-semibold text-error px-1.5 py-0.5 rounded bg-error-container">Suất 04</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-error-container text-on-error-container">
+                Thiếu sơ đồ (0/3)
+              </span>
+</div>
+<div class="mt-2">
+<p class="text-xs font-bold text-on-surface">Thứ Hai, 19/10/2026</p>
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[13px]">alarm</span>
+<span>20:00 · 0 ghế</span>
+</div>
+</div>
+<div class="mt-2.5 pt-2 border-t border-outline-variant flex items-center justify-between text-[11px]">
+<span class="text-error font-medium">Chưa cấu hình</span>
+<span class="font-semibold text-error">Chặn mở</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Slot Details Container (Dynamically toggled context) -->
+<section class="space-y-4" id="slot-details-container">
+<!-- Slot Overview Card -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-3.5 shadow-sm">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2.5 mb-2.5">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="text-xs font-bold text-on-surface" id="detail-slot-id">Suất 01: 16/10/2026 (19:30)</span>
+</div>
+<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-primary-fixed text-on-primary-fixed" id="detail-badge">
+              Nháp (Sẵn sàng mở)
+            </span>
+</div>
+<div class="grid grid-cols-2 gap-2.5 text-xs">
+<div class="bg-surface-container-low p-2.5 rounded">
+<span class="text-[11px] text-on-surface-variant block">Địa điểm giả định</span>
+<span class="font-semibold text-on-surface mt-0.5 block truncate">Nhà hát Ánh Dương</span>
+<span class="text-[10px] text-outline">Quy mô: 2.000 chỗ (3 khu)</span>
+</div>
+<div class="bg-surface-container-low p-2.5 rounded">
+<span class="text-[11px] text-on-surface-variant block">Khung giá vé</span>
+<span class="font-semibold text-on-surface mt-0.5 block">350.000 ₫ – 1.2M ₫</span>
+<span class="text-[10px] text-outline">Đã phân hạng vé</span>
+</div>
+<div class="bg-surface-container-low p-2.5 rounded col-span-2 flex items-center justify-between"><div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px] text-primary">timer</span><div><span class="font-semibold text-on-surface block text-xs">Thời gian giữ chỗ 10 phút</span><span class="text-[10px] text-on-surface-variant block">Thời gian tính từ khi chọn ghế đầu tiên</span></div></div><span class="text-[10px] font-medium px-2 py-1 rounded bg-surface-container-highest text-on-surface-variant">Áp dụng</span></div>
+</div>
+</div>
+<!-- Readiness Checklist Card -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant p-3.5 shadow-sm" id="checklist-card">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[20px] text-primary">fact_check</span>
+<h3 class="text-xs font-bold text-on-surface">Kiểm tra điều kiện mở bán (Readiness)</h3>
+</div>
+<span class="text-xs font-bold px-2 py-0.5 rounded bg-surface-container-high text-primary" id="checklist-counter">2/2 Đạt tiêu chuẩn</span>
+</div>
+<div class="space-y-2.5"><div class="checklist-item flex items-start gap-2.5 p-2.5 rounded bg-surface-container-low border border-outline-variant"><span class="material-symbols-outlined text-primary text-[20px] mt-0.5" data-weight="fill" id="check-icon-1">check_circle</span><div class="flex-1"><div class="flex items-center justify-between"><span class="text-xs font-semibold text-on-surface">1. Có sơ đồ ghế</span><span class="text-[10px] font-medium text-primary" id="check-status-1">Hợp lệ</span></div><p class="text-[11px] text-on-surface-variant mt-0.5" id="check-desc-1">Đã nạp file <code class="bg-surface-container-highest px-1 py-0.2 rounded font-mono text-[10px]">seats-demo-2000.json</code> thành công (2.000 chỗ).</p></div></div><div class="checklist-item flex items-start gap-2.5 p-2.5 rounded bg-surface-container-low border border-outline-variant"><span class="material-symbols-outlined text-primary text-[20px] mt-0.5" data-weight="fill" id="check-icon-2">check_circle</span><div class="flex-1"><div class="flex items-center justify-between"><span class="text-xs font-semibold text-on-surface">2. Đã đặt giá cho mọi hạng</span><span class="text-[10px] font-medium text-primary" id="check-status-2">Hợp lệ</span></div><p class="text-[11px] text-on-surface-variant mt-0.5" id="check-desc-2">Đã cấu hình đủ 3 hạng vé: VIP (1.200.000 ₫), Tiêu chuẩn (650.000 ₫), Ban công (350.000 ₫).</p></div></div><div class="flex items-center gap-1.5 p-2 rounded bg-surface-container-low text-[11px] text-on-surface-variant border border-outline-variant"><span class="material-symbols-outlined text-outline text-[16px]">info</span><span>Sau khi mở bán, cấu trúc sơ đồ không thể sửa.</span></div></div>
+</div>
+<!-- Warning Card for Missing Configuration (Suất 04) -->
+<div class="hidden bg-error-container/40 border border-error rounded-lg p-3" id="missing-layout-warning">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-error text-[22px]" data-weight="fill">warning</span>
+<div>
+<h4 class="text-xs font-bold text-on-error-container">Không đủ điều kiện mở bán</h4>
+<p class="text-[11px] text-on-surface-variant mt-1 leading-relaxed">
+                Suất diễn Thứ Hai 19/10/2026 chưa được nạp ma trận ghế JSON và chưa thiết lập phân hạng giá vé. Nút mở bán bị vô hiệu hóa tự động để đảm bảo tính toàn vẹn dữ liệu.
+              </p>
+<div class="mt-2.5 flex gap-2">
+<button class="px-2.5 py-1.5 bg-primary text-on-primary rounded text-xs font-medium inline-flex items-center gap-1 active:opacity-80" onclick="goToImportTab()">
+<span class="material-symbols-outlined text-[14px]">upload_file</span>
+                  Nạp JSON ngay
+                </button>
+<button class="px-2.5 py-1.5 border border-outline-variant bg-surface rounded text-xs font-medium text-on-surface" onclick="selectSlot(1)">
+                  Quay lại Suất 01
+                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Single Primary Action Button -->
+<div class="pt-1">
+<button class="w-full h-11 bg-primary-container text-on-primary hover:bg-primary font-semibold text-sm rounded-lg flex items-center justify-center gap-2 shadow-sm active:scale-[0.99] transition-all" id="btnPrimaryAction" onclick="handleOpenSaleModal()">
+<span class="material-symbols-outlined text-[18px]">lock_open</span>
+<span>Mở bán vé ngay</span>
+</button>
+<p class="text-[11px] text-center text-on-surface-variant mt-1.5" id="btnHelperText">Nhấn để bắt đầu phát hành vé trực tuyến cho khán giả.</p>
+</div>
+<!-- Information / Closure Guard Card -->
+<div class="border border-outline-variant bg-surface rounded-lg p-3 text-xs text-on-surface-variant space-y-2"><div class="flex items-center justify-between font-semibold text-on-surface"><span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-secondary">pause_circle</span>Đóng bán suất này?</span><button class="text-xs font-medium text-error hover:opacity-80 transition-colors" onclick="toggleCloseSlotModal()">Đóng suất diễn...</button></div><p class="text-[11px] leading-relaxed text-on-surface-variant">Suất sẽ ngừng nhận yêu cầu giữ ghế mới. Các ghế đang trong thời gian giữ chỗ của khán giả vẫn được tiếp tục hoàn tất.</p></div>
+</section>
+</main>
+<!-- Shared Component: BottomNavBar -->
+<div class="style_shell_layout fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-2 bg-surface dark:bg-surface border-t border-outline-variant dark:border-outline-variant pb-safe">
+<!-- Destination 1: Sự kiện -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline py-1 hover:text-primary transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[22px]">explore</span>
+<span class="font-label text-xs font-medium mt-0.5">Sự kiện</span>
+</a>
+<!-- Destination 2: Sơ đồ vé -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline py-1 hover:text-primary transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[22px]">event_seat</span>
+<span class="font-label text-xs font-medium mt-0.5">Sơ đồ vé</span>
+</a>
+<!-- Destination 3: Vé của tôi -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline py-1 hover:text-primary transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[22px]">confirmation_number</span>
+<span class="font-label text-xs font-medium mt-0.5">Vé của tôi</span>
+</a>
+<!-- Destination 4: Quản trị (ACTIVE) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary font-medium py-1 hover:text-primary transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[22px]" data-weight="fill">admin_panel_settings</span>
+<span class="font-label text-xs font-medium mt-0.5">Quản trị</span>
+</a>
+</div>
+<!-- Organizer Side Drawer Menu (Overlay) -->
+<div class="fixed inset-0 z-50 bg-on-surface/40 backdrop-blur-sm hidden transition-opacity" id="drawerOverlay">
+<div class="w-[300px] h-full bg-surface-container-lowest p-4 flex flex-col justify-between shadow-xl transform -translate-x-full transition-transform duration-200" id="drawerPanel">
+<div>
+<!-- Drawer Header -->
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[26px]">confirmation_number</span>
+<div>
+<p class="font-headline text-sm font-bold text-primary tracking-tight">Vé Sự Kiện</p>
+<p class="text-[10px] text-on-surface-variant font-medium">Bảng điều khiển Ban tổ chức</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded flex items-center justify-center text-on-surface-variant hover:bg-surface-container" id="btnCloseDrawer">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Organizer Context -->
+<div class="my-3 p-2.5 rounded bg-surface-container-low border border-outline-variant">
+<span class="text-[10px] uppercase font-bold text-outline block tracking-wider">Sự kiện hoạt động</span>
+<p class="text-xs font-bold text-on-surface mt-0.5 truncate">Đêm nhạc Tháng Mười</p>
+<p class="text-[11px] text-on-surface-variant">16/10/2026 · Nhà hát Ánh Dương</p>
+</div>
+<!-- Drawer Navigation Links -->
+<nav class="space-y-1"><p class="text-[10px] font-bold text-outline uppercase px-2 py-1 tracking-wider">Quản lý sự kiện</p><a class="flex items-center gap-2.5 px-3 py-2.5 rounded text-xs font-medium text-on-surface-variant hover:bg-surface-container" href="#"><span class="material-symbols-outlined text-[18px]">theater_comedy</span><span>Sự kiện</span></a><a class="flex items-center justify-between px-3 py-2.5 rounded text-xs font-semibold bg-surface-container text-primary" href="#"><div class="flex items-center gap-2.5"><span class="material-symbols-outlined text-[18px]">schedule</span><span>Suất diễn</span></div><span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span></a><a class="flex items-center gap-2.5 px-3 py-2.5 rounded text-xs font-medium text-on-surface-variant hover:bg-surface-container" href="#"><span class="material-symbols-outlined text-[18px]">map</span><span>Sơ đồ ghế</span></a><a class="flex items-center gap-2.5 px-3 py-2.5 rounded text-xs font-medium text-on-surface-variant hover:bg-surface-container" href="#"><span class="material-symbols-outlined text-[18px]">sell</span><span>Giá vé</span></a><a class="flex items-center gap-2.5 px-3 py-2.5 rounded text-xs font-medium text-on-surface-variant hover:bg-surface-container" href="#"><span class="material-symbols-outlined text-[18px]">person</span><span>Tài khoản</span></a></nav>
+</div>
+<!-- Drawer Footer -->
+<div class="pt-3 border-t border-outline-variant text-[11px] text-on-surface-variant space-y-1"><p class="text-[10px] text-outline text-center">Demo Sprint 2 · dữ liệu giả</p></div>
+</div>
+</div>
+<!-- Confirm Open Sale Modal Dialog -->
+<div class="fixed inset-0 z-50 bg-on-surface/40 backdrop-blur-sm hidden items-center justify-center p-4" id="modalConfirmOpen">
+<div class="w-full max-w-[340px] bg-surface-container-lowest rounded-xl p-4 shadow-2xl border border-outline-variant animate-in fade-in zoom-in duration-150">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary mx-auto mb-3">
+<span class="material-symbols-outlined text-[24px]">lock</span>
+</div>
+<h3 class="text-sm font-bold text-center text-on-surface">Xác nhận mở bán Suất 01</h3>
+<p class="text-xs text-on-surface-variant text-center mt-1 leading-relaxed">
+          Thứ Sáu, 16/10/2026 lúc 19:30 tại Nhà hát Ánh Dương.
+        </p>
+<div class="my-3 p-2.5 rounded bg-surface-container-low border border-outline-variant text-[11px] space-y-1 text-on-surface-variant"><p class="font-semibold text-primary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">info</span>Lưu ý khi mở bán</p><p>• Sơ đồ 2.000 ghế sẽ không thể sửa đổi sau khi mở.</p><p>• Thời gian giữ chỗ cho mỗi lượt mua là 10 phút.</p></div>
+<div class="grid grid-cols-2 gap-2 mt-4">
+<button class="h-10 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface hover:bg-surface-container" onclick="closeConfirmModal()">
+            Hủy bỏ
+          </button>
+<button class="h-10 bg-primary-container hover:bg-primary text-on-primary rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow-sm" onclick="executeOpenSale()">
+<span class="material-symbols-outlined text-[16px]">check</span>
+            Xác nhận mở
+          </button>
+</div>
+</div>
+</div>
+<!-- Confirm Close Slot Modal Dialog -->
+<div class="fixed inset-0 z-50 bg-on-surface/40 backdrop-blur-sm hidden items-center justify-center p-4" id="modalConfirmClose">
+<div class="w-full max-w-[340px] bg-surface-container-lowest rounded-xl p-4 shadow-2xl border border-outline-variant animate-in"><div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center text-error mx-auto mb-3"><span class="material-symbols-outlined text-[24px]">pause_circle</span></div><h3 class="text-sm font-bold text-center text-on-surface">Đóng bán suất này?</h3><p class="text-xs text-on-surface-variant text-center mt-1 leading-relaxed">Suất sẽ ngừng nhận yêu cầu giữ ghế mới.</p><div class="my-3 p-2.5 rounded bg-surface-container-low border border-outline-variant text-[11px] space-y-1 text-on-surface-variant"><p class="font-semibold text-on-surface flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">verified_user</span>Bảo toàn phiên đang đặt</p><p>• Ghế đang trong thời gian giữ chỗ của khán giả vẫn được tiếp tục thanh toán.</p><p>• Hệ thống không tự ý giải phóng ghế đang có người giữ.</p></div><div class="grid grid-cols-2 gap-2 mt-4"><button class="h-10 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface hover:bg-surface-container" onclick="toggleCloseSlotModal()">Quay lại</button><button class="h-10 bg-on-surface hover:bg-inverse-surface text-surface rounded-lg text-xs font-semibold flex items-center justify-center gap-1" onclick="executeCloseSlot()"><span class="material-symbols-outlined text-[16px]">block</span>Xác nhận đóng</button></div></div>
+</div>
+<!-- Success Toast Notification -->
+<div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-lg shadow-lg text-xs font-medium hidden items-center gap-2 border border-outline/30" id="toastNotification">
+<span class="material-symbols-outlined text-primary-fixed text-[18px]">check_circle</span>
+<span id="toastMessage">Thao tác thành công</span>
+</div>
+</div>
+<script>
+    // State representation
+    let currentSlot = 1;
+    let slotStates = {
+      1: { status: 'draft', ready: true },
+      2: { status: 'selling', ready: true },
+      3: { status: 'closed', ready: true },
+      4: { status: 'incomplete', ready: false }
+    };
+
+    // Drawer handlers
+    const btnOpenDrawer = document.getElementById('btnOpenDrawer');
+    const btnCloseDrawer = document.getElementById('btnCloseDrawer');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    const drawerPanel = document.getElementById('drawerPanel');
+
+    function openDrawer() {
+      drawerOverlay.classList.remove('hidden');
+      setTimeout(() => {
+        drawerPanel.classList.remove('-translate-x-full');
+      }, 10);
+    }
+
+    function closeDrawer() {
+      drawerPanel.classList.add('-translate-x-full');
+      setTimeout(() => {
+        drawerOverlay.classList.add('hidden');
+      }, 200);
+    }
+
+    btnOpenDrawer.addEventListener('click', openDrawer);
+    btnCloseDrawer.addEventListener('click', closeDrawer);
+    drawerOverlay.addEventListener('click', (e) => {
+      if (e.target === drawerOverlay) closeDrawer();
+    });
+
+    // Slot selection logic
+    function selectSlot(id) {
+      currentSlot = id;
+      
+      // Update horizontal card highlights
+      document.querySelectorAll('.slot-card').forEach(card => {
+        card.classList.remove('border-2', 'border-primary-container', 'bg-surface-container-low', 'border-primary');
+        card.classList.add('border-outline-variant');
+      });
+
+      const activeCard = document.getElementById(`card-slot-${id}`);
+      if (activeCard) {
+        activeCard.classList.remove('border-outline-variant');
+        activeCard.classList.add('border-2', 'border-primary-container', 'bg-surface-container-low');
+      }
+
+      // Populate Slot Specific Info
+      const titleEl = document.getElementById('detail-slot-id');
+      const badgeEl = document.getElementById('detail-badge');
+      const warningEl = document.getElementById('missing-layout-warning');
+      const checklistCard = document.getElementById('checklist-card');
+      const primaryBtn = document.getElementById('btnPrimaryAction');
+      const helperText = document.getElementById('btnHelperText');
+
+      if (id === 1) {
+        titleEl.textContent = 'Suất 01: 16/10/2026 (19:30)';
+        badgeEl.textContent = 'Nháp (Sẵn sàng mở)';
+        badgeEl.className = 'px-2 py-0.5 rounded text-[11px] font-semibold bg-primary-fixed text-on-primary-fixed';
+        
+        warningEl.classList.add('hidden');
+        checklistCard.classList.remove('opacity-40');
+        
+        // Checklist updates
+        document.getElementById('checklist-counter').textContent = '3/3 Đạt tiêu chuẩn';
+        document.getElementById('checklist-counter').className = 'text-xs font-bold px-2 py-0.5 rounded bg-surface-container-high text-primary';
+        
+        // Reset checklist items to valid
+        updateCheckItem(1, true, 'seats-demo-2000.json đã nạp thành công (2.000 ghế, 3 phân khu).');
+        updateCheckItem(2, true, 'VIP 1.200.000 ₫, Tiêu chuẩn 650.000 ₫, Ban công 350.000 ₫.');
+        updateCheckItem(3, true, 'Hệ thống sẽ khóa bất biến sơ đồ ghế & bảng giá ngay khi mở bán.');
+
+        primaryBtn.disabled = false;
+        primaryBtn.className = 'w-full h-11 bg-primary-container text-on-primary hover:bg-primary font-semibold text-sm rounded-lg flex items-center justify-center gap-2 shadow-sm active:scale-[0.99] transition-all cursor-pointer';
+        primaryBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">lock_open</span><span>Mở bán vé ngay</span>';
+        helperText.textContent = 'Nhấn để phát hành vé trực tuyến. Sơ đồ ghế sẽ được chốt bất biến.';
+      } 
+      else if (id === 4) {
+        titleEl.textContent = 'Suất 04: 19/10/2026 (20:00)';
+        badgeEl.textContent = 'Thiếu cấu hình (0/3)';
+        badgeEl.className = 'px-2 py-0.5 rounded text-[11px] font-semibold bg-error-container text-on-error-container';
+        
+        warningEl.classList.remove('hidden');
+        checklistCard.classList.add('opacity-40');
+        
+        document.getElementById('checklist-counter').textContent = '0/3 Chưa đạt';
+        document.getElementById('checklist-counter').className = 'text-xs font-bold px-2 py-0.5 rounded bg-error-container text-on-error-container';
+
+        // Set checklist to incomplete
+        updateCheckItem(1, false, 'Chưa nạp file sơ đồ ghế .json.');
+        updateCheckItem(2, false, 'Chưa gắn đơn giá cho các phân khu.');
+        updateCheckItem(3, false, 'Chưa thể khóa cấu hình do dữ liệu rỗng.');
+
+        // Disable primary action
+        primaryBtn.disabled = true;
+        primaryBtn.className = 'w-full h-11 bg-surface-dim text-outline font-semibold text-sm rounded-lg flex items-center justify-center gap-2 cursor-not-allowed';
+        primaryBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">block</span><span>Không thể mở bán (Thiếu sơ đồ)</span>';
+        helperText.textContent = 'Cần hoàn tất tối thiểu 3 điều kiện kỹ thuật trước khi mở bán.';
+      }
+      else if (id === 2) {
+        titleEl.textContent = 'Suất 02: 17/10/2026 (19:30)';
+        badgeEl.textContent = 'Đang mở bán (92%)';
+        badgeEl.className = 'px-2 py-0.5 rounded text-[11px] font-semibold bg-surface-container-high text-on-surface';
+        
+        warningEl.classList.add('hidden');
+        checklistCard.classList.remove('opacity-40');
+        document.getElementById('checklist-counter').textContent = '3/3 Đã khóa';
+
+        updateCheckItem(1, true, 'Sơ đồ 2.000 ghế đã chốt bất biến.');
+        updateCheckItem(2, true, 'Giá vé đang áp dụng: VIP, Tiêu chuẩn, Ban công.');
+        updateCheckItem(3, true, 'Khóa vận hành đang hoạt động, không thể sửa đổi.');
+
+        primaryBtn.disabled = true;
+        primaryBtn.className = 'w-full h-11 bg-surface-container-high text-on-surface-variant font-semibold text-sm rounded-lg flex items-center justify-center gap-2 cursor-default';
+        primaryBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check_circle</span><span>Suất diễn đang mở bán</span>';
+        helperText.textContent = 'Suất diễn đang có giao dịch thời gian thực.';
+      }
+      else if (id === 3) {
+        titleEl.textContent = 'Suất 03: 18/10/2026 (15:00)';
+        badgeEl.textContent = 'Đã đóng';
+        badgeEl.className = 'px-2 py-0.5 rounded text-[11px] font-semibold bg-surface-dim text-outline';
+        
+        warningEl.classList.add('hidden');
+        checklistCard.classList.add('opacity-40');
+        
+        primaryBtn.disabled = true;
+        primaryBtn.className = 'w-full h-11 bg-surface-dim text-outline font-semibold text-sm rounded-lg flex items-center justify-center gap-2 cursor-not-allowed';
+        primaryBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">lock</span><span>Suất diễn đã đóng</span>';
+        helperText.textContent = 'Suất diễn đã kết thúc kỳ mở bán.';
+      }
+    }
+
+    function updateCheckItem(index, isOk, text) {
+      const icon = document.getElementById(`check-icon-${index}`);
+      const status = document.getElementById(`check-status-${index}`);
+      const desc = document.getElementById(`check-desc-${index}`);
+
+      if (isOk) {
+        icon.textContent = 'check_circle';
+        icon.className = 'material-symbols-outlined text-primary text-[20px] mt-0.5';
+        status.textContent = 'Hợp lệ';
+        status.className = 'text-[10px] font-medium text-primary';
+      } else {
+        icon.textContent = 'cancel';
+        icon.className = 'material-symbols-outlined text-error text-[20px] mt-0.5';
+        status.textContent = 'Chưa xong';
+        status.className = 'text-[10px] font-medium text-error';
+      }
+      if (desc && text) {
+        desc.textContent = text;
+      }
+    }
+
+    // Modal triggers
+    function handleOpenSaleModal() {
+      if (currentSlot === 1) {
+        document.getElementById('modalConfirmOpen').classList.remove('hidden');
+        document.getElementById('modalConfirmOpen').classList.add('flex');
+      }
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('modalConfirmOpen').classList.add('hidden');
+      document.getElementById('modalConfirmOpen').classList.remove('flex');
+    }
+
+    function executeOpenSale() {
+      closeConfirmModal();
+      showToast('Đã phát hành và khóa bất biến cấu hình Suất 01!');
+      
+      // Update UI state for slot 1
+      setTimeout(() => {
+        selectSlot(2);
+      }, 700);
+    }
+
+    function toggleCloseSlotModal() {
+      const modal = document.getElementById('modalConfirmClose');
+      if (modal.classList.contains('hidden')) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      } else {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function executeCloseSlot() {
+      toggleCloseSlotModal();
+      showToast('Đã tạm dừng nhận đơn mới. Các phiên giữ chỗ cũ được bảo lưu.');
+    }
+
+    function goToImportTab() {
+      showToast('Chuyển tới giao diện nạp JSON...');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      const text = document.getElementById('toastMessage');
+      text.textContent = msg;
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 2500);
+    }
+  </script>
+</body></html>
