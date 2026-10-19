@@ -181,10 +181,13 @@ function releaseContainers(release) {
     return { name, running: item.State.Running };
   });
 }
-function startRelease(release) {
+async function startRelease(release) {
   // Validate the entire release before changing any container state.
   for (const item of releaseContainers(release))
     if (!item.running) docker("start", item.name);
+  await waitHealth(release.apiPort);
+  if (release.apiReplicaPort) await waitHealth(release.apiReplicaPort);
+  await waitHealth(release.webPort, "/api/health");
 }
 function releaseLifecycle(candidate) {
   return {
@@ -198,7 +201,7 @@ function releaseLifecycle(candidate) {
       timeline("previous-release-quiesced", { sha: previous.sha, activeSha: candidate.sha, retainedForRollback: true });
     },
     async resumePrevious(previous) {
-      startRelease(previous);
+      await startRelease(previous);
       await smoke(config(), previous);
     },
   };
@@ -329,14 +332,14 @@ export async function stagingHttps(c, path, options = {}) {
     req.end(options.body ? JSON.stringify(options.body) : undefined);
   });
 }
-async function waitHealth(port) {
+async function waitHealth(port, path = "/health") {
   for (let n = 0; n < 90; n++) {
     try {
-      if ((await internalCall(port, "/health")).status === 200) return;
+      if ((await internalCall(port, path)).status === 200) return;
     } catch {}
     await new Promise((r) => setTimeout(r, 500));
   }
-  throw new Error("Candidate API not healthy");
+  throw new Error("Candidate endpoint not healthy");
 }
 async function smoke(c, release, wrongKey = false) {
   assert.equal(
@@ -1015,7 +1018,7 @@ async function deploy() {
       `STAGING READY https://${c.lanAddress}:${c.gatewayPort} source=${sha}; credentials .sprint1-staging/config.json`,
     );
   } catch (error) {
-    if (switched && active) { startRelease(active); await smoke(c, active); restorePointers(dir, pointers); }
+    if (switched && active) { await startRelease(active); await smoke(c, active); restorePointers(dir, pointers); }
     const stillActive = existsSync(activePath) && JSON.parse(readFileSync(activePath)).sha === sha;
     if (stillActive) {
       timeline("verified-candidate-retained-recovery-required", { sha });
@@ -1085,7 +1088,7 @@ async function main() {
     if (previous.sha !== current.sha && [previous.apiContainer, previous.apiReplicaContainer, previous.webContainer].filter(Boolean).some((name) => currentNames.has(name)))
       throw Error("Release container identities overlap; refuse rollback");
     try {
-      startRelease(previous);
+      await startRelease(previous);
       await smoke(c, previous);
       await promoteRelease(dir, previous, async () => {
         assert.equal((await stagingHttps(c, "/api/health")).status, 200);
