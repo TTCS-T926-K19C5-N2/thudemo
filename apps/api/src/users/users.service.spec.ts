@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { UsersService } from './users.service.js';
 import type { PrismaService } from '../prisma/prisma.service.js';
+import { Prisma } from '@prisma/client';
 
 describe('Account management rejection has no side effects', () => {
   const transaction = vi.fn();
@@ -35,5 +36,36 @@ describe('Account management rejection has no side effects', () => {
       BadRequestException,
     );
     expect(transaction).not.toHaveBeenCalled();
+  });
+});
+
+describe('Employee transaction failure mapping', () => {
+  const body = {
+    email: 'race@demo.invalid',
+    password: 'FixturePassword123!',
+    role: 'STAFF',
+  };
+  it('maps a database unique conflict to400 and never retries a create transaction', async () => {
+    const conflict = new Prisma.PrismaClientKnownRequestError(
+      'Unique email conflict',
+      { code: 'P2002', clientVersion: 'fixture' },
+    );
+    const transaction = vi.fn().mockRejectedValue(conflict);
+    const service = new UsersService({
+      $transaction: transaction,
+    } as unknown as PrismaService);
+    await expect(service.createEmployee('actor', body)).rejects.toMatchObject({
+      status: 400,
+    });
+    expect(transaction).toHaveBeenCalledTimes(1);
+  });
+  it('preserves an unexpected storage failure for the exception boundary instead of reporting duplicate success', async () => {
+    const failure = new Error('fixture unavailable database');
+    const transaction = vi.fn().mockRejectedValue(failure);
+    const service = new UsersService({
+      $transaction: transaction,
+    } as unknown as PrismaService);
+    await expect(service.createEmployee('actor', body)).rejects.toBe(failure);
+    expect(transaction).toHaveBeenCalledTimes(1);
   });
 });
