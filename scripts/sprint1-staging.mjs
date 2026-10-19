@@ -20,6 +20,7 @@ import assert from "node:assert/strict";
 import { stagingConfig, stagingRelease } from "../deploy/laptop-gateway.mjs";
 import { requireBuildResources } from "../deploy/laptop-resources.mjs";
 import { registrationMailEnv } from "../deploy/registration-mail.mjs";
+import { ticketMailEnv } from "../deploy/ticket-mail.mjs";
 import {
   prepareTicketKey,
   ticketKeyEnv,
@@ -173,6 +174,7 @@ function apiEnv(c) {
   return {
     ...ticketKeyEnv(dir),
     ...registrationMailEnv(dir, `https://${c.lanAddress}:${c.gatewayPort}`),
+    ...ticketMailEnv(dir),
     NODE_ENV: "production",
     APP_ENV: "staging",
     SERVICE_ROLE: "api",
