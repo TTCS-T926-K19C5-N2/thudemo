@@ -1,4 +1,5 @@
 "use client";
+import { notifySessionChanged } from "@/lib/session-events";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -50,6 +51,7 @@ export function LoginForm({
         throw new Error(
           "Phiên đăng nhập chưa được xác nhận. Hãy đăng nhập lại.",
         );
+      notifySessionChanged();
       router.replace(
         (user.roles.length === 1 && user.roles.includes("STAFF")
           ? "/check-in"
