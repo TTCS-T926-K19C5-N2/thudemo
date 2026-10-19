@@ -1,5 +1,6 @@
-import { api, ApiError } from "@/lib/api/client";
-import { decodeCheckIn } from "./admission-response";
+import { api, ApiError, object } from "@/lib/api/client";
+import { loadCurrentUser } from "@/lib/api";
+import { parseTicketQr } from "shared/ticket-qr";
 import {
   getPendingScans,
   getPendingScanCount,
@@ -60,157 +61,159 @@ export function isSyncing(): boolean {
 export async function syncPendingScans(
   options: SyncOptions = {},
 ): Promise<SyncResult> {
+  const result: SyncResult = {
+    totalProcessed: 0,
+    syncedCount: 0,
+    failedCount: 0,
+    remainingCount: await getPendingScanCount(options.showtimeId),
+    stoppedDueToNetwork: false,
+    errors: [],
+  };
   if (syncInProgress) {
-    const remaining = await getPendingScanCount(options.showtimeId);
-    return {
-      totalProcessed: 0,
-      syncedCount: 0,
-      failedCount: 0,
-      remainingCount: remaining,
-      stoppedDueToNetwork: false,
-      errors: ["Tiến trình đồng bộ khác đang chạy."],
-    };
+    result.errors.push("Tiến trình đồng bộ khác đang chạy.");
+    return result;
   }
-
   setSyncInProgress(true);
-
   try {
-    // 1. Verify server connectivity if requested
-    if (options.checkServerBeforeSync !== false) {
-      const reachable = await checkServerHealth();
-      if (!reachable) {
-        markServerOffline("Không thể kết nối máy chủ");
-        const remaining = await getPendingScanCount(options.showtimeId);
-        const result: SyncResult = {
-          totalProcessed: 0,
-          syncedCount: 0,
-          failedCount: 0,
-          remainingCount: remaining,
-          stoppedDueToNetwork: true,
-          errors: ["Máy chủ không thể truy cập."],
-        };
-        options.onSyncComplete?.(result);
-        return result;
-      }
-      markServerOnline();
-    }
-
-    // 2. Fetch pending scans
-    const pendingScans = await getPendingScans(options.showtimeId);
-    if (pendingScans.length === 0) {
-      const result: SyncResult = {
-        totalProcessed: 0,
-        syncedCount: 0,
-        failedCount: 0,
-        remainingCount: 0,
-        stoppedDueToNetwork: false,
-        errors: [],
-      };
-      options.onSyncComplete?.(result);
+    if (
+      options.checkServerBeforeSync !== false &&
+      !(await checkServerHealth())
+    ) {
+      markServerOffline();
+      result.stoppedDueToNetwork = true;
       return result;
     }
-
-    let syncedCount = 0;
-    let failedCount = 0;
-    let stoppedDueToNetwork = false;
-    const errors: string[] = [];
-
-    // 3. Process each scan sequentially to maintain order
-    for (const scan of pendingScans) {
-      await updatePendingScan(scan.id, { status: "syncing" });
-
+    const actor = await loadCurrentUser();
+    if (!actor?.roles.includes("STAFF")) {
+      result.errors.push(
+        "Đăng nhập đúng nhân viên để đồng bộ. Hàng đợi được giữ lại.",
+      );
+      return result;
+    }
+    const records = await getPendingScans(options.showtimeId);
+    const eligible = records.filter((scan) => {
+      if (
+        scan.migrationIssue ||
+        !parseTicketQr(scan.ticketId) ||
+        !scan.deviceId ||
+        !scan.gateId ||
+        (scan.staffId && scan.staffId !== actor.id)
+      ) {
+        result.errors.push(
+          scan.migrationIssue ??
+            "Lượt quét thuộc nhân viên khác hoặc thiếu cấu hình; giữ lại để đối chiếu.",
+        );
+        return false;
+      }
+      return true;
+    });
+    for (let offset = 0; offset < eligible.length; offset += 40) {
+      const batch = eligible.slice(offset, offset + 40),
+        deviceSentAt = new Date().toISOString();
+      for (const scan of batch)
+        await updatePendingScan(scan.id, { status: "syncing" });
       try {
-        await api(
-          `/showtimes/${encodeURIComponent(scan.showtimeId)}/check-in`,
-          decodeCheckIn,
+        const acknowledgements = await api(
+          "/scanner/sync-scans",
+          (value) => {
+            const data = object(value);
+            if (data.version !== 2 || !Array.isArray(data.results))
+              throw Error("Không đọc được ACK đồng bộ. Hàng đợi được giữ lại.");
+            const expected = new Set(batch.map((s) => s.id)),
+              seen = new Set<string>();
+            return data.results.map((raw) => {
+              const ack = object(raw);
+              if (
+                typeof ack.scanId !== "string" ||
+                !expected.has(ack.scanId) ||
+                seen.has(ack.scanId) ||
+                !["synced", "conflict", "rejected"].includes(
+                  String(ack.status),
+                ) ||
+                ack.ticketCode !==
+                  parseTicketQr(
+                    batch.find((s) => s.id === ack.scanId)!.ticketId,
+                  )?.ticketId
+              )
+                throw Error("ACK không khớp lượt quét. Hàng đợi được giữ lại.");
+              seen.add(ack.scanId);
+              return { id: ack.scanId, status: String(ack.status) };
+            });
+          },
           {
             method: "POST",
             body: {
-              qrPayload: scan.ticketId,
-              gateId: scan.gateId,
-              requestId: scan.requestId, // Crucial for backend idempotency
+              scans: batch.map((scan) => ({
+                scanId: scan.requestId,
+                showtimeId: scan.showtimeId,
+                gateId: scan.gateId,
+                ticketCode: parseTicketQr(scan.ticketId)!.ticketId,
+                qrPayload: scan.ticketId,
+                deviceId: scan.deviceId,
+                scannedAt: scan.createdAt,
+                deviceSentAt,
+                mode: scan.mode ?? "online_confirmation",
+              })),
             },
           },
         );
-
-        // Server confirmed success (or ALREADY_RECORDED)!
-        await removePendingScan(scan.id);
+        const ackIds = new Set(acknowledgements.map((a) => a.id));
+        for (const ack of acknowledgements) {
+          await removePendingScan(ack.id);
+          await updatePendingScan(ack.id, {
+            lastError:
+              ack.status === "conflict"
+                ? "Có xung đột trong báo cáo suất."
+                : ack.status === "rejected"
+                  ? "Máy chủ từ chối lượt quét; cần đối chiếu."
+                  : undefined,
+          });
+          result.totalProcessed++;
+          if (ack.status === "synced") result.syncedCount++;
+          else result.failedCount++;
+          const scan = batch.find((s) => s.id === ack.id)!;
+          options.onItemSynced?.(
+            scan,
+            await getPendingScanCount(options.showtimeId),
+          );
+        }
+        for (const scan of batch)
+          if (!ackIds.has(scan.id))
+            await updatePendingScan(scan.id, { status: "pending" });
         markServerOnline();
-        syncedCount++;
-
-        const currentRemaining = await getPendingScanCount(options.showtimeId);
-        options.onItemSynced?.(scan, currentRemaining);
-      } catch (err: unknown) {
-        if (err instanceof ApiError) {
-          // Case A: Network error or timeout
-          if (err.status === 0 || err.code === "NETWORK_ERROR") {
-            markServerOffline("Mất kết nối máy chủ trong lúc đồng bộ");
-            await updatePendingScan(scan.id, {
-              status: "pending",
-              retryCount: scan.retryCount + 1,
-              lastError: err.message,
-            });
-            stoppedDueToNetwork = true;
-            errors.push(`Mất kết nối mạng khi gửi vé ${scan.ticketId}`);
-            // Break loop to preserve remaining items
-            break;
-          }
-
-          // Case B: Ticket already checked in (409)
-          if (err.status === 409 && err.code === "TICKET_ALREADY_CHECKED_IN") {
-            // Already recorded by server -> resolve scan
-            await removePendingScan(scan.id);
-            syncedCount++;
-            const currentRemaining = await getPendingScanCount(options.showtimeId);
-            options.onItemSynced?.(scan, currentRemaining);
-            continue;
-          }
-
-          // Case C: 4xx non-retryable business error (e.g. invalid QR, wrong showtime)
-          if (err.status >= 400 && err.status < 500) {
-            // Business error cannot be resolved by retrying
-            await removePendingScan(scan.id);
-            failedCount++;
-            errors.push(err.message);
-            const currentRemaining = await getPendingScanCount(options.showtimeId);
-            options.onItemSynced?.(scan, currentRemaining);
-            continue;
-          }
-
-          // Case D: 5xx server error
-          await updatePendingScan(scan.id, {
-            status: "pending",
-            retryCount: scan.retryCount + 1,
-            lastError: err.message,
-          });
-          errors.push(err.message);
-          stoppedDueToNetwork = true;
-          break;
-        } else {
-          // Unknown error, keep in queue
-          await updatePendingScan(scan.id, {
-            status: "pending",
-            retryCount: scan.retryCount + 1,
-            lastError: err instanceof Error ? err.message : String(err),
-          });
-          errors.push(err instanceof Error ? err.message : "Lỗi không xác định");
+        if (ackIds.size !== batch.length) {
+          result.errors.push(
+            "Máy chủ chưa ACK đủ lô. Lượt còn lại được giữ để gửi tiếp.",
+          );
           break;
         }
+      } catch (error) {
+        for (const scan of batch)
+          await updatePendingScan(scan.id, {
+            status: "pending",
+            retryCount: scan.retryCount + 1,
+            lastError: "Chưa nhận ACK; giữ nguyên mã lượt để thử lại.",
+          });
+        if (error instanceof ApiError && error.status === 0) {
+          markServerOffline();
+          result.stoppedDueToNetwork = true;
+        }
+        result.errors.push(
+          error instanceof ApiError && [401, 403].includes(error.status)
+            ? "Phiên hoặc quyền đã thay đổi. Đăng nhập đúng nhân viên; hàng đợi vẫn còn."
+            : "Chưa đồng bộ được lô; dữ liệu vẫn được giữ trên máy.",
+        );
+        break;
       }
     }
-
-    const remainingCount = await getPendingScanCount(options.showtimeId);
-    const result: SyncResult = {
-      totalProcessed: syncedCount + failedCount,
-      syncedCount,
-      failedCount,
-      remainingCount,
-      stoppedDueToNetwork,
-      errors,
-    };
-    options.onSyncComplete?.(result);
-    return result;
+  } catch {
+    result.errors.push(
+      "Chưa xác minh được phiên hoặc hàng đợi. Thử lại khi có mạng.",
+    );
   } finally {
+    result.remainingCount = await getPendingScanCount(options.showtimeId);
     setSyncInProgress(false);
+    options.onSyncComplete?.(result);
   }
+  return result;
 }
