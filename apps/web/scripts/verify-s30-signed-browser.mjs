@@ -120,7 +120,7 @@ try {
     "Next scan clears and focuses input",
   );
   await scan(a, fixture.fresh.id);
-  await status(a).filter({ hasText: "Mã QR không hợp lệ" }).waitFor();
+  await status(a).filter({ hasText: "Không phải vé của hệ thống hoặc chữ ký không hợp lệ." }).waitFor();
   check(
     !(await status(a).innerText()).includes("Hợp lệ"),
     "Unsigned real UUID rejected without green state",
@@ -129,10 +129,10 @@ try {
   await a.getByRole("button", { name: "Quét vé tiếp theo" }).click();
   const bad = fixture.retry.qr.replace("ET1.", "ET2.");
   await scan(a, bad);
-  await status(a).filter({ hasText: "Mã QR không hợp lệ" }).waitFor();
+  await status(a).filter({ hasText: "Không phải vé của hệ thống hoặc chữ ký không hợp lệ." }).waitFor();
   check(
     !(await status(a).innerText()).includes("Hợp lệ"),
-    "Unsupported QR version rejected by browser",
+    "Unsupported QR version rejected by server with no admission",
   );
   await a.getByRole("button", { name: "Quét vé tiếp theo" }).click();
   const pattern = "**/api/showtimes/*/check-in";

@@ -192,6 +192,11 @@ async function ticket(status = 'PAID') {
     },
     include: { items: true },
   });
+  if (status === 'PAID') await db.ticket.create({ data: {
+    orderId: order.id, showtimeId: fixture.showtimeId, seatId: seat.id,
+    code: randomUUID(), seatLabel: `A-${seatNumber}`, ticketType: 'Hạng thường',
+    status: 'VALID', price: 200000,
+  } });
   return order.items[0].id;
 }
 async function send(ticketId, actor, gateId, options = {}) {

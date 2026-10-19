@@ -7,7 +7,7 @@ import { CheckInServiceS29 } from './check-in-s29.service.js';
 export class CheckInControllerS29 {
   constructor(private readonly service: CheckInServiceS29) {}
 
-  @Roles('STAFF', 'ADMIN', 'ORGANIZER')
+  @Roles('STAFF')
   @Get('today')
   getTodayShowtimes(@Req() req: AuthenticatedRequest) {
     return this.service.getTodayShowtimes(req.user.id);

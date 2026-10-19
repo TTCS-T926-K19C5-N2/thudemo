@@ -138,7 +138,7 @@ describe('S-29 CheckInServiceS29 & CheckInControllerS29', () => {
         ROLES_KEY,
         CheckInControllerS29.prototype.getTodayShowtimes,
       );
-      expect(roles).toEqual(['STAFF', 'ADMIN', 'ORGANIZER']);
+      expect(roles).toEqual(['STAFF']);
       expect(mockCheckInService.getTodayShowtimes).toHaveBeenCalledWith('assigned-staff');
     });
   });
