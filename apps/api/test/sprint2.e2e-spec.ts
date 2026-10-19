@@ -643,7 +643,7 @@ describe('Sprint 2 isolated database integration', () => {
     await request(app.getHttpServer())
       .get(`/orders/${placedA.body.order.id}`)
       .set('Cookie', secondBuyer.cookie)
-      .expect(404);
+      .expect(403);
     const freshSeat = available.find(
       (seat) =>
         seat.categoryId === firstCategory.id &&

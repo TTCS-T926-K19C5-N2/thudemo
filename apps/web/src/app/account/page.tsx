@@ -100,6 +100,11 @@ export default function AccountPage() {
                 : "Khám phá sự kiện đang mở bán, chọn và giữ ghế."}
             </p>
             <div className="operations-actions">
+              {user.roles.includes("BUYER") && (
+                <Button variant="outline" asChild>
+                  <Link href="/orders">Đơn hàng của tôi</Link>
+                </Button>
+              )}
               {user.roles.includes("ADMIN") && (
                 <Button variant="outline" asChild>
                   <Link href="/admin/users">Quản lý nhân viên</Link>
