@@ -203,6 +203,7 @@ try {
     .getByTestId("signed-ticket")
     .locator("svg, img[data-testid=ticket-qr-image]")
     .screenshot();
+  writeFileSync(resolve(out, "owner-qr-element.png"), qrImage);
   await owner.addScriptTag({
     path: resolve(
       root,
@@ -216,27 +217,49 @@ try {
       div.id = "fixture-image-decoder";
       div.hidden = true;
       document.body.append(div);
-      const qr = new Html5Qrcode(div.id);
       const binary = atob(imageBase64),
         bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+      const attempts = [];
       try {
-        return await qr.scanFile(
-          new File([bytes], "fixture.png", { type: "image/png" }),
-          false,
-        );
-      } finally {
-        qr.clear();
-        div.remove();
-      }
+        for (const angle of [0, 90, 180, 270]) {
+          let blob = new Blob([bytes], { type: "image/png" });
+          if (angle) {
+            const image = new Image();
+            const url = URL.createObjectURL(blob);
+            try {
+              image.src = url;
+              await image.decode();
+              const canvas = document.createElement("canvas");
+              canvas.width = image.width;
+              canvas.height = image.height;
+              const context = canvas.getContext("2d");
+              context.translate(canvas.width / 2, canvas.height / 2);
+              context.rotate(angle * Math.PI / 180);
+              context.drawImage(image, -image.width / 2, -image.height / 2);
+              blob = await new Promise((done) => canvas.toBlob(done));
+            } finally { URL.revokeObjectURL(url); }
+          }
+          const qr = new Html5Qrcode(div.id);
+          try {
+            const payload = await qr.scanFile(new File([blob], "fixture.png", { type: "image/png" }), false);
+            attempts.push({ angle, result: "PASS" });
+            return { payload, attempts };
+          } catch (error) {
+            attempts.push({ angle, result: "FAIL", error: String(error) });
+          } finally { qr.clear(); }
+        }
+        throw Error(JSON.stringify(attempts));
+      } finally { div.remove(); }
     },
     { imageBase64: qrImage.toString("base64") },
   );
+  report.imageDecodeAttempts = decoded.attempts;
   check(
-    decoded === fixture.camera.qr,
+    decoded.payload === fixture.camera.qr,
     "Actual QR image decodes to owner-issued signed payload; image fixture is not hardware-camera proof",
   );
   await a.getByRole("button", { name: "Quét vé tiếp theo" }).click();
-  await scan(a, decoded);
+  await scan(a, decoded.payload);
   await status(a).filter({ hasText: "Hợp lệ" }).waitFor();
   check(
     (await status(a).innerText()).includes("A-"),
