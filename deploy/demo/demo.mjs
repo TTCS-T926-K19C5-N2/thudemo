@@ -8,6 +8,16 @@ const mode=process.argv[2],state='/demo-state',file=state+'/config.json';
 assert.equal(process.env.DEMO_MODE,'true','Explicit DEMO_MODE=true required');
 if(process.env.APP_ENV==='production')throw Error('Demo is forbidden in production');
 function config(){const c=JSON.parse(readFileSync(file,'utf8'));assert.equal(c.version,1);return c;}
+async function ensureHistoryFixtures(tx,eventId,buyerId){
+ // Reconcile only this explicit synthetic event's older empty terminal fixtures.
+ const empty=await tx.order.findMany({where:{eventId,userId:buyerId,status:{in:['CANCELLED','EXPIRED']},items:{none:{}}}});
+ for(const order of empty){
+  const category=await tx.seatCategory.findFirstOrThrow({where:{showtimeId:order.showtimeId}});
+  const seat=await tx.seat.create({data:{showtimeId:order.showtimeId,categoryId:category.id,row:'DEMO-HISTORY-'+order.id.slice(0,8),seatNumber:1}});
+  await tx.orderItem.create({data:{orderId:order.id,seatId:seat.id,categoryName:'STANDARD',unitPrice:order.totalAmount}});
+ }
+}
+
 if(mode==='init'){
  const password=process.env.DEMO_PASSWORD??'';assert.ok(password.length>=12&&!password.startsWith('<'),'Set DEMO_PASSWORD>=12 characters');
  const dbUrl=new URL(process.env.DATABASE_URL),dbPassword=decodeURIComponent(dbUrl.password);assert.ok(/^[A-Za-z0-9_-]{12,}$/.test(dbPassword)&&dbPassword!==password,'Use a distinct URL-safe database password>=12 characters');
@@ -42,7 +52,7 @@ if(mode==='init'){
      accounts[who]=await tx.user.upsert({where:{email:`${who.toLowerCase()}@demo.invalid`},update:{},create:{email:`${who.toLowerCase()}@demo.invalid`,password:hash,fullName:`Demo ${who}`,isEmailVerified:true,userRoles:{create:{role:{connect:{name:role}}}}},select:{id:true,email:true}});
     }
     const name=`Demo Sprint4-5 ${day} #${batch}`;let event=await tx.event.findFirst({where:{name,organizerId:accounts.organizer.id}});
-    if(event){const shows=await tx.showtime.findMany({where:{eventId:event.id},orderBy:{startTime:'asc'},select:{id:true}}),orders=[];for(const show of shows){const order=await tx.order.findFirstOrThrow({where:{eventId:event.id,showtimeId:show.id,userId:accounts.buyerA.id,status:'PAID'},orderBy:{createdAt:'asc'}});orders.push(order.id);}return{eventId:event.id,accounts,orders,shows:shows.map(s=>s.id),existing:true,day,batch};}
+    if(event){await ensureHistoryFixtures(tx,event.id,accounts.buyerA.id);const shows=await tx.showtime.findMany({where:{eventId:event.id},orderBy:{startTime:'asc'},select:{id:true}}),orders=[];for(const show of shows){const order=await tx.order.findFirstOrThrow({where:{eventId:event.id,showtimeId:show.id,userId:accounts.buyerA.id,status:'PAID'},orderBy:{createdAt:'asc'}});orders.push(order.id);}return{eventId:event.id,accounts,orders,shows:shows.map(s=>s.id),existing:true,day,batch};}
     event=await tx.event.create({data:{name,organizerId:accounts.organizer.id,description:'DEMO: fake payment, catcher email, no real refund/provider',location:'Demo venue',status:'PUBLISHED'}});
     const orders=[],shows=[];for(const [offset,count]of [[0,55],[1,3]]){
      const start=new Date(day+'T19:00:00+07:00');start.setUTCDate(start.getUTCDate()+offset);
@@ -63,6 +73,7 @@ if(mode==='init'){
      }
     }
     for(const status of ['CANCELLED','EXPIRED'])await tx.order.create({data:{userId:accounts.buyerA.id,eventId:event.id,showtimeId:shows[0],status,totalAmount:0,paymentExpiresAt:new Date(),expiresAt:new Date()}});
+    await ensureHistoryFixtures(tx,event.id,accounts.buyerA.id);
     return {eventId:event.id,accounts,orders,shows,day,batch,existing:false};
    },{timeout:120000});
    writeFileSync(state+'/fixture.json',JSON.stringify(result,null,2),{mode:0o600});chownSync(state+'/fixture.json',1000,1000);
