@@ -41,7 +41,6 @@ import {
   remainingSeconds,
   type ServerClock,
 } from "@/features/seat-selection/server-countdown";
-import { OrderTickets } from "@/features/tickets/order-tickets";
 import { OrderBadge } from "@/features/orders/order-badge";
 
 export interface OrderReviewProps {
@@ -535,7 +534,6 @@ export function OrderReview({ id, page = 1, onPay }: OrderReviewProps) {
             {order.status === "PAID" && (
               <>
                 <SignedTickets key={order.id} orderId={order.id} />
-                <OrderTickets orderId={order.id} />
               </>
             )}
 

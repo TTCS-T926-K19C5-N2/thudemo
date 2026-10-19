@@ -23,6 +23,7 @@ import { ScannerModule } from './scanner/scanner.module.js';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      ignoreEnvFile: process.env.CONFIG_IGNORE_ENV_FILE === 'true',
       envFilePath: [
         resolve(process.cwd(), '.env'),
         resolve(process.cwd(), '../../.env'),
