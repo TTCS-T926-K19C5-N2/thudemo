@@ -28,18 +28,32 @@ export function restorePointers(dir, snapshot) {
     }
   }
 }
-export async function promoteRelease(dir, value, verify) {
+export async function promoteRelease(dir, value, verify, lifecycle = {}) {
   stagingRelease(value);
   const snapshot = pointerSnapshot(dir),
     path = resolve(dir, "active.json"),
     temp = resolve(dir, "active.next.json");
+  let retiring = false;
   try {
     if (snapshot["active.json"])
       writeFileSync(resolve(dir, "previous.json"), snapshot["active.json"]);
     writeFileSync(temp, JSON.stringify(value, null, 2));
     renameSync(temp, path);
     await verify();
+    if (snapshot["active.json"] && lifecycle.retirePrevious) {
+      retiring = true;
+      await lifecycle.retirePrevious(JSON.parse(snapshot["active.json"]));
+    }
   } catch (error) {
+    if (retiring) {
+      try {
+        await lifecycle.resumePrevious(JSON.parse(snapshot["active.json"]));
+      } catch (recoveryError) {
+        // Do not point traffic at a partially stopped previous release or stop
+        // the healthy candidate when previous workers cannot be recovered.
+        throw new AggregateError([error, recoveryError], "Previous release recovery failed; verified candidate remains active");
+      }
+    }
     restorePointers(dir, snapshot);
     throw error;
   }
