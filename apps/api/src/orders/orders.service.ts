@@ -14,7 +14,7 @@ import { isOrderExpired } from './order-expiration.js';
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-type Clock = { serverTime: Date; paymentExpiresAt: Date };
+type Clock = { serverTime: Date };
 type HoldAuthority = {
   id: string;
   token: string;
@@ -213,9 +213,7 @@ export class OrdersService {
             ORDER BY h."seatId" FOR UPDATE OF h`);
 
           const [clock] = await tx.$queryRaw<Clock[]>(Prisma.sql`
-            WITH current_clock AS (SELECT clock_timestamp() AS now)
-            SELECT now AS "serverTime", now + interval '10 minutes' AS "paymentExpiresAt"
-            FROM current_clock`);
+            SELECT clock_timestamp() AS "serverTime"`);
           const heldById = new Map(seats.map((seat) => [seat.seatId, seat]));
           const lostSeatIds = hold.expectedSeatIds.filter((seatId) => {
             const seat = heldById.get(seatId);
@@ -246,10 +244,17 @@ export class OrdersService {
               message: 'Một hoặc nhiều ghế chưa có giá. Hãy tải lại sơ đồ.',
             });
 
-          const totalAmount = seats.reduce(
-            (sum, seat) => sum + seat.price!,
-            0,
-          );
+          if (
+            seats.some(
+              (seat) => seat.expiresAt.getTime() !== hold.expiresAt.getTime(),
+            )
+          )
+            throw new ConflictException({
+              code: 'HOLD_CHANGED',
+              message: 'Thời hạn giữ ghế không đồng nhất. Hãy chọn lại ghế.',
+            });
+
+          const totalAmount = seats.reduce((sum, seat) => sum + seat.price!, 0);
           const order = await tx.order.create({
             data: {
               userId,
@@ -258,8 +263,8 @@ export class OrdersService {
               holdSessionId: hold.id,
               holdToken: hold.token,
               status: OrderStatus.PENDING_PAYMENT,
-              paymentExpiresAt: clock.paymentExpiresAt,
-              expiresAt: clock.paymentExpiresAt,
+              paymentExpiresAt: hold.expiresAt,
+              expiresAt: hold.expiresAt,
               totalAmount,
               items: {
                 create: seats.map((seat) => ({
@@ -272,20 +277,6 @@ export class OrdersService {
             },
             select: orderProjection,
           });
-
-          await tx.holdSession.update({
-            where: { id: hold.id },
-            data: { expiresAt: clock.paymentExpiresAt },
-          });
-          const extended = await tx.seatHold.updateMany({
-            where: { holdSessionId: hold.id, token: hold.token },
-            data: { expiresAt: clock.paymentExpiresAt },
-          });
-          if (extended.count !== seats.length)
-            throw new ConflictException({
-              code: 'HOLD_CHANGED',
-              message: 'Trạng thái giữ ghế vừa thay đổi. Hãy thử lại.',
-            });
 
           this.logger.log(
             JSON.stringify({
@@ -441,7 +432,8 @@ export class OrdersService {
       });
 
       const serverNow = new Date();
-      const effectiveExpiry = order.expiresAt ?? order.paymentExpiresAt ?? serverNow;
+      const effectiveExpiry =
+        order.expiresAt ?? order.paymentExpiresAt ?? serverNow;
       const remainingSeconds = Math.max(
         0,
         Math.ceil((effectiveExpiry.getTime() - serverNow.getTime()) / 1000),

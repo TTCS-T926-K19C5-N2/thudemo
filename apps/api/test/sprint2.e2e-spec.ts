@@ -541,7 +541,7 @@ describe('Sprint 2 isolated database integration', () => {
       .expect(400);
   });
 
-  it('creates one pending order from live holds, snapshots prices, extends ten minutes and rejects expired seats', async () => {
+  it('creates one pending order from live holds, snapshots prices, preserves the original deadline and rejects expired seats', async () => {
     const available = await db.seat.findMany({
       where: { showtimeId: showId },
       orderBy: [{ categoryId: 'asc' }, { row: 'asc' }, { seatNumber: 'asc' }],
@@ -558,6 +558,7 @@ describe('Sprint 2 isolated database integration', () => {
       .send({ seatIds: firstSeats.map((seat) => seat.id) })
       .expect(200);
     const holdExpiresAt = Date.parse(held.body.hold.expiresAt);
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     const [placedA, placedB] = await Promise.all([
       request(app.getHttpServer())
@@ -583,17 +584,19 @@ describe('Sprint 2 isolated database integration', () => {
     );
     const paymentExpiresAt = Date.parse(placedA.body.order.paymentExpiresAt);
     // Promise.all preserves input order, not which concurrent request won the lock.
-    // Only the creator gets a new 600-second deadline; the reuser must not extend it.
+    // DEC10/T37: neither the creator nor the reuser may extend the first hold.
     const created = placedA.body.created ? placedA : placedB;
     const reused = placedA.body.created ? placedB : placedA;
-    expect(paymentExpiresAt - Date.parse(created.body.serverTime)).toBe(600000);
+    expect(paymentExpiresAt).toBe(holdExpiresAt);
+    expect(paymentExpiresAt - Date.parse(created.body.serverTime)).toBeLessThan(
+      600000,
+    );
     expect(reused.body.order.paymentExpiresAt).toBe(
       created.body.order.paymentExpiresAt,
     );
     const remaining = paymentExpiresAt - Date.parse(reused.body.serverTime);
     expect(remaining).toBeGreaterThan(0);
     expect(remaining).toBeLessThanOrEqual(600000);
-    expect(paymentExpiresAt).toBeGreaterThanOrEqual(holdExpiresAt);
     expect(
       await db.order.count({
         where: { userId: buyer, showtimeId: showId },
@@ -604,13 +607,23 @@ describe('Sprint 2 isolated database integration', () => {
       .set('Cookie', buyerCookie)
       .expect(200);
     expect(currentOrder.body.order.status).toBe('PENDING_PAYMENT');
-    const extended = await db.seatHold.findMany({
+    const unchangedClaims = await db.seatHold.findMany({
       where: { seatId: { in: firstSeats.map((seat) => seat.id) } },
       select: { expiresAt: true },
     });
     expect(
-      extended.every((seat) => seat.expiresAt.getTime() === paymentExpiresAt),
+      unchangedClaims.every(
+        (seat) => seat.expiresAt.getTime() === holdExpiresAt,
+      ),
     ).toBe(true);
+    expect(unchangedClaims).toHaveLength(firstSeats.length);
+    expect(
+      (
+        await db.holdSession.findUniqueOrThrow({
+          where: { id: held.body.hold.id },
+        })
+      ).expiresAt.getTime(),
+    ).toBe(holdExpiresAt);
 
     const newPrice = (firstCategory.price ?? 0) + 12345;
     await request(app.getHttpServer())
