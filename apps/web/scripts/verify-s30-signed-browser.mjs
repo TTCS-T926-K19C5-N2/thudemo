@@ -164,6 +164,10 @@ try {
   );
   await shot(a, "desktop-network-error.png");
   await a.unroute(pattern);
+  await a.getByRole("button", { name: "Thử kết nối lại", exact: true }).click();
+  await a.getByTestId("network-status").getByText("Trực tuyến", { exact: true }).waitFor();
+  await a.getByTestId("offline-status-banner").waitFor({ state: "hidden" });
+  check(true, "Restored server probe and validated sync ACK end the injected network outage before the next online admission");
   await scan(mobile, fixture.usedQr);
   await status(mobile).filter({ hasText: "Vé đã sử dụng" }).waitFor();
   await shot(mobile, "mobile-used.png");
