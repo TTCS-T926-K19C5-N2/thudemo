@@ -10,6 +10,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { ScannerCryptoService } from './scanner-crypto.service.js';
 type Ticket = {
   code: string;
+  legacyCodes?: string[];
   status: 'valid' | 'checked_in' | 'cancelled';
   checkedInAt: string | null;
   seatLabel: string;
@@ -22,6 +23,7 @@ const fingerprint = (ticket: Ticket) =>
     ticket.checkedInAt,
     ticket.seatLabel,
     ticket.ticketType,
+    ticket.legacyCodes ?? [],
   ]);
 @Injectable()
 export class ScannerSnapshotService {
@@ -69,11 +71,12 @@ export class ScannerSnapshotService {
             checkedInAt: Date | null;
             seatLabel: string;
             ticketType: string;
+            legacyCodes: string[];
           }[]
         >(Prisma.sql`
         SELECT oi.id::text AS code,CASE WHEN o.status<>'PAID' OR t.status='CANCELLED' THEN 'cancelled'
           WHEN oi."checkedInAt" IS NOT NULL OR t.status='CHECKED_IN' THEN 'checked_in' ELSE 'valid' END AS status,
-          COALESCE(oi."checkedInAt",t."checkedInAt") AS "checkedInAt",s.row||'-'||s."seatNumber" AS "seatLabel",oi."categoryName" AS "ticketType"
+          COALESCE(oi."checkedInAt",t."checkedInAt") AS "checkedInAt",s.row||'-'||s."seatNumber" AS "seatLabel",oi."categoryName" AS "ticketType",ARRAY[t.code] AS "legacyCodes"
         FROM order_items oi JOIN orders o ON o.id=oi."orderId" JOIN seats s ON s.id=oi."seatId"
         JOIN tickets t ON t."orderId"=o.id AND t."seatId"=oi."seatId"
         WHERE o."showtimeId"=${showtimeId}::uuid AND s."showtimeId"=o."showtimeId" ORDER BY oi.id`);

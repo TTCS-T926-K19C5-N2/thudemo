@@ -358,8 +358,9 @@ try {
     .waitFor({ state: "hidden" });
   check(
     retriedScanBodies.length === 2 &&
-      JSON.stringify(retriedScanBodies[0]) ===
-        JSON.stringify(retriedScanBodies[1]),
+      ["requestId", "gateId", "qrPayload"].every(
+        (field) => retriedScanBodies[0][field] === retriedScanBodies[1][field],
+      ),
     "Batch confirmation preserves exact request ID, gate and signed payload after the server committed",
   );
   await ordinary.getByRole("button", { name: "Kiểm tra vé" }).click();

@@ -90,6 +90,7 @@ export function TicketScanner({
 }) {
   const [userLoading, setUserLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
+  const [sessionRevision, setSessionRevision] = useState(0);
   const [userError, setUserError] = useState("");
   const [showtimeId, setShowtimeId] = useState(initialShowtimeId);
   const [todayShowtimes, setTodayShowtimes] = useState<TodayShowtimeS29[]>([]);
@@ -296,7 +297,33 @@ export function TicketScanner({
           );
       }
     };
-  }, [initialShowtimeId]);
+  }, [initialShowtimeId, sessionRevision]);
+
+  useEffect(() => {
+    const changed = () => {
+      localStorage.removeItem("scanner.staff-identity");
+      staffIdentity.current = "";
+      setAuthorized(false);
+      setGates([]);
+      setGateId("");
+      setResult(null);
+      setUsed(null);
+      activeRequest.current?.abort();
+      if (scanner.current?.isScanning)
+        void scanner.current.stop().catch(() => {});
+      setSessionRevision((revision) => revision + 1);
+    };
+    window.addEventListener("account-session-changed", changed);
+    const channel =
+      typeof BroadcastChannel !== "undefined"
+        ? new BroadcastChannel("account-session")
+        : null;
+    if (channel) channel.onmessage = changed;
+    return () => {
+      window.removeEventListener("account-session-changed", changed);
+      channel?.close();
+    };
+  }, []);
 
   useEffect(() => {
     if (!authorized) return;
