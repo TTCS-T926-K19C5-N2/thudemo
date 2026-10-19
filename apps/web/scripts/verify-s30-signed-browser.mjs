@@ -120,7 +120,7 @@ try {
     "Next scan clears and focuses input",
   );
   await scan(a, fixture.fresh.id);
-  await status(a).filter({ hasText: "Mã QR không hợp lệ" }).waitFor();
+  await status(a).filter({ hasText: "Không phải vé của hệ thống hoặc chữ ký không hợp lệ." }).waitFor();
   check(
     !(await status(a).innerText()).includes("Hợp lệ"),
     "Unsigned real UUID rejected without green state",
@@ -129,10 +129,10 @@ try {
   await a.getByRole("button", { name: "Quét vé tiếp theo" }).click();
   const bad = fixture.retry.qr.replace("ET1.", "ET2.");
   await scan(a, bad);
-  await status(a).filter({ hasText: "Mã QR không hợp lệ" }).waitFor();
+  await status(a).filter({ hasText: "Không phải vé của hệ thống hoặc chữ ký không hợp lệ." }).waitFor();
   check(
     !(await status(a).innerText()).includes("Hợp lệ"),
-    "Unsupported QR version rejected by browser",
+    "Unsupported QR version rejected by server with no admission",
   );
   await a.getByRole("button", { name: "Quét vé tiếp theo" }).click();
   const pattern = "**/api/showtimes/*/check-in";
@@ -156,7 +156,7 @@ try {
   await a.route(pattern, (route) => route.abort());
   await scan(a, fixture.usedQr);
   await status(a)
-    .filter({ hasText: /Không thể|kết nối|Lỗi mạng/ })
+    .filter({ hasText: "Chưa nhận xác nhận từ máy chủ. Chưa cho vào; yêu cầu được giữ để kiểm tra lại khi có mạng." })
     .waitFor();
   check(
     !(await status(a).innerText()).includes("Hợp lệ"),
@@ -186,8 +186,8 @@ try {
   await owner.goto(base + "/orders/" + fixture.ownerOrderId);
   await owner.getByTestId("signed-ticket").waitFor();
   check(
-    (await owner.getByTestId("signed-ticket").locator("svg").count()) === 1,
-    "Owner page renders one real signed QR at a time",
+    (await owner.getByTestId("signed-ticket").locator("svg, img[data-testid=ticket-qr-image]").count()) === 1,
+    "Owner page renders one real signed QR image at a time",
   );
   check(
     (await owner.getByTestId("countdown-banner").count()) === 0 &&
@@ -197,7 +197,7 @@ try {
   await shot(owner, "desktop-owner-qr-fixture.png");
   const qrImage = await owner
     .getByTestId("signed-ticket")
-    .locator("svg")
+    .locator("svg, img[data-testid=ticket-qr-image]")
     .screenshot();
   await owner.addScriptTag({
     path: resolve(
@@ -280,12 +280,16 @@ try {
     report.consoleErrors.length === 0,
     "No unexpected browser console/runtime errors",
   );
-  await a.getByLabel("Mã suất diễn").fill(fixture.otherShowtimeId);
+  check(
+    await a.locator(`select[aria-label="Mã suất diễn"] option[value="${fixture.otherShowtimeId}"]`).count() === 0,
+    "Unassigned other showtime cannot be selected in the operative scanner",
+  );
+  await a.getByLabel("Mã suất diễn").selectOption("");
   check(
     !(await status(a).innerText()).includes(
       "Vé hợp lệ. Check-in thành công.",
     ) && (await a.getByLabel("Hoặc nhập mã vé").inputValue()) === "",
-    "Changing showtime clears previous admission message and QR input",
+    "Clearing showtime selection clears previous admission message and QR input",
   );
   report.status = "PASS";
 } catch (error) {

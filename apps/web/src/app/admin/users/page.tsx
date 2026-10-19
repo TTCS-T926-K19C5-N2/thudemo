@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { StaffAssignment } from "@/features/check-in/staff-assignment";
 import {
   Table,
   TableBody,
@@ -226,6 +227,7 @@ export default function AdminUsersPage() {
                 </Button>
               </div>
             </form>
+            <StaffAssignment users={list.items} />
             <section className="operations-panel" aria-busy={loading}>
               <h2>Danh sách tài khoản</h2>
               {loading ? (

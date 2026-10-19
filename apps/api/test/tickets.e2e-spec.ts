@@ -1,6 +1,9 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { ModulesContainer } from '@nestjs/core';
+import { PATH_METADATA, METHOD_METADATA } from '@nestjs/common/constants';
+import { RequestMethod } from '@nestjs/common';
 import request from 'supertest';
 import { describe, beforeAll, afterAll, it, expect } from 'vitest';
 import { OrderStatus, PaymentStatus } from '@prisma/client';
@@ -9,7 +12,8 @@ import { PrismaService } from '../src/prisma/prisma.service.js';
 import { hashSessionToken, SESSION_COOKIE } from '../src/auth/auth.service.js';
 import { buildMomoSignature } from '../src/payments/gateways/momo-signature.js';
 import { decodeTicketKey } from '../src/tickets/ticket-signing-keys.js';
-import { verifyTicketQr } from '../src/tickets/ticket-qr.js';
+import { TicketsService } from '../src/tickets/tickets.service.js';
+import { ScannerCryptoService } from '../src/scanner/scanner-crypto.service.js';
 
 describe('Tickets S-25 / S-26 E2E Integration', () => {
   let app: INestApplication;
@@ -223,6 +227,34 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
     }
   });
 
+  it('registers exactly one GET owner-ticket route regardless of module order', () => {
+    const routes: string[] = [];
+    for (const module of app.get(ModulesContainer).values()) {
+      for (const wrapper of module.controllers.values()) {
+        const controller = wrapper.metatype;
+        if (!controller) continue;
+        const prefix = Reflect.getMetadata(PATH_METADATA, controller);
+        for (const method of Object.getOwnPropertyNames(controller.prototype)) {
+          const handler = controller.prototype[method];
+          if (
+            typeof handler !== 'function' ||
+            Reflect.getMetadata(METHOD_METADATA, handler) !== RequestMethod.GET
+          )
+            continue;
+          routes.push(
+            `${prefix}/${Reflect.getMetadata(PATH_METADATA, handler)}`.replace(
+              /\/+$/,
+              '',
+            ),
+          );
+        }
+      }
+    }
+    expect(
+      routes.filter((route) => route === 'orders/:id/tickets'),
+    ).toHaveLength(1);
+  });
+
   it('lets only the owner read the tickets, with QR codes that verify offline and reject tampering', async () => {
     const { order, gatewayRef } = await createPendingOrder([3]);
 
@@ -254,24 +286,28 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
     const [ticket] = res.body.tickets;
     expect(ticket).toMatchObject({ seatLabel: 'T-3', status: 'VALID' });
 
+    // Email and HTTP must consume exactly the same signed identity, not a
+    // second legacy encoding accepted only by its own verifier.
+    const beforeCount = await db.ticket.count({ where: { orderId: order.id } });
+    const projection = await app
+      .get(TicketsService)
+      .listForOrder(order.id, buyer.id);
+    expect(projection).toEqual(res.body.tickets);
+    const claims = app
+      .get(ScannerCryptoService)
+      .verifyQr(projection[0].qrPayload);
+    expect(claims.ticketId).toBe(ticket.ticketId);
+    expect(await db.ticket.count({ where: { orderId: order.id } })).toBe(
+      beforeCount,
+    );
+
     const keys = await scannerKeys();
     expect(ticket.qrPayload).toBeTruthy();
-    if (ticket.qrPayload.startsWith('ET1.')) {
-      const { parseTicketQr } = await import('shared/ticket-qr');
-      const parsed = parseTicketQr(ticket.qrPayload);
-      expect(parsed).toBeTruthy();
-      expect(parsed?.showtimeId).toBe(showtimeId);
-    } else {
-      expect(verifyTicketQr(ticket.qrPayload, keys)).toMatchObject({
-        valid: true,
-        ticket: { code: ticket.code, showtimeId },
-      });
-      const tampered = ticket.qrPayload.replace(
-        ticket.code,
-        `${ticket.code.slice(0, -1)}X`,
-      );
-      expect(verifyTicketQr(tampered, keys).valid).toBe(false);
-    }
+    expect(ticket.qrPayload.startsWith('ET1.')).toBe(true);
+    expect(keys.has(claims.keyId)).toBe(true);
+    expect(claims.showtimeId).toBe(showtimeId);
+    const tampered = ticket.qrPayload.replace(claims.ticketId, randomUUID());
+    expect(() => app.get(ScannerCryptoService).verifyQr(tampered)).toThrow();
   });
 
   it('gives the scanner the issued tickets together with the signing keys', async () => {

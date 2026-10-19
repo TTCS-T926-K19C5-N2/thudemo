@@ -7,7 +7,7 @@ import {
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import * as argon2 from 'argon2';
-import { employeeInput, employeeRole } from './admin-input.js';
+import { adminBody, employeeInput, employeeRole } from './admin-input.js';
 
 const projection = {
   id: true,
@@ -25,6 +25,122 @@ function publicUser(user: ProjectedUser) {
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async scannerShowtimes() {
+    return this.prisma.showtime.findMany({
+      where: { startTime: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+      select: {
+        id: true,
+        startTime: true,
+        event: { select: { name: true } },
+        checkInGates: { select: { id: true, name: true } },
+      },
+      orderBy: [{ startTime: 'asc' }, { id: 'asc' }],
+      take: 100,
+    });
+  }
+
+  async assignGate(actorId: string, targetId: string, value: unknown) {
+    const body = adminBody(value);
+    if (
+      typeof body.showtimeId !== 'string' ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        body.showtimeId,
+      ) ||
+      typeof body.gateName !== 'string' ||
+      !body.gateName.trim() ||
+      body.gateName.length > 80 ||
+      typeof body.canOverride !== 'boolean' ||
+      typeof body.enabled !== 'boolean'
+    )
+      throw new BadRequestException(
+        'Suất, tên cửa và quyền phân công không hợp lệ.',
+      );
+    const showtimeId = body.showtimeId.toLowerCase(),
+      name = body.gateName.trim();
+    const canOverride = body.canOverride,
+      enabled = body.enabled;
+    return this.prisma.$transaction(async (tx) => {
+      await this.lockAdmin(tx, actorId, targetId);
+      const target = await tx.user.findUnique({
+        where: { id: targetId },
+        include: { userRoles: { include: { role: true } } },
+      });
+      if (
+        !target?.isActive ||
+        !target.userRoles.some((r) => r.role.name === 'STAFF')
+      )
+        throw new BadRequestException(
+          'Chỉ phân công nhân viên soát vé đang hoạt động.',
+        );
+      if (!(await tx.showtime.findUnique({ where: { id: showtimeId } })))
+        throw new NotFoundException('Không tìm thấy suất diễn.');
+      const gate = enabled
+        ? await tx.checkInGate.upsert({
+            where: { showtimeId_name: { showtimeId, name } },
+            create: { showtimeId, name },
+            update: {},
+          })
+        : await tx.checkInGate.findUnique({
+            where: { showtimeId_name: { showtimeId, name } },
+          });
+      if (!gate) throw new NotFoundException('Không tìm thấy cửa.');
+      const old = await tx.checkInPermission.findUnique({
+        where: { userId_gateId: { userId: targetId, gateId: gate.id } },
+      });
+      if (enabled) {
+        await tx.checkInPermission.upsert({
+          where: { userId_gateId: { userId: targetId, gateId: gate.id } },
+          create: {
+            userId: targetId,
+            gateId: gate.id,
+            staffName: target.fullName || target.email,
+            canOverride,
+          },
+          update: { canOverride, staffName: target.fullName || target.email },
+        });
+        await tx.showtimeStaff.upsert({
+          where: { showtimeId_userId: { showtimeId, userId: targetId } },
+          create: { showtimeId, userId: targetId },
+          update: {},
+        });
+      } else {
+        await tx.checkInPermission.deleteMany({
+          where: { userId: targetId, gateId: gate.id },
+        });
+        if (
+          !(await tx.checkInPermission.count({
+            where: { userId: targetId, gate: { showtimeId } },
+          }))
+        )
+          await tx.showtimeStaff.deleteMany({
+            where: { userId: targetId, showtimeId },
+          });
+      }
+      await tx.userAdminAudit.create({
+        data: {
+          performedById: actorId,
+          targetUserId: targetId,
+          action: enabled ? 'ASSIGN_GATE' : 'REVOKE_GATE',
+          oldValue: old
+            ? JSON.stringify({ gateId: gate.id, canOverride: old.canOverride })
+            : null,
+          newValue: JSON.stringify({
+            gateId: gate.id,
+            showtimeId,
+            enabled,
+            canOverride: enabled && canOverride,
+          }),
+        },
+      });
+      return {
+        gateId: gate.id,
+        showtimeId,
+        enabled,
+        canOverride: enabled && canOverride,
+      };
+    });
+  }
 
   // A stable lock order serializes account mutations without cross-admin deadlocks.
   private async lockAdmin(

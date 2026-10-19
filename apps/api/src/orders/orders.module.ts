@@ -1,6 +1,6 @@
 import { ScannerModule } from '../scanner/scanner.module.js';
 import { TicketQrController } from './ticket-qr.controller.js';
-import { TicketQrService } from './ticket-qr.service.js';
+import { TicketProjectionModule } from '../tickets/ticket-projection.module.js';
 import { Module } from '@nestjs/common';
 import {
   OrdersController,
@@ -13,7 +13,7 @@ import { TicketCheckInController } from './ticket-check-in.controller.js';
 import { TicketCheckInService } from './ticket-check-in.service.js';
 
 @Module({
-  imports: [ScannerModule],
+  imports: [ScannerModule, TicketProjectionModule],
   controllers: [
     TicketQrController,
     OrdersController,
@@ -21,7 +21,6 @@ import { TicketCheckInService } from './ticket-check-in.service.js';
     TicketCheckInController,
   ],
   providers: [
-    TicketQrService,
     OrdersService,
     OrderHistoryService,
     OrderExpiryScheduler,
