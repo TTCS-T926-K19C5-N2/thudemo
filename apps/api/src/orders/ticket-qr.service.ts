@@ -25,6 +25,49 @@ export class TicketQrService {
     private readonly db: PrismaService,
     private readonly crypto: ScannerCryptoService,
   ) {}
+  async forBuyer(
+    userId: string,
+    page: { page: number; pageSize: number; skip: number },
+  ) {
+    const [count] = await this.db.$queryRaw<{ total: number }[]>(Prisma.sql`
+      SELECT count(*)::int AS total FROM order_items oi JOIN orders o ON o.id=oi."orderId"
+      JOIN tickets t ON t."orderId"=o.id AND t."seatId"=oi."seatId"
+      WHERE o."userId"=${userId}::uuid AND o.status='PAID'::"OrderStatus"`);
+    const ids = await this.db.$queryRaw<
+      { ticketId: string; orderId: string }[]
+    >(Prisma.sql`
+      SELECT oi.id AS "ticketId",o.id AS "orderId" FROM order_items oi
+      JOIN orders o ON o.id=oi."orderId" JOIN showtimes st ON st.id=o."showtimeId"
+      JOIN tickets t ON t."orderId"=o.id AND t."seatId"=oi."seatId"
+      WHERE o."userId"=${userId}::uuid AND o.status='PAID'::"OrderStatus"
+      ORDER BY CASE WHEN st."startTime">=CURRENT_TIMESTAMP THEN 0 ELSE 1 END,
+        CASE WHEN st."startTime">=CURRENT_TIMESTAMP THEN st."startTime" END ASC,
+        CASE WHEN st."startTime"<CURRENT_TIMESTAMP THEN st."startTime" END DESC,oi.id
+      LIMIT ${page.pageSize} OFFSET ${page.skip}`);
+    // Bound the ticket ID page first; project each distinct owning order once.
+    // No second QR encoder, ownership rule or issuance path is introduced.
+    const projected = new Map<
+      string,
+      Awaited<ReturnType<TicketQrService['forOwner']>>['tickets'][number] & {
+        orderId: string;
+      }
+    >();
+    for (const orderId of new Set(ids.map((item) => item.orderId))) {
+      for (const ticket of (await this.forOwner(orderId, userId)).tickets)
+        projected.set(ticket.ticketId, { ...ticket, orderId });
+    }
+    return {
+      tickets: ids
+        .map((item) => projected.get(item.ticketId))
+        .filter((t) => t !== undefined),
+      pagination: {
+        page: page.page,
+        pageSize: page.pageSize,
+        total: count.total,
+        hasNext: page.skip + ids.length < count.total,
+      },
+    };
+  }
   async forOwner(orderId: string, userId: string) {
     return this.db.$transaction(async (tx) => {
       const [order] = await tx.$queryRaw<{ status: string }[]>(Prisma.sql`

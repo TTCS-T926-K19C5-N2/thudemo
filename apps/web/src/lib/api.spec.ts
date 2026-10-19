@@ -6,6 +6,8 @@ describe("Login return path allowlist", () => {
       "/events/new",
       "/orders",
       "/orders?page=2",
+      "/account/tickets",
+      "/account/tickets?page=2",
       "/events/12345678-1234-1234-1234-123456789abc",
       "/shows/12345678-1234-1234-1234-123456789abc/seats",
     ])
@@ -20,6 +22,8 @@ describe("Login return path allowlist", () => {
       "/events/new#x",
       "/events/not-uuid",
       "/events/%6eew",
+      "/account/tickets?next=https://attacker.invalid",
+      "/account/tickets?page=0",
     ])
       expect(safeReturnTo(path)).toBeNull();
   });

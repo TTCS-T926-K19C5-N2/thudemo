@@ -7,6 +7,13 @@ export interface OutgoingMail {
   subject: string;
   text: string;
   messageId: string;
+  html?: string;
+  attachments?: Array<{
+    filename: string;
+    content: Buffer;
+    contentType: 'image/png';
+    cid?: string;
+  }>;
 }
 
 @Injectable()
