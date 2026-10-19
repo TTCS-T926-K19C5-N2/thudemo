@@ -186,8 +186,8 @@ try {
   await owner.goto(base + "/orders/" + fixture.ownerOrderId);
   await owner.getByTestId("signed-ticket").waitFor();
   check(
-    (await owner.getByTestId("signed-ticket").locator("svg").count()) === 1,
-    "Owner page renders one real signed QR at a time",
+    (await owner.getByTestId("signed-ticket").locator("svg, img[data-testid=ticket-qr-image]").count()) === 1,
+    "Owner page renders one real signed QR image at a time",
   );
   check(
     (await owner.getByTestId("countdown-banner").count()) === 0 &&
@@ -197,7 +197,7 @@ try {
   await shot(owner, "desktop-owner-qr-fixture.png");
   const qrImage = await owner
     .getByTestId("signed-ticket")
-    .locator("svg")
+    .locator("svg, img[data-testid=ticket-qr-image]")
     .screenshot();
   await owner.addScriptTag({
     path: resolve(
@@ -280,7 +280,7 @@ try {
     report.consoleErrors.length === 0,
     "No unexpected browser console/runtime errors",
   );
-  await a.getByLabel("Mã suất diễn").fill(fixture.otherShowtimeId);
+  await a.getByLabel("Mã suất diễn").selectOption(fixture.otherShowtimeId);
   check(
     !(await status(a).innerText()).includes(
       "Vé hợp lệ. Check-in thành công.",

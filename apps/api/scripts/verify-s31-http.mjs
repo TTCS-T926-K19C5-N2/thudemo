@@ -249,14 +249,14 @@ try {
   const showtime = await db.showtime.create({
     data: {
       eventId: event.id,
-      startTime: new Date('2026-12-25T12:00:00Z'),
+      startTime: new Date(),
       status: 'ON_SALE',
     },
   });
   const otherShowtime = await db.showtime.create({
     data: {
       eventId: event.id,
-      startTime: new Date('2026-12-26T12:00:00Z'),
+      startTime: new Date(),
       status: 'ON_SALE',
     },
   });
