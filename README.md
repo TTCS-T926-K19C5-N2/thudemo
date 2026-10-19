@@ -1,5 +1,7 @@
 # Chạy dự án bán vé sự kiện trên máy cá nhân
 
+Quản trị nhân viên S28: xem [ACCOUNT_ADMIN](docs/ACCOUNT_ADMIN.md) cho màn `/admin/users`, quyền ADMIN, đổi vai trò tức thời và thu hồi session khi khóa.
+
 Bản được nghiệm thu: **61749f82**, staging **https://10.228.54.197:3470**. CI 221 giây, tự triển khai sau merge 365,240 giây; T01–T10/K01/DoD được đối chiếu đủ 95 mapping. [Báo cáo](docs/SPRINT1_REVIEW_REPORT.md), [ma trận](docs/SPRINT1_ACCEPTANCE_MATRIX.md), [runbook](docs/SPRINT1_DEMO_RUNBOOK.md), [receipt thực tế](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229852854). Review đúng SHA theo DEC18 đã áp dụng; không phải review độc lập của người khác. K01 có sai lệch timebox/mentor lịch sử đã được PO chấp thuận.
 
 ## Demo từ clone mới

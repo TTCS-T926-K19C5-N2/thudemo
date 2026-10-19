@@ -74,7 +74,7 @@ export class SessionAuthGuard implements CanActivate {
       Prisma.sql`
       SELECT u.id,u.email,COALESCE((SELECT array_agg(r.name) FROM user_roles ur JOIN roles r ON r.id=ur."roleId" WHERE ur."userId"=u.id),'{}'::text[]) AS roles
       FROM sessions s JOIN users u ON u.id=s."userId"
-      WHERE s."tokenHash"=${tokenHash} AND s."expiresAt">clock_timestamp() AND u."isEmailVerified"=true`,
+      WHERE s."tokenHash"=${tokenHash} AND s."expiresAt">clock_timestamp() AND u."isEmailVerified"=true AND u."isActive"=true`,
       isHoldClaim ? request : undefined,
     );
     if (!session) {

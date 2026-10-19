@@ -51,7 +51,9 @@ export function LoginForm({
           "Phiên đăng nhập chưa được xác nhận. Hãy đăng nhập lại.",
         );
       router.replace(
-        safeReturnTo(returnTo ?? null) ??
+        (user.roles.length === 1 && user.roles.includes("STAFF")
+          ? "/check-in"
+          : safeReturnTo(returnTo ?? null)) ??
           (user.roles.includes("ORGANIZER")
             ? "/events"
             : user.roles.includes("STAFF")
@@ -62,7 +64,7 @@ export function LoginForm({
     } catch (e) {
       setError(
         e instanceof ApiError && e.status === 401
-          ? "Email hoặc mật khẩu không chính xác."
+          ? "Email hoặc mật khẩu không chính xác. Nếu tài khoản bị khóa, vui lòng liên hệ quản trị."
           : e instanceof ApiError && e.status === 429
             ? `Đăng nhập tạm thời bị khóa. Thử lại sau ${Math.ceil(Number(e.details.retryAfterSeconds ?? 60) / 60)} phút.`
             : e instanceof Error
@@ -206,8 +208,15 @@ export function LoginForm({
             </p>
           )}
         </form>
-        <p className="login-account-guidance">Nếu tài khoản chưa kích hoạt, hãy mở liên kết trong hộp thư thử nghiệm hoặc <Link href="/resend-activation">gửi lại liên kết kích hoạt</Link>.</p>
-        <p className="login-account-guidance">Chưa có tài khoản? <Link href="/register">Đăng ký tài khoản thử nghiệm</Link></p>
+        <p className="login-account-guidance">
+          Nếu tài khoản chưa kích hoạt, hãy mở liên kết trong hộp thư thử nghiệm
+          hoặc <Link href="/resend-activation">gửi lại liên kết kích hoạt</Link>
+          .
+        </p>
+        <p className="login-account-guidance">
+          Chưa có tài khoản?{" "}
+          <Link href="/register">Đăng ký tài khoản thử nghiệm</Link>
+        </p>
       </div>
       <Link href={show ? `/shows/${show.id}` : "/"} className="login-back">
         ← Quay lại {show ? "chi tiết sự kiện" : "danh sách sự kiện"}
