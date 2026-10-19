@@ -55,7 +55,7 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
     return { id: user.id, cookie: `${SESSION_COOKIE}=${token}` };
   }
 
-  async function createPendingOrder(seatNumbers: number[]) {
+  async function createPendingOrder(seatNumbers: number[], initialStatus: OrderStatus = OrderStatus.PENDING_PAYMENT) {
     const seats = await Promise.all(
       seatNumbers.map((seatNumber) =>
         db.seat.create({
@@ -68,7 +68,7 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
       data: {
         userId: buyer.id,
         showtimeId,
-        status: OrderStatus.PENDING_PAYMENT,
+        status: initialStatus,
         paymentExpiresAt: expiresAt,
         expiresAt,
         totalAmount: 250000 * seats.length,
@@ -197,7 +197,7 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
   });
 
   it('issues exactly one signed ticket per seat when the order becomes PAID, even with replayed webhooks', async () => {
-    const { order, seats, gatewayRef } = await createPendingOrder([1, 2]);
+    const { order, seats, gatewayRef } = await createPendingOrder([1, 2, 4]);
     const webhook = signedWebhook(order.id, gatewayRef, order.totalAmount);
 
     await Promise.all([
@@ -216,15 +216,21 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
       .expect(200);
 
     const tickets = await db.ticket.findMany({ where: { orderId: order.id } });
-    expect(tickets).toHaveLength(2);
+    expect(tickets).toHaveLength(3);
     expect(new Set(tickets.map((t) => t.seatId))).toEqual(
       new Set(seats.map((s) => s.id)),
     );
-    expect(new Set(tickets.map((t) => t.code)).size).toBe(2);
+    expect(new Set(tickets.map((t) => t.code)).size).toBe(3);
     for (const ticket of tickets) {
       expect(ticket.keyId).toBeTruthy();
       expect(ticket.signature).toBeTruthy();
     }
+    const view = await request(app.getHttpServer()).get(`/orders/${order.id}/tickets`).set('Cookie', buyer.cookie).expect(200);
+    expect(new Set(view.body.tickets.map((ticket: { qrPayload: string }) => ticket.qrPayload)).size).toBe(3);
+    for (const ticket of view.body.tickets) expect(app.get(ScannerCryptoService).verifyQr(ticket.qrPayload).showtimeId).toBe(showtimeId);
+    const mail = await db.ticketMailDelivery.findMany({ where: { orderId: order.id } });
+    expect(mail).toHaveLength(1);
+    expect(mail[0]).toMatchObject({ dedupeKey: `paid:${order.id}`, status: 'QUEUED', attempts: 0 });
   });
 
   it('registers exactly one GET owner-ticket route regardless of module order', () => {
@@ -333,5 +339,28 @@ describe('Tickets S-25 / S-26 E2E Integration', () => {
     for (const ticket of issued) {
       if (ticket.keyId) expect(keyIds).toContain(ticket.keyId);
     }
+  });
+
+  it('pages only the current buyer tickets and never exposes a cancelled QR', async () => {
+    const first = await db.ticket.findFirstOrThrow({ where: { showtimeId }, orderBy: { id: 'asc' } });
+    await db.ticket.update({ where: { id: first.id }, data: { status: 'CANCELLED', cancelledAt: new Date() } });
+    const own = await request(app.getHttpServer()).get('/tickets/me?pageSize=1').set('Cookie', buyer.cookie).expect(200);
+    expect(own.body.tickets).toHaveLength(1);
+    expect(own.body.pagination).toMatchObject({ total: 4, hasNext: true });
+    const full = await request(app.getHttpServer()).get('/tickets/me').set('Cookie', buyer.cookie).expect(200);
+    expect(full.body.tickets).toHaveLength(4);
+    expect(full.body.tickets.find((t: { id: string }) => t.id === first.id)).toMatchObject({ status: 'CANCELLED', qrPayload: null });
+    const other = await request(app.getHttpServer()).get('/tickets/me').set('Cookie', otherBuyer.cookie).expect(200);
+    expect(other.body).toMatchObject({ tickets: [], pagination: { total: 0, hasNext: false } });
+    await request(app.getHttpServer()).get('/tickets/me').expect(401);
+    await request(app.getHttpServer()).get('/tickets/me?page=0').set('Cookie', buyer.cookie).expect(400);
+    expect(await db.ticket.count({ where: { showtimeId } })).toBe(4);
+  });
+
+  it.each([OrderStatus.PENDING_PAYMENT, OrderStatus.EXPIRED, OrderStatus.CANCELLED, OrderStatus.NEEDS_REVIEW])('does not expose or issue tickets for %s', async (status) => {
+    const { order } = await createPendingOrder([100 + userIds.length + Object.values(OrderStatus).indexOf(status)], status);
+    const response = await request(app.getHttpServer()).get(`/orders/${order.id}/tickets`).set('Cookie', buyer.cookie).expect(409);
+    expect(response.body.code).toBe('TICKETS_NOT_READY');
+    expect(await db.ticket.count({ where: { orderId: order.id } })).toBe(0);
   });
 });

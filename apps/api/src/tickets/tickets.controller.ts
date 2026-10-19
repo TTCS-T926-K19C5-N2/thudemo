@@ -3,6 +3,8 @@ import {
   Body,
   Controller,
   Get,
+  Header,
+  Query,
   Param,
   ParseUUIDPipe,
   Post,
@@ -12,10 +14,39 @@ import { Public, Roles } from '../auth/decorators/roles.decorator.js';
 import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js';
 import { ScannerCryptoService } from '../scanner/scanner-crypto.service.js';
 import { TicketsService } from './tickets.service.js';
+import { TicketDeliveryService } from './ticket-delivery.service.js';
+import { TicketQrService } from '../orders/ticket-qr.service.js';
+import { orderPagination } from '../orders/order-pagination.js';
 
 @Controller('tickets')
 export class TicketsController {
-  constructor(private readonly signing: ScannerCryptoService) {}
+  constructor(
+    private readonly signing: ScannerCryptoService,
+    private readonly delivery: TicketDeliveryService,
+    private readonly projection: TicketQrService,
+  ) {}
+
+  @Get('me')
+  @Roles('BUYER')
+  @Header('Cache-Control', 'private, no-store')
+  @Header('Vary', 'Cookie')
+  myTickets(
+    @Req() req: AuthenticatedRequest,
+    @Query('page') page?: unknown,
+    @Query('pageSize') pageSize?: unknown,
+  ) {
+    return this.projection.forBuyer(
+      req.user.id,
+      orderPagination({ page, pageSize }),
+    );
+  }
+
+  @Get('mail-failures')
+  @Roles('ADMIN')
+  @Header('Cache-Control', 'private, no-store')
+  mailFailures() {
+    return this.delivery.failures();
+  }
 
   // Public keys only. Scanners download them ahead of time to verify QR
   // signatures offline.
@@ -32,7 +63,20 @@ export class TicketsController {
 
 @Controller('orders/:id/tickets')
 export class OrderTicketsController {
-  constructor(private readonly tickets: TicketsService) {}
+  constructor(
+    private readonly tickets: TicketsService,
+    private readonly delivery: TicketDeliveryService,
+  ) {}
+
+  @Post('resend')
+  @Roles('BUYER')
+  resend(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+    @Body() value: unknown,
+  ) {
+    return this.delivery.resend(id, req.user.id, value);
+  }
 
   @Post(':ticketId/transfer')
   @Roles('BUYER')

@@ -18,3 +18,7 @@ process.env.TICKET_SIGNING_ACTIVE_KEY_ID = 'integration-fixture';
 process.env.TICKET_SIGNING_PRIVATE_KEY =
   process.env.SCANNER_SIGNING_PRIVATE_KEY;
 process.env.TICKET_SIGNING_PUBLIC_KEYS = process.env.SCANNER_PUBLIC_KEYS;
+// Domain integration fixtures must not deliver to a real SMTP provider.
+// The separate ticket-mail runtime acceptance explicitly enables its worker
+// against an isolated SMTP catcher and records real receipts/timings.
+process.env.TICKET_MAIL_WORKER = 'false';

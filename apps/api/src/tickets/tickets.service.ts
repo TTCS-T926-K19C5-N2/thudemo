@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { TicketStatus, type Prisma } from '@prisma/client';
+import { TicketStatus, Prisma } from '@prisma/client';
+import { randomUUID } from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { generateTicketCode } from './ticket-code.js';
 import { TicketQrService } from '../orders/ticket-qr.service.js';
@@ -69,6 +70,12 @@ export class TicketsService {
       }),
       skipDuplicates: true,
     });
+    // Durable work commits with PAID and its existing minimal tickets. Workers
+    // cannot observe it before commit; webhook replay cannot enqueue twice.
+    await tx.$executeRaw(Prisma.sql`
+      INSERT INTO ticket_mail_deliveries(id,"orderId","dedupeKey")
+      VALUES(${randomUUID()}::uuid,${order.id}::uuid,${'paid:' + order.id})
+      ON CONFLICT ("dedupeKey") DO NOTHING`);
   }
 
   async listForOrder(orderId: string, userId: string): Promise<OrderTicketItem[]> {

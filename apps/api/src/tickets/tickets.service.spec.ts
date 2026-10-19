@@ -23,6 +23,7 @@ describe('TicketsService', () => {
 
   beforeEach(() => {
     tx = {
+      $executeRaw: vi.fn().mockResolvedValue(1),
       ticket: {
         createMany: vi.fn().mockResolvedValue({ count: 0 }),
         update: vi.fn(),

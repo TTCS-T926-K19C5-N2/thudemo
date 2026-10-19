@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { QRCodeSVG } from "qrcode.react";
+import { TicketQrImage } from "../tickets/ticket-qr-image";
+import { ResendTickets } from "../tickets/resend-tickets";
 import { Button } from "@/components/ui/button";
 import { api, object, ApiError } from "@/lib/api/client";
 import { parseTicketQr } from "shared/ticket-qr";
@@ -111,13 +112,10 @@ export function SignedTickets({ orderId }: { orderId: string }) {
         >
           {ticket.qrPayload && (
             <div className="bg-white p-4">
-              <QRCodeSVG
-                value={ticket.qrPayload}
-                size={256}
-                style={{ width: 256, height: 256, maxWidth: "100%" }}
-                marginSize={4}
-                level="M"
-                aria-label={`Mã QR vé ghế ${ticket.seatLabel}`}
+              <TicketQrImage
+                payload={ticket.qrPayload}
+                ticketId={ticket.ticketId}
+                seatLabel={ticket.seatLabel}
               />
             </div>
           )}
@@ -135,6 +133,9 @@ export function SignedTickets({ orderId }: { orderId: string }) {
             Mã vé: {ticket.ticketId.slice(0, 8)}
           </p>
         </div>
+      )}
+      {!!tickets?.some((item) => item.qrPayload) && (
+        <ResendTickets orderId={orderId} />
       )}
     </section>
   );
