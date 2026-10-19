@@ -147,11 +147,12 @@ export function TicketScanner({
     }
   }, [showtimeId]);
 
-  const [shellStatus, setShellStatus] = useState("");
+  const [shellStatus, setShellStatus] = useState(
+    "Đang chuẩn bị giao diện để mở lại khi mất mạng…",
+  );
   useEffect(() => {
     if (!authorized || !isDeviceOnline) return;
     let active = true;
-    setShellStatus("Đang chuẩn bị giao diện để mở lại khi mất mạng…");
     void prepareOfflineScannerShell().then(
       () => {
         if (active)
@@ -835,7 +836,7 @@ export function TicketScanner({
           : "Không thể bật camera. Hãy kiểm tra quyền truy cập camera.",
       );
     }
-  }, [showtimeId, gateId, isDeviceOnline, validateTicket]);
+  }, [showtimeId, gateId, validateTicket]);
 
   const scanNext = useCallback(() => {
     if (scanInProgress.current) return;
