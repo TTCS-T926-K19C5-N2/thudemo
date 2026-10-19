@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { OrderStatus, TicketStatus, type Prisma } from '@prisma/client';
+import { TicketStatus, type Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { generateTicketCode } from './ticket-code.js';
-import { encodeTicketQr } from './ticket-qr.js';
+import { TicketQrService } from '../orders/ticket-qr.service.js';
 import { TicketSigningService } from './ticket-signing.service.js';
 
 export interface PaidOrderForIssue {
@@ -34,6 +34,7 @@ export class TicketsService {
   constructor(
     private readonly db: PrismaService,
     private readonly signing: TicketSigningService,
+    private readonly projection: TicketQrService,
   ) {}
 
   // Runs inside the transaction that moves the order to PAID, so tickets
@@ -71,38 +72,7 @@ export class TicketsService {
   }
 
   async listForOrder(orderId: string, userId: string): Promise<OrderTicketItem[]> {
-    const order = await this.db.order.findUnique({
-      where: { id: orderId },
-      select: { userId: true, status: true, showtimeId: true },
-    });
-    if (!order || order.userId !== userId) {
-      throw new NotFoundException('Không tìm thấy đơn hàng.');
-    }
-    if (order.status !== OrderStatus.PAID) return [];
-
-    const tickets = await this.db.ticket.findMany({
-      where: { orderId },
-      orderBy: { seatLabel: 'asc' },
-    });
-    return tickets.map((ticket) => ({
-      id: ticket.id,
-      code: ticket.code,
-      seatId: ticket.seatId,
-      seatLabel: ticket.seatLabel,
-      ticketType: ticket.ticketType,
-      status: ticket.status,
-      transferredToEmail: ticket.transferredToEmail,
-      ownerEmail: ticket.ownerEmail,
-      qrPayload:
-        ticket.keyId && ticket.signature
-          ? encodeTicketQr({
-              keyId: ticket.keyId,
-              code: ticket.code,
-              showtimeId: ticket.showtimeId,
-              signature: ticket.signature,
-            })
-          : null,
-    }));
+    return (await this.projection.forOwner(orderId, userId)).tickets;
   }
 
   async transferTicket(

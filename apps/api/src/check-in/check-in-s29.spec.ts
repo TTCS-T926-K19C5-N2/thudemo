@@ -50,12 +50,13 @@ describe('S-29 CheckInServiceS29 & CheckInControllerS29', () => {
         },
       ]);
 
-      const result = await service.getTodayShowtimes();
+      const result = await service.getTodayShowtimes('assigned-staff');
 
       expect(mockPrisma.showtime.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
             status: { in: [ShowtimeStatus.ON_SALE, ShowtimeStatus.CLOSED] },
+            checkInGates: { some: { permissions: { some: { userId: 'assigned-staff' } } } },
           }),
           orderBy: { startTime: 'asc' },
         }),
@@ -80,7 +81,7 @@ describe('S-29 CheckInServiceS29 & CheckInControllerS29', () => {
     it('returns empty array when no showtimes exist today', async () => {
       mockPrisma.showtime.findMany.mockResolvedValue([]);
 
-      const result = await service.getTodayShowtimes();
+      const result = await service.getTodayShowtimes('assigned-staff');
 
       expect(result).toEqual([]);
     });
@@ -88,7 +89,7 @@ describe('S-29 CheckInServiceS29 & CheckInControllerS29', () => {
     it('queries with Vietnam timezone (UTC+7) boundaries and excludes DRAFT', async () => {
       mockPrisma.showtime.findMany.mockResolvedValue([]);
 
-      await service.getTodayShowtimes();
+      await service.getTodayShowtimes('assigned-staff');
 
       const callArgs = mockPrisma.showtime.findMany.mock.calls[0][0];
       const { startTime, status } = callArgs.where;
@@ -127,7 +128,7 @@ describe('S-29 CheckInServiceS29 & CheckInControllerS29', () => {
       } as unknown as CheckInServiceS29;
 
       const controller = new CheckInControllerS29(mockCheckInService);
-      const res = await controller.getTodayShowtimes();
+      const res = await controller.getTodayShowtimes({ user: { id: 'assigned-staff' } } as AuthenticatedRequest);
 
       expect(res).toBe(mockResult);
       expect(mockCheckInService.getTodayShowtimes).toHaveBeenCalledTimes(1);
@@ -137,7 +138,8 @@ describe('S-29 CheckInServiceS29 & CheckInControllerS29', () => {
         ROLES_KEY,
         CheckInControllerS29.prototype.getTodayShowtimes,
       );
-      expect(roles).toEqual(['STAFF']);
+      expect(roles).toEqual(['STAFF', 'ADMIN', 'ORGANIZER']);
+      expect(mockCheckInService.getTodayShowtimes).toHaveBeenCalledWith('assigned-staff');
     });
   });
 

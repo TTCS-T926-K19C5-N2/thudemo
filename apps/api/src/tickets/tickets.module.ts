@@ -5,9 +5,10 @@ import { TicketEmailService } from './ticket-email.service.js';
 import { TicketReminderScheduler } from './ticket-reminder.scheduler.js';
 import { OrderTicketsController, TicketsController } from './tickets.controller.js';
 import { TicketsService } from './tickets.service.js';
+import { TicketProjectionModule } from './ticket-projection.module.js';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, TicketProjectionModule],
   controllers: [TicketsController, OrderTicketsController],
   providers: [TicketSigningService, TicketsService, TicketEmailService, TicketReminderScheduler],
   exports: [TicketSigningService, TicketsService, TicketEmailService],
