@@ -76,6 +76,7 @@ jobs:
       DATABASE_URL: postgresql://ci_test_user:ci_test_password@127.0.0.1:15432/sprint2_integration?schema=public
       REDIS_HOST: 127.0.0.1
       REDIS_PORT: "6379"
+      HOLD_EXPIRY_MODE: "off"
       VERIFICATION_EVIDENCE_DIR: ../../evidence/ci/integration
     services:
       postgres:
