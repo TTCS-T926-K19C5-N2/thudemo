@@ -7,6 +7,7 @@ import { AppModule } from '../src/app.module.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 import { RedisService } from '../src/redis/redis.service.js';
 import { AuthService } from '../src/auth/auth.service.js';
+import { UsersService } from '../src/users/users.service.js';
 
 describe('S-28 account management with real stores', () => {
   let app: INestApplication;
@@ -70,6 +71,122 @@ describe('S-28 account management with real stores', () => {
     await second?.close();
     await app?.close();
   });
+  it('bounds private account listing and rejects invalid pages before returning data', async () => {
+    const fixtures = Array.from({ length: 22 }, () => ({
+      id: randomUUID(),
+      email: `mip005-list-${randomUUID()}@demo.invalid`,
+      password: 'not-a-login-hash-fixture',
+      isEmailVerified: true,
+    }));
+    ids.push(...fixtures.map((user) => user.id));
+    await prisma.user.createMany({ data: fixtures });
+    const first = await request(app.getHttpServer())
+      .get('/admin/users')
+      .set('Cookie', admin.cookie)
+      .expect(200);
+    const secondPage = await request(app.getHttpServer())
+      .get('/admin/users?page=2')
+      .set('Cookie', admin.cookie)
+      .expect(200);
+    expect(first.body).toMatchObject({ page: 1, hasNext: true });
+    expect(first.body.items).toHaveLength(20);
+    expect(secondPage.body.items.length).toBeGreaterThan(0);
+    const firstIds = new Set(
+      first.body.items.map((user: { id: string }) => user.id),
+    );
+    expect(
+      secondPage.body.items.every(
+        (user: { id: string }) => !firstIds.has(user.id),
+      ),
+    ).toBe(true);
+    expect(first.headers['cache-control']).toBe('no-store');
+    for (const user of [...first.body.items, ...secondPage.body.items]) {
+      expect(user).not.toHaveProperty('password');
+      expect(user).not.toHaveProperty('sessions');
+      expect(Array.isArray(user.roles)).toBe(true);
+    }
+    for (const page of ['0', '100001', 'NaN', '1.5'])
+      await request(app.getHttpServer())
+        .get('/admin/users?page=' + page)
+        .set('Cookie', admin.cookie)
+        .expect(400);
+  });
+
+  it('rejects duplicate normalized email without an extra account or audit record', async () => {
+    const user = await fixture('STAFF');
+    const before = await prisma.userAdminAudit.count();
+    await request(app.getHttpServer())
+      .post('/admin/users')
+      .set('Cookie', admin.cookie)
+      .send({ email: ` ${user.email.toUpperCase()} `, password, role: 'STAFF' })
+      .expect(400);
+    expect(await prisma.user.count({ where: { email: user.email } })).toBe(1);
+    expect(await prisma.userAdminAudit.count()).toBe(before);
+  });
+
+  it('rejects missing targets and revalidates actor permissions inside the service', async () => {
+    const target = randomUUID();
+    await request(app.getHttpServer())
+      .patch(`/admin/users/${target}/role`)
+      .set('Cookie', admin.cookie)
+      .send({ role: 'STAFF' })
+      .expect(404);
+    await request(app.getHttpServer())
+      .patch(`/admin/users/${target}/status`)
+      .set('Cookie', admin.cookie)
+      .send({ isActive: false })
+      .expect(404);
+    const inactive = await fixture('ADMIN');
+    await prisma.user.update({
+      where: { id: inactive.id },
+      data: { isActive: false },
+    });
+    const organizer = await fixture('ORGANIZER');
+    const service = app.get(UsersService);
+    for (const actorId of [inactive.id, organizer.id, randomUUID()])
+      await expect(
+        service.changeRole(actorId, target, 'STAFF'),
+      ).rejects.toMatchObject({ status: 403 });
+  });
+
+  it('same-role and repeated-disable requests do not duplicate audits; enable cannot restore revoked sessions', async () => {
+    const user = await fixture('STAFF');
+    await request(app.getHttpServer())
+      .patch(`/admin/users/${user.id}/role`)
+      .set('Cookie', admin.cookie)
+      .send({ role: 'STAFF' })
+      .expect(200);
+    expect(
+      await prisma.userAdminAudit.count({ where: { targetUserId: user.id } }),
+    ).toBe(0);
+    for (let i = 0; i < 2; i++)
+      await request(app.getHttpServer())
+        .patch(`/admin/users/${user.id}/status`)
+        .set('Cookie', admin.cookie)
+        .send({ isActive: false })
+        .expect(200);
+    expect(await prisma.session.count({ where: { userId: user.id } })).toBe(0);
+    expect(
+      await prisma.userAdminAudit.count({ where: { targetUserId: user.id } }),
+    ).toBe(1);
+    await request(app.getHttpServer())
+      .patch(`/admin/users/${user.id}/status`)
+      .set('Cookie', admin.cookie)
+      .send({ isActive: true })
+      .expect(200);
+    expect(
+      await prisma.userAdminAudit.count({ where: { targetUserId: user.id } }),
+    ).toBe(2);
+    await request(second.getHttpServer())
+      .get('/auth/me')
+      .set('Cookie', user.cookie)
+      .expect(401);
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: user.email, password })
+      .expect(200);
+  });
+
   it('rejects an old cookie on both API instances after disable and removes sessions', async () => {
     await request(second.getHttpServer())
       .get('/auth/me')
