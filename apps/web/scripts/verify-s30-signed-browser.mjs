@@ -156,7 +156,7 @@ try {
   await a.route(pattern, (route) => route.abort());
   await scan(a, fixture.usedQr);
   await status(a)
-    .filter({ hasText: /Không thể|kết nối|Lỗi mạng/ })
+    .filter({ hasText: "Chưa nhận xác nhận từ máy chủ. Chưa cho vào; yêu cầu được giữ để kiểm tra lại khi có mạng." })
     .waitFor();
   check(
     !(await status(a).innerText()).includes("Hợp lệ"),
