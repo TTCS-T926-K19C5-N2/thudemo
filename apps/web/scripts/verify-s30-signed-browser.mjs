@@ -280,12 +280,16 @@ try {
     report.consoleErrors.length === 0,
     "No unexpected browser console/runtime errors",
   );
-  await a.getByLabel("Mã suất diễn").selectOption(fixture.otherShowtimeId);
+  check(
+    await a.locator(`select[aria-label="Mã suất diễn"] option[value="${fixture.otherShowtimeId}"]`).count() === 0,
+    "Unassigned other showtime cannot be selected in the operative scanner",
+  );
+  await a.getByLabel("Mã suất diễn").selectOption("");
   check(
     !(await status(a).innerText()).includes(
       "Vé hợp lệ. Check-in thành công.",
     ) && (await a.getByLabel("Hoặc nhập mã vé").inputValue()) === "",
-    "Changing showtime clears previous admission message and QR input",
+    "Clearing showtime selection clears previous admission message and QR input",
   );
   report.status = "PASS";
 } catch (error) {
