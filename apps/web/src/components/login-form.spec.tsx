@@ -34,7 +34,7 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 it.each(["/events/new", undefined])(
-  "returns to an allowed event path or preserves the STAFF destination: %s",
+  "keeps staff on check-in even when an organizer return path is supplied: %s",
   async (returnTo) => {
     render(<LoginForm returnTo={returnTo} />);
     fireEvent.change(screen.getByLabelText(/Email/), {
@@ -45,9 +45,7 @@ it.each(["/events/new", undefined])(
     });
     fireEvent.click(screen.getByRole("button", { name: /^Đăng nhập$/ }));
     await waitFor(() =>
-      expect(mocks.router.replace).toHaveBeenCalledWith(
-        returnTo ?? "/check-in",
-      ),
+      expect(mocks.router.replace).toHaveBeenCalledWith("/check-in"),
     );
     expect(mocks.router.refresh).toHaveBeenCalled();
   },

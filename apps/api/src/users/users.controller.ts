@@ -9,6 +9,7 @@ import {
   HttpCode,
   Req,
   ForbiddenException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import {
@@ -19,6 +20,8 @@ import {
 import { UsersService } from './users.service.js';
 import { Public, Roles } from '../auth/decorators/roles.decorator.js';
 import { RegistrationService } from './registration.service.js';
+import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js';
+import { adminBody } from './admin-input.js';
 
 @Controller('users')
 export class UsersController {
@@ -41,16 +44,29 @@ export class UsersController {
     }
   }
 
-  @Roles('ADMIN', 'ORGANIZER')
+  @Roles('ADMIN')
   @Post('staff')
-  createStaff(@Body() body: any) {
-    return this.usersService.createStaff(body.email, body.password);
+  async createStaff(
+    @Body() body: unknown,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    const input = adminBody(body);
+    const user = await this.usersService.createEmployee(request.user.id, {
+      email: input.email,
+      password: input.password,
+      role: 'STAFF',
+    });
+    return { message: 'Staff account created successfully', id: user.id };
   }
 
-  @Roles('ADMIN', 'ORGANIZER')
+  @Roles('ADMIN')
   @Patch(':id/disable')
-  disableAccount(@Param('id') id: string) {
-    return this.usersService.disableAccount(id);
+  async disableAccount(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    await this.usersService.setActive(request.user.id, id, false);
+    return { message: 'Account disabled successfully' };
   }
 
   @Public()

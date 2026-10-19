@@ -109,11 +109,24 @@ export class AuthService {
 
     const token = randomBytes(32).toString('base64url');
     const expiresAt = new Date(Date.now() + SESSION_TTL_SECONDS * 1000);
-    await this.prisma.session.deleteMany({
-      where: { expiresAt: { lte: new Date() } },
-    });
-    await this.prisma.session.create({
-      data: { tokenHash: hashSessionToken(token), userId: user.id, expiresAt },
+    await this.prisma.$transaction(async (tx) => {
+      // Password verification can overlap disable. Serialize session issuance
+      // against account mutations, then recheck the account under the lock.
+      const [active] = await tx.$queryRaw<{ id: string }[]>`
+        SELECT id FROM users WHERE id=${user.id}::uuid
+        AND "isActive"=true AND "isEmailVerified"=true FOR UPDATE`;
+      if (!active)
+        throw new UnauthorizedException('Email hoặc mật khẩu không đúng.');
+      await tx.session.deleteMany({
+        where: { userId: user.id, expiresAt: { lte: new Date() } },
+      });
+      await tx.session.create({
+        data: {
+          tokenHash: hashSessionToken(token),
+          userId: user.id,
+          expiresAt,
+        },
+      });
     });
     return { token, expiresAt };
   }

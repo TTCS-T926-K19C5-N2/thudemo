@@ -18,7 +18,10 @@ describe('Login account and transport budgets', () => {
     const prisma = {
       user: { findMany: vi.fn().mockResolvedValue([user]) },
       session: { create: vi.fn(), deleteMany: vi.fn() },
+      $queryRaw: vi.fn().mockResolvedValue([{ id: 'owner' }]),
+      $transaction: vi.fn(),
     };
+    prisma.$transaction.mockImplementation((callback) => callback(prisma));
     const redis = {
       loginIpRetryAfter: vi.fn().mockResolvedValue(0),
       isAccountLocked: vi.fn().mockResolvedValue(false),
