@@ -87,4 +87,12 @@ export class OrdersController {
   ) {
     return this.history.status(id, req.user.id);
   }
+
+  @Get(':id/audit-log')
+  @Roles('ADMIN')
+  @Header('Cache-Control', 'private, no-store')
+  @Header('Vary', 'Cookie')
+  auditLog(@Param('id', ParseUUIDPipe) id: string) {
+    return this.history.audit(id);
+  }
 }

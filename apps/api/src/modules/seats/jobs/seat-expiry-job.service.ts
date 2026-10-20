@@ -39,7 +39,8 @@ export class SeatExpiryJobService implements OnApplicationBootstrap {
   constructor(
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
     @Optional() private readonly seatHoldStorage?: SeatHoldStorage,
-    @Optional() private readonly seatStatusQueryService?: SeatStatusQueryService,
+    @Optional()
+    private readonly seatStatusQueryService?: SeatStatusQueryService,
     @Optional() private readonly prisma?: PrismaService,
   ) {}
 
@@ -48,7 +49,9 @@ export class SeatExpiryJobService implements OnApplicationBootstrap {
    * Tự động chạy ngay khi ứng dụng vừa khởi động để dọn sạch mọi giữ chỗ tồn đọng trước đó.
    */
   async onApplicationBootstrap(): Promise<void> {
-    this.logger.log('Khởi chạy kiểm tra và dọn dẹp giữ chỗ tồn đọng sau khi khởi động hệ thống...');
+    this.logger.log(
+      'Khởi chạy kiểm tra và dọn dẹp giữ chỗ tồn đọng sau khi khởi động hệ thống...',
+    );
     try {
       await this.handleSeatExpiryCleanup();
     } catch (error) {
@@ -90,7 +93,10 @@ export class SeatExpiryJobService implements OnApplicationBootstrap {
       const now = Date.now();
 
       for (const key of keys) {
-        const [ttl, rawData] = await Promise.all([this.redis.ttl(key), this.redis.get(key)]);
+        const [ttl, rawData] = await Promise.all([
+          this.redis.ttl(key),
+          this.redis.get(key),
+        ]);
 
         // Nếu key đã biến mất hoặc TTL báo hết hạn (-2: key không tồn tại, -1: không có TTL)
         if (ttl === -2 || !rawData) {
@@ -159,17 +165,34 @@ export class SeatExpiryJobService implements OnApplicationBootstrap {
       const client = this.prisma as any;
       const seatHoldModel = client.seatHold || client.seat_holds;
       if (seatHoldModel && typeof seatHoldModel.deleteMany === 'function') {
-        const result = await seatHoldModel.deleteMany({
-          where: {
-            expiresAt: { lte: new Date() },
-          },
-        });
+        const deleteExpired = async (tx: any) => {
+          const model = tx?.seatHold || tx?.seat_holds || seatHoldModel;
+          return model.deleteMany({
+            where: { expiresAt: { lte: new Date() } },
+          });
+        };
+
+        const result =
+          typeof client.$transaction === 'function'
+            ? await client.$transaction(async (tx: any) => {
+                if (typeof tx?.$executeRaw === 'function') {
+                  await tx.$executeRaw`SELECT set_config('app.hold_release_actor', 'SYSTEM', true)`;
+                }
+                return deleteExpired(tx);
+              })
+            : await deleteExpired(client);
+
         if (result?.count && result.count > 0) {
-          this.logger.log(`Đã dọn dẹp ${result.count} lượt giữ chỗ hết hạn trong Database (Prisma).`);
+          this.logger.log(
+            `Đã dọn dẹp ${result.count} lượt giữ chỗ hết hạn trong Database (Prisma).`,
+          );
         }
       }
     } catch (err) {
-      this.logger.debug('Bỏ qua dọn dẹp DB nếu bảng chưa tồn tại hoặc DB chưa kết nối:', err);
+      this.logger.debug(
+        'Bỏ qua dọn dẹp DB nếu bảng chưa tồn tại hoặc DB chưa kết nối:',
+        err,
+      );
     }
   }
 

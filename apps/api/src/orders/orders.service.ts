@@ -157,15 +157,35 @@ export class OrdersService {
             Prisma.sql`SELECT clock_timestamp() AS "serverTime"`,
           );
 
-          await tx.order.updateMany({
-            where: {
-              userId,
-              showtimeId,
-              status: { in: ['PENDING', 'PENDING_PAYMENT'] },
-              paymentExpiresAt: { lte: lookupClock.serverTime },
-            },
-            data: { status: 'EXPIRED' },
-          });
+          const expiredOrders = await tx.$queryRaw<
+            { id: string; previousStatus: OrderStatus }[]
+          >(Prisma.sql`
+            WITH candidates AS MATERIALIZED (
+              SELECT id, status FROM orders
+              WHERE "userId"=${userId}::uuid AND "showtimeId"=${showtimeId}::uuid
+                AND status IN ('PENDING'::"OrderStatus",'PENDING_PAYMENT'::"OrderStatus")
+                AND "paymentExpiresAt"<=${lookupClock.serverTime}
+              FOR UPDATE
+            ), changed AS (
+              UPDATE orders o SET status='EXPIRED'::"OrderStatus", "updatedAt"=clock_timestamp()
+              FROM candidates c WHERE o.id=c.id RETURNING o.id
+            ) SELECT changed.id,candidates.status AS "previousStatus"
+              FROM changed JOIN candidates USING (id)
+          `);
+          if (expiredOrders.length > 0) {
+            await tx.orderLog.createMany({
+              data: expiredOrders.map((order) => ({
+                orderId: order.id,
+                type: 'ORDER_STATUS_CHANGED',
+                detail: {
+                  actorType: 'SYSTEM',
+                  fromStatus: order.previousStatus,
+                  toStatus: OrderStatus.EXPIRED,
+                  reason: 'ORDER_EXPIRED_DURING_CREATE',
+                },
+              })),
+            });
+          }
 
           const existing = await tx.order.findFirst({
             where: {
@@ -276,6 +296,19 @@ export class OrdersService {
               },
             },
             select: orderProjection,
+          });
+
+          await tx.orderLog.create({
+            data: {
+              orderId: order.id,
+              type: 'ORDER_CREATED',
+              detail: {
+                actorType: 'USER',
+                actorId: userId,
+                fromStatus: null,
+                toStatus: order.status,
+              },
+            },
           });
 
           this.logger.log(
@@ -431,6 +464,19 @@ export class OrdersService {
         },
       });
 
+      await tx.orderLog.create({
+        data: {
+          orderId: order.id,
+          type: 'ORDER_CREATED',
+          detail: {
+            actorType: 'USER',
+            actorId: userId,
+            fromStatus: null,
+            toStatus: order.status,
+          },
+        },
+      });
+
       const serverNow = new Date();
       const effectiveExpiry =
         order.expiresAt ?? order.paymentExpiresAt ?? serverNow;
@@ -546,23 +592,38 @@ export class OrdersService {
       Math.ceil((effectiveExpiresAt.getTime() - serverNow.getTime()) / 1000),
     );
 
+    let resolvedStatus = order.status;
     if (
       expired &&
       (order.status === OrderStatus.PENDING ||
         order.status === OrderStatus.PENDING_PAYMENT)
     ) {
-      await this.db.order.update({
-        where: { id: order.id },
+      const changed = await this.db.order.updateMany({
+        where: { id: order.id, status: order.status },
         data: { status: OrderStatus.EXPIRED },
       });
+      if (changed.count === 1) {
+        await this.db.orderLog.create({
+          data: {
+            orderId: order.id,
+            type: 'ORDER_STATUS_CHANGED',
+            detail: {
+              actorType: 'SYSTEM',
+              fromStatus: order.status,
+              toStatus: OrderStatus.EXPIRED,
+              reason: 'ORDER_EXPIRED_ON_READ',
+            },
+          },
+        });
+        resolvedStatus = OrderStatus.EXPIRED;
+      } else {
+        const freshOrder = await this.db.order.findUnique({
+          where: { id: order.id },
+          select: { status: true },
+        });
+        resolvedStatus = freshOrder?.status ?? order.status;
+      }
     }
-
-    const resolvedStatus =
-      expired &&
-      (order.status === OrderStatus.PENDING ||
-        order.status === OrderStatus.PENDING_PAYMENT)
-        ? OrderStatus.EXPIRED
-        : order.status;
 
     const expiresIso = effectiveExpiresAt.toISOString();
     const serverTimeIso = serverNow.toISOString();
@@ -732,15 +793,29 @@ export class OrdersService {
     return this.db.$transaction(async (tx) => {
       // 1. Conditional atomic update: only PENDING / PENDING_PAYMENT, expiresAt <= clock_timestamp()
       const updated = await tx.$queryRaw<
-        { id: string; userId: string; holdSessionId: string | null }[]
-      >(Prisma.sql`
-        UPDATE orders
-        SET status = 'EXPIRED'::"OrderStatus", "updatedAt" = clock_timestamp()
-        WHERE id = ${orderId}::uuid
-          AND status IN ('PENDING'::"OrderStatus", 'PENDING_PAYMENT'::"OrderStatus")
-          AND COALESCE("paymentExpiresAt", "expiresAt") <= clock_timestamp()
-        RETURNING id, "userId", "holdSessionId"
-      `);
+        {
+          id: string;
+          userId: string;
+          holdSessionId: string | null;
+          previousStatus: OrderStatus;
+        }[]
+      >(
+        Prisma.sql`
+          WITH candidate AS MATERIALIZED (
+            SELECT id, status, "userId", "holdSessionId" FROM orders
+            WHERE id = ${orderId}::uuid
+              AND status IN ('PENDING'::"OrderStatus", 'PENDING_PAYMENT'::"OrderStatus")
+              AND COALESCE("paymentExpiresAt", "expiresAt") <= clock_timestamp()
+            FOR UPDATE
+          ), changed AS (
+            UPDATE orders o SET status = 'EXPIRED'::"OrderStatus", "updatedAt" = clock_timestamp()
+            FROM candidate c WHERE o.id = c.id
+            RETURNING o.id
+          )
+          SELECT changed.id, candidate."userId", candidate."holdSessionId", candidate.status AS "previousStatus"
+          FROM changed JOIN candidate USING (id)
+        `,
+      );
 
       if (!updated || updated.length === 0) {
         return {
@@ -751,6 +826,19 @@ export class OrdersService {
       }
 
       const order = updated[0];
+
+      await tx.orderLog.create({
+        data: {
+          orderId,
+          type: 'ORDER_STATUS_CHANGED',
+          detail: {
+            actorType: 'SYSTEM',
+            fromStatus: order.previousStatus,
+            toStatus: OrderStatus.EXPIRED,
+            reason: 'PAYMENT_WINDOW_EXPIRED',
+          },
+        },
+      });
 
       // Simulated failure hook for testing rollback behavior
       if (testHooks?.failOnRelease) {
