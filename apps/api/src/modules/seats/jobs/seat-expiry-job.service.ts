@@ -165,12 +165,23 @@ export class SeatExpiryJobService implements OnApplicationBootstrap {
       const client = this.prisma as any;
       const seatHoldModel = client.seatHold || client.seat_holds;
       if (seatHoldModel && typeof seatHoldModel.deleteMany === 'function') {
-        const result = await client.$transaction(async (tx: any) => {
-          await tx.$executeRaw`SELECT set_config('app.hold_release_actor', 'SYSTEM', true)`;
-          return tx.seatHold.deleteMany({
+        const deleteExpired = async (tx: any) => {
+          const model = tx?.seatHold || tx?.seat_holds || seatHoldModel;
+          return model.deleteMany({
             where: { expiresAt: { lte: new Date() } },
           });
-        });
+        };
+
+        const result =
+          typeof client.$transaction === 'function'
+            ? await client.$transaction(async (tx: any) => {
+                if (typeof tx?.$executeRaw === 'function') {
+                  await tx.$executeRaw`SELECT set_config('app.hold_release_actor', 'SYSTEM', true)`;
+                }
+                return deleteExpired(tx);
+              })
+            : await deleteExpired(client);
+
         if (result?.count && result.count > 0) {
           this.logger.log(
             `Đã dọn dẹp ${result.count} lượt giữ chỗ hết hạn trong Database (Prisma).`,
