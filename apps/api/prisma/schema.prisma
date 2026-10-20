@@ -29,6 +29,8 @@ model User {
   scannerSnapshotCursors ScannerSnapshotCursor[]
   registrationConsent RegistrationConsent?
   activationTokens    ActivationToken[]
+  consents            UserConsent[]
+  consentHistory      UserConsentHistory[]
 
   @@map("users")
 }
@@ -57,6 +59,40 @@ model RegistrationConsent {
 
   @@map("registration_consents")
 }
+
+model UserConsent {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @db.Uuid
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String
+  version     String
+  status      String    @default("GRANTED") // 'GRANTED' | 'REVOKED'
+  consentedAt DateTime  @default(now()) @db.Timestamptz(3)
+  revokedAt   DateTime? @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime  @updatedAt @db.Timestamptz(3)
+
+  @@unique([userId, type])
+  @@index([userId, status])
+  @@map("user_consents")
+}
+
+model UserConsentHistory {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  version   String
+  action    String   // 'GRANTED' | 'REVOKED'
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([userId, createdAt])
+  @@index([userId, type])
+  @@map("user_consent_history")
+}
+
 
 model ActivationToken {
   tokenHash  String          @id

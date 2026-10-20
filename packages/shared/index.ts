@@ -31,3 +31,5 @@ export interface ShowtimeSeatSummaryDto {
   queryDurationMs: number;
   seats: SeatStatusResponseDto[];
 }
+
+export * from './policy-registry.js';

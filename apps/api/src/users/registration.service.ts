@@ -9,6 +9,7 @@ import * as argon2 from 'argon2';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { RedisService } from '../redis/redis.service.js';
 import { REGISTRATION_NOTICE } from 'shared/registration-notice';
+import { CURRENT_POLICIES } from 'shared/policy-registry';
 import { RegistrationSettings } from './registration-settings.js';
 import {
   ActivationDeliveryService,
@@ -145,9 +146,22 @@ export class RegistrationService {
       errors.password = 'Mật khẩu phải từ 8 đến 1024 ký tự.';
     if (
       input.consent !== true ||
-      input.noticeVersion !== REGISTRATION_NOTICE.version
+      (input.noticeVersion !== REGISTRATION_NOTICE.version &&
+        input.noticeVersion !== CURRENT_POLICIES.PRIVACY_POLICY.version)
     )
       errors.consent = 'Hãy đọc và chủ động đồng ý đúng phiên bản thông báo.';
+    if (
+      input.termsVersion !== undefined &&
+      input.termsVersion !== CURRENT_POLICIES.TERMS_OF_SERVICE.version
+    ) {
+      errors.terms = 'Phiên bản điều khoản dịch vụ không chính xác.';
+    }
+    if (
+      input.marketingConsent !== undefined &&
+      typeof input.marketingConsent !== 'boolean'
+    ) {
+      errors.marketingConsent = 'Trạng thái đồng ý email tiếp thị không hợp lệ.';
+    }
     if (Object.keys(errors).length)
       throw new BadRequestException({
         message: 'Kiểm tra lại thông tin.',
@@ -184,6 +198,58 @@ export class RegistrationService {
             },
           },
         });
+
+        const consentRecords = [
+          {
+            userId: user.id,
+            type: CURRENT_POLICIES.TERMS_OF_SERVICE.type,
+            version: CURRENT_POLICIES.TERMS_OF_SERVICE.version,
+            status: 'GRANTED',
+          },
+          {
+            userId: user.id,
+            type: CURRENT_POLICIES.PRIVACY_POLICY.type,
+            version: CURRENT_POLICIES.PRIVACY_POLICY.version,
+            status: 'GRANTED',
+          },
+        ];
+
+        const historyRecords = [
+          {
+            userId: user.id,
+            type: CURRENT_POLICIES.TERMS_OF_SERVICE.type,
+            version: CURRENT_POLICIES.TERMS_OF_SERVICE.version,
+            action: 'GRANTED',
+            ipAddress: peer,
+          },
+          {
+            userId: user.id,
+            type: CURRENT_POLICIES.PRIVACY_POLICY.type,
+            version: CURRENT_POLICIES.PRIVACY_POLICY.version,
+            action: 'GRANTED',
+            ipAddress: peer,
+          },
+        ];
+
+        if (input.marketingConsent === true) {
+          consentRecords.push({
+            userId: user.id,
+            type: CURRENT_POLICIES.MARKETING_EMAIL.type,
+            version: CURRENT_POLICIES.MARKETING_EMAIL.version,
+            status: 'GRANTED',
+          });
+          historyRecords.push({
+            userId: user.id,
+            type: CURRENT_POLICIES.MARKETING_EMAIL.type,
+            version: CURRENT_POLICIES.MARKETING_EMAIL.version,
+            action: 'GRANTED',
+            ipAddress: peer,
+          });
+        }
+
+        await tx.userConsent.createMany({ data: consentRecords });
+        await tx.userConsentHistory.createMany({ data: historyRecords });
+
         await this.issue(tx, user.id);
       });
     } catch (error) {

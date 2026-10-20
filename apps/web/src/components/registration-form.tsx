@@ -15,6 +15,7 @@ export function RegistrationForm({ resend = false }: { resend?: boolean }) {
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [consent, setConsent] = useState(false);
+  const [marketingConsent, setMarketingConsent] = useState(false);
   const [noticeReady, setNoticeReady] = useState(false);
   const [noticeAttempt, setNoticeAttempt] = useState(0);
   const [noticeError, setNoticeError] = useState("");
@@ -84,6 +85,7 @@ export function RegistrationForm({ resend = false }: { resend?: boolean }) {
                 password,
                 consent,
                 noticeVersion: REGISTRATION_NOTICE.version,
+                marketingConsent,
               },
         },
       );
@@ -261,6 +263,48 @@ export function RegistrationForm({ resend = false }: { resend?: boolean }) {
                     {REGISTRATION_NOTICE.consentLabel}
                   </label>
                   {fieldError("consent")}
+                </Field>
+                <Field>
+                  <label
+                    htmlFor="registration-marketing-consent"
+                    style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}
+                  >
+                    <button
+                      id="registration-marketing-consent"
+                      type="button"
+                      role="switch"
+                      aria-checked={marketingConsent}
+                      onClick={() => setMarketingConsent((prev) => !prev)}
+                      disabled={pending || !noticeReady}
+                      style={{
+                        width: "2.5rem",
+                        height: "1.25rem",
+                        borderRadius: "9999px",
+                        backgroundColor: marketingConsent ? "#175cd3" : "#e4e7ec",
+                        position: "relative",
+                        border: "none",
+                        cursor: pending || !noticeReady ? "not-allowed" : "pointer",
+                        transition: "background-color 0.2s",
+                      }}
+                    >
+                      <span
+                        style={{
+                          display: "block",
+                          width: "1rem",
+                          height: "1rem",
+                          borderRadius: "50%",
+                          backgroundColor: "#ffffff",
+                          position: "absolute",
+                          top: "0.125rem",
+                          left: marketingConsent ? "1.375rem" : "0.125rem",
+                          transition: "left 0.2s",
+                        }}
+                      />
+                    </button>
+                    <span>
+                      Tôi đồng ý nhận thông tin tiếp thị, khuyến mãi và tin tức sự kiện qua email (tùy chọn, có thể thu hồi bất kỳ lúc nào).
+                    </span>
+                  </label>
                 </Field>
               </>
             )}

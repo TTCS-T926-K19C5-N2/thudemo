@@ -132,3 +132,23 @@ it("shows resend remaining time without requiring signup consent fields", async 
   await screen.findByText("Đã đạt giới hạn gửi lại. Thử lại sau 2 phút.");
   expect(screen.queryByRole("checkbox")).toBeNull();
 });
+
+it("supports toggling marketing email consent alongside mandatory terms", async () => {
+  render(<RegistrationForm />);
+  await fill();
+  fireEvent.click(screen.getByRole("checkbox"));
+  const marketingSwitch = screen.getByRole("switch");
+  expect(marketingSwitch.getAttribute("aria-checked")).toBe("false");
+  fireEvent.click(marketingSwitch);
+  expect(marketingSwitch.getAttribute("aria-checked")).toBe("true");
+
+  fireEvent.click(screen.getByRole("button", { name: "Đăng ký" }));
+  await screen.findByRole("status");
+  const registerCall = mocks.api.mock.calls.find(
+    (call) => call[0] === "/users/register",
+  );
+  expect(registerCall).toBeTruthy();
+  expect(registerCall![2].body.marketingConsent).toBe(true);
+  expect(registerCall![2].body.consent).toBe(true);
+});
+

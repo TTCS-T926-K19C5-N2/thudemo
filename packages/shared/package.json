@@ -18,6 +18,10 @@
     "./login-peer": {
       "types": "./login-peer.d.ts",
       "default": "./login-peer.js"
+    },
+    "./policy-registry": {
+      "types": "./policy-registry.d.ts",
+      "default": "./policy-registry.js"
     }
   }
 }

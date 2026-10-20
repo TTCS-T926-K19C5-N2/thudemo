@@ -166,4 +166,104 @@ describe('S03 validation and configuration boundaries', () => {
     expect(redis.reserveRegistrationDelivery).not.toHaveBeenCalled();
     expect(tx).not.toHaveBeenCalled();
   });
+
+  it('rejects invalid termsVersion or non-boolean marketingConsent', async () => {
+    const tx = vi.fn();
+    const service = new RegistrationService(
+      { $transaction: tx } as unknown as PrismaService,
+      {} as RedisService,
+      { available: true } as ActivationDeliveryService,
+      {} as RegistrationSettings,
+    );
+    await expect(
+      service.register({ ...valid, termsVersion: 'INVALID_VERSION' }),
+    ).rejects.toMatchObject({
+      response: { errors: { terms: expect.any(String) } },
+    });
+
+    await expect(
+      service.register({ ...valid, marketingConsent: 'not-a-boolean' }),
+    ).rejects.toMatchObject({
+      response: { errors: { marketingConsent: expect.any(String) } },
+    });
+    expect(tx).not.toHaveBeenCalled();
+  });
+
+  it('persists UserConsent and UserConsentHistory records in registration transaction', async () => {
+    const mockTx = {
+      $executeRaw: vi.fn(),
+      $queryRaw: vi.fn().mockResolvedValue([{ now: new Date() }]),
+      user: {
+        findMany: vi.fn().mockResolvedValue([]),
+        create: vi.fn().mockResolvedValue({ id: 'new-user-uuid' }),
+      },
+      userConsent: {
+        createMany: vi.fn().mockResolvedValue({ count: 3 }),
+      },
+      userConsentHistory: {
+        createMany: vi.fn().mockResolvedValue({ count: 3 }),
+      },
+      activationToken: {
+        create: vi.fn().mockResolvedValue({}),
+      },
+    };
+
+    const redis = {
+      reserveRegistrationCaller: vi.fn().mockResolvedValue({ count: 1, ttl: 3600 }),
+      reserveRegistrationDelivery: vi.fn().mockResolvedValue({ count: 1, ttl: 3600 }),
+    };
+
+    const service = new RegistrationService(
+      {
+        $transaction: vi.fn(async (callback) => callback(mockTx)),
+      } as unknown as PrismaService,
+      redis as unknown as RedisService,
+      { available: true } as ActivationDeliveryService,
+      { encryptionKey: Buffer.alloc(32, 1) } as unknown as RegistrationSettings,
+    );
+
+    const res = await service.register(
+      { ...valid, marketingConsent: true },
+      '203.0.113.10',
+    );
+
+    expect(res).toEqual({ message: 'Nếu email hợp lệ, bạn sẽ nhận được hướng dẫn.' });
+    expect(mockTx.userConsent.createMany).toHaveBeenCalledWith({
+      data: expect.arrayContaining([
+        expect.objectContaining({
+          userId: 'new-user-uuid',
+          type: 'TERMS_OF_SERVICE',
+          status: 'GRANTED',
+        }),
+        expect.objectContaining({
+          userId: 'new-user-uuid',
+          type: 'PRIVACY_POLICY',
+          status: 'GRANTED',
+        }),
+        expect.objectContaining({
+          userId: 'new-user-uuid',
+          type: 'MARKETING_EMAIL',
+          status: 'GRANTED',
+        }),
+      ]),
+    });
+
+    expect(mockTx.userConsentHistory.createMany).toHaveBeenCalledWith({
+      data: expect.arrayContaining([
+        expect.objectContaining({
+          userId: 'new-user-uuid',
+          type: 'TERMS_OF_SERVICE',
+          action: 'GRANTED',
+          ipAddress: '203.0.113.10',
+        }),
+        expect.objectContaining({
+          userId: 'new-user-uuid',
+          type: 'MARKETING_EMAIL',
+          action: 'GRANTED',
+          ipAddress: '203.0.113.10',
+        }),
+      ]),
+    });
+  });
 });
+

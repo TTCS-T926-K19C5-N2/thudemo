@@ -6,16 +6,19 @@ import { RegistrationService } from './registration.service.js';
 import { RegistrationSettings } from './registration-settings.js';
 import { ActivationDeliveryService } from './activation-delivery.service.js';
 import { AdminUsersController } from './admin-users.controller.js';
+import { ConsentsController } from './consents.controller.js';
+import { ConsentsService } from './consents.service.js';
 
 @Module({
   imports: [MailModule],
-  controllers: [UsersController, AdminUsersController],
+  controllers: [UsersController, AdminUsersController, ConsentsController],
   providers: [
     UsersService,
     RegistrationService,
     RegistrationSettings,
     ActivationDeliveryService,
+    ConsentsService,
   ],
-  exports: [UsersService],
+  exports: [UsersService, ConsentsService],
 })
 export class UsersModule {}

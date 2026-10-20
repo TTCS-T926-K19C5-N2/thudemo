@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SessionActions } from "@/components/layout/session-actions";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ConsentManagement } from "@/components/consent-management";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -124,6 +125,7 @@ export default function AccountPage() {
               )}
             </div>
           </section>
+          <ConsentManagement />
         </>
       )}
     </div>
