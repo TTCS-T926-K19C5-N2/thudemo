@@ -68,6 +68,8 @@ export class PaymentsService {
           type: 'RETRY_REJECTED_EXPIRED',
           attemptNo: null,
           detail: {
+            actorType: 'USER',
+            actorId: userId,
             status: order.status,
             reason: isOrderExpired(order, now)
               ? 'ORDER_EXPIRED'
@@ -107,7 +109,8 @@ export class PaymentsService {
     const payment = await this.db.$transaction(async (tx) => {
       // Lock order to serialize concurrent attempt creations
       if (typeof (tx as any).$executeRaw === 'function') {
-        await (tx as any).$executeRaw`SELECT id FROM orders WHERE id = ${order.id}::uuid FOR UPDATE`;
+        await (tx as any)
+          .$executeRaw`SELECT id FROM orders WHERE id = ${order.id}::uuid FOR UPDATE`;
       }
 
       const previousPayment = await tx.payment.findFirst({
@@ -136,13 +139,14 @@ export class PaymentsService {
           detail:
             attemptNo > 1
               ? {
+                  actorType: 'USER',
+                  actorId: userId,
                   previousPaymentId: previousPayment?.id,
                   previousStatus: previousPayment?.status,
-                  previousGatewayRef: previousPayment?.gatewayRef,
                 }
               : {
+                  actorType: 'USER',
                   gateway: this.gateway.name,
-                  gatewayRef: gatewayResult.gatewayRef,
                 },
         },
       });
@@ -313,6 +317,7 @@ export class PaymentsService {
 
         await this.db.$transaction(async (tx) => {
           // Release any holds remaining for this order if not already released
+          await tx.$executeRaw`SELECT set_config('app.hold_release_actor', 'SYSTEM', true)`;
           await tx.$executeRaw(Prisma.sql`
             DELETE FROM seat_holds
             WHERE "seatId" IN (
@@ -325,10 +330,33 @@ export class PaymentsService {
             ${order.holdSessionId ? Prisma.sql`AND "holdSessionId" = ${order.holdSessionId}::uuid` : Prisma.empty}
           `);
 
-          await tx.order.update({
+          const currentOrder = await tx.order.findUnique({
             where: { id: order.id },
-            data: { status: OrderStatus.NEEDS_REVIEW },
+            select: { status: true },
           });
+          if (
+            currentOrder &&
+            currentOrder.status !== OrderStatus.NEEDS_REVIEW
+          ) {
+            const transition = await tx.order.updateMany({
+              where: { id: order.id, status: currentOrder.status },
+              data: { status: OrderStatus.NEEDS_REVIEW },
+            });
+            if (transition.count === 1) {
+              await tx.orderLog.create({
+                data: {
+                  orderId: order.id,
+                  type: 'ORDER_STATUS_CHANGED',
+                  detail: {
+                    actorType: 'SYSTEM',
+                    fromStatus: currentOrder.status,
+                    toStatus: OrderStatus.NEEDS_REVIEW,
+                    reason: 'LATE_PAYMENT',
+                  },
+                },
+              });
+            }
+          }
 
           const payment = await tx.payment.findFirst({
             where: { gatewayRef: event.gatewayRef },
@@ -436,10 +464,24 @@ export class PaymentsService {
     // 5. Amount mismatch check
     if (event.status === 'SUCCESS' && event.amount !== orderTotal) {
       await this.db.$transaction(async (tx) => {
-        await tx.order.update({
-          where: { id: order.id },
+        const transition = await tx.order.updateMany({
+          where: { id: order.id, status: order.status },
           data: { status: OrderStatus.NEEDS_REVIEW },
         });
+        if (transition.count === 1) {
+          await tx.orderLog.create({
+            data: {
+              orderId: order.id,
+              type: 'ORDER_STATUS_CHANGED',
+              detail: {
+                actorType: 'SYSTEM',
+                fromStatus: order.status,
+                toStatus: OrderStatus.NEEDS_REVIEW,
+                reason: 'PAYMENT_AMOUNT_MISMATCH',
+              },
+            },
+          });
+        }
 
         const payment = await tx.payment.findFirst({
           where: { gatewayRef: event.gatewayRef },
@@ -486,7 +528,8 @@ export class PaymentsService {
         return await this.db.$transaction(async (tx) => {
           // Advisory lock using gatewayRef to prevent race conditions
           if (typeof (tx as any).$executeRaw === 'function') {
-            await (tx as any).$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${event.gatewayRef}))`;
+            await (tx as any)
+              .$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${event.gatewayRef}))`;
           }
 
           // Check if order was already updated to PAID while waiting for lock
@@ -503,7 +546,9 @@ export class PaymentsService {
           const updateResult = await tx.order.updateMany({
             where: {
               id: order.id,
-              status: { in: [OrderStatus.PENDING, OrderStatus.PENDING_PAYMENT] },
+              status: {
+                in: [OrderStatus.PENDING, OrderStatus.PENDING_PAYMENT],
+              },
               ...(order.paymentExpiresAt
                 ? { paymentExpiresAt: { gt: serverNow } }
                 : order.expiresAt
@@ -523,6 +568,7 @@ export class PaymentsService {
 
             // S-23: Order expired or collided with expiry job. Enter late payment path:
             // Release holds for this order
+            await tx.$executeRaw`SELECT set_config('app.hold_release_actor', 'SYSTEM', true)`;
             await tx.$executeRaw(Prisma.sql`
               DELETE FROM seat_holds
               WHERE "seatId" IN (
@@ -536,10 +582,26 @@ export class PaymentsService {
             `);
 
             // Mark order as NEEDS_REVIEW
-            await tx.order.update({
-              where: { id: order.id },
-              data: { status: OrderStatus.NEEDS_REVIEW },
-            });
+            const transition = postCheck
+              ? await tx.order.updateMany({
+                  where: { id: order.id, status: postCheck.status },
+                  data: { status: OrderStatus.NEEDS_REVIEW },
+                })
+              : { count: 0 };
+            if (postCheck && transition.count === 1) {
+              await tx.orderLog.create({
+                data: {
+                  orderId: order.id,
+                  type: 'ORDER_STATUS_CHANGED',
+                  detail: {
+                    actorType: 'SYSTEM',
+                    fromStatus: postCheck.status,
+                    toStatus: OrderStatus.NEEDS_REVIEW,
+                    reason: 'LATE_PAYMENT',
+                  },
+                },
+              });
+            }
 
             // Mark payment as LATE
             const existingPayment = await tx.payment.findFirst({
@@ -580,6 +642,19 @@ export class PaymentsService {
             return { received: true, status: 'LATE' };
           }
 
+          await tx.orderLog.create({
+            data: {
+              orderId: order.id,
+              type: 'ORDER_STATUS_CHANGED',
+              detail: {
+                actorType: 'SYSTEM',
+                fromStatus: freshOrder.status,
+                toStatus: OrderStatus.PAID,
+                reason: 'PAYMENT_SUCCEEDED',
+              },
+            },
+          });
+
           // (b) Seats -> SOLD (isSold = true) & release holds (executed strictly ONCE)
           const seatIds = order.items.map((item) => item.seatId);
           if (seatIds.length > 0) {
@@ -588,6 +663,7 @@ export class PaymentsService {
               data: { isSold: true },
             });
 
+            await tx.$executeRaw`SELECT set_config('app.hold_release_actor', 'SYSTEM', true)`;
             await tx.seatHold.deleteMany({
               where: { seatId: { in: seatIds } },
             });
@@ -684,9 +760,8 @@ export class PaymentsService {
           type: 'PAYMENT_FAILED',
           attemptNo: currentPayment.attemptNo,
           detail: {
-            gatewayRef: event.gatewayRef,
-            transactionId: event.transactionId,
-            reason: (event as any).message ?? 'Payment failed',
+            actorType: 'SYSTEM',
+            reasonCode: 'PAYMENT_FAILED',
           },
         },
       });

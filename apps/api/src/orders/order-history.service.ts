@@ -2,6 +2,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { Prisma, type OrderStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -275,5 +276,197 @@ export class OrderHistoryService {
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
     );
+  }
+
+  async audit(id: string) {
+    const order = await this.db.order.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        holdSessionId: true,
+        holdToken: true,
+        showtimeId: true,
+        logs: {
+          orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+          select: {
+            id: true,
+            type: true,
+            attemptNo: true,
+            detail: true,
+            createdAt: true,
+          },
+        },
+        tickets: {
+          select: {
+            seatLabel: true,
+            logs: {
+              orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+              select: {
+                id: true,
+                action: true,
+                actorId: true,
+                detail: true,
+                createdAt: true,
+              },
+            },
+          },
+        },
+        items: {
+          select: {
+            id: true,
+            seatId: true,
+            seat: { select: { row: true, seatNumber: true } },
+          },
+        },
+      },
+    });
+    if (!order) throw new NotFoundException('Không tìm thấy đơn hàng.');
+
+    const sanitize = (value: unknown): unknown => {
+      if (Array.isArray(value)) return value.map(sanitize);
+      if (!value || typeof value !== 'object') return value;
+      return Object.fromEntries(
+        Object.entries(value)
+          .filter(
+            ([key]) => !/(email|token|secret|signature|password|qr)/i.test(key),
+          )
+          .map(([key, nested]) => [key, sanitize(nested)]),
+      );
+    };
+    const events: {
+      id: string;
+      source: string;
+      action: string;
+      actorId: string | null;
+      actorType: string;
+      at: Date;
+      fromStatus: string | null;
+      toStatus: string | null;
+      detail: unknown;
+      attemptNo: number | null;
+    }[] = [];
+    const objectDetail = (value: unknown): Record<string, unknown> => {
+      const result = sanitize(value);
+      return result && typeof result === 'object' && !Array.isArray(result)
+        ? (result as Record<string, unknown>)
+        : {};
+    };
+
+    for (const log of order.logs) {
+      const detail = objectDetail(log.detail);
+      events.push({
+        id: log.id,
+        source: 'ORDER',
+        action: log.type,
+        actorId: typeof detail.actorId === 'string' ? detail.actorId : null,
+        actorType:
+          typeof detail.actorType === 'string' ? detail.actorType : 'SYSTEM',
+        at: log.createdAt,
+        fromStatus:
+          typeof detail.fromStatus === 'string' ? detail.fromStatus : null,
+        toStatus: typeof detail.toStatus === 'string' ? detail.toStatus : null,
+        detail,
+        attemptNo: log.attemptNo,
+      });
+    }
+    for (const ticket of order.tickets) {
+      for (const log of ticket.logs) {
+        const detail = objectDetail(log.detail);
+        events.push({
+          id: log.id,
+          source: 'TICKET',
+          action: log.action,
+          actorId: log.actorId,
+          actorType: log.actorId ? 'USER' : 'SYSTEM',
+          at: log.createdAt,
+          fromStatus:
+            typeof detail.fromStatus === 'string' ? detail.fromStatus : null,
+          toStatus:
+            typeof detail.toStatus === 'string' ? detail.toStatus : null,
+          detail: { ...detail, seat: ticket.seatLabel },
+          attemptNo: null,
+        });
+      }
+    }
+    if (order.holdSessionId && order.holdToken) {
+      const holdLogs = await this.db.holdLog.findMany({
+        where: {
+          orderId: order.id,
+          showtimeId: order.showtimeId,
+          holdSessionId: order.holdSessionId,
+          token: order.holdToken,
+        },
+        orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+      });
+      for (const log of holdLogs) {
+        events.push({
+          id: log.id,
+          source: 'HOLD',
+          action: log.action,
+          actorId: log.actorId,
+          actorType: log.actorType,
+          at: log.createdAt,
+          fromStatus: log.fromExpiresAt ? 'HELD' : null,
+          toStatus:
+            log.action === 'RELEASED' || log.action === 'EXPIRED'
+              ? 'AVAILABLE'
+              : 'HELD',
+          detail: {
+            seats: log.seatIds,
+            fromExpiresAt: log.fromExpiresAt,
+            toExpiresAt: log.toExpiresAt,
+          },
+          attemptNo: null,
+        });
+      }
+    }
+    const itemIds = order.items.map((item) => item.id);
+    if (itemIds.length) {
+      let admissions: {
+        id: string;
+        ticketId: string;
+        staffId: string;
+        kind: string;
+        reason: string | null;
+        enteredAt: Date;
+        gateName: string | null;
+      }[];
+      try {
+        admissions = await this.db.$queryRaw<typeof admissions>(Prisma.sql`
+          SELECT id, "ticketId", "staffId", kind, reason, "enteredAt", "gateName"
+          FROM ticket_admissions WHERE "ticketId" = ANY(${itemIds}::uuid[])
+          ORDER BY "enteredAt", id
+        `);
+      } catch {
+        throw new ServiceUnavailableException(
+          'Chưa thể tải ledger check-in; kiểm tra migration S-31 đã được áp dụng.',
+        );
+      }
+      const itemById = new Map(order.items.map((item) => [item.id, item]));
+      for (const admission of admissions) {
+        const item = itemById.get(admission.ticketId);
+        events.push({
+          id: admission.id,
+          source: 'ADMISSION',
+          action:
+            admission.kind === 'EXCEPTION' ? 'CHECK_IN_EXCEPTION' : 'CHECK_IN',
+          actorId: admission.staffId,
+          actorType: 'STAFF',
+          at: admission.enteredAt,
+          fromStatus: null,
+          toStatus: admission.kind,
+          detail: {
+            gateName: admission.gateName,
+            reason: admission.reason,
+            seat: item ? `${item.seat.row}-${item.seat.seatNumber}` : null,
+          },
+          attemptNo: null,
+        });
+      }
+    }
+    events.sort(
+      (a, b) => a.at.getTime() - b.at.getTime() || a.id.localeCompare(b.id),
+    );
+    return { orderId: order.id, events };
   }
 }

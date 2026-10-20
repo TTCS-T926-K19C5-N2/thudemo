@@ -434,6 +434,25 @@ model TicketLog {
   @@map("ticket_logs")
 }
 
+model HoldLog {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId       String?     @db.Uuid
+  showtimeId    String      @db.Uuid
+  holdSessionId String      @db.Uuid
+  token         String      @db.Uuid
+  actorId       String?     @db.Uuid
+  actorType     String
+  seatIds       String[]    @db.Uuid
+  action        String
+  fromExpiresAt DateTime?   @db.Timestamptz(3)
+  toExpiresAt   DateTime?   @db.Timestamptz(3)
+  createdAt     DateTime    @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+
+  @@index([orderId, createdAt])
+  @@index([showtimeId, holdSessionId, token, createdAt])
+  @@map("hold_logs")
+}
+
 model CheckInGate {
   id          String              @id @default(uuid()) @db.Uuid
   showtimeId  String              @db.Uuid

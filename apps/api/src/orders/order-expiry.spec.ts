@@ -20,6 +20,7 @@ describe('S-23 Order Expiry & Seat Release', () => {
         findUnique: vi.fn(),
         update: vi.fn(),
       },
+      orderLog: { create: vi.fn().mockResolvedValue({ id: 'audit-id' }) },
       seatHold: {
         deleteMany: vi.fn(),
       },
@@ -35,6 +36,7 @@ describe('S-23 Order Expiry & Seat Release', () => {
           id: mockOrderId,
           userId: mockUserId,
           holdSessionId: mockHoldSessionId,
+          previousStatus: 'PENDING',
         },
       ]);
       // 2. DELETE FROM seat_holds returns count of deleted holds
@@ -49,6 +51,18 @@ describe('S-23 Order Expiry & Seat Release', () => {
       });
       expect(mockPrisma.$queryRaw).toHaveBeenCalledTimes(1);
       expect(mockPrisma.$executeRaw).toHaveBeenCalledTimes(1);
+      expect(mockPrisma.orderLog.create).toHaveBeenCalledWith({
+        data: {
+          orderId: mockOrderId,
+          type: 'ORDER_STATUS_CHANGED',
+          detail: {
+            actorType: 'SYSTEM',
+            fromStatus: 'PENDING',
+            toStatus: 'EXPIRED',
+            reason: 'PAYMENT_WINDOW_EXPIRED',
+          },
+        },
+      });
     });
 
     it('AC 1: rollbacks order status to PENDING if seat release step fails', async () => {
@@ -57,6 +71,7 @@ describe('S-23 Order Expiry & Seat Release', () => {
           id: mockOrderId,
           userId: mockUserId,
           holdSessionId: mockHoldSessionId,
+          previousStatus: 'PENDING',
         },
       ]);
 
