@@ -52,6 +52,7 @@ export function SeatSelection({ id }: { id: string }) {
   const authority = useRef<HoldState["hold"]>(null),
     busy = useRef(false),
     alive = useRef(true);
+  const demoMode = useRef(false);
   const apply = useCallback((state: HoldState) => {
     if (!alive.current) return;
     if (authority.current && !state.hold) {
@@ -74,10 +75,12 @@ export function SeatSelection({ id }: { id: string }) {
   }, []);
   const refresh = useCallback(async () => {
     if (busy.current) return;
-    const [state, map] = await Promise.all([
-      api(`/showtimes/${id}/holds`, decodeHoldState),
-      api(`/showtimes/${id}/seats`, decodeSeats),
-    ]);
+    const map = await api(`/showtimes/${id}/seats`, decodeSeats);
+    if (demoMode.current) {
+      if (alive.current && !busy.current) setSeats(map);
+      return;
+    }
+    const state = await api(`/showtimes/${id}/holds`, decodeHoldState);
     if (!alive.current || busy.current) return;
     apply(state);
     setSeats(map);
@@ -94,7 +97,22 @@ export function SeatSelection({ id }: { id: string }) {
   useEffect(() => {
     alive.current = true;
     const controller = new AbortController();
+    let eventSource: EventSource | null = null;
     async function load() {
+      const detail = await api(`/showtimes/${id}`, decodePublicShowtime, {
+        signal: controller.signal,
+      });
+      if (controller.signal.aborted) return;
+      demoMode.current = detail.isDemo;
+      if (detail.isDemo) {
+        const map = await api(`/showtimes/${id}/seats`, decodeSeats, {
+          signal: controller.signal,
+        });
+        if (controller.signal.aborted) return;
+        setShow(detail);
+        setSeats(map);
+        return;
+      }
       const user = await loadCurrentUser();
       if (controller.signal.aborted) return;
       if (!user) {
@@ -105,10 +123,38 @@ export function SeatSelection({ id }: { id: string }) {
       }
       if (!user.roles.includes("BUYER"))
         throw Error("Tài khoản cần vai trò người mua để chọn ghế.");
-      const [detail, map, state] = await Promise.all([
-        api(`/showtimes/${id}`, decodePublicShowtime, {
-          signal: controller.signal,
-        }),
+      if (typeof EventSource !== "undefined") {
+        try {
+          eventSource = new EventSource(`/api/showtimes/${id}/seats/stream`);
+          eventSource.onmessage = (event) => {
+            if (!alive.current) return;
+            try {
+              const change = JSON.parse(event.data) as {
+                showtimeId?: string;
+                kind?: string;
+              };
+              if (change.showtimeId !== id || change.kind !== "refresh") return;
+            } catch {
+              // Ignore malformed notifications and keep the normal reconnect path.
+              return;
+            }
+            const sync = () => {
+              if (!alive.current) return;
+              if (busy.current) {
+                window.setTimeout(sync, 250);
+                return;
+              }
+              void refresh().catch(() =>
+                setError("Không cập nhật được sơ đồ ghế. Hãy thử tải lại."),
+              );
+            };
+            sync();
+          };
+        } catch {
+          // The normal focus/online refresh remains available without SSE.
+        }
+      }
+      const [map, state] = await Promise.all([
         api(`/showtimes/${id}/seats`, decodeSeats, {
           signal: controller.signal,
         }),
@@ -145,6 +191,7 @@ export function SeatSelection({ id }: { id: string }) {
     return () => {
       alive.current = false;
       controller.abort();
+      eventSource?.close();
       window.removeEventListener("online", reconnect);
       window.removeEventListener("focus", reconnect);
       document.removeEventListener("visibilitychange", visible);
@@ -303,7 +350,7 @@ export function SeatSelection({ id }: { id: string }) {
     <>
       <MobileShowHeader
         href={`/shows/${id}`}
-        title="Chọn và giữ ghế"
+        title={show.isDemo ? "Sơ đồ ghế tham khảo" : "Chọn và giữ ghế"}
         subtitle={show.event.name}
       >
         <span className="mobile-hold-time">
@@ -393,7 +440,7 @@ export function SeatSelection({ id }: { id: string }) {
           )}
           <SeatMap
             seats={seats}
-            selectable={!pending}
+            selectable={!pending && !show.isDemo}
             showNumbers
             selectedIds={selectedIds}
             ownedIds={ownedIds}
@@ -404,6 +451,23 @@ export function SeatSelection({ id }: { id: string }) {
             }}
           />
         </div>
+        {show.isDemo ? (
+          <aside className="seat-summary">
+            <Badge variant="secondary">Chế độ chỉ xem</Badge>
+            <h2>Hạng vé tham khảo</h2>
+            {show.categories.map((category) => (
+              <div className="hold-seat" key={category.name}>
+                <span><b>{category.name}</b><small>Giá mô phỏng</small></span>
+                <b>{formatVnd(category.price)}</b>
+              </div>
+            ))}
+            <Separator className="my-4" />
+            <p>Giá và sơ đồ ghế không đại diện cho một đợt mở bán thực tế.</p>
+            <Button asChild variant="outline">
+              <Link href={`/shows/${id}`}>Quay lại thông tin sự kiện</Link>
+            </Button>
+          </aside>
+        ) : (
         <aside className="seat-summary">
           <div className={`hold-clock ${expired ? "hold-clock-expired" : ""}`}>
             <span>
@@ -517,6 +581,7 @@ export function SeatSelection({ id }: { id: string }) {
             </>
           )}
         </aside>
+        )}
       </div>
     </>
   );

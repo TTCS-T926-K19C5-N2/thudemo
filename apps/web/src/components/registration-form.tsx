@@ -1,6 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import {
+  ArrowRight,
+  CheckCircle,
+  Clock3,
+  LockKeyhole,
+  Mail,
+  Ticket,
+} from "@/components/ui/material-icon";
 import { REGISTRATION_NOTICE } from "shared/registration-notice";
 import { PublicLayout } from "@/components/layout/product-layout";
 import { RegistrationNotice } from "@/components/registration-notice";
@@ -128,160 +136,249 @@ export function RegistrationForm({ resend = false }: { resend?: boolean }) {
       </p>
     ) : null;
   return (
-    <PublicLayout>
-      <div className="product-login registration-form">
-        <h1>
-          {resend
-            ? "Gửi lại liên kết kích hoạt"
-            : "Đăng ký tài khoản thử nghiệm"}
-        </h1>
-        <p>
-          {resend
-            ? "Liên kết có hạn 24 giờ. Tối đa 5 yêu cầu gửi lại mỗi giờ cho một email."
-            : "Chỉ dùng dữ liệu giả và mật khẩu thử nghiệm theo thông báo bên dưới."}
-        </p>
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        {message && (
-          <Alert role="status">
-            <AlertDescription>
-              {message} Kiểm tra cả thư rác; nếu chưa nhận được, bạn có thể gửi
-              lại liên kết.
-            </AlertDescription>
-          </Alert>
-        )}
-        <form onSubmit={submit} noValidate aria-busy={pending}>
-          <FieldGroup>
-            {!resend && (
-              <Field>
-                <FieldLabel htmlFor="registration-fullName">
-                  Họ tên giả
-                </FieldLabel>
-                <Input
-                  id="registration-fullName"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  autoComplete="off"
-                  maxLength={120}
-                  disabled={pending}
-                  required
-                  aria-invalid={!!errors.fullName}
-                  aria-describedby={
-                    errors.fullName ? "registration-fullName-error" : undefined
-                  }
-                />
-                {fieldError("fullName")}
-              </Field>
-            )}
-            <Field>
-              <FieldLabel htmlFor="registration-email">
-                Email thử nghiệm
-              </FieldLabel>
-              <Input
-                id="registration-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                maxLength={320}
-                disabled={pending}
-                required
-                aria-invalid={!!errors.email}
-                aria-describedby={
-                  errors.email ? "registration-email-error" : undefined
-                }
-              />
-              {fieldError("email")}
-            </Field>
-            {!resend && (
-              <Field>
-                <FieldLabel htmlFor="registration-password">
-                  Mật khẩu thử nghiệm
-                </FieldLabel>
-                <Input
-                  id="registration-password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="new-password"
-                  minLength={8}
-                  maxLength={1024}
-                  disabled={pending}
-                  required
-                  aria-invalid={!!errors.password}
-                  aria-describedby={
-                    errors.password ? "registration-password-error" : undefined
-                  }
-                />
-                {fieldError("password")}
-              </Field>
-            )}
-            {!resend && (
-              <>
-                <RegistrationNotice />
-                {noticeError && (
-                  <Alert variant="destructive">
-                    <AlertDescription>
-                      {noticeError}{" "}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => {
-                          setNoticeError("");
-                          setNoticeAttempt((n) => n + 1);
-                        }}
-                      >
-                        Tải lại thông báo
-                      </Button>
-                    </AlertDescription>
-                  </Alert>
-                )}
-                {!noticeReady && !noticeError && (
-                  <p role="status">Đang xác nhận phiên bản thông báo…</p>
-                )}
+    <PublicLayout auth>
+      <div className={`registration-shell ${resend ? "is-resend" : ""}`}>
+        <aside className="registration-story" aria-label="Quy trình tài khoản">
+          <div className="registration-story-topline">
+            <span className="registration-story-icon">
+              <Ticket filled />
+            </span>
+            <span>VÉ SỰ KIỆN</span>
+          </div>
+          <p className="registration-eyebrow">MỞ RA NHỮNG ĐÊM ĐÁNG NHỚ</p>
+          <h2>
+            Một tài khoản.
+            <br />
+            Thêm nhiều trải nghiệm.
+          </h2>
+          <p className="registration-story-copy">
+            Tạo tài khoản trải nghiệm để khám phá hành trình chọn sự kiện, chọn
+            chỗ ngồi và quản lý vé trong cùng một nơi.
+          </p>
+          <div className="registration-ticket-art" aria-hidden="true">
+            <div className="registration-ticket-art-inner">
+              <span className="registration-ticket-label">
+                TRẢI NGHIỆM SỰ KIỆN
+              </span>
+              <strong>
+                Một đêm đáng nhớ
+                <br />
+                bắt đầu từ đây.
+              </strong>
+              <div className="registration-ticket-meta">
+                <span>VÉ SỰ KIỆN</span>
+                <span className="registration-ticket-dots" />
+                <span>01 — 03</span>
+              </div>
+            </div>
+          </div>
+          <ol className="registration-steps">
+            <li>
+              <span className="registration-step-number">01</span>
+              <span>
+                <strong>Tạo tài khoản</strong>
+                <small>Dùng thông tin thử nghiệm</small>
+              </span>
+            </li>
+            <li>
+              <span className="registration-step-number">02</span>
+              <span>
+                <strong>Xác minh email</strong>
+                <small>Nhận liên kết kích hoạt trong hộp thư</small>
+              </span>
+            </li>
+            <li>
+              <span className="registration-step-number">03</span>
+              <span>
+                <strong>Bắt đầu khám phá</strong>
+                <small>Trở lại để tiếp tục trải nghiệm</small>
+              </span>
+            </li>
+          </ol>
+          <div className="registration-story-footnote">
+            <LockKeyhole />
+            <span>Kích hoạt qua email · Không dùng cho tiếp thị</span>
+          </div>
+        </aside>
+
+        <section
+          className="product-login registration-form"
+          aria-labelledby="registration-title"
+        >
+          <div className="registration-card-topline">
+            <span className="registration-card-kicker">
+              <Mail />
+              {resend ? "HỖ TRỢ KÍCH HOẠT" : "THÀNH VIÊN MỚI"}
+            </span>
+            <span className="registration-time-chip">
+              <Clock3 />
+              {resend ? "Liên kết có hạn 24 giờ" : "Khoảng 1 phút"}
+            </span>
+          </div>
+          <h1 id="registration-title">
+            {resend
+              ? "Gửi lại liên kết kích hoạt"
+              : "Tạo tài khoản trải nghiệm"}
+          </h1>
+          <p className="registration-intro">
+            {resend
+              ? "Liên kết có hạn 24 giờ. Tối đa 5 yêu cầu gửi lại mỗi giờ cho một email."
+              : "Điền thông tin bên dưới để nhận liên kết kích hoạt qua email. Chỉ dùng dữ liệu giả và mật khẩu thử nghiệm theo thông báo."}
+          </p>
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          {message && (
+            <Alert role="status">
+              <AlertDescription>
+                {message} Kiểm tra cả thư rác; nếu chưa nhận được, bạn có thể
+                gửi lại liên kết.
+              </AlertDescription>
+            </Alert>
+          )}
+          <form onSubmit={submit} noValidate aria-busy={pending}>
+            <FieldGroup>
+              {!resend && (
                 <Field>
-                  <label htmlFor="registration-consent">
-                    <input
-                      id="registration-consent"
-                      type="checkbox"
-                      checked={consent}
-                      onChange={(e) => setConsent(e.target.checked)}
-                      disabled={pending || !noticeReady}
-                      required
-                      aria-invalid={!!errors.consent}
-                      aria-describedby={
-                        errors.consent
-                          ? "registration-consent-error"
-                          : undefined
-                      }
-                    />{" "}
-                    {REGISTRATION_NOTICE.consentLabel}
-                  </label>
-                  {fieldError("consent")}
+                  <FieldLabel htmlFor="registration-fullName">
+                    Họ tên giả
+                  </FieldLabel>
+                  <Input
+                    id="registration-fullName"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    autoComplete="off"
+                    maxLength={120}
+                    disabled={pending}
+                    required
+                    aria-invalid={!!errors.fullName}
+                    aria-describedby={
+                      errors.fullName
+                        ? "registration-fullName-error"
+                        : undefined
+                    }
+                  />
+                  {fieldError("fullName")}
                 </Field>
-              </>
-            )}
-            <Button
-              type="submit"
-              disabled={pending || (!resend && !noticeReady)}
-            >
-              {pending
-                ? "Đang xử lý…"
-                : resend
-                  ? "Gửi lại liên kết"
-                  : "Đăng ký"}
-            </Button>
-          </FieldGroup>
-        </form>
-        <p>
-          <Link href="/login">Đăng nhập</Link> ·{" "}
-          <Link href={resend ? "/register" : "/resend-activation"}>
-            {resend ? "Đăng ký" : "Gửi lại liên kết kích hoạt"}
-          </Link>
-        </p>
+              )}
+              <Field>
+                <FieldLabel htmlFor="registration-email">
+                  Email thử nghiệm
+                </FieldLabel>
+                <Input
+                  id="registration-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  maxLength={320}
+                  disabled={pending}
+                  required
+                  aria-invalid={!!errors.email}
+                  aria-describedby={
+                    errors.email ? "registration-email-error" : undefined
+                  }
+                />
+                {fieldError("email")}
+              </Field>
+              {!resend && (
+                <Field>
+                  <FieldLabel htmlFor="registration-password">
+                    Mật khẩu thử nghiệm
+                  </FieldLabel>
+                  <Input
+                    id="registration-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="new-password"
+                    minLength={8}
+                    maxLength={1024}
+                    disabled={pending}
+                    required
+                    aria-invalid={!!errors.password}
+                    aria-describedby={
+                      errors.password
+                        ? "registration-password-error"
+                        : undefined
+                    }
+                  />
+                  {fieldError("password")}
+                </Field>
+              )}
+              {!resend && (
+                <>
+                  <RegistrationNotice />
+                  {noticeError && (
+                    <Alert variant="destructive">
+                      <AlertDescription>
+                        {noticeError}{" "}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setNoticeError("");
+                            setNoticeAttempt((n) => n + 1);
+                          }}
+                        >
+                          Tải lại thông báo
+                        </Button>
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  {!noticeReady && !noticeError && (
+                    <p role="status">Đang xác nhận phiên bản thông báo…</p>
+                  )}
+                  <Field className="registration-consent-field">
+                    <label htmlFor="registration-consent">
+                      <input
+                        id="registration-consent"
+                        type="checkbox"
+                        checked={consent}
+                        onChange={(e) => setConsent(e.target.checked)}
+                        disabled={pending || !noticeReady}
+                        required
+                        aria-invalid={!!errors.consent}
+                        aria-describedby={
+                          errors.consent
+                            ? "registration-consent-error"
+                            : undefined
+                        }
+                      />
+                      <span>{REGISTRATION_NOTICE.consentLabel}</span>
+                    </label>
+                    {fieldError("consent")}
+                  </Field>
+                </>
+              )}
+              <Button
+                type="submit"
+                className="registration-submit"
+                disabled={pending || (!resend && !noticeReady)}
+              >
+                {pending
+                  ? "Đang xử lý…"
+                  : resend
+                    ? "Gửi lại liên kết"
+                    : "Đăng ký"}
+                {!pending && <ArrowRight />}
+              </Button>
+            </FieldGroup>
+          </form>
+          <div className="registration-form-bottom">
+            <CheckCircle />
+            <span>Liên kết kích hoạt sẽ được gửi tới email bạn đăng ký.</span>
+          </div>
+          <p className="registration-secondary-links">
+            <Link href="/login">Đăng nhập</Link>
+            <span aria-hidden="true">·</span>
+            <Link href={resend ? "/register" : "/resend-activation"}>
+              {resend ? "Đăng ký" : "Gửi lại liên kết kích hoạt"}
+            </Link>
+          </p>
+        </section>
       </div>
     </PublicLayout>
   );

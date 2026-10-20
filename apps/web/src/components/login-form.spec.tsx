@@ -8,6 +8,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { LoginForm } from "./login-form";
+import { ApiError } from "@/lib/api/client";
 const mocks = vi.hoisted(() => ({
   api: vi.fn(),
   user: vi.fn(),
@@ -52,3 +53,31 @@ it.each(["/events/new", undefined])(
     expect(mocks.router.refresh).toHaveBeenCalled();
   },
 );
+
+it("shows activation guidance and resend link for an unverified account", async () => {
+  mocks.api.mockRejectedValue(
+    new ApiError(
+      "Tài khoản chưa được kích hoạt. Hãy kiểm tra email hoặc gửi lại liên kết kích hoạt.",
+      401,
+      "EMAIL_NOT_VERIFIED",
+    ),
+  );
+  render(<LoginForm />);
+  fireEvent.change(screen.getByLabelText(/Email/), {
+    target: { value: "fixture@example.invalid" },
+  });
+  fireEvent.change(screen.getByLabelText("Mật khẩu"), {
+    target: { value: "fixture-password" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: /^Đăng nhập$/ }));
+
+  expect(
+    await screen.findByText(/Tài khoản chưa được kích hoạt/),
+  ).toBeTruthy();
+  expect(
+    screen
+      .getAllByRole("link", { name: "Gửi lại liên kết kích hoạt" })[0]
+      .getAttribute("href"),
+  ).toBe("/resend-activation");
+  expect(mocks.router.replace).not.toHaveBeenCalled();
+});

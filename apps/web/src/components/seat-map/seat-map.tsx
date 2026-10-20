@@ -488,7 +488,11 @@ export function SeatMap({
           style={{ width: width * zoom, height: height * zoom }}
           tabIndex={0}
           role="application"
-          aria-label="Dùng phím mũi tên để xem ghế; Enter chọn ghế trống."
+          aria-label={
+            selectable
+              ? "Dùng phím mũi tên để xem ghế; Enter chọn ghế trống."
+              : "Dùng phím mũi tên để xem ghế trong chế độ chỉ xem."
+          }
           aria-describedby="seat-inspector"
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {

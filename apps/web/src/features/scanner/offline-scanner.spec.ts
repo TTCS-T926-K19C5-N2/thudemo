@@ -3,7 +3,7 @@ import { generateKeyPairSync, sign } from 'node:crypto';
 import { ticketQrInput } from 'shared/ticket-qr';
 import { processOfflineScan } from './offline-scanner';
 import * as scannerDb from './scanner-db';
-import * as scannerApi from './scanner-api';
+import * as ticketScannerSync from '../ticket-scanner/sync-manager';
 import { syncOfflineScanQueue } from './scanner-sync';
 
 // Generate a valid Ed25519 keypair for signing test QRs
@@ -329,126 +329,69 @@ describe('S-34 Offline Scanner (processOfflineScan & syncOfflineScanQueue)', () 
 
   describe('Queue Synchronization (syncOfflineScanQueue)', () => {
     it('returns 0 when there are no pending offline scans', async () => {
-      vi.spyOn(scannerDb, 'getPendingOfflineScans').mockResolvedValue([]);
+      vi.spyOn(ticketScannerSync, 'syncPendingScans').mockResolvedValue({
+        totalProcessed: 0,
+        syncedCount: 0,
+        failedCount: 0,
+        remainingCount: 0,
+        stoppedDueToNetwork: false,
+        errors: [],
+      });
       const res = await syncOfflineScanQueue(showtimeId);
       expect(res.syncedCount).toBe(0);
       expect(res.conflictCount).toBe(0);
     });
 
-    it('pushes pending scans to server, marks them synced, and triggers incremental sync', async () => {
-      const pendingScans: scannerDb.OfflineScanRecord[] = [
-        {
-          scanId: 'scan-uuid-1',
-          showtimeId,
-          ticketCode: ticketId,
-          gateId: 'gate-1',
-          gateName: 'Cửa 1',
-          scannedAt: new Date().toISOString(),
-          deviceId: 'device-1',
-          staffId: 'staff-1',
-          offline: true,
-          syncStatus: 'pending',
-          seatLabel: 'A-01',
-          ticketType: 'VIP',
-        },
-      ];
-
-      vi.spyOn(scannerDb, 'getPendingOfflineScans').mockResolvedValue(pendingScans);
-      const syncApiSpy = vi.spyOn(scannerApi, 'syncOfflineScansApi').mockResolvedValue({
-        synced: 1,
-        conflicts: [],
-        syncedScanIds: ['scan-uuid-1'],
-      });
-      const markSyncedSpy = vi.spyOn(scannerDb, 'markOfflineScansSynced').mockResolvedValue();
-      vi.spyOn(scannerApi, 'fetchShowtimeTickets').mockResolvedValue({
-        showtimeId,
-        showtimeName: 'Test',
-        generatedAt: new Date().toISOString(),
-        cursor: 'new-cur',
-        publicKey: { keyId: 'k1', key: testPublicKeyPem },
-        tickets: [],
-      });
-      vi.spyOn(scannerDb, 'getShowtimeMeta').mockResolvedValue({
-        showtimeId,
-        showtimeName: 'Test',
-        downloadedAt: new Date().toISOString(),
-        lastSyncAt: new Date().toISOString(),
-        cursor: 'old-cur',
-        ticketCount: 1,
-        keyId: 'k1',
-        publicKey: testPublicKeyPem,
-        status: 'ready',
-      });
-      vi.spyOn(scannerDb, 'mergeTicketsIncremental').mockResolvedValue({
-        showtimeId,
-        showtimeName: 'Test',
-        downloadedAt: new Date().toISOString(),
-        lastSyncAt: new Date().toISOString(),
-        cursor: 'new-cur',
-        ticketCount: 1,
-        keyId: 'k1',
-        publicKey: testPublicKeyPem,
-        status: 'ready',
+    it('maps synced counts from the durable scanner queue', async () => {
+      const syncQueueSpy = vi.spyOn(ticketScannerSync, 'syncPendingScans').mockResolvedValue({
+        totalProcessed: 1,
+        syncedCount: 1,
+        failedCount: 0,
+        remainingCount: 0,
+        stoppedDueToNetwork: false,
+        errors: [],
       });
 
       const res = await syncOfflineScanQueue(showtimeId);
 
-      expect(syncApiSpy).toHaveBeenCalledTimes(1);
-      expect(markSyncedSpy).toHaveBeenCalledWith(['scan-uuid-1']);
+      expect(syncQueueSpy).toHaveBeenCalledWith({ showtimeId });
       expect(res.syncedCount).toBe(1);
       expect(res.conflictCount).toBe(0);
     });
 
-    it('returns immediately without calling API when navigator is offline', async () => {
+    it('returns zero synced scans when the queue reports an offline stop', async () => {
       Object.defineProperty(navigator, 'onLine', {
         value: false,
         configurable: true,
       });
-      const syncApiSpy = vi.spyOn(scannerApi, 'syncOfflineScansApi');
+      const syncQueueSpy = vi.spyOn(ticketScannerSync, 'syncPendingScans').mockResolvedValue({
+        totalProcessed: 0,
+        syncedCount: 0,
+        failedCount: 0,
+        remainingCount: 1,
+        stoppedDueToNetwork: true,
+        errors: [],
+      });
       const res = await syncOfflineScanQueue(showtimeId);
       expect(res.syncedCount).toBe(0);
-      expect(syncApiSpy).not.toHaveBeenCalled();
+      expect(syncQueueSpy).toHaveBeenCalledWith({ showtimeId });
     });
 
-    it('marks conflict scans synced so they do not loop endlessly', async () => {
-      const pendingScans: scannerDb.OfflineScanRecord[] = [
-        {
-          scanId: 'scan-conflict-1',
-          showtimeId,
-          ticketCode: ticketId,
-          gateId: 'gate-1',
-          scannedAt: new Date().toISOString(),
-          deviceId: 'device-1',
-          staffId: 'staff-1',
-          offline: true,
-          syncStatus: 'pending',
-          seatLabel: 'A-01',
-          ticketType: 'VIP',
-        },
-      ];
-
-      vi.spyOn(scannerDb, 'getPendingOfflineScans').mockResolvedValue(pendingScans);
-      vi.spyOn(scannerApi, 'syncOfflineScansApi').mockResolvedValue({
-        synced: 0,
-        conflicts: [
-          {
-            scanId: 'scan-conflict-1',
-            ticketCode: ticketId,
-            reason: 'ALREADY_CHECKED_IN_PRIOR',
-            existingCheckedInAt: '2026-10-12T08:00:00.000Z',
-          },
-        ],
-        syncedScanIds: [],
+    it('maps failed durable queue entries to the conflict count', async () => {
+      vi.spyOn(ticketScannerSync, 'syncPendingScans').mockResolvedValue({
+        totalProcessed: 1,
+        syncedCount: 0,
+        failedCount: 1,
+        remainingCount: 0,
+        stoppedDueToNetwork: false,
+        errors: ['ALREADY_CHECKED_IN_PRIOR'],
       });
-      vi.spyOn(scannerDb, 'getShowtimeMeta').mockResolvedValue(null);
-      const markSyncedSpy = vi.spyOn(scannerDb, 'markOfflineScansSynced').mockResolvedValue();
 
       const res = await syncOfflineScanQueue(showtimeId);
 
       expect(res.syncedCount).toBe(0);
       expect(res.conflictCount).toBe(1);
-      expect(res.conflicts[0].reason).toBe('ALREADY_CHECKED_IN_PRIOR');
-      expect(markSyncedSpy).toHaveBeenCalledWith(['scan-conflict-1']);
+      expect(res.conflicts).toEqual([]);
     });
   });
 });

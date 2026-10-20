@@ -173,7 +173,7 @@ export class ScannerCryptoService {
     ) {
       throw new BadRequestException({
         code: 'INVALID_QR_SIGNATURE',
-        message: 'Mã QR không hợp lệ hoặc chữ ký không được xác minh.',
+        message: 'Không phải vé của hệ thống hoặc chữ ký không hợp lệ.',
       });
     }
     return claims;

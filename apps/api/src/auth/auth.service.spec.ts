@@ -94,7 +94,7 @@ describe('Login account and transport budgets', () => {
     });
     expect(f.redis.loginIpRetryAfter).not.toHaveBeenCalled();
   });
-  it.each(['unknown', 'ambiguous', 'password', 'unverified', 'inactive'])(
+  it.each(['unknown', 'ambiguous', 'password', 'inactive'])(
     'keeps one generic error and charges failed account/IP attempts for %s',
     async (reason) => {
       const f = fixture();
@@ -102,7 +102,6 @@ describe('Login account and transport budgets', () => {
       if (reason === 'ambiguous')
         f.prisma.user.findMany.mockResolvedValue([f.user, f.user]);
       if (reason === 'password') cryptoMock.verify.mockResolvedValue(false);
-      if (reason === 'unverified') f.user.isEmailVerified = false;
       if (reason === 'inactive') f.user.isActive = false;
       f.redis.incrementLoginFailures.mockResolvedValue(5);
       await expect(
@@ -116,6 +115,24 @@ describe('Login account and transport budgets', () => {
       expect(f.prisma.session.create).not.toHaveBeenCalled();
     },
   );
+  it('gives activation guidance only after the correct password for an unverified account', async () => {
+    const f = fixture();
+    f.user.isEmailVerified = false;
+    await expect(
+      f.service.login('owner@example.invalid', 'valid', '192.0.2.1'),
+    ).rejects.toMatchObject({
+      status: 401,
+      response: {
+        code: 'EMAIL_NOT_VERIFIED',
+        message: expect.stringContaining('chưa được kích hoạt'),
+      },
+    });
+    expect(f.redis.clearLoginFailures).toHaveBeenCalledWith(
+      'owner@example.invalid',
+    );
+    expect(f.redis.recordLoginIpFailure).not.toHaveBeenCalled();
+    expect(f.prisma.session.create).not.toHaveBeenCalled();
+  });
   it.each(['precheck', 'failure-counter', 'clear-success'])(
     'fails closed when Redis fails at %s',
     async (phase) => {

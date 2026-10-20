@@ -1,4 +1,5 @@
 "use client";
+import { notifySessionChanged } from "@/lib/session-events";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,11 +31,13 @@ export function LoginForm({
     [password, setPassword] = useState(""),
     [visible, setVisible] = useState(false),
     [pending, setPending] = useState(false),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [needsActivation, setNeedsActivation] = useState(false);
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (pending) return;
     setError("");
+    setNeedsActivation(false);
     if (!/^\S+@\S+\.\S+$/.test(email.trim()) || !password) {
       setError("Vui lòng nhập email hợp lệ và mật khẩu để tiếp tục.");
       return;
@@ -50,8 +53,11 @@ export function LoginForm({
         throw new Error(
           "Phiên đăng nhập chưa được xác nhận. Hãy đăng nhập lại.",
         );
+      notifySessionChanged();
       router.replace(
-        safeReturnTo(returnTo ?? null) ??
+        (user.roles.length === 1 && user.roles.includes("STAFF")
+          ? "/check-in"
+          : safeReturnTo(returnTo ?? null)) ??
           (user.roles.includes("ORGANIZER")
             ? "/events"
             : user.roles.includes("STAFF")
@@ -60,8 +66,15 @@ export function LoginForm({
       );
       router.refresh();
     } catch (e) {
+      const activationRequired =
+        e instanceof ApiError && e.code === "EMAIL_NOT_VERIFIED";
+      setNeedsActivation(activationRequired);
       setError(
-        e instanceof ApiError && e.status === 401
+        activationRequired
+          ? e instanceof ApiError
+            ? e.message
+            : "Tài khoản chưa được kích hoạt."
+          : e instanceof ApiError && e.status === 401
           ? "Email hoặc mật khẩu không chính xác."
           : e instanceof ApiError && e.status === 429
             ? `Đăng nhập tạm thời bị khóa. Thử lại sau ${Math.ceil(Number(e.details.retryAfterSeconds ?? 60) / 60)} phút.`
@@ -126,7 +139,14 @@ export function LoginForm({
             {error && (
               <Alert variant="destructive" className="login-error">
                 <CircleAlert />
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>
+                  {error}{" "}
+                  {needsActivation && (
+                    <Link href="/resend-activation" className="underline">
+                      Gửi lại liên kết kích hoạt
+                    </Link>
+                  )}
+                </AlertDescription>
               </Alert>
             )}
             <FieldGroup>
@@ -206,7 +226,7 @@ export function LoginForm({
             </p>
           )}
         </form>
-        <p className="login-account-guidance">Nếu tài khoản chưa kích hoạt, hãy mở liên kết trong hộp thư thử nghiệm hoặc <Link href="/resend-activation">gửi lại liên kết kích hoạt</Link>.</p>
+        <p className="login-account-guidance">Nếu tài khoản chưa kích hoạt, hãy mở liên kết trong email hoặc <Link href="/resend-activation">gửi lại liên kết kích hoạt</Link>.</p>
         <p className="login-account-guidance">Chưa có tài khoản? <Link href="/register">Đăng ký tài khoản thử nghiệm</Link></p>
       </div>
       <Link href={show ? `/shows/${show.id}` : "/"} className="login-back">

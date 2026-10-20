@@ -113,4 +113,27 @@ describe("Runtime same-origin API proxy", () => {
     );
     expect(big.status).toBe(413);
   });
+  it("keeps the same-origin event stream open without the JSON request timeout", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(new ReadableStream(), {
+        headers: { "content-type": "text/event-stream" },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    const request = new Request(
+      "http://localhost/api/showtimes/fixture/seats/stream",
+      { headers: { accept: "text/event-stream" } },
+    );
+
+    const response = await proxyApi(request, [
+      "showtimes",
+      "fixture",
+      "seats",
+      "stream",
+    ]);
+
+    expect(response.headers.get("content-type")).toBe("text/event-stream");
+    expect(fetchMock.mock.calls[0][1].signal).toBe(request.signal);
+    await response.body?.cancel();
+  });
 });

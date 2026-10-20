@@ -372,20 +372,3 @@ Lần sau: kiểm máy → mục 4 → mục 6. Chỉ build lại nếu code/dep
 Chưa hoàn thành nghiệm thu Sprint 2: hiệu năng giữ ghế chưa ổn định dưới 300 ms; CI/staging revision mới chưa chạy; Render Free không chứng minh worker liên tục khi API ngủ. Chưa có đơn hàng/thanh toán/vé hoặc dữ liệu thật. Xem báo cáo hiện hành, không lấy chữ PASS local làm PASS release.
 
 Tài liệu này chỉ bổ sung hướng dẫn sử dụng; không commit, push, tạo PR, deploy, thay schema hoặc thay password/data đang có.
-
-## 13. Nạp dữ liệu nhà hát mô phỏng
-
-`theater_chamber_events_seed.json` tự khai báo toàn bộ chương trình, nghệ sĩ, đơn vị, nhà hát, địa chỉ, lịch diễn và inventory là **hư cấu**. Script giữ nguyên nhãn này; không dùng thông tin Internet để khiến nội dung trông như sự kiện có thật.
-
-Yêu cầu: API/web local đang chạy ở `http://localhost:3001`/`http://localhost:3000`, tài khoản `design-organizer@example.invalid` còn hoạt động, `.git/stitch-correction-password` có mật khẩu local và `.env` trỏ tới database local với `PAYMENT_GATEWAY=mock`.
-
-Từ root `thudemo/`, xem trước rồi mới nhập:
-
-```powershell
-pnpm --filter api run seed:theater-demo -- --dry-run
-pnpm --filter api run seed:theater-demo -- --apply
-```
-
-Script dùng session của người tổ chức qua API web, tạo 12 sự kiện/24 suất diễn, import sơ đồ và giá hạng ghế, rồi mở các suất demo có lịch hợp lệ. Tên sự kiện và địa điểm được đánh dấu **MÔ PHỎNG**; mô tả nêu rõ vé không có giá trị vào cửa. Script có marker để chạy lại mà không nhân đôi sự kiện/suất; không tự ghi đè sự kiện đã có, và giữ nguyên suất đã đóng. Mật khẩu không được in ra terminal; có thể thay file local bằng biến môi trường `DEMO_ORGANIZER_PASSWORD`.
-
-Inventory `bookedSeatIds`/`heldSeatIds`/`blockedSeatIds` trong file nguồn là dữ liệu giả và bị bỏ qua; các ghế mới được tạo ở trạng thái trống. Ứng dụng chưa hỗ trợ thời điểm bắt đầu/kết thúc mở bán theo suất, nên script chỉ mở bán ngay các suất đủ điều kiện trong môi trường mock; không sử dụng để bán vé hoặc nhận tiền thật. Không có ảnh poster trong dataset nên script không tải hoặc gán ảnh không có quyền sử dụng.

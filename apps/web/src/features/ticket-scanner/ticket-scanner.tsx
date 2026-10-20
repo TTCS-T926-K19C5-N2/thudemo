@@ -1,4 +1,5 @@
 "use client";
+import { deviceIdentity } from "../scanner/durable-scans";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Html5Qrcode } from "html5-qrcode";
@@ -7,6 +8,10 @@ import { ApiError, api, object } from "@/lib/api/client";
 import { loadCurrentUser } from "@/lib/api";
 import { checkInFailureState, checkInWithWaiting } from "./check-in-request";
 import Link from "next/link";
+import {
+  fetchTodayShowtimesS29,
+  type TodayShowtimeS29,
+} from "@/lib/api-check-in-s29";
 import { AdmissionOverride } from "./admission-override";
 import { verifyTicketQr, decodeQrKeys } from "./verify-ticket-qr";
 import type { TicketQrPublicKey } from "shared/ticket-qr";
@@ -17,7 +22,7 @@ import {
   type CheckInResult,
   type UsedTicket,
 } from "./admission-response";
-import { AlertTriangle, CheckCircle, CloudOff } from "lucide-react";
+import { AlertTriangle, CheckCircle } from "lucide-react";
 import { OfflineBanner } from "./offline-banner";
 import {
   addPendingScan,
@@ -39,11 +44,10 @@ import {
 } from "./sync-manager";
 import {
   getShowtimeMeta,
-  markTicketAsLocalCheckedIn,
   countPendingOfflineScans,
 } from "../scanner/scanner-db";
 import { processOfflineScan } from "../scanner/offline-scanner";
-import { syncOfflineScanQueue } from "../scanner/scanner-sync";
+import { prepareOfflineScannerShell } from "../scanner/offline-shell";
 
 type ScanStatus =
   | "SCANNING"
@@ -86,8 +90,12 @@ export function TicketScanner({
 }) {
   const [userLoading, setUserLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
+  const [sessionRevision, setSessionRevision] = useState(0);
   const [userError, setUserError] = useState("");
   const [showtimeId, setShowtimeId] = useState(initialShowtimeId);
+  const [todayShowtimes, setTodayShowtimes] = useState<TodayShowtimeS29[]>([]);
+  const [selectionLoading, setSelectionLoading] = useState(true);
+  const [selectionError, setSelectionError] = useState("");
   const [ticketId, setTicketId] = useState("");
   const [qrKeys, setQrKeys] = useState<TicketQrPublicKey[]>([]);
   const [gates, setGates] = useState<Gate[]>([]);
@@ -95,17 +103,18 @@ export function TicketScanner({
   const [gatesLoading, setGatesLoading] = useState(false);
   const [used, setUsed] = useState<UsedTicket | null>(null);
 
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline, setIsOnline] = useState(false);
   const [browserOnline, setBrowserOnline] = useState(true);
-  const [offlineModeSimulated, setOfflineModeSimulated] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
-  const [pendingScansCount, setPendingScansCount] = useState<number>(0);
   const [isSyncingState, setIsSyncingState] = useState(false);
   const [isSyncingQueue, setIsSyncingQueue] = useState(false);
-  const [syncSuccessMessage, setSyncSuccessMessage] = useState<string | null>(null);
+  const [syncSuccessMessage, setSyncSuccessMessage] = useState<string | null>(
+    null,
+  );
 
-  const isExplicitOffline = offlineModeSimulated || !browserOnline;
-  const isDeviceOnline = !isExplicitOffline;
+  const isExplicitOffline = !isOnline || !browserOnline;
+  const isDeviceOnline = isOnline && browserOnline;
+  const staffIdentity = useRef("");
 
   const scanAction = useRef<{
     ticketId: string;
@@ -133,11 +142,34 @@ export function TicketScanner({
       const count = await countPendingOfflineScans(
         showtimeId.trim() || undefined,
       );
-      if (mounted.current) setPendingScansCount(count);
+      if (mounted.current) setPendingCount(count);
     } catch {
       // ignore
     }
   }, [showtimeId]);
+
+  const [shellStatus, setShellStatus] = useState(
+    "Đang chuẩn bị giao diện để mở lại khi mất mạng…",
+  );
+  useEffect(() => {
+    if (!authorized || !isDeviceOnline) return;
+    let active = true;
+    void prepareOfflineScannerShell().then(
+      () => {
+        if (active)
+          setShellStatus("Giao diện đã sẵn sàng mở lại khi mất mạng.");
+      },
+      () => {
+        if (active)
+          setShellStatus(
+            "Chưa chuẩn bị được giao diện ngoại tuyến. Giữ kết nối và tải lại trước khi mất mạng.",
+          );
+      },
+    );
+    return () => {
+      active = false;
+    };
+  }, [authorized, isDeviceOnline]);
 
   const triggerSync = useCallback(async () => {
     if (isSyncing()) return;
@@ -145,7 +177,6 @@ export function TicketScanner({
       showtimeId: showtimeId.trim() || undefined,
     });
     try {
-      await syncOfflineScanQueue(showtimeId.trim() || undefined);
       await refreshPendingCount();
     } catch {
       // ignore
@@ -165,7 +196,6 @@ export function TicketScanner({
     if (isSyncingQueue) return;
     setIsSyncingQueue(true);
     try {
-      await syncOfflineScanQueue(showtimeId.trim() || undefined);
       await syncPendingScans({ showtimeId: showtimeId.trim() || undefined });
       await refreshPendingCount();
     } catch (e) {
@@ -179,7 +209,7 @@ export function TicketScanner({
     let active = true;
     void countPendingOfflineScans(showtimeId.trim() || undefined)
       .then((count) => {
-        if (active) setPendingScansCount(count);
+        if (active) setPendingCount(count);
       })
       .catch(() => {});
 
@@ -195,21 +225,54 @@ export function TicketScanner({
     void loadCurrentUser()
       .then((user) => {
         if (!active) return;
-        setAuthorized(
-          Boolean(
-            user?.roles.some((role) =>
-              ["STAFF", "ORGANIZER", "ADMIN"].includes(role),
-            ),
-          ),
-        );
+        const allowed = Boolean(user?.roles.includes("STAFF"));
+        setAuthorized(allowed);
+        if (allowed && user) {
+          staffIdentity.current = user.id;
+          localStorage.setItem(
+            "scanner.staff-identity",
+            JSON.stringify({
+              id: user.id,
+              validUntil: Date.now() + 8 * 60 * 60 * 1000,
+            }),
+          );
+        } else {
+          localStorage.removeItem("scanner.staff-identity");
+          staffIdentity.current = "";
+        }
         setUserLoading(false);
       })
       .catch((error: unknown) => {
         if (!active) return;
-        if (typeof navigator !== "undefined" && !navigator.onLine) {
-          setAuthorized(true);
-          setUserLoading(false);
-          return;
+        if (
+          (error instanceof ApiError && error.status === 0) ||
+          !navigator.onLine
+        ) {
+          try {
+            const saved = JSON.parse(
+              localStorage.getItem("scanner.staff-identity") ?? "null",
+            );
+            const show =
+              initialShowtimeId ||
+              localStorage.getItem("checkin_showtime_s29") ||
+              "";
+            const grant = JSON.parse(
+              localStorage.getItem(`scanner.grants.${show}`) ?? "null",
+            );
+            if (
+              saved?.id &&
+              saved.validUntil > Date.now() &&
+              grant?.staffId === saved.id &&
+              grant.validUntil > Date.now()
+            ) {
+              staffIdentity.current = saved.id;
+              setAuthorized(true);
+              setUserLoading(false);
+              return;
+            }
+          } catch {
+            /* Missing/expired local assignment cannot authorize offline scanning. */
+          }
         }
         setUserError(
           error instanceof Error
@@ -234,17 +297,148 @@ export function TicketScanner({
           );
       }
     };
+  }, [initialShowtimeId, sessionRevision]);
+
+  useEffect(() => {
+    const changed = () => {
+      localStorage.removeItem("scanner.staff-identity");
+      staffIdentity.current = "";
+      setAuthorized(false);
+      setGates([]);
+      setGateId("");
+      setResult(null);
+      setUsed(null);
+      activeRequest.current?.abort();
+      if (scanner.current?.isScanning)
+        void scanner.current.stop().catch(() => {});
+      setSessionRevision((revision) => revision + 1);
+    };
+    window.addEventListener("account-session-changed", changed);
+    const channel =
+      typeof BroadcastChannel !== "undefined"
+        ? new BroadcastChannel("account-session")
+        : null;
+    if (channel) channel.onmessage = changed;
+    return () => {
+      window.removeEventListener("account-session-changed", changed);
+      channel?.close();
+    };
   }, []);
 
   useEffect(() => {
-    const unsubCount = subscribePendingCount((count) => {
-      if (mounted.current) setPendingCount(count);
+    if (!authorized) return;
+    let active = true;
+    const restoreOffline = async () => {
+      const saved =
+        initialShowtimeId || localStorage.getItem("checkin_showtime_s29") || "";
+      const meta = await getShowtimeMeta(saved);
+      const grant = JSON.parse(
+        localStorage.getItem(`scanner.grants.${saved}`) ?? "null",
+      );
+      const cached = JSON.parse(
+        localStorage.getItem("scanner.today-showtimes") ?? "[]",
+      ) as TodayShowtimeS29[];
+      const today = new Date().toLocaleDateString("en-CA", {
+        timeZone: "Asia/Ho_Chi_Minh",
+      });
+      const available = cached.filter(
+        (show) =>
+          new Date(show.startTime).toLocaleDateString("en-CA", {
+            timeZone: "Asia/Ho_Chi_Minh",
+          }) === today,
+      );
+      if (
+        !meta ||
+        !grant ||
+        grant.staffId !== staffIdentity.current ||
+        grant.validUntil <= Date.now() ||
+        !available.some((show) => show.id === saved)
+      )
+        throw Error(
+          "Chưa có danh sách và phân công còn hiệu lực. Tải khi có mạng trước khi soát ngoại tuyến.",
+        );
+      if (!active) return;
+      setTodayShowtimes(available);
+      setShowtimeId(saved);
+      setGates(grant.gates);
+      const selected = localStorage.getItem(`scanner.gate.${saved}`) ?? "";
+      setGateId(
+        grant.gates.some((gate: Gate) => gate.gateId === selected)
+          ? selected
+          : (grant.gates[0]?.gateId ?? ""),
+      );
+    };
+    if (!navigator.onLine) {
+      void restoreOffline()
+        .catch((reason) => {
+          if (active)
+            setSelectionError(
+              reason instanceof Error
+                ? reason.message
+                : "Không đọc được cấu hình ngoại tuyến.",
+            );
+        })
+        .finally(() => {
+          if (active) setSelectionLoading(false);
+        });
+      return () => {
+        active = false;
+      };
+    }
+    void fetchTodayShowtimesS29()
+      .then((shows) => {
+        if (!active) return;
+        setTodayShowtimes(shows);
+        localStorage.setItem("scanner.today-showtimes", JSON.stringify(shows));
+        const saved =
+          initialShowtimeId ||
+          localStorage.getItem("checkin_showtime_s29") ||
+          "";
+        setShowtimeId(shows.some((s) => s.id === saved) ? saved : "");
+      })
+      .catch(async (reason: unknown) => {
+        if (reason instanceof ApiError && [401, 403].includes(reason.status)) {
+          if (active)
+            setSelectionError("Phiên hoặc quyền đã thay đổi. Đăng nhập lại.");
+          return;
+        }
+        try {
+          await restoreOffline();
+        } catch (error) {
+          if (active)
+            setSelectionError(
+              error instanceof Error
+                ? error.message
+                : "Không tải được suất diễn hôm nay.",
+            );
+        }
+      })
+      .finally(() => {
+        if (active) setSelectionLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [authorized, initialShowtimeId]);
+
+  useEffect(() => {
+    const unsubCount = subscribePendingCount(() => {
+      void refreshPendingCount();
     });
-    void getPendingScanCount(showtimeId.trim() || undefined).then((count) => {
-      if (mounted.current) setPendingCount(count);
-    });
+    void getPendingScanCount(showtimeId.trim() || undefined)
+      .then((count) => {
+        if (mounted.current) setPendingCount(count);
+      })
+      .catch(() => {
+        if (mounted.current) {
+          setStatus("ERROR");
+          setMessage(
+            "Không đọc được bộ nhớ ngoại tuyến. Chưa cho vào; mở lại bộ nhớ trình duyệt và thử lại.",
+          );
+        }
+      });
     return unsubCount;
-  }, [showtimeId]);
+  }, [showtimeId, refreshPendingCount]);
 
   useEffect(() => {
     return subscribeSyncState((syncing) => {
@@ -295,7 +489,7 @@ export function TicketScanner({
         return;
       }
 
-      if (isDeviceOnline && !gateId) {
+      if (!gateId) {
         setStatus("ERROR");
         setMessage("Chọn suất diễn và cửa được cấp quyền trước khi quét vé.");
         return;
@@ -336,7 +530,9 @@ export function TicketScanner({
           const offlineOutcome = await processOfflineScan({
             showtimeId: showtimeId.trim(),
             qrPayload: scannedTicketId,
-            gateId: gateId || gates[0]?.gateId || "gate-offline",
+            gateId,
+            staffId: staffIdentity.current,
+            deviceId: deviceIdentity(),
             gateName:
               gates.find((g) => g.gateId === gateId)?.gateName ??
               gates[0]?.gateName ??
@@ -362,8 +558,7 @@ export function TicketScanner({
           } else if (offlineOutcome.code === "ALREADY_CHECKED_IN") {
             setUsed({
               checkedInAt:
-                offlineOutcome.previousCheckedInAt ??
-                new Date().toISOString(),
+                offlineOutcome.previousCheckedInAt ?? new Date().toISOString(),
               gateName: "cửa trước đó",
               canOverride: false,
             });
@@ -426,17 +621,9 @@ export function TicketScanner({
       setMessage("Đang xác thực vé...");
 
       try {
-        let effectiveKeys = qrKeys;
-        if (!effectiveKeys.length && showtimeId.trim()) {
-          const meta = await getShowtimeMeta(showtimeId.trim()).catch(() => null);
-          if (meta?.verificationKeys?.length) {
-            effectiveKeys = meta.verificationKeys;
-          } else if (meta?.keyId && meta?.publicKey) {
-            effectiveKeys = [{ keyId: meta.keyId, key: meta.publicKey }];
-          }
-        }
-
-        await verifyTicketQr(scannedTicketId, effectiveKeys, showtimeId.trim());
+        // Online verification is authoritative on the server, which also logs
+        // rejection codes and returns the actual show/cancellation details.
+        // Offline scans use processOfflineScan and its signature + membership checks.
 
         // Check if ticket was already scanned locally and pending sync
         const existingPending = await getPendingScanByTicket(
@@ -444,15 +631,11 @@ export function TicketScanner({
           scannedTicketId,
         );
         if (existingPending) {
-          setUsed({
-            checkedInAt: existingPending.createdAt,
-            gateName:
-              gates.find((g) => g.gateId === existingPending.gateId)?.gateName ??
-              "Cửa hiện tại",
-            canOverride: false,
-          });
-          setStatus("USED");
-          setMessage("Vé đã được quét trước đó trên máy này (đang chờ đồng bộ).");
+          setUsed(null);
+          setStatus("WAITING");
+          setMessage(
+            "Lượt quét trước đang chờ máy chủ xác nhận. Chưa cho vào; hãy đồng bộ hoặc thử lại cùng yêu cầu.",
+          );
           return;
         }
 
@@ -471,8 +654,7 @@ export function TicketScanner({
           };
         }
         const action = scanAction.current;
-        if (!action)
-          throw new Error("Không thể tạo lượt quét. Hãy thử lại.");
+        if (!action) throw new Error("Không thể tạo lượt quét. Hãy thử lại.");
 
         const pendingItem: PendingScan = {
           id: action.requestId,
@@ -483,37 +665,17 @@ export function TicketScanner({
           createdAt: new Date().toISOString(),
           status: "pending",
           retryCount: 0,
+          staffId: staffIdentity.current,
+          deviceId: deviceIdentity(),
+          mode: "online_confirmation",
         };
 
-        // If browser is offline, save locally and sync when reconnected
-        if (!browserOnline) {
-          await addPendingScan(pendingItem);
-          void markTicketAsLocalCheckedIn(
-            action.showtimeId,
-            action.ticketId,
-          ).catch(() => {});
-          if (!mounted.current || sequence !== requestSequence.current) return;
-          setStatus("RECORDED");
-          setMessage(
-            "Đã lưu ngoại tuyến thành công. Lượt quét sẽ tự động đồng bộ khi có mạng.",
+        if (!browserOnline)
+          throw new ApiError(
+            "Mạng đã thay đổi. Chưa nhận xác nhận vào cửa.",
+            0,
+            "NETWORK_ERROR",
           );
-          setResult({
-            status: "ALREADY_RECORDED",
-            ticketId: action.ticketId,
-            gateName:
-              gates.find((g) => g.gateId === gateId)?.gateName ?? "Cửa hiện tại",
-            kind: "NORMAL",
-            seat: {
-              category: "Đã lưu máy",
-              row: "-",
-              number: 0,
-              label: "Lưu ngoại tuyến",
-            },
-            checkedInAt: pendingItem.createdAt,
-          });
-          return;
-        }
-
         const checkedIn = await checkInWithWaiting(
           (signal) =>
             api(
@@ -573,6 +735,30 @@ export function TicketScanner({
             setMessage(error.message);
             return;
           }
+          try {
+            const meta = qrKeys.length
+              ? null
+              : await getShowtimeMeta(failedAction.showtimeId);
+            const keys = qrKeys.length
+              ? qrKeys
+              : (meta?.verificationKeys ??
+                (meta?.keyId && meta?.publicKey
+                  ? [{ keyId: meta.keyId, key: meta.publicKey }]
+                  : []));
+            await verifyTicketQr(
+              failedAction.ticketId,
+              keys,
+              failedAction.showtimeId,
+            );
+          } catch {
+            await removePendingScan(failedAction.requestId).catch(() => {});
+            setStatus("INVALID");
+            setMessage(
+              "Chưa thể xác minh mã QR khi mất kết nối. Không cho vào; thử lại khi có mạng.",
+            );
+            setResult(null);
+            return;
+          }
           const failedPendingItem: PendingScan = {
             id: failedAction.requestId,
             showtimeId: failedAction.showtimeId,
@@ -582,6 +768,9 @@ export function TicketScanner({
             createdAt: new Date().toISOString(),
             status: "pending",
             retryCount: 0,
+            staffId: staffIdentity.current,
+            deviceId: deviceIdentity(),
+            mode: "online_confirmation",
           };
           try {
             await addPendingScan(failedPendingItem);
@@ -594,29 +783,12 @@ export function TicketScanner({
             );
             return;
           }
-          void markTicketAsLocalCheckedIn(
-            failedAction.showtimeId,
-            failedAction.ticketId,
-          ).catch(() => {});
           markServerOffline("Mất kết nối máy chủ");
-          setStatus("RECORDED");
+          setStatus("ERROR");
           setMessage(
-            "Mất kết nối máy chủ. Lượt quét đã được lưu ngoại tuyến để đồng bộ sau.",
+            "Chưa nhận xác nhận từ máy chủ. Chưa cho vào; yêu cầu được giữ để kiểm tra lại khi có mạng.",
           );
-          setResult({
-            status: "ALREADY_RECORDED",
-            ticketId: scannedTicketId,
-            gateName:
-              gates.find((g) => g.gateId === gateId)?.gateName ?? "Cửa hiện tại",
-            kind: "NORMAL",
-            seat: {
-              category: "Đã lưu máy",
-              row: "-",
-              number: 0,
-              label: "Lưu ngoại tuyến",
-            },
-            checkedInAt: new Date().toISOString(),
-          });
+          setResult(null);
           return;
         }
 
@@ -661,7 +833,7 @@ export function TicketScanner({
       setMessage("Nhập mã suất diễn trước khi bật camera.");
       return;
     }
-    if (isDeviceOnline && !gateId) {
+    if (!gateId) {
       setStatus("ERROR");
       setMessage("Chọn suất diễn và cửa được cấp quyền trước khi bật camera.");
       return;
@@ -691,7 +863,7 @@ export function TicketScanner({
           : "Không thể bật camera. Hãy kiểm tra quyền truy cập camera.",
       );
     }
-  }, [showtimeId, gateId, isDeviceOnline, validateTicket]);
+  }, [showtimeId, gateId, validateTicket]);
 
   const scanNext = useCallback(() => {
     if (scanInProgress.current) return;
@@ -727,45 +899,21 @@ export function TicketScanner({
               Chuẩn bị danh sách vé
             </Link>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setOfflineModeSimulated((prev) => !prev);
-                  setMessage(
-                    offlineModeSimulated
-                      ? "Đã chuyển sang chế độ trực tuyến."
-                      : "Đã chuyển sang chế độ ngoại tuyến (mô phỏng mất mạng).",
-                  );
-                }}
-                title="Bấm để chuyển đổi giữa Trực tuyến và Ngoại tuyến"
+              <span
                 data-testid="network-status"
-                className={`inline-flex items-center gap-1.5 font-medium text-xs px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
-                  isDeviceOnline
-                    ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20"
-                    : "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20 hover:bg-amber-500/20"
-                }`}
+                className="text-xs font-medium"
               >
-                {isDeviceOnline ? (
-                  <>
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Trực tuyến (Bấm để thử Ngoại tuyến)
-                  </>
-                ) : (
-                  <>
-                    <CloudOff className="size-3.5" />
-                    Ngoại tuyến (Bấm để về Trực tuyến)
-                  </>
-                )}
-              </button>
-              {pendingScansCount > 0 && (
+                {isDeviceOnline ? "Trực tuyến" : "Ngoại tuyến"}
+              </span>
+              {pendingCount > 0 && (
                 <span
                   data-testid="pending-scans-count"
                   className="inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2.5 py-1 rounded-full"
                 >
-                  {pendingScansCount} lượt quét chờ đồng bộ
+                  {pendingCount} lượt quét chờ đồng bộ
                 </span>
               )}
-              {isDeviceOnline && pendingScansCount > 0 && (
+              {isDeviceOnline && pendingCount > 0 && (
                 <button
                   type="button"
                   disabled={isSyncingQueue}
@@ -791,6 +939,11 @@ export function TicketScanner({
           onRetrySync={() => void triggerSync()}
           syncSuccessMessage={syncSuccessMessage}
         />
+        {shellStatus && (
+          <p role="status" className="text-sm text-muted-foreground">
+            {shellStatus}
+          </p>
+        )}
 
         <div className="pointer-events-none fixed left-0 top-20 z-[9999] flex w-full flex-wrap items-center justify-between gap-2 border-b bg-background/95 px-4 pb-3 pt-2 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
@@ -804,7 +957,9 @@ export function TicketScanner({
             >
               <span
                 className={`size-1.5 rounded-full ${
-                  isOnline && !isExplicitOffline ? "bg-emerald-500" : "bg-amber-500"
+                  isOnline && !isExplicitOffline
+                    ? "bg-emerald-500"
+                    : "bg-amber-500"
                 }`}
               />
               {isOnline && !isExplicitOffline ? "Trực tuyến" : "Ngoại tuyến"}
@@ -816,7 +971,7 @@ export function TicketScanner({
               data-testid="pending-scan-counter"
               className="font-bold text-foreground"
             >
-              {pendingCount + pendingScansCount}
+              {pendingCount}
             </span>
           </div>
         </div>
@@ -841,11 +996,17 @@ export function TicketScanner({
         ) : (
           <>
             <label className="block space-y-2">
-              <span className="font-medium">Mã suất diễn</span>
-              <input
+              <span className="font-medium">
+                Suất diễn hôm nay được phân công
+              </span>
+              <select
                 value={showtimeId}
                 onChange={(event) => {
                   setShowtimeId(event.target.value);
+                  localStorage.setItem(
+                    "checkin_showtime_s29",
+                    event.target.value,
+                  );
                   setTicketId("");
                   setQrKeys([]);
                   setMessage(
@@ -859,10 +1020,34 @@ export function TicketScanner({
                   setStatus("SCANNING");
                 }}
                 className="w-full rounded-md border bg-background px-3 py-2 font-mono"
-                autoComplete="off"
                 aria-label="Mã suất diễn"
-                disabled={cameraActive || requestPending || gatesLoading}
-              />
+                disabled={
+                  cameraActive ||
+                  requestPending ||
+                  gatesLoading ||
+                  selectionLoading
+                }
+              >
+                <option value="">
+                  {selectionLoading
+                    ? "Đang tải suất diễn…"
+                    : "Chọn suất diễn hôm nay"}
+                </option>
+                {todayShowtimes.map((show) => (
+                  <option key={show.id} value={show.id}>
+                    {show.eventName} —{" "}
+                    {new Date(show.startTime).toLocaleString("vi-VN")}
+                  </option>
+                ))}
+              </select>
+              {selectionError && <p role="alert">{selectionError}</p>}
+              {!selectionLoading &&
+                !selectionError &&
+                !todayShowtimes.length && (
+                  <p role="status">
+                    Không có suất diễn nào hôm nay được phân công cho bạn.
+                  </p>
+                )}
             </label>
 
             <button
@@ -907,7 +1092,27 @@ export function TicketScanner({
                     const keys = await api("/scanner/qr-keys", decodeQrKeys);
                     setQrKeys(keys);
                     setGates(available);
-                    setGateId(available[0]?.gateId ?? "");
+                    localStorage.setItem(
+                      `scanner.grants.${showtimeId}`,
+                      JSON.stringify({
+                        staffId: staffIdentity.current,
+                        gates: available,
+                        validUntil: Date.now() + 8 * 60 * 60 * 1000,
+                      }),
+                    );
+                    const savedGate = localStorage.getItem(
+                      `scanner.gate.${showtimeId}`,
+                    );
+                    const restored =
+                      available.find((gate) => gate.gateId === savedGate)
+                        ?.gateId ??
+                      available[0]?.gateId ??
+                      "";
+                    setGateId(restored);
+                    localStorage.setItem(
+                      `scanner.gate.${showtimeId}`,
+                      restored,
+                    );
                     setMessage(
                       available.length
                         ? "Sẵn sàng quét vé."
@@ -936,6 +1141,10 @@ export function TicketScanner({
                 className="w-full rounded-md border bg-background px-3 py-3"
                 onChange={(event) => {
                   setGateId(event.target.value);
+                  localStorage.setItem(
+                    `scanner.gate.${showtimeId}`,
+                    event.target.value,
+                  );
                   setTicketId("");
                   setMessage("Quét vé tại cửa hiện tại để xác thực.");
                   scanAction.current = null;
@@ -1026,9 +1235,7 @@ export function TicketScanner({
                 type="button"
                 onClick={() => void startCamera()}
                 disabled={Boolean(
-                  (isDeviceOnline && !gateId) ||
-                    gatesLoading ||
-                    !showtimeId.trim(),
+                  !gateId || gatesLoading || !showtimeId.trim(),
                 )}
                 className="rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground"
               >
@@ -1050,7 +1257,7 @@ export function TicketScanner({
                 <input
                   id="ticket-code"
                   ref={inputRef}
-                  disabled={requestPending || Boolean(isDeviceOnline && !gateId)}
+                  disabled={requestPending || !gateId}
                   value={ticketId}
                   onChange={(event) => {
                     setTicketId(event.target.value);
@@ -1064,7 +1271,7 @@ export function TicketScanner({
                 />
                 <button
                   type="submit"
-                  disabled={requestPending || Boolean(isDeviceOnline && !gateId)}
+                  disabled={requestPending || !gateId}
                   className="rounded-md border px-4 py-2 font-semibold"
                 >
                   Kiểm tra vé

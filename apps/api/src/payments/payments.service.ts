@@ -18,6 +18,7 @@ import {
 } from './gateways/payment-gateway.interface.js';
 import { AccountantNotifier } from './accountant-notifier.js';
 import { TicketsService } from '../tickets/tickets.service.js';
+import { SeatEventsService } from '../showtimes/seat-events.service.js';
 
 @Injectable()
 export class PaymentsService {
@@ -30,6 +31,7 @@ export class PaymentsService {
     private readonly config: ConfigService,
     private readonly tickets: TicketsService,
     @Optional() private readonly ordersService?: OrdersService,
+    @Optional() private readonly seatEvents?: SeatEventsService,
   ) {}
 
   async initiatePayment(
@@ -254,6 +256,8 @@ export class PaymentsService {
             });
           }
         });
+
+        this.seatEvents?.invalidate(order.showtimeId);
 
         await this.accountantNotifier.notifyLatePayment({
           orderId: order.id,
@@ -483,7 +487,7 @@ export class PaymentsService {
     // 6. Successful event with matched amount in a SINGLE TRANSACTION
     if (event.status === 'SUCCESS') {
       try {
-        return await this.db.$transaction(async (tx) => {
+        const result = await this.db.$transaction(async (tx) => {
           // Advisory lock using gatewayRef to prevent race conditions
           if (typeof (tx as any).$executeRaw === 'function') {
             await (tx as any).$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${event.gatewayRef}))`;
@@ -624,6 +628,12 @@ export class PaymentsService {
 
           return { received: true, status: 'PAID' };
         });
+        if (result.status === 'PAID' || result.status === 'LATE') {
+          // Publish only after the transaction commits so clients re-read the
+          // authoritative seat state rather than observing an uncommitted change.
+          this.seatEvents?.invalidate(order.showtimeId);
+        }
+        return result;
       } catch (error: any) {
         // Catch duplicate key / concurrency errors (Prisma P2002) and treat as idempotent success
         if (

@@ -96,6 +96,14 @@ export async function processOfflineScan(
   params: ProcessOfflineScanParams,
 ): Promise<OfflineScanOutcome> {
   const { showtimeId, qrPayload, gateId, gateName, staffId, deviceId } = params;
+  if (!gateId || !/^[0-9a-f-]{36}$/i.test(gateId) || !staffId || !deviceId) {
+    return {
+      success: false,
+      code: "NO_LIST_OFFLINE",
+      message:
+        "Chưa lưu phân công suất/cửa và thiết bị. Tải cấu hình khi có mạng trước khi soát ngoại tuyến.",
+    };
+  }
 
   // 1. Check if showtime list has been downloaded (AC #4)
   const meta = await getShowtimeMeta(showtimeId);
@@ -129,7 +137,8 @@ export async function processOfflineScan(
     return {
       success: false,
       code: "INVALID_SIGNATURE",
-      message: "Chữ ký QR không hợp lệ (không tìm thấy khoá xác minh trên thiết bị).",
+      message:
+        "Chữ ký QR không hợp lệ (không tìm thấy khoá xác minh trên thiết bị).",
     };
   }
 
@@ -203,6 +212,7 @@ export async function processOfflineScan(
   const scanRecord: OfflineScanRecord = {
     scanId: crypto.randomUUID(),
     ticketCode: qr.ticketId,
+    qrPayload,
     showtimeId,
     gateId,
     gateName: gateName ?? "Cửa soát vé",

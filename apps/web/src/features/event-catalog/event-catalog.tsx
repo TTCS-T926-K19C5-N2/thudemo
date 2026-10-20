@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   CalendarDays,
   Schedule,
@@ -56,6 +57,52 @@ function Filters({
     </div>
   );
 }
+
+function getEventBadgeInfo(startTime: string, isDemo = false) {
+  if (isDemo) {
+    return {
+      posterBadge: "LỊCH MÔ PHỎNG",
+      posterClass: "poster-demo",
+      statusPill: "Sơ đồ tham khảo",
+      pillClass: "status-upcoming",
+    };
+  }
+  const now = Date.now();
+  const showTime = Date.parse(startTime);
+  const diffDays = Math.ceil((showTime - now) / (1000 * 60 * 60 * 24));
+
+  if (diffDays <= 0) {
+    return {
+      posterBadge: "ĐÃ KHÉP LẠI",
+      posterClass: "poster-past",
+      statusPill: "Đã diễn ra",
+      pillClass: "status-past",
+    };
+  }
+  if (diffDays <= 20) {
+    return {
+      posterBadge: "SẮP DIỄN RA",
+      posterClass: "poster-soon",
+      statusPill: "Sắp diễn ra",
+      pillClass: "status-soon",
+    };
+  }
+  if (diffDays <= 50) {
+    return {
+      posterBadge: "ĐANG MỞ BÁN",
+      posterClass: "poster-onsale",
+      statusPill: "Đang mở bán vé",
+      pillClass: "status-onsale",
+    };
+  }
+  return {
+    posterBadge: "SẮP TỚI",
+    posterClass: "poster-upcoming",
+    statusPill: "Sắp tới",
+    pillClass: "status-upcoming",
+  };
+}
+
 export function EventCatalog() {
   const [data, setData] = useState<CatalogPage | null>(null),
     [cursor, setCursor] = useState<string | null>(null),
@@ -121,14 +168,19 @@ export function EventCatalog() {
     });
   }, [category, data, query, sort]);
   const featuredEvent = data?.items[0];
+  const demoCatalog = !!data?.items.length && data.items.every((item) => item.isDemo);
+  const featuredBadge = featuredEvent
+    ? getEventBadgeInfo(featuredEvent.startTime, featuredEvent.isDemo)
+    : null;
   return (
     <>
       <section className="catalog-hero">
         <div className="catalog-hero-art" aria-hidden="true">
-          <EventPoster
-            path={featuredEvent?.posterPath ?? null}
-            name={featuredEvent?.name ?? ""}
-            decorative
+          <Image
+            src="/images/hero-symphony-banner.png"
+            alt=""
+            fill
+            priority
             sizes="100vw"
           />
         </div>
@@ -137,6 +189,9 @@ export function EventCatalog() {
           <span className="season-subtitle">Sân khấu · Âm nhạc · Nghệ thuật</span>
           <h1>Nơi nghệ thuật chạm đến cảm xúc.</h1>
           <p>Khám phá những đêm diễn, hòa nhạc và câu chuyện trên sân khấu.</p>
+          <p className="catalog-hero-note">
+            Dữ liệu lịch, giá và sơ đồ mô phỏng luôn được đánh dấu rõ ràng.
+          </p>
           <div className="catalog-hero-actions">
             <Button asChild size="lg">
               <a href="#lich-dien">Khám phá sự kiện <ArrowRight /></a>
@@ -147,7 +202,11 @@ export function EventCatalog() {
           </div>
         </div>
         <div className="catalog-hero-count" aria-live="polite">
-          <strong>{loading ? "—" : (data?.items.length ?? 0)}</strong>
+          <strong>
+            {loading
+              ? "—"
+              : (data?.totalCount ?? data?.items.length ?? 0)}
+          </strong>
           <span>chương trình<br />đang được giới thiệu</span>
         </div>
       </section>
@@ -162,8 +221,20 @@ export function EventCatalog() {
             />
           </Link>
           <div className="catalog-featured-copy">
-            <span className="catalog-eyebrow">CÂU CHUYỆN SÂN KHẤU</span>
-            <span className="catalog-featured-category">{featuredEvent.categoryLabel ?? "Nghệ thuật biểu diễn"}</span>
+            <span className="catalog-eyebrow">
+              {featuredEvent.isDemo
+                ? "CHƯƠNG TRÌNH TIÊU BIỂU · LỊCH MÔ PHỎNG"
+                : "CÂU CHUYỆN SÂN KHẤU"}
+            </span>
+            <div className="catalog-featured-badges">
+              <span className="catalog-featured-category">{featuredEvent.categoryLabel ?? "Nghệ thuật biểu diễn"}</span>
+              {featuredBadge && (
+                <span className={`status-pill ${featuredBadge.pillClass}`}>
+                  <span className="status-dot" aria-hidden="true" />
+                  {featuredBadge.statusPill}
+                </span>
+              )}
+            </div>
             <h2 id="catalog-featured-title">{featuredEvent.name}</h2>
             <p className="catalog-featured-meta">
               <Schedule /> {formatShowtime(featuredEvent.startTime)}
@@ -173,11 +244,13 @@ export function EventCatalog() {
             </p>
             <div className="catalog-featured-action">
               <div>
-                <small>Vé từ</small>
+                <small>{featuredEvent.isDemo ? "Giá tham khảo từ" : "Vé từ"}</small>
                 <strong>{formatVnd(featuredEvent.minPrice)}</strong>
               </div>
               <Button asChild>
-                <Link href={`/shows/${featuredEvent.id}`}>Khám phá chương trình <ArrowRight /></Link>
+                <Link href={`/shows/${featuredEvent.id}`}>
+                  {featuredEvent.isDemo ? "Xem nội dung & sơ đồ" : "Khám phá chương trình"} <ArrowRight />
+                </Link>
               </Button>
             </div>
           </div>
@@ -225,10 +298,16 @@ export function EventCatalog() {
       >
         <div className="catalog-section-copy">
           <h2>
-            {loading ? "Đang tải danh sách sự kiện…" : "Lịch diễn & trải nghiệm"}{" "}
-            {!loading && <small>{visibleItems.length} suất phù hợp</small>}
+            {loading
+              ? "Đang tải danh sách sự kiện…"
+              : `Khám phá ${data?.totalCount ?? data?.items.length ?? 0} chương trình`}{" "}
+            {!loading && <small>{visibleItems.length} kết quả trên trang này</small>}
           </h2>
-          <p>Chọn đêm diễn phù hợp và khám phá các hạng vé đang mở bán.</p>
+          <p>
+            {demoCatalog
+              ? "Thông tin chương trình được biên tập từ nguồn tham khảo; ngày diễn, giá và ghế là dữ liệu mô phỏng."
+              : "Khám phá chương trình nghệ thuật, lịch diễn và chọn vị trí ghế ngồi trực tuyến."}
+          </p>
         </div>
         <select
           aria-label="Sắp xếp sự kiện"
@@ -236,8 +315,8 @@ export function EventCatalog() {
           onChange={(event) => setSort(event.target.value)}
         >
           <option value="soon">Gần nhất</option>
-          <option value="price-asc">Giá thấp trước</option>
-          <option value="price-desc">Giá cao trước</option>
+          <option value="price-asc">{demoCatalog ? "Giá tham khảo thấp trước" : "Giá thấp trước"}</option>
+          <option value="price-desc">{demoCatalog ? "Giá tham khảo cao trước" : "Giá cao trước"}</option>
         </select>
       </div>
       {!loading && error && (
@@ -282,6 +361,7 @@ export function EventCatalog() {
       ) : visibleItems.length ? (
         <div className="catalog-list catalog-grid">
           {visibleItems.map((item) => {
+            const badge = getEventBadgeInfo(item.startTime, item.isDemo);
             return (
             <article key={item.id} className="catalog-card">
               <div className="catalog-poster">
@@ -291,7 +371,9 @@ export function EventCatalog() {
                   name={item.name}
                   sizes="(max-width: 640px) calc(100vw - 32px), (max-width: 900px) calc(50vw - 40px), 420px"
                 />
-                <span className="poster-sale">ĐANG MỞ BÁN</span>
+                <span className={`poster-sale ${badge.posterClass}`}>
+                  {badge.posterBadge}
+                </span>
                 <span className="catalog-card-date">
                   <CalendarDays />
                   {shortDate(item.startTime)}
@@ -302,6 +384,10 @@ export function EventCatalog() {
                   {item.categoryLabel && (
                     <span className="genre-badge">{item.categoryLabel}</span>
                   )}
+                  <span className={`status-pill ${badge.pillClass}`}>
+                    <span className="status-dot" aria-hidden="true" />
+                    {badge.statusPill}
+                  </span>
                 </div>
                 <h3>{item.name}</h3>
                 <div className="catalog-meta">
@@ -314,7 +400,7 @@ export function EventCatalog() {
                     {item.location}
                   </span>
                 </div>
-                <ul className="catalog-tiers" aria-label="Các hạng vé">
+                <ul className="catalog-tiers" aria-label={item.isDemo ? "Các hạng ghế tham khảo" : "Các hạng vé"}>
                   {item.categories.slice(0, 3).map((tier) => (
                     <li key={tier.name}>
                       <span>{tier.name}</span>
@@ -328,12 +414,12 @@ export function EventCatalog() {
               </div>
               <div className="catalog-action">
                 <div>
-                  <small>Giá vé từ</small>
+                  <small>{item.isDemo ? "Giá tham khảo từ" : "Giá vé từ"}</small>
                   <strong>{formatVnd(item.minPrice)}</strong>
                 </div>
                 <Button asChild>
                   <Link href={`/shows/${item.id}`}>
-                    Xem lịch & ghế <ArrowRight />
+                    {item.isDemo ? "Xem thông tin & sơ đồ" : "Xem lịch & ghế"} <ArrowRight />
                   </Link>
                 </Button>
               </div>
@@ -366,7 +452,7 @@ export function EventCatalog() {
       <div className="catalog-pagination">
         {!loading && (
           <p>
-            Hiển thị {visibleItems.length} / {data?.items.length ?? 0} suất trên trang này
+            {visibleItems.length} suất trên trang này
           </p>
         )}
         <div>
@@ -398,8 +484,9 @@ export function EventCatalog() {
         <div className="catalog-notice">
           <Info />
           <p>
-            Giá vé và lịch diễn được cập nhật theo từng suất. Chọn “Xem lịch &amp; ghế”
-            để xem sơ đồ khán phòng trước khi đặt.
+            {demoCatalog
+              ? "Ngày diễn, giá và sơ đồ ghế mang tính mô phỏng; chức năng đặt vé không áp dụng cho các suất này."
+              : "Thông tin mở bán và tình trạng vé được cập nhật theo thời gian thực. Chọn suất diễn để xem sơ đồ ghế và đặt vé."}
           </p>
         </div>
       )}

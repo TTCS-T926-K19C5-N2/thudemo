@@ -5,6 +5,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  Optional,
   ServiceUnavailableException,
   HttpException,
 } from '@nestjs/common';
@@ -15,8 +16,13 @@ import type {
   HoldConnection,
   HoldQueryable,
 } from '../prisma/hold-transaction.js';
+import { SeatEventsService } from '../showtimes/seat-events.service.js';
 
-export type ExpiredClaim = { seatId: string; token: string };
+export type ExpiredClaim = {
+  seatId: string;
+  token: string;
+  showtimeId?: string;
+};
 export type HoldState = {
   serverTime: Date;
   hold: { id: string; expiresAt: Date; seatIds: string[] } | null;
@@ -82,7 +88,10 @@ export class HoldsService {
   // hold pool and time out real claims (T-31/S-43 concurrency gates).
   private readonly limitInflight = new Map<string, Promise<number | null>>();
   private limitCacheTtlMs = S42_LIMIT_CACHE_TTL_MS;
-  constructor(private readonly db: PrismaService) {}
+  constructor(
+    private readonly db: PrismaService,
+    @Optional() private readonly seatEvents?: SeatEventsService,
+  ) {}
 
   private async loadLimit(
     showtimeId: string,
@@ -140,6 +149,15 @@ export class HoldsService {
     client?: HoldConnection,
   ): Promise<HoldState> {
     const seatIds = requestedSeats(body);
+    const [showtime] = await this.db.seatReadQuery<{ isDemo: boolean }[]>(
+      Prisma.sql`SELECT "isDemo" FROM showtimes WHERE id=${showtimeId}::uuid`,
+      client,
+    );
+    if (showtime?.isDemo)
+      throw new ConflictException({
+        code: 'DEMO_NOT_BOOKABLE',
+        message: 'Đây là suất diễn mô phỏng; sơ đồ ghế chỉ dùng để tham khảo.',
+      });
     await this.enforceTicketLimit(showtimeId, userId, seatIds.length, client);
     const requestId = randomUUID();
     try {
@@ -214,6 +232,7 @@ export class HoldsService {
           requestId,
         });
       }
+      this.seatEvents?.invalidate(showtimeId);
       return {
         serverTime: result.serverTime,
         hold: {
@@ -438,7 +457,7 @@ export class HoldsService {
 
   expiredBatch(): Promise<ExpiredClaim[]> {
     return this.db.$queryRaw(
-      Prisma.sql`SELECT h."seatId", h.token FROM seat_holds h
+      Prisma.sql`SELECT h."seatId", h.token, h."showtimeId" FROM seat_holds h
         WHERE h."expiresAt" <= clock_timestamp()
         AND NOT EXISTS (
           SELECT 1 FROM order_items oi
@@ -453,9 +472,19 @@ export class HoldsService {
   async cleanupBatch(candidates: ExpiredClaim[]): Promise<number> {
     if (!candidates.length) return 0;
     // Snapshot token AND current expiry are checked again: an old job cannot delete a new right.
-    return this.db
+    const deleted = await this.db
       .$executeRaw(Prisma.sql`DELETE FROM seat_holds h USING jsonb_to_recordset(${JSON.stringify(candidates)}::jsonb) AS old("seatId" uuid,token uuid)
       WHERE h."seatId"=old."seatId" AND h.token=old.token AND h."expiresAt"<=clock_timestamp()`);
+    if (deleted > 0 && this.seatEvents) {
+      for (const showtimeId of new Set(
+        candidates
+          .map((candidate) => candidate.showtimeId)
+          .filter((id): id is string => typeof id === 'string'),
+      )) {
+        this.seatEvents.invalidate(showtimeId);
+      }
+    }
+    return deleted;
   }
 
   async sweep(): Promise<number> {

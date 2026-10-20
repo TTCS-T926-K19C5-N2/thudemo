@@ -5,20 +5,8 @@ export function seatCategoryToken(
   const normalized = name
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
-  if (
-    normalized.includes("ban cong") ||
-    normalized.includes("economy") ||
-    normalized.includes("pho thong") ||
-    normalized === "b"
-  )
-    return "--seat-balcony";
-  if (
-    normalized.includes("vip") ||
-    normalized.includes("premium") ||
-    normalized === "s"
-  )
-    return "--seat-vip";
+    .toLowerCase();
+  if (normalized.includes("ban cong")) return "--seat-balcony";
+  if (normalized.includes("vip")) return "--seat-vip";
   return "--seat-standard";
 }

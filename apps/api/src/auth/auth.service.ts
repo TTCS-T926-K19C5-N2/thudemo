@@ -83,7 +83,7 @@ export class AuthService {
       user?.password ?? (await this.dummyHash),
       passwordInput,
     );
-    if (!user || !isMatch || !user.isEmailVerified || !user.isActive) {
+    if (!user || !isMatch || !user.isActive) {
       try {
         if (peerIp) await this.redis.recordLoginIpFailure(peerIp);
         const failures = await this.redis.incrementLoginFailures(email);
@@ -107,13 +107,36 @@ export class AuthService {
       );
     }
 
+    // Reveal activation guidance only after the password is verified. This
+    // keeps unknown accounts and incorrect passwords indistinguishable.
+    if (!user.isEmailVerified) {
+      throw new UnauthorizedException({
+        code: 'EMAIL_NOT_VERIFIED',
+        message:
+          'Tài khoản chưa được kích hoạt. Hãy kiểm tra email hoặc gửi lại liên kết kích hoạt.',
+      });
+    }
+
     const token = randomBytes(32).toString('base64url');
     const expiresAt = new Date(Date.now() + SESSION_TTL_SECONDS * 1000);
-    await this.prisma.session.deleteMany({
-      where: { expiresAt: { lte: new Date() } },
-    });
-    await this.prisma.session.create({
-      data: { tokenHash: hashSessionToken(token), userId: user.id, expiresAt },
+    await this.prisma.$transaction(async (tx) => {
+      // Password verification can overlap disable. Serialize session issuance
+      // against account mutations, then recheck the account under the lock.
+      const [active] = await tx.$queryRaw<{ id: string }[]>`
+        SELECT id FROM users WHERE id=${user.id}::uuid
+        AND "isActive"=true AND "isEmailVerified"=true FOR UPDATE`;
+      if (!active)
+        throw new UnauthorizedException('Email hoặc mật khẩu không đúng.');
+      await tx.session.deleteMany({
+        where: { userId: user.id, expiresAt: { lte: new Date() } },
+      });
+      await tx.session.create({
+        data: {
+          tokenHash: hashSessionToken(token),
+          userId: user.id,
+          expiresAt,
+        },
+      });
     });
     return { token, expiresAt };
   }

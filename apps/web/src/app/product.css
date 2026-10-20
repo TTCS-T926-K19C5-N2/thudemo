@@ -41,12 +41,7 @@
 .product h1,
 .product h2,
 .product h3 {
-  letter-spacing: -0.015em;
-  text-wrap: balance;
-}
-
-.product :is(h1, h2, h3, .catalog-card h3) {
-  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 .product h1 {
@@ -3246,48 +3241,6 @@
     font-size: 13px;
   }
 }
-
-/* Wider, roomier hall map while keeping the booking summary easy to scan. */
-.product-seat-layout {
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 24px;
-}
-.product-map-scroll {
-  min-height: 360px;
-  max-height: 620px;
-}
-.evd-synopsis p:first-child {
-  color: #263b5d;
-  font-size: 15px;
-  line-height: 1.9;
-}
-.evd-section-head > p {
-  color: var(--muted-foreground);
-}
-.evd-cast-note {
-  margin-top: 12px;
-  padding: 10px 12px;
-  border-left: 3px solid #c8d7f1;
-  border-radius: 0 8px 8px 0;
-  background: #f6f8fc;
-  color: #61718b;
-  font-size: 11px;
-  line-height: 1.6;
-}
-@media (max-width: 900px) {
-  .product-seat-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-@media (max-width: 640px) {
-  .product-map-scroll {
-    min-height: 300px;
-    max-height: 420px;
-  }
-  .evd-synopsis p:first-child {
-    font-size: 14px;
-  }
-}
 .product-seat-layout > div {
   min-width: 0;
 }
@@ -4228,6 +4181,765 @@
 @media (max-width: 767px) {
   .public-header .session-actions [data-slot="button"] {
     display: none;
+  }
+}
+
+.product .order-page .order-status-badge[data-variant="default"] {
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+.product .order-page .order-status-badge[data-variant="secondary"] {
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+}
+.product .order-page .order-status-badge[data-variant="destructive"] {
+  color: var(--on-error-container);
+  background: var(--error-container);
+}
+.order-page {
+  min-width: 0;
+}
+.order-code {
+  font-family: var(--font-code);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.order-table .order-code {
+  display: block;
+  max-width: 220px;
+  white-space: normal;
+}
+.order-table [data-slot="table-cell"] {
+  white-space: normal;
+  vertical-align: top;
+  padding: 16px 12px;
+}
+.order-table [data-slot="table-head"] {
+  padding: 12px;
+}
+.order-table p {
+  margin-top: 4px;
+  font-size: 12px;
+}
+.order-table [data-slot="table"] {
+  min-width: 0;
+}
+.order-money {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.order-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+}
+.order-mobile-list {
+  display: none;
+}
+.order-card-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.order-facts {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0;
+}
+.order-facts > div {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 12px;
+}
+.order-facts dt {
+  color: var(--muted-foreground);
+}
+.order-facts dd {
+  overflow-wrap: anywhere;
+}
+.order-loading {
+  display: grid;
+  gap: 20px;
+}
+.order-loading-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+.order-seat-panel {
+  margin-top: 24px;
+}
+.order-seat-panel [data-slot="table-cell"] {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Registration: focused account flow with a readable, unchanged R0 notice. */
+.auth-public-header {
+  background: color-mix(in srgb, var(--card) 96%, white);
+  border-bottom-color: color-mix(in srgb, var(--border) 75%, transparent);
+}
+.auth-public-header .public-header-inner {
+  max-width: 1200px;
+  justify-content: space-between;
+}
+.auth-public-header .product-brand {
+  color: var(--primary);
+  font-size: 20px;
+  letter-spacing: -0.035em;
+}
+.auth-public-header .product-brand > .material-symbol {
+  color: var(--primary);
+}
+.auth-header-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+.auth-header-actions .header-login-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--primary);
+  font-weight: 600;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease;
+}
+.auth-header-actions .header-login-link:hover {
+  background: var(--surface-low);
+  border-color: var(--primary);
+}
+.public-auth .public-main {
+  max-width: none;
+  padding: 48px 32px 56px;
+  background:
+    radial-gradient(ellipse at 7% 18%, rgb(142 38 56 / 0.055), transparent 30%),
+    var(--background);
+}
+.registration-shell {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.18fr);
+  align-items: stretch;
+  gap: 28px;
+}
+.registration-story {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 34px;
+  border-radius: 24px;
+  color: #fff9f2;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgb(230 185 131 / 0.19),
+      transparent 34%
+    ),
+    linear-gradient(155deg, #541723 0%, #351018 54%, #271018 100%);
+  box-shadow: 0 20px 55px rgb(50 15 22 / 0.16);
+}
+.registration-story::after {
+  position: absolute;
+  z-index: -1;
+  right: -88px;
+  bottom: 74px;
+  width: 230px;
+  height: 230px;
+  border: 1px solid rgb(245 227 201 / 0.11);
+  border-radius: 50%;
+  content: "";
+}
+.registration-story-topline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f0d7ac;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+.registration-story-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgb(240 215 172 / 0.3);
+  border-radius: 11px;
+  background: rgb(255 255 255 / 0.07);
+}
+.registration-story-icon .material-symbol {
+  --symbol-size: 19px;
+  width: 19px;
+  height: 19px;
+}
+.registration-eyebrow {
+  margin: 42px 0 10px;
+  color: #e2c291 !important;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+.registration-story h2 {
+  margin: 0;
+  color: #fff9f2;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+.registration-story-copy {
+  max-width: 360px;
+  margin: 14px 0 24px;
+  color: rgb(255 249 242 / 0.76) !important;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.registration-ticket-art {
+  position: relative;
+  margin: 0 0 25px;
+  padding: 1px;
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    rgb(238 213 179 / 0.58),
+    rgb(238 213 179 / 0.08)
+  );
+}
+.registration-ticket-art-inner {
+  min-height: 148px;
+  padding: 20px 22px 15px;
+  border-radius: 15px;
+  background:
+    radial-gradient(
+      circle at 91% 22%,
+      rgb(240 215 172 / 0.2) 0 1px,
+      transparent 2px
+    ),
+    linear-gradient(125deg, #78313a, #4c1a26 72%);
+}
+.registration-ticket-label {
+  display: block;
+  color: #e7cda5;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.registration-ticket-art-inner > strong {
+  display: block;
+  margin-top: 10px;
+  color: #fff9f2;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+.registration-ticket-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  color: rgb(255 249 242 / 0.7);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+.registration-ticket-dots {
+  flex: 1;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgb(255 249 242 / 0.38) 0 3px,
+    transparent 3px 7px
+  );
+}
+.registration-steps {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.registration-steps li {
+  display: flex;
+  align-items: start;
+  gap: 13px;
+}
+.registration-step-number {
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgb(240 215 172 / 0.28);
+  border-radius: 50%;
+  color: #f0d7ac;
+  font-size: 10px;
+  font-weight: 700;
+}
+.registration-steps li > span:last-child {
+  display: grid;
+  gap: 3px;
+  padding-top: 1px;
+}
+.registration-steps strong {
+  color: #fff9f2;
+  font-size: 12px;
+  font-weight: 600;
+}
+.registration-steps small {
+  color: rgb(255 249 242 / 0.66);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.registration-story-footnote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 26px;
+  color: rgb(255 249 242 / 0.65);
+  font-size: 10px;
+}
+.registration-story-footnote .material-symbol {
+  --symbol-size: 15px;
+  width: 15px;
+  height: 15px;
+  color: #e2c291;
+}
+.product-login.registration-form {
+  width: 100%;
+  max-width: 690px;
+  margin: 0;
+  padding: 36px clamp(24px, 4vw, 48px);
+  border: 1px solid color-mix(in srgb, var(--border) 78%, white);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 20px 55px rgb(52 31 20 / 0.08);
+}
+.registration-card-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.registration-card-kicker,
+.registration-time-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted-foreground);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+}
+.registration-card-kicker {
+  color: var(--primary);
+}
+.registration-card-kicker .material-symbol,
+.registration-time-chip .material-symbol {
+  --symbol-size: 15px;
+  width: 15px;
+  height: 15px;
+}
+.registration-time-chip {
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: normal;
+  white-space: nowrap;
+}
+.product-login.registration-form h1 {
+  margin: 0;
+  color: var(--foreground);
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3vw, 36px);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.04em;
+}
+.product-login.registration-form > .registration-intro {
+  margin: 10px 0 25px;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.product-login.registration-form form {
+  display: block;
+}
+.product-login.registration-form [data-slot="field-group"] {
+  gap: 18px;
+}
+.product-login.registration-form [data-slot="field"] {
+  gap: 7px;
+}
+.product-login.registration-form [data-slot="field-label"] {
+  color: #342b29;
+  font-size: 12px;
+  font-weight: 600;
+}
+.product-login.registration-form [data-slot="input"] {
+  min-height: 48px;
+  height: 48px;
+  padding: 11px 13px;
+  border-color: #d8cbbd;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+.product-login.registration-form [data-slot="input"]:hover {
+  border-color: #b9a494;
+}
+.product-login.registration-form [data-slot="input"]:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px rgb(142 38 56 / 0.12);
+}
+.registration-privacy {
+  padding: 18px;
+  border: 1px solid #e7ddd1;
+  border-radius: 14px;
+  background: #fcfaf7;
+}
+.registration-privacy-heading {
+  display: flex;
+  align-items: start;
+  gap: 11px;
+  margin-bottom: 12px;
+}
+.registration-privacy-heading > .material-symbol {
+  --symbol-size: 19px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #f1e6d8;
+  color: var(--primary);
+}
+.registration-privacy-heading > div > span {
+  display: block;
+  margin: 0 0 4px;
+  color: var(--primary);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+.registration-privacy h2 {
+  margin: 0;
+  color: #342b29;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+  letter-spacing: normal;
+  overflow-wrap: anywhere;
+}
+.registration-privacy-copy {
+  display: grid;
+  gap: 10px;
+  padding-left: 45px;
+}
+.registration-privacy-copy p {
+  margin: 0;
+  color: #625955;
+  font-size: 12px;
+  line-height: 1.75;
+}
+.registration-consent-field > label {
+  display: flex;
+  align-items: start;
+  gap: 11px;
+  color: #4f4541;
+  font-size: 12px;
+  line-height: 1.7;
+  cursor: pointer;
+}
+.registration-consent-field input[type="checkbox"] {
+  flex: 0 0 17px;
+  width: 17px;
+  height: 17px;
+  margin: 2px 0 0;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+.registration-consent-field input:disabled {
+  cursor: not-allowed;
+}
+.registration-consent-field [role="alert"] {
+  margin-left: 28px;
+}
+.product-login.registration-form .registration-submit {
+  display: flex;
+  width: 100%;
+  min-height: 50px;
+  height: 50px;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 2px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 5px 12px rgb(101 24 36 / 0.16);
+}
+.product-login.registration-form .registration-submit:hover:not(:disabled) {
+  background: #50131e;
+  box-shadow: 0 7px 16px rgb(101 24 36 / 0.21);
+}
+.registration-submit .material-symbol {
+  --symbol-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+.registration-form-bottom {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+  margin-top: 18px;
+  color: var(--muted-foreground);
+  font-size: 10px;
+  line-height: 1.6;
+}
+.registration-form-bottom .material-symbol {
+  --symbol-size: 15px;
+  width: 15px;
+  height: 15px;
+  color: #66805d;
+}
+.product-login.registration-form > .registration-secondary-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin: 21px 0 0;
+  padding-top: 17px;
+  border-top: 1px solid #eee7de;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+.registration-secondary-links a {
+  color: var(--primary);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+.registration-secondary-links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 980px) {
+  .public-auth .public-main {
+    padding: 30px 22px 44px;
+  }
+  .registration-shell {
+    max-width: 720px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .registration-story {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 24px;
+    min-height: 0;
+    padding: 24px 28px;
+    border-radius: 20px;
+  }
+  .registration-story-topline {
+    grid-column: 1 / -1;
+  }
+  .registration-eyebrow {
+    grid-column: 1;
+    margin: 19px 0 7px;
+  }
+  .registration-story h2 {
+    grid-column: 1;
+    font-size: 31px;
+  }
+  .registration-story-copy {
+    grid-column: 1;
+    margin: 8px 0 0;
+  }
+  .registration-ticket-art {
+    grid-column: 2;
+    grid-row: 2 / span 3;
+    align-self: center;
+    width: 230px;
+    margin: 4px 0;
+  }
+  .registration-steps {
+    display: none;
+  }
+  .registration-story-footnote {
+    display: none;
+  }
+  .product-login.registration-form {
+    max-width: none;
+    padding: 32px 38px;
+    border-radius: 20px;
+  }
+}
+@media (max-width: 640px) {
+  .auth-public-header {
+    height: 60px;
+  }
+  .auth-public-header .public-header-inner {
+    padding: 0 16px;
+  }
+  .auth-public-header .product-brand {
+    gap: 7px;
+    font-size: 17px;
+  }
+  .auth-public-header .product-brand > span:first-child {
+    width: 29px;
+    height: 29px;
+  }
+  .auth-header-actions {
+    gap: 8px;
+    font-size: 0;
+  }
+  .auth-header-actions .header-login-link {
+    min-height: 36px;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  .public-auth .public-main {
+    padding: 18px 13px 32px;
+  }
+  .registration-shell {
+    gap: 12px;
+  }
+  .registration-story {
+    display: block;
+    padding: 18px 20px;
+    border-radius: 16px;
+  }
+  .registration-story-topline {
+    font-size: 10px;
+  }
+  .registration-story-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+  .registration-eyebrow {
+    margin: 14px 0 5px;
+    font-size: 9px;
+  }
+  .registration-story h2 {
+    font-size: 26px;
+  }
+  .registration-story-copy {
+    max-width: none;
+    margin-top: 7px;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  .registration-ticket-art {
+    display: none;
+  }
+  .product-login.registration-form {
+    padding: 23px 19px 21px;
+    border-radius: 16px;
+  }
+  .registration-card-topline {
+    margin-bottom: 16px;
+  }
+  .registration-time-chip {
+    padding: 6px 8px;
+    font-size: 9px;
+  }
+  .product-login.registration-form h1 {
+    font-size: 28px;
+  }
+  .product-login.registration-form > .registration-intro {
+    margin: 8px 0 20px;
+    font-size: 12px;
+  }
+  .product-login.registration-form [data-slot="field-group"] {
+    gap: 15px;
+  }
+  .registration-privacy {
+    padding: 14px;
+    border-radius: 12px;
+  }
+  .registration-privacy-copy {
+    padding-left: 0;
+  }
+  .registration-privacy-copy p {
+    font-size: 12px;
+  }
+  .product-login.registration-form > .registration-secondary-links {
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+}
+@media (max-width: 767px) {
+  .public-header .session-orders-link {
+    display: none;
+  }
+  .order-table {
+    display: none;
+  }
+  .order-mobile-list {
+    display: grid;
+    gap: 16px;
+    list-style: none;
+    padding: 0;
+  }
+  .order-mobile-list h2 {
+    margin-bottom: 12px;
+  }
+  .order-card-heading {
+    flex-wrap: wrap;
+  }
+  .order-facts > div {
+    grid-template-columns: 100px minmax(0, 1fr);
+  }
+  .order-pagination {
+    flex-wrap: wrap;
+  }
+  .order-pagination p {
+    width: 100%;
+    text-align: center;
+    order: -1;
+  }
+  .order-mobile-list [data-slot="button"] {
+    width: 100%;
+  }
+  .order-page [data-slot="button"] {
+    min-height: 44px;
   }
 }
 

@@ -1,23 +1,29 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { createRequire } from 'node:module';
+import { parseEnv } from 'node:util';
+
+const root = resolve(import.meta.dirname, '..');
+const envFile = resolve(root, '.env');
+if (existsSync(envFile)) {
+  const parsed = parseEnv(readFileSync(envFile, 'utf8'));
+  for (const [k, v] of Object.entries(parsed)) {
+    process.env[k] = process.env[k] || v;
+  }
+}
 
 const require = createRequire(import.meta.url);
 const { PrismaClient } = require('../apps/api/node_modules/@prisma/client');
 const { PrismaPg } = require('../apps/api/node_modules/@prisma/adapter-pg');
 const Redis = require('../apps/api/node_modules/ioredis');
 
-const root = resolve(import.meta.dirname, '..');
-const jsonPath = process.env.EVENT_DATA_PATH || resolve(
-  root,
-  '..',
-  'su_kien_nha_hat_chuyen_nghiep_chi_tiet_2026.json',
-);
+const defaultJson = resolve(root, 'su_kien_nha_hat_40_su_kien_chi_tiet_2026.json');
+const jsonPath = process.env.EVENT_DATA_PATH || defaultJson;
 
 const databaseUrl =
   process.env.DATABASE_URL ||
-  'postgresql://postgres:postgres@localhost:5432/ticketing_dev?schema=public';
+  'postgresql://postgres:postgres@localhost:5432/ticket_db?schema=public';
 
 const adapter = new PrismaPg({ connectionString: databaseUrl });
 const prisma = new PrismaClient({ adapter });
@@ -27,6 +33,34 @@ const redis = new Redis({
   port: Number(process.env.REDIS_PORT) || 6379,
   lazyConnect: true,
 });
+
+// Accurate poster mapping based on images in images_tham_khao / public/images/events/tham-khao
+const referencePosterMap = {
+  kich_benh_si: '/images/events/tham-khao/benh_si.jpg',
+  kich_nguoi_tot_nha_so_5: '/images/events/tham-khao/nguoi_tot_nha_so_5.jpg',
+  kich_ngheu_so_oc_hen: '/images/events/tham-khao/Ngheu_so_oc_hen.jpg',
+  kich_kieu: '/images/events/tham-khao/kieu.jpg',
+  kich_dem_trang: '/images/events/tham-khao/dem_trang.jpg',
+  kich_hamlet: '/images/events/tham-khao/hamlet.jpg',
+  kich_hon_truong_ba: '/images/events/tham-khao/hon_truong_ba_da_hang_thịt.jpg',
+  kich_nguoi_trong_coi_nho: '/images/events/tham-khao/nguoi_trong_coi_nho.jpg',
+  cheo_thien_menh_bac_ninh: '/images/events/tham-khao/thien_menh.png',
+  cheo_ky_uc_dong_thuong: '/images/events/tham-khao/ky_uc_dong_thuong.jpg',
+  vnso_180: '/images/events/tham-khao/subscriptionVNSOban_giao_huong_VNSO_subscription_concert.jpg',
+  vnso_184: '/images/events/tham-khao/subscriptionVNSOban_giao_huong_VNSO_subscription_concert.jpg',
+  vnso_186: '/images/events/tham-khao/subscriptionVNSOban_giao_huong_VNSO_subscription_concert.jpg',
+  vnso_188: '/images/events/tham-khao/subscriptionVNSOban_giao_huong_VNSO_subscription_concert.jpg',
+  vnso_189: '/images/events/tham-khao/subscriptionVNSOban_giao_huong_VNSO_subscription_concert.jpg',
+  vnso_metropole_mozart_125: '/images/events/autumn-symphony.jpg',
+  hoa_nhac_toyota_2026: '/images/events/tham-khao/hoa_nhac_toyota.jpg',
+  in_gratitude_2026: '/images/events/tham-khao/in_gratitude.jpg',
+  helmantic_quartet_2026: '/images/events/tham-khao/tieng_vong_truyen_thong.jpg',
+  tieng_vi_cam_giai_dieu_mua_ha: '/images/events/tham-khao/tieng_vi_cam_trong_can_nha_co.jpg',
+  hanoi_concert_mua_he_2025: '/images/events/tham-khao/hoa_nhac_toyota.png',
+  kich_nguoc_chieu_binh_an: '/images/events/tham-khao/nguoc_chieu_binh_an.jpg',
+  kich_nhan_the: '/images/events/tham-khao/nhan_the.webp',
+  kich_quan_thanh_tra: '/images/events/tham-khao/quan_thanh_tra.jpg',
+};
 
 // Image visual presets based on category and style
 const imageMap = {
@@ -62,18 +96,24 @@ const imageMap = {
   },
 };
 
-function selectImages(category, subcategory) {
-  if (category === 'sankhau') {
-    if (subcategory === 'cheo') return imageMap.sankhau_cheo;
-    return imageMap.sankhau_kich;
+function selectImages(rawEvent) {
+  const specificPoster = referencePosterMap[rawEvent.id];
+  let preset;
+  if (rawEvent.category === 'sankhau') {
+    preset = rawEvent.subcategory === 'cheo' ? imageMap.sankhau_cheo : imageMap.sankhau_kich;
+  } else if (rawEvent.subcategory === 'thinh_phong' || rawEvent.subcategory === 'thinh_phong_va_giao_huong') {
+    preset = imageMap.am_nhac_thinh_phong;
+  } else if (rawEvent.subcategory === 'hoa_nhac_dac_biet') {
+    preset = imageMap.am_nhac_dac_biet;
+  } else {
+    preset = imageMap.am_nhac_giao_huong;
   }
-  if (subcategory === 'thinh_phong' || subcategory === 'thinh_phong_va_giao_huong') {
-    return imageMap.am_nhac_thinh_phong;
-  }
-  if (subcategory === 'hoa_nhac_dac_biet') {
-    return imageMap.am_nhac_dac_biet;
-  }
-  return imageMap.am_nhac_giao_huong;
+
+  return {
+    poster: specificPoster || preset.poster,
+    mobile: specificPoster || preset.mobile,
+    banner: specificPoster || preset.banner,
+  };
 }
 
 function getCategoryLabel(category, subcategory) {
@@ -94,8 +134,7 @@ function getCategoryLabel(category, subcategory) {
   return map[subcategory] || (category === 'sankhau' ? 'Sân Khấu Kịch Nghệ' : 'Âm Nhạc Cổ Điển');
 }
 
-function cleanTitle(title, subcategory) {
-  // Enhance titles to make them sound like grand real-world productions
+function cleanTitle(title) {
   let clean = title.trim();
   if (clean.startsWith('vnso_') || clean.startsWith('Hòa nhạc đặt vé trước số')) {
     const num = clean.replace(/[^0-9]/g, '');
@@ -167,33 +206,38 @@ function buildCompellingDescription(ev, venue, datasetDisclaimer) {
   }
 
   sections.push(
-    `【ĐỊA ĐIỂM THAM KHẢO】\n` +
-      `• Tư liệu bản dựng nhắc đến ${venue.name} — ${venue.address}, ${venue.city}. ` +
-      `Địa điểm của suất diễn cụ thể cần được đơn vị tổ chức xác nhận.`,
-  );
-  sections.push(
-    `【DỮ LIỆU MÔ PHỎNG】\n[MÔ PHỎNG] Suất diễn, giá vé và sơ đồ ghế chỉ phục vụ trải nghiệm thử; không phải lịch mở bán hoặc tồn ghế thực tế.\n${datasetDisclaimer}`,
+    `【ĐỊA ĐIỂM BIỂU DIỄN】\n` +
+      `• ${venue.name} — ${venue.address}.`,
   );
 
   return sections.join('\n\n');
 }
 
 async function main() {
-  console.log('🚀 Bắt đầu nạp dữ liệu sự kiện văn hóa nghệ thuật thực tế...');
+  console.log('🚀 Bắt đầu nạp nội dung sự kiện và lịch tham khảo...');
+
+  if (!existsSync(jsonPath)) {
+    throw new Error(`Không tìm thấy file dữ liệu tại: ${jsonPath}`);
+  }
 
   const rawJson = readFileSync(jsonPath, 'utf8');
   const dataset = JSON.parse(rawJson);
+  const demoPerformances = dataset.demoPerformances || [];
+  const updateExistingEvents = process.env.EVENT_IMPORT_UPDATE_EXISTING === 'true';
+
   if (
-    dataset.schemaVersion !== '2.0.0' ||
-    dataset.importGuide?.environment !== 'development' ||
-    dataset.importGuide?.productionImportAllowed !== false ||
-    !Array.isArray(dataset.demoPerformances)
+    process.env.NODE_ENV === 'production' &&
+    (dataset.importGuide?.productionImportAllowed === false || demoPerformances.length > 0)
   ) {
-    throw new Error('Tệp dữ liệu phải là catalog nhà hát phiên bản 2.0.0 có demoPerformances.');
+    throw new Error(
+      'Từ chối nhập bộ dữ liệu có suất diễn demo vào production. Dữ liệu này chỉ dành cho development.',
+    );
   }
-  const databaseHost = new URL(databaseUrl).hostname;
-  if (!['localhost', '127.0.0.1', '::1'].includes(databaseHost)) {
-    throw new Error('Catalog có giá và lịch mô phỏng chỉ được nhập vào PostgreSQL local.');
+
+  if (dataset.importGuide?.productionImportAllowed !== false && demoPerformances.length > 0) {
+    throw new Error(
+      'Bộ dữ liệu có suất demo nhưng thiếu khai báo productionImportAllowed=false; dừng nhập để tránh mở bán nhầm.',
+    );
   }
 
   // 1. Identify Organizer account
@@ -208,22 +252,15 @@ async function main() {
     throw new Error('Không tìm thấy tài khoản người tổ chức trong database.');
   }
   console.log(`👤 Sử dụng tài khoản người tổ chức: ${organizer.email} (${organizer.id})`);
-  const demoOrganizers = await prisma.user.findMany({
-    where: {
-      email: { in: ['design-organizer@example.invalid', 'organizer@demo.invalid'] },
-    },
-    select: { id: true },
-  });
-  const demoOrganizerIds = demoOrganizers.map((user) => user.id);
 
-  // 2. Lookup existing venues and seatmaps from the JSON
+  // 2. Lookup existing venues and seatmaps
   const venueMap = new Map(dataset.venues.map((v) => [v.id, v]));
   const seatMapDefMap = new Map(dataset.seatMaps.map((sm) => [sm.id, sm]));
 
-  console.log(`\n🎭 Cập nhật ${dataset.events.length} hồ sơ sự kiện trong catalog...`);
+  console.log(`\n🎭 Nạp ${dataset.events.length} sự kiện đã tuyển chọn và liên kết poster...`);
 
   const demosByEvent = new Map();
-  for (const demo of dataset.demoPerformances) {
+  for (const demo of demoPerformances) {
     const performances = demosByEvent.get(demo.eventId) || [];
     performances.push(demo);
     demosByEvent.set(demo.eventId, performances);
@@ -234,10 +271,10 @@ async function main() {
     const performances = demosByEvent.get(rawEvent.id) || [];
     const venue = venueMap.get(performances[0]?.venueId || rawEvent.defaultVenueId) || dataset.venues[0];
     const categoryLabel = getCategoryLabel(rawEvent.category, rawEvent.subcategory);
-    const title = cleanTitle(rawEvent.title, rawEvent.subcategory);
+    const title = cleanTitle(rawEvent.title);
     const description = buildCompellingDescription(rawEvent, venue, dataset.disclaimer);
     const location = `${venue.name} — ${venue.address}`;
-    const images = selectImages(rawEvent.category, rawEvent.subcategory);
+    const images = selectImages(rawEvent);
 
     const eventData = {
       description,
@@ -245,56 +282,68 @@ async function main() {
       mobilePosterPath: images.mobile,
       bannerPath: images.banner,
       categoryLabel,
+      location,
+      status: 'PUBLISHED',
+      organizerId: organizer.id,
     };
+
     const existingEvent = await prisma.event.findFirst({
-      where: { name: title, organizerId: { in: demoOrganizerIds } },
+      where: { name: title },
       orderBy: { createdAt: 'asc' },
-      select: { id: true, organizerId: true },
+      select: { id: true },
     });
-    const event = existingEvent
-      ? await prisma.event.update({ where: { id: existingEvent.id }, data: eventData })
-      : await prisma.event.create({
+
+    const eventId = existingEvent
+      ? (updateExistingEvents
+          ? (await prisma.event.update({ where: { id: existingEvent.id }, data: eventData })).id
+          : existingEvent.id)
+      : (await prisma.event.create({
           data: {
             ...eventData,
             name: title,
-            location,
-            status: 'PUBLISHED',
-            organizerId: organizer.id,
           },
-        });
+        })).id;
 
-    console.log(`✅ [${eventIndex + 1}/${dataset.events.length}] Đã ${existingEvent ? 'cập nhật' : 'tạo'}: "${title}" (${categoryLabel})`);
+    console.log(
+      `✅ [${eventIndex + 1}/${dataset.events.length}] ${existingEvent ? (updateExistingEvents ? 'Cập nhật theo EVENT_IMPORT_UPDATE_EXISTING' : 'Giữ nguyên nội dung hiện có') : 'Tạo mới'}: "${title}" (${categoryLabel}) | Poster: ${images.poster}`,
+    );
 
     for (const performance of performances) {
+      if (performance.bookingEnabled !== false || performance.isRealEventSchedule !== false) {
+        throw new Error(`Suất ${performance.id} không được xác nhận là dữ liệu demo không bán vé.`);
+      }
       const seatMapDef = seatMapDefMap.get(performance.seatMapId);
       if (!seatMapDef) {
-        console.log(`    ↳ Bỏ qua suất demo không có sơ đồ ghế: ${performance.id}`);
+        console.log(`    ↳ Bỏ qua suất không có sơ đồ ghế: ${performance.id}`);
         continue;
       }
+
       const priceTable = Object.fromEntries(
-        performance.priceTiers.map((tier) => [tier.sectionId, tier.priceVND]),
+        (performance.priceTiers || []).map((tier) => [tier.sectionId, tier.priceVND]),
       );
       const showDate = new Date(performance.startAt);
-      if (Number.isNaN(showDate.getTime()) || performance.isPubliclyBookable !== false) {
-        throw new Error(`Suất demo không hợp lệ hoặc không được đánh dấu không thể đặt: ${performance.id}`);
-      }
-      if (performance.bookingEnabled !== false || performance.publicVisibility !== 'development_only') {
-        throw new Error(`Suất demo không được cấu hình riêng cho development: ${performance.id}`);
-      }
+
       const existingPerformance = await prisma.showtime.findFirst({
-        where: { eventId: event.id, startTime: showDate },
-        select: { id: true },
+        where: { eventId, startTime: showDate },
+        select: {
+          id: true,
+          isDemo: true,
+        },
       });
+
       if (existingPerformance) {
-        console.log(`    ↳ Giữ nguyên suất hiện có: ${performance.startAt}`);
+        console.log(
+          `    ↳ Giữ nguyên suất đã có (${existingPerformance.isDemo ? 'demo' : 'đã cấu hình'}): ${performance.startAt}`,
+        );
         continue;
       }
 
       const showtime = await prisma.showtime.create({
         data: {
-          eventId: event.id,
+          eventId,
           startTime: showDate,
-          status: 'ON_SALE',
+          status: 'DRAFT',
+          isDemo: true,
           structureLocked: true,
           seatMapId: performance.seatMapId,
           maxTicketsPerUser: 4,
@@ -327,7 +376,7 @@ async function main() {
           categoryId: categoryIdMap.get(catName),
           row: seat.row,
           seatNumber: seat.seatNumber,
-          isSold: (performance.seatInventory?.bookedSeatIds || []).includes(seat.id),
+          isSold: false,
         };
       });
 
@@ -336,7 +385,7 @@ async function main() {
       });
 
       console.log(
-        `    ↳ Suất diễn: ${showDate.toLocaleString('vi-VN')} | ${seatRows.length} ghế | ${categoriesInMap.length} hạng vé | Trạng thái: ON_SALE`,
+        `    ↳ Tạo suất demo DRAFT: ${showDate.toLocaleString('vi-VN')} | ${seatRows.length} ghế | ${categoriesInMap.length} hạng vé | Không thể đặt vé`,
       );
     }
 
@@ -362,8 +411,7 @@ async function main() {
     console.log('ℹ️ Redis cache flush bypass hoặc không có keys.');
   }
 
-  console.log('\n🎉 Đã nhập hồ sơ sự kiện và các suất mô phỏng có trong catalog.');
-  console.log('ℹ️ Lịch, giá và sơ đồ ghế được gắn nhãn demo; không đại diện cho giao dịch thực.');
+  console.log(`\n🎉 Đã xử lý ${dataset.events.length} sự kiện và ${demoPerformances.length} suất demo. Suất demo luôn ở trạng thái DRAFT và không được bán vé.`);
 }
 
 main()

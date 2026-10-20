@@ -208,7 +208,8 @@ export function PublicShowtime({ id }: { id: string }) {
   const tiers = show.categories.toSorted((a, b) => (b.price ?? 0) - (a.price ?? 0));
   const prices = tiers.flatMap((c) => (c.price === null ? [] : [c.price]));
   const minPrice = prices.length ? Math.min(...prices) : null;
-  const onSale = show.siblings.filter((s) => s.status === "ON_SALE");
+  const onSale = show.siblings.filter((s) => s.status === "ON_SALE" && !s.isDemo);
+  const demoShows = show.siblings.filter((s) => s.isDemo);
   const nextOnSale = onSale[0] ?? show.siblings[0];
   const { venue, address } = splitLocation(show.event.location);
   const genre = show.event.categoryLabel ?? "Nghệ thuật biểu diễn";
@@ -245,6 +246,12 @@ export function PublicShowtime({ id }: { id: string }) {
             <span className="evd-genre">
               <Theater size={14} /> {genre}
             </span>
+            {show.isDemo && (
+              <span className="status-pill status-upcoming">
+                <span className="status-dot" aria-hidden="true" />
+                Lịch và sơ đồ mô phỏng
+              </span>
+            )}
             <h1 id="evd-title">{show.event.name}</h1>
             {content.lead[0] && (
               <p className="evd-hero-synopsis">{bullet(content.lead[0])}</p>
@@ -253,7 +260,13 @@ export function PublicShowtime({ id }: { id: string }) {
               <li>
                 <CalendarDays />
                 <div>
-                  <small>{onSale.length ? "Suất gần nhất" : "Thời gian"}</small>
+                  <small>
+                    {show.isDemo
+                      ? "Lịch tham khảo"
+                      : onSale.length
+                        ? "Suất gần nhất"
+                        : "Thời gian"}
+                  </small>
                   <b>{formatShowtime(nextOnSale?.startTime ?? show.startTime)}</b>
                 </div>
               </li>
@@ -270,7 +283,7 @@ export function PublicShowtime({ id }: { id: string }) {
                 <div>
                   <small>Lịch diễn</small>
                   <b>
-                    {show.siblings.length} suất
+                    {show.siblings.length} {show.isDemo ? "suất mô phỏng" : "suất"}
                     {onSale.length > 0 && ` · ${onSale.length} đang mở bán`}
                   </b>
                 </div>
@@ -278,7 +291,7 @@ export function PublicShowtime({ id }: { id: string }) {
             </ul>
             <div className="evd-buy">
               <div>
-                <small>Giá vé từ</small>
+                <small>{show.isDemo ? "Giá tham khảo từ" : "Giá vé từ"}</small>
                 <strong>{minPrice === null ? "Liên hệ" : formatVnd(minPrice)}</strong>
               </div>
               {onSale.length > 0 ? (
@@ -286,6 +299,12 @@ export function PublicShowtime({ id }: { id: string }) {
                   <a href="#lich-dien">
                     <Ticket /> Mua vé ngay
                   </a>
+                </Button>
+              ) : demoShows.length > 0 ? (
+                <Button asChild size="lg" variant="outline">
+                  <Link href={`/shows/${demoShows[0].id}/seats`}>
+                    <Armchair /> Xem sơ đồ tham khảo
+                  </Link>
                 </Button>
               ) : (
                 <Button size="lg" disabled variant="outline">
@@ -302,9 +321,13 @@ export function PublicShowtime({ id }: { id: string }) {
           <section id="lich-dien" className="evd-section" aria-labelledby="evd-showtimes">
             <header className="evd-section-head">
               <h2 id="evd-showtimes">
-                <CalendarDays /> Lịch diễn &amp; giá vé
+                <CalendarDays /> {show.isDemo ? "Lịch & sơ đồ tham khảo" : "Lịch diễn & giá vé"}
               </h2>
-              <p>Khám phá lịch diễn, hạng vé và sơ đồ ghế theo từng suất.</p>
+              <p>
+                {show.isDemo
+                  ? "Ngày diễn, giá và sơ đồ ghế là dữ liệu mô phỏng; chức năng đặt vé không áp dụng."
+                  : "Khám phá lịch diễn, hạng vé và sơ đồ ghế theo từng suất."}
+              </p>
             </header>
             {show.siblings.length === 0 ? (
               <p className="evd-empty">
@@ -314,7 +337,8 @@ export function PublicShowtime({ id }: { id: string }) {
               <ol className="evd-showtimes">
                 {show.siblings.map((s) => {
                   const d = dateParts(s.startTime);
-                  const open = s.status === "ON_SALE";
+                  const demo = s.isDemo;
+                  const open = s.status === "ON_SALE" && !demo;
                   const sPrices = s.categories.flatMap((c) =>
                     c.price === null ? [] : [c.price],
                   );
@@ -336,11 +360,17 @@ export function PublicShowtime({ id }: { id: string }) {
                           <span className="evd-stub-time">{d.time}</span>
                           <span className="sr-only">{formatShowtime(s.startTime)}</span>
                         </h3>
+                        {demo && (
+                          <span className="status-pill status-upcoming">
+                            <span className="status-dot" aria-hidden="true" />
+                            Sơ đồ tham khảo
+                          </span>
+                        )}
                         <p>
                           <MapPin size={14} /> {venue}
                         </p>
-                        {open ? (
-                          <ul className="evd-stub-tiers" aria-label="Hạng vé">
+                        {open || demo ? (
+                          <ul className="evd-stub-tiers" aria-label={demo ? "Hạng giá tham khảo" : "Hạng vé"}>
                             {s.categories
                               .toSorted((a, b) => (b.price ?? 0) - (a.price ?? 0))
                               .map((c) => (
@@ -353,20 +383,23 @@ export function PublicShowtime({ id }: { id: string }) {
                           </ul>
                         ) : (
                           <p className="evd-stub-closed">
-                            <Info size={14} /> Suất diễn đã đóng bán.
+                            <Info size={14} />
+                            {demo
+                              ? "Sơ đồ và giá vé chỉ mang tính tham khảo."
+                              : "Suất diễn đã đóng bán."}
                           </p>
                         )}
                       </div>
                       <div className="evd-stub-action">
-                        {open ? (
+                        {open || demo ? (
                           <>
                             <small>
-                              Từ{" "}
+                              {demo ? "Tham khảo từ " : "Từ "}
                               <b>{sPrices.length ? formatVnd(Math.min(...sPrices)) : "Liên hệ"}</b>
                             </small>
                             <Button asChild>
                               <Link href={`/shows/${s.id}/seats`}>
-                                <Armchair /> Chọn ghế <ArrowRight />
+                                <Armchair /> {demo ? "Xem sơ đồ" : "Chọn ghế"} <ArrowRight />
                               </Link>
                             </Button>
                           </>
@@ -466,7 +499,7 @@ export function PublicShowtime({ id }: { id: string }) {
         <aside className="evd-aside" aria-label="Thông tin vé">
           <section className="evd-card">
             <h2>
-              <Ticket /> Bảng giá vé
+              <Ticket /> {show.isDemo ? "Bảng giá tham khảo" : "Bảng giá vé"}
             </h2>
             {tiers.length ? (
               <ul className="evd-price-list">
@@ -482,7 +515,9 @@ export function PublicShowtime({ id }: { id: string }) {
               <p>Giá vé sẽ được công bố sớm.</p>
             )}
             <p className="evd-card-note">
-              Màu của từng hạng trùng với màu ghế trên sơ đồ.
+              {show.isDemo
+                ? "Giá chỉ để minh họa; sơ đồ ghế ở chế độ chỉ xem."
+                : "Màu của từng hạng trùng với màu ghế trên sơ đồ."}
             </p>
           </section>
 

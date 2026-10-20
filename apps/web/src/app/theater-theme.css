@@ -193,8 +193,8 @@
 .catalog-hero-art::after {
   z-index: 1;
   background:
-    linear-gradient(90deg, rgb(38 11 18 / 88%) 0%, rgb(64 14 25 / 60%) 40%, rgb(64 14 25 / 12%) 100%),
-    linear-gradient(0deg, rgb(38 11 18 / 40%), transparent 55%);
+    linear-gradient(90deg, rgb(38 11 18 / 72%) 0%, rgb(64 14 25 / 42%) 40%, rgb(64 14 25 / 6%) 100%),
+    linear-gradient(0deg, rgb(38 11 18 / 30%), transparent 55%);
   content: "";
 }
 
@@ -234,6 +234,13 @@
   color: rgb(250 245 236 / 82%);
   font-size: clamp(15px, 1.4vw, 18px);
   line-height: 1.7;
+}
+
+.catalog-hero .catalog-hero-note {
+  margin-top: 10px;
+  color: rgb(250 245 236 / 68%);
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .season-label {
@@ -516,11 +523,57 @@
   object-fit: cover;
 }
 
+.catalog-featured-badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .catalog-card .poster-sale {
-  background: var(--wine);
-  color: var(--champagne);
-  border: 1px solid rgb(198 164 106 / 45%);
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
   border-radius: 999px;
+  text-transform: uppercase;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.catalog-card .poster-sale.poster-onsale {
+  background: rgba(20, 83, 45, 0.92);
+  color: #dcfce7;
+  border: 1px solid rgba(134, 239, 172, 0.45);
+}
+
+.catalog-card .poster-sale.poster-soon {
+  background: rgba(180, 83, 9, 0.92);
+  color: #fef3c7;
+  border: 1px solid rgba(253, 230, 138, 0.45);
+}
+
+.catalog-card .poster-sale.poster-upcoming {
+  background: rgba(107, 29, 47, 0.92);
+  color: var(--champagne);
+  border: 1px solid rgba(198, 164, 106, 0.45);
+}
+
+.catalog-card .poster-sale.poster-past {
+  background: rgba(71, 85, 105, 0.9);
+  color: #f1f5f9;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.catalog-card .poster-sale.poster-demo {
+  color: var(--wine);
+  background: var(--champagne);
+  border-color: var(--antique-gold);
 }
 
 .catalog-card-date {
@@ -534,11 +587,81 @@
   padding: 22px 22px 14px;
 }
 
+.catalog-card .catalog-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .catalog-card .genre-badge {
   color: var(--burgundy);
   background: var(--cream);
   border: 1px solid #e8d4af;
   border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  line-height: 1.4;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.status-pill.status-onsale {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+.status-pill.status-onsale .status-dot {
+  background: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+.status-pill.status-soon {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+.status-pill.status-soon .status-dot {
+  background: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+}
+
+.status-pill.status-upcoming {
+  background: #f8fafc;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+.status-pill.status-upcoming .status-dot {
+  background: #64748b;
+  box-shadow: 0 0 0 2px rgba(100, 116, 139, 0.25);
+}
+
+.status-pill.status-past {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+.status-pill.status-past .status-dot {
+  background: #9ca3af;
 }
 
 .catalog-card h3 {

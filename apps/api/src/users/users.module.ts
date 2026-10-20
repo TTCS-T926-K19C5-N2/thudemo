@@ -5,10 +5,11 @@ import { MailModule } from '../mail/mail.module.js';
 import { RegistrationService } from './registration.service.js';
 import { RegistrationSettings } from './registration-settings.js';
 import { ActivationDeliveryService } from './activation-delivery.service.js';
+import { AdminUsersController } from './admin-users.controller.js';
 
 @Module({
   imports: [MailModule],
-  controllers: [UsersController],
+  controllers: [UsersController, AdminUsersController],
   providers: [
     UsersService,
     RegistrationService,

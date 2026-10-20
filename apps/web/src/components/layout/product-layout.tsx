@@ -27,6 +27,7 @@ interface MobileShowHeaderProps {
 interface PublicLayoutProps {
   readonly children: React.ReactNode;
   readonly compact?: boolean;
+  readonly auth?: boolean;
   readonly context?: React.ReactNode;
   readonly signedIn?: boolean;
 }
@@ -59,11 +60,14 @@ export function MobileShowHeader({
 export function PublicLayout({
   children,
   compact = false,
+  auth = false,
   context,
   signedIn = false,
 }: PublicLayoutProps) {
   return (
-    <div className={`product public-layout ${compact ? "public-compact" : ""}`}>
+    <div
+      className={`product public-layout ${compact ? "public-compact" : ""} ${auth ? "public-auth" : ""}`}
+    >
       {compact && (
         <header className="mobile-login-header">
           <Link href="/" aria-label="Về danh sách sự kiện">
@@ -73,80 +77,91 @@ export function PublicLayout({
           <span />
         </header>
       )}
-      <header className="public-header">
+      <header className={`public-header ${auth ? "auth-public-header" : ""}`}>
         <div className="public-header-inner">
           <Link href="/" className="product-brand">
             <Ticket />
             Vé Sự Kiện
           </Link>
-          {context ? (
-            <div className="header-event-context">
-              <Theater />
-              {context}
+          {auth ? (
+            <div className="auth-header-actions">
+              <span>Đã có tài khoản?</span>
+              <Link href="/login" className="header-login-link">
+                Đăng nhập
+              </Link>
             </div>
           ) : (
-            <div className="header-search">
-              <Search />
-              <Input
-                aria-label="Tìm sự kiện"
-                placeholder="Tìm sự kiện, nghệ sĩ, địa điểm..."
+            <>
+              {context ? (
+                <div className="header-event-context">
+                  <Theater />
+                  {context}
+                </div>
+              ) : (
+                <div className="header-search">
+                  <Search />
+                  <Input
+                    aria-label="Tìm sự kiện"
+                    placeholder="Tìm sự kiện, nghệ sĩ, địa điểm..."
+                    disabled
+                    title="Tìm kiếm chưa khả dụng"
+                  />
+                </div>
+              )}
+              <nav className="public-links">
+                <Link href="/" aria-current="page">
+                  Sự kiện
+                </Link>
+                <button disabled title="Chưa khả dụng">
+                  Nhà hát
+                </button>
+                <Link href="/account/tickets">Vé của tôi</Link>
+              </nav>
+              <button
+                className="location-control"
                 disabled
-                title="Tìm kiếm chưa khả dụng"
-              />
-            </div>
-          )}
-          <nav className="public-links">
-            <Link href="/" aria-current="page">
-              Sự kiện
-            </Link>
-            <button disabled title="Chưa khả dụng">
-              Nhà hát
-            </button>
-            <button disabled title="Chưa khả dụng">
-              Vé của tôi
-            </button>
-          </nav>
-          <button
-            className="location-control"
-            disabled
-            title="Lọc địa điểm chưa khả dụng"
-          >
-            <MapPin /> <span>TP. Hồ Chí Minh</span>
-            <ChevronDown />
-          </button>
-          {signedIn ? (
-            <SessionActions />
-          ) : (
-            <Link
-              href="/login"
-              className="header-login-link"
-              aria-current={compact ? "page" : undefined}
-            >
-              Đăng nhập
-            </Link>
+                title="Lọc địa điểm chưa khả dụng"
+              >
+                <MapPin /> <span>TP. Hồ Chí Minh</span>
+                <ChevronDown />
+              </button>
+              {signedIn ? (
+                <SessionActions />
+              ) : (
+                <Link
+                  href="/login"
+                  className="header-login-link"
+                  aria-current={compact ? "page" : undefined}
+                >
+                  Đăng nhập
+                </Link>
+              )}
+            </>
           )}
         </div>
       </header>
       <main className="public-main">{children}</main>
       <ProductFooter />
-      <nav className="mobile-public-nav" aria-label="Điều hướng">
-        <Link href="/">
-          <Home filled />
-          Sự kiện
-        </Link>
-        <button disabled title="Chọn một suất diễn để xem sơ đồ ghế">
-          <Armchair />
-          Sơ đồ vé
-        </button>
-        <button disabled title="Chưa khả dụng">
-          <Ticket />
-          Vé của tôi
-        </button>
-        <Link href="/events">
-          <Admin />
-          Quản trị
-        </Link>
-      </nav>
+      {!auth && (
+        <nav className="mobile-public-nav" aria-label="Điều hướng">
+          <Link href="/">
+            <Home filled />
+            Sự kiện
+          </Link>
+          <button disabled title="Chọn một suất diễn để xem sơ đồ ghế">
+            <Armchair />
+            Sơ đồ vé
+          </button>
+          <Link href="/account/tickets">
+            <Ticket />
+            Vé của tôi
+          </Link>
+          <Link href="/events">
+            <Admin />
+            Quản trị
+          </Link>
+        </nav>
+      )}
     </div>
   );
 }

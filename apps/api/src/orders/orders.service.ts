@@ -5,11 +5,13 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  Optional,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { OrderStatus, PaymentStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { isOrderExpired } from './order-expiration.js';
+import { SeatEventsService } from '../showtimes/seat-events.service.js';
 
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -137,7 +139,10 @@ const orderProjection = {
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
 
-  constructor(private readonly db: PrismaService) {}
+  constructor(
+    private readonly db: PrismaService,
+    @Optional() private readonly seatEvents?: SeatEventsService,
+  ) {}
 
   async createFromHold(
     showtimeId: string,
@@ -152,6 +157,24 @@ export class OrdersService {
           );
           if (!buyers.length)
             throw new NotFoundException('Không tìm thấy người mua.');
+
+          const shows = await tx.$queryRaw<
+            { status: string; eventId: string; isDemo: boolean }[]
+          >(
+            Prisma.sql`SELECT status, "eventId", "isDemo" FROM showtimes WHERE id=${showtimeId}::uuid FOR SHARE`,
+          );
+          if (!shows.length)
+            throw new NotFoundException('Không tìm thấy suất diễn.');
+          if (shows[0].status !== 'ON_SALE')
+            throw new ConflictException({
+              code: 'SHOWTIME_CLOSED',
+              message: 'Suất diễn đã đóng bán. Không thể tạo đơn.',
+            });
+          if (shows[0].isDemo)
+            throw new ConflictException({
+              code: 'DEMO_NOT_BOOKABLE',
+              message: 'Đây là suất diễn mô phỏng; không thể tạo đơn đặt vé.',
+            });
 
           const [lookupClock] = await tx.$queryRaw<{ serverTime: Date }[]>(
             Prisma.sql`SELECT clock_timestamp() AS "serverTime"`,
@@ -178,19 +201,6 @@ export class OrdersService {
           });
           if (existing)
             return this.response(existing, lookupClock.serverTime, false);
-
-          const shows = await tx.$queryRaw<
-            { status: string; eventId: string }[]
-          >(
-            Prisma.sql`SELECT status, "eventId" FROM showtimes WHERE id=${showtimeId}::uuid FOR SHARE`,
-          );
-          if (!shows.length)
-            throw new NotFoundException('Không tìm thấy suất diễn.');
-          if (shows[0].status !== 'ON_SALE')
-            throw new ConflictException({
-              code: 'SHOWTIME_CLOSED',
-              message: 'Suất diễn đã đóng bán. Không thể tạo đơn.',
-            });
 
           const holds = await tx.$queryRaw<HoldAuthority[]>(Prisma.sql`
             SELECT id,token,"expiresAt","expectedSeatIds" FROM hold_sessions
@@ -246,10 +256,17 @@ export class OrdersService {
               message: 'Một hoặc nhiều ghế chưa có giá. Hãy tải lại sơ đồ.',
             });
 
-          const totalAmount = seats.reduce(
-            (sum, seat) => sum + seat.price!,
-            0,
-          );
+          if (
+            seats.some(
+              (seat) => seat.expiresAt.getTime() !== hold.expiresAt.getTime(),
+            )
+          )
+            throw new ConflictException({
+              code: 'HOLD_CHANGED',
+              message: 'Thời hạn giữ ghế không đồng nhất. Hãy chọn lại ghế.',
+            });
+
+          const totalAmount = seats.reduce((sum, seat) => sum + seat.price!, 0);
           const order = await tx.order.create({
             data: {
               userId,
@@ -441,7 +458,8 @@ export class OrdersService {
       });
 
       const serverNow = new Date();
-      const effectiveExpiry = order.expiresAt ?? order.paymentExpiresAt ?? serverNow;
+      const effectiveExpiry =
+        order.expiresAt ?? order.paymentExpiresAt ?? serverNow;
       const remainingSeconds = Math.max(
         0,
         Math.ceil((effectiveExpiry.getTime() - serverNow.getTime()) / 1000),
@@ -737,28 +755,35 @@ export class OrdersService {
     orderId: string,
     testHooks?: { failOnRelease?: boolean },
   ): Promise<ExpireOrderResult> {
-    return this.db.$transaction(async (tx) => {
+    let affectedShowtimeId: string | undefined;
+    const result = await this.db.$transaction(async (tx) => {
       // 1. Conditional atomic update: only PENDING / PENDING_PAYMENT, expiresAt <= clock_timestamp()
       const updated = await tx.$queryRaw<
-        { id: string; userId: string; holdSessionId: string | null }[]
+        {
+          id: string;
+          userId: string;
+          holdSessionId: string | null;
+          showtimeId: string;
+        }[]
       >(Prisma.sql`
         UPDATE orders
         SET status = 'EXPIRED'::"OrderStatus", "updatedAt" = clock_timestamp()
         WHERE id = ${orderId}::uuid
           AND status IN ('PENDING'::"OrderStatus", 'PENDING_PAYMENT'::"OrderStatus")
           AND COALESCE("paymentExpiresAt", "expiresAt") <= clock_timestamp()
-        RETURNING id, "userId", "holdSessionId"
+        RETURNING id, "userId", "holdSessionId", "showtimeId"
       `);
 
       if (!updated || updated.length === 0) {
         return {
-          status: 'skipped',
+          status: 'skipped' as const,
           orderId,
           reason: 'Order not found, not in pending state, or not yet expired',
         };
       }
 
       const order = updated[0];
+      affectedShowtimeId = order.showtimeId;
 
       // Simulated failure hook for testing rollback behavior
       if (testHooks?.failOnRelease) {
@@ -793,11 +818,19 @@ export class OrdersService {
       );
 
       return {
-        status: 'expired',
+        status: 'expired' as const,
         orderId,
         releasedSeatsCount,
       };
     });
+    if (
+      result.status === 'expired' &&
+      result.releasedSeatsCount > 0 &&
+      affectedShowtimeId
+    ) {
+      this.seatEvents?.invalidate(affectedShowtimeId);
+    }
+    return result;
   }
 
   /**

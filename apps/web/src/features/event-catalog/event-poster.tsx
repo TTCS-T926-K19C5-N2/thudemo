@@ -4,6 +4,7 @@ import { ImageIcon } from "@/components/ui/material-icon";
 const referencePosters = new Map<string, string>([
   ["BENH SI", "/images/events/tham-khao/benh_si.jpg"],
   ["DEM TRANG TRONG NGO", "/images/events/tham-khao/dem_trang.jpg"],
+  ["DEM TRANG", "/images/events/tham-khao/dem_trang.jpg"],
   ["HAMLET", "/images/events/tham-khao/hamlet.jpg"],
   [
     "HON TRUONG BA, DA HANG THIT",

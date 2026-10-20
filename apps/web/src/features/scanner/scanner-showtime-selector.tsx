@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { fetchAssignedShowtimes, type AssignedShowtime } from './scanner-api';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { loadCurrentUser } from "@/lib/api";
+import { fetchAssignedShowtimes, type AssignedShowtime } from "./scanner-api";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   CalendarDays,
   MapPin,
@@ -11,7 +13,7 @@ import {
   Ticket,
   RotateCw,
   CircleAlert,
-} from '@/components/ui/material-icon';
+} from "@/components/ui/material-icon";
 
 interface ScannerShowtimeSelectorProps {
   onSelectShowtime: (showtime: AssignedShowtime) => void;
@@ -23,14 +25,23 @@ export function ScannerShowtimeSelector({
   const [showtimes, setShowtimes] = useState<AssignedShowtime[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [canReport, setCanReport] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
       try {
-        const data = await fetchAssignedShowtimes();
+        const [data, user] = await Promise.all([
+          fetchAssignedShowtimes(),
+          loadCurrentUser(),
+        ]);
         if (!cancelled) {
+          setCanReport(
+            Boolean(
+              user?.roles.some((role) => ["ADMIN", "ORGANIZER"].includes(role)),
+            ),
+          );
           setShowtimes(data);
           setLoading(false);
         }
@@ -39,7 +50,7 @@ export function ScannerShowtimeSelector({
           setError(
             err instanceof Error
               ? err.message
-              : 'Không thể tải danh sách suất diễn được phân công.',
+              : "Không thể tải danh sách suất diễn được phân công.",
           );
           setLoading(false);
         }
@@ -62,7 +73,7 @@ export function ScannerShowtimeSelector({
       setError(
         err instanceof Error
           ? err.message
-          : 'Không thể tải danh sách suất diễn được phân công.',
+          : "Không thể tải danh sách suất diễn được phân công.",
       );
     } finally {
       setLoading(false);
@@ -78,7 +89,8 @@ export function ScannerShowtimeSelector({
             Máy quét vé — Chọn suất diễn (S-29)
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Chọn một suất diễn được phân công để tải trước danh sách vé và bắt đầu soát vé.
+            Chọn một suất diễn được phân công để tải trước danh sách vé và bắt
+            đầu soát vé.
           </p>
         </div>
         <Button
@@ -88,7 +100,7 @@ export function ScannerShowtimeSelector({
           disabled={loading}
           className="self-start sm:self-auto gap-2"
         >
-          <RotateCw className={loading ? 'animate-spin' : ''} />
+          <RotateCw className={loading ? "animate-spin" : ""} />
           Làm mới
         </Button>
       </div>
@@ -106,7 +118,9 @@ export function ScannerShowtimeSelector({
       {loading ? (
         <div className="py-12 flex flex-col items-center justify-center space-y-3 text-muted-foreground">
           <RotateCw className="animate-spin text-3xl text-primary" />
-          <p className="text-sm">Đang tải danh sách suất diễn được phân công…</p>
+          <p className="text-sm">
+            Đang tải danh sách suất diễn được phân công…
+          </p>
         </div>
       ) : showtimes.length === 0 ? (
         <div className="py-16 text-center border-2 border-dashed rounded-xl p-8 bg-muted/30">
@@ -116,7 +130,11 @@ export function ScannerShowtimeSelector({
             Tài khoản nhân viên của bạn hiện chưa được phân công suất diễn nào.
             Vui lòng liên hệ ban tổ chức hoặc quản trị viên để được cấp quyền.
           </p>
-          <Button className="mt-4" variant="outline" onClick={handleManualRefresh}>
+          <Button
+            className="mt-4"
+            variant="outline"
+            onClick={handleManualRefresh}
+          >
             Kiểm tra lại
           </Button>
         </div>
@@ -132,8 +150,10 @@ export function ScannerShowtimeSelector({
                   <h3 className="font-semibold text-lg line-clamp-2">
                     {st.eventName}
                   </h3>
-                  <Badge variant={st.status === 'ON_SALE' ? 'default' : 'secondary'}>
-                    {st.status === 'ON_SALE' ? 'Đang mở' : st.status}
+                  <Badge
+                    variant={st.status === "ON_SALE" ? "default" : "secondary"}
+                  >
+                    {st.status === "ON_SALE" ? "Đang mở" : st.status}
                   </Badge>
                 </div>
 
@@ -141,10 +161,10 @@ export function ScannerShowtimeSelector({
                   <div className="flex items-center gap-2">
                     <CalendarDays className="text-base text-primary/70 shrink-0" />
                     <span>
-                      {new Date(st.startTime).toLocaleString('vi-VN', {
-                        timeZone: 'Asia/Ho_Chi_Minh',
-                        dateStyle: 'full',
-                        timeStyle: 'short',
+                      {new Date(st.startTime).toLocaleString("vi-VN", {
+                        timeZone: "Asia/Ho_Chi_Minh",
+                        dateStyle: "full",
+                        timeStyle: "short",
                       })}
                     </span>
                   </div>
@@ -157,7 +177,10 @@ export function ScannerShowtimeSelector({
                   <div className="flex items-center gap-2">
                     <Ticket className="text-base text-primary/70 shrink-0" />
                     <span>
-                      Tổng vé: <strong className="text-foreground">{st.totalTickets}</strong>{' '}
+                      Tổng vé:{" "}
+                      <strong className="text-foreground">
+                        {st.totalTickets}
+                      </strong>{" "}
                       (Đã soát: {st.checkedInTickets})
                     </span>
                   </div>
@@ -171,6 +194,13 @@ export function ScannerShowtimeSelector({
                 <Scan />
                 Vào máy quét suất này
               </Button>
+              {canReport && (
+                <Button asChild variant="outline">
+                  <Link href={`/scanner/reports/${st.id}`}>
+                    Xem xung đột hai cửa
+                  </Link>
+                </Button>
+              )}
             </div>
           ))}
         </div>

@@ -17,6 +17,8 @@ import { SeatPricingForm } from "@/features/seat-pricing/seat-pricing-form";
 import { SeatMapImportForm } from "@/features/seat-map-import/seat-map-import-form";
 import { SaleStatusControl } from "./sale-status-control";
 import { TicketLimitControl } from "./ticket-limit-control";
+import { ShowtimeSalesReport } from "./showtime-sales-report";
+import { CloneShowtimeForm } from "./clone-showtime-form";
 export function ShowtimeWorkspace({
   id,
   mode,
@@ -28,6 +30,7 @@ export function ShowtimeWorkspace({
     [seats, setSeats] = useState<Seat[]>([]),
     [loading, setLoading] = useState(true),
     [error, setError] = useState("");
+  const [salesRefreshSignal, setSalesRefreshSignal] = useState(0);
   const fetchWorkspace = useCallback(
     async (signal?: AbortSignal) => {
       const [detail, map] = await Promise.all([
@@ -48,6 +51,7 @@ export function ShowtimeWorkspace({
     const { detail, map } = await fetchWorkspace();
     setShow(detail);
     setSeats(map);
+    setSalesRefreshSignal((value) => value + 1);
   }
   useEffect(() => {
     const controller = new AbortController();
@@ -194,6 +198,12 @@ export function ShowtimeWorkspace({
             <SaleStatusControl key={id} show={show} onChanged={refresh} />
             <TicketLimitControl key={`limit-${id}`} show={show} onChanged={refresh} />
           </div>
+        </div>
+      )}
+      {mode === "manage" && (
+        <div className="mt-8">
+          <ShowtimeSalesReport id={id} refreshSignal={salesRefreshSignal} />
+          <CloneShowtimeForm id={id} />
         </div>
       )}
       {mode === "import" && (

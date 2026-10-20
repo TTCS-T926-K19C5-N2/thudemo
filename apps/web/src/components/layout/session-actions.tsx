@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { UserRound } from "@/components/ui/material-icon";
+import { notifySessionChanged } from "@/lib/session-events";
 
 interface SessionActionsProps {
   readonly accountLink?: boolean;
 }
 
 export function SessionActions({ accountLink = true }: SessionActionsProps) {
-  const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   async function logout() {
@@ -21,8 +20,8 @@ export function SessionActions({ accountLink = true }: SessionActionsProps) {
     try {
       const response = await fetch("/api/auth/logout", { method: "POST" });
       if (!response.ok) throw new Error();
-      router.replace("/login");
-      router.refresh();
+      notifySessionChanged();
+      window.location.replace("/login");
     } catch {
       setError("Không thể đăng xuất. Hãy thử lại.");
     } finally {
@@ -31,6 +30,9 @@ export function SessionActions({ accountLink = true }: SessionActionsProps) {
   }
   return (
     <div className="session-actions">
+      <Link href="/orders" className="session-orders-link">
+        Đơn hàng
+      </Link>
       {accountLink && (
         <Link href="/account">
           <UserRound />

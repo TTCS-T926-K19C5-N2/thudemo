@@ -13,6 +13,7 @@ export type Category = { id: string; name: string; price: number | null };
 export type CatalogItem = {
   id: string;
   eventId: string;
+  isDemo: boolean;
   name: string;
   description: string;
   location: string;
@@ -24,11 +25,16 @@ export type CatalogItem = {
   categoryLabel: string | null;
   categories: { name: string; price: number | null }[];
 };
-export type CatalogPage = { items: CatalogItem[]; nextCursor: string | null };
+export type CatalogPage = {
+  items: CatalogItem[];
+  nextCursor: string | null;
+  totalCount: number;
+};
 export type PublicShowtime = {
   id: string;
   startTime: string;
   status: SaleStatus;
+  isDemo: boolean;
   event: {
     id: string;
     name: string;
@@ -44,6 +50,7 @@ export type PublicShowtime = {
     id: string;
     startTime: string;
     status: SaleStatus;
+    isDemo: boolean;
     categories: { name: string; price: number | null }[];
   }[];
 };
@@ -51,6 +58,7 @@ export type OwnedShowtime = {
   id: string;
   startTime: string;
   status: SaleStatus;
+  isDemo: boolean;
   structureLocked: boolean;
   event: { id: string; name: string; location: string };
   categories: Category[];
@@ -88,7 +96,7 @@ const sale = (v: unknown): SaleStatus =>
   v === "DRAFT" || v === "ON_SALE" || v === "CLOSED" ? v : invalid();
 export function posterPath(value: unknown): string | null {
   const path = nullableString(value);
-  return path && /^\/images\/events\/[a-zA-Z0-9_-]+\.(jpg|png|webp)$/.test(path)
+  return path && /^\/images\/events\/([a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.\u00C0-\u024F\u1EA0-\u1EF9-]+\.(jpg|png|webp)$/.test(path)
     ? path
     : null;
 }
@@ -104,17 +112,22 @@ const siblings = (v: unknown) =>
       id: string(s.id),
       startTime: time(s.startTime),
       status: sale(s.status),
+      isDemo: s.isDemo === true,
     };
   });
 export function decodeCatalog(v: unknown): CatalogPage {
   const page = object(v);
+  const rawItems = array(page.items);
   return {
     nextCursor: nullableString(page.nextCursor),
-    items: array(page.items).map((item) => {
+    totalCount:
+      page.totalCount === undefined ? rawItems.length : number(page.totalCount),
+    items: rawItems.map((item) => {
       const i = object(item);
       return {
         id: string(i.id),
         eventId: string(i.eventId),
+        isDemo: i.isDemo === true,
         name: string(i.name),
         description: string(i.description),
         location: string(i.location),
@@ -136,6 +149,7 @@ export function decodePublicShowtime(v: unknown): PublicShowtime {
     id: string(s.id),
     startTime: time(s.startTime),
     status: sale(s.status),
+    isDemo: s.isDemo === true,
     event: {
       id: string(e.id),
       name: string(e.name),
@@ -153,6 +167,7 @@ export function decodePublicShowtime(v: unknown): PublicShowtime {
         id: string(slot.id),
         startTime: time(slot.startTime),
         status: sale(slot.status),
+        isDemo: slot.isDemo === true,
         categories: categories(slot.categories),
       };
     }),
@@ -166,6 +181,7 @@ export function decodeOwnedShowtime(v: unknown): OwnedShowtime {
     id: string(s.id),
     startTime: time(s.startTime),
     status: sale(s.status),
+    isDemo: s.isDemo === true,
     structureLocked: s.structureLocked,
     event: {
       id: string(e.id),
@@ -185,6 +201,50 @@ export function decodeOwnedShowtime(v: unknown): OwnedShowtime {
             (s.maxTicketsPerUser as number) >= 1
           ? (s.maxTicketsPerUser as number)
           : invalid(),
+  };
+}
+export type SalesFigures = {
+  totalSeats: number;
+  sold: number;
+  held: number;
+  available: number;
+  revenue: number;
+};
+export type ShowtimeSales = {
+  showtimeId: string;
+  generatedAt: string;
+  isDemo: boolean;
+  totals: SalesFigures;
+  categories: (SalesFigures & { name: string; price: number | null })[];
+};
+const count = (v: unknown): number =>
+  Number.isInteger(v) && number(v) >= 0 ? number(v) : invalid();
+const salesFigures = (v: unknown): SalesFigures => {
+  const f = object(v);
+  return {
+    totalSeats: count(f.totalSeats),
+    sold: count(f.sold),
+    held: count(f.held),
+    available: count(f.available),
+    revenue: count(f.revenue),
+  };
+};
+export function decodeShowtimeSales(v: unknown): ShowtimeSales {
+  const d = object(v);
+  if (typeof d.isDemo !== 'boolean') return invalid();
+  return {
+    showtimeId: string(d.showtimeId),
+    generatedAt: time(d.generatedAt),
+    isDemo: d.isDemo,
+    totals: salesFigures(d.totals),
+    categories: array(d.categories).map((item) => {
+      const category = object(item);
+      return {
+        name: string(category.name),
+        price: price(category.price),
+        ...salesFigures(category),
+      };
+    }),
   };
 }
 export function decodeSeats(v: unknown): Seat[] {

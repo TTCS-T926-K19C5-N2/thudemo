@@ -20,6 +20,7 @@ import assert from "node:assert/strict";
 import { stagingConfig, stagingRelease } from "../deploy/laptop-gateway.mjs";
 import { requireBuildResources } from "../deploy/laptop-resources.mjs";
 import { registrationMailEnv } from "../deploy/registration-mail.mjs";
+import { ticketMailEnv } from "../deploy/ticket-mail.mjs";
 import {
   prepareTicketKey,
   ticketKeyEnv,
@@ -169,10 +170,44 @@ function stopRelease(release) {
   ])
     if (name && ownedContainer(name)) docker("stop", name);
 }
+function releaseContainers(release) {
+  const names = [release.apiContainer, release.apiReplicaContainer, release.webContainer].filter(Boolean);
+  if (release.webProcess) throw Error("Legacy process release requires explicit recovery before container lifecycle transition");
+  return names.map((name) => {
+    if (!ownedContainer(name)) throw Error("Previous owned release container missing; refusing recreation");
+    const item = JSON.parse(docker("inspect", name))[0];
+    if (item.Config.Labels?.["org.opencontainers.image.revision"] !== release.sha)
+      throw Error("Previous release revision mismatch");
+    return { name, running: item.State.Running };
+  });
+}
+function startRelease(release) {
+  // Validate the entire release before changing any container state.
+  for (const item of releaseContainers(release))
+    if (!item.running) docker("start", item.name);
+}
+function releaseLifecycle(candidate) {
+  return {
+    retirePrevious(previous) {
+      if (previous.sha === candidate.sha) return;
+      const candidateNames = new Set([candidate.apiContainer, candidate.apiReplicaContainer, candidate.webContainer].filter(Boolean));
+      for (const name of [previous.apiContainer, previous.apiReplicaContainer, previous.webContainer].filter(Boolean))
+        if (candidateNames.has(name)) throw Error("Release container identities overlap; refuse retirement");
+      for (const item of releaseContainers(previous))
+        if (item.running) docker("stop", item.name);
+      timeline("previous-release-quiesced", { sha: previous.sha, activeSha: candidate.sha, retainedForRollback: true });
+    },
+    async resumePrevious(previous) {
+      startRelease(previous);
+      await smoke(config(), previous);
+    },
+  };
+}
 function apiEnv(c) {
   return {
     ...ticketKeyEnv(dir),
     ...registrationMailEnv(dir, `https://${c.lanAddress}:${c.gatewayPort}`),
+    ...ticketMailEnv(dir),
     NODE_ENV: "production",
     APP_ENV: "staging",
     SERVICE_ROLE: "api",
@@ -969,7 +1004,7 @@ async function deploy() {
     await promoteRelease(dir, release, async () => {
       assert.equal((await stagingHttps(c, "/api/health")).status, 200);
       assert.equal((await stagingHttps(c, "/")).status, 200);
-    });
+    }, releaseLifecycle(release));
     switched = true;
     timeline("promoted", {
       sha,
@@ -980,7 +1015,12 @@ async function deploy() {
       `STAGING READY https://${c.lanAddress}:${c.gatewayPort} source=${sha}; credentials .sprint1-staging/config.json`,
     );
   } catch (error) {
-    if (switched) restorePointers(dir, pointers);
+    if (switched && active) { startRelease(active); await smoke(c, active); restorePointers(dir, pointers); }
+    const stillActive = existsSync(activePath) && JSON.parse(readFileSync(activePath)).sha === sha;
+    if (stillActive) {
+      timeline("verified-candidate-retained-recovery-required", { sha });
+      throw error;
+    }
     if (webContainer && ownedContainer(webContainer))
       docker("stop", webContainer);
     if (ownedContainer(apiContainer)) docker("stop", apiContainer);
@@ -1040,10 +1080,25 @@ async function main() {
     const previous = stagingRelease(
       JSON.parse(readFileSync(resolve(dir, "previous.json"))),
     );
-    await smoke(c, previous);
-    await promoteRelease(dir, previous, async () =>
-      assert.equal((await stagingHttps(c, "/api/health")).status, 200),
-    );
+    const current = stagingRelease(JSON.parse(readFileSync(resolve(dir, "active.json"))));
+    const currentNames = new Set([current.apiContainer, current.apiReplicaContainer, current.webContainer].filter(Boolean));
+    if (previous.sha !== current.sha && [previous.apiContainer, previous.apiReplicaContainer, previous.webContainer].filter(Boolean).some((name) => currentNames.has(name)))
+      throw Error("Release container identities overlap; refuse rollback");
+    try {
+      startRelease(previous);
+      await smoke(c, previous);
+      await promoteRelease(dir, previous, async () => {
+        assert.equal((await stagingHttps(c, "/api/health")).status, 200);
+        assert.equal((await stagingHttps(c, "/")).status, 200);
+      }, releaseLifecycle(previous));
+    } catch (error) {
+      // An unsuccessful rollback must not leave stale workers on the shared queue.
+      const activeAfter = JSON.parse(readFileSync(resolve(dir, "active.json")));
+      if (activeAfter.sha !== previous.sha)
+        for (const item of releaseContainers(previous))
+          if (item.running) docker("stop", item.name);
+      throw error;
+    }
     timeline("rollback", { sha: previous.sha });
     console.log("Rollback passed; database/history retained.");
     return;

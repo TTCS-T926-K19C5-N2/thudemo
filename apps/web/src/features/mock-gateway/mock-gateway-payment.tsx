@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import {
   CheckCircle,
   CircleAlert,
   RotateCw,
+  Info,
 } from "@/components/ui/material-icon";
 import { formatVnd } from "@/lib/formatting";
 import { api } from "@/lib/api/client";
@@ -60,7 +62,7 @@ export function MockGatewayPayment({
       setError(
         err instanceof Error
           ? err.message
-          : "Không thể xử lý thanh toán. Vui lòng thử lại.",
+          : "Không thể gửi kết quả thanh toán giả lập.",
       );
       setSubmitting(false);
     }
@@ -73,13 +75,25 @@ export function MockGatewayPayment({
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
           <div>
             <h1 style={{ fontSize: "1.5rem", fontWeight: 700, margin: 0 }}>
-              Thanh toán đơn hàng
+              Cổng thanh toán giả lập
             </h1>
             <p style={{ margin: "0.25rem 0 0", color: "var(--color-text-secondary, #64748b)", fontSize: "0.875rem" }}>
-              Kiểm tra thông tin và hoàn tất thanh toán
+              Mô phỏng quy trình thanh toán MoMo Sandbox (S-19)
             </p>
           </div>
+          <Badge variant="outline" style={{ background: "rgba(245, 158, 11, 0.1)", color: "#d97706", borderColor: "rgba(245, 158, 11, 0.3)" }}>
+            Môi trường Dev / Test
+          </Badge>
         </div>
+
+        {/* Info notice */}
+        <Alert style={{ marginBottom: "1.5rem" }}>
+          <Info className="h-4 w-4" />
+          <AlertTitle>Chế độ giả lập thanh toán</AlertTitle>
+          <AlertDescription>
+            Cổng này được kích hoạt khi cấu hình hệ thống bật <code>PAYMENT_GATEWAY=mock</code>. Bạn có thể chọn mô phỏng giao dịch thành công hoặc thất bại để kiểm thử luồng IPN webhook và cập nhật đơn hàng.
+          </AlertDescription>
+        </Alert>
 
         {error && (
           <Alert variant="destructive" style={{ marginBottom: "1.5rem" }}>
@@ -134,7 +148,7 @@ export function MockGatewayPayment({
             }}
           >
             {submitting ? <RotateCw className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
-            Hoàn tất thanh toán
+            Thanh toán thành công
           </Button>
 
           <Button
@@ -157,7 +171,7 @@ export function MockGatewayPayment({
             }}
           >
             {submitting ? <RotateCw className="h-4 w-4 animate-spin" /> : <CircleAlert className="h-4 w-4" />}
-            Hủy giao dịch
+            Thanh toán thất bại
           </Button>
         </div>
       </div>
