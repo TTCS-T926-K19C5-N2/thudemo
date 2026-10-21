@@ -92,4 +92,15 @@ export class OrderTicketsController {
     await this.tickets.transferTicket(id, ticketId, req.user.id, toEmail);
     return { success: true };
   }
+
+  @Post(':ticketId/cancel')
+  @Roles('BUYER')
+  async cancel(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('ticketId', ParseUUIDPipe) ticketId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    await this.tickets.cancelTicket(id, ticketId, req.user.id);
+    return { success: true };
+  }
 }

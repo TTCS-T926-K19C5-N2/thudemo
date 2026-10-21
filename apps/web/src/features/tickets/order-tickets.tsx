@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   fetchOrderTickets,
   transferTicket,
+  cancelTicket,
   type OrderTicket,
   type OrderTicketStatus,
 } from "./order-tickets-api";
@@ -62,6 +63,10 @@ export function OrderTickets({ orderId }: { orderId: string }) {
   const [transferError, setTransferError] = useState("");
   const [isTransferring, setIsTransferring] = useState(false);
 
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [cancelError, setCancelError] = useState("");
+  const [isCancelling, setIsCancelling] = useState(false);
+
   const handleTransfer = async (ticketId: string) => {
     if (!toEmail) {
       setTransferError("Vui lòng nhập email người nhận.");
@@ -78,6 +83,20 @@ export function OrderTickets({ orderId }: { orderId: string }) {
       setTransferError(e instanceof Error ? e.message : "Lỗi khi chuyển vé");
     } finally {
       setIsTransferring(false);
+    }
+  };
+
+  const handleCancel = async (ticketId: string) => {
+    setCancelError("");
+    setIsCancelling(true);
+    try {
+      await cancelTicket(orderId, ticketId);
+      setCancellingId(null);
+      setRetry((n) => n + 1);
+    } catch (e: unknown) {
+      setCancelError(e instanceof Error ? e.message : "Lỗi khi huỷ vé");
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -202,19 +221,62 @@ export function OrderTickets({ orderId }: { orderId: string }) {
                           </Button>
                         </div>
                       </div>
+                    ) : cancellingId === ticket.id ? (
+                      <div className="space-y-2 text-left">
+                        <p className="text-xs text-destructive font-medium">
+                          Bạn có chắc chắn muốn huỷ vé ghế {ticket.seatLabel}? Ghế này sẽ được nhả lại kho bán cho người khác.
+                        </p>
+                        {cancelError && <p className="text-xs text-red-500">{cancelError}</p>}
+                        <div className="flex gap-2 justify-end">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setCancellingId(null);
+                              setCancelError("");
+                            }}
+                            disabled={isCancelling}
+                          >
+                            Đóng
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleCancel(ticket.id)}
+                            disabled={isCancelling}
+                          >
+                            {isCancelling ? "Đang huỷ..." : "Xác nhận huỷ"}
+                          </Button>
+                        </div>
+                      </div>
                     ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full"
-                        onClick={() => {
-                          setTransferringId(ticket.id);
-                          setToEmail("");
-                          setTransferError("");
-                        }}
-                      >
-                        Chuyển nhượng vé
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => {
+                            setTransferringId(ticket.id);
+                            setCancellingId(null);
+                            setToEmail("");
+                            setTransferError("");
+                          }}
+                        >
+                          Chuyển nhượng
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-destructive hover:bg-destructive/10"
+                          onClick={() => {
+                            setCancellingId(ticket.id);
+                            setTransferringId(null);
+                            setCancelError("");
+                          }}
+                        >
+                          Huỷ vé
+                        </Button>
+                      </div>
                     )}
                   </div>
                 )}

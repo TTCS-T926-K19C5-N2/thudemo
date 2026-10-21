@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { decodeOrderTickets } from "./order-tickets-api";
 
 const ticket = {
@@ -39,3 +39,26 @@ describe("decodeOrderTickets", () => {
     expect(() => decodeOrderTickets({ tickets: [{ ...ticket, id: 1 }] })).toThrow();
   });
 });
+
+describe("cancelTicket", () => {
+  it("calls POST on /orders/:id/tickets/:ticketId/cancel", async () => {
+    const { cancelTicket } = await import("./order-tickets-api");
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await cancelTicket("order-123", "ticket-456");
+    expect(result).toEqual({ success: true });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/orders/order-123/tickets/ticket-456/cancel",
+      expect.objectContaining({
+        method: "POST",
+      }),
+    );
+  });
+});
+

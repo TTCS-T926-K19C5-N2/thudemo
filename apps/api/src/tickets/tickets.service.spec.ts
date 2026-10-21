@@ -29,7 +29,19 @@ describe('TicketsService', () => {
         update: vi.fn(),
         updateMany: vi.fn().mockResolvedValue({ count: 1 }),
         create: vi.fn().mockResolvedValue({ id: 'new-ticket-1' }),
+        findFirst: vi.fn().mockResolvedValue(null),
+        count: vi.fn().mockResolvedValue(0),
       },
+      seat: {
+        updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+      },
+      seatHold: {
+        deleteMany: vi.fn().mockResolvedValue({ count: 1 }),
+      },
+      order: {
+        updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+      },
+      orderLog: { create: vi.fn() },
       ticketLog: { create: vi.fn() },
     };
     db = {
@@ -207,4 +219,148 @@ describe('TicketsService', () => {
       });
     });
   });
+
+  describe('cancelTicket', () => {
+    const TICKET_ID = '33333333-3333-4333-8333-333333333333';
+    const SEAT_ID = '55555555-5555-4555-8555-555555555555';
+
+    it('throws NotFound if order not found or does not belong to user', async () => {
+      db.order.findUnique.mockResolvedValue(null);
+      await expect(service.cancelTicket(ORDER_ID, TICKET_ID, OWNER_ID)).rejects.toThrow(NotFoundException);
+
+      db.order.findUnique.mockResolvedValue({ id: ORDER_ID, userId: 'other-user' });
+      await expect(service.cancelTicket(ORDER_ID, TICKET_ID, OWNER_ID)).rejects.toThrow(NotFoundException);
+    });
+
+    it('throws NotFound if ticket not found or does not belong to order', async () => {
+      db.order.findUnique.mockResolvedValue({ id: ORDER_ID, userId: OWNER_ID });
+      db.ticket.findUnique.mockResolvedValue(null);
+      await expect(service.cancelTicket(ORDER_ID, TICKET_ID, OWNER_ID)).rejects.toThrow(NotFoundException);
+
+      db.ticket.findUnique.mockResolvedValue({ id: TICKET_ID, orderId: 'other-order' });
+      await expect(service.cancelTicket(ORDER_ID, TICKET_ID, OWNER_ID)).rejects.toThrow(NotFoundException);
+    });
+
+    it('throws BadRequest if ticket is already CANCELLED', async () => {
+      db.order.findUnique.mockResolvedValue({ id: ORDER_ID, userId: OWNER_ID });
+      db.ticket.findUnique.mockResolvedValue({
+        id: TICKET_ID,
+        orderId: ORDER_ID,
+        status: TicketStatus.CANCELLED,
+      });
+      await expect(service.cancelTicket(ORDER_ID, TICKET_ID, OWNER_ID)).rejects.toThrow(
+        'Vé đã được huỷ trước đó.',
+      );
+    });
+
+    it('throws BadRequest if ticket is already CHECKED_IN', async () => {
+      db.order.findUnique.mockResolvedValue({ id: ORDER_ID, userId: OWNER_ID });
+      db.ticket.findUnique.mockResolvedValue({
+        id: TICKET_ID,
+        orderId: ORDER_ID,
+        status: TicketStatus.CHECKED_IN,
+      });
+      await expect(service.cancelTicket(ORDER_ID, TICKET_ID, OWNER_ID)).rejects.toThrow(
+        'Vé đã được sử dụng, không thể huỷ.',
+      );
+    });
+
+    it('throws BadRequest if concurrent request already invalidated the ticket', async () => {
+      db.order.findUnique.mockResolvedValue({ id: ORDER_ID, userId: OWNER_ID });
+      db.ticket.findUnique.mockResolvedValue({
+        id: TICKET_ID,
+        orderId: ORDER_ID,
+        status: TicketStatus.VALID,
+        seatId: SEAT_ID,
+        showtimeId: SHOWTIME_ID,
+      });
+      tx.ticket.updateMany.mockResolvedValue({ count: 0 });
+
+      await expect(service.cancelTicket(ORDER_ID, TICKET_ID, OWNER_ID)).rejects.toThrow(
+        'Vé đã bị huỷ hoặc không còn hợp lệ.',
+      );
+    });
+
+    it('cancels ticket, releases seat (isSold = false), and records ticketLog audit', async () => {
+      db.order.findUnique.mockResolvedValue({ id: ORDER_ID, userId: OWNER_ID, status: 'PAID' });
+      db.ticket.findUnique.mockResolvedValue({
+        id: TICKET_ID,
+        orderId: ORDER_ID,
+        status: TicketStatus.VALID,
+        seatId: SEAT_ID,
+        showtimeId: SHOWTIME_ID,
+      });
+      tx.ticket.updateMany.mockResolvedValue({ count: 1 });
+      tx.ticket.findFirst.mockResolvedValue(null);
+      tx.ticket.count.mockResolvedValue(0); // all tickets in order now cancelled
+
+      await service.cancelTicket(ORDER_ID, TICKET_ID, OWNER_ID);
+
+      // Verify ticket marked CANCELLED
+      expect(tx.ticket.updateMany).toHaveBeenCalledWith({
+        where: { id: TICKET_ID, status: TicketStatus.VALID },
+        data: expect.objectContaining({
+          status: TicketStatus.CANCELLED,
+        }),
+      });
+
+      // Verify seat released (isSold = false)
+      expect(tx.seat.updateMany).toHaveBeenCalledWith({
+        where: { id: SEAT_ID },
+        data: { isSold: false },
+      });
+
+      // Verify lingering seat holds deleted
+      expect(tx.seatHold.deleteMany).toHaveBeenCalledWith({
+        where: { seatId: SEAT_ID },
+      });
+
+      // Verify audit log
+      expect(tx.ticketLog.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          ticketId: TICKET_ID,
+          action: 'CANCELLED',
+          actorId: OWNER_ID,
+        }),
+      });
+
+      // Verify order cancelled when no active tickets remain
+      expect(tx.order.updateMany).toHaveBeenCalledWith({
+        where: { id: ORDER_ID, status: 'PAID' },
+        data: { status: 'CANCELLED' },
+      });
+    });
+
+    it('evicts Redis keys when Redis is provided', async () => {
+      const mockRedis = {
+        del: vi.fn().mockResolvedValue(1),
+      };
+      const redisService = new TicketsService(
+        db,
+        signing,
+        projection as unknown as TicketQrService,
+        mockRedis as any,
+      );
+
+      db.order.findUnique.mockResolvedValue({ id: ORDER_ID, userId: OWNER_ID });
+      db.ticket.findUnique.mockResolvedValue({
+        id: TICKET_ID,
+        orderId: ORDER_ID,
+        status: TicketStatus.VALID,
+        seatId: SEAT_ID,
+        showtimeId: SHOWTIME_ID,
+      });
+      tx.ticket.updateMany.mockResolvedValue({ count: 1 });
+      tx.ticket.findFirst.mockResolvedValue(null);
+      tx.ticket.count.mockResolvedValue(1);
+
+      await redisService.cancelTicket(ORDER_ID, TICKET_ID, OWNER_ID);
+
+      expect(mockRedis.del).toHaveBeenCalledWith(
+        `sold:showtime:${SHOWTIME_ID}:seat:${SEAT_ID}`,
+        `hold:showtime:${SHOWTIME_ID}:seat:${SEAT_ID}`,
+      );
+    });
+  });
 });
+

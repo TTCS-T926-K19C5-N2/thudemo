@@ -52,3 +52,14 @@ export async function transferTicket(orderId: string, ticketId: string, toEmail:
     }
   );
 }
+
+export async function cancelTicket(orderId: string, ticketId: string) {
+  return api(
+    `/orders/${orderId}/tickets/${ticketId}/cancel`,
+    () => ({ success: true }),
+    {
+      method: "POST",
+    }
+  );
+}
+

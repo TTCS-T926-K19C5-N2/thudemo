@@ -1,5 +1,12 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { TicketStatus, Prisma } from '@prisma/client';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  Optional,
+} from '@nestjs/common';
+import { TicketStatus, Prisma, OrderStatus } from '@prisma/client';
+import type { Redis } from 'ioredis';
 import { randomUUID } from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { generateTicketCode } from './ticket-code.js';
@@ -36,6 +43,7 @@ export class TicketsService {
     private readonly db: PrismaService,
     private readonly signing: TicketSigningService,
     private readonly projection: TicketQrService,
+    @Optional() @Inject('REDIS_CLIENT') private readonly redis?: Redis,
   ) {}
 
   // Runs inside the transaction that moves the order to PAID, so tickets
@@ -181,4 +189,128 @@ export class TicketsService {
       });
     });
   }
+
+  async cancelTicket(
+    orderId: string,
+    ticketId: string,
+    userId: string,
+  ): Promise<void> {
+    const order = await this.db.order.findUnique({
+      where: { id: orderId },
+      select: { id: true, userId: true, status: true },
+    });
+    if (!order || order.userId !== userId) {
+      throw new NotFoundException('Không tìm thấy đơn hàng.');
+    }
+
+    const ticket = await this.db.ticket.findUnique({
+      where: { id: ticketId },
+      include: { seat: true },
+    });
+    if (!ticket || ticket.orderId !== orderId) {
+      throw new NotFoundException('Không tìm thấy vé.');
+    }
+    if (ticket.status === TicketStatus.CANCELLED) {
+      throw new BadRequestException('Vé đã được huỷ trước đó.');
+    }
+    if (ticket.status === TicketStatus.CHECKED_IN) {
+      throw new BadRequestException('Vé đã được sử dụng, không thể huỷ.');
+    }
+    if (ticket.status !== TicketStatus.VALID) {
+      throw new BadRequestException('Chỉ có thể huỷ vé hợp lệ.');
+    }
+
+    await this.db.$transaction(async (tx) => {
+      // 1. Atomic status update: if concurrent requests try to cancel the same ticket,
+      // only one matches status: VALID and gets count === 1.
+      const updated = await tx.ticket.updateMany({
+        where: {
+          id: ticketId,
+          status: TicketStatus.VALID,
+        },
+        data: {
+          status: TicketStatus.CANCELLED,
+          cancelledAt: new Date(),
+        },
+      });
+
+      if (updated.count === 0) {
+        throw new BadRequestException('Vé đã bị huỷ hoặc không còn hợp lệ.');
+      }
+
+      // 2. Release seat back to inventory (isSold = false)
+      if (ticket.seatId) {
+        const otherActiveTicket = await tx.ticket.findFirst({
+          where: {
+            seatId: ticket.seatId,
+            id: { not: ticketId },
+            status: { in: [TicketStatus.VALID, TicketStatus.CHECKED_IN] },
+          },
+        });
+
+        if (!otherActiveTicket) {
+          await tx.seat.updateMany({
+            where: { id: ticket.seatId },
+            data: { isSold: false },
+          });
+
+          // Clean up any lingering seat_holds for this seat
+          await tx.seatHold.deleteMany({
+            where: { seatId: ticket.seatId },
+          });
+        }
+      }
+
+      // 3. Audit log for ticket
+      await tx.ticketLog.create({
+        data: {
+          ticketId: ticket.id,
+          action: 'CANCELLED',
+          actorId: userId,
+          detail: {
+            reason: 'BUYER_CANCELLED',
+            seatId: ticket.seatId,
+            showtimeId: ticket.showtimeId,
+          },
+        },
+      });
+
+      // 4. If all tickets of this order are now cancelled, mark order as CANCELLED
+      const remainingValid = await tx.ticket.count({
+        where: {
+          orderId,
+          status: { in: [TicketStatus.VALID, TicketStatus.CHECKED_IN] },
+        },
+      });
+      if (remainingValid === 0) {
+        await tx.order.updateMany({
+          where: { id: orderId, status: OrderStatus.PAID },
+          data: { status: OrderStatus.CANCELLED },
+        });
+        await tx.orderLog.create({
+          data: {
+            orderId,
+            type: 'ORDER_CANCELLED',
+            detail: {
+              reason: 'ALL_TICKETS_CANCELLED',
+              cancelledBy: userId,
+            },
+          },
+        });
+      }
+    });
+
+    // 5. Delete Redis cache keys if Redis is available
+    if (this.redis && ticket.seatId) {
+      try {
+        await this.redis.del(
+          `sold:showtime:${ticket.showtimeId}:seat:${ticket.seatId}`,
+          `hold:showtime:${ticket.showtimeId}:seat:${ticket.seatId}`,
+        );
+      } catch {
+        // Non-blocking cache eviction
+      }
+    }
+  }
 }
+
