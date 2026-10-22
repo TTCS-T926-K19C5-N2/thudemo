@@ -1,0 +1,8 @@
+INSERT INTO users(id,email,password,"updatedAt") VALUES('10000000-0000-4000-8000-000000000001','b1a-fixture@example.invalid','synthetic-not-a-secret',now());
+INSERT INTO events(id,name,description,location,"organizerId","updatedAt") VALUES('10000000-0000-4000-8000-000000000002','Reconstructed v4 fixture','Synthetic','Local','10000000-0000-4000-8000-000000000001',now());
+INSERT INTO showtimes(id,"eventId","startTime",status,"structureLocked","seatMapId","maxTicketsPerUser","updatedAt") VALUES('10000000-0000-4000-8000-000000000003','10000000-0000-4000-8000-000000000002',now()+interval '1 day','ON_SALE',true,'synthetic',4,now());
+INSERT INTO seat_categories(id,"showtimeId",name,price) VALUES('10000000-0000-4000-8000-000000000004','10000000-0000-4000-8000-000000000003','A',100000);
+INSERT INTO seats(id,"showtimeId","categoryId",row,"seatNumber") VALUES('10000000-0000-4000-8000-000000000005','10000000-0000-4000-8000-000000000003','10000000-0000-4000-8000-000000000004','A',1);
+SELECT * FROM claim_hold_v4('10000000-0000-4000-8000-000000000003','10000000-0000-4000-8000-000000000001','original-login',ARRAY['10000000-0000-4000-8000-000000000005']::uuid[],'10000000-0000-4000-8000-000000000006','10000000-0000-4000-8000-000000000007');
+INSERT INTO orders(id,"userId","eventId","showtimeId","holdSessionId","holdToken",status,"paymentExpiresAt","totalAmount","updatedAt") SELECT '10000000-0000-4000-8000-000000000008',"userId",'10000000-0000-4000-8000-000000000002',"showtimeId",id,token,'PENDING_PAYMENT',"expiresAt",100000,now() FROM hold_sessions;
+INSERT INTO order_items(id,"orderId","seatId","categoryName","unitPrice") VALUES('10000000-0000-4000-8000-000000000009','10000000-0000-4000-8000-000000000008','10000000-0000-4000-8000-000000000005','A',100000);
