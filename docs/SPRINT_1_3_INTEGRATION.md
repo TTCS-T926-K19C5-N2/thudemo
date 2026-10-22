@@ -29,10 +29,19 @@ RETAINED theo thứ tự S-05 → S-06/S-09 → S-15 prerequisite → S-07 → S
 
 | Nhóm | Build | Lint | Typecheck | Test | API E2E | Quyết định |
 |---|---|---|---|---|---|---|
+| g3-configurable-hold (S-10, S-12, S-13) | PASS | PASS (warning có sẵn) | PASS | 604 PASS | 156 PASS | [receipt](../.integration-s123/g3-configurable-hold/summary.json) |
 | g2-seatmap-pricing-sale (S-05, S-06, S-09, S-15, S-07, S-08) | PASS | PASS (warning có sẵn) | PASS | 604 PASS | 151 PASS | [receipt](../.integration-s123/g2-seatmap-pricing-sale/summary.json) |
 | g1-foundations-retry (S-01, S-02, S-04, K-01) | PASS | PASS (warning có sẵn) | PASS | 604 PASS | 151 PASS | [receipt](../.integration-s123/g1-foundations-retry/summary.json) |
 
 Raw/log và manifest ở `.integration-s123/<group>/`; báo cáo cuối nêu rõ phần giữ base, phần nhập mới, các lỗi còn mở và loại bằng chứng. Raw lớn giữ local, receipt/hash được commit. Ma trận `STORY_SOURCE_MATRIX.csv` vẫn là snapshot nguồn audit A/B0, không gán thay đổi integration cho thư mục donor chỉ đọc.
+
+### G3 — S-10/S-12/S-13, TTL cấu hình trên lineage A
+
+IMPORTED/ADAPTED từ R27 `83f950563a38`: checkout riêng `apps/api/test/configurable-hold-ttl.e2e-spec.ts`; forward-port phần thân v1 của `202610190004_configurable_hold_ttl` sang **migration mới `202610220012_configurable_hold_ttl`**. Không nhập file migration19/10, wrapper v7 chín trường, caller hoặc quota preflight của donor. V6/v5 và HTTP sáu trường giữ nguyên. Không đổi index, pool, khóa hàng hoặc tối ưu hiệu năng.
+
+TTL là thiết lập PostgreSQL phía server `app.hold_ttl_seconds`, default600; ví dụ cấu hình kết nối API bằng query parameter `options=-c%20app.hold_ttl_seconds%3D120` trong DATABASE_URL riêng. Tái tạo pool sau đổi cấu hình; hold đã có giữ deadline/token, đơn không gia hạn. Không nhận TTL từ body HTTP. Test donor được thích nghi từ `HOLD_TTL_SECONDS`/v7 sang connection option/v6 và guard DB integration hiện có; giữ đủ năm tình huống, gồm transaction-local reset/fallback600.
+
+Năm gate PASS:604 test và156 E2E. Migration **47/47 mới,35→47 upgrade PASS**, fixture hash giữ nguyên; [receipt migration/load](../.integration-s123/g3-migration-load/summary.json). Chạy load **đúng một lần vì S-10 sửa routine**:42/42 correctness/invariant check,10 vòng100 thắng/100 xung đột/100ghế duy nhất,0 lỗi. **p95 tổng353,36ms; vòng1 438,25ms; NFR FAIL (harness exit1 chỉ do ngưỡng300ms)**. Không đo lại tìm lần pass, không tối ưu; giữ rủi ro đã được người dùng cho phép xử lý sau tích hợp. Đây không phải S-10 Done đủ AC/NFR/DoD.
 
 ## Các gate còn cần người thật
 

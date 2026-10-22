@@ -2,6 +2,8 @@
 
 ## Rủi ro hiệu năng được người dùng yêu cầu giữ lại
 
+Cập nhật S-10: migration47/47 mới và35→47 upgrade PASS; TTL đã cấu hình được phía PostgreSQL, default600. Năm gate PASS (604 test,156 E2E); load hồi quy duy nhất10/10 correctness, p95 mới **353,36ms**, vòng1 **438,25ms**, NFR FAIL; không tối ưu/đo lại trong lượt này. Xem [receipt](../.integration-s123/g3-migration-load/summary.json). Đoạn trích yêu cầu bên dưới giữ nguyên số đo B1 lịch sử.
+
 > p95 giữ ghế đạt 297,88 ms nhưng vòng 1 (khởi động nguội) cao 381-531 ms ở mọi lần chạy; xử lý sau tích hợp bằng làm nóng pool hoặc xác nhận NFR với nhóm.
 
 Đây là số đo B1, không phải phép đo mới. Nhãn “khởi động nguội” trong ghi chú trên mô tả rủi ro vòng đầu; protocol B1 đã qua health/tiền kiểm và có pool được mở sẵn, nên chưa chứng minh thời gian khởi động một tiến trình hoàn toàn nguội. Không tối ưu/warmup mới trong lượt Sprint 1–3.

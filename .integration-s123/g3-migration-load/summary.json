@@ -1,0 +1,17 @@
+{
+  "fresh": "s123_empty_20261022145619",
+  "upgrade": "s123_v4_20261022145619",
+  "fresh_applied": 47,
+  "upgrade_from": 35,
+  "upgrade_to": 47,
+  "fixture_before": "27fd83b3d47798ac29ea0cc77630b62e",
+  "fixture_after": "27fd83b3d47798ac29ea0cc77630b62e",
+  "no_failed_migrations": true,
+  "correctness_10_rounds": true,
+  "checks": 42,
+  "p95_ms": 353.3649999999998,
+  "first_round_p95_ms": 438.2534000000005,
+  "nfr_pass": false,
+  "raw_sha256": "b9a44ef1a50e850991df1b54494286119d33a4697a32194d760fef76bbb302cd",
+  "performance_optimization_attempted": false
+}
