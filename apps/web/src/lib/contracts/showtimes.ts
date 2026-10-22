@@ -27,6 +27,7 @@ export type CatalogItem = {
 export type CatalogPage = { items: CatalogItem[]; nextCursor: string | null };
 export type PublicShowtime = {
   id: string;
+  isDemo: boolean;
   startTime: string;
   status: SaleStatus;
   event: {
@@ -132,8 +133,10 @@ export function decodeCatalog(v: unknown): CatalogPage {
 export function decodePublicShowtime(v: unknown): PublicShowtime {
   const s = object(v),
     e = object(s.event);
+  if (s.isDemo !== undefined && typeof s.isDemo !== "boolean") return invalid();
   return {
     id: string(s.id),
+    isDemo: s.isDemo === true,
     startTime: time(s.startTime),
     status: sale(s.status),
     event: {

@@ -29,6 +29,7 @@ import { CancellationsService } from './cancellations.service.js';
 import { ReportsService } from './reports.service.js';
 import { PrivacyService } from './privacy.service.js';
 import { metrics } from '../monitoring/metrics.js';
+import { SeatEventsModule } from '../showtimes/seat-events.module.js';
 
 @Injectable()
 class PolicyGuard implements CanActivate {
@@ -341,7 +342,7 @@ export class LifecycleWorker implements OnModuleInit, OnModuleDestroy {
   }
 }
 @Module({
-  imports: [MailModule],
+  imports: [MailModule, SeatEventsModule],
   controllers: [LifecycleController],
   providers: [
     CancellationsService,

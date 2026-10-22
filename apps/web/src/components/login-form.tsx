@@ -58,8 +58,12 @@ export function LoginForm({
         router.refresh();
         return;
       }
+      const returnPath = safeReturnTo(returnTo ?? null);
+      const allowedReturn = returnPath?.startsWith("/events/") && !user.roles.includes("ORGANIZER")
+        ? null
+        : returnPath;
       router.replace(
-        safeReturnTo(returnTo ?? null) ??
+        allowedReturn ??
           (user.roles.includes("ORGANIZER")
             ? "/events"
             : user.roles.includes("STAFF")

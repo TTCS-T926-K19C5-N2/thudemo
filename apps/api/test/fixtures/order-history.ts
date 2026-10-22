@@ -1,3 +1,4 @@
+import { assertIntegrationDatabase } from '../integration-database.js';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { PrismaClient, type OrderStatus } from '@prisma/client';
 import * as argon2 from 'argon2';
@@ -25,13 +26,9 @@ export type HistoryFixture = {
 };
 
 export function assertOrderHistoryTestDatabase() {
-  const target = new URL(process.env.DATABASE_URL ?? '');
+  assertIntegrationDatabase();
   if (
     process.env.S32_ISOLATED_TEST !== 'true' ||
-    target.hostname !== '127.0.0.1' ||
-    (target.port !== '15432' &&
-      (target.port !== '15449' || process.env.S32_ISOLATED_TEST !== 'true')) ||
-    target.pathname !== '/sprint2_integration' ||
     process.env.HOLD_EXPIRY_MODE !== 'off'
   )
     throw Error(
