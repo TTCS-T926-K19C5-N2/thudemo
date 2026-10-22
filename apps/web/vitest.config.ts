@@ -8,5 +8,8 @@ export default defineConfig({
   test: {
     include: ["src/**/*.spec.ts", "src/**/*.spec.tsx", "tests/**/*.test.ts"],
     environment: "node",
+    // Exhaustive QR mutation checks share CPU with the parallel API/web suites.
+    // Keep all cases and default worker concurrency; allow a bounded test budget.
+    testTimeout: 15_000,
   },
 });
