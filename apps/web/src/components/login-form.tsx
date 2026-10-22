@@ -1,4 +1,5 @@
 "use client";
+import { notifySessionChanged } from "@/lib/session-events";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -50,15 +51,22 @@ export function LoginForm({
         throw new Error(
           "Phiên đăng nhập chưa được xác nhận. Hãy đăng nhập lại.",
         );
+      notifySessionChanged();
       router.replace(
-        safeReturnTo(returnTo ?? null) ??
-          (user.roles.includes("ORGANIZER") ? "/events" : user.roles.includes("STAFF") ? "/check-in" : "/account"),
+        (user.roles.length === 1 && user.roles.includes("STAFF")
+          ? "/check-in"
+          : safeReturnTo(returnTo ?? null)) ??
+          (user.roles.includes("ORGANIZER")
+            ? "/events"
+            : user.roles.includes("STAFF")
+              ? "/check-in"
+              : "/account"),
       );
       router.refresh();
     } catch (e) {
       setError(
         e instanceof ApiError && e.status === 401
-          ? "Email hoặc mật khẩu không chính xác."
+          ? "Email hoặc mật khẩu không chính xác. Nếu tài khoản bị khóa, vui lòng liên hệ quản trị."
           : e instanceof ApiError && e.status === 429
             ? `Đăng nhập tạm thời bị khóa. Thử lại sau ${Math.ceil(Number(e.details.retryAfterSeconds ?? 60) / 60)} phút.`
             : e instanceof Error
@@ -82,7 +90,13 @@ export function LoginForm({
       }
     >
       <div className="product-login">
-        <h1>{returnTo ? "Đăng nhập để tiếp tục chọn ghế" : "Đăng nhập"}</h1>
+        <h1>
+          {returnTo?.startsWith("/events/")
+            ? "Đăng nhập để tiếp tục sửa sự kiện"
+            : returnTo
+              ? "Đăng nhập để tiếp tục chọn ghế"
+              : "Đăng nhập"}
+        </h1>
         <p>
           {returnTo
             ? "Đăng nhập bằng email và mật khẩu của bạn."
@@ -100,8 +114,9 @@ export function LoginForm({
                 </strong>
               )}
               <p>
-                Sau khi đăng nhập thành công, bạn sẽ quay lại chọn ghế{" "}
-                {show ? `cho ${show.event.name}` : "cho đúng suất diễn"}.
+                {returnTo?.startsWith("/events/")
+                  ? "Sau khi đăng nhập, bạn sẽ quay lại biểu mẫu sự kiện. Nội dung đang nhập được khôi phục cho cùng tài khoản trên thẻ này."
+                  : `Sau khi đăng nhập thành công, bạn sẽ quay lại chọn ghế ${show ? `cho ${show.event.name}` : "cho đúng suất diễn"}.`}
               </p>
             </div>
           </div>
@@ -188,13 +203,22 @@ export function LoginForm({
             </section>
           )}
 
-          {returnTo && (
+          {returnTo?.startsWith("/shows/") && (
             <p className="login-availability">
               Việc chọn vị trí chưa xác nhận đặt chỗ. Ghế chỉ được giữ sau khi
               máy chủ xác nhận thành công.
             </p>
           )}
         </form>
+        <p className="login-account-guidance">
+          Nếu tài khoản chưa kích hoạt, hãy mở liên kết trong hộp thư thử nghiệm
+          hoặc <Link href="/resend-activation">gửi lại liên kết kích hoạt</Link>
+          .
+        </p>
+        <p className="login-account-guidance">
+          Chưa có tài khoản?{" "}
+          <Link href="/register">Đăng ký tài khoản thử nghiệm</Link>
+        </p>
       </div>
       <Link href={show ? `/shows/${show.id}` : "/"} className="login-back">
         ← Quay lại {show ? "chi tiết sự kiện" : "danh sách sự kiện"}

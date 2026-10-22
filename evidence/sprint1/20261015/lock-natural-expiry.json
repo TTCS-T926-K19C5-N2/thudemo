@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "lockStarted": "2026-10-15T07:57:10.119Z",
+  "checkedAt": "2026-10-15T08:17:30.944Z",
+  "result": "Real Redis lock expired naturally after original 900s; correct login200. No TTL shortening or lock deletion."
+}

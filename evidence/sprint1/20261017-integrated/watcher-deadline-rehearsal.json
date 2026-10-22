@@ -1,0 +1,23 @@
+{
+  "time": "2026-10-16T17:41:05.958Z",
+  "base": "90188e572d41d3f95e1dac13a42256260fd68a22",
+  "workingTree": true,
+  "watcherSha256": "0f2adf36c0c4d1e6855283d5d46150ddb6f4ec8f7f5d3094ad7cc3853a27ec38",
+  "result": "PASS",
+  "environment": "Windows Node24, real Git HTTP transport against isolated loopback delayed server; temporary bare repository, no real credentials or remote writes",
+  "baseline": {
+    "bounded": false,
+    "elapsedMs": 22120,
+    "status": 128
+  },
+  "fixed": {
+    "productionDefaultDeadlineMs": 20000,
+    "elapsedMs": 20009,
+    "timedOut": true
+  },
+  "limitations": [
+    "This proves the real default command deadline, not merge→healthy<600s",
+    "15second retries preserve all source/ancestry/check gates",
+    "Live automatic deadline gate must be remeasured on a subsequent reviewed merge"
+  ]
+}

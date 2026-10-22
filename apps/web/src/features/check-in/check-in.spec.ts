@@ -6,7 +6,7 @@ import {
 import {
   LOCAL_STORAGE_SHOWTIME_KEY,
   LOCAL_STORAGE_GATE_KEY,
-} from "@/app/check-in/page";
+} from "./selection-storage";
 
 describe("S-29 Ticket Checker Selection (Contracts & State)", () => {
   describe("decodeTodayShowtimes", () => {

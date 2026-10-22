@@ -1,0 +1,77 @@
+{
+  "preflight": {
+    "time": "2026-10-16T10:06:26.898Z",
+    "source": "5b3f67bc343729dd6d87140b77af6536ec704086",
+    "systemFree": [
+      {
+        "Name": "C",
+        "freeGiB": 35.24
+      },
+      {
+        "Name": "D",
+        "freeGiB": 107.96
+      }
+    ],
+    "memory": {
+      "FreePhysicalMemory": 1778080,
+      "TotalVisibleMemorySize": 16401100
+    }
+  },
+  "result": "PASS",
+  "source": "5b3f67bc343729dd6d87140b77af6536ec704086",
+  "sourceArchive": "D:/s1ac/5b3f67bc-1792145186898",
+  "pristineGitArchive": true,
+  "rootEnvOnly": true,
+  "frozenInstall": true,
+  "lockHashBefore": "f0143587db4eeecdbaf37cd57a260a756dc98cea9ce8a5e9a435ebc95ec08f2d",
+  "lockHashAfter": "f0143587db4eeecdbaf37cd57a260a756dc98cea9ce8a5e9a435ebc95ec08f2d",
+  "migrationsApplied": 29,
+  "database": "sprint1_clean_native_1792145186898",
+  "smoke": [
+    {
+      "url": "http://127.0.0.1:3481/health",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3480/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3480/api/health",
+      "status": 200
+    }
+  ],
+  "nativeProcesses": [
+    {
+      "name": "api",
+      "pid": 24124
+    },
+    {
+      "name": "web",
+      "pid": 18820
+    }
+  ],
+  "dependencyPorts": {
+    "postgres": 15446,
+    "redis": 16396
+  },
+  "sourcePortsOverriddenForIsolation": true,
+  "conditions": "README install/migrate/generate/native API + web order; dedicated clean DB on owned Compose dependencies. Used compiled native processes after pnpm build. Explicit local key/fixture config; not QR/payment acceptance. Standard 3000/3001/5432/6379 ports preserved in documentation; test ports checked free.",
+  "cleanUp": "Only these two child processes stopped; DB/container/volumes preserved, no existing data edited",
+  "versions": {
+    "node": "v24.21.0",
+    "pnpm": "10.15.1",
+    "next": "16.3.8",
+    "react": "19.2.8",
+    "@nestjs/core": "12.1.0",
+    "prisma": "7.10.0",
+    "tailwindcss": "4.3.3"
+  },
+  "verificationSource": {
+    "path": "evidence\\sprint1\\20261016-acceptance-audit\\acceptance-clean-native.mjs",
+    "sha256": "0395f9e4011b0c3be561fbe592b3a6b00c2581dd8a59f121f1172f4836cf3618",
+    "executedAs": ".sprint1-local/acceptance-clean-native.mjs",
+    "executedSha256": "d06512268e7207d62c265e5089ce2dc6127135d3b2ae31b913c1a59f8d01cbea",
+    "publicationTransform": "Prettier formatting only; executed and published hashes recorded separately"
+  }
+}

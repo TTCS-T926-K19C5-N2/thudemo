@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 export class CheckInServiceS29 {
   constructor(private readonly db: PrismaService) {}
 
-  async getTodayShowtimes() {
+  async getTodayShowtimes(userId: string) {
     const now = new Date();
     // Support Vietnam timezone (UTC+7) as required by project conventions
     // "thời gian lưu ở UTC, hiển thị theo múi giờ Việt Nam"
@@ -20,6 +20,7 @@ export class CheckInServiceS29 {
 
     const showtimes = await this.db.showtime.findMany({
       where: {
+        checkInGates: { some: { permissions: { some: { userId } } } },
         startTime: {
           gte: startOfDay,
           lt: endOfDay,

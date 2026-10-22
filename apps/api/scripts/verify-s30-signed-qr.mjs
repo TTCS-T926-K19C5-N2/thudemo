@@ -158,6 +158,9 @@ async function account(role, name) {
   });
   return { id: user.id, name, cookie: 'event_session=' + token };
 }
+async function legacyTicketRecord({ data }) {
+  return db.ticket.upsert({ where: { orderId_seatId: { orderId: data.orderId, seatId: data.seatId } }, create: data, update: data });
+}
 async function ticket(status = 'PAID') {
   const seat = await db.seat.create({
     data: {
@@ -185,6 +188,11 @@ async function ticket(status = 'PAID') {
     },
     include: { items: true },
   });
+  if (status === 'PAID') await db.ticket.create({ data: {
+    orderId: order.id, showtimeId: fixture.showtimeId, seatId: seat.id,
+    code: randomUUID(), seatLabel: `A-${seatNumber}`, ticketType: 'Hạng thường',
+    status: 'VALID', price: 200000,
+  } });
   return {
     id: order.items[0].id,
     orderId: order.id,
@@ -239,14 +247,14 @@ try {
   const show = await db.showtime.create({
     data: {
       eventId: event.id,
-      startTime: new Date('2026-12-25T12:00:00Z'),
+      startTime: new Date(),
       status: 'ON_SALE',
     },
   });
   const other = await db.showtime.create({
     data: {
       eventId: event.id,
-      startTime: new Date('2026-12-26T12:00:00Z'),
+      startTime: new Date(),
       status: 'ON_SALE',
     },
   });
@@ -373,7 +381,7 @@ try {
     'Signed unpaid/cancelled tickets rejected without admissions',
   );
   const legacyCancelled = await ticket();
-  await db.ticket.create({
+  await legacyTicketRecord({
     data: {
       orderId: legacyCancelled.orderId,
       showtimeId: show.id,
@@ -392,7 +400,7 @@ try {
     'S-33 CANCELLED Ticket vetoes admission and QR rendering',
   );
   const legacyUsed = await ticket();
-  await db.ticket.create({
+  await legacyTicketRecord({
     data: {
       orderId: legacyUsed.orderId,
       showtimeId: show.id,
@@ -411,7 +419,7 @@ try {
     'Legacy used status with missing timestamp fails closed and owner sees used',
   );
   const legacyAlias = 'TEST-' + randomUUID();
-  await db.ticket.create({
+  await legacyTicketRecord({
     data: {
       orderId: first.orderId,
       showtimeId: show.id,

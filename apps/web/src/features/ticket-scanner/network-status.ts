@@ -15,8 +15,8 @@ const initialBrowserOnline =
     : true;
 
 let currentState: NetworkStatusState = {
-  isOnline: initialBrowserOnline,
-  isServerReachable: initialBrowserOnline,
+  isOnline: false,
+  isServerReachable: false,
   browserOnline: initialBrowserOnline,
   lastCheckedAt: null,
   serverError: null,
@@ -25,7 +25,9 @@ let currentState: NetworkStatusState = {
 // Test override mechanism
 let mockServerReachable: boolean | null = null;
 
-export function _setMockServerReachableForTesting(reachable: boolean | null): void {
+export function _setMockServerReachableForTesting(
+  reachable: boolean | null,
+): void {
   mockServerReachable = reachable;
   if (reachable !== null) {
     currentState = {
@@ -113,6 +115,7 @@ export function markServerOffline(reason = "Mất kết nối với máy chủ")
 
 let globalListenerRegistered = false;
 let heartbeatIntervalId: number | null = null;
+let detachEvents: (() => void) | null = null;
 
 function setupGlobalListeners(): void {
   if (typeof window === "undefined" || globalListenerRegistered) return;
@@ -136,10 +139,17 @@ function setupGlobalListeners(): void {
 
   window.addEventListener("online", handleOnline);
   window.addEventListener("offline", handleOffline);
+  detachEvents = () => {
+    window.removeEventListener("online", handleOnline);
+    window.removeEventListener("offline", handleOffline);
+  };
 
   // Periodic heartbeat every 30s
   heartbeatIntervalId = window.setInterval(() => {
-    if (listeners.size > 0 && (typeof navigator === "undefined" || navigator.onLine)) {
+    if (
+      listeners.size > 0 &&
+      (typeof navigator === "undefined" || navigator.onLine)
+    ) {
       void verifyAndBroadcast();
     }
   }, 30000);
@@ -181,6 +191,8 @@ export function subscribeNetworkStatus(
         heartbeatIntervalId = null;
       }
       globalListenerRegistered = false;
+      detachEvents?.();
+      detachEvents = null;
     }
   };
 }

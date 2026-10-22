@@ -20,6 +20,9 @@ export interface ScannerTicketPayload {
 }
 
 export interface ShowtimeTicketsPayload {
+  protocolVersion?: number;
+  version?: string;
+  mode?: "full" | "delta";
   showtimeId: string;
   showtimeName: string;
   generatedAt: string;
@@ -65,6 +68,9 @@ export async function fetchShowtimeTickets(
       const pubKey = object(data.publicKey);
 
       return {
+        protocolVersion: Number(data.protocolVersion ?? 1),
+        version: typeof data.version === "string" ? data.version : undefined,
+        mode: data.mode === "full" ? "full" : "delta",
         showtimeId: String(data.showtimeId),
         showtimeName: String(data.showtimeName ?? ""),
         generatedAt: String(data.generatedAt),
@@ -95,15 +101,6 @@ export async function fetchShowtimeTickets(
   );
 }
 
-export interface OfflineScanItemPayload {
-  scanId: string;
-  showtimeId: string;
-  ticketCode: string;
-  gateId?: string;
-  scannedAt: string;
-  deviceId: string;
-}
-
 export interface SyncOfflineScansResponse {
   synced: number;
   conflicts: {
@@ -113,40 +110,5 @@ export interface SyncOfflineScansResponse {
     existingCheckedInAt?: string | null;
   }[];
   syncedScanIds: string[];
-}
-
-export async function syncOfflineScansApi(
-  scans: OfflineScanItemPayload[],
-): Promise<SyncOfflineScansResponse> {
-  return api(
-    "/scanner/sync-scans",
-    (value: unknown) => {
-      const data = object(value);
-      const conflictsRaw = Array.isArray(data.conflicts) ? data.conflicts : [];
-      const syncedScanIdsRaw = Array.isArray(data.syncedScanIds)
-        ? data.syncedScanIds
-        : [];
-
-      return {
-        synced: Number(data.synced ?? 0),
-        conflicts: conflictsRaw.map((c) => {
-          const item = object(c);
-          return {
-            scanId: String(item.scanId),
-            ticketCode: String(item.ticketCode),
-            reason: String(item.reason),
-            existingCheckedInAt: item.existingCheckedInAt
-              ? String(item.existingCheckedInAt)
-              : null,
-          };
-        }),
-        syncedScanIds: syncedScanIdsRaw.map((id) => String(id)),
-      };
-    },
-    {
-      method: "POST",
-      body: JSON.stringify({ scans }),
-    },
-  );
 }
 

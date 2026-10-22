@@ -19,7 +19,7 @@ type TicketBody = {
   ticketId: string;
   showtimeId: string;
   eventName: string;
-  startTime: string;
+  showtimeStart: string;
   seatLabel: string;
   category: string;
   tier: string | null;
@@ -101,6 +101,20 @@ describe('S-25/S-26 signed QR tickets', () => {
         },
       },
     });
+    // Paid orders are issued one tickets row per seat; the QR endpoint
+    // refuses orders whose tickets were never issued.
+    if (status === OrderStatus.PAID)
+      await db.ticket.createMany({
+        data: seatIds.map((seatId, index) => ({
+          orderId: order.id,
+          showtimeId,
+          seatId,
+          code: randomUUID(),
+          seatLabel: `C-${seatNumber - seats + index + 1}`,
+          ticketType: 'Thường',
+          price: 300000,
+        })),
+      });
     return order.id;
   }
 
@@ -209,7 +223,7 @@ describe('S-25/S-26 signed QR tickets', () => {
       expect(ticket).toMatchObject({
         showtimeId,
         eventName: 'Đêm nhạc S-25',
-        startTime: startTime.toISOString(),
+        showtimeStart: startTime.toISOString(),
         category: 'Thường',
         tier: 'Mở bán sớm',
         status: 'VALID',

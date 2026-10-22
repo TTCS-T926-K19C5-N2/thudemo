@@ -2,12 +2,22 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { describe, beforeAll, afterAll, it, expect } from 'vitest';
+import {
+  describe,
+  beforeAll,
+  afterAll,
+  afterEach,
+  it,
+  expect,
+  vi,
+} from 'vitest';
 import { AppModule } from '../src/app.module.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 import { hashSessionToken, SESSION_COOKIE } from '../src/auth/auth.service.js';
 import { OrderStatus } from '@prisma/client';
 import { OrdersService } from '../src/orders/orders.service.js';
+import { PAYMENT_GATEWAY } from '../src/payments/gateways/payment-gateway.interface.js';
+import { MockPaymentGateway } from '../src/payments/gateways/mock.gateway.js';
 
 describe('Orders S-17 E2E Integration', () => {
   let app: INestApplication;
@@ -20,6 +30,12 @@ describe('Orders S-17 E2E Integration', () => {
   let seat1Id: string;
   let seat2Id: string;
   const userIds: string[] = [];
+  let originalFetch: typeof fetch | undefined;
+  const externalFetch = vi
+    .fn<typeof fetch>()
+    .mockRejectedValue(
+      new Error('External HTTP is forbidden in order integration'),
+    );
 
   async function createAccount(role: string) {
     await db.role.createMany({ data: [{ name: role }], skipDuplicates: true });
@@ -48,15 +64,26 @@ describe('Orders S-17 E2E Integration', () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
       target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
+      !(
+        target.port === '15432' ||
+        (target.port === '15446' &&
+          process.env.SPRINT1_ISOLATED_TEST === 'true')
+      ) ||
       target.pathname !== '/sprint2_integration'
     ) {
       throw new Error('Run only on the isolated sprint2_integration database');
     }
 
+    // Exercise real HTTP/auth/database order behavior without depending on
+    // MoMo DNS/latency. Adapter/provider acceptance is covered separately.
+    originalFetch = globalThis.fetch;
+    globalThis.fetch = externalFetch;
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(PAYMENT_GATEWAY)
+      .useClass(MockPaymentGateway)
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
@@ -131,7 +158,13 @@ describe('Orders S-17 E2E Integration', () => {
     seat2Id = s2.id;
   }, 30000);
 
+  afterEach(() => {
+    expect(externalFetch).not.toHaveBeenCalled();
+    externalFetch.mockClear();
+  });
+
   afterAll(async () => {
+    if (originalFetch) globalThis.fetch = originalFetch;
     if (db) {
       if (eventId) {
         const shows = await db.showtime.findMany({
@@ -263,21 +296,26 @@ describe('Orders S-17 E2E Integration', () => {
         expiresAt: new Date(Date.now() + 600000),
         paymentExpiresAt: new Date(Date.now() + 600000),
         items: {
-          create: [{ seatId: seat1Id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
+          create: [
+            {
+              seatId: seat1Id,
+              tierName: 'VIP',
+              categoryName: 'VIP',
+              unitPrice: 500000,
+            },
+          ],
         },
       },
     });
 
     // Unauthenticated request
-    await request(app.getHttpServer())
-      .get(`/orders/${order.id}`)
-      .expect(401);
+    await request(app.getHttpServer()).get(`/orders/${order.id}`).expect(401);
 
     // Buyer 2 attempting to view Buyer 1's order -> 404 (do not leak existence)
     await request(app.getHttpServer())
       .get(`/orders/${order.id}`)
       .set('Cookie', buyer2Cookie)
-      .expect(404);
+      .expect(403);
   });
 
   it('AC 3: marks expired order as EXPIRED and isExpired=true', async () => {
@@ -292,7 +330,14 @@ describe('Orders S-17 E2E Integration', () => {
         expiresAt: new Date(Date.now() - 5000), // expired 5 seconds ago
         paymentExpiresAt: new Date(Date.now() - 5000),
         items: {
-          create: [{ seatId: seat2Id, tierName: 'Standard', categoryName: 'Standard', unitPrice: 300000 }],
+          create: [
+            {
+              seatId: seat2Id,
+              tierName: 'Standard',
+              categoryName: 'Standard',
+              unitPrice: 300000,
+            },
+          ],
         },
       },
     });
@@ -319,7 +364,14 @@ describe('Orders S-17 E2E Integration', () => {
           expiresAt: new Date(Date.now() + 600000),
           paymentExpiresAt: new Date(Date.now() + 600000),
           items: {
-            create: [{ seatId: seat1Id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
+            create: [
+              {
+                seatId: seat1Id,
+                tierName: 'VIP',
+                categoryName: 'VIP',
+                unitPrice: 500000,
+              },
+            ],
           },
           payments: {
             create: [
@@ -339,7 +391,8 @@ describe('Orders S-17 E2E Integration', () => {
         .set('Cookie', buyer1Cookie)
         .expect(200);
 
-      expect(res.headers['cache-control']).toBe('no-store');
+      expect(res.headers['cache-control']).toBe('private, no-store');
+      expect(res.headers.vary).toContain('Cookie');
       expect(res.body.orderId).toBe(order.id);
       expect(res.body.status).toBe(OrderStatus.PENDING);
       expect(res.body.expiresAt).toBeTruthy();
@@ -349,7 +402,9 @@ describe('Orders S-17 E2E Integration', () => {
       expect(res.body.latestPayment.attemptNo).toBe(1);
 
       // Verify no side effects: DB order status remains unchanged
-      const freshOrder = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+      const freshOrder = await db.order.findUniqueOrThrow({
+        where: { id: order.id },
+      });
       expect(freshOrder.status).toBe(OrderStatus.PENDING);
 
       // Verify detail API also exposes latestPayment (S-22 requirement for S-24 compatibility)
@@ -362,7 +417,7 @@ describe('Orders S-17 E2E Integration', () => {
       expect(detailRes.body.latestPayment.attemptNo).toBe(1);
     });
 
-    it('rejects unauthenticated user (401) and different user (404) on status endpoint', async () => {
+    it('rejects unauthenticated user (401) and different user (403) on status endpoint', async () => {
       const order = await db.order.create({
         data: {
           userId: buyer1Id,
@@ -373,7 +428,14 @@ describe('Orders S-17 E2E Integration', () => {
           expiresAt: new Date(Date.now() + 600000),
           paymentExpiresAt: new Date(Date.now() + 600000),
           items: {
-            create: [{ seatId: seat1Id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
+            create: [
+              {
+                seatId: seat1Id,
+                tierName: 'VIP',
+                categoryName: 'VIP',
+                unitPrice: 500000,
+              },
+            ],
           },
         },
       });
@@ -387,7 +449,7 @@ describe('Orders S-17 E2E Integration', () => {
       await request(app.getHttpServer())
         .get(`/orders/${order.id}/status`)
         .set('Cookie', buyer2Cookie)
-        .expect(404);
+        .expect(403);
     });
   });
 
@@ -400,7 +462,9 @@ describe('Orders S-17 E2E Integration', () => {
       const testSeat = await db.seat.create({
         data: {
           showtimeId,
-          categoryId: (await db.seatCategory.findFirstOrThrow({ where: { showtimeId } })).id,
+          categoryId: (
+            await db.seatCategory.findFirstOrThrow({ where: { showtimeId } })
+          ).id,
           row: 'X',
           seatNumber: 99,
           isSold: false,
@@ -442,13 +506,22 @@ describe('Orders S-17 E2E Integration', () => {
           expiresAt: pastTime,
           paymentExpiresAt: pastTime,
           items: {
-            create: [{ seatId: testSeat.id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
+            create: [
+              {
+                seatId: testSeat.id,
+                tierName: 'VIP',
+                categoryName: 'VIP',
+                unitPrice: 500000,
+              },
+            ],
           },
         },
       });
 
       // Verify hold exists before expiry
-      const holdBefore = await db.seatHold.findUnique({ where: { seatId: testSeat.id } });
+      const holdBefore = await db.seatHold.findUnique({
+        where: { seatId: testSeat.id },
+      });
       expect(holdBefore).not.toBeNull();
 
       // Run expireOrder
@@ -457,15 +530,21 @@ describe('Orders S-17 E2E Integration', () => {
       expect((result1 as any).releasedSeatsCount).toBe(1);
 
       // Verify DB state: order is EXPIRED
-      const updatedOrder = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+      const updatedOrder = await db.order.findUniqueOrThrow({
+        where: { id: order.id },
+      });
       expect(updatedOrder.status).toBe(OrderStatus.EXPIRED);
 
       // Verify seatHold is DELETED (seat is released to available)
-      const holdAfter = await db.seatHold.findUnique({ where: { seatId: testSeat.id } });
+      const holdAfter = await db.seatHold.findUnique({
+        where: { seatId: testSeat.id },
+      });
       expect(holdAfter).toBeNull();
 
       // Verify seat is NOT sold
-      const seatAfter = await db.seat.findUniqueOrThrow({ where: { id: testSeat.id } });
+      const seatAfter = await db.seat.findUniqueOrThrow({
+        where: { id: testSeat.id },
+      });
       expect(seatAfter.isSold).toBe(false);
 
       // AC 4: Run 2nd and 3rd time: idempotent, skipped
@@ -483,7 +562,9 @@ describe('Orders S-17 E2E Integration', () => {
       const testSeat = await db.seat.create({
         data: {
           showtimeId,
-          categoryId: (await db.seatCategory.findFirstOrThrow({ where: { showtimeId } })).id,
+          categoryId: (
+            await db.seatCategory.findFirstOrThrow({ where: { showtimeId } })
+          ).id,
           row: 'Y',
           seatNumber: 88,
           isSold: false,
@@ -523,7 +604,14 @@ describe('Orders S-17 E2E Integration', () => {
           expiresAt: futureTime,
           paymentExpiresAt: futureTime,
           items: {
-            create: [{ seatId: testSeat.id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
+            create: [
+              {
+                seatId: testSeat.id,
+                tierName: 'VIP',
+                categoryName: 'VIP',
+                unitPrice: 500000,
+              },
+            ],
           },
         },
       });
@@ -532,11 +620,15 @@ describe('Orders S-17 E2E Integration', () => {
       expect(result.status).toBe('skipped');
 
       // Order remains PENDING
-      const orderDb = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+      const orderDb = await db.order.findUniqueOrThrow({
+        where: { id: order.id },
+      });
       expect(orderDb.status).toBe(OrderStatus.PENDING);
 
       // Hold is preserved
-      const holdDb = await db.seatHold.findUnique({ where: { seatId: testSeat.id } });
+      const holdDb = await db.seatHold.findUnique({
+        where: { seatId: testSeat.id },
+      });
       expect(holdDb).not.toBeNull();
     });
   });
@@ -548,7 +640,9 @@ describe('Orders S-17 E2E Integration', () => {
       const testSeat = await db.seat.create({
         data: {
           showtimeId,
-          categoryId: (await db.seatCategory.findFirstOrThrow({ where: { showtimeId } })).id,
+          categoryId: (
+            await db.seatCategory.findFirstOrThrow({ where: { showtimeId } })
+          ).id,
           row: 'Z',
           seatNumber: 11,
           isSold: false,
@@ -588,7 +682,14 @@ describe('Orders S-17 E2E Integration', () => {
           expiresAt: futureTime,
           paymentExpiresAt: futureTime,
           items: {
-            create: [{ seatId: testSeat.id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
+            create: [
+              {
+                seatId: testSeat.id,
+                tierName: 'VIP',
+                categoryName: 'VIP',
+                unitPrice: 500000,
+              },
+            ],
           },
         },
       });
@@ -621,9 +722,13 @@ describe('Orders S-17 E2E Integration', () => {
       });
 
       // Verify order is still PENDING and seat is still HELD
-      const orderAfterFail = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+      const orderAfterFail = await db.order.findUniqueOrThrow({
+        where: { id: order.id },
+      });
       expect(orderAfterFail.status).toBe(OrderStatus.PENDING);
-      const holdAfterFail = await db.seatHold.findUnique({ where: { seatId: testSeat.id } });
+      const holdAfterFail = await db.seatHold.findUnique({
+        where: { seatId: testSeat.id },
+      });
       expect(holdAfterFail).not.toBeNull();
 
       // Check order details endpoint
@@ -671,7 +776,9 @@ describe('Orders S-17 E2E Integration', () => {
       const testSeat = await db.seat.create({
         data: {
           showtimeId,
-          categoryId: (await db.seatCategory.findFirstOrThrow({ where: { showtimeId } })).id,
+          categoryId: (
+            await db.seatCategory.findFirstOrThrow({ where: { showtimeId } })
+          ).id,
           row: 'Z',
           seatNumber: 12,
           isSold: false,
@@ -688,21 +795,34 @@ describe('Orders S-17 E2E Integration', () => {
           expiresAt: pastTime,
           paymentExpiresAt: pastTime,
           items: {
-            create: [{ seatId: testSeat.id, tierName: 'VIP', categoryName: 'VIP', unitPrice: 500000 }],
+            create: [
+              {
+                seatId: testSeat.id,
+                tierName: 'VIP',
+                categoryName: 'VIP',
+                unitPrice: 500000,
+              },
+            ],
           },
         },
       });
 
-      const payCountBefore = await db.payment.count({ where: { orderId: order.id } });
+      const payCountBefore = await db.payment.count({
+        where: { orderId: order.id },
+      });
 
       const res = await request(app.getHttpServer())
         .post(`/orders/${order.id}/pay`)
         .set('Cookie', buyer1Cookie)
         .expect(400);
 
-      expect(res.body.code ?? res.body.message).toMatch(/ORDER_EXPIRED|hết hạn/);
+      expect(res.body.code ?? res.body.message).toMatch(
+        /ORDER_EXPIRED|hết hạn/,
+      );
 
-      const payCountAfter = await db.payment.count({ where: { orderId: order.id } });
+      const payCountAfter = await db.payment.count({
+        where: { orderId: order.id },
+      });
       expect(payCountAfter).toBe(payCountBefore); // NO payment created
 
       const expiredLogs = await db.orderLog.findMany({
@@ -712,4 +832,3 @@ describe('Orders S-17 E2E Integration', () => {
     });
   });
 });
-

@@ -18,12 +18,12 @@ import { CheckInModuleS29 } from './check-in/check-in-s29.module.js';
 import { TicketsModule } from './tickets/tickets.module.js';
 import { WebhookSecurityFilter } from './payments/webhook-security.filter.js';
 import { ScannerModule } from './scanner/scanner.module.js';
-import { SeatsModule as SeatHoldModule } from './modules/seats/seats.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      ignoreEnvFile: process.env.CONFIG_IGNORE_ENV_FILE === 'true',
       envFilePath: [
         resolve(process.cwd(), '.env'),
         resolve(process.cwd(), '../../.env'),
@@ -43,7 +43,6 @@ import { SeatsModule as SeatHoldModule } from './modules/seats/seats.module.js';
     CheckInModuleS29,
     TicketsModule,
     ScannerModule,
-    SeatHoldModule,
   ],
   controllers: [AppController],
   providers: [

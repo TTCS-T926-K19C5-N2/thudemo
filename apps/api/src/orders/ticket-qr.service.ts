@@ -9,8 +9,9 @@ import { ScannerCryptoService } from '../scanner/scanner-crypto.service.js';
 type TicketRow = {
   id: string;
   showtimeId: string;
+  seatId: string;
   eventName: string;
-  startTime: Date;
+  showtimeStart: Date;
   checkedInAt: Date | null;
   row: string;
   seatNumber: number;
@@ -25,6 +26,49 @@ export class TicketQrService {
     private readonly db: PrismaService,
     private readonly crypto: ScannerCryptoService,
   ) {}
+  async forBuyer(
+    userId: string,
+    page: { page: number; pageSize: number; skip: number },
+  ) {
+    const [count] = await this.db.$queryRaw<{ total: number }[]>(Prisma.sql`
+      SELECT count(*)::int AS total FROM order_items oi JOIN orders o ON o.id=oi."orderId"
+      JOIN tickets t ON t."orderId"=o.id AND t."seatId"=oi."seatId"
+      WHERE o."userId"=${userId}::uuid AND o.status='PAID'::"OrderStatus"`);
+    const ids = await this.db.$queryRaw<
+      { ticketId: string; orderId: string }[]
+    >(Prisma.sql`
+      SELECT oi.id AS "ticketId",o.id AS "orderId" FROM order_items oi
+      JOIN orders o ON o.id=oi."orderId" JOIN showtimes st ON st.id=o."showtimeId"
+      JOIN tickets t ON t."orderId"=o.id AND t."seatId"=oi."seatId"
+      WHERE o."userId"=${userId}::uuid AND o.status='PAID'::"OrderStatus"
+      ORDER BY CASE WHEN st."startTime">=CURRENT_TIMESTAMP THEN 0 ELSE 1 END,
+        CASE WHEN st."startTime">=CURRENT_TIMESTAMP THEN st."startTime" END ASC,
+        CASE WHEN st."startTime"<CURRENT_TIMESTAMP THEN st."startTime" END DESC,oi.id
+      LIMIT ${page.pageSize} OFFSET ${page.skip}`);
+    // Bound the ticket ID page first; project each distinct owning order once.
+    // No second QR encoder, ownership rule or issuance path is introduced.
+    const projected = new Map<
+      string,
+      Awaited<ReturnType<TicketQrService['forOwner']>>['tickets'][number] & {
+        orderId: string;
+      }
+    >();
+    for (const orderId of new Set(ids.map((item) => item.orderId))) {
+      for (const ticket of (await this.forOwner(orderId, userId)).tickets)
+        projected.set(ticket.ticketId, { ...ticket, orderId });
+    }
+    return {
+      tickets: ids
+        .map((item) => projected.get(item.ticketId))
+        .filter((t) => t !== undefined),
+      pagination: {
+        page: page.page,
+        pageSize: page.pageSize,
+        total: count.total,
+        hasNext: page.skip + ids.length < count.total,
+      },
+    };
+  }
   async forOwner(orderId: string, userId: string) {
     return this.db.$transaction(async (tx) => {
       const [order] = await tx.$queryRaw<{ status: string }[]>(Prisma.sql`
@@ -43,7 +87,8 @@ export class TicketQrService {
           ownerEmail: string | null;
         })[]
       >(Prisma.sql`
-        SELECT oi.id,o."showtimeId",e.name AS "eventName",st."startTime",oi."checkedInAt",s.row,s."seatNumber",oi."categoryName",oi."tierName",
+        SELECT oi.id,o."showtimeId",oi."seatId",oi."checkedInAt",s.row,s."seatNumber",oi."categoryName",oi."tierName",
+          e.name AS "eventName",st."startTime" AS "showtimeStart",
           EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CANCELLED') AS cancelled,
           EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CHECKED_IN') AS used,
           (SELECT t.code FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" LIMIT 1) AS code,
@@ -53,23 +98,29 @@ export class TicketQrService {
         FROM order_items oi JOIN orders o ON o.id=oi."orderId" JOIN seats s ON s.id=oi."seatId"
           JOIN showtimes st ON st.id=o."showtimeId" JOIN events e ON e.id=st."eventId"
         WHERE o.id=${orderId}::uuid AND s."showtimeId"=o."showtimeId" ORDER BY s.row,s."seatNumber"`);
+      if (items.some((item) => !item.ticketDbId || !item.code))
+        throw new ConflictException({
+          code: 'TICKETS_NOT_READY',
+          message: 'Vé chưa được phát đầy đủ. Liên hệ hỗ trợ.',
+        });
       return {
         tickets: items.map((item) => ({
           ticketId: item.id,
           id: item.ticketDbId ?? item.id,
           code: item.code ?? item.id,
           showtimeId: item.showtimeId,
+          seatId: item.seatId,
           eventName: item.eventName,
-          startTime: item.startTime.toISOString(),
+          showtimeStart: item.showtimeStart.toISOString(),
           seatLabel: `${item.row}-${item.seatNumber}`,
           category: item.categoryName,
           tier: item.tierName,
           ticketType: item.categoryName,
           status: item.cancelled
-            ? 'CANCELLED'
+            ? ('CANCELLED' as const)
             : item.checkedInAt || item.used
-              ? 'CHECKED_IN'
-              : 'VALID',
+              ? ('CHECKED_IN' as const)
+              : ('VALID' as const),
           transferredToEmail: item.transferredToEmail ?? null,
           ownerEmail: item.ownerEmail ?? null,
           qrPayload: item.cancelled

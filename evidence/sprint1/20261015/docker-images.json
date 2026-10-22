@@ -1,0 +1,24 @@
+{
+  "images": [
+    {
+      "id": "sha256:810aac2c9cef8ba7e5d5fa918583503386115b3d69b2e4e86c58a1bb44d13b68",
+      "created": "2026-10-15T08:27:48.692067542Z",
+      "tags": [
+        "sprint1-review-api:20261015"
+      ],
+      "user": "node",
+      "sizeBytes": 189122964
+    },
+    {
+      "id": "sha256:0d385a0be57215837cdb143cb621db9acce5616da21727060eef64e609b8b40e",
+      "created": "2026-10-15T08:36:04.204981006Z",
+      "tags": [
+        "sprint1-review-web:20261015"
+      ],
+      "user": "node",
+      "sizeBytes": 235040900
+    }
+  ],
+  "scope": "local images/runtime smoke only",
+  "warning": "Custom web entry uses full production dependencies; output standalone warning is expected config warning, missing-module smoke failures were fixed. No staging or edge certification."
+}

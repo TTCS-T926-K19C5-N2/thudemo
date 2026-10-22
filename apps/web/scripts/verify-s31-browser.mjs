@@ -280,11 +280,11 @@ try {
   await status(ordinary)
     .filter({
       hasText:
-        "Mất kết nối máy chủ. Lượt quét đã được lưu ngoại tuyến để đồng bộ sau.",
+        "Chưa nhận xác nhận từ máy chủ. Chưa cho vào; yêu cầu được giữ để kiểm tra lại khi có mạng.",
     })
     .waitFor();
   check(
-    (await status(ordinary).getAttribute("data-state")) === "RECORDED",
+    (await status(ordinary).getAttribute("data-state")) === "ERROR",
     "Network failure saves the signed scan locally without claiming server confirmation",
   );
   await ordinary.getByTestId("offline-status-banner").waitFor();
@@ -326,18 +326,27 @@ try {
   await status(ordinary)
     .filter({
       hasText:
-        "Mất kết nối máy chủ. Lượt quét đã được lưu ngoại tuyến để đồng bộ sau.",
+        "Chưa nhận xác nhận từ máy chủ. Chưa cho vào; yêu cầu được giữ để kiểm tra lại khi có mạng.",
     })
     .waitFor();
   check(
-    (await status(ordinary).getAttribute("data-state")) === "RECORDED",
+    (await status(ordinary).getAttribute("data-state")) === "ERROR",
     "Lost scan response keeps the committed request queued without premature confirmation",
   );
   await ordinary.getByTestId("offline-status-banner").waitFor();
   await ordinary.route(
-    "**/check-in",
+    "**/scanner/sync-scans",
     async (route) => {
-      retriedScanBodies.push(route.request().postDataJSON());
+      const scans = route.request().postDataJSON().scans;
+      check(
+        scans.length === 1,
+        "Confirmation batch contains the one pending action",
+      );
+      retriedScanBodies.push({
+        requestId: scans[0].scanId,
+        gateId: scans[0].gateId,
+        qrPayload: scans[0].qrPayload,
+      });
       await route.continue();
     },
     { times: 1 },
@@ -349,16 +358,19 @@ try {
     .waitFor({ state: "hidden" });
   check(
     retriedScanBodies.length === 2 &&
-      JSON.stringify(retriedScanBodies[0]) ===
-        JSON.stringify(retriedScanBodies[1]),
-    "Offline replay sends the exact same idempotency action after the server committed",
+      ["requestId", "gateId", "qrPayload"].every(
+        (field) => retriedScanBodies[0][field] === retriedScanBodies[1][field],
+      ),
+    "Batch confirmation preserves exact request ID, gate and signed payload after the server committed",
   );
   await ordinary.getByRole("button", { name: "Kiểm tra vé" }).click();
   await status(ordinary)
     .filter({ hasText: "Đây không phải lần vào mới" })
     .waitFor();
-  check((await status(ordinary).getAttribute("data-state")) === "RECORDED",
-    "The original request result remains recorded rather than admitting a duplicate");
+  check(
+    (await status(ordinary).getAttribute("data-state")) === "RECORDED",
+    "The original request result remains recorded rather than admitting a duplicate",
+  );
   const retriedExceptionBodies = [];
   await desktop.getByRole("button", { name: "Cho vào có ghi chú" }).click();
   await desktop

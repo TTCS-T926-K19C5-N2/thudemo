@@ -1,0 +1,22 @@
+{
+  "original": "TECH01/T01AC1 Next16.3.6",
+  "installedVerified": "Next16.3.8 / eslint-config-next16.3.8",
+  "scope": "Compatible security patch under later explicit user authorization, not a new stack or silent AC rewrite",
+  "authority": {
+    "attachment": "C:\\Users\\Admin\\.codex\\attachments\\795f184b-fcbe-4af7-8583-1a91e56208db\\Văn bản đã dán.txt",
+    "sha256": "008b6220245505005ffb4fa7120c72a828dc456d8595d17a6c13f9e3cd4f36f6",
+    "lines": [
+      16,
+      34,
+      79,
+      86,
+      87
+    ],
+    "quotes": [
+      "Đọc, review và sửa code, test, dependency, CI, script triển khai, tài liệu.",
+      "Chọn sửa nhỏ nhất có căn cứ: cập nhật tương thích, gỡ dependency không dùng sau khi kiểm chứng, hoặc thay công cụ trực tiếp tương đương."
+    ]
+  },
+  "verification": "Pristine frozen install, lock unchanged, build/native smoke and full/prod audit0; manifest pins actual version",
+  "historicalRequirementEdited": false
+}

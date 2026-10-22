@@ -1,0 +1,42 @@
+[
+  {
+    "name": "test-dependencies",
+    "exitCode": 0,
+    "seconds": 1.023
+  },
+  {
+    "name": "test-migration",
+    "exitCode": 0,
+    "seconds": 1.704
+  },
+  {
+    "name": "lint",
+    "exitCode": 0,
+    "seconds": 10.619
+  },
+  {
+    "name": "typecheck",
+    "exitCode": 0,
+    "seconds": 6.142
+  },
+  {
+    "name": "test",
+    "exitCode": 0,
+    "seconds": 5.393
+  },
+  {
+    "name": "integration",
+    "exitCode": 0,
+    "seconds": 36.782
+  },
+  {
+    "name": "qr-migration",
+    "exitCode": 0,
+    "seconds": 2.304
+  },
+  {
+    "name": "integration-scanner",
+    "exitCode": 0,
+    "seconds": 3.127
+  }
+]

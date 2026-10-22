@@ -1,0 +1,29 @@
+{
+  "time": "2026-10-15T16:29:13.370Z",
+  "from": "864189edcba0b0c112203d8de4ebbfb189ac7148",
+  "upstream": "97ff91710fea7736acac5c413ab7a9d77a502212",
+  "profile": "sprint1-laptop-20261015",
+  "existingCounts": {
+    "users": 406,
+    "events": 4,
+    "orders": 0,
+    "tickets": 0
+  },
+  "duplicateOrderSeatPairs": 0,
+  "files": [
+    {
+      "path": "apps/api/prisma/migrations/202610080001_s42_ticket_limit/migration.sql",
+      "sha256": "dc9486a1c331f1cd4fb18409887dbca603f91a395dff7a95b81d7d0d82fed401"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610090001_s25_s26_signed_tickets/migration.sql",
+      "sha256": "8137e12c7b70a439e09a30ec607513ee2a288c30425eeb192a5776ffcb1d1ae0"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610090002_s57_ticket_transfer/migration.sql",
+      "sha256": "3e220cee99f150bc40ead3aa380f9f8161427f8e1ce00198dcc69b9d3847733d"
+    }
+  ],
+  "review": "Agent technical SQL review: additive showtime quota/default4, nullable ticket metadata, unique order-seat, new ticket_logs table/index/FK. Existing tickets must have no duplicate order-seat; no destructive SQL/down migration. Both old and new application schemas retain existing columns. Backup required before migrate; rollback code only retains new schema and keys. Not independent human review.",
+  "result": "PASS for this fake-data database"
+}

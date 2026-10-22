@@ -1,0 +1,112 @@
+{
+  "total": {
+    "lines": {
+      "total": 251,
+      "covered": 214,
+      "skipped": 0,
+      "pct": 85.25
+    },
+    "statements": {
+      "total": 275,
+      "covered": 228,
+      "skipped": 0,
+      "pct": 82.9
+    },
+    "functions": {
+      "total": 46,
+      "covered": 35,
+      "skipped": 0,
+      "pct": 76.08
+    },
+    "branches": {
+      "total": 204,
+      "covered": 172,
+      "skipped": 0,
+      "pct": 84.31
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "apps/api/src/holds/holds.service.ts": {
+    "lines": {
+      "total": 122,
+      "covered": 104,
+      "skipped": 0,
+      "pct": 85.24
+    },
+    "functions": {
+      "total": 21,
+      "covered": 16,
+      "skipped": 0,
+      "pct": 76.19
+    },
+    "statements": {
+      "total": 132,
+      "covered": 111,
+      "skipped": 0,
+      "pct": 84.09
+    },
+    "branches": {
+      "total": 131,
+      "covered": 113,
+      "skipped": 0,
+      "pct": 86.25
+    }
+  },
+  "apps/api/src/prisma/hold-transaction.ts": {
+    "lines": {
+      "total": 73,
+      "covered": 71,
+      "skipped": 0,
+      "pct": 97.26
+    },
+    "functions": {
+      "total": 12,
+      "covered": 12,
+      "skipped": 0,
+      "pct": 100
+    },
+    "statements": {
+      "total": 79,
+      "covered": 76,
+      "skipped": 0,
+      "pct": 96.2
+    },
+    "branches": {
+      "total": 49,
+      "covered": 46,
+      "skipped": 0,
+      "pct": 93.87
+    }
+  },
+  "apps/api/src/prisma/prisma.service.ts": {
+    "lines": {
+      "total": 56,
+      "covered": 39,
+      "skipped": 0,
+      "pct": 69.64
+    },
+    "functions": {
+      "total": 13,
+      "covered": 7,
+      "skipped": 0,
+      "pct": 53.84
+    },
+    "statements": {
+      "total": 64,
+      "covered": 41,
+      "skipped": 0,
+      "pct": 64.06
+    },
+    "branches": {
+      "total": 24,
+      "covered": 13,
+      "skipped": 0,
+      "pct": 54.16
+    }
+  }
+}

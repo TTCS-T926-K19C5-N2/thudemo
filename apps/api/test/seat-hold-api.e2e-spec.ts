@@ -2,9 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { Redis } from 'ioredis';
-import { AppModule } from '../src/app.module.js';
+import { SeatHoldController } from '../src/modules/seats/seat-hold.controller.js';
+import { SeatHoldService } from '../src/modules/seats/seat-hold.service.js';
+import { SeatAvailabilityQueryService } from '../src/modules/seats/queries/seat-availability.query.js';
+import { SEAT_VALIDATOR } from '../src/modules/seats/interfaces/seat-validator.interface.js';
+import { MockSeatValidatorAdapter } from '../src/modules/seats/adapters/mock-seat-validator.adapter.js';
 
-describe('SeatHoldApi (e2e)', () => {
+describe('K-01 isolated research HTTP fixture (not the production AppModule)', () => {
   let app: INestApplication;
   let redis: Redis;
   const showtimeId = 'st_101';
@@ -13,7 +17,15 @@ describe('SeatHoldApi (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      // Prototype behavior is deliberately reachable only in this isolated fixture.
+      // No production Redis, scheduler, auth or PostgreSQL is touched.
+      controllers: [SeatHoldController],
+      providers: [
+        SeatHoldService,
+        SeatAvailabilityQueryService,
+        { provide: SEAT_VALIDATOR, useClass: MockSeatValidatorAdapter },
+        { provide: 'REDIS_CLIENT', useValue: prototypeRedis() },
+      ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -69,3 +81,40 @@ describe('SeatHoldApi (e2e)', () => {
     expect(response.body.message).toContain('Ghế A1 đã bị người khác chọn');
   });
 });
+
+function prototypeRedis() {
+  const values = new Map<string, { value: string; until: number }>();
+  const get = async (key: string) => {
+    const entry = values.get(key);
+    if (!entry || entry.until <= Date.now()) {
+      values.delete(key);
+      return null;
+    }
+    return entry.value;
+  };
+  return {
+    get,
+    async set(
+      key: string,
+      value: string,
+      _ex: string,
+      seconds: number,
+      _nx: string,
+    ) {
+      if (await get(key)) return null;
+      values.set(key, { value, until: Date.now() + seconds * 1000 });
+      return 'OK';
+    },
+    async del(...keys: string[]) {
+      return keys.filter((key) => values.delete(key)).length;
+    },
+    async ttl(key: string) {
+      return (await get(key))
+        ? Math.ceil((values.get(key)!.until - Date.now()) / 1000)
+        : -2;
+    },
+    async exists(key: string) {
+      return (await get(key)) ? 1 : 0;
+    },
+  };
+}

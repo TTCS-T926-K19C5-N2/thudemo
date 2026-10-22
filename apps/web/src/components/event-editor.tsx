@@ -12,6 +12,10 @@ import { OrganizerLayout } from "@/components/layout/product-layout";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { loadCurrentUser, readApiError } from "@/lib/api";
+import {
+  vietnamInputToUtc,
+  vietnamInputFromUtc,
+} from "@/lib/formatting/vietnam-input";
 
 type EventDetails = {
   id: string;
@@ -50,6 +54,22 @@ export function EventEditor({ eventId }: EventEditorProps) {
 
   const submitting = useRef(false);
   const showtimeSubmitting = useRef(false);
+  const ownerId = useRef("");
+  const draftKey = `event-draft:${eventId ?? "new"}`;
+
+  function recoverSession() {
+    try {
+      sessionStorage.setItem(
+        draftKey,
+        JSON.stringify({ ownerId: ownerId.current, draft, startTime }),
+      );
+    } catch {
+      /* Storage may be unavailable. */
+    }
+    router.replace(
+      `/login?returnTo=${encodeURIComponent(eventId ? `/events/${eventId}` : "/events/new")}`,
+    );
+  }
 
   useEffect(() => {
     let mounted = true;
@@ -64,8 +84,10 @@ export function EventEditor({ eventId }: EventEditorProps) {
           setForbidden(true);
           return;
         }
+        ownerId.current = user.id;
 
         if (!eventId) {
+          restoreDraft(user.id);
           if (mounted) setLoading(false);
           return;
         }
@@ -73,6 +95,10 @@ export function EventEditor({ eventId }: EventEditorProps) {
         const response = await fetch(`/api/events/${eventId}/manage`, {
           cache: "no-store",
         });
+        if (response.status === 401) {
+          router.replace("/login");
+          return;
+        }
         if (response.status === 403) {
           setForbidden(true);
           return;
@@ -86,17 +112,43 @@ export function EventEditor({ eventId }: EventEditorProps) {
           description: result.description,
           location: result.location,
         });
+        restoreDraft(user.id);
       } catch {
         if (mounted) setError("Không tải được sự kiện. Hãy thử lại.");
       } finally {
         if (mounted) setLoading(false);
       }
     }
+    function restoreDraft(userId: string) {
+      try {
+        const saved = sessionStorage.getItem(draftKey);
+        sessionStorage.removeItem(draftKey);
+        if (!saved) return;
+        const value = JSON.parse(saved) as {
+          ownerId?: string;
+          draft?: typeof empty;
+          startTime?: string;
+        };
+        if (value.ownerId !== userId) return;
+        if (
+          value.draft &&
+          [
+            value.draft.name,
+            value.draft.description,
+            value.draft.location,
+          ].every((v) => typeof v === "string")
+        )
+          setDraft(value.draft);
+        if (typeof value.startTime === "string") setStartTime(value.startTime);
+      } catch {
+        /* Ignore unavailable storage or malformed drafts. */
+      }
+    }
     void load();
     return () => {
       mounted = false;
     };
-  }, [eventId, router]);
+  }, [eventId, router, draftKey]);
 
   function update(field: keyof typeof empty, value: string) {
     setDraft((current) => ({ ...current, [field]: value }));
@@ -128,6 +180,10 @@ export function EventEditor({ eventId }: EventEditorProps) {
           body: JSON.stringify(draft),
         },
       );
+      if (response.status === 401) {
+        recoverSession();
+        return;
+      }
       if (response.status === 403) {
         setForbidden(true);
         return;
@@ -159,7 +215,8 @@ export function EventEditor({ eventId }: EventEditorProps) {
   async function addShowtime(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (showtimeSubmitting.current) return;
-    if (!startTime || new Date(startTime) <= new Date()) {
+    const startTimeUtc = vietnamInputToUtc(startTime);
+    if (!startTimeUtc || new Date(startTimeUtc) <= new Date()) {
       setFieldErrors((current) => ({
         ...current,
         startTime: "Vui lòng chọn thời gian bắt đầu trong tương lai.",
@@ -174,8 +231,12 @@ export function EventEditor({ eventId }: EventEditorProps) {
       const response = await fetch(`/api/events/${eventId}/showtimes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ startTime: new Date(startTime).toISOString() }),
+        body: JSON.stringify({ startTime: startTimeUtc }),
       });
+      if (response.status === 401) {
+        recoverSession();
+        return;
+      }
       if (response.status === 403) {
         setForbidden(true);
         return;
@@ -213,13 +274,9 @@ export function EventEditor({ eventId }: EventEditorProps) {
 
   function setPresetTime(hoursAhead: number) {
     const d = new Date();
-    d.setHours(d.getHours() + hoursAhead);
-    d.setMinutes(0);
-    d.setSeconds(0);
-    const localIso = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
-      .toISOString()
-      .slice(0, 16);
-    setStartTime(localIso);
+    d.setTime(d.getTime() + hoursAhead * 60 * 60 * 1000);
+    d.setUTCMinutes(0, 0, 0);
+    setStartTime(vietnamInputFromUtc(d));
   }
 
   return (
@@ -379,7 +436,9 @@ export function EventEditor({ eventId }: EventEditorProps) {
                   noValidate
                 >
                   <div>
-                    <Label htmlFor="showtime-start">Thời gian bắt đầu *</Label>
+                    <Label htmlFor="showtime-start">
+                      Thời gian bắt đầu (giờ Việt Nam) *
+                    </Label>
                     <Input
                       id="showtime-start"
                       type="datetime-local"
@@ -433,6 +492,7 @@ export function EventEditor({ eventId }: EventEditorProps) {
                         <div>
                           <time dateTime={st.startTime}>
                             {new Intl.DateTimeFormat("vi-VN", {
+                              timeZone: "Asia/Ho_Chi_Minh",
                               dateStyle: "full",
                               timeStyle: "short",
                             }).format(new Date(st.startTime))}

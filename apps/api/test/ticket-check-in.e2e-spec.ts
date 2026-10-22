@@ -3,7 +3,8 @@ import type { INestApplication } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { Logger } from '@nestjs/common';
 import { hashSessionToken, SESSION_COOKIE } from '../src/auth/auth.service.js';
 import { AppModule } from '../src/app.module.js';
 import { ScannerCryptoService } from '../src/scanner/scanner-crypto.service.js';
@@ -13,6 +14,7 @@ describe('Ticket check-in integration', () => {
   let app: INestApplication;
   let db: PrismaService;
   let staffCookie: string;
+  let adminCookie: string;
   let gateId: string;
   let otherGateId: string;
   let otherOrganizerCookie: string;
@@ -95,6 +97,12 @@ describe('Ticket check-in integration', () => {
     if (
       target.hostname !== '127.0.0.1' ||
       !(
+        (target.port === '15446' &&
+          process.env.SPRINT1_ISOLATED_TEST === 'true' &&
+          target.pathname === '/sprint2_integration') ||
+        (target.port === '15450' &&
+          process.env.SPRINT1_ISOLATED_TEST === 'true' &&
+          target.pathname === '/signed_qr_integration') ||
         (target.port === '15432' &&
           target.pathname === '/sprint2_integration') ||
         (target.port === '15438' &&
@@ -117,6 +125,7 @@ describe('Ticket check-in integration', () => {
     const otherOrganizer = await createAccount('ORGANIZER');
     const buyer = await createAccount('BUYER');
     const staff = await createAccount('STAFF');
+    adminCookie = (await createAccount('ADMIN')).cookie;
     organizerId = organizer.id;
     otherOrganizerCookie = otherOrganizer.cookie;
     buyerId = buyer.id;
@@ -136,7 +145,7 @@ describe('Ticket check-in integration', () => {
     const showtime = await db.showtime.create({
       data: {
         eventId,
-        startTime: new Date('2026-12-25T19:00:00Z'),
+        startTime: new Date(),
         status: 'ON_SALE',
       },
     });
@@ -212,6 +221,9 @@ describe('Ticket check-in integration', () => {
       await db.event.deleteMany({ where: { id: eventId } });
     }
     if (db && userIds.length) {
+      await db.userAdminAudit.deleteMany({
+        where: { targetUserId: { in: userIds } },
+      });
       await db.session.deleteMany({ where: { userId: { in: userIds } } });
       await db.userRole.deleteMany({ where: { userId: { in: userIds } } });
       await db.user.deleteMany({ where: { id: { in: userIds } } });
@@ -276,6 +288,214 @@ describe('Ticket check-in integration', () => {
           .issueQr(unpaidTicketId, showtimeId),
       })
       .expect(404);
+  });
+
+  it('lists only today shows with an explicit gate grant', async () => {
+    const unassigned = await db.showtime.create({
+      data: { eventId, startTime: new Date(), status: 'ON_SALE' },
+    });
+    try {
+      const response = await request(app.getHttpServer())
+        .get('/check-in/today')
+        .set('Cookie', staffCookie)
+        .expect(200);
+      expect(response.body.map((s: { id: string }) => s.id)).toEqual([
+        showtimeId,
+      ]);
+    } finally {
+      await db.showtime.delete({ where: { id: unassigned.id } });
+    }
+  });
+
+  it('admin creates staff, grants gates, records an explained exception and revokes the old session grant', async () => {
+    const password = 'fixture-local-only-password';
+    const created = await request(app.getHttpServer())
+      .post('/admin/users')
+      .set('Cookie', adminCookie)
+      .send({
+        email: `${randomUUID()}@check-in-e2e.test`,
+        password,
+        role: 'STAFF',
+      })
+      .expect(201);
+    userIds.push(created.body.id);
+    const login = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: created.body.email, password })
+      .expect(200);
+    const cookie = login.headers['set-cookie'][0].split(';')[0];
+    const path = `/admin/users/${created.body.id}/assignment`;
+    const grant = {
+      showtimeId,
+      gateName: 'Cửa A',
+      canOverride: false,
+      enabled: true,
+    };
+    await request(app.getHttpServer())
+      .post(path)
+      .set('Cookie', staffCookie)
+      .send(grant)
+      .expect(403);
+    await request(app.getHttpServer())
+      .post(path)
+      .set('Cookie', adminCookie)
+      .send({ ...grant, showtimeId: 'malformed' })
+      .expect(400);
+    await request(app.getHttpServer())
+      .post(path)
+      .set('Cookie', adminCookie)
+      .send(grant)
+      .expect(201);
+    const gates = await request(app.getHttpServer())
+      .get(`/showtimes/${showtimeId}/check-in/gates`)
+      .set('Cookie', cookie)
+      .expect(200);
+    expect(gates.body.gates.map((g: { gateId: string }) => g.gateId)).toEqual([
+      gateId,
+    ]);
+    const ticketId = await createOrderItem(100, OrderStatus.PAID);
+    const qrPayload = app
+      .get(ScannerCryptoService)
+      .issueQr(ticketId, showtimeId);
+    const first = await request(app.getHttpServer())
+      .post(`/showtimes/${showtimeId}/check-in`)
+      .set('Cookie', cookie)
+      .send({ qrPayload, gateId })
+      .expect(200);
+    const gateB = await request(app.getHttpServer())
+      .post(path)
+      .set('Cookie', adminCookie)
+      .send({ ...grant, gateName: 'Cửa B', canOverride: true })
+      .expect(201);
+    const second = await request(app.getHttpServer())
+      .post(`/showtimes/${showtimeId}/check-in`)
+      .set('Cookie', cookie)
+      .send({ qrPayload, gateId: gateB.body.gateId })
+      .expect(409);
+    expect(second.body.firstAdmission).toEqual({
+      checkedInAt: first.body.checkedInAt,
+      gateName: 'Cửa A',
+    });
+    expect(second.body.canOverride).toBe(true);
+    const exception = {
+      qrPayload,
+      gateId: gateB.body.gateId,
+      reason: 'Đã đối chiếu chủ vé thử nghiệm',
+      ownerConfirmed: true,
+    };
+    await request(app.getHttpServer())
+      .post(`/showtimes/${showtimeId}/check-in/exception`)
+      .set('Cookie', cookie)
+      .send({ ...exception, reason: '' })
+      .expect(400);
+    await request(app.getHttpServer())
+      .post(`/showtimes/${showtimeId}/check-in/exception`)
+      .set('Cookie', cookie)
+      .send(exception)
+      .expect(200);
+    const records = await db.ticketAdmission.findMany({
+      where: { ticketId },
+      orderBy: { enteredAt: 'asc' },
+    });
+    expect(records.map((r) => r.kind)).toEqual(['NORMAL', 'EXCEPTION']);
+    expect(records[1]).toMatchObject({
+      staffId: created.body.id,
+      gateId: gateB.body.gateId,
+      reason: exception.reason,
+      ownerConfirmed: true,
+    });
+    expect(
+      (
+        await db.orderItem.findUniqueOrThrow({ where: { id: ticketId } })
+      ).checkedInAt?.toISOString(),
+    ).toBe(first.body.checkedInAt);
+    await request(app.getHttpServer())
+      .post(path)
+      .set('Cookie', adminCookie)
+      .send({ ...grant, gateName: 'Cửa B', enabled: false })
+      .expect(201);
+    await request(app.getHttpServer())
+      .post(`/showtimes/${showtimeId}/check-in/exception`)
+      .set('Cookie', cookie)
+      .send(exception)
+      .expect(403);
+    expect(
+      await db.userAdminAudit.count({
+        where: { targetUserId: created.body.id, action: 'REVOKE_GATE' },
+      }),
+    ).toBe(1);
+  });
+
+  it('returns and logs distinct wrong-show, cancelled, unknown and unsigned reasons without admitting', async () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn');
+    const cancelledId = await createOrderItem(99, OrderStatus.PAID);
+    const item = await db.orderItem.findUniqueOrThrow({
+      where: { id: cancelledId },
+    });
+    const cancelledAt = new Date('2026-10-18T10:00:00Z');
+    await db.ticket.create({
+      data: {
+        orderId: item.orderId,
+        showtimeId,
+        seatId: item.seatId,
+        code: randomUUID(),
+        seatLabel: 'B-99',
+        ticketType: 'VIP',
+        status: 'CANCELLED',
+        cancelledAt,
+      },
+    });
+    const crypto = app.get(ScannerCryptoService);
+    const cases = [
+      {
+        qrPayload: crypto.issueQr(cancelledId, showtimeId),
+        expected: 'TICKET_CANCELLED',
+        text: '18/10/2026',
+      },
+      {
+        qrPayload: crypto.issueQr(randomUUID(), showtimeId),
+        expected: 'UNKNOWN_TICKET',
+        text: 'Không phải vé của hệ thống',
+      },
+      {
+        qrPayload: 'not-a-system-qr',
+        expected: 'INVALID_QR_SIGNATURE',
+        text: 'Không phải vé của hệ thống',
+      },
+      {
+        qrPayload: crypto.issueQr(randomUUID(), otherShowtimeId),
+        expected: 'WRONG_SHOWTIME',
+        text: 'Check-in test',
+      },
+    ];
+    try {
+      const count = await db.ticketAdmission.count({ where: { showtimeId } });
+      for (const entry of cases) {
+        const response = await request(app.getHttpServer())
+          .post(`/showtimes/${showtimeId}/check-in`)
+          .set('Cookie', staffCookie)
+          .send({ gateId, qrPayload: entry.qrPayload });
+        expect(response.status).toBeGreaterThanOrEqual(400);
+        expect(response.body.code).toBe(entry.expected);
+        expect(response.body.message).toContain(entry.text);
+        expect(
+          warn.mock.calls.some(
+            ([message]) =>
+              typeof message === 'string' &&
+              message.includes(`"reasonCode":"${entry.expected}"`),
+          ),
+        ).toBe(true);
+      }
+      expect(await db.ticketAdmission.count({ where: { showtimeId } })).toBe(
+        count,
+      );
+      expect(
+        (await db.orderItem.findUniqueOrThrow({ where: { id: cancelledId } }))
+          .checkedInAt,
+      ).toBeNull();
+    } finally {
+      warn.mockRestore();
+    }
   });
 
   it('rejects a second scan and allows only one concurrent check-in', async () => {

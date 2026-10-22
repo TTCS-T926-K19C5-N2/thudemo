@@ -74,6 +74,8 @@ web_modules/
 
 # dotenv environment variable files
 .env
+.sprint1-local/
+.sprint1-staging/
 .env.development.local
 .env.test.local
 .env.production.local
@@ -137,7 +139,12 @@ apps/api/prisma/*.db
 apps/api/prisma/*.db-journal
 
 # Local cryptographic keys
+.sprint1-demo/
 *.pem
 .keys/
 keys/
 
+
+# Private portable demo profiles and exported credentials
+.env.demo*
+.demo-private/

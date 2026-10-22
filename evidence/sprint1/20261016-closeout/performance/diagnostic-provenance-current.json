@@ -1,0 +1,6 @@
+{
+  "source": "cdb7fdbac5594f4831715731dd2b19893cecc9a2",
+  "harnessSha256": "c5bbd65c75eb091fd1d7bb8b06e3f97c9c8eaff8de2c3948be195a2575032068",
+  "changes": "Only transport leg/output/diagnostic labels; same200concurrent/100seats/10rounds, realauth/DB, allsamples, no correctness relaxation",
+  "time": "2026-10-16T06:55:46.273Z"
+}

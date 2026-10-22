@@ -1,0 +1,16 @@
+{
+  "time": "2026-10-16T16:20:28.673411+00:00",
+  "source": "49b28427aca611e4c171285b68c53184e9941d45",
+  "testedProductSource": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "result": "PASS",
+  "assertion": "git diff confirms API/web/shared/deploy/schema/migrations/lock/toolchain blobs unchanged; only two operations entrypoints plus docs/evidence differ",
+  "runtimeChangedPaths": [
+    "scripts/sprint1-staging-access.ps1",
+    "scripts/sprint1-staging.mjs"
+  ],
+  "operationsEvidence": "operations-delta-review.json",
+  "limitations": [
+    "Source identity permits reuse of stated product assertions only; not exact-head CI or integrated deployment proof",
+    "Current runtime remains02a; scripts49b have separately tested current working runtime behavior"
+  ]
+}

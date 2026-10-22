@@ -1,0 +1,7 @@
+{
+  "time": "2026-10-16T11:35:22.834Z",
+  "scope": "SMTP connection/auth/TLS only; not product delivery or inbox receipt",
+  "allowedRecipientCount": 1,
+  "credentialsPrinted": false,
+  "result": "PASS"
+}

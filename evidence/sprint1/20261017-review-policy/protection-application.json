@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-17T04:09:49.705Z",
+  "policy": "DEC-18",
+  "result": "PASS CONFIGURATION READBACK ONLY; enforcement pending",
+  "head": "6e4bb4986c0660eb70d6e372375fbcc0f9bc66b2",
+  "sequence": [
+    "Actual exact-SHA review status56580301236 read back",
+    "Add6threquired context while human1/lastpushtrue retained",
+    "Readback6contexts/strict/original5issuers",
+    "Patch only approvals0/lastpushfalse",
+    "Readback all unrelated controls exactly preserved; main byte-semantic unchanged"
+  ],
+  "autoMergeEnabled": false,
+  "mainUnchanged": true,
+  "checks": [
+    {
+      "context": "T-02 / build-and-typecheck",
+      "app_id": 15368
+    },
+    {
+      "context": "T-02 / lint",
+      "app_id": 15368
+    },
+    {
+      "context": "T-02 / test",
+      "app_id": 15368
+    },
+    {
+      "context": "K-01 / candidate-research",
+      "app_id": 15368
+    },
+    {
+      "context": "T-31 / hold-concurrency",
+      "app_id": 15368
+    },
+    {
+      "context": "Review / technical-review",
+      "app_id": null
+    }
+  ],
+  "prRequiredObjectRetained": true
+}

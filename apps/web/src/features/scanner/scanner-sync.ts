@@ -1,16 +1,13 @@
+import { syncPendingScans } from "../ticket-scanner/sync-manager";
 import {
   fetchShowtimeTickets,
-  syncOfflineScansApi,
   type ShowtimeTicketsPayload,
-  type OfflineScanItemPayload,
   type SyncOfflineScansResponse,
 } from "./scanner-api";
 import {
   getShowtimeMeta,
   saveTicketsAtomic,
   mergeTicketsIncremental,
-  getPendingOfflineScans,
-  markOfflineScansSynced,
   type ShowtimeLocalMeta,
 } from "./scanner-db";
 
@@ -53,6 +50,7 @@ export async function downloadTicketsFull(
       downloadedAt: payload.generatedAt,
       lastSyncAt: payload.generatedAt,
       cursor: payload.cursor,
+      version: payload.version,
       ticketCount: payload.tickets.length,
       keyId: payload.publicKey.keyId,
       publicKey: payload.publicKey.key,
@@ -85,12 +83,28 @@ export async function syncTicketsIncremental(
   isSyncing = true;
   try {
     const payload = await fetchShowtimeTickets(showtimeId, existingMeta.cursor);
+    if (payload.mode === "full") {
+      const meta = {
+        ...existingMeta,
+        downloadedAt: payload.generatedAt,
+        lastSyncAt: payload.generatedAt,
+        cursor: payload.cursor,
+        version: payload.version,
+        ticketCount: payload.tickets.length,
+        keyId: payload.publicKey.keyId,
+        publicKey: payload.publicKey.key,
+        verificationKeys: payload.publicKey.verificationKeys,
+      };
+      await saveTicketsAtomic(meta, payload.tickets);
+      return meta;
+    }
 
     const updatedMeta = await mergeTicketsIncremental(
       showtimeId,
       payload.cursor,
       payload.tickets,
       {
+        version: payload.version,
         keyId: payload.publicKey.keyId,
         publicKey: payload.publicKey.key,
         verificationKeys: payload.publicKey.verificationKeys,
@@ -106,62 +120,17 @@ export async function syncTicketsIncremental(
   }
 }
 
-export async function syncOfflineScanQueue(
-  showtimeId?: string,
-): Promise<{
+export async function syncOfflineScanQueue(showtimeId?: string): Promise<{
   syncedCount: number;
   conflictCount: number;
   conflicts: SyncOfflineScansResponse["conflicts"];
 }> {
-  if (typeof navigator !== "undefined" && !navigator.onLine) {
-    return { syncedCount: 0, conflictCount: 0, conflicts: [] };
-  }
-
-  const pending = await getPendingOfflineScans(showtimeId);
-  if (pending.length === 0) {
-    return { syncedCount: 0, conflictCount: 0, conflicts: [] };
-  }
-
-  const payload: OfflineScanItemPayload[] = pending.map((item) => ({
-    scanId: item.scanId,
-    showtimeId: item.showtimeId,
-    ticketCode: item.ticketCode,
-    gateId: item.gateId,
-    scannedAt: item.scannedAt,
-    deviceId: item.deviceId,
-  }));
-
-  try {
-    const res = await syncOfflineScansApi(payload);
-    const toMarkSynced = [
-      ...res.syncedScanIds,
-      ...res.conflicts.map((c) => c.scanId),
-    ];
-    if (toMarkSynced.length > 0) {
-      await markOfflineScansSynced(toMarkSynced);
-    }
-
-    // Trigger incremental sync after queue sync
-    const distinctShowtimes = Array.from(
-      new Set(pending.map((p) => p.showtimeId)),
-    );
-    for (const sid of distinctShowtimes) {
-      try {
-        await syncTicketsIncremental(sid);
-      } catch (e) {
-        console.warn(`Lỗi đồng bộ vé sau khi đẩy hàng đợi suất ${sid}:`, e);
-      }
-    }
-
-    return {
-      syncedCount: res.synced,
-      conflictCount: res.conflicts.length,
-      conflicts: res.conflicts,
-    };
-  } catch (err) {
-    console.warn("Lỗi đồng bộ hàng đợi quét ngoại tuyến:", err);
-    throw err;
-  }
+  const result = await syncPendingScans({ showtimeId });
+  return {
+    syncedCount: result.syncedCount,
+    conflictCount: result.failedCount,
+    conflicts: [],
+  };
 }
 
 export function startAutoSync(
@@ -210,4 +179,3 @@ export function startAutoSync(
     window.removeEventListener("online", onOnline);
   };
 }
-

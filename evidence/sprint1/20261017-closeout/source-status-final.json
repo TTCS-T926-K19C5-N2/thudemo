@@ -1,0 +1,84 @@
+{
+  "at": "2026-10-17T04:48:55.434Z",
+  "source": "61749f82ccaebc8fa102456b145881f43bd68fcf",
+  "backlogUnchangedHash": "957492ff6cb1b934b4b31b1e1cf73cb0a0438cb297dee752f1f0498816103c73",
+  "tasks": [
+    {
+      "id": "T-01",
+      "beforeSha256": "dc3094b65a430642c48e7ac20ec8b66e1ca96bcbbd3fdd969d08d9b8bcda4628",
+      "afterSha256": "8cd53397b0e1bbff772bbb7ca5b24d933c019fc794f644ae2cc5b54a5134f852",
+      "status": "Done",
+      "change": "Append verified currentcheckpoint only; priorcontent/AC/owner/SP untouched"
+    },
+    {
+      "id": "T-02",
+      "beforeSha256": "99cc8b59d0ec11fc7218fcabbe69f29a05aabda08bb6351ee2d1d74782205393",
+      "afterSha256": "8fed691713b74960b3478811606e42f6d42939afa30156dba41a8537506c1dcd",
+      "status": "Done",
+      "change": "Append verified currentcheckpoint only; priorcontent/AC/owner/SP untouched"
+    },
+    {
+      "id": "T-03",
+      "beforeSha256": "0171cd8e2a1b1e1b5d5f963a15651f47444560f2ad710edce06307608229d9bb",
+      "afterSha256": "d1de802e0c73d69c7aecf22ae2edab366c402b48236d9faf600931b26ddfca58",
+      "status": "Done",
+      "change": "Append verified currentcheckpoint only; priorcontent/AC/owner/SP untouched"
+    },
+    {
+      "id": "T-04",
+      "beforeSha256": "d08e407ec6937d0d19e8f5b473a6012af572872bd435e3457402b9f8f5c1a269",
+      "afterSha256": "58b7c0169bae5d2912b4a763ad63359a109d95f205eb2088c624f34366d82f36",
+      "status": "Done",
+      "change": "Append verified currentcheckpoint only; priorcontent/AC/owner/SP untouched"
+    },
+    {
+      "id": "T-05",
+      "beforeSha256": "1629cfeeab9114bcf05c7045dbc1ae495ee68f4ce719d5a62116994c1af549a2",
+      "afterSha256": "c82cfc924e1b9ab0140b83ab044cd668b695a3908021b10de2554a92a2ad0c07",
+      "status": "Done",
+      "change": "Append verified currentcheckpoint only; priorcontent/AC/owner/SP untouched"
+    },
+    {
+      "id": "T-06",
+      "beforeSha256": "b928a3ed82df59d8661b9abdbec057ce0498f6819115b5f0cb35bf21bb420ef0",
+      "afterSha256": "9153346a27447c534130e0475bbd1b1465435607f04d12af33aa40e2f6605008",
+      "status": "Done",
+      "change": "Append verified currentcheckpoint only; priorcontent/AC/owner/SP untouched"
+    },
+    {
+      "id": "T-07",
+      "beforeSha256": "ec1e6df51b2bbb6989ce01b3e937d74b4d38000fc4a60b7dcb470fbdc41bbfb4",
+      "afterSha256": "ecf0778c0302d58fa0877a23d03df9117f3c2e0cc4bf1283683214eaecdf3ecd",
+      "status": "Done",
+      "change": "Append verified currentcheckpoint only; priorcontent/AC/owner/SP untouched"
+    },
+    {
+      "id": "T-08",
+      "beforeSha256": "34a16f09a4be5f7b166882cb4981459805c17a46e78a5a63828415a7d80ff91c",
+      "afterSha256": "14025a117cc619795b1fadbc3fae4ef13385761d925097c73837d7e3ce2c639c",
+      "status": "Done",
+      "change": "Append verified currentcheckpoint only; priorcontent/AC/owner/SP untouched"
+    },
+    {
+      "id": "T-09",
+      "beforeSha256": "0c7c21edfaaf1d3a42cdf86b304011d507cdf7c8b859f7edfc848f71524e2802",
+      "afterSha256": "12248b8205d60bd7e3603c551fb3bdf7c8a0e19455434c07781ce1b0eea940b5",
+      "status": "Done",
+      "change": "Append verified currentcheckpoint only; priorcontent/AC/owner/SP untouched"
+    },
+    {
+      "id": "T-10",
+      "beforeSha256": "1ef17a4745bbd85da07863a999494f60c468a7e9021d955565a1eed1f496ea7e",
+      "afterSha256": "86edd4304be99db9f21b73ab84d6e02c9d04c79e189b42567bbab6d5d4934de8",
+      "status": "Done",
+      "change": "Append verified currentcheckpoint only; priorcontent/AC/owner/SP untouched"
+    }
+  ],
+  "decisionLog": {
+    "beforeSha256": "bffed73f9aec3ead144e4f2a2b6c1794d1e1eedac60f021c42ee0ef3f981ef17",
+    "afterSha256": "00e84a359230c8e9afa38b1da7a451e8e67cf2b1e544a0e383fa52234c280c93",
+    "historicalPrefixPreserved": true
+  },
+  "workbookNotRewritten": true,
+  "note": "Canonical parent source tasks checkpoint append only; no status/AC/owner/SP/Sprint changes. Workbook hash is actual DEC18 C2edit, original15statuses remain Done."
+}

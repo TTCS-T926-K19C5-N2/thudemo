@@ -1,0 +1,143 @@
+{
+  "capturedAt": "2026-10-16T08:35:10.067583+00:00",
+  "baseRefName": "develop",
+  "baseRefOid": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
+  "headRefOid": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "isDraft": true,
+  "mergeStateStatus": "CLEAN",
+  "number": 91,
+  "reviews": [],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T07:51:51Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38869794487/job/116870938886",
+      "name": "T-02 / build-and-typecheck",
+      "startedAt": "2026-10-16T07:50:53Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T07:51:48Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38869786323/job/116870911113",
+      "name": "T-02 / build-and-typecheck",
+      "startedAt": "2026-10-16T07:50:49Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T07:52:30Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38869794488/job/116870937974",
+      "name": "S-30 / signed QR HTTP and browser",
+      "startedAt": "2026-10-16T07:50:53Z",
+      "status": "COMPLETED",
+      "workflowName": "S-30 signed QR"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T07:52:32Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38869794484/job/116870937742",
+      "name": "S-31 / signed QR admission HTTP and browser",
+      "startedAt": "2026-10-16T07:50:52Z",
+      "status": "COMPLETED",
+      "workflowName": "S31 signed admission"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T08:00:51Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38869794491/job/116870937665",
+      "name": "S-43 / monitoring-integration",
+      "startedAt": "2026-10-16T07:50:53Z",
+      "status": "COMPLETED",
+      "workflowName": "S43 monitoring"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T07:51:23Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38869794487/job/116870938574",
+      "name": "T-02 / lint",
+      "startedAt": "2026-10-16T07:50:53Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T07:51:14Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38869786323/job/116870911494",
+      "name": "T-02 / lint",
+      "startedAt": "2026-10-16T07:50:48Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T07:52:39Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38869794487/job/116870938879",
+      "name": "T-02 / test",
+      "startedAt": "2026-10-16T07:50:53Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T07:52:13Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38869786323/job/116870911372",
+      "name": "T-02 / test",
+      "startedAt": "2026-10-16T07:50:48Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T07:53:34Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38869794487/job/116871546116",
+      "name": "K-01 / candidate-research",
+      "startedAt": "2026-10-16T07:52:43Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T07:52:56Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38869786323/job/116871402018",
+      "name": "K-01 / candidate-research",
+      "startedAt": "2026-10-16T07:52:16Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T07:54:48Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38869794487/job/116871545869",
+      "name": "T-31 / hold-concurrency",
+      "startedAt": "2026-10-16T07:52:42Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-16T07:54:22Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38869786323/job/116871401722",
+      "name": "T-31 / hold-concurrency",
+      "startedAt": "2026-10-16T07:52:16Z",
+      "status": "COMPLETED",
+      "workflowName": "CI"
+    }
+  ],
+  "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/91"
+}

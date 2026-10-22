@@ -1,4 +1,5 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Req } from '@nestjs/common';
+import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { CheckInServiceS29 } from './check-in-s29.service.js';
 
@@ -8,7 +9,7 @@ export class CheckInControllerS29 {
 
   @Roles('STAFF')
   @Get('today')
-  getTodayShowtimes() {
-    return this.service.getTodayShowtimes();
+  getTodayShowtimes(@Req() req: AuthenticatedRequest) {
+    return this.service.getTodayShowtimes(req.user.id);
   }
 }
