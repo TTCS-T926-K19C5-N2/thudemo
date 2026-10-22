@@ -96,14 +96,6 @@ export async function processOfflineScan(
   params: ProcessOfflineScanParams,
 ): Promise<OfflineScanOutcome> {
   const { showtimeId, qrPayload, gateId, gateName, staffId, deviceId } = params;
-  if (!gateId || !/^[0-9a-f-]{36}$/i.test(gateId) || !staffId || !deviceId) {
-    return {
-      success: false,
-      code: "NO_LIST_OFFLINE",
-      message:
-        "Chưa lưu phân công suất/cửa và thiết bị. Tải cấu hình khi có mạng trước khi soát ngoại tuyến.",
-    };
-  }
 
   // 1. Check if showtime list has been downloaded (AC #4)
   const meta = await getShowtimeMeta(showtimeId);
@@ -208,6 +200,9 @@ export async function processOfflineScan(
   }
 
   // 8. Valid -> Atomically mark checked in and record in scan_queue (AC #1)
+  if (!gateId || !staffId || !deviceId) {
+    return { success: false, code: 'NO_LIST_OFFLINE', message: 'Chọn cửa, đăng nhập đúng nhân viên và chuẩn bị thiết bị trước khi quét offline.' };
+  }
   const scannedAt = new Date().toISOString();
   const scanRecord: OfflineScanRecord = {
     scanId: crypto.randomUUID(),
@@ -217,8 +212,8 @@ export async function processOfflineScan(
     gateId,
     gateName: gateName ?? "Cửa soát vé",
     scannedAt,
-    deviceId: deviceId ?? "scanner-device-local",
-    staffId: staffId ?? "staff-local",
+    deviceId,
+    staffId,
     offline: true,
     syncStatus: "pending",
     seatLabel: ticket.seatLabel,

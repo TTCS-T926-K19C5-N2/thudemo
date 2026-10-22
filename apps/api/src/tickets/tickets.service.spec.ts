@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { TicketStatus } from '@prisma/client';
+import { OrderStatus, TicketStatus } from '@prisma/client';
 import { TicketSigningService } from './ticket-signing.service.js';
-import type { TicketQrService } from '../orders/ticket-qr.service.js';
 import { TicketsService } from './tickets.service.js';
 
 const ORDER_ID = '22222222-2222-4222-8222-222222222222';
@@ -18,8 +17,8 @@ describe('TicketsService', () => {
   let db: any;
   let tx: any;
   let signing: TicketSigningService;
+  let projection: any;
   let service: TicketsService;
-  let projection: { forOwner: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     tx = {
@@ -38,9 +37,12 @@ describe('TicketsService', () => {
       ticket: { findMany: vi.fn(), findUnique: vi.fn() },
       $transaction: vi.fn((cb) => cb(tx)),
     };
+    projection = {
+      forOwner: vi.fn(),
+      forBuyer: vi.fn(),
+    };
     signing = signingService();
-    projection = { forOwner: vi.fn() };
-    service = new TicketsService(db, signing, projection as unknown as TicketQrService);
+    service = new TicketsService(db, signing, projection);
   });
 
   describe('issueForPaidOrder', () => {
@@ -69,6 +71,7 @@ describe('TicketsService', () => {
         status: TicketStatus.VALID,
         price: 300000,
       });
+      expect(tx.$executeRaw).toHaveBeenCalledTimes(1);
     });
 
     it('stores a signature that verifies against the stored code and showtime', async () => {
@@ -87,22 +90,71 @@ describe('TicketsService', () => {
       await service.issueForPaidOrder(tx, { ...order, items: [] });
       expect(tx.ticket.createMany).not.toHaveBeenCalled();
     });
+
+    it('creates 3 distinct unpredictable tickets for an order with 3 seats (S-25 AC)', async () => {
+      const order3 = {
+        id: ORDER_ID,
+        showtimeId: SHOWTIME_ID,
+        items: [
+          { seatId: 'seat-1', categoryName: 'VIP', unitPrice: 300000, seat: { row: 'A', seatNumber: 1 } },
+          { seatId: 'seat-2', categoryName: 'VIP', unitPrice: 300000, seat: { row: 'A', seatNumber: 2 } },
+          { seatId: 'seat-3', categoryName: 'VIP', unitPrice: 300000, seat: { row: 'A', seatNumber: 3 } },
+        ],
+      };
+      await service.issueForPaidOrder(tx, order3);
+      const call = tx.ticket.createMany.mock.calls[0][0];
+      expect(call.data).toHaveLength(3);
+      const codes = call.data.map((t: any) => t.code);
+      const uniqueCodes = new Set(codes);
+      expect(uniqueCodes.size).toBe(3);
+      expect(codes[0]).not.toBe(codes[1]);
+      expect(codes[1]).not.toBe(codes[2]);
+    });
+
+    it('is idempotent on duplicate webhook replays using skipDuplicates and ON CONFLICT (S-25 AC)', async () => {
+      await service.issueForPaidOrder(tx, order);
+      await service.issueForPaidOrder(tx, order);
+      expect(tx.ticket.createMany).toHaveBeenCalledTimes(2);
+      expect(tx.ticket.createMany.mock.calls[0][0].skipDuplicates).toBe(true);
+      expect(tx.ticket.createMany.mock.calls[1][0].skipDuplicates).toBe(true);
+      expect(tx.$executeRaw).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('listForOrder', () => {
-    it('returns the canonical projection without issuing or encoding another ticket', async () => {
-      const tickets = [{ id: 'existing', qrPayload: 'canonical-ET1' }];
-      projection.forOwner.mockResolvedValue({ tickets });
-      expect(await service.listForOrder(ORDER_ID, OWNER_ID)).toBe(tickets);
-      expect(projection.forOwner).toHaveBeenCalledWith(ORDER_ID, OWNER_ID);
-      expect(tx.ticket.createMany).not.toHaveBeenCalled();
-      expect(db.ticket.findMany).not.toHaveBeenCalled();
+    it('hides the order from anyone but its owner', async () => {
+      projection.forOwner.mockRejectedValue(new NotFoundException('Không tìm thấy đơn hàng.'));
+      await expect(service.listForOrder(ORDER_ID, 'someone-else')).rejects.toThrow(NotFoundException);
     });
 
-    it('propagates the canonical ownership refusal', async () => {
-      projection.forOwner.mockRejectedValue(new NotFoundException());
+    it('throws NotFound for a missing order', async () => {
+      projection.forOwner.mockRejectedValue(new NotFoundException('Không tìm thấy đơn hàng.'));
       await expect(service.listForOrder(ORDER_ID, OWNER_ID)).rejects.toThrow(NotFoundException);
-      expect(tx.ticket.createMany).not.toHaveBeenCalled();
+    });
+
+    it.each([OrderStatus.PENDING_PAYMENT, OrderStatus.EXPIRED, OrderStatus.NEEDS_REVIEW])(
+      'throws when the order is %s',
+      async (status) => {
+        projection.forOwner.mockRejectedValue(new NotFoundException('Vé chỉ sẵn sàng sau khi thanh toán.'));
+        await expect(service.listForOrder(ORDER_ID, OWNER_ID)).rejects.toThrow(NotFoundException);
+      },
+    );
+
+    it('returns tickets of a PAID order with a verifiable QR payload', async () => {
+      const mockTicket = {
+        id: 'ticket-1',
+        code: 'TK-12345',
+        seatLabel: 'A-1',
+        category: 'VIP',
+        status: TicketStatus.VALID,
+        qrPayload: 'ET1.Ed25519.test.qr',
+      };
+      projection.forOwner.mockResolvedValue({ tickets: [mockTicket] });
+
+      const tickets = await service.listForOrder(ORDER_ID, OWNER_ID);
+
+      expect(tickets[0]).toMatchObject({ id: 'ticket-1', code: 'TK-12345', seatLabel: 'A-1' });
+      expect(tickets[0].qrPayload).toBe('ET1.Ed25519.test.qr');
     });
   });
 

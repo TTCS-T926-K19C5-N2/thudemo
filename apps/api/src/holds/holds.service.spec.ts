@@ -234,8 +234,18 @@ describe('S-42 per-account ticket limit', () => {
     expect(statusOf(() => parseTicketLimit([1]))).toBe(400);
   });
 
-  it('blocks a claim that would exceed the limit without touching the routine', async () => {
+  it('maps the transactional database quota outcome to TICKET_LIMIT', async () => {
     const { db, holds } = fixture(2, '1', 1n);
+    db.commitHoldRoutine.mockResolvedValueOnce([
+      {
+        failure: 'H0007',
+        rejectedSeatIds: [seatA],
+        serverTime: new Date(),
+        id: null,
+        expiresAt: null,
+        seatIds: [],
+      },
+    ] as never);
     await expect(
       holds.claim(showtimeId, userId, 'fixture-session-hash', {
         seatIds: [seatA],
@@ -244,11 +254,9 @@ describe('S-42 per-account ticket limit', () => {
       status: 403,
       response: expect.objectContaining({
         code: 'TICKET_LIMIT',
-        limit: 2,
-        owned: 2,
       }),
     });
-    expect(db.commitHoldRoutine).not.toHaveBeenCalled();
+    expect(db.commitHoldRoutine).toHaveBeenCalledOnce();
   });
 
   it('allows a claim that exactly reaches the limit', async () => {
@@ -339,7 +347,7 @@ describe('S-42 per-account ticket limit', () => {
       );
       expect(results).toHaveLength(10);
       expect(limitQueryCount(db)).toBe(1);
-      expect(db.seatReadQuery).toHaveBeenCalledTimes(limit === null ? 1 : 11);
+      expect(db.seatReadQuery).toHaveBeenCalledTimes(1);
       for (const client of clients)
         expect(client.release).not.toHaveBeenCalled();
       for (const [index, args] of db.commitHoldRoutine.mock.calls.entries())
