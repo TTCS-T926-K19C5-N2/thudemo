@@ -11,7 +11,7 @@ const fixture = JSON.parse(
 const root = resolve(import.meta.dirname, "../../.."),
   out = resolve(root, "evidence/s30");
 mkdirSync(out, { recursive: true });
-const base = "http://localhost:3050",
+const base = "http://127.0.0.1:3050",
   report = {
     sourceSha: process.env.QR_SOURCE_SHA ?? "working-tree",
     driverSha256: createHash("sha256")
@@ -24,6 +24,7 @@ const base = "http://localhost:3050",
     checks: [],
     screenshots: [],
     consoleErrors: [],
+    checkInResponses: [],
     startedAt: new Date().toISOString(),
   };
 const browser = await chromium.launch({ headless: true }),
@@ -45,6 +46,17 @@ async function session(actor, viewport = { width: 1440, height: 1000 }) {
     },
   ]);
   const page = await context.newPage();
+  page.on("response", (response) => {
+    const url = new URL(response.url());
+    if (
+      url.pathname.startsWith("/api/showtimes/") &&
+      url.pathname.endsWith("/check-in")
+    )
+      report.checkInResponses.push({
+        status: response.status(),
+        path: url.pathname,
+      });
+  });
   page.on("pageerror", (error) => report.consoleErrors.push(error.message));
   page.on("console", (message) => {
     if (
@@ -108,7 +120,7 @@ try {
     "Next scan clears and focuses input",
   );
   await scan(a, fixture.fresh.id);
-  await status(a).filter({ hasText: "Mã QR không hợp lệ" }).waitFor();
+  await status(a).filter({ hasText: "Không phải vé của hệ thống hoặc chữ ký không hợp lệ." }).waitFor();
   check(
     !(await status(a).innerText()).includes("Hợp lệ"),
     "Unsigned real UUID rejected without green state",
@@ -117,10 +129,10 @@ try {
   await a.getByRole("button", { name: "Quét vé tiếp theo" }).click();
   const bad = fixture.retry.qr.replace("ET1.", "ET2.");
   await scan(a, bad);
-  await status(a).filter({ hasText: "Mã QR không hợp lệ" }).waitFor();
+  await status(a).filter({ hasText: "Không phải vé của hệ thống hoặc chữ ký không hợp lệ." }).waitFor();
   check(
     !(await status(a).innerText()).includes("Hợp lệ"),
-    "Unsupported QR version rejected by browser",
+    "Unsupported QR version rejected by server with no admission",
   );
   await a.getByRole("button", { name: "Quét vé tiếp theo" }).click();
   const pattern = "**/api/showtimes/*/check-in";
@@ -144,7 +156,7 @@ try {
   await a.route(pattern, (route) => route.abort());
   await scan(a, fixture.usedQr);
   await status(a)
-    .filter({ hasText: /Không thể|kết nối|Lỗi mạng/ })
+    .filter({ hasText: "Chưa nhận xác nhận từ máy chủ. Chưa cho vào; yêu cầu được giữ để kiểm tra lại khi có mạng." })
     .waitFor();
   check(
     !(await status(a).innerText()).includes("Hợp lệ"),
@@ -152,6 +164,10 @@ try {
   );
   await shot(a, "desktop-network-error.png");
   await a.unroute(pattern);
+  await a.getByRole("button", { name: "Thử kết nối lại", exact: true }).click();
+  await a.getByTestId("network-status").getByText("Trực tuyến", { exact: true }).waitFor();
+  await a.getByTestId("offline-status-banner").waitFor({ state: "hidden" });
+  check(true, "Restored server probe and validated sync ACK end the injected network outage before the next online admission");
   await scan(mobile, fixture.usedQr);
   await status(mobile).filter({ hasText: "Vé đã sử dụng" }).waitFor();
   await shot(mobile, "mobile-used.png");
@@ -174,8 +190,8 @@ try {
   await owner.goto(base + "/orders/" + fixture.ownerOrderId);
   await owner.getByTestId("signed-ticket").waitFor();
   check(
-    (await owner.getByTestId("signed-ticket").locator("svg").count()) === 1,
-    "Owner page renders one real signed QR at a time",
+    (await owner.getByTestId("signed-ticket").locator("svg, img[data-testid=ticket-qr-image]").count()) === 1,
+    "Owner page renders one real signed QR image at a time",
   );
   check(
     (await owner.getByTestId("countdown-banner").count()) === 0 &&
@@ -185,8 +201,9 @@ try {
   await shot(owner, "desktop-owner-qr-fixture.png");
   const qrImage = await owner
     .getByTestId("signed-ticket")
-    .locator("svg")
+    .locator("svg, img[data-testid=ticket-qr-image]")
     .screenshot();
+  writeFileSync(resolve(out, "owner-qr-element.png"), qrImage);
   await owner.addScriptTag({
     path: resolve(
       root,
@@ -200,27 +217,49 @@ try {
       div.id = "fixture-image-decoder";
       div.hidden = true;
       document.body.append(div);
-      const qr = new Html5Qrcode(div.id);
       const binary = atob(imageBase64),
         bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+      const attempts = [];
       try {
-        return await qr.scanFile(
-          new File([bytes], "fixture.png", { type: "image/png" }),
-          false,
-        );
-      } finally {
-        qr.clear();
-        div.remove();
-      }
+        for (const angle of [0, 90, 180, 270]) {
+          let blob = new Blob([bytes], { type: "image/png" });
+          if (angle) {
+            const image = new Image();
+            const url = URL.createObjectURL(blob);
+            try {
+              image.src = url;
+              await image.decode();
+              const canvas = document.createElement("canvas");
+              canvas.width = image.width;
+              canvas.height = image.height;
+              const context = canvas.getContext("2d");
+              context.translate(canvas.width / 2, canvas.height / 2);
+              context.rotate(angle * Math.PI / 180);
+              context.drawImage(image, -image.width / 2, -image.height / 2);
+              blob = await new Promise((done) => canvas.toBlob(done));
+            } finally { URL.revokeObjectURL(url); }
+          }
+          const qr = new Html5Qrcode(div.id);
+          try {
+            const payload = await qr.scanFile(new File([blob], "fixture.png", { type: "image/png" }), false);
+            attempts.push({ angle, result: "PASS" });
+            return { payload, attempts };
+          } catch (error) {
+            attempts.push({ angle, result: "FAIL", error: String(error) });
+          } finally { qr.clear(); }
+        }
+        throw Error(JSON.stringify(attempts));
+      } finally { div.remove(); }
     },
     { imageBase64: qrImage.toString("base64") },
   );
+  report.imageDecodeAttempts = decoded.attempts;
   check(
-    decoded === fixture.camera.qr,
+    decoded.payload === fixture.camera.qr,
     "Actual QR image decodes to owner-issued signed payload; image fixture is not hardware-camera proof",
   );
   await a.getByRole("button", { name: "Quét vé tiếp theo" }).click();
-  await scan(a, decoded);
+  await scan(a, decoded.payload);
   await status(a).filter({ hasText: "Hợp lệ" }).waitFor();
   check(
     (await status(a).innerText()).includes("A-"),
@@ -268,17 +307,53 @@ try {
     report.consoleErrors.length === 0,
     "No unexpected browser console/runtime errors",
   );
-  await a.getByLabel("Mã suất diễn").fill(fixture.otherShowtimeId);
+  check(
+    await a.locator(`select[aria-label="Mã suất diễn"] option[value="${fixture.otherShowtimeId}"]`).count() === 0,
+    "Unassigned other showtime cannot be selected in the operative scanner",
+  );
+  await a.getByLabel("Mã suất diễn").selectOption("");
   check(
     !(await status(a).innerText()).includes(
       "Vé hợp lệ. Check-in thành công.",
     ) && (await a.getByLabel("Hoặc nhập mã vé").inputValue()) === "",
-    "Changing showtime clears previous admission message and QR input",
+    "Clearing showtime selection clears previous admission message and QR input",
   );
   report.status = "PASS";
 } catch (error) {
   report.status = "FAIL";
   report.error = error.message;
+  const pageStates = [];
+  for (const context of contexts) {
+    const page = context.pages()[0];
+    if (!page) continue;
+    try {
+      pageStates.push({
+        url: page.url(),
+        state: await status(page).getAttribute("data-state"),
+        text: await status(page).innerText(),
+      });
+    } catch (diagnosticError) {
+      pageStates.push({
+        url: page.url(),
+        diagnosticError:
+          diagnosticError instanceof Error
+            ? diagnosticError.message
+            : String(diagnosticError),
+      });
+    }
+  }
+  console.error(
+    JSON.stringify(
+      {
+        error: error.message,
+        pageStates,
+        checkInResponses: report.checkInResponses,
+        consoleErrors: report.consoleErrors,
+      },
+      null,
+      2,
+    ),
+  );
   throw error;
 } finally {
   report.finishedAt = new Date().toISOString();

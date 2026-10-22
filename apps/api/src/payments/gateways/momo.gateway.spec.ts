@@ -1,14 +1,26 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ConfigService } from '@nestjs/config';
 import { MomoGateway } from './momo.gateway.js';
-import { buildMomoSignature } from './momo-signature.js';
+import {
+  buildMomoCreateRawString,
+  buildMomoSignature,
+  calculateHmacSha256,
+} from './momo-signature.js';
 
 describe('MomoGateway Adapter', () => {
   let gateway: MomoGateway;
   const accessKey = 'test_access_key';
   const secretKey = 'test_secret_key';
+  const fetchMock = vi.fn<typeof fetch>();
 
   beforeEach(() => {
+    // This is an adapter unit test, not a provider sandbox acceptance test.
+    // Never let CI latency or sandbox availability decide whether it passes.
+    fetchMock.mockReset();
+    fetchMock.mockImplementation(async () =>
+      Response.json({ payUrl: 'https://payment.example.invalid/fixture' }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
     const config = {
       get: vi.fn((key: string, defaultValue?: string) => {
         if (key === 'MOMO_PARTNER_CODE') return 'MOMO_PARTNER';
@@ -22,16 +34,69 @@ describe('MomoGateway Adapter', () => {
     gateway = new MomoGateway(config);
   });
 
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('createPayment generates unique gatewayRef containing orderId', async () => {
     const orderId = 'd8248149-2e71-46ca-86b3-a3d827f8a701';
-    const result = await gateway.createPayment({
+    const params = {
       orderId,
       amount: 250000,
       returnUrl: 'http://localhost:3000/payment/result',
-    });
+    };
+    const result = await gateway.createPayment(params);
+    const retry = await gateway.createPayment(params);
 
     expect(result.gatewayRef).toContain(orderId);
     expect(result.redirectUrl).toBeTruthy();
+    expect(result.redirectUrl).toBe('https://payment.example.invalid/fixture');
+    expect(retry.gatewayRef).toContain(orderId);
+    expect(retry.gatewayRef).not.toBe(result.gatewayRef);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    for (const [index, payment] of [result, retry].entries()) {
+      const [url, options] = fetchMock.mock.calls[index];
+      expect(url).toBe('https://test-payment.momo.vn/v2/gateway/api/create');
+      expect(options?.method).toBe('POST');
+      const requestBody = JSON.parse(String(options?.body)) as Omit<
+        Parameters<typeof buildMomoCreateRawString>[0],
+        'accessKey'
+      > & { signature: string };
+      expect(requestBody.orderId).toBe(payment.gatewayRef);
+      expect(requestBody.requestId).toBe(payment.gatewayRef);
+      expect(requestBody.amount).toBe(params.amount);
+      expect(requestBody.redirectUrl).toBe(params.returnUrl);
+      expect(
+        JSON.parse(
+          Buffer.from(String(requestBody.extraData), 'base64').toString(),
+        ),
+      ).toEqual({ orderId });
+      expect(requestBody.signature).toBe(
+        calculateHmacSha256(
+          buildMomoCreateRawString({ ...requestBody, accessKey }),
+          secretKey,
+        ),
+      );
+    }
+  });
+
+  it('preserves the existing fallback contract when transport fails', async () => {
+    fetchMock.mockRejectedValueOnce(new Error('offline fixture transport'));
+    const params = {
+      orderId: 'd8248149-2e71-46ca-86b3-a3d827f8a701',
+      amount: 250000,
+      returnUrl: 'http://localhost:3000/payment/result',
+    };
+    const result = await gateway.createPayment(params);
+    const redirect = new URL(result.redirectUrl);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(redirect.origin).toBe('https://test-payment.momo.vn');
+    expect(redirect.pathname).toBe('/gw_payment/transactionProcessor');
+    expect(redirect.searchParams.get('orderId')).toBe(result.gatewayRef);
+    expect(result.gatewayRef).toContain(params.orderId);
+    expect(redirect.searchParams.get('amount')).toBe(String(params.amount));
+    expect(redirect.searchParams.get('returnUrl')).toBe(params.returnUrl);
   });
 
   it('verifyWebhook validates signature against secret key', async () => {

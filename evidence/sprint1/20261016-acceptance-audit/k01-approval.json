@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-16T10:29:26.934221+00:00",
+  "decision": "DEC-14",
+  "confirmedBy": "Nguyễn Văn Sáng — PO, direct user message",
+  "humanQuote": "Tôi chấp nhận và làm tất cả, dưới tên của tôi có thể làm gì thì hãy làm tất cả",
+  "questionContext": "K01 PG/Redis packet reviewed; confirm PostgreSQL authority for fake-data laptop staging; separately asked actual mentor/timebox",
+  "approved": "PostgreSQL authority for this laptop fake-data staging; Redis cache/counter; stated invariants and durability limitations",
+  "decisionContextSource": "ddcb4c1f7b87edf7594353f6060ff5764bd829bf",
+  "notApprovedOrNotEvidenced": [
+    "No independent member approval exists",
+    "No actual mentor/timebox history supplied",
+    "No AC/DoD/NFR waiver; no production/public deployment"
+  ],
+  "reviewReply": "tôi",
+  "reviewIdentityCheck": {
+    "prAuthor": "sangnguyencoder",
+    "authenticatedAccount": "sangnguyencoder",
+    "reviewDecision": "REVIEW_REQUIRED",
+    "approvals": 0,
+    "meaning": "Author/PO acceptance cannot satisfy another-member approval; no forged review submitted"
+  },
+  "sourceDecisionText": "## DEC-14 — PostgreSQL authority cho laptop staging dữ liệu giả (16/10/2026)\n\n- **Người xác nhận:** Nguyễn Văn Sáng (PO), xác nhận trực tiếp trong cuộc trò chuyện sau câu hỏi dẫn tới `thudemo-sprint1-gitflow-20261015/docs/K01_EVIDENCE.md` và đề xuất cụ thể.\n- **Nguyên văn trả lời:** “Tôi chấp nhận và làm tất cả, dưới tên của tôi có thể làm gì thì hãy làm tất cả”. Câu hỏi xác nhận PostgreSQL authority cho laptop staging dữ liệu giả sau khi đọc so sánh PG/Redis và các trade-off; không phải xác nhận người khác đã review hoặc đã tham dự spike.\n- **Đã chốt:** PostgreSQL là nguồn quyền giữ có thẩm quyền cho laptop staging dữ liệu giả theo transaction/một owner còn hạn/mốc UTC10phút từ ghế đầu/thêm-retry không gia hạn/fencing cleanup. Redis-AOF chỉ cache/counter; graceful restart không chứng minh hard crash/zero-data-loss. Lý do không chọn Redis authority: không cùng transaction ownership/order PostgreSQL, thêm distributed reconciliation vượt bản sửa.\n- **Phạm vi:** Mở rộng xác nhận authority local của DEC12 sang đúng laptop staging đã duyệt DEC13. Không production, tiền/dữ liệu thật, Tunnel/public hay tài nguyên trả phí. DEC09 giữ nguyên scope/Sprint/SP/Owner/AC; không đưa S30/S31/T31 vào Sprint1.\n- **Không miễn:** Review thật của thành viên khác theo DoD/protection, CI, staging auto-deploy/rollback, NFR và nghiệm thu sprint sau. User nhận review (“tôi”) không trở thành approval hợp lệ cho chính PR do tài khoản sangnguyencoder mở. Không ký hay tạo review dưới tài khoản người khác.\n- **Khoảng trống quy trình:** Chưa có thông tin xác nhận thực tế timebox1ngày/người hướng dẫn theo Backlog!K14; giữ NOT RUN, không suy từ phê duyệt quyết định. K01 chưa Done chỉ vì authority đã được duyệt.\n- **Bằng chứng:** Bộ số đo PG/Redis tại `thudemo-sprint1-gitflow-20261015/evidence/sprint1/20261015-handoff/k01-laptop-research/`, hồ sơ K01 và `evidence/sprint1/20261016-acceptance-audit/k01-approval.json`. Phê duyệt PO được ghi đúng bản chất; review kỹ thuật tự động không là review độc lập của người thật.\n"
+}

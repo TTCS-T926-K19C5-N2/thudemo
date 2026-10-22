@@ -1,6 +1,8 @@
+import { syncPendingScans } from "../ticket-scanner/sync-manager";
 import {
   fetchShowtimeTickets,
   type ShowtimeTicketsPayload,
+  type SyncOfflineScansResponse,
 } from "./scanner-api";
 import {
   getShowtimeMeta,
@@ -48,6 +50,7 @@ export async function downloadTicketsFull(
       downloadedAt: payload.generatedAt,
       lastSyncAt: payload.generatedAt,
       cursor: payload.cursor,
+      version: payload.version,
       ticketCount: payload.tickets.length,
       keyId: payload.publicKey.keyId,
       publicKey: payload.publicKey.key,
@@ -80,12 +83,28 @@ export async function syncTicketsIncremental(
   isSyncing = true;
   try {
     const payload = await fetchShowtimeTickets(showtimeId, existingMeta.cursor);
+    if (payload.mode === "full") {
+      const meta = {
+        ...existingMeta,
+        downloadedAt: payload.generatedAt,
+        lastSyncAt: payload.generatedAt,
+        cursor: payload.cursor,
+        version: payload.version,
+        ticketCount: payload.tickets.length,
+        keyId: payload.publicKey.keyId,
+        publicKey: payload.publicKey.key,
+        verificationKeys: payload.publicKey.verificationKeys,
+      };
+      await saveTicketsAtomic(meta, payload.tickets);
+      return meta;
+    }
 
     const updatedMeta = await mergeTicketsIncremental(
       showtimeId,
       payload.cursor,
       payload.tickets,
       {
+        version: payload.version,
         keyId: payload.publicKey.keyId,
         publicKey: payload.publicKey.key,
         verificationKeys: payload.publicKey.verificationKeys,
@@ -101,6 +120,19 @@ export async function syncTicketsIncremental(
   }
 }
 
+export async function syncOfflineScanQueue(showtimeId?: string): Promise<{
+  syncedCount: number;
+  conflictCount: number;
+  conflicts: SyncOfflineScansResponse["conflicts"];
+}> {
+  const result = await syncPendingScans({ showtimeId });
+  return {
+    syncedCount: result.syncedCount,
+    conflictCount: result.failedCount,
+    conflicts: [],
+  };
+}
+
 export function startAutoSync(
   showtimeId: string,
   onMetaUpdated: (meta: ShowtimeLocalMeta) => void,
@@ -111,6 +143,12 @@ export function startAutoSync(
 
   const checkAndSync = async () => {
     if (!navigator.onLine) return;
+    try {
+      await syncOfflineScanQueue(showtimeId);
+    } catch {
+      // ignore
+    }
+
     const meta = await getShowtimeMeta(showtimeId);
     if (!meta) return;
 

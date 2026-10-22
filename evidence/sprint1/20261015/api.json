@@ -1,0 +1,80 @@
+{
+  "source": "81d1dd9d8f453b32ed0c6956399e5600f71a32d6 + local diff",
+  "time": "2026-10-15T08:46:39.896Z",
+  "results": [
+    {
+      "name": "anonymous401",
+      "status": "PASS"
+    },
+    {
+      "name": "session-cookie-contract",
+      "status": "PASS"
+    },
+    {
+      "name": "field-validation400",
+      "status": "PASS"
+    },
+    {
+      "name": "create-draft-owner-list-public-hidden",
+      "status": "PASS"
+    },
+    {
+      "name": "edit-persist-read",
+      "status": "PASS"
+    },
+    {
+      "name": "buyer-and-other-organizer-server403",
+      "status": "PASS"
+    },
+    {
+      "name": "multi-role-and-default-deny403",
+      "status": "PASS"
+    },
+    {
+      "name": "past-rejected-utc-roundtrip-duplicate-warning-saved",
+      "status": "PASS"
+    },
+    {
+      "name": "event-delete-fk-restrict-no-history-cascade",
+      "status": "PASS"
+    },
+    {
+      "name": "db-unique-five-roles-six-argon2id-fixtures",
+      "status": "PASS"
+    },
+    {
+      "name": "logout-replay401",
+      "status": "PASS"
+    },
+    {
+      "name": "expired-server-session401-fixture-no-production-ttl-change",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown-email-and-wrong-password-same-error",
+      "status": "PASS"
+    },
+    {
+      "name": "existing-real-lock429-ttl-preserved",
+      "status": "PASS",
+      "ttlSeconds": 471
+    },
+    {
+      "name": "real-api-process-restart-retains-redis-lock",
+      "status": "PASS",
+      "remainingSeconds": 470
+    },
+    {
+      "name": "ip-budget-account-rotation-spoofed-forwarded-header-independent-peer",
+      "status": "PASS"
+    }
+  ],
+  "phase": "Final attested-source HTTP acceptance; default test transport peer127.0.0.8 avoids the primary browser budget. Existing UI fixture lock reused without deleting/shortening TTL; initial five-failure boundary and original natural900s expiry retained separately.",
+  "fileDigests": {
+    "apps/api/src/auth/guards/session-auth.guard.ts": "087576cabbdaa8e7a486cd3e252b07de3fd09eeb204e6c136c129abc9a4823d8",
+    "apps/api/src/events/events.service.ts": "5625d0df52d1aa2dcf9891cd722a6b016262176fc31879a1b3a569d91ce64e07",
+    "apps/api/src/auth/auth.controller.ts": "dc407268e4cacc3e5dec5e8c65e93a97edd843b1eb1215ba5e167888450f9034",
+    "apps/api/src/auth/auth.service.ts": "9e1a143eaf7f04397adefc636e8c4fc48765841f9929c37f020999899e34d05e",
+    "apps/api/src/redis/redis.service.ts": "8a4322c2d04366343c71d941fd834c6a1a855c08a51f6d54621b0fed23cabd3a"
+  }
+}

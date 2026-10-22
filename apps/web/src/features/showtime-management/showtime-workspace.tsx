@@ -17,6 +17,7 @@ import { SeatPricingForm } from "@/features/seat-pricing/seat-pricing-form";
 import { SeatMapImportForm } from "@/features/seat-map-import/seat-map-import-form";
 import { ShowtimeSalesReport } from "@/features/showtime-sales/showtime-sales";
 import { SaleStatusControl } from "./sale-status-control";
+import { TicketLimitControl } from "./ticket-limit-control";
 export function ShowtimeWorkspace({
   id,
   mode,
@@ -200,6 +201,7 @@ export function ShowtimeWorkspace({
           </aside>
           <div>
             <SaleStatusControl key={id} show={show} onChanged={refresh} />
+            <TicketLimitControl key={`limit-${id}`} show={show} onChanged={refresh} />
           </div>
         </div>
       )}

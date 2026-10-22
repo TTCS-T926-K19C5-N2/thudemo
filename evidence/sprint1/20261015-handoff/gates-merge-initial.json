@@ -1,0 +1,32 @@
+[
+  {
+    "name": "test-dependencies",
+    "exitCode": 0,
+    "seconds": 1.105
+  },
+  {
+    "name": "test-migration",
+    "exitCode": 0,
+    "seconds": 2.051
+  },
+  {
+    "name": "lint",
+    "exitCode": 0,
+    "seconds": 21.975
+  },
+  {
+    "name": "typecheck",
+    "exitCode": 0,
+    "seconds": 16.665
+  },
+  {
+    "name": "test",
+    "exitCode": 0,
+    "seconds": 16.094
+  },
+  {
+    "name": "integration",
+    "exitCode": 1,
+    "seconds": 63.509
+  }
+]

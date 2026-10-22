@@ -1,0 +1,19 @@
+{
+  "time": "2026-10-16T16:34:30.021Z",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "root": "D:/s1demo/02a8e86-clean-20261016",
+  "profile": "s1demo-19b8f733e0a1",
+  "result": "PASS",
+  "assertions": [
+    "Harmless separate Node process, not in profile process records, remains alive before Stop, after Stop and after Start",
+    "Only test-owned sentinel is terminated in finally; no other application stopped",
+    "Repeated Stop/Start returns READY; config/env/signing key bytes unchanged",
+    "Every published PG/Redis/Mailpit port binds127.0.0.1",
+    "Config/env/signing key paths are ignored by Git"
+  ],
+  "limitations": [
+    "Sentinel is a controlled separate process, not an unrelated real user application",
+    "Native API binding remains baseline0.0.0.0; database/cache/mail dependencies are loopback-only",
+    "Port/profile/DB rejection logic also reviewed in source; seed safety tests exist in exact-head CI"
+  ]
+}

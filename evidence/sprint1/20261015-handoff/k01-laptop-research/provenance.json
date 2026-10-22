@@ -1,0 +1,36 @@
+{
+  "source": "b52ba6afa07d29444e5e809892e5325f0966625c",
+  "time": "2026-10-15T16:42:23.263Z",
+  "profile": "Dedicated laptop staging research, isolated from product and dev",
+  "postgres": "15-alpine; persistent named volume",
+  "redis": "7-alpine; AOF yes / appendfsync everysec; persistent named volume",
+  "ports": [
+    15456,
+    16406
+  ],
+  "transformations": [
+    {
+      "file": "candidate-stores.mjs",
+      "originalSha256": "265ac407d5a47f24c64707cba3b03cbd190d8800ba8280b418def5a2758395f1",
+      "adaptedSha256": "4e5eb400e9d85fc98d48d4e9b2de0ed91cc6dae2b650ff43820ab18c96394de6"
+    },
+    {
+      "file": "candidate-server.mjs",
+      "originalSha256": "0832ccd1bd4ba4c7dabef1371bc3441f783a2fd23ec585fd839332208fcf579b",
+      "adaptedSha256": "0832ccd1bd4ba4c7dabef1371bc3441f783a2fd23ec585fd839332208fcf579b"
+    },
+    {
+      "file": "compare-candidates.mjs",
+      "originalSha256": "b58fd3540d664514193a7ce213aaa316d33c19543a4c80d992506b6570896493",
+      "adaptedSha256": "4032a7773c5114a4aebcc8a97df47500858147f10742874501c480bf37c70e8a"
+    }
+  ],
+  "changes": "Exact target/container/output relocation; Redis graceful-restart assertion strengthened to require retention with AOF; no concurrency/latency threshold relaxed. Source copies included for review.",
+  "limits": [
+    "No product endpoint result from this datastore experiment",
+    "Two research processes and co-located generator",
+    "Graceful restart only, not hard crash/power loss/fsync durability guarantee",
+    "Original source required guard remains unchanged; only disposable adapted copies execute",
+    "Not an independent human architecture review"
+  ]
+}

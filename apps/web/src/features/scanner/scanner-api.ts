@@ -20,6 +20,9 @@ export interface ScannerTicketPayload {
 }
 
 export interface ShowtimeTicketsPayload {
+  protocolVersion?: number;
+  version?: string;
+  mode?: "full" | "delta";
   showtimeId: string;
   showtimeName: string;
   generatedAt: string;
@@ -65,6 +68,9 @@ export async function fetchShowtimeTickets(
       const pubKey = object(data.publicKey);
 
       return {
+        protocolVersion: Number(data.protocolVersion ?? 1),
+        version: typeof data.version === "string" ? data.version : undefined,
+        mode: data.mode === "full" ? "full" : "delta",
         showtimeId: String(data.showtimeId),
         showtimeName: String(data.showtimeName ?? ""),
         generatedAt: String(data.generatedAt),
@@ -94,3 +100,15 @@ export async function fetchShowtimeTickets(
     { signal },
   );
 }
+
+export interface SyncOfflineScansResponse {
+  synced: number;
+  conflicts: {
+    scanId: string;
+    ticketCode: string;
+    reason: string;
+    existingCheckedInAt?: string | null;
+  }[];
+  syncedScanIds: string[];
+}
+

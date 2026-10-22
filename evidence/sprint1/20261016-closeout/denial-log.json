@@ -1,0 +1,22 @@
+{
+  "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "result": "PASS",
+  "scope": "Actual owned API RolesGuard denied-call log entries only; generic route/role mismatch, no request credential/body",
+  "evidence": [
+    {
+      "container": "sprint1-stage-api-a2e5f675a371-1792137268858",
+      "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "entries": [
+        "[Nest] 1  - 10/16/2026, 7:55:52 AM    WARN [RolesGuard] Access denied to route create: role mismatch",
+        "[Nest] 1  - 10/16/2026, 8:22:55 AM    WARN [RolesGuard] Access denied to route findOwned: role mismatch"
+      ]
+    },
+    {
+      "container": "sprint1-stage-api-replica-a2e5f675a371-1792137268859",
+      "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+      "entries": [
+        "[Nest] 1  - 10/16/2026, 8:22:55 AM    WARN [RolesGuard] Access denied to route claim: role mismatch"
+      ]
+    }
+  ]
+}

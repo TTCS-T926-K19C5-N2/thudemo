@@ -5,16 +5,38 @@ import * as argon2 from 'argon2';
 import request from 'supertest';
 import { AppModule } from '../src/app.module.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
+import { MailService, type OutgoingMail } from '../src/mail/mail.service.js';
+import { RegistrationSettings } from '../src/users/registration-settings.js';
+import {
+  ActivationDeliveryService,
+  activationHash,
+} from '../src/users/activation-delivery.service.js';
+import { REGISTRATION_NOTICE } from 'shared/registration-notice';
 
 describe('Existing account input regressions (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   const ids: string[] = [];
+  const messages: OutgoingMail[] = [];
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(MailService)
+      .useValue({
+        ready: true,
+        send: async (mail: OutgoingMail) => {
+          messages.push(mail);
+        },
+      })
+      .overrideProvider(RegistrationSettings)
+      .useValue({
+        encryptionKey: Buffer.alloc(32, 7),
+        publicOrigin: 'http://localhost:3000',
+        worker: false,
+      })
+      .compile();
     app = module.createNestApplication();
     await app.init();
     prisma = app.get(PrismaService);
@@ -37,8 +59,14 @@ describe('Existing account input regressions (e2e)', () => {
         email,
         password: await argon2.hash(password, { type: argon2.argon2id }),
         isEmailVerified: verified,
-        activationToken: verified ? null : token,
-        activationExpires: new Date(Date.now() + (expired ? -60_000 : 60_000)),
+        activationTokens: verified
+          ? undefined
+          : {
+              create: {
+                tokenHash: activationHash(token),
+                expiresAt: new Date(Date.now() + (expired ? -60_000 : 60_000)),
+              },
+            },
         userRoles: { create: { role: { connect: { name: 'BUYER' } } } },
       },
     });
@@ -84,13 +112,26 @@ describe('Existing account input regressions (e2e)', () => {
     const password = randomUUID();
     await request(app.getHttpServer())
       .post('/users/register')
-      .send({ email, password })
+      .send({
+        email,
+        password,
+        fullName: 'Người thử nghiệm',
+        consent: true,
+        noticeVersion: REGISTRATION_NOTICE.version,
+      })
       .expect(201);
-    const user = await prisma.user.findUniqueOrThrow({ where: { email } });
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: email.toLowerCase() },
+    });
     ids.push(user.id);
+    await app.get(ActivationDeliveryService).drain();
+    const token = messages
+      .find((mail) => mail.to === user.email)
+      ?.text.match(/#token=([a-f0-9]{64})/)?.[1];
+    expect(token).toHaveLength(64);
     await request(app.getHttpServer())
-      .get('/users/activate')
-      .query({ token: user.activationToken })
+      .post('/users/activate')
+      .send({ token, password })
       .expect(200);
     await request(app.getHttpServer())
       .post('/auth/login')
@@ -123,8 +164,8 @@ describe('Existing account input regressions (e2e)', () => {
       true,
     );
     await request(app.getHttpServer())
-      .get('/users/activate')
-      .query({ token })
+      .post('/users/activate')
+      .send({ token, password: 'Activation-fixture-123' })
       .expect(400);
     expect(
       (await prisma.user.findUniqueOrThrow({ where: { id: user.id } }))
@@ -136,15 +177,17 @@ describe('Existing account input regressions (e2e)', () => {
     const { user, token } = await fixture(`valid-${randomUUID()}@demo.invalid`);
     const responses = await Promise.all(
       Array.from({ length: 2 }, () =>
-        request(app.getHttpServer()).get('/users/activate').query({ token }),
+        request(app.getHttpServer())
+          .post('/users/activate')
+          .send({ token, password: 'Activation-fixture-123' }),
       ),
     );
     expect(
       responses.map((response) => response.status).sort((a, b) => a - b),
     ).toEqual([200, 400]);
     await request(app.getHttpServer())
-      .get('/users/activate')
-      .query({ token })
+      .post('/users/activate')
+      .send({ token, password: 'Activation-fixture-123' })
       .expect(400);
     const current = await prisma.user.findUniqueOrThrow({
       where: { id: user.id },

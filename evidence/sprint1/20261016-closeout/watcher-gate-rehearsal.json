@@ -1,0 +1,365 @@
+{
+  "time": "2026-10-15T18:01:34.925Z",
+  "kind": "Controlled orchestration rehearsal using production watchOnce; fixture Git/GitHub adapters, real isolated child deployment sentinel. Not a live GitHub red run or post-merge auto-deploy.",
+  "outcomes": [
+    {
+      "mode": "red",
+      "commands": [
+        [
+          "git",
+          "fetch",
+          "origin",
+          "develop"
+        ],
+        [
+          "git",
+          "rev-parse",
+          "origin/develop"
+        ],
+        [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "gh",
+          "api",
+          "repos/TTCS-T926-K19C5-N2/thudemo/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/check-runs?per_page=100"
+        ]
+      ],
+      "events": [
+        {
+          "status": "BLOCKED_CI_not_all_success",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "deploymentChildStarted": false,
+      "result": "PASS"
+    },
+    {
+      "mode": "missing",
+      "commands": [
+        [
+          "git",
+          "fetch",
+          "origin",
+          "develop"
+        ],
+        [
+          "git",
+          "rev-parse",
+          "origin/develop"
+        ],
+        [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "gh",
+          "api",
+          "repos/TTCS-T926-K19C5-N2/thudemo/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/check-runs?per_page=100"
+        ]
+      ],
+      "events": [
+        {
+          "status": "BLOCKED_CI_not_all_success",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "deploymentChildStarted": false,
+      "result": "PASS"
+    },
+    {
+      "mode": "pending",
+      "commands": [
+        [
+          "git",
+          "fetch",
+          "origin",
+          "develop"
+        ],
+        [
+          "git",
+          "rev-parse",
+          "origin/develop"
+        ],
+        [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "gh",
+          "api",
+          "repos/TTCS-T926-K19C5-N2/thudemo/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/check-runs?per_page=100"
+        ]
+      ],
+      "events": [
+        {
+          "status": "BLOCKED_CI_not_all_success",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "deploymentChildStarted": false,
+      "result": "PASS"
+    },
+    {
+      "mode": "wrong-sha",
+      "commands": [
+        [
+          "git",
+          "fetch",
+          "origin",
+          "develop"
+        ],
+        [
+          "git",
+          "rev-parse",
+          "origin/develop"
+        ],
+        [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "gh",
+          "api",
+          "repos/TTCS-T926-K19C5-N2/thudemo/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/check-runs?per_page=100"
+        ]
+      ],
+      "events": [
+        {
+          "status": "BLOCKED_CI_not_all_success",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "deploymentChildStarted": false,
+      "result": "PASS"
+    },
+    {
+      "mode": "wrong-app",
+      "commands": [
+        [
+          "git",
+          "fetch",
+          "origin",
+          "develop"
+        ],
+        [
+          "git",
+          "rev-parse",
+          "origin/develop"
+        ],
+        [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "gh",
+          "api",
+          "repos/TTCS-T926-K19C5-N2/thudemo/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/check-runs?per_page=100"
+        ]
+      ],
+      "events": [
+        {
+          "status": "BLOCKED_CI_not_all_success",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "deploymentChildStarted": false,
+      "result": "PASS"
+    },
+    {
+      "mode": "extra-red",
+      "commands": [
+        [
+          "git",
+          "fetch",
+          "origin",
+          "develop"
+        ],
+        [
+          "git",
+          "rev-parse",
+          "origin/develop"
+        ],
+        [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "gh",
+          "api",
+          "repos/TTCS-T926-K19C5-N2/thudemo/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/check-runs?per_page=100"
+        ]
+      ],
+      "events": [
+        {
+          "status": "BLOCKED_CI_not_all_success",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "deploymentChildStarted": false,
+      "result": "PASS"
+    },
+    {
+      "mode": "truncated",
+      "commands": [
+        [
+          "git",
+          "fetch",
+          "origin",
+          "develop"
+        ],
+        [
+          "git",
+          "rev-parse",
+          "origin/develop"
+        ],
+        [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "gh",
+          "api",
+          "repos/TTCS-T926-K19C5-N2/thudemo/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/check-runs?per_page=100"
+        ]
+      ],
+      "events": [
+        {
+          "status": "BLOCKED_watcher_error",
+          "reason": "checks_truncated_fail_closed"
+        }
+      ],
+      "deploymentChildStarted": false,
+      "result": "PASS"
+    },
+    {
+      "mode": "missing-ancestor",
+      "commands": [
+        [
+          "git",
+          "fetch",
+          "origin",
+          "develop"
+        ],
+        [
+          "git",
+          "rev-parse",
+          "origin/develop"
+        ],
+        [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      ],
+      "events": [
+        {
+          "status": "BLOCKED_develop_missing_approved_fix",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "deploymentChildStarted": false,
+      "result": "PASS"
+    },
+    {
+      "mode": "busy",
+      "commands": [
+        [
+          "git",
+          "fetch",
+          "origin",
+          "develop"
+        ],
+        [
+          "git",
+          "rev-parse",
+          "origin/develop"
+        ],
+        [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "gh",
+          "api",
+          "repos/TTCS-T926-K19C5-N2/thudemo/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/check-runs?per_page=100"
+        ]
+      ],
+      "events": [
+        {
+          "status": "deployment_busy",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "deploymentChildStarted": false,
+      "result": "PASS"
+    },
+    {
+      "mode": "success",
+      "commands": [
+        [
+          "git",
+          "fetch",
+          "origin",
+          "develop"
+        ],
+        [
+          "git",
+          "rev-parse",
+          "origin/develop"
+        ],
+        [
+          "git",
+          "merge-base",
+          "--is-ancestor",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "gh",
+          "api",
+          "repos/TTCS-T926-K19C5-N2/thudemo/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/check-runs?per_page=100"
+        ]
+      ],
+      "events": [
+        {
+          "status": "deploy_after_CI",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "status": "deploy_complete",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "deploymentChildStarted": true,
+      "result": "PASS"
+    }
+  ]
+}

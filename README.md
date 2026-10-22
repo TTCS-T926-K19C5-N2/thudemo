@@ -1,139 +1,45 @@
-# Chạy dự án bán vé sự kiện trên máy cá nhân
+# thudemo — portable demo Sprint4–5
 
-> **Hướng dẫn hiện hành cho giao diện, tài khoản và giữ ghế Sprint 2:** [LOCAL_USER_GUIDE](docs/LOCAL_USER_GUIDE.md). Có lệnh build/chạy/test từng bước, tài khoản người tổ chức/người mua, cách đọc mật khẩu giả riêng trên máy và xử lý lỗi. Profile review dùng PostgreSQL 15432/Redis 16379 với database `stitch_fidelity`; các mục T-01 và checkpoint cũ dưới đây được giữ làm lịch sử, dùng profile khác.
+**Clone `develop`**; `main` is not the handoff branch. Demo only: S19 mock payment, SMTP catcher, fake accounts and fixture PAID orders. This is not production-ready or complete AC/NFR/DoD acceptance. The current laptop URL is operational information in the handoff, not a hardcoded application setting.
 
-Đây là hướng dẫn cho môi trường local theo T-01/TECH-01. Docker Compose chạy PostgreSQL và Redis; API NestJS và web Next.js chạy trực tiếp trên máy. Web dùng cổng **3000**, API dùng cổng **3001**. Các lệnh dưới đây dùng PowerShell và được chạy từ thư mục `thudemo/` chứa file README này.
+## Start from a clean clone
 
-## 1. Chuẩn bị
+Prerequisites: Git; Docker Desktop Linux engine or Docker Engine with Compose supporting `service_completed_successfully` and `up --wait` (tested Desktop/Compose 5.1.4 on Windows). No host Node, pnpm, Prisma, Codex runtime or shared worktree dependencies. Allow at least **12 GiB free on Docker/system disk, 8 GiB on checkout disk, 4 GiB available RAM**; first image build needs network access. Tested on one Windows laptop with isolated Linux containers, not every OS. Ports **3488 web** and **8138 email UI** must be free; change both URL/port fields in `.env` if needed. PostgreSQL/Redis/API are private to this Compose project.
 
-Cài và khởi động Docker Desktop. Máy cần có Node.js **24.21.0** và pnpm **10.15.1**. Mở PowerShell tại `thudemo/`, rồi kiểm tra:
-
-```powershell
-node --version
-pnpm --version
-docker compose version
+```text
+git clone --branch develop --single-branch https://github.com/TTCS-T926-K19C5-N2/thudemo.git
+cd thudemo
 ```
 
-Nếu phiên bản Node hoặc pnpm khác các phiên bản trên, hãy chọn đúng phiên bản trước khi cài dependency. Nếu lệnh Docker báo không kết nối được engine, hãy chờ Docker Desktop khởi động xong.
+Copy `.env.example` to `.env` (`Copy-Item .env.example .env` in PowerShell, `cp .env.example .env` on Linux). Set **POSTGRES_PASSWORD** and **DEMO_PASSWORD** to two different private values of at least12 characters (DB password: letters/digits/underscore/hyphen only); replace both placeholders. Retain this file privately. Other defaults work for localhost.
 
-## 2. Tạo cấu hình local
+One startup command, from this clone root:
 
-Chỉ sao chép file mẫu khi chưa có `.env`:
-
-```powershell
-if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+```text
+docker compose --env-file .env -f compose.demo.yml up --build -d --wait
 ```
 
-Mở `thudemo/.env` và thay **mọi** giá trị dạng `<...>` bằng giá trị thử nghiệm do bạn tự đặt. Dùng cùng tên user, mật khẩu và tên database trong `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` và `DATABASE_URL`. URL của API phải trỏ `localhost:5432`; Redis trỏ `localhost:6379`. Nếu mật khẩu chứa ký tự đặc biệt, phần mật khẩu trong `DATABASE_URL` cần được mã hóa theo URL; dùng ký tự chữ/số cho mật khẩu local sẽ dễ cấu hình hơn.
+Only proceed if command succeeds: migration/init failure blocks API/web. Open **http://localhost:3488**, email catcher **http://localhost:8138** (or configured ports). Accounts and5–10minute scenario: [HUONG_DAN_DEMO.md](HUONG_DAN_DEMO.md). Credentials: configured `DEMO_PASSWORD` in ignored `.env`; all role emails are listed in the guide. Do not publish `.env`, keys or exported fixture.
 
-Giữ `PORT=3001` và `NEXT_PUBLIC_API_URL=http://localhost:3001` như file mẫu. `NEXT_PUBLIC_*` là biến công khai: không đặt mật khẩu, token hoặc chuỗi kết nối vào đó. `.env` đã được Git ignore; không commit hoặc gửi nội dung file này. Các biến JWT trong mẫu thuộc scaffold authentication hiện có, chưa phải bằng chứng tính năng đăng nhập đã hoàn thành.
+The command builds pinned Node24.21.0/pnpm10.15.1 images with frozen lockfile, starts healthy PostgreSQL15/Redis7 and Mailpit, initializes persistent Ed25519/auth keys once, locks migration then runs committed Prisma migrations, adds missing fake demo data and starts API/actual ticket-mail worker plus web. Demo API runs compiled code with `NODE_ENV=development`, explicitly required by the existing mock-payment gate, `APP_ENV=demo`; production API mode still rejects mock. No source watcher or weakened RBAC/signatures. Web uses production Next build and same-origin `/api`; `API_INTERNAL_URL=http://api:3001` stays server-only. Compose only consumes this `.env`; no host/parent `.env`, keys or dependencies mounted. Legacy local setup is in `.env.development.example`; do not mix profiles.
 
-Nếu đã có volume PostgreSQL từ lần chạy trước, đổi `POSTGRES_USER`, `POSTGRES_PASSWORD` hoặc `POSTGRES_DB` trong `.env` không tự đổi tài khoản/database đã khởi tạo trong volume. Hãy dùng lại các giá trị tương ứng hoặc xử lý volume theo quy trình của nhóm; không xóa volume khi còn dữ liệu cần giữ.
+## Status, stop and restart without data loss
 
-## 3. Khởi động dữ liệu và cài dependency
-
-```powershell
-docker compose up -d --wait postgres redis
-pnpm install --frozen-lockfile
-pnpm --filter api exec prisma migrate deploy
-pnpm --filter api exec prisma generate
+```text
+docker compose --env-file .env -f compose.demo.yml ps -a
+docker compose --env-file .env -f compose.demo.yml logs --tail 80 prepare api web
+docker compose --env-file .env -f compose.demo.yml stop
+docker compose --env-file .env -f compose.demo.yml up --build -d --wait
 ```
 
-`--wait` chỉ hoàn tất khi PostgreSQL và Redis đạt healthcheck. Lệnh migration dùng lịch sử Prisma trong repository; chạy lại sẽ báo không có migration chờ nếu database đã cập nhật. Các migration T-01 chỉ là mẫu apply → migration bù → tái áp dụng, chưa tạo các bảng nghiệp vụ User/Event/Showtime. Không dùng `prisma db push` hoặc reset database thay cho migration.
+Reuse the startup command after changing demo date/batch or source. `restart` alone does not re-read configuration. Named volumes retain DB, Redis, signing keys and Mailpit receipts. **Never `down -v`, DB reset or delete volumes to prepare a demo**. Changing password on an existing key volume fails explicitly; user/password edits belong in the administration UI. Changing DB password requires a separate deliberate database credential migration, not editing `.env` alone. Use a distinct `COMPOSE_PROJECT_NAME` for a new isolated installation.
 
-## 4. Chạy API và web
+Seed runs only in explicit demo mode. Blank `DEMO_DATE` selects today's Vietnam date; use YYYY-MM-DD to prepare a future day. Existing dataset is not reset. Change `DEMO_BATCH=2` and rerun startup to **add** another event/ticket batch for the selected day. Old used/cancelled tickets remain unchanged. `DEMO_SEED=false` skips fixture creation. Admin UI creates additional staff; no production account provisioning claimed.
 
-Mở **hai cửa sổ PowerShell riêng**, cùng ở `thudemo/`:
+## LAN / camera
 
-```powershell
-# Cửa sổ 1 — API
-pnpm --filter api run start:dev
-```
+Localhost is a browser secure context: camera/service worker work at `http://localhost`. QR text input is a fallback for the presentation, not hardware-camera acceptance. A phone's `localhost` refers to the phone. For LAN, place an HTTPS reverse proxy in front of this web port, use a certificate with the real hostname/IP SAN, trust its CA on each device and set `PUBLIC_URL=https://<that-host>:<tls-port>`. Bind web only to the intended local interface via `DEMO_BIND_ADDRESS`, allow only the selected firewall port/local subnet; SMTP UI remains loopback. Reverse proxy must preserve Origin/Host and forward to the **web server**, never expose API/DB/Redis. No automatic certificate trust/firewall edits. Existing laptop HTTPS staging remains a separate profile; do not copy its keys/database/config. Exact LAN proxy/certificate provisioning on a second machine is not part of the localhost clone proof.
 
-```powershell
-# Cửa sổ 2 — web
-pnpm --filter web run dev
-```
+## Boundaries
 
-Mở [web](http://localhost:3000) và [API health](http://localhost:3001/health). Health trả HTTP `200` với `status: ok` khi API kết nối được cả PostgreSQL và Redis; nếu một dịch vụ lỗi, API trả `503`. Web hiện vẫn là scaffold của Sprint 1, chưa có luồng bán vé hoàn chỉnh.
-
-Để dừng API hoặc web, nhấn `Ctrl+C` trong từng cửa sổ. Có thể dừng hai dịch vụ dữ liệu bằng `docker compose stop postgres redis`; lệnh này giữ nguyên volume PostgreSQL.
-
-### Chạy thử nghiệm luồng thanh toán bằng cổng giả lập (Story S-19)
-
-Khi chưa có tài khoản MoMo Sandbox, có thể bật cổng thanh toán giả lập nội bộ trong `.env`:
-```powershell
-PAYMENT_GATEWAY=mock
-PAYMENT_WEBHOOK_SECRET=mock_webhook_secret_dev
-```
-Khi bấm "Thanh toán ngay" ở trang chi tiết đơn hàng, hệ thống sẽ chuyển hướng tới trang `/mock-gateway/pay`. Tại đây có hai nút **"Thanh toán thành công"** và **"Thanh toán thất bại"**. Server giả lập sẽ phát một IPN webhook chuẩn MoMo có chữ ký số hợp lệ tới endpoint `/payments/webhook`, cập nhật đơn hàng tức thì và chuyển người dùng về trang kết quả `/payment/result`. *Lưu ý: Cổng mock chỉ dùng cho dev/test và bị nghiêm cấm trên môi trường production.*
-
-## 5. Kiểm tra thay đổi local
-
-Sau khi dữ liệu đã healthy và migration đã chạy, từ `thudemo/`:
-
-```powershell
-pnpm build
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm --filter api run test:e2e
-pnpm --filter api exec prisma migrate status
-```
-
-E2E gọi API với PostgreSQL và Redis local thật. `prisma migrate status` phải báo database đã cập nhật. Một số warning lint trong module auth/users thuộc scaffold hiện có; nếu lệnh lint trả mã thoát khác 0 thì kiểm tra và sửa lỗi trước khi tiếp tục.
-
-## Khi gặp lỗi
-
-| Triệu chứng | Kiểm tra trước |
-|---|---|
-| `docker compose` không chạy | Docker Desktop đã chạy chưa; cổng 5432/6379 có bị ứng dụng khác chiếm không. |
-| Compose báo thiếu `POSTGRES_*` | File `.env` phải nằm ở `thudemo/`, không phải `apps/api/`; thay hết placeholder. |
-| Migration không kết nối được database | Chờ `docker compose up -d --wait postgres redis` thành công; kiểm `DATABASE_URL` khớp `POSTGRES_*` và dùng `localhost:5432`. |
-| API không khởi động hoặc `/health` trả `503` | Kiểm tra container PostgreSQL/Redis healthy, `DATABASE_URL`, `REDIS_HOST` và `REDIS_PORT`; xem lỗi trong terminal API. |
-| Web/API báo cổng đang được dùng | Dừng tiến trình local đang chiếm 3000/3001; giữ cổng theo TECH-01. |
-
-CI đầy đủ và chặn merge thuộc T-02. Docker image ứng dụng, staging và rollback khi triển khai thuộc T-03.
-
-## Sprint 2 — triển khai và đo local 04/10/2026
-
-Root ứng dụng vẫn `thudemo/`. Hướng dẫn chạy/seed/demo an toàn: [SPRINT2_HANDOFF](docs/SPRINT2_HANDOFF.md). [AC và bằng chứng](docs/SPRINT2_LOCAL_EVIDENCE.md), [K01 spike](docs/K01_EVIDENCE.md).
-
-Đã nối API thật cho nạp JSON, giá từng hạng, mở/đóng bán, danh sách/chi tiết và một canvas2.000ghế. Chọn ghế hiện chỉ nháp; giữ ghế disabled vì K01 chưa đóng gate. 13task kiểm local,8task chờ dependency. Không tuyên bố Sprint Done.
-
-Tạo fixture tùy số ghế (1–2.000):
-
-```powershell
-node scripts/generate-seat-map.mjs 2000 fixtures/seat-map-2000.json
-```
-
-Chọn tệp ở trang Nạp sơ đồ JSON để preview không ghi DB; xác nhận mới import. Script seed dùng cùng API thật. Tái đo: khởi động bản production theo handoff, đặt mật khẩu giả trong biến môi trường, mở CLI browser rồi chạy `./scripts/verify-sprint2-browser.ps1`. Kết quả máy đọc được: `evidence/sprint2/20261004-local/browser-report.json`.
-
-| Phép đo | p95 local | Mẫu / mode |
-|---|---|---|
-| Import2000 |715.8ms |10 HTTP test-harness, DBthật |
-| Query2000 |36.4ms |30 HTTP test-harness, DBthật |
-| Danh sách200 suất |19.7ms cachemiss /11.9ms hit |30 mỗi loại, Redisthật |
-| Hiển thị đủ2000ghế |177.3ms |30 navigation→double-frame, production web, warm browser |
-
-p95 nearest-rank sort/ceil(n×.95)-1. Windows i5-13500H/16threads/~15.64GiB, Node24.21.0,pnpm10.15.1,DockerPG15/Redis7. Local không thay thế staging, physicalmobile hoặc benchmark HTTPgiữ ghế. Rawresults và screenshot gồm35browserchecks. Không dùng request lỗi để giảm latency.
-
-## Bản sửa Stitch và code sản phẩm
-
-Run sửa ngày 04/10/2026 dùng DB riêng `stitch_fidelity`. Runtime được tổ chức theo nghiệp vụ; poster gắn event ổn định, thao tác API thật và copy nội bộ đã được loại khỏi các bề mặt sửa. Bằng chứng cũ ở trên được giữ nguyên theo lần chạy cũ.
-
-Xem [bằng chứng mới](docs/STITCH_CORRECTION_EVIDENCE.md), [hướng dẫn chạy và rollback](docs/STITCH_CORRECTION_HANDOFF.md), [ledger 29 màn hình](docs/STITCH_FIDELITY_LEDGER.md) và [viewer trước/sau](evidence/stitch-correction/20261004/index.html). Giữ ghế vẫn chưa khả dụng; không xác nhận Sprint Done.
-
-## Profile Render Free và review hiện hành — 04/10/2026
-
-Quyết định DEC-11: Render Free/ngân sách0, PO + review kỹ thuật tự động review, chưa commit/push/publish/upload/deploy. [Gói review và ma trận21task](docs/SPRINT2_PO_REVIEW.md), [Dashboard/migration/seed/backup runbook](docs/RENDER_FREE_RUNBOOK.md). Hướng dẫn lịch sử ở trên không phải trạng thái scaffold hiện tại: auth dùng phiên máy chủ/cookie, client gọi /api cùng origin; web proxy đọc API_INTERNAL_URL runtime, Redis hỗ trợ REDIS_URL. Giữ root thudemo và runtime Node24.21.0/pnpm10.15.1.
-
-Profile Docker kiểm tại http://localhost:3100, API3101. Browser106checks/33captures/0JSerrors; render2.000ghế p95162.3ms (30navigation warm) trong evidence/render-free/20261004/browser-report.json. Build/lint/typecheck/unit/integration local PASS. Không thay con số này thành staging hoặc hold p95.
-
-K01 local two-process đã so durability/invariant và đề xuất PostgreSQL authority; chờ PO xác nhận tạm thời trước T22–T31. Sáu màn hình giữ thành công/conflict/expiry chưa nối API. Không báo Sprint100% khi chưa producthold/CI/Render/NFR/POacceptance. Source/current evidence giữ WIP; không sửa AC nguồn.
-
-## Quyền giữ ghế local — DEC-12
-
-PostgreSQL authoritative tạm thời cho local; Redis/Valkey chỉ cache/counter. [Gói review hiện tại](docs/SPRINT2_PO_REVIEW.md), [AC/lệnh/bằng chứng](docs/SEAT_HOLD_LOCAL_EVIDENCE.md). API/web3001/3000; imageprofilemới3201/3200. Chạy migration theo runner trướcAPI; mở cửa sổ thứba `./scripts/run-sprint2-local.ps1 -Mode Worker -Database stitch_fidelity` để quét mỗi phút. Thêm ghế/retry/reload không gia hạn10phút; query vẫn trống ngay khi quá hạn dù worker tắt. Chỉ tài khoản/dữ liệu giả, passwordlocal không trongchat/source.
-
-Lượt cuối T31 đúng100winner/100conflict×10 nhưng NFRp95FAIL750,96ms. ChưaCI/staging/Render/continuousworkerPASS; khôngSprint100%. Không dùngreset/dbpush để rollback, không xóa.env/volumes/WIP. RenderFree scheduler chỉ khiAPIthức,cache/loginlock có thểmất khi restart.
+[POST_DEMO_BACKLOG.md](POST_DEMO_BACKLOG.md) records device/provider/performance and integration limitations. No Internet email, real payment/refund or physical outdoor camera proof is implied. Old Sprint1 guides under `docs/` remain historical; this entrypoint is the Sprint4–5 handoff.

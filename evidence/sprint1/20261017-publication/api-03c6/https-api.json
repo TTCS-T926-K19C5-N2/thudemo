@@ -1,0 +1,53 @@
+{
+  "startedSource": "03c6aa7796f17683281cc612fb955976cdf4daae",
+  "origin": "https://10.228.54.197:3470",
+  "transport": "Real HTTPS, certificate and hostname verified using this exact staging certificate as trust anchor",
+  "results": [
+    {
+      "name": "https-home-health-anonymous401",
+      "source": "03c6aa7796f17683281cc612fb955976cdf4daae",
+      "status": "PASS"
+    },
+    {
+      "name": "production-secure-cookie-contract",
+      "source": "03c6aa7796f17683281cc612fb955976cdf4daae",
+      "status": "PASS"
+    },
+    {
+      "name": "organizer-draft-created-and-hidden-from-buyer",
+      "source": "03c6aa7796f17683281cc612fb955976cdf4daae",
+      "status": "PASS"
+    },
+    {
+      "name": "owner-b-and-buyer-server403",
+      "source": "03c6aa7796f17683281cc612fb955976cdf4daae",
+      "status": "PASS"
+    },
+    {
+      "name": "event-edit-readback-persists",
+      "source": "03c6aa7796f17683281cc612fb955976cdf4daae",
+      "status": "PASS"
+    },
+    {
+      "name": "future-past-duplicate-warning-utc-storage-and-fk-restrict",
+      "source": "03c6aa7796f17683281cc612fb955976cdf4daae",
+      "status": "PASS"
+    },
+    {
+      "name": "logout-replay-and-server-expired-session401",
+      "source": "03c6aa7796f17683281cc612fb955976cdf4daae",
+      "status": "PASS"
+    },
+    {
+      "name": "bounded-regression-finished-no-login-lockout-probe",
+      "source": "03c6aa7796f17683281cc612fb955976cdf4daae",
+      "status": "PASS",
+      "limitations": "Rate-limit/restart/naturalTTL/two-peer assertions retain prior versioned evidence; not rerun here"
+    }
+  ],
+  "limitations": [
+    "Not an independent second-device test",
+    "Current laptop trust/firewall verified separately; no new second-device test",
+    "Manual candidate deployment does not prove develop auto-deploy AC"
+  ]
+}

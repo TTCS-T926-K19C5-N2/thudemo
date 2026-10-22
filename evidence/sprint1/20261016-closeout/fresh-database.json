@@ -1,0 +1,11 @@
+{
+  "time": "2026-10-16T07:53:57.2293106Z",
+  "claimHoldV4Count": 1,
+  "resetOrDropUsed": false,
+  "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "database": "sprint1_clean_a2e5f675",
+  "result": "PASS",
+  "freshDatabase": true,
+  "migrationsApplied": 29,
+  "installEvidence": "Clean source archive frozen install/generate in staging timeline and private logs; separate empty DB full chain here"
+}

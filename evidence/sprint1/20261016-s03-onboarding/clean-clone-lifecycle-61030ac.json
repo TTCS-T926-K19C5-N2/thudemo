@@ -1,0 +1,17 @@
+{
+  "time": "2026-10-16T14:18:48.156Z",
+  "source": "61030acc51b1fd5849b46985432fc5025755a10d",
+  "root": "D:/s1demo/a42f1ce-20261016",
+  "profile": "s1demo-443290698c15",
+  "result": "PASS",
+  "assertions": [
+    "Status returns exit0",
+    "Stop terminates only recorded owned worker identities",
+    "Start -SkipBuild returns exit0 after real readiness/login/logout smoke",
+    "Config/env/signing key byte hashes unchanged",
+    "Previously created edited event and showtime preserved",
+    "30 migrations applied in new database"
+  ],
+  "credentialsRetained": false,
+  "previousFailedAttempts": "Resource guard and launcher build/background issues preserved in private clone logs; fixes27df/a42/ef3 committed"
+}

@@ -192,6 +192,11 @@ async function ticket(status = 'PAID') {
     },
     include: { items: true },
   });
+  if (status === 'PAID') await db.ticket.create({ data: {
+    orderId: order.id, showtimeId: fixture.showtimeId, seatId: seat.id,
+    code: randomUUID(), seatLabel: `A-${seatNumber}`, ticketType: 'Hạng thường',
+    status: 'VALID', price: 200000,
+  } });
   return order.items[0].id;
 }
 async function send(ticketId, actor, gateId, options = {}) {
@@ -249,14 +254,14 @@ try {
   const showtime = await db.showtime.create({
     data: {
       eventId: event.id,
-      startTime: new Date('2026-12-25T12:00:00Z'),
+      startTime: new Date(),
       status: 'ON_SALE',
     },
   });
   const otherShowtime = await db.showtime.create({
     data: {
       eventId: event.id,
-      startTime: new Date('2026-12-26T12:00:00Z'),
+      startTime: new Date(),
       status: 'ON_SALE',
     },
   });
@@ -757,10 +762,15 @@ try {
     max: Math.max(...timings),
   };
   fixture.browserTicket = firstTicket;
+  fixture.offlineTicket = await ticket();
   fixture.freshTicket = await ticket();
   fixture.retryTicket = await ticket();
   fixture.browserTicket = signer.issueQr(
     fixture.browserTicket,
+    fixture.showtimeId,
+  );
+  fixture.offlineTicket = signer.issueQr(
+    fixture.offlineTicket,
     fixture.showtimeId,
   );
   fixture.freshTicket = signer.issueQr(fixture.freshTicket, fixture.showtimeId);

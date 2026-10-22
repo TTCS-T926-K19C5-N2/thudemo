@@ -1,0 +1,754 @@
+{
+  "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "time": "2026-10-16T08:08:03.896Z",
+  "environment": "One laptop: separate native client/gateway processes, Docker web and twoAPI/PG/Redis; not an independent device",
+  "resources": [
+    {
+      "name": "Windows system/Docker Desktop volume",
+      "freeBytes": 39386750976,
+      "minimumBytes": 12884901888
+    },
+    {
+      "name": "Staging source/backup volume",
+      "freeBytes": 116035883008,
+      "minimumBytes": 5368709120
+    }
+  ],
+  "samples": [
+    {
+      "time": "2026-10-16T08:08:19.403Z",
+      "phase": "auth-setup",
+      "cpuPercent": 22.217866614399373,
+      "freeMemoryBytes": 2912673792,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:19.664Z",
+      "phase": "auth-setup",
+      "cpuPercent": 25.125748502994018,
+      "freeMemoryBytes": 2917908480,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:19.930Z",
+      "phase": "auth-setup",
+      "cpuPercent": 25.388235294117646,
+      "freeMemoryBytes": 2918785024,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:20.186Z",
+      "phase": "auth-setup",
+      "cpuPercent": 23.14995131450828,
+      "freeMemoryBytes": 2919993344,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:20.436Z",
+      "phase": "auth-setup",
+      "cpuPercent": 28.73708091756996,
+      "freeMemoryBytes": 2918641664,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:20.698Z",
+      "phase": "auth-setup",
+      "cpuPercent": 57.54631721644826,
+      "freeMemoryBytes": 2880655360,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:20.956Z",
+      "phase": "auth-setup",
+      "cpuPercent": 71.89122373300371,
+      "freeMemoryBytes": 2878304256,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:21.215Z",
+      "phase": "auth-setup",
+      "cpuPercent": 77.7089072543618,
+      "freeMemoryBytes": 2869211136,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:21.478Z",
+      "phase": "auth-setup",
+      "cpuPercent": 58.45530285971628,
+      "freeMemoryBytes": 2854780928,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:21.742Z",
+      "phase": "auth-setup",
+      "cpuPercent": 26.33053221288515,
+      "freeMemoryBytes": 2857369600,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:21.992Z",
+      "phase": "auth-setup",
+      "cpuPercent": 20.784213223987702,
+      "freeMemoryBytes": 2856583168,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:22.255Z",
+      "phase": "auth-setup",
+      "cpuPercent": 27.919884169884167,
+      "freeMemoryBytes": 2855305216,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:22.505Z",
+      "phase": "auth-setup",
+      "cpuPercent": 34.621136590229305,
+      "freeMemoryBytes": 2847547392,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:22.760Z",
+      "phase": "auth-setup",
+      "cpuPercent": 21.51149016820658,
+      "freeMemoryBytes": 2842898432,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:23.024Z",
+      "phase": "auth-setup",
+      "cpuPercent": 22.2011385199241,
+      "freeMemoryBytes": 2841976832,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:23.289Z",
+      "phase": "auth-setup",
+      "cpuPercent": 33.662004127493695,
+      "freeMemoryBytes": 2877227008,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:23.538Z",
+      "phase": "auth-setup",
+      "cpuPercent": 36.3954068896655,
+      "freeMemoryBytes": 2872565760,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:23.792Z",
+      "phase": "auth-setup",
+      "cpuPercent": 43.22055456626812,
+      "freeMemoryBytes": 2875756544,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:24.042Z",
+      "phase": "auth-setup",
+      "cpuPercent": 25.595238095238095,
+      "freeMemoryBytes": 2892382208,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:24.296Z",
+      "phase": "auth-setup",
+      "cpuPercent": 48.088482808367395,
+      "freeMemoryBytes": 2890534912,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:24.559Z",
+      "phase": "auth-setup",
+      "cpuPercent": 38.357142857142854,
+      "freeMemoryBytes": 2893774848,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:24.812Z",
+      "phase": "auth-setup",
+      "cpuPercent": 23.731306692816865,
+      "freeMemoryBytes": 2893426688,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:25.063Z",
+      "phase": "auth-setup",
+      "cpuPercent": 26.664965552436847,
+      "freeMemoryBytes": 2893266944,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:25.313Z",
+      "phase": "auth-setup",
+      "cpuPercent": 24.543864033991504,
+      "freeMemoryBytes": 2898448384,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:25.569Z",
+      "phase": "auth-setup",
+      "cpuPercent": 26.13030373290053,
+      "freeMemoryBytes": 2893651968,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:25.825Z",
+      "phase": "auth-setup",
+      "cpuPercent": 30.738221214411688,
+      "freeMemoryBytes": 2895478784,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:26.076Z",
+      "phase": "auth-setup",
+      "cpuPercent": 26.594167078596143,
+      "freeMemoryBytes": 2895777792,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:26.327Z",
+      "phase": "auth-setup",
+      "cpuPercent": 22.002007024586057,
+      "freeMemoryBytes": 2895482880,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:26.588Z",
+      "phase": "auth-setup",
+      "cpuPercent": 27.497142857142855,
+      "freeMemoryBytes": 2895302656,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:26.837Z",
+      "phase": "auth-setup",
+      "cpuPercent": 19.109554777388695,
+      "freeMemoryBytes": 2895765504,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:27.090Z",
+      "phase": "auth-setup",
+      "cpuPercent": 25.967261904761905,
+      "freeMemoryBytes": 2892468224,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:27.342Z",
+      "phase": "auth-setup",
+      "cpuPercent": 22.60956175298805,
+      "freeMemoryBytes": 2893389824,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:27.601Z",
+      "phase": "auth-setup",
+      "cpuPercent": 21.270382088099293,
+      "freeMemoryBytes": 2894684160,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:27.862Z",
+      "phase": "auth-setup",
+      "cpuPercent": 29.932137663596702,
+      "freeMemoryBytes": 2894897152,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:28.123Z",
+      "phase": "auth-setup",
+      "cpuPercent": 21.34442134442135,
+      "freeMemoryBytes": 2896388096,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:28.375Z",
+      "phase": "auth-setup",
+      "cpuPercent": 21.530740276035132,
+      "freeMemoryBytes": 2892357632,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:28.625Z",
+      "phase": "auth-setup",
+      "cpuPercent": 30.309901738473165,
+      "freeMemoryBytes": 2886959104,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:28.889Z",
+      "phase": "auth-setup",
+      "cpuPercent": 28.831775700934582,
+      "freeMemoryBytes": 2889715712,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:29.146Z",
+      "phase": "auth-setup",
+      "cpuPercent": 29.18943533697632,
+      "freeMemoryBytes": 2888908800,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:29.396Z",
+      "phase": "auth-setup",
+      "cpuPercent": 31.870902672718103,
+      "freeMemoryBytes": 2889494528,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:29.654Z",
+      "phase": "auth-setup",
+      "cpuPercent": 23.61381322957199,
+      "freeMemoryBytes": 2887720960,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:29.911Z",
+      "phase": "auth-setup",
+      "cpuPercent": 33.3654309099663,
+      "freeMemoryBytes": 2888126464,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:30.175Z",
+      "phase": "auth-setup",
+      "cpuPercent": 23.83333333333333,
+      "freeMemoryBytes": 2888794112,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:30.437Z",
+      "phase": "auth-setup",
+      "cpuPercent": 25.11973180076629,
+      "freeMemoryBytes": 2887626752,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:30.700Z",
+      "phase": "auth-setup",
+      "cpuPercent": 49.46452476572959,
+      "freeMemoryBytes": 2849325056,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:30.961Z",
+      "phase": "auth-setup",
+      "cpuPercent": 70.11970534069982,
+      "freeMemoryBytes": 2846167040,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:31.220Z",
+      "phase": "auth-setup",
+      "cpuPercent": 79.63320463320464,
+      "freeMemoryBytes": 2833960960,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:31.479Z",
+      "phase": "auth-setup",
+      "cpuPercent": 46.30240226095148,
+      "freeMemoryBytes": 2823147520,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:31.744Z",
+      "phase": "auth-setup",
+      "cpuPercent": 26.746366619784347,
+      "freeMemoryBytes": 2824273920,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:32.002Z",
+      "phase": "auth-setup",
+      "cpuPercent": 27.27048978587251,
+      "freeMemoryBytes": 2826309632,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:32.263Z",
+      "phase": "auth-setup",
+      "cpuPercent": 20.92190112252209,
+      "freeMemoryBytes": 2826055680,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:32.526Z",
+      "phase": "auth-setup",
+      "cpuPercent": 33.8093044679871,
+      "freeMemoryBytes": 2820173824,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:32.780Z",
+      "phase": "auth-setup",
+      "cpuPercent": 26.070717131474108,
+      "freeMemoryBytes": 2811412480,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:33.041Z",
+      "phase": "auth-setup",
+      "cpuPercent": 35.07706679121906,
+      "freeMemoryBytes": 2805358592,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:33.306Z",
+      "phase": "auth-setup",
+      "cpuPercent": 45.10506208213945,
+      "freeMemoryBytes": 2855632896,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:33.565Z",
+      "phase": "auth-setup",
+      "cpuPercent": 30.88707684704719,
+      "freeMemoryBytes": 2851491840,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:33.829Z",
+      "phase": "auth-setup",
+      "cpuPercent": 38.78970554138651,
+      "freeMemoryBytes": 2879111168,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:34.088Z",
+      "phase": "auth-setup",
+      "cpuPercent": 30.921358771521636,
+      "freeMemoryBytes": 2888769536,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:34.345Z",
+      "phase": "auth-setup",
+      "cpuPercent": 24.79213907785336,
+      "freeMemoryBytes": 2888392704,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:34.609Z",
+      "phase": "auth-setup",
+      "cpuPercent": 20.42857142857143,
+      "freeMemoryBytes": 2889695232,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:34.863Z",
+      "phase": "auth-setup",
+      "cpuPercent": 25.926817525276846,
+      "freeMemoryBytes": 2890657792,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:35.127Z",
+      "phase": "auth-setup",
+      "cpuPercent": 26.923076923076927,
+      "freeMemoryBytes": 2881077248,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:35.390Z",
+      "phase": "auth-setup",
+      "cpuPercent": 29.035250463821892,
+      "freeMemoryBytes": 2888941568,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:35.640Z",
+      "phase": "auth-setup",
+      "cpuPercent": 27.09660973744583,
+      "freeMemoryBytes": 2890018816,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:35.898Z",
+      "phase": "auth-setup",
+      "cpuPercent": 37.421456830346756,
+      "freeMemoryBytes": 2864283648,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:36.161Z",
+      "phase": "auth-setup",
+      "cpuPercent": 40.41062801932367,
+      "freeMemoryBytes": 2858225664,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:36.421Z",
+      "phase": "auth-setup",
+      "cpuPercent": 33.80381086803105,
+      "freeMemoryBytes": 2854326272,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:36.672Z",
+      "phase": "measured-load",
+      "cpuPercent": 23.799999999999997,
+      "freeMemoryBytes": 2835353600,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:36.936Z",
+      "phase": "measured-load",
+      "cpuPercent": 14.193548387096778,
+      "freeMemoryBytes": 2817150976,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:37.193Z",
+      "phase": "measured-load",
+      "cpuPercent": 22.406930461250298,
+      "freeMemoryBytes": 2810396672,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:37.455Z",
+      "phase": "measured-load",
+      "cpuPercent": 61.13526570048309,
+      "freeMemoryBytes": 2812530688,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:37.717Z",
+      "phase": "measured-load",
+      "cpuPercent": 70.77171903881701,
+      "freeMemoryBytes": 2785419264,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:37.978Z",
+      "phase": "measured-load",
+      "cpuPercent": 67.1055671055671,
+      "freeMemoryBytes": 2783088640,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:38.239Z",
+      "phase": "measured-load",
+      "cpuPercent": 76.09286243516917,
+      "freeMemoryBytes": 2765148160,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:38.495Z",
+      "phase": "measured-load",
+      "cpuPercent": 57.713884992987374,
+      "freeMemoryBytes": 2788536320,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:38.760Z",
+      "phase": "measured-load",
+      "cpuPercent": 68.07326686760955,
+      "freeMemoryBytes": 2788995072,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:39.030Z",
+      "phase": "measured-load",
+      "cpuPercent": 67.95528644620401,
+      "freeMemoryBytes": 2775801856,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:39.282Z",
+      "phase": "measured-load",
+      "cpuPercent": 94.2878156410885,
+      "freeMemoryBytes": 2594447360,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:39.542Z",
+      "phase": "measured-load",
+      "cpuPercent": 74.91281097419204,
+      "freeMemoryBytes": 2593083392,
+      "totalMemoryBytes": 16794726400
+    },
+    {
+      "time": "2026-10-16T08:08:39.803Z",
+      "phase": "complete",
+      "cpuPercent": 72.84798534798536,
+      "freeMemoryBytes": 2698084352,
+      "totalMemoryBytes": 16794726400
+    }
+  ],
+  "coldApi": true,
+  "protocol": "HTTP1.1",
+  "before": {
+    "time": "2026-10-16T08:08:03.914Z",
+    "stats": "sprint1-stage-web-a2e5f675a371-1792137272414|0.45%|128.5MiB / 7.576GiB\nsprint1-stage-api-replica-a2e5f675a371-1792137268859|0.05%|170.2MiB / 7.576GiB\nsprint1-stage-api-a2e5f675a371-1792137268858|0.00%|168MiB / 7.576GiB\nsprint1-stage-web-accf832be519-1792135689006|0.00%|84.03MiB / 7.576GiB\nsprint1-stage-api-replica-accf832be519-1792135686652|0.00%|90.5MiB / 7.576GiB\nsprint1-stage-api-accf832be519-1792135686652|0.00%|92.56MiB / 7.576GiB\nsprint1-stage-redis-20261015|0.68%|5.203MiB / 7.576GiB\nsprint1-stage-pg-20261015|0.03%|136.5MiB / 7.576GiB\nsprint1-gitflow-tests-qr-pg-20261015|0.00%|20.81MiB / 7.576GiB\nsprint1-gitflow-tests-pg-20261015|0.01%|49.23MiB / 7.576GiB\nsprint1-gitflow-tests-redis-20261015|0.66%|7.555MiB / 7.576GiB\nsupabase_vector_supportai-pro|0.08%|1.887MiB / 7.576GiB",
+    "containers": [
+      {
+        "name": "sprint1-stage-api-a2e5f675a371-1792137268858",
+        "image": "sprint1-staging-api:a2e5f675a371",
+        "revision": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+        "running": true,
+        "user": "node",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      },
+      {
+        "name": "sprint1-stage-api-replica-a2e5f675a371-1792137268859",
+        "image": "sprint1-staging-api:a2e5f675a371",
+        "revision": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+        "running": true,
+        "user": "node",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      },
+      {
+        "name": "sprint1-stage-web-a2e5f675a371-1792137272414",
+        "image": "sprint1-staging-web:a2e5f675a371",
+        "revision": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+        "running": true,
+        "user": "node",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      },
+      {
+        "name": "sprint1-stage-pg-20261015",
+        "image": "postgres:15-alpine",
+        "running": true,
+        "user": "",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      },
+      {
+        "name": "sprint1-stage-redis-20261015",
+        "image": "redis:7-alpine",
+        "running": true,
+        "user": "",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      }
+    ]
+  },
+  "beforeMeasuredSetup": {
+    "health": 200,
+    "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d"
+  },
+  "database": {
+    "buyerUsers": 200,
+    "activeDistinctSeatRights": 1000,
+    "ownershipPairsCorrect": true,
+    "rounds": [
+      {
+        "round": 0,
+        "activeRights": 100
+      },
+      {
+        "round": 1,
+        "activeRights": 100
+      },
+      {
+        "round": 2,
+        "activeRights": 100
+      },
+      {
+        "round": 3,
+        "activeRights": 100
+      },
+      {
+        "round": 4,
+        "activeRights": 100
+      },
+      {
+        "round": 5,
+        "activeRights": 100
+      },
+      {
+        "round": 6,
+        "activeRights": 100
+      },
+      {
+        "round": 7,
+        "activeRights": 100
+      },
+      {
+        "round": 8,
+        "activeRights": 100
+      },
+      {
+        "round": 9,
+        "activeRights": 100
+      }
+    ],
+    "durability": [
+      {
+        "fsync": "on",
+        "synchronous_commit": "on",
+        "version": "PostgreSQL 15.19 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit"
+      }
+    ]
+  },
+  "after": {
+    "time": "2026-10-16T08:08:40.143Z",
+    "stats": "sprint1-stage-web-a2e5f675a371-1792137272414|0.48%|143.4MiB / 7.576GiB\nsprint1-stage-api-replica-a2e5f675a371-1792137268859|0.00%|157.3MiB / 7.576GiB\nsprint1-stage-api-a2e5f675a371-1792137268858|0.08%|144.6MiB / 7.576GiB\nsprint1-stage-web-accf832be519-1792135689006|0.00%|84.03MiB / 7.576GiB\nsprint1-stage-api-replica-accf832be519-1792135686652|0.00%|90.5MiB / 7.576GiB\nsprint1-stage-api-accf832be519-1792135686652|0.00%|92.56MiB / 7.576GiB\nsprint1-stage-redis-20261015|0.82%|4.703MiB / 7.576GiB\nsprint1-stage-pg-20261015|0.02%|137.3MiB / 7.576GiB\nsprint1-gitflow-tests-qr-pg-20261015|0.00%|20.8MiB / 7.576GiB\nsprint1-gitflow-tests-pg-20261015|2.46%|49.45MiB / 7.576GiB\nsprint1-gitflow-tests-redis-20261015|2.73%|7.605MiB / 7.576GiB\nsupabase_vector_supportai-pro|0.00%|1.977MiB / 7.576GiB",
+    "containers": [
+      {
+        "name": "sprint1-stage-api-a2e5f675a371-1792137268858",
+        "image": "sprint1-staging-api:a2e5f675a371",
+        "revision": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+        "running": true,
+        "user": "node",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      },
+      {
+        "name": "sprint1-stage-api-replica-a2e5f675a371-1792137268859",
+        "image": "sprint1-staging-api:a2e5f675a371",
+        "revision": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+        "running": true,
+        "user": "node",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      },
+      {
+        "name": "sprint1-stage-web-a2e5f675a371-1792137272414",
+        "image": "sprint1-staging-web:a2e5f675a371",
+        "revision": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+        "running": true,
+        "user": "node",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      },
+      {
+        "name": "sprint1-stage-pg-20261015",
+        "image": "postgres:15-alpine",
+        "running": true,
+        "user": "",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      },
+      {
+        "name": "sprint1-stage-redis-20261015",
+        "image": "redis:7-alpine",
+        "running": true,
+        "user": "",
+        "memoryLimitBytes": 0,
+        "nanoCpus": 0
+      }
+    ]
+  },
+  "gatewaySha256": "c3748f0b8471c263d2da6f5163bdc688c09c55794a48dc8cdf16cd1300e9ab82",
+  "clientMetrics": {
+    "cpu": {
+      "user": 672000,
+      "system": 469000
+    },
+    "wallMs": 3198.1007000000027,
+    "eventLoopUtilization": 0.3285507745219923,
+    "eventLoopDelayP95Ms": 20.086783,
+    "eventLoopDelayMaxMs": 36.863999,
+    "maxRssKiB": 106396
+  },
+  "sourceUnchanged": true,
+  "correctness": "PASS",
+  "allP95Ms": 737.9674999999988,
+  "nfrResult": "FAIL",
+  "completedAt": "2026-10-16T08:08:43.346Z"
+}

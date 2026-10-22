@@ -41,13 +41,15 @@ import {
   remainingSeconds,
   type ServerClock,
 } from "@/features/seat-selection/server-countdown";
+import { OrderBadge } from "@/features/orders/order-badge";
 
 export interface OrderReviewProps {
   id: string;
+  page?: number;
   onPay?: () => void;
 }
 
-export function OrderReview({ id, onPay }: OrderReviewProps) {
+export function OrderReview({ id, page = 1, onPay }: OrderReviewProps) {
   const router = useRouter();
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [clock, setClock] = useState<ServerClock | null>(null);
@@ -60,12 +62,59 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
   const [paying, setPaying] = useState<boolean>(false);
   const [payError, setPayError] = useState<string>("");
   const alive = useRef(true);
+  const reader = useRef<AbortController | null>(null);
+  const [readVersion, setReadVersion] = useState(0);
+
+  useEffect(() => {
+    const forget = () => {
+      reader.current?.abort();
+      setOrder(null);
+      setClock(null);
+      setError("");
+      setNotFound(false);
+      setUnauthorized(false);
+      setLoading(true);
+      if (document.visibilityState !== "hidden")
+        setReadVersion((value) => value + 1);
+    };
+    const channel =
+      typeof BroadcastChannel === "undefined"
+        ? null
+        : new BroadcastChannel("account-session");
+    if (channel) channel.onmessage = forget;
+    for (const event of [
+      "focus",
+      "pageshow",
+      "pagehide",
+      "account-session-changed",
+    ])
+      window.addEventListener(event, forget);
+    document.addEventListener("visibilitychange", forget);
+    return () => {
+      channel?.close();
+      for (const event of [
+        "focus",
+        "pageshow",
+        "pagehide",
+        "account-session-changed",
+      ])
+        window.removeEventListener(event, forget);
+      document.removeEventListener("visibilitychange", forget);
+    };
+  }, []);
 
   const refresh = useCallback(async () => {
+    reader.current?.abort();
+    const controller = new AbortController();
+    reader.current = controller;
     setLoading(true);
+    setOrder(null);
     setError("");
     try {
-      const data = await api(`/orders/${id}`, decodeOrderDetail);
+      const data = await api(`/orders/${id}`, decodeOrderDetail, {
+        signal: controller.signal,
+      });
+      if (controller.signal.aborted) return;
       setOrder(data);
       const serverAnchor: ServerClock = {
         serverMs: Date.parse(data.serverTime),
@@ -78,13 +127,20 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
         serverAnchor.receivedAt,
       );
       setRemaining(rem);
-      setExpired(data.status !== "PAID" && (data.isExpired || rem <= 0));
+      setExpired(
+        data.status === "EXPIRED" ||
+          ((data.status === "PENDING" || data.status === "PENDING_PAYMENT") &&
+            (data.isExpired || rem <= 0)),
+      );
     } catch (err) {
+      if (controller.signal.aborted) return;
       if (
         err instanceof ApiError &&
         (err.status === 404 || err.status === 403)
       ) {
         setNotFound(true);
+      } else if (err instanceof ApiError && err.status === 401) {
+        setUnauthorized(true);
       } else {
         setError(
           err instanceof Error
@@ -93,13 +149,14 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
         );
       }
     } finally {
-      setLoading(false);
+      if (!controller.signal.aborted) setLoading(false);
     }
   }, [id]);
 
   useEffect(() => {
     alive.current = true;
     const controller = new AbortController();
+    reader.current = controller;
 
     async function load() {
       const user = await loadCurrentUser();
@@ -128,7 +185,11 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
         serverAnchor.receivedAt,
       );
       setRemaining(rem);
-      setExpired(data.status !== "PAID" && (data.isExpired || rem <= 0));
+      setExpired(
+        data.status === "EXPIRED" ||
+          ((data.status === "PENDING" || data.status === "PENDING_PAYMENT") &&
+            (data.isExpired || rem <= 0)),
+      );
       setLoading(false);
     }
 
@@ -155,11 +216,17 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
       alive.current = false;
       controller.abort();
     };
-  }, [id]);
+  }, [id, readVersion]);
 
   // Live countdown timer based on server clock synchronization
   useEffect(() => {
-    if (!order || order.status === "PAID" || expired || !clock) return;
+    if (
+      !order ||
+      (order.status !== "PENDING" && order.status !== "PENDING_PAYMENT") ||
+      expired ||
+      !clock
+    )
+      return;
     const interval = setInterval(() => {
       const rem = remainingSeconds(order.expiresAt, clock, performance.now());
       setRemaining(rem);
@@ -199,6 +266,9 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
   return (
     <PublicLayout signedIn={!unauthorized}>
       <main className="order-review-container max-w-4xl mx-auto px-4 py-8">
+        <Button variant="link" asChild>
+          <Link href={`/orders?page=${page}`}>← Đơn hàng của tôi</Link>
+        </Button>
         {loading && (
           <div className="space-y-6" data-testid="order-loading">
             <Skeleton className="h-10 w-48" />
@@ -220,7 +290,7 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
             <Button
               onClick={() =>
                 router.replace(
-                  `/login?returnTo=${encodeURIComponent(`/orders/${id}`)}`,
+                  `/login?returnTo=${encodeURIComponent(`/orders/${id}?page=${page}`)}`,
                 )
               }
             >
@@ -288,6 +358,9 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
                   >
                     Đã hết hạn
                   </Badge>
+                ) : order.status === "CANCELLED" ||
+                  order.status === "NEEDS_REVIEW" ? (
+                  <OrderBadge status={order.status} />
                 ) : order.status === "PAID" ? (
                   <Badge
                     variant="secondary"
@@ -322,7 +395,8 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
                   được giải phóng. Vui lòng quay lại sơ đồ ghế để chọn lại.
                 </AlertDescription>
               </Alert>
-            ) : order.status !== "PAID" ? (
+            ) : order.status === "PENDING" ||
+              order.status === "PENDING_PAYMENT" ? (
               <div
                 className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 border border-secondary text-secondary-foreground"
                 data-testid="countdown-banner"
@@ -458,7 +532,9 @@ export function OrderReview({ id, onPay }: OrderReviewProps) {
             </div>
 
             {order.status === "PAID" && (
-              <SignedTickets key={order.id} orderId={order.id} />
+              <>
+                <SignedTickets key={order.id} orderId={order.id} />
+              </>
             )}
 
             {/* S-24: Failed previous payment notice */}

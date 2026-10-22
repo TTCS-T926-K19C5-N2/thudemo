@@ -121,7 +121,7 @@ export class PrismaService
 
   // Scoped to session/seat reads with primitive bindings and known projections;
   // not a replacement for Prisma model operations or order transactions.
-  async seatReadQuery<T>(sql: Prisma.Sql): Promise<T> {
+  async seatReadQuery<T>(sql: Prisma.Sql, client?: HoldConnection): Promise<T> {
     if (
       sql.values.some(
         (v) =>
@@ -133,8 +133,10 @@ export class PrismaService
     const pool = this.holdAdapter.pool;
     if (!pool) throw Error('Seat read connection pool is unavailable');
     // Never cache session/role, seat price or inventory results.
-    // Pool.query owns and releases its client, including query errors.
-    const result = await pool.query({
+    // A claim already owns a session connection. Reuse it for quota reads;
+    // borrowing another connection can deadlock a fully occupied pool.
+    // The request/transaction retains release ownership of a supplied client.
+    const result = await (client ?? pool).query({
       text: sql.text,
       values: sql.values,
       name: this.holdNames({ sql: sql.text }),

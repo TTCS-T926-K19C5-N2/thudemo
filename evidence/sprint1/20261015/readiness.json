@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-15T08:47:16.364Z",
+  "status": "READY",
+  "source": "81d1dd9d8f453b32ed0c6956399e5600f71a32d6",
+  "repair": "uncommitted local diff, see source-manifest.json",
+  "readiness": [
+    {
+      "url": "http://127.0.0.1:3401/health",
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "timestamp": "2026-10-15T08:47:16.341Z"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:3400/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:3400/api/health",
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "timestamp": "2026-10-15T08:47:16.360Z"
+      }
+    }
+  ],
+  "credentialFile": ".sprint1-local/config.json",
+  "staging": "BLOCKED"
+}

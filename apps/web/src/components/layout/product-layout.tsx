@@ -110,9 +110,7 @@ export function PublicLayout({
             <button disabled title="Chưa khả dụng">
               Nhà hát
             </button>
-            <button disabled title="Chưa khả dụng">
-              Vé của tôi
-            </button>
+            <Link href="/account/tickets">Vé của tôi</Link>
           </nav>
           <button
             className="location-control"
@@ -146,10 +144,10 @@ export function PublicLayout({
           <Armchair />
           Sơ đồ vé
         </button>
-        <button disabled title="Chưa khả dụng">
+        <Link href="/account/tickets">
           <Ticket />
           Vé của tôi
-        </button>
+        </Link>
         <Link href="/events">
           <Admin />
           Quản trị

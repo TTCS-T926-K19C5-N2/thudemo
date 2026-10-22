@@ -1,0 +1,35 @@
+{
+  "time": "2026-10-16T17:24:22.441876+00:00",
+  "result": "PASS",
+  "scope": "Feature→develop integration only; deploy/acceptance remain separate",
+  "pullRequest": {
+    "baseRefOid": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
+    "headRefOid": "a8295158e5775f26c33e269d04ab3bb1e94f6c4b",
+    "mergeCommit": {
+      "oid": "90188e572d41d3f95e1dac13a42256260fd68a22"
+    },
+    "mergedAt": "2026-10-16T17:21:45Z",
+    "reviews": [
+      {
+        "id": "PRR_kwDOUttVO88AAAABSt_sqQ",
+        "author": {
+          "login": "thuytrang158"
+        },
+        "authorAssociation": "MEMBER",
+        "body": "",
+        "submittedAt": "2026-10-16T17:12:13Z",
+        "includesCreatedEdit": false,
+        "reactionGroups": [],
+        "state": "APPROVED",
+        "commit": {
+          "oid": "a8295158e5775f26c33e269d04ab3bb1e94f6c4b"
+        }
+      }
+    ],
+    "state": "MERGED",
+    "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/91"
+  },
+  "mergeMethod": "merge commit; no admin bypass or direct develop push",
+  "approvedTreeEqualsMergedTree": true,
+  "sourceBeforeMerge": "02a8e86a6fea05a49bd27902c08652920e444a10"
+}

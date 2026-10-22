@@ -1,0 +1,29 @@
+{
+  "strict": true,
+  "checks": [
+    {
+      "context": "T-02 / build-and-typecheck",
+      "app_id": 15368
+    },
+    {
+      "context": "T-02 / lint",
+      "app_id": 15368
+    },
+    {
+      "context": "T-02 / test",
+      "app_id": 15368
+    },
+    {
+      "context": "K-01 / candidate-research",
+      "app_id": 15368
+    },
+    {
+      "context": "T-31 / hold-concurrency",
+      "app_id": 15368
+    },
+    {
+      "context": "Review / technical-review",
+      "app_id": -1
+    }
+  ]
+}

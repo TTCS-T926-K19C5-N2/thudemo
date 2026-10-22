@@ -1,0 +1,41 @@
+{
+  "time": "2026-10-16T14:47:27.034627+00:00",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "baseline": "ac39c1460ce819bb07ec8689ae2b2de7285dbec2",
+  "finding": "S03-SEC-03",
+  "severity": "MEDIUM",
+  "scanId": "fa4c01dc-e651-453f-8628-c2acc32da263",
+  "route": "POST /users/resend-activation; POST /users/register",
+  "reproduction": "Rotate syntactically valid nonexistent recipients: shared120/hour capacity charged even for no-op. Before-fix real isolated HTTP/Redis fixture observed31st samecaller201; source proves all callers reject at121.",
+  "expected": "One caller cannot cheaply monopolize all shared SMTP admission.",
+  "fix": "Hashed trusted transport peer30/hour before shared120/hour. Existing login classification/counter unchanged. New protected-mail path classification reuses socket/HMAC boundary; XFF untrusted. Per-email resend5/hour unchanged.",
+  "after": {
+    "result": "PASS",
+    "requests": 120,
+    "admitted": 30,
+    "rejected": 90,
+    "sharedDebits": 30,
+    "otherAttestedCallerRegistration": 201,
+    "forgedAttestation": 403,
+    "ttl": "Actual remaining >3500seconds, normal3600expiry; no shortening/reset"
+  },
+  "regression": {
+    "focused": 16,
+    "apiUnit": 362,
+    "webUnit": 134,
+    "node": 18,
+    "integration": 98,
+    "scanner": 4,
+    "gates": "regression-admission/gates.json"
+  },
+  "review": "Automated security fix review, no additional plausible changed vulnerability; not independent human approval.",
+  "limits": [
+    "Same NAT/IP shares30/hour budget",
+    "Multiple independent callers may consume intentional shared provider cap",
+    "No live staging or login-lockout probe"
+  ],
+  "privateLogDigests": {
+    "s03-admission-before.log": "3c7ba240c05d0c204d8f0a493d443abc05eb5bd45d7789181050f1d78643820e",
+    "s03-admission-after.log": "9eeb1fce4571f1de8dd6489ae4549d868dda50abedd7cf7b0911b3e1e2a5607d"
+  }
+}

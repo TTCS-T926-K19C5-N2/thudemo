@@ -1,0 +1,25 @@
+{
+  "results": [
+    {
+      "name": "admin-no-implicit-organizer",
+      "status": "PASS"
+    },
+    {
+      "name": "seed-repeat-preserves-account-event-session-counts",
+      "status": "PASS"
+    },
+    {
+      "name": "seed-wrong-target-denied-before-connection",
+      "status": "PASS"
+    },
+    {
+      "name": "real-lock-ui429-fifteen-minute-message",
+      "status": "PASS"
+    },
+    {
+      "name": "browser-logout-to-login-and-me401",
+      "status": "PASS"
+    }
+  ],
+  "lockFixture": "locked for another real15min by this UI verification; primary demo accounts unaffected"
+}

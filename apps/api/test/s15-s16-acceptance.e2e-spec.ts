@@ -10,6 +10,8 @@ import { Prisma } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { holdTransaction } from '../src/prisma/hold-transaction.js';
 import { holdStatementNames } from '../src/prisma/hold-statement-names.js';
+import { buildMomoSignature } from '../src/payments/gateways/momo-signature.js';
+import { MOCK_ACCESS_KEY } from '../src/payments/gateways/mock.gateway.js';
 
 type Account = { id: string; cookie: string };
 type Category = { id: string; name: string; price: number | null };
@@ -27,6 +29,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
   let seats: Seat[];
   const users: string[] = [];
   const prices = [1200000, 650000, 350000];
+  const previousGateway = process.env.PAYMENT_GATEWAY;
 
   async function account(roleName: string): Promise<Account> {
     const role = await db.role.upsert({
@@ -90,7 +93,11 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
       target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
+      !(
+        target.port === '15432' ||
+        (target.port === '15446' &&
+          process.env.SPRINT1_ISOLATED_TEST === 'true')
+      ) ||
       target.pathname !== '/sprint2_integration'
     )
       throw Error(
@@ -100,6 +107,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
       throw Error(
         'Disable the automatic expiry worker: these tests control cleanup explicitly',
       );
+    process.env.PAYMENT_GATEWAY = 'mock';
     const module = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -125,7 +133,13 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     if (!eventId) throw Error('Fixture setup did not complete');
     showId = (
       await db.showtime.create({
-        data: { eventId, startTime: new Date(Date.now() + 86400000) },
+        // Bulk-hold acceptance proves the routine, not S-42 limits (covered by
+        // holds.service.spec.ts); opt out of the default 4-ticket limit here.
+        data: {
+          eventId,
+          startTime: new Date(Date.now() + 86400000),
+          maxTicketsPerUser: null,
+        },
       })
     ).id;
     const names = ['VIP', 'Tiêu chuẩn', 'Ban công'];
@@ -160,6 +174,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
           })
         ).map((s) => s.id);
         const scope = { showtimeId: { in: ids } };
+        await db.payment.deleteMany({ where: { order: scope } });
         await db.orderItem.deleteMany({ where: { order: scope } });
         await db.order.deleteMany({ where: scope });
         await db.seatHold.deleteMany({ where: scope });
@@ -172,11 +187,78 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
       if (db && users.length)
         await db.user.deleteMany({ where: { id: { in: users } } });
     } finally {
+      if (previousGateway === undefined) delete process.env.PAYMENT_GATEWAY;
+      else process.env.PAYMENT_GATEWAY = previousGateway;
       if (app) {
         await app.get('REDIS_CLIENT').quit();
         await app.close();
       }
     }
+  });
+
+  it('T37: a signed success after the original deadline never sells or tickets the seat held by another buyer', async () => {
+    // This case uses the actual mock gateway verifier, never a provider request.
+    expect(process.env.PAYMENT_GATEWAY).toBe('mock');
+    await openSale();
+    await hold([seats[0].id]).expect(200);
+    const original = await db.holdSession.findFirstOrThrow({
+      where: { showtimeId: showId, userId: buyer.id },
+    });
+    // Shorten only this synthetic fixture so the boundary is tested in real time.
+    const deadline = new Date(Date.now() + 1500);
+    await db.holdSession.update({
+      where: { id: original.id },
+      data: { expiresAt: deadline },
+    });
+    await db.seatHold.updateMany({
+      where: { holdSessionId: original.id },
+      data: { expiresAt: deadline },
+    });
+    const placed = await place().expect(200);
+    const orderId = placed.body.order.id;
+    expect(new Date(placed.body.order.paymentExpiresAt).getTime()).toBe(
+      deadline.getTime(),
+    );
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.max(0, deadline.getTime() - Date.now()) + 100),
+    );
+    await hold([seats[0].id], otherBuyer).expect(200);
+    const replacement = await db.seatHold.findUniqueOrThrow({
+      where: { seatId: seats[0].id },
+    });
+    expect(replacement.holdSessionId).not.toBe(original.id);
+    const payload: Record<string, unknown> = {
+      orderId: `${orderId}_deadline`,
+      amount: prices[0],
+      resultCode: 0,
+      transId: randomUUID(),
+      extraData: Buffer.from(JSON.stringify({ orderId })).toString('base64'),
+    };
+    payload.signature = buildMomoSignature(
+      payload,
+      MOCK_ACCESS_KEY,
+      process.env.PAYMENT_WEBHOOK_SECRET ?? 'mock_webhook_secret_dev',
+    );
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const callback = await request(app.getHttpServer())
+        .post('/payments/webhook')
+        .send(payload)
+        .expect(200);
+      expect(callback.body.status).toBe('LATE');
+    }
+    expect(
+      (await db.order.findUniqueOrThrow({ where: { id: orderId } })).status,
+    ).toBe('NEEDS_REVIEW');
+    expect(await db.ticket.count({ where: { orderId } })).toBe(0);
+    expect(
+      (await db.seat.findUniqueOrThrow({ where: { id: seats[0].id } })).isSold,
+    ).toBe(false);
+    expect(
+      await db.seatHold.findUnique({ where: { seatId: seats[0].id } }),
+    ).toEqual(replacement);
+    const payments = await db.payment.findMany({ where: { orderId } });
+    expect(payments).toHaveLength(1);
+    expect(payments[0].status).toBe('LATE');
   });
 
   it('TC-S15-01: saves three category prices and exposes the correct price for every seat', async () => {
@@ -275,13 +357,15 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     expect(fresh.body.order.totalAmount).toBe(1500000);
   });
 
-  it('TC-S16-01: creates exactly the two held seats at server prices and extends both holds for 600 seconds', async () => {
+  it('TC-S16-01: creates exactly the held seats at server prices with the unchanged original deadline', async () => {
     await openSale();
     const selected = [
       seats.find((s) => s.categoryId === categories[0].id)!,
       seats.find((s) => s.categoryId === categories[1].id)!,
     ];
     const held = await hold(selected.map((s) => s.id)).expect(200);
+    const originalDeadline = Date.parse(held.body.hold.expiresAt);
+    await new Promise((resolve) => setTimeout(resolve, 100));
     const result = await request(app.getHttpServer())
       .post(`/showtimes/${showId}/orders`)
       .set('Cookie', buyer.cookie)
@@ -293,10 +377,8 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     ).toEqual(selected.map((s) => s.id).sort());
     expect(result.body.order.totalAmount).toBe(1850000);
     const deadline = Date.parse(result.body.order.paymentExpiresAt);
-    expect(deadline - Date.parse(result.body.serverTime)).toBe(600000);
-    expect(deadline).toBeGreaterThanOrEqual(
-      Date.parse(held.body.hold.expiresAt),
-    );
+    expect(deadline).toBe(originalDeadline);
+    expect(deadline - Date.parse(result.body.serverTime)).toBeLessThan(600000);
     expect(
       (
         await db.holdSession.findUniqueOrThrow({
@@ -309,6 +391,31 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     });
     expect(claims).toHaveLength(2);
     expect(claims.every((s) => s.expiresAt.getTime() === deadline)).toBe(true);
+  });
+
+  it('T37: refuses inconsistent active seat/session deadlines without extending either or creating an order', async () => {
+    await openSale();
+    const held = await hold([seats[0].id]).expect(200);
+    const originalDeadline = Date.parse(held.body.hold.expiresAt);
+    const inconsistentDeadline = new Date(originalDeadline - 1000);
+    await db.seatHold.update({
+      where: { seatId: seats[0].id },
+      data: { expiresAt: inconsistentDeadline },
+    });
+    const result = await place().expect(409);
+    expect(result.body.code).toBe('HOLD_CHANGED');
+    await expectNoOrder();
+    expect(
+      (
+        await db.holdSession.findUniqueOrThrow({
+          where: { id: held.body.hold.id },
+        })
+      ).expiresAt.getTime(),
+    ).toBe(originalDeadline);
+    expect(
+      (await db.seatHold.findUniqueOrThrow({ where: { seatId: seats[0].id } }))
+        .expiresAt,
+    ).toEqual(inconsistentDeadline);
   });
 
   it('TC-S16-05: refuses an order without a hold', async () => {
@@ -865,7 +972,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
         const [row] = await db.$queryRaw<{ waiting: boolean }[]>`
           SELECT EXISTS(SELECT 1 FROM pg_stat_activity
             WHERE datname=current_database() AND wait_event_type='Lock'
-              AND query LIKE '%public.claim_hold_v3(%') AS waiting`;
+              AND query LIKE '%public.claim_hold_v4(%') AS waiting`;
         if (row.waiting) {
           waiting = true;
           break;

@@ -1,0 +1,8 @@
+{
+  "systemDiskFreeGB": 36.72,
+  "totalMemoryMB": 16017.0,
+  "processorPercent": 78,
+  "freeMemoryMB": 2800.0,
+  "time": "2026-10-16T08:00:30.8109963Z",
+  "measurementPhase": "During real API login setup, not an idle baseline; use per-run phaseSamples for performance"
+}

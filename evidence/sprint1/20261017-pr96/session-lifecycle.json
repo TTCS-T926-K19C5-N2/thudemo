@@ -1,0 +1,23 @@
+{
+  "time": "2026-10-17T01:29:02.108383+00:00",
+  "source": "Working branch from038; helper not yet committed/reviewed",
+  "helperSha256": "6f1fe5c8463869d2e64c7661d6fd41495127ca1d9b1b2b2c72275fceb3d77827",
+  "runtime": "Windows PowerShell5 via powershell.exe; kernel32 SetThreadExecutionState realcalls",
+  "events": [
+    {
+      "time": "2026-10-17T01:25:45.3993184Z",
+      "pid": 7256,
+      "durationSeconds": 2,
+      "expiresAt": "2026-10-17T01:25:47.3993184Z",
+      "event": "awake-request-accepted"
+    },
+    {
+      "time": "2026-10-17T01:25:47.5316586Z",
+      "pid": 7256,
+      "event": "awake-request-cleared"
+    }
+  ],
+  "result": "PASS",
+  "scope": "Actual request+clear2s lifecycle, not proof that lid close/explicit sleep is prevented or merge→healthy600s passed",
+  "noGlobalPowerPolicyMutation": true
+}

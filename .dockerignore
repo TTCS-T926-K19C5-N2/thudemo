@@ -1,4 +1,7 @@
 .git
+.sprint1-local
+.sprint1-staging
+.sprint1-demo
 .env
 .env.*
 **/.env

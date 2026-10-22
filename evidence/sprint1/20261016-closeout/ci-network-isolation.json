@@ -1,0 +1,28 @@
+{
+  "testedWorkingTreeBase": "a506cdab21ecc89c88d272b26d8fea13c4dcf9ee",
+  "changedTestFile": "apps\\api\\test\\orders.e2e-spec.ts",
+  "changedTestSha256": "13fff5758679c578b427f3c20f6a1cdb6753c7a54129a4cd6f7618d5d4b56426",
+  "sourceCompare": [
+    {
+      "path": "apps/api/src/payments/payments.module.ts",
+      "sameAsBase": true,
+      "sha256": "5fa106290d4d417f573f96d151ea0467c9c2d1669a1568e1f3de296ca56e11af"
+    },
+    {
+      "path": "apps/api/src/payments/payments.service.ts",
+      "sameAsBase": true,
+      "sha256": "e03896bbef525a25f4bb6201114ca03389b497b6b406016e1d3e0e542f1ee237"
+    },
+    {
+      "path": "apps/api/src/payments/gateways/momo.gateway.ts",
+      "sameAsBase": true,
+      "sha256": "9756c99b70445e0bcd83da7a0cdb70f4365d33e1c72a92d0b5a5af8dcb73e9a0"
+    }
+  ],
+  "scope": "T02 test harness isolation only; no S24 implementation or payment AC changed",
+  "evidence": "checks-network-isolation/gates.json",
+  "fix": "Nest override PAYMENT_GATEWAY with existing MockPaymentGateway for this suite; afterEach asserts no global fetch; original fetch restored in teardown",
+  "unchanged": "Business/auth/real DB assertions and default5000ms test timeout; production provider/runtime code unchanged",
+  "externalProviderAcceptance": "NOT RUN, not implied by mock boundary",
+  "originalFailure": "ci-a506-failure.json"
+}

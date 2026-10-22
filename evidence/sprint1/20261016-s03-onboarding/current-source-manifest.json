@@ -1,0 +1,3296 @@
+{
+  "time": "2026-10-16T14:47:27.034627+00:00",
+  "head": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "364cd3e9c113d32b23b16178dce7330c586fef0600545c8ed71fbbe2385d1868",
+      "gitBlob": "fc7d28df925164d391e4c89b9d2da3d8d9b2e65c"
+    },
+    {
+      "path": ".github/workflows/hold-profile.yml",
+      "sha256": "6cad11494f06fce7e4931195f3f8ca01b303bce5fd239c187b1cab213e7da216",
+      "gitBlob": "58e267bc862606b0c072c9e0819f5422c5d51066"
+    },
+    {
+      "path": ".github/workflows/monitoring.yml",
+      "sha256": "316c826aceae31931d74802e50bc6c43f28a6f197b6a97c39fd115dc7759f0d0",
+      "gitBlob": "6bed2f5cf7370a084007cc6883a771288a5c5cd5"
+    },
+    {
+      "path": ".github/workflows/s30-signed-qr.yml",
+      "sha256": "5a499b14dc8c2a490315909f1da8fe219bd9453987f118620ad92ba3d064b113",
+      "gitBlob": "4adc0d252730cfd589e0338ef1e24c70188879a9"
+    },
+    {
+      "path": ".github/workflows/s31-admission.yml",
+      "sha256": "6cf8cb8ebecbf579052fa80ba3614925d8e4e7fc1bf03ffc48d40f9d27e53270",
+      "gitBlob": "3d1bc74c413b8c8b04088a591a5b8f1fb84c5a30"
+    },
+    {
+      "path": ".github/workflows/s31-storage-proof.yml",
+      "sha256": "4f54984f59db5972fb6eadc96b171f380769439b9d4c30cd47cfd357552fcf32",
+      "gitBlob": "ac2771c36fa8b063cb94af62683d4ae8ca94ab56"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/SKILL.md",
+      "sha256": "3fca0498f5f0a0041dbd1069eec05e9289c50fce4149a1a18b7332c166199646",
+      "gitBlob": "e612e02ed2cdc8c50a69a92350cb4fd59a58d4d9"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/agent-safety.md",
+      "sha256": "e078643dd177cde866ec26f1699493b3d1417bad5a5ee85d1c6c83a9dd0e2201",
+      "gitBlob": "651c6c34eb2446fbcb81b50088569182bb64c074"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/complete.md",
+      "sha256": "e3211dc3ecd1195fafa3cb37481eb1029ea47e914a425c02244ce61e5f0d02ba",
+      "gitBlob": "7332440798fafbfe1f87602bfeaf6b86549e3db4"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/db-execute.md",
+      "sha256": "ae3c03317b4ec557e0e1c0130e5673dbdb29c7bdb783d2a37d907222305758f1",
+      "gitBlob": "c966f23e59c0cfdbf6dbf77d9c9caf0e3b5bcc8f"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/db-pull.md",
+      "sha256": "157ff62bb97d34311e9aab0ddfb922df0ceadf99bf35f65f7f405119e5dbfd1d",
+      "gitBlob": "58a6e47d09d103fd5d41db2dd2d29108c5de5a09"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/db-push.md",
+      "sha256": "f81602e613b650a55f4ae467a35b71a03b7461a3c20170b097b2a83670db6c83",
+      "gitBlob": "74da0cf40549471e3e2df5cbd74a24d29fda8c92"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/db-seed.md",
+      "sha256": "e714190edfa3ab262c6e819b65d8fcb99330131e23f1b8b64d3a5d96904b5021",
+      "gitBlob": "7657cff9b6b0c928a9c13868c1b2ab9a23f1fdf6"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/debug.md",
+      "sha256": "b56a1ef65bef75a56dd118fd547e4effb727af23830c1047987b404345f40c9d",
+      "gitBlob": "1c2b0afc023edf13d3cb3c8673703e87562e5db0"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/dev.md",
+      "sha256": "c572e9a226995a91ba4c91a80cfebd46251ffeeaadeead426318861997a4b733",
+      "gitBlob": "870efb960fcea45e160ff4986d08fb7a297eef4c"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/format.md",
+      "sha256": "479f19ad1206ec711574e264a03237db47efdf069086b667f9ace179613a7cc9",
+      "gitBlob": "896b1ec17e346b9f057174c5352af5f6ce7195b6"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/generate.md",
+      "sha256": "6d8f1a0f482d9287b8c38262662c91b9e69b7fc0bdced244679fe7e73eef9f95",
+      "gitBlob": "3d371cf674232fa5540a7154c429d0762abce76c"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/init.md",
+      "sha256": "5af83c1ca67f77c5ff5101589dc38f94fd6efd70b182c5f21cc0fe71f568ada5",
+      "gitBlob": "c4390ed8633586e5ebb2c95f9c389ef995e3b264"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/mcp.md",
+      "sha256": "de7b350d70b994179d62c880628e558d66486d98c6c20bbace7f0fb91364cffe",
+      "gitBlob": "284130fa5cdcf5f5816164c211eea4038716675a"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/migrate-deploy.md",
+      "sha256": "2b74ef0d72f698b928d0ca86b375aefc8d477c7517ed367d2143418e8d8c8b8b",
+      "gitBlob": "2132075526014f5e77eaca0dfbba379512abae4f"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/migrate-dev.md",
+      "sha256": "d40d43ab3ced6a86063586104277218941124458d07cb8bbef932b4b8a856495",
+      "gitBlob": "48643b64efeace1b4a26a1c8e614111e60cba1e2"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/migrate-diff.md",
+      "sha256": "df75c632dba0ccdb61cd748ee215356de78497241b177766f74de8ebcdddf0de",
+      "gitBlob": "873107ec8dd11644769ef9c27ec1baaa2689268f"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/migrate-reset.md",
+      "sha256": "048edc1fc762f79775851eb404d1234fb9ddb380a0d165e87eb86d75bfe3210b",
+      "gitBlob": "900e2885edfccf354dd888e2020a7c92a5a75b02"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/migrate-resolve.md",
+      "sha256": "c4d2ca9d305d456a72e0cf4a7f06d65d2e777cde45b3c8eb3c03a22514092f0f",
+      "gitBlob": "6b65f65fadd1e48e092b089cef58e7f2fd6c5e17"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/migrate-status.md",
+      "sha256": "b5968d4abdd500c73d543b00851726b57989cd24491990a03d919e68b5a2fa36",
+      "gitBlob": "80a7ffa7a30cdddce3cf0d9effff0b8b43229fae"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/studio.md",
+      "sha256": "4f7e2f7b319b256f84cc7965c25c700787ebe18f2eb3343dc40af6e6cc3e0be4",
+      "gitBlob": "ba71c9d8869d6b6099713ac20fa26d3b88d146fe"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-cli/references/validate.md",
+      "sha256": "5e73d1b769520e798d2de512680c9fa6feb53782afc93e4f46222703ea120c0b",
+      "gitBlob": "61156c6d485d622378cdad4e96f456c5a85d515b"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-client-api/SKILL.md",
+      "sha256": "0fa1fead6f9c8d8e1f19b4884e3fb62fd614f2f26c0d3aae9b37a4e8579f4cde",
+      "gitBlob": "57aa8a52e9d81fc63d3f7e0f085ebeb71f39ef7d"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-client-api/references/client-methods.md",
+      "sha256": "eb672a297cb408f8a866502a7fcfcd2bef21eccaef28b3de274bc1519e100b4a",
+      "gitBlob": "17beb1f555d23a39560e9a0b890aacb9dfb5a1ce"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-client-api/references/constructor.md",
+      "sha256": "902b777486aabd86934da8d40021a1ce2cbc12d01bea59f4e6c4ffe6d10a49c3",
+      "gitBlob": "a9fb5e8ff7681a879e292f05882b680be253f61e"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-client-api/references/filters.md",
+      "sha256": "78c2abd5dd47810bb849e6742776b50553a7dee796b368235d1a0b7e9cc442b9",
+      "gitBlob": "a9b7eeab29264e6b271ea689fc9fbaebea28aec1"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-client-api/references/model-queries.md",
+      "sha256": "c2186b4912f292108bd94c7bd4eef1d5ca0d7ee3542c575d717e7f85a02e43e1",
+      "gitBlob": "0687ef5bc1e435b88b75ee6df43dc57159f5949e"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-client-api/references/query-options.md",
+      "sha256": "28573915f8626eed65c3bc97293406f692ee8d3fceb9c95ae0793c561a08d254",
+      "gitBlob": "25864a4bb598ea6d82d44ce48dfd1534a9bc4dbf"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-client-api/references/raw-queries.md",
+      "sha256": "6cc93b180897d8352201cafb20ed92d56e9b30e8e40f062513c4084c94ed003c",
+      "gitBlob": "e444ce2fb7782d5414117d3a4a45f2adb35ea7d6"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-client-api/references/relations.md",
+      "sha256": "efe4c5528b1a5ac6d77ba099edcd23d034b7f3f90c88ed6a0461ab24ef93f406",
+      "gitBlob": "001c448839a5dbf6fe1b00e25acab31a99c5253b"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-client-api/references/transactions.md",
+      "sha256": "e636d2438ec81a0976f0756c0a68929f7fd152fc31a623b4993bd83f1a3757d3",
+      "gitBlob": "c2a981ae3baf863411b8afa362a7b4801ff4e766"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-compute/SKILL.md",
+      "sha256": "7c4db69efee1a18e7120745d20627ee789c962299447ddd91fdb807d71cfd73f",
+      "gitBlob": "f1105f92c6c5acccdf9184b2e9e93908deebfdef"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-compute/references/app-deploy-cli.md",
+      "sha256": "fc7f2b06e18cca0116dcaac0950eb7df52555e7a6eafb4b66258f491b3ac8a47",
+      "gitBlob": "0c472e0a5d370ce52b71585ccda08486c8b7fabb"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-compute/references/compute-config.md",
+      "sha256": "482bb7c0dcea2cab9d01952312d261c49ed01f5182d6f7f1b09138af7a6290e5",
+      "gitBlob": "633a60337359a126098f8e4bbe07d563477e8ff7"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-compute/references/create-prisma.md",
+      "sha256": "5d72b41ee00e4daf7780153e27207156aad33b758f968d45ca4c1323cde5d79f",
+      "gitBlob": "ae09f928add80e404a3748ef38a507387fefce13"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-compute/references/frameworks.md",
+      "sha256": "87cc0e6c28cca991beb21fa4cf20d5a39f22f4034ee35d215556f37c2b75fecc",
+      "gitBlob": "915cf1778ff4f05056c7967183640484430edd2a"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-compute/references/sdk-api.md",
+      "sha256": "f159584bbf4de200361523e7e3f54be466e79f2ef6f2da00b0d608cdc1aa8f09",
+      "gitBlob": "290f7439f3bf37978cccb0a12904fd0fd5234b4e"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-compute/references/troubleshooting.md",
+      "sha256": "2e33de5de6927c5c761054ebab9dcf620b9b3c335a749bcbc2a8a9048e46a7b9",
+      "gitBlob": "04899893c3664bffe5f927c27a47b8d59c38e6c7"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-database-setup/SKILL.md",
+      "sha256": "ddb9d0bb355aa1640f1ecfa010b923a2e09a3f0a668e24b12b85f2a51f38c2b1",
+      "gitBlob": "e505f7e8ae7e1046e9272b38ac30e648f533304e"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-driver-adapter-implementation/SKILL.md",
+      "sha256": "52a6b230f27af582d4bf8ebd220cb5f17ef50fd083312851068a6f088c8c8a5c",
+      "gitBlob": "4bf3479c7fd3f0666305a5f4dd29116d3762b0f4"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-mongodb-upgrade/SKILL.md",
+      "sha256": "64b0191a2fc037caf36dc2a5951546a2d913f1da742c797ad18f8e29652772f6",
+      "gitBlob": "fa7e0d22cd70c146b93266e4222902a107c2e960"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-mongodb-upgrade/references/client-api-mapping.md",
+      "sha256": "916dd607f694d5c041935ef72d85f681f6f41100be4acf82a155345ee94f1e96",
+      "gitBlob": "4aef43e71898cd46f85b357cd8dde8e52e5b4b0c"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-mongodb-upgrade/references/decision-stay-or-migrate.md",
+      "sha256": "9916c2c014beb7903c6933387d8c9d2692bb76f199c04fa17e881661c97969c5",
+      "gitBlob": "43a159198768eaf73a3ea6c71de88dc518f37deb"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-mongodb-upgrade/references/migrations-mapping.md",
+      "sha256": "de9083685f06b8a65217d7154962248fae549f7138ff15503eea14be4f2416ae",
+      "gitBlob": "fc728bc777296a1b32a14e30192ce95ef9f5df58"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-mongodb-upgrade/references/schema-contract-mapping.md",
+      "sha256": "bcea13358fa3ce4f00f4dd6533c188a48e4d90fe87aaaa09bd8494ac000088f3",
+      "gitBlob": "4b1093004d3ca06064d661d68993a3f25da587b7"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-mongodb-upgrade/references/verify-cutover-checklist.md",
+      "sha256": "f136c606a3e79038439ff2d2e3d5844aa86a665f4efa6c3ceba9e2f367c0bf1d",
+      "gitBlob": "0b4cd600dc80d1cc1042be98731a12fe0354623d"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-orm-setup/SKILL.md",
+      "sha256": "912f09ffb9dd45c64ef3bfae04c839d976325a7561217649bd2d763d854f9ea6",
+      "gitBlob": "a711519b6d3fb2a945b160c028ab1092b1869480"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-orm-setup/references/v6-mongodb.md",
+      "sha256": "d6afba720bdaf231e419a84137d165117fc4392888dfcfea51b66b096eba2698",
+      "gitBlob": "c1d8b4b11a18d9246ec674be21de7ef51f80ba7f"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-orm-setup/references/v7-client-setup.md",
+      "sha256": "2b86c40ed090dbe2fcb0332a159277cb9338ef314f7fd4299c008f97604c2360",
+      "gitBlob": "dfea6f44ceb7ff36dd4425defa40a1c380449fde"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-orm-setup/references/v7-cockroachdb.md",
+      "sha256": "812dd52eda923375645bebb7dc9ba1840a0efdb385282a587fb02acbd20013c4",
+      "gitBlob": "4206216308c1c2fb16b770695a7b057d1b5de096"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-orm-setup/references/v7-mysql.md",
+      "sha256": "25fff209da55b182071a8f4b52efe9312bc30da1ddc92b77497670e71d1ea7ff",
+      "gitBlob": "b4ec3df92681bce9515b9a1686402fdabc23ea8b"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-orm-setup/references/v7-postgresql.md",
+      "sha256": "7f4fdf55a7ff9a5ef8e4eb539ab74a27892a0ccaa6b53c16db6c107c6383d21e",
+      "gitBlob": "d9f18d5acb0cb56b2def892fa4034485e1b29d17"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-orm-setup/references/v7-prisma-postgres.md",
+      "sha256": "405f07e80b23025311238f1d1f0b418acf6e5097a86e8ef11d8b5569bf7197ef",
+      "gitBlob": "318be1503cc250476745e0d28f3a913c09b83f27"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-orm-setup/references/v7-sqlite.md",
+      "sha256": "82b7e19665ed674fd8ca310af5f4063a38e7528d3fd40c8079c6762bedc93a52",
+      "gitBlob": "9ef7f5594b73ba336e5c31f7fa319b687a60814a"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-orm-setup/references/v7-sqlserver.md",
+      "sha256": "1a358d153ccf5515a9b66ed13e5ca00e35c9526d7d34b7e5406100c7e69ea29f",
+      "gitBlob": "8476233ce0f6ee03b4e72d17e7d2fa448346c27b"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-postgres-setup/SKILL.md",
+      "sha256": "f2cc4975487d60bd79a6cccdf311a45ee6afd4c2991840457850afcb29b3f9ad",
+      "gitBlob": "9be36dac6f9ad958e2b5e7d2baca90155ca291ea"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-postgres-setup/references/operations.md",
+      "sha256": "fdfdbda067769180e7b93acea9cf03d7ec4281f478d52f7603c876d084551939",
+      "gitBlob": "7f8ac31b96ed6c40e4427b3244431746ada9cb3b"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-postgres-setup/references/provisioning.md",
+      "sha256": "5f5d90be2053e3fd0bb8b01b57b229aa338aba2458673cf08278f34a47712d7e",
+      "gitBlob": "7ecd29e2e6f9a91ff761b2f1965bdac6dd15e60e"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-postgres-setup/references/vercel-marketplace.md",
+      "sha256": "03da814f4d8b200a33515a1faeac58dedd71f33838da0f22601b55e2816f5819",
+      "gitBlob": "3ccbd17bd5215ae3d796c262c98fd6a8eaf48cd1"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-postgres/SKILL.md",
+      "sha256": "7855eb607091e28bf8e1b4e62e98e17a78143fb8008534ead0d6108932a9a3ea",
+      "gitBlob": "f146d2725b5a52496287b43eca2112dfb7b3a84b"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-upgrade-v7/SKILL.md",
+      "sha256": "5b9f53f3ce2eb080e625e435a70d86bc56896f4807806cbabbe86a2ce19359e7",
+      "gitBlob": "bd0e30598884112be908f22ebf0e2498cc07c32a"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-upgrade-v7/references/accelerate-users.md",
+      "sha256": "8c984f09c5b69c1286b0445db9be8cacc8281b234f3a4fd02a8769bd67d5298f",
+      "gitBlob": "893e341d73236a68bd8507c9a7eb3e170dcf258f"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-upgrade-v7/references/driver-adapters.md",
+      "sha256": "03e178a3f31cc39cf158544765da101f433d66c37c354603141d31dcfa6c5516",
+      "gitBlob": "c7abac686bd556b5ecd14692945c15906e1ad4ce"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-upgrade-v7/references/env-variables.md",
+      "sha256": "413d564c9067a7f026a7c4989e604c7c5eec7e664528ce93deeb9b589d775f1a",
+      "gitBlob": "fb67e89952e95dbc8b360ba2574990c51fdb9554"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-upgrade-v7/references/esm-support.md",
+      "sha256": "e516430e7262076fda0b66b061f54a602ce621564edd2360d33dbbe07b98c57b",
+      "gitBlob": "bf2697b1448b126a6006b79a45c5103392e1daf4"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-upgrade-v7/references/prisma-config.md",
+      "sha256": "aff4eb55e4d3f51531379d531e154904477d7cc16c3c31d705e91ed54871e8a5",
+      "gitBlob": "65b5128155120305c57746fdf89ed2f7fe3b039c"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-upgrade-v7/references/removed-features.md",
+      "sha256": "f28ee12d7a626024c6e538c7c58f68d66d1b7b8e5f79ce09f13e22d6c2e15c37",
+      "gitBlob": "0d77eafc7439583a26a19010bddacf5f8aeeab50"
+    },
+    {
+      "path": "apps/api/.agents/skills/prisma-upgrade-v7/references/schema-changes.md",
+      "sha256": "85206f1581cc61c4af966fe57ebddf7f7a451e8fbbdb73689d388d41cf1ea35f",
+      "gitBlob": "6c817a58180ffb811a2d4f1f3828a0b238c7d66a"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/SKILL.md",
+      "sha256": "3fca0498f5f0a0041dbd1069eec05e9289c50fce4149a1a18b7332c166199646",
+      "gitBlob": "e612e02ed2cdc8c50a69a92350cb4fd59a58d4d9"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/agent-safety.md",
+      "sha256": "e078643dd177cde866ec26f1699493b3d1417bad5a5ee85d1c6c83a9dd0e2201",
+      "gitBlob": "651c6c34eb2446fbcb81b50088569182bb64c074"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/complete.md",
+      "sha256": "e3211dc3ecd1195fafa3cb37481eb1029ea47e914a425c02244ce61e5f0d02ba",
+      "gitBlob": "7332440798fafbfe1f87602bfeaf6b86549e3db4"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/db-execute.md",
+      "sha256": "ae3c03317b4ec557e0e1c0130e5673dbdb29c7bdb783d2a37d907222305758f1",
+      "gitBlob": "c966f23e59c0cfdbf6dbf77d9c9caf0e3b5bcc8f"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/db-pull.md",
+      "sha256": "157ff62bb97d34311e9aab0ddfb922df0ceadf99bf35f65f7f405119e5dbfd1d",
+      "gitBlob": "58a6e47d09d103fd5d41db2dd2d29108c5de5a09"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/db-push.md",
+      "sha256": "f81602e613b650a55f4ae467a35b71a03b7461a3c20170b097b2a83670db6c83",
+      "gitBlob": "74da0cf40549471e3e2df5cbd74a24d29fda8c92"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/db-seed.md",
+      "sha256": "e714190edfa3ab262c6e819b65d8fcb99330131e23f1b8b64d3a5d96904b5021",
+      "gitBlob": "7657cff9b6b0c928a9c13868c1b2ab9a23f1fdf6"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/debug.md",
+      "sha256": "b56a1ef65bef75a56dd118fd547e4effb727af23830c1047987b404345f40c9d",
+      "gitBlob": "1c2b0afc023edf13d3cb3c8673703e87562e5db0"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/dev.md",
+      "sha256": "c572e9a226995a91ba4c91a80cfebd46251ffeeaadeead426318861997a4b733",
+      "gitBlob": "870efb960fcea45e160ff4986d08fb7a297eef4c"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/format.md",
+      "sha256": "479f19ad1206ec711574e264a03237db47efdf069086b667f9ace179613a7cc9",
+      "gitBlob": "896b1ec17e346b9f057174c5352af5f6ce7195b6"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/generate.md",
+      "sha256": "6d8f1a0f482d9287b8c38262662c91b9e69b7fc0bdced244679fe7e73eef9f95",
+      "gitBlob": "3d371cf674232fa5540a7154c429d0762abce76c"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/init.md",
+      "sha256": "5af83c1ca67f77c5ff5101589dc38f94fd6efd70b182c5f21cc0fe71f568ada5",
+      "gitBlob": "c4390ed8633586e5ebb2c95f9c389ef995e3b264"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/mcp.md",
+      "sha256": "de7b350d70b994179d62c880628e558d66486d98c6c20bbace7f0fb91364cffe",
+      "gitBlob": "284130fa5cdcf5f5816164c211eea4038716675a"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/migrate-deploy.md",
+      "sha256": "2b74ef0d72f698b928d0ca86b375aefc8d477c7517ed367d2143418e8d8c8b8b",
+      "gitBlob": "2132075526014f5e77eaca0dfbba379512abae4f"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/migrate-dev.md",
+      "sha256": "d40d43ab3ced6a86063586104277218941124458d07cb8bbef932b4b8a856495",
+      "gitBlob": "48643b64efeace1b4a26a1c8e614111e60cba1e2"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/migrate-diff.md",
+      "sha256": "df75c632dba0ccdb61cd748ee215356de78497241b177766f74de8ebcdddf0de",
+      "gitBlob": "873107ec8dd11644769ef9c27ec1baaa2689268f"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/migrate-reset.md",
+      "sha256": "048edc1fc762f79775851eb404d1234fb9ddb380a0d165e87eb86d75bfe3210b",
+      "gitBlob": "900e2885edfccf354dd888e2020a7c92a5a75b02"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/migrate-resolve.md",
+      "sha256": "c4d2ca9d305d456a72e0cf4a7f06d65d2e777cde45b3c8eb3c03a22514092f0f",
+      "gitBlob": "6b65f65fadd1e48e092b089cef58e7f2fd6c5e17"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/migrate-status.md",
+      "sha256": "b5968d4abdd500c73d543b00851726b57989cd24491990a03d919e68b5a2fa36",
+      "gitBlob": "80a7ffa7a30cdddce3cf0d9effff0b8b43229fae"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/studio.md",
+      "sha256": "4f7e2f7b319b256f84cc7965c25c700787ebe18f2eb3343dc40af6e6cc3e0be4",
+      "gitBlob": "ba71c9d8869d6b6099713ac20fa26d3b88d146fe"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-cli/references/validate.md",
+      "sha256": "5e73d1b769520e798d2de512680c9fa6feb53782afc93e4f46222703ea120c0b",
+      "gitBlob": "61156c6d485d622378cdad4e96f456c5a85d515b"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-client-api/SKILL.md",
+      "sha256": "0fa1fead6f9c8d8e1f19b4884e3fb62fd614f2f26c0d3aae9b37a4e8579f4cde",
+      "gitBlob": "57aa8a52e9d81fc63d3f7e0f085ebeb71f39ef7d"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-client-api/references/client-methods.md",
+      "sha256": "eb672a297cb408f8a866502a7fcfcd2bef21eccaef28b3de274bc1519e100b4a",
+      "gitBlob": "17beb1f555d23a39560e9a0b890aacb9dfb5a1ce"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-client-api/references/constructor.md",
+      "sha256": "902b777486aabd86934da8d40021a1ce2cbc12d01bea59f4e6c4ffe6d10a49c3",
+      "gitBlob": "a9fb5e8ff7681a879e292f05882b680be253f61e"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-client-api/references/filters.md",
+      "sha256": "78c2abd5dd47810bb849e6742776b50553a7dee796b368235d1a0b7e9cc442b9",
+      "gitBlob": "a9b7eeab29264e6b271ea689fc9fbaebea28aec1"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-client-api/references/model-queries.md",
+      "sha256": "c2186b4912f292108bd94c7bd4eef1d5ca0d7ee3542c575d717e7f85a02e43e1",
+      "gitBlob": "0687ef5bc1e435b88b75ee6df43dc57159f5949e"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-client-api/references/query-options.md",
+      "sha256": "28573915f8626eed65c3bc97293406f692ee8d3fceb9c95ae0793c561a08d254",
+      "gitBlob": "25864a4bb598ea6d82d44ce48dfd1534a9bc4dbf"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-client-api/references/raw-queries.md",
+      "sha256": "6cc93b180897d8352201cafb20ed92d56e9b30e8e40f062513c4084c94ed003c",
+      "gitBlob": "e444ce2fb7782d5414117d3a4a45f2adb35ea7d6"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-client-api/references/relations.md",
+      "sha256": "efe4c5528b1a5ac6d77ba099edcd23d034b7f3f90c88ed6a0461ab24ef93f406",
+      "gitBlob": "001c448839a5dbf6fe1b00e25acab31a99c5253b"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-client-api/references/transactions.md",
+      "sha256": "e636d2438ec81a0976f0756c0a68929f7fd152fc31a623b4993bd83f1a3757d3",
+      "gitBlob": "c2a981ae3baf863411b8afa362a7b4801ff4e766"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-compute/SKILL.md",
+      "sha256": "7c4db69efee1a18e7120745d20627ee789c962299447ddd91fdb807d71cfd73f",
+      "gitBlob": "f1105f92c6c5acccdf9184b2e9e93908deebfdef"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-compute/references/app-deploy-cli.md",
+      "sha256": "fc7f2b06e18cca0116dcaac0950eb7df52555e7a6eafb4b66258f491b3ac8a47",
+      "gitBlob": "0c472e0a5d370ce52b71585ccda08486c8b7fabb"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-compute/references/compute-config.md",
+      "sha256": "482bb7c0dcea2cab9d01952312d261c49ed01f5182d6f7f1b09138af7a6290e5",
+      "gitBlob": "633a60337359a126098f8e4bbe07d563477e8ff7"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-compute/references/create-prisma.md",
+      "sha256": "5d72b41ee00e4daf7780153e27207156aad33b758f968d45ca4c1323cde5d79f",
+      "gitBlob": "ae09f928add80e404a3748ef38a507387fefce13"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-compute/references/frameworks.md",
+      "sha256": "87cc0e6c28cca991beb21fa4cf20d5a39f22f4034ee35d215556f37c2b75fecc",
+      "gitBlob": "915cf1778ff4f05056c7967183640484430edd2a"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-compute/references/sdk-api.md",
+      "sha256": "f159584bbf4de200361523e7e3f54be466e79f2ef6f2da00b0d608cdc1aa8f09",
+      "gitBlob": "290f7439f3bf37978cccb0a12904fd0fd5234b4e"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-compute/references/troubleshooting.md",
+      "sha256": "2e33de5de6927c5c761054ebab9dcf620b9b3c335a749bcbc2a8a9048e46a7b9",
+      "gitBlob": "04899893c3664bffe5f927c27a47b8d59c38e6c7"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-database-setup/SKILL.md",
+      "sha256": "ddb9d0bb355aa1640f1ecfa010b923a2e09a3f0a668e24b12b85f2a51f38c2b1",
+      "gitBlob": "e505f7e8ae7e1046e9272b38ac30e648f533304e"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-driver-adapter-implementation/SKILL.md",
+      "sha256": "52a6b230f27af582d4bf8ebd220cb5f17ef50fd083312851068a6f088c8c8a5c",
+      "gitBlob": "4bf3479c7fd3f0666305a5f4dd29116d3762b0f4"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-mongodb-upgrade/SKILL.md",
+      "sha256": "64b0191a2fc037caf36dc2a5951546a2d913f1da742c797ad18f8e29652772f6",
+      "gitBlob": "fa7e0d22cd70c146b93266e4222902a107c2e960"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-mongodb-upgrade/references/client-api-mapping.md",
+      "sha256": "916dd607f694d5c041935ef72d85f681f6f41100be4acf82a155345ee94f1e96",
+      "gitBlob": "4aef43e71898cd46f85b357cd8dde8e52e5b4b0c"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-mongodb-upgrade/references/decision-stay-or-migrate.md",
+      "sha256": "9916c2c014beb7903c6933387d8c9d2692bb76f199c04fa17e881661c97969c5",
+      "gitBlob": "43a159198768eaf73a3ea6c71de88dc518f37deb"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-mongodb-upgrade/references/migrations-mapping.md",
+      "sha256": "de9083685f06b8a65217d7154962248fae549f7138ff15503eea14be4f2416ae",
+      "gitBlob": "fc728bc777296a1b32a14e30192ce95ef9f5df58"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-mongodb-upgrade/references/schema-contract-mapping.md",
+      "sha256": "bcea13358fa3ce4f00f4dd6533c188a48e4d90fe87aaaa09bd8494ac000088f3",
+      "gitBlob": "4b1093004d3ca06064d661d68993a3f25da587b7"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-mongodb-upgrade/references/verify-cutover-checklist.md",
+      "sha256": "f136c606a3e79038439ff2d2e3d5844aa86a665f4efa6c3ceba9e2f367c0bf1d",
+      "gitBlob": "0b4cd600dc80d1cc1042be98731a12fe0354623d"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-orm-setup/SKILL.md",
+      "sha256": "912f09ffb9dd45c64ef3bfae04c839d976325a7561217649bd2d763d854f9ea6",
+      "gitBlob": "a711519b6d3fb2a945b160c028ab1092b1869480"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-orm-setup/references/v6-mongodb.md",
+      "sha256": "d6afba720bdaf231e419a84137d165117fc4392888dfcfea51b66b096eba2698",
+      "gitBlob": "c1d8b4b11a18d9246ec674be21de7ef51f80ba7f"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-orm-setup/references/v7-client-setup.md",
+      "sha256": "2b86c40ed090dbe2fcb0332a159277cb9338ef314f7fd4299c008f97604c2360",
+      "gitBlob": "dfea6f44ceb7ff36dd4425defa40a1c380449fde"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-orm-setup/references/v7-cockroachdb.md",
+      "sha256": "812dd52eda923375645bebb7dc9ba1840a0efdb385282a587fb02acbd20013c4",
+      "gitBlob": "4206216308c1c2fb16b770695a7b057d1b5de096"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-orm-setup/references/v7-mysql.md",
+      "sha256": "25fff209da55b182071a8f4b52efe9312bc30da1ddc92b77497670e71d1ea7ff",
+      "gitBlob": "b4ec3df92681bce9515b9a1686402fdabc23ea8b"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-orm-setup/references/v7-postgresql.md",
+      "sha256": "7f4fdf55a7ff9a5ef8e4eb539ab74a27892a0ccaa6b53c16db6c107c6383d21e",
+      "gitBlob": "d9f18d5acb0cb56b2def892fa4034485e1b29d17"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-orm-setup/references/v7-prisma-postgres.md",
+      "sha256": "405f07e80b23025311238f1d1f0b418acf6e5097a86e8ef11d8b5569bf7197ef",
+      "gitBlob": "318be1503cc250476745e0d28f3a913c09b83f27"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-orm-setup/references/v7-sqlite.md",
+      "sha256": "82b7e19665ed674fd8ca310af5f4063a38e7528d3fd40c8079c6762bedc93a52",
+      "gitBlob": "9ef7f5594b73ba336e5c31f7fa319b687a60814a"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-orm-setup/references/v7-sqlserver.md",
+      "sha256": "1a358d153ccf5515a9b66ed13e5ca00e35c9526d7d34b7e5406100c7e69ea29f",
+      "gitBlob": "8476233ce0f6ee03b4e72d17e7d2fa448346c27b"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-postgres-setup/SKILL.md",
+      "sha256": "f2cc4975487d60bd79a6cccdf311a45ee6afd4c2991840457850afcb29b3f9ad",
+      "gitBlob": "9be36dac6f9ad958e2b5e7d2baca90155ca291ea"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-postgres-setup/references/operations.md",
+      "sha256": "fdfdbda067769180e7b93acea9cf03d7ec4281f478d52f7603c876d084551939",
+      "gitBlob": "7f8ac31b96ed6c40e4427b3244431746ada9cb3b"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-postgres-setup/references/provisioning.md",
+      "sha256": "5f5d90be2053e3fd0bb8b01b57b229aa338aba2458673cf08278f34a47712d7e",
+      "gitBlob": "7ecd29e2e6f9a91ff761b2f1965bdac6dd15e60e"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-postgres-setup/references/vercel-marketplace.md",
+      "sha256": "03da814f4d8b200a33515a1faeac58dedd71f33838da0f22601b55e2816f5819",
+      "gitBlob": "3ccbd17bd5215ae3d796c262c98fd6a8eaf48cd1"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-postgres/SKILL.md",
+      "sha256": "7855eb607091e28bf8e1b4e62e98e17a78143fb8008534ead0d6108932a9a3ea",
+      "gitBlob": "f146d2725b5a52496287b43eca2112dfb7b3a84b"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-upgrade-v7/SKILL.md",
+      "sha256": "5b9f53f3ce2eb080e625e435a70d86bc56896f4807806cbabbe86a2ce19359e7",
+      "gitBlob": "bd0e30598884112be908f22ebf0e2498cc07c32a"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-upgrade-v7/references/accelerate-users.md",
+      "sha256": "8c984f09c5b69c1286b0445db9be8cacc8281b234f3a4fd02a8769bd67d5298f",
+      "gitBlob": "893e341d73236a68bd8507c9a7eb3e170dcf258f"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-upgrade-v7/references/driver-adapters.md",
+      "sha256": "03e178a3f31cc39cf158544765da101f433d66c37c354603141d31dcfa6c5516",
+      "gitBlob": "c7abac686bd556b5ecd14692945c15906e1ad4ce"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-upgrade-v7/references/env-variables.md",
+      "sha256": "413d564c9067a7f026a7c4989e604c7c5eec7e664528ce93deeb9b589d775f1a",
+      "gitBlob": "fb67e89952e95dbc8b360ba2574990c51fdb9554"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-upgrade-v7/references/esm-support.md",
+      "sha256": "e516430e7262076fda0b66b061f54a602ce621564edd2360d33dbbe07b98c57b",
+      "gitBlob": "bf2697b1448b126a6006b79a45c5103392e1daf4"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-upgrade-v7/references/prisma-config.md",
+      "sha256": "aff4eb55e4d3f51531379d531e154904477d7cc16c3c31d705e91ed54871e8a5",
+      "gitBlob": "65b5128155120305c57746fdf89ed2f7fe3b039c"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-upgrade-v7/references/removed-features.md",
+      "sha256": "f28ee12d7a626024c6e538c7c58f68d66d1b7b8e5f79ce09f13e22d6c2e15c37",
+      "gitBlob": "0d77eafc7439583a26a19010bddacf5f8aeeab50"
+    },
+    {
+      "path": "apps/api/.claude/skills/prisma-upgrade-v7/references/schema-changes.md",
+      "sha256": "85206f1581cc61c4af966fe57ebddf7f7a451e8fbbdb73689d388d41cf1ea35f",
+      "gitBlob": "6c817a58180ffb811a2d4f1f3828a0b238c7d66a"
+    },
+    {
+      "path": "apps/api/.oxlintrc.json",
+      "sha256": "7b40d890e22052eb2deb1fd77affa3faedb26192a747c6e3abc261b9ad1787ea",
+      "gitBlob": "554f9be8a99adbe00bad60c890a228ec732fbdea"
+    },
+    {
+      "path": "apps/api/.prettierrc",
+      "sha256": "30d23aaa5811720602dec802795cbc172c65bc56eb8c683fc5b12c10dcb05563",
+      "gitBlob": "a20502b7f06d848452da0d93ce8830c1d86b05dd"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/SKILL.md",
+      "sha256": "3fca0498f5f0a0041dbd1069eec05e9289c50fce4149a1a18b7332c166199646",
+      "gitBlob": "e612e02ed2cdc8c50a69a92350cb4fd59a58d4d9"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/agent-safety.md",
+      "sha256": "e078643dd177cde866ec26f1699493b3d1417bad5a5ee85d1c6c83a9dd0e2201",
+      "gitBlob": "651c6c34eb2446fbcb81b50088569182bb64c074"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/complete.md",
+      "sha256": "e3211dc3ecd1195fafa3cb37481eb1029ea47e914a425c02244ce61e5f0d02ba",
+      "gitBlob": "7332440798fafbfe1f87602bfeaf6b86549e3db4"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/db-execute.md",
+      "sha256": "ae3c03317b4ec557e0e1c0130e5673dbdb29c7bdb783d2a37d907222305758f1",
+      "gitBlob": "c966f23e59c0cfdbf6dbf77d9c9caf0e3b5bcc8f"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/db-pull.md",
+      "sha256": "157ff62bb97d34311e9aab0ddfb922df0ceadf99bf35f65f7f405119e5dbfd1d",
+      "gitBlob": "58a6e47d09d103fd5d41db2dd2d29108c5de5a09"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/db-push.md",
+      "sha256": "f81602e613b650a55f4ae467a35b71a03b7461a3c20170b097b2a83670db6c83",
+      "gitBlob": "74da0cf40549471e3e2df5cbd74a24d29fda8c92"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/db-seed.md",
+      "sha256": "e714190edfa3ab262c6e819b65d8fcb99330131e23f1b8b64d3a5d96904b5021",
+      "gitBlob": "7657cff9b6b0c928a9c13868c1b2ab9a23f1fdf6"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/debug.md",
+      "sha256": "b56a1ef65bef75a56dd118fd547e4effb727af23830c1047987b404345f40c9d",
+      "gitBlob": "1c2b0afc023edf13d3cb3c8673703e87562e5db0"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/dev.md",
+      "sha256": "c572e9a226995a91ba4c91a80cfebd46251ffeeaadeead426318861997a4b733",
+      "gitBlob": "870efb960fcea45e160ff4986d08fb7a297eef4c"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/format.md",
+      "sha256": "479f19ad1206ec711574e264a03237db47efdf069086b667f9ace179613a7cc9",
+      "gitBlob": "896b1ec17e346b9f057174c5352af5f6ce7195b6"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/generate.md",
+      "sha256": "6d8f1a0f482d9287b8c38262662c91b9e69b7fc0bdced244679fe7e73eef9f95",
+      "gitBlob": "3d371cf674232fa5540a7154c429d0762abce76c"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/init.md",
+      "sha256": "5af83c1ca67f77c5ff5101589dc38f94fd6efd70b182c5f21cc0fe71f568ada5",
+      "gitBlob": "c4390ed8633586e5ebb2c95f9c389ef995e3b264"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/mcp.md",
+      "sha256": "de7b350d70b994179d62c880628e558d66486d98c6c20bbace7f0fb91364cffe",
+      "gitBlob": "284130fa5cdcf5f5816164c211eea4038716675a"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/migrate-deploy.md",
+      "sha256": "2b74ef0d72f698b928d0ca86b375aefc8d477c7517ed367d2143418e8d8c8b8b",
+      "gitBlob": "2132075526014f5e77eaca0dfbba379512abae4f"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/migrate-dev.md",
+      "sha256": "d40d43ab3ced6a86063586104277218941124458d07cb8bbef932b4b8a856495",
+      "gitBlob": "48643b64efeace1b4a26a1c8e614111e60cba1e2"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/migrate-diff.md",
+      "sha256": "df75c632dba0ccdb61cd748ee215356de78497241b177766f74de8ebcdddf0de",
+      "gitBlob": "873107ec8dd11644769ef9c27ec1baaa2689268f"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/migrate-reset.md",
+      "sha256": "048edc1fc762f79775851eb404d1234fb9ddb380a0d165e87eb86d75bfe3210b",
+      "gitBlob": "900e2885edfccf354dd888e2020a7c92a5a75b02"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/migrate-resolve.md",
+      "sha256": "c4d2ca9d305d456a72e0cf4a7f06d65d2e777cde45b3c8eb3c03a22514092f0f",
+      "gitBlob": "6b65f65fadd1e48e092b089cef58e7f2fd6c5e17"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/migrate-status.md",
+      "sha256": "b5968d4abdd500c73d543b00851726b57989cd24491990a03d919e68b5a2fa36",
+      "gitBlob": "80a7ffa7a30cdddce3cf0d9effff0b8b43229fae"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/studio.md",
+      "sha256": "4f7e2f7b319b256f84cc7965c25c700787ebe18f2eb3343dc40af6e6cc3e0be4",
+      "gitBlob": "ba71c9d8869d6b6099713ac20fa26d3b88d146fe"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-cli/references/validate.md",
+      "sha256": "5e73d1b769520e798d2de512680c9fa6feb53782afc93e4f46222703ea120c0b",
+      "gitBlob": "61156c6d485d622378cdad4e96f456c5a85d515b"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-client-api/SKILL.md",
+      "sha256": "0fa1fead6f9c8d8e1f19b4884e3fb62fd614f2f26c0d3aae9b37a4e8579f4cde",
+      "gitBlob": "57aa8a52e9d81fc63d3f7e0f085ebeb71f39ef7d"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-client-api/references/client-methods.md",
+      "sha256": "eb672a297cb408f8a866502a7fcfcd2bef21eccaef28b3de274bc1519e100b4a",
+      "gitBlob": "17beb1f555d23a39560e9a0b890aacb9dfb5a1ce"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-client-api/references/constructor.md",
+      "sha256": "902b777486aabd86934da8d40021a1ce2cbc12d01bea59f4e6c4ffe6d10a49c3",
+      "gitBlob": "a9fb5e8ff7681a879e292f05882b680be253f61e"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-client-api/references/filters.md",
+      "sha256": "78c2abd5dd47810bb849e6742776b50553a7dee796b368235d1a0b7e9cc442b9",
+      "gitBlob": "a9b7eeab29264e6b271ea689fc9fbaebea28aec1"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-client-api/references/model-queries.md",
+      "sha256": "c2186b4912f292108bd94c7bd4eef1d5ca0d7ee3542c575d717e7f85a02e43e1",
+      "gitBlob": "0687ef5bc1e435b88b75ee6df43dc57159f5949e"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-client-api/references/query-options.md",
+      "sha256": "28573915f8626eed65c3bc97293406f692ee8d3fceb9c95ae0793c561a08d254",
+      "gitBlob": "25864a4bb598ea6d82d44ce48dfd1534a9bc4dbf"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-client-api/references/raw-queries.md",
+      "sha256": "6cc93b180897d8352201cafb20ed92d56e9b30e8e40f062513c4084c94ed003c",
+      "gitBlob": "e444ce2fb7782d5414117d3a4a45f2adb35ea7d6"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-client-api/references/relations.md",
+      "sha256": "efe4c5528b1a5ac6d77ba099edcd23d034b7f3f90c88ed6a0461ab24ef93f406",
+      "gitBlob": "001c448839a5dbf6fe1b00e25acab31a99c5253b"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-client-api/references/transactions.md",
+      "sha256": "e636d2438ec81a0976f0756c0a68929f7fd152fc31a623b4993bd83f1a3757d3",
+      "gitBlob": "c2a981ae3baf863411b8afa362a7b4801ff4e766"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-compute/SKILL.md",
+      "sha256": "7c4db69efee1a18e7120745d20627ee789c962299447ddd91fdb807d71cfd73f",
+      "gitBlob": "f1105f92c6c5acccdf9184b2e9e93908deebfdef"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-compute/references/app-deploy-cli.md",
+      "sha256": "fc7f2b06e18cca0116dcaac0950eb7df52555e7a6eafb4b66258f491b3ac8a47",
+      "gitBlob": "0c472e0a5d370ce52b71585ccda08486c8b7fabb"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-compute/references/compute-config.md",
+      "sha256": "482bb7c0dcea2cab9d01952312d261c49ed01f5182d6f7f1b09138af7a6290e5",
+      "gitBlob": "633a60337359a126098f8e4bbe07d563477e8ff7"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-compute/references/create-prisma.md",
+      "sha256": "5d72b41ee00e4daf7780153e27207156aad33b758f968d45ca4c1323cde5d79f",
+      "gitBlob": "ae09f928add80e404a3748ef38a507387fefce13"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-compute/references/frameworks.md",
+      "sha256": "87cc0e6c28cca991beb21fa4cf20d5a39f22f4034ee35d215556f37c2b75fecc",
+      "gitBlob": "915cf1778ff4f05056c7967183640484430edd2a"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-compute/references/sdk-api.md",
+      "sha256": "f159584bbf4de200361523e7e3f54be466e79f2ef6f2da00b0d608cdc1aa8f09",
+      "gitBlob": "290f7439f3bf37978cccb0a12904fd0fd5234b4e"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-compute/references/troubleshooting.md",
+      "sha256": "2e33de5de6927c5c761054ebab9dcf620b9b3c335a749bcbc2a8a9048e46a7b9",
+      "gitBlob": "04899893c3664bffe5f927c27a47b8d59c38e6c7"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-database-setup/SKILL.md",
+      "sha256": "ddb9d0bb355aa1640f1ecfa010b923a2e09a3f0a668e24b12b85f2a51f38c2b1",
+      "gitBlob": "e505f7e8ae7e1046e9272b38ac30e648f533304e"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-driver-adapter-implementation/SKILL.md",
+      "sha256": "52a6b230f27af582d4bf8ebd220cb5f17ef50fd083312851068a6f088c8c8a5c",
+      "gitBlob": "4bf3479c7fd3f0666305a5f4dd29116d3762b0f4"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-mongodb-upgrade/SKILL.md",
+      "sha256": "64b0191a2fc037caf36dc2a5951546a2d913f1da742c797ad18f8e29652772f6",
+      "gitBlob": "fa7e0d22cd70c146b93266e4222902a107c2e960"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-mongodb-upgrade/references/client-api-mapping.md",
+      "sha256": "916dd607f694d5c041935ef72d85f681f6f41100be4acf82a155345ee94f1e96",
+      "gitBlob": "4aef43e71898cd46f85b357cd8dde8e52e5b4b0c"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-mongodb-upgrade/references/decision-stay-or-migrate.md",
+      "sha256": "9916c2c014beb7903c6933387d8c9d2692bb76f199c04fa17e881661c97969c5",
+      "gitBlob": "43a159198768eaf73a3ea6c71de88dc518f37deb"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-mongodb-upgrade/references/migrations-mapping.md",
+      "sha256": "de9083685f06b8a65217d7154962248fae549f7138ff15503eea14be4f2416ae",
+      "gitBlob": "fc728bc777296a1b32a14e30192ce95ef9f5df58"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-mongodb-upgrade/references/schema-contract-mapping.md",
+      "sha256": "bcea13358fa3ce4f00f4dd6533c188a48e4d90fe87aaaa09bd8494ac000088f3",
+      "gitBlob": "4b1093004d3ca06064d661d68993a3f25da587b7"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-mongodb-upgrade/references/verify-cutover-checklist.md",
+      "sha256": "f136c606a3e79038439ff2d2e3d5844aa86a665f4efa6c3ceba9e2f367c0bf1d",
+      "gitBlob": "0b4cd600dc80d1cc1042be98731a12fe0354623d"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-orm-setup/SKILL.md",
+      "sha256": "912f09ffb9dd45c64ef3bfae04c839d976325a7561217649bd2d763d854f9ea6",
+      "gitBlob": "a711519b6d3fb2a945b160c028ab1092b1869480"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-orm-setup/references/v6-mongodb.md",
+      "sha256": "d6afba720bdaf231e419a84137d165117fc4392888dfcfea51b66b096eba2698",
+      "gitBlob": "c1d8b4b11a18d9246ec674be21de7ef51f80ba7f"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-orm-setup/references/v7-client-setup.md",
+      "sha256": "2b86c40ed090dbe2fcb0332a159277cb9338ef314f7fd4299c008f97604c2360",
+      "gitBlob": "dfea6f44ceb7ff36dd4425defa40a1c380449fde"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-orm-setup/references/v7-cockroachdb.md",
+      "sha256": "812dd52eda923375645bebb7dc9ba1840a0efdb385282a587fb02acbd20013c4",
+      "gitBlob": "4206216308c1c2fb16b770695a7b057d1b5de096"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-orm-setup/references/v7-mysql.md",
+      "sha256": "25fff209da55b182071a8f4b52efe9312bc30da1ddc92b77497670e71d1ea7ff",
+      "gitBlob": "b4ec3df92681bce9515b9a1686402fdabc23ea8b"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-orm-setup/references/v7-postgresql.md",
+      "sha256": "7f4fdf55a7ff9a5ef8e4eb539ab74a27892a0ccaa6b53c16db6c107c6383d21e",
+      "gitBlob": "d9f18d5acb0cb56b2def892fa4034485e1b29d17"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-orm-setup/references/v7-prisma-postgres.md",
+      "sha256": "405f07e80b23025311238f1d1f0b418acf6e5097a86e8ef11d8b5569bf7197ef",
+      "gitBlob": "318be1503cc250476745e0d28f3a913c09b83f27"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-orm-setup/references/v7-sqlite.md",
+      "sha256": "82b7e19665ed674fd8ca310af5f4063a38e7528d3fd40c8079c6762bedc93a52",
+      "gitBlob": "9ef7f5594b73ba336e5c31f7fa319b687a60814a"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-orm-setup/references/v7-sqlserver.md",
+      "sha256": "1a358d153ccf5515a9b66ed13e5ca00e35c9526d7d34b7e5406100c7e69ea29f",
+      "gitBlob": "8476233ce0f6ee03b4e72d17e7d2fa448346c27b"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-postgres-setup/SKILL.md",
+      "sha256": "f2cc4975487d60bd79a6cccdf311a45ee6afd4c2991840457850afcb29b3f9ad",
+      "gitBlob": "9be36dac6f9ad958e2b5e7d2baca90155ca291ea"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-postgres-setup/references/operations.md",
+      "sha256": "fdfdbda067769180e7b93acea9cf03d7ec4281f478d52f7603c876d084551939",
+      "gitBlob": "7f8ac31b96ed6c40e4427b3244431746ada9cb3b"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-postgres-setup/references/provisioning.md",
+      "sha256": "5f5d90be2053e3fd0bb8b01b57b229aa338aba2458673cf08278f34a47712d7e",
+      "gitBlob": "7ecd29e2e6f9a91ff761b2f1965bdac6dd15e60e"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-postgres-setup/references/vercel-marketplace.md",
+      "sha256": "03da814f4d8b200a33515a1faeac58dedd71f33838da0f22601b55e2816f5819",
+      "gitBlob": "3ccbd17bd5215ae3d796c262c98fd6a8eaf48cd1"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-postgres/SKILL.md",
+      "sha256": "7855eb607091e28bf8e1b4e62e98e17a78143fb8008534ead0d6108932a9a3ea",
+      "gitBlob": "f146d2725b5a52496287b43eca2112dfb7b3a84b"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-upgrade-v7/SKILL.md",
+      "sha256": "5b9f53f3ce2eb080e625e435a70d86bc56896f4807806cbabbe86a2ce19359e7",
+      "gitBlob": "bd0e30598884112be908f22ebf0e2498cc07c32a"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-upgrade-v7/references/accelerate-users.md",
+      "sha256": "8c984f09c5b69c1286b0445db9be8cacc8281b234f3a4fd02a8769bd67d5298f",
+      "gitBlob": "893e341d73236a68bd8507c9a7eb3e170dcf258f"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-upgrade-v7/references/driver-adapters.md",
+      "sha256": "03e178a3f31cc39cf158544765da101f433d66c37c354603141d31dcfa6c5516",
+      "gitBlob": "c7abac686bd556b5ecd14692945c15906e1ad4ce"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-upgrade-v7/references/env-variables.md",
+      "sha256": "413d564c9067a7f026a7c4989e604c7c5eec7e664528ce93deeb9b589d775f1a",
+      "gitBlob": "fb67e89952e95dbc8b360ba2574990c51fdb9554"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-upgrade-v7/references/esm-support.md",
+      "sha256": "e516430e7262076fda0b66b061f54a602ce621564edd2360d33dbbe07b98c57b",
+      "gitBlob": "bf2697b1448b126a6006b79a45c5103392e1daf4"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-upgrade-v7/references/prisma-config.md",
+      "sha256": "aff4eb55e4d3f51531379d531e154904477d7cc16c3c31d705e91ed54871e8a5",
+      "gitBlob": "65b5128155120305c57746fdf89ed2f7fe3b039c"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-upgrade-v7/references/removed-features.md",
+      "sha256": "f28ee12d7a626024c6e538c7c58f68d66d1b7b8e5f79ce09f13e22d6c2e15c37",
+      "gitBlob": "0d77eafc7439583a26a19010bddacf5f8aeeab50"
+    },
+    {
+      "path": "apps/api/.windsurf/skills/prisma-upgrade-v7/references/schema-changes.md",
+      "sha256": "85206f1581cc61c4af966fe57ebddf7f7a451e8fbbdb73689d388d41cf1ea35f",
+      "gitBlob": "6c817a58180ffb811a2d4f1f3828a0b238c7d66a"
+    },
+    {
+      "path": "apps/api/README.md",
+      "sha256": "a7300fca821e758d3c60c05346226de4e814f281abd433616f83bd9a6b272ac9",
+      "gitBlob": "7378260e3c413bedb1797b37e823cd0bc9278622"
+    },
+    {
+      "path": "apps/api/nest-cli.json",
+      "sha256": "84dc81177a0db2270bd71242b910f07982c56eec68285694c9cbffc3911912ba",
+      "gitBlob": "f9aa683b1ad5cffc76da9ad4b77c562ac4c2b399"
+    },
+    {
+      "path": "apps/api/package.json",
+      "sha256": "65db09addd17a20bec8f599711d7a6aa28f3763b7e7828eb87b60b91b1b2ee62",
+      "gitBlob": "b1d618c40e4a5881fec5461c091b8fc0bcf44435"
+    },
+    {
+      "path": "apps/api/prisma.config.ts",
+      "sha256": "931c93cb8f30c1ca76008293ad24925d6e203edac867008244cd13272f10c25d",
+      "gitBlob": "3ce64b7129e0407ae773132344dc7ebbc797e0dd"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202609290001_t01_probe_apply/migration.sql",
+      "sha256": "43b771ee3f6beddaaffe32138fced7b74111734e0a07c5df47111ae5035cbf48",
+      "gitBlob": "03b62be70052a98f7de43f48217f9aeeb9fe4d83"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202609290002_t01_probe_compensate/migration.sql",
+      "sha256": "647827c242469a555c58cd985aedfe0427fe01b25e18c6639dec0eb30105a900",
+      "gitBlob": "6b4aac33296f9655224e14aa3ef395d6af4c35bc"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202609290003_t01_probe_reapply/migration.sql",
+      "sha256": "0f4a38dc31eeb7ff119029966de462e1799f06652a427cce90a67019cb534192",
+      "gitBlob": "30be34e1db8ed28a4832c0522a2f8cf136af9b2d"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610010001_t04_users_roles/migration.sql",
+      "sha256": "a243da28394d282e53da335a2ef85060569111008c668883de81435a35ebb041",
+      "gitBlob": "c681842753b7a20ef4841080885a5eed083ff6da"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610010001_t04_users_roles/rollback.sql",
+      "sha256": "162fb82c6d83adf82eb7f955a59d98370566d5684df7c6e0150035c181d0fbb9",
+      "gitBlob": "b5cacf7427bedafd458f20a68223758d626836ac"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610010002_t09_events_showtimes/migration.sql",
+      "sha256": "3feab45c6e49d5310cda874ee643c98c12286520ce0a4ebeb196a0c707bd53dd",
+      "gitBlob": "aa876684dab3e9520d7f62fddd93ae645126defc"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610010002_t09_events_showtimes/rollback.sql",
+      "sha256": "5f87846d1a516298bc42071de6dbd1e74f2c62c5749d320df80ac46905ecfb8d",
+      "gitBlob": "1481a30869b3aab59a3316b0a2a11029543ca8b6"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610010003_t05_sessions/migration.sql",
+      "sha256": "f899353992975e721d9e845ea1ff78496d2c6f62694fcbc52488ca75d11999e6",
+      "gitBlob": "8fa3c1e80a33630dd565e5499856f4148301c259"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610010003_t05_sessions/rollback.sql",
+      "sha256": "9d93cb39113b85f54291ee3f6ce167d3db39a6d1f7a013d4d06cdb23b09e06f0",
+      "gitBlob": "5d3fff6a88bdaa77534975dc5a84ada49d27c669"
+    },
+    {
+      "path": "apps/api/prisma/migrations/20261003_init_seats_and_seat_categories/migration.sql",
+      "sha256": "eda4fc7c13d63f54377f7d032350b55709b9d95fc8923ba331df23df41f8de03",
+      "gitBlob": "bae155b52d851a6c4a854649a44b9dbf34ad6f89"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610040001_sprint2_seats/migration.sql",
+      "sha256": "6dc818bf1a09f2ddf2f826175a03899cf3b900c53c4166fce9a54c8b6ca3daa5",
+      "gitBlob": "6e8aee0e03ff2aade1d6b40c9b7cfcf7b153f439"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610040004_event_presentation/migration.sql",
+      "sha256": "6f0313764256bf508b1461021cb6fdd86f2526875f46c62411e520bda30beaf1",
+      "gitBlob": "38e91580f1a8e1aecd29801c30b281174d0c1e06"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610040005_seat_holds/migration.sql",
+      "sha256": "983ea87e74adecc3f0cc442ed7e13880f87172ca2913821efa77c2a4075f1ba4",
+      "gitBlob": "403a4e9df57c77937b7627877e16aefdacbd5d7e"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610050001_pending_orders/migration.sql",
+      "sha256": "d511886471adf4d267ea78184ad68e3829a1bf6fd71e4c5cab5fa3f4fe0ff234",
+      "gitBlob": "12695cd2e875b4d0aa2c3ef8fae137535e0a4351"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610060001_claim_hold_function/migration.sql",
+      "sha256": "cdd504992e582690422d832851a26a9225fd457fc94953a431694c094613449e",
+      "gitBlob": "87add7518639ef0f83ed1fbbbd56b0732f15ff30"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610060001_hold_expected_seats/migration.sql",
+      "sha256": "0b3b51166a761412640f020dbb04f48246dfd2a3753babc195d43dc230e07241",
+      "gitBlob": "284796832f96b7e907824b5dd240ea5932ba4168"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610060002_validated_hold_routine/migration.sql",
+      "sha256": "bbb39300068c24319dca0466c15cd95c5b01e2382a5c72dba3d044928166133d",
+      "gitBlob": "27d10bfe1ac5edecd486984dc7a71462231d5780"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610060003_hold_outcomes/migration.sql",
+      "sha256": "472af33adc5dd15d093b842cc9161c80be066090628cf502e21f3b805858c741",
+      "gitBlob": "c1a640b669d3ee56fc9feed655d06be89a6d8595"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610070001_s17_orders/migration.sql",
+      "sha256": "fb40c6dce433eb4051619ba6f64f4f895299dd57c8aafbe874a1e18eaa26faf8",
+      "gitBlob": "6f3622b2c86fe44ef7298a995c654785f35dc241"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610070002_s18_payments/migration.sql",
+      "sha256": "a0de9641fd3e7f1fb35d3a2c0e60f4d4f3bd7c1a8acf0f6f6a2ec75b6132b8cb",
+      "gitBlob": "4f6327e9d5d9a733e8a99c54194beaf7bcaa2274"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610070003_s20_idempotent_payments/migration.sql",
+      "sha256": "7946fdfbe2d1fa499523ddb6c5727c5baf297c75d8c90aba99d2529ffeec24a1",
+      "gitBlob": "84a4d45eec29e75c19e06ea6ab9ac901413f7a29"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610080001_s24_payment_retry_and_logs/migration.sql",
+      "sha256": "133f0c84596ad184524b7cbdf13c27e88042da252279c22a1e27f4cbf55a0006",
+      "gitBlob": "f13728db7c7cb9467d27a51f5007f620e578e6bb"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610080001_s42_ticket_limit/migration.sql",
+      "sha256": "dc9486a1c331f1cd4fb18409887dbca603f91a395dff7a95b81d7d0d82fed401",
+      "gitBlob": "d5b013b351f4002efdf49fc26e25057348e49de8"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610080002_s28_user_is_active/migration.sql",
+      "sha256": "e7b054998cc68c5da6a5a7eb95cad18a94839a8282644830a62100a96f09662a",
+      "gitBlob": "22566836f9a814b723fbaf347e8ec1ce9ff209a8"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610080002_s33_tickets_and_scanner/migration.sql",
+      "sha256": "4ed91cb96cb523dbc30f96f30b499d7e583d5338c8255badf53c765d5476c58d",
+      "gitBlob": "340191ce27a3b81445cc1e3b16ba169865b607c7"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610080002_ticket_checkin/migration.sql",
+      "sha256": "c1f50f9130f8c3c7bb46b5de91c70d8c91cb62f5f08f9d40913c2bffcea7dde1",
+      "gitBlob": "5c068e1d584d9b4a34b75c10459b2b4df3e3a990"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610080003_s31_admission_ledger/migration.sql",
+      "sha256": "f1d6f9a81cb78fa4630209b582cbd8fd05605fa33bef9b95313c4afa5ac9ca6c",
+      "gitBlob": "cabeff9364aa2a2c77a6c8b3580b849c708651d8"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610090001_s25_s26_signed_tickets/migration.sql",
+      "sha256": "8137e12c7b70a439e09a30ec607513ee2a288c30425eeb192a5776ffcb1d1ae0",
+      "gitBlob": "dbd9c16a7ad528c1fd8df68feaf356a79899c2bf"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610090002_s57_ticket_transfer/migration.sql",
+      "sha256": "3e220cee99f150bc40ead3aa380f9f8161427f8e1ce00198dcc69b9d3847733d",
+      "gitBlob": "5c36db5281415dddf9e7a9fa7e598a1fb55b8626"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610090002_s61_ticket_reminder/migration.sql",
+      "sha256": "70d64201f0b57dbfb08bbc2512640a3ee2d9151996b09a72900bb2cefa786613",
+      "gitBlob": "21b3da9b2fe5cb06a4e4b26921fa26294e48fd39"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610120001_s34_offline_scan_queue/migration.sql",
+      "sha256": "43596d92f340da16d49aab6f048889eda73eef0d70e846a5dba6ddc48fa52c23",
+      "gitBlob": "0eb4414b6ee0a565270cf2432c0131d73a2eb097"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610160001_hold_known_conflict/migration.sql",
+      "sha256": "59f343d166c54219e1eedf8230dfb305e6768efcc3dceec5630577a39858fbfb",
+      "gitBlob": "c7b1e9999a9f5f7c843cd08481bedc212dac7d87"
+    },
+    {
+      "path": "apps/api/prisma/migrations/202610160001_registration_consent_delivery/migration.sql",
+      "sha256": "e0b7218b76fb4ef95505c8cfec0f3e1b4d5c6d49d35babaeaaf0795d5d106b21",
+      "gitBlob": "2a20805f4563b64185b693cb3a511b439e8875e6"
+    },
+    {
+      "path": "apps/api/prisma/migrations/migration_lock.toml",
+      "sha256": "cad79a4b344f476dd998b1bf45ddd219ff8643b5a8e06578fcdd53afb4f75366",
+      "gitBlob": "cdfc5d43ce64e258684ff7e9b2a666cb3f48d831"
+    },
+    {
+      "path": "apps/api/prisma/schema.prisma",
+      "sha256": "6133f9aaf2281c94ec0ef48e6cbf9946be71149947cf33da935724a1654a4b6e",
+      "gitBlob": "9f8372ab119ba05597f27d7346d233aab5329ceb"
+    },
+    {
+      "path": "apps/api/prisma/seed-demo.mjs",
+      "sha256": "bc70e5405e12f01a58f2f34b994a044d1060333aa54bde282c57b08913856dbb",
+      "gitBlob": "28b464ba837c0b55b3677d57436f595d3a5f86f1"
+    },
+    {
+      "path": "apps/api/prisma/verification/holds-compensate.sql",
+      "sha256": "1d244186cc7ae239cb93a5200a50ab4395b27352e959a5ad8da2302fee6e9d88",
+      "gitBlob": "f24a6224bef583ef44fb0e6258589588ea797143"
+    },
+    {
+      "path": "apps/api/prisma/verification/s31-admission-candidate.sql",
+      "sha256": "92983bd15094b9db42a662193ca9b2a5794155fdb494162d2a9ea94f805a091c",
+      "gitBlob": "0889968d4b0375755c8ba1b78f8ab815d0de7b54"
+    },
+    {
+      "path": "apps/api/prisma/verification/s31-compensate-empty.sql",
+      "sha256": "1e5ed6154eacac8e70fc6736615da0643cf4333624c39b6c2a783a3aa4ad5180",
+      "gitBlob": "b3e77872b608e34014b39ce0744d9bcd14d5d18d"
+    },
+    {
+      "path": "apps/api/prisma/verification/sprint2-compensate.sql",
+      "sha256": "aef8bfb56b0ad3f8250a5506a794a6d291e4c331cab9faf2890a83aac9fd70c4",
+      "gitBlob": "9ae43dbc471fe2862faafe7105e14c610ba52292"
+    },
+    {
+      "path": "apps/api/scripts/hold-browser-fixture.mjs",
+      "sha256": "f4e0b9824d5e385c38db8f8d0b680bf2a1b600550472c740f49ed9a40fba4a53",
+      "gitBlob": "1aef357e6520515d6ca5acc2b1a32cdc76e8ee1b"
+    },
+    {
+      "path": "apps/api/scripts/k01-spike.mjs",
+      "sha256": "49e37215030df7abb580eb2a7eaa015c6d9d9d0291ecfac44ebac9395b240587",
+      "gitBlob": "80343567093abbc5a4d4731abb4d25accaa495e7"
+    },
+    {
+      "path": "apps/api/scripts/k01/candidate-server.mjs",
+      "sha256": "0832ccd1bd4ba4c7dabef1371bc3441f783a2fd23ec585fd839332208fcf579b",
+      "gitBlob": "09c325130e5cd2b9ea3656220fc3d2dee70ad0ec"
+    },
+    {
+      "path": "apps/api/scripts/k01/candidate-stores.mjs",
+      "sha256": "265ac407d5a47f24c64707cba3b03cbd190d8800ba8280b418def5a2758395f1",
+      "gitBlob": "2cba14bafb7e9144b9a75470171e5bb145f9f0ec"
+    },
+    {
+      "path": "apps/api/scripts/k01/compare-candidates.mjs",
+      "sha256": "b58fd3540d664514193a7ce213aaa316d33c19543a4c80d992506b6570896493",
+      "gitBlob": "e9cdb6cf0c1db61c7dab1324ac07cb97bc1ae720"
+    },
+    {
+      "path": "apps/api/scripts/profile-holds-preload.mjs",
+      "sha256": "791261724016f2694031f67453958a27609f6ed482a2066e7d0ff1baa3795068",
+      "gitBlob": "207a26f48836d86398a3f8fd7e88bc77a10bade5"
+    },
+    {
+      "path": "apps/api/scripts/profile-holds-preload.spec.mjs",
+      "sha256": "9d04dfbffd0125d13ebd9080ff12c450d07c0c5200b5a91baf231e75eb77d53d",
+      "gitBlob": "b1d4a7d937964ab37716c1b8e99da16c8a9f1bf8"
+    },
+    {
+      "path": "apps/api/scripts/qr-keygen.mjs",
+      "sha256": "7e1f8e4b1542b8605d7b12e259075edcc1373bb939bdbccf518e82444b755cdc",
+      "gitBlob": "b11ee2c0c4cdc51fb195a8ac3ca13131f8bef9d8"
+    },
+    {
+      "path": "apps/api/scripts/render-staging-target.mjs",
+      "sha256": "d7961b1aa3e3d1b23878bc626bfdffe63d1525dbf55dd9f2976131a0d81dd3d6",
+      "gitBlob": "0f41141271c0bd4677c3736b57b32af2093b2448"
+    },
+    {
+      "path": "apps/api/scripts/render-staging-target.spec.mjs",
+      "sha256": "92f88e119273627285ba6e13e04beef4225b7ee135f015a23513b4d01d13434d",
+      "gitBlob": "8e4dfd5c365b5e865a1671e12df61417816dbae9"
+    },
+    {
+      "path": "apps/api/scripts/s31-db-client.mjs",
+      "sha256": "af1319247aeec3514a848cadfaaa5df6ff2797065f4b519908a348137373726b",
+      "gitBlob": "62ac9121f560fe5fb1ee998ff8fcd393399a08a7"
+    },
+    {
+      "path": "apps/api/scripts/s31-db-worker.mjs",
+      "sha256": "b6b2dd35a421006ffefa43a8ef4f7108eb8a94d82da29be4e7c42fa5eda2f876",
+      "gitBlob": "ebf0decd4894a51d4b026314071d3f51367878b5"
+    },
+    {
+      "path": "apps/api/scripts/seed-design-fidelity.mjs",
+      "sha256": "531c09f080ed157216e1bd26b6da75d1f78c8a2223a03260e7f54b3a939a9d5c",
+      "gitBlob": "b6501f405b14fc755b42966424ca907a74d6f23b"
+    },
+    {
+      "path": "apps/api/scripts/seed-render-staging.mjs",
+      "sha256": "d739ec8df95faadd7e6e0ed02ed64dcb3b2004415ee9316f333a3936c00387ee",
+      "gitBlob": "908089d56230b4531f2e7b6a43d170c2ea40f741"
+    },
+    {
+      "path": "apps/api/scripts/seed-s33-demo.mjs",
+      "sha256": "7b28b75a855c29917994e67c52473071461cd9a1f376d80cf85f3dccdf9ecd91",
+      "gitBlob": "32a0cb98ff3c3a283153bff6e0b6f21f35535f75"
+    },
+    {
+      "path": "apps/api/scripts/seed-sprint1-onboarding.mjs",
+      "sha256": "4b8110eca487c1ad3178ac480770980620e6812a7a44a10cf10ddd92752cc731",
+      "gitBlob": "d705001c5b7ff01714976bfc74685d1d61ad8f36"
+    },
+    {
+      "path": "apps/api/scripts/seed-sprint1-staging.mjs",
+      "sha256": "39bf913e3640e041445775008e9b07fa16e1794ce53f3c008032f013673f6e4a",
+      "gitBlob": "a1dea139ae87a9c070d1c81081161d9af408cbb1"
+    },
+    {
+      "path": "apps/api/scripts/seed-sprint1.mjs",
+      "sha256": "f5cc2abc2467da9569d9971bc2500cf72ef286bbf33e791538a0f94d0adf4724",
+      "gitBlob": "c5c0660185e1239796c9e0696aee2c18b2e7294b"
+    },
+    {
+      "path": "apps/api/scripts/seed-sprint2.mjs",
+      "sha256": "759627959671744348468631941f88d219f38b1f8eb79450d400477a56c5a9d2",
+      "gitBlob": "4bb8a308d4ca1334d7e5cb7e04134362e5ebcc5a"
+    },
+    {
+      "path": "apps/api/scripts/summarize-holds-profile.mjs",
+      "sha256": "d06fda3b4db7d27c002562d1a0b7941c246bb6eba223aa8f1ae061a441c92b66",
+      "gitBlob": "efa6d564c7da0de70131bb176f193f6754e03ebf"
+    },
+    {
+      "path": "apps/api/scripts/verify-hold-render-local.mjs",
+      "sha256": "937e6a77622f162249f6e705796662527820969df3d6d41e3ddaf146700b6eb9",
+      "gitBlob": "19232aad9e2d6101868721b9892a57ecd40b61af"
+    },
+    {
+      "path": "apps/api/scripts/verify-holds-http.mjs",
+      "sha256": "04bee1da7ab1e87af35a96edcc4be182525e10374094b6f51bd1098c58e78ba6",
+      "gitBlob": "f44a943d827c5c7af37005391572bfeb635ec2e3"
+    },
+    {
+      "path": "apps/api/scripts/verify-s30-signed-qr.mjs",
+      "sha256": "f7ced75a0c531989cdca2420fd9d92fd72bb1f231578bdc444a53a462d5ae57d",
+      "gitBlob": "249657edf054572f3202039588b32afc55d9538f"
+    },
+    {
+      "path": "apps/api/scripts/verify-s31-http.mjs",
+      "sha256": "eb789162713b1e6d976bada876737322aeb30f67c28385ee162ba41fba2046fd",
+      "gitBlob": "9ee845ca0b513be8e6921fa881b990c1bd2a5a14"
+    },
+    {
+      "path": "apps/api/scripts/verify-s31-storage.mjs",
+      "sha256": "29c197e0920d8a73b61f51950756a05bd4d03850db28a81780b9f19b778c2af0",
+      "gitBlob": "753dd323158fdee690211c2bb3ebd632159aa590"
+    },
+    {
+      "path": "apps/api/scripts/verify-s43.mjs",
+      "sha256": "fde2fa0f7bf804390f83475480db1c13d64fedabfd3407ce9a901d8d77e02b0a",
+      "gitBlob": "d884361838e75660c2b6234fa93cd440ae1f5571"
+    },
+    {
+      "path": "apps/api/skills-lock.json",
+      "sha256": "00d9ffe113692b76edbbef0692c57212dc219705f51df2c18807347a91f36616",
+      "gitBlob": "3f08398ec2e348cac395014f47efdb76cf4e84b8"
+    },
+    {
+      "path": "apps/api/src/app.controller.spec.ts",
+      "sha256": "13910c0259ea23d3f7ac8fa5bdd7f956be7e1e9400b23c4f46e2fd5aeb95949d",
+      "gitBlob": "258c96da375f8acc42f6a9bece3e425dafa99dde"
+    },
+    {
+      "path": "apps/api/src/app.controller.ts",
+      "sha256": "85ea968792896078539ac42c2c3c9f03490939cdc81375f2f140543eb1746594",
+      "gitBlob": "e41906a12ab52462ddee8eb00730b2eacccca027"
+    },
+    {
+      "path": "apps/api/src/app.module.ts",
+      "sha256": "3dd481799a81da56b5882a69f3b43abf4d734dde4e888d4063e575614851b13e",
+      "gitBlob": "f5e5a0c17d20e79758173b49c662e11c7862bce5"
+    },
+    {
+      "path": "apps/api/src/app.service.ts",
+      "sha256": "5d4242d50092a353e5ab1f06663a89dbc714c7d9d70072ea03c83c5b14750f05",
+      "gitBlob": "927d7cca0badb13577152bf8753ce3552358f53b"
+    },
+    {
+      "path": "apps/api/src/auth/auth.controller.spec.ts",
+      "sha256": "2ebbab2f4cffb0ff903e5d5965d3fec16841047a5f7524eb674ba6eeea630d89",
+      "gitBlob": "1168285452bee91016c483fbec50180006497255"
+    },
+    {
+      "path": "apps/api/src/auth/auth.controller.ts",
+      "sha256": "dc407268e4cacc3e5dec5e8c65e93a97edd843b1eb1215ba5e167888450f9034",
+      "gitBlob": "d3c02870449e29020313f9a8a403fb5b54ae484b"
+    },
+    {
+      "path": "apps/api/src/auth/auth.module.ts",
+      "sha256": "6e7a9617d31fdf1dded2350a6e6a7a9243d1a2c059330aaebf6129ec423f016e",
+      "gitBlob": "9789e2934a80085d9fef2bfa2d7f716aeb619fd6"
+    },
+    {
+      "path": "apps/api/src/auth/auth.service.spec.ts",
+      "sha256": "64bd89f0102fcbd2ee380b659435a0cafe1928d5adc3e60b9158fbd929436269",
+      "gitBlob": "e726a4f01e0912e680dca85d1a41bc60e345c7a5"
+    },
+    {
+      "path": "apps/api/src/auth/auth.service.ts",
+      "sha256": "8797311334f066cc8d3b022111749f6130ccddc153a82c33c14468e371eb25c4",
+      "gitBlob": "48b694414b6c37ee56b9ed6fdf470085b0f663e9"
+    },
+    {
+      "path": "apps/api/src/auth/decorators/roles.decorator.ts",
+      "sha256": "5ad0ac992aef49efffa336d8c88f5e6f57879bd0b8e111ec05f1cf26b1783893",
+      "gitBlob": "3a994111dba78d51b1ae1c8dfb69d4f87e6b5f79"
+    },
+    {
+      "path": "apps/api/src/auth/guards/roles.guard.ts",
+      "sha256": "80f4cb6e8329b7d37f6f90340841131d0d4958cc1c3eee35a22fd372e5efbf50",
+      "gitBlob": "78ef6862ce2ced902e3018ea889d287f301c28ad"
+    },
+    {
+      "path": "apps/api/src/auth/guards/session-auth.guard.spec.ts",
+      "sha256": "55ef6cda9f2fa00bf0581182acb0c713a134b948458c43acd1da4a80f1c5df18",
+      "gitBlob": "222d870e88b80d30f72fb7f6c38473df3b181741"
+    },
+    {
+      "path": "apps/api/src/auth/guards/session-auth.guard.ts",
+      "sha256": "087576cabbdaa8e7a486cd3e252b07de3fd09eeb204e6c136c129abc9a4823d8",
+      "gitBlob": "d8c3137e93df79e4d293b3b841d09ebd2b09467e"
+    },
+    {
+      "path": "apps/api/src/auth/login-peer.spec.ts",
+      "sha256": "2e35e86f809c8a50c0ee4b096202429e64ee91a048e0b16549d842e92f484bdb",
+      "gitBlob": "331bb287f3e6dba28fefffe0f31e5948d6dd1db3"
+    },
+    {
+      "path": "apps/api/src/auth/roles.ts",
+      "sha256": "07561504c1bd7a62152e2b6350fa5a3dfd612ec68ef4a39dc9b0d21cdbcb368c",
+      "gitBlob": "b3332952c2110f928e3539d21e2c2187a464ddd1"
+    },
+    {
+      "path": "apps/api/src/check-in/check-in-s29.controller.ts",
+      "sha256": "17f4f77b68286f974a30d0a4cfba04a3a3179c1cc7c5184e82f0e43d9440c4d6",
+      "gitBlob": "c866157b33595a3c8384a92ea13b0113c42dc2b9"
+    },
+    {
+      "path": "apps/api/src/check-in/check-in-s29.module.ts",
+      "sha256": "26f7309784a8aa67325d6b59a3a6ee3071cce72ef09ff2afd057b6f507c08a5f",
+      "gitBlob": "775babdde7f3063938b1dc8c3b5306230faf6a89"
+    },
+    {
+      "path": "apps/api/src/check-in/check-in-s29.service.ts",
+      "sha256": "5700edb463797ba29db169a46e50d3847a4cc4927c2ec8f45d1feb43b6fed66e",
+      "gitBlob": "c44d53644d3859d531e4468d4db0b5b09c3aedb1"
+    },
+    {
+      "path": "apps/api/src/check-in/check-in-s29.spec.ts",
+      "sha256": "86c298636bd29a13fc613f4b8611d6db09d2ffa7964a69c891773301c163b06a",
+      "gitBlob": "d0d9d71b39dee5f161771b58892fe4f08bbfe3a2"
+    },
+    {
+      "path": "apps/api/src/events/events.controller.ts",
+      "sha256": "bc22d21854d757548308ec4c55c1cf525f391b875f4e35986b7a194d11a97506",
+      "gitBlob": "bceab94ebd1c9c0265d2a6c6f22634e7f4a6f831"
+    },
+    {
+      "path": "apps/api/src/events/events.module.ts",
+      "sha256": "31b0037b6a754e4e03bff7c22750ca3c4e0f663d13b3875f3c19651224ed6bb3",
+      "gitBlob": "cfad44b0c33fef50968ae8e6b9e7e553cc8c0dc1"
+    },
+    {
+      "path": "apps/api/src/events/events.service.ts",
+      "sha256": "5625d0df52d1aa2dcf9891cd722a6b016262176fc31879a1b3a569d91ce64e07",
+      "gitBlob": "40d0ac245688e0c56d2795d5be991a726f5a9b19"
+    },
+    {
+      "path": "apps/api/src/hold-expiry-worker.ts",
+      "sha256": "753b3da2ea75a169786c2c060b5030c1020f119e908bb0ca5210a3b13b053068",
+      "gitBlob": "da0819ad6e6515ef35c20048b5a82bc909301808"
+    },
+    {
+      "path": "apps/api/src/holds/hold-expiry.scheduler.spec.ts",
+      "sha256": "96cf7fb828cef65e0412b74ec7c46d1732ea7fa19384093c66364923335dff0c",
+      "gitBlob": "e1515983cb9aae4f87c83a9e7ceb2e43b9d58351"
+    },
+    {
+      "path": "apps/api/src/holds/hold-expiry.scheduler.ts",
+      "sha256": "6a8e3d98120800dfa7d657a8ea16685079a092181aa56f38c944c294a02e165a",
+      "gitBlob": "ad8fdc4e874be82bc99dc5d1cae05b257b1086a5"
+    },
+    {
+      "path": "apps/api/src/holds/holds.controller.ts",
+      "sha256": "9aa292cf09a20349d7131092af8b08b32e1515f7cc3fcc425bec209b47864d1c",
+      "gitBlob": "e417ca7b133fa9b949c45dc6c375ee2543d2decc"
+    },
+    {
+      "path": "apps/api/src/holds/holds.module.ts",
+      "sha256": "930fa544529b935aaa0619e3395a423d22f9018b123381a031ab6235a99faabf",
+      "gitBlob": "3d9af529df225498e2257970676c6cf1e72843ae"
+    },
+    {
+      "path": "apps/api/src/holds/holds.service.spec.ts",
+      "sha256": "923f6708f456957c6ba35d86abd1b6a7b2140057cff5ad82f21707356ab26472",
+      "gitBlob": "26f795ddcc57a9bb3689f0bada9128c0522d29c3"
+    },
+    {
+      "path": "apps/api/src/holds/holds.service.ts",
+      "sha256": "d87583d84efb9d395e6b2344267095c65ecebd89e786685c7276f17f4f374a68",
+      "gitBlob": "9871a8f1cfc58ab69de7c6ef595cfcd2fa8ffdb0"
+    },
+    {
+      "path": "apps/api/src/mail/mail.module.ts",
+      "sha256": "f4eff4e8789bc638181ef1c243bc29602d2e4f94bf118ce1ca3bd889c015b96d",
+      "gitBlob": "77f37853d8f76ee9bd3d07b041b51bc642864de7"
+    },
+    {
+      "path": "apps/api/src/mail/mail.service.spec.ts",
+      "sha256": "b861adacb86c6eaed36f7eb701bacf44be23c8fb1d4cdbca611bc72498c672a7",
+      "gitBlob": "a4dbbf2db69ce7919193f2bdd5594c537e182f5e"
+    },
+    {
+      "path": "apps/api/src/mail/mail.service.ts",
+      "sha256": "5e5caf0f11c9e05aa00936723b70fdd6beea8eed10108dfa3e5f849e61f3e4f7",
+      "gitBlob": "e5b579ff9bea382f378eebb12fa45a3ac31bca86"
+    },
+    {
+      "path": "apps/api/src/main.ts",
+      "sha256": "84825d0efc47f283ebf4ac77e1d2bb7c293770ccb1e4f8b8f2edcb6be0f0fb00",
+      "gitBlob": "e50412192c28a2cf4ac40c5214fb736d20fb6832"
+    },
+    {
+      "path": "apps/api/src/modules/seats/adapters/mock-seat-validator.adapter.ts",
+      "sha256": "8365a70d102b734b225237eb5d840a4d9eb229dfa21b8443b4785144368730cb",
+      "gitBlob": "e421aaf7190a92d41c32225356dda470aeb3b02e"
+    },
+    {
+      "path": "apps/api/src/modules/seats/adapters/seat-validator.adapter.ts",
+      "sha256": "5ba8037bc897498f78334cf1e0535a6151bce56a271f4232f2f80f5d4a796699",
+      "gitBlob": "6f87cc9cf47854627c436ac2374d03a6eb95be3f"
+    },
+    {
+      "path": "apps/api/src/modules/seats/dto/expired-holds.dto.ts",
+      "sha256": "4d4c67bbbbde0d584e3b4730ca7fd8a7104b05e48e80764ac0c0d95a188cf93e",
+      "gitBlob": "ce923abbd8d9168d33c446914be97e6c13667595"
+    },
+    {
+      "path": "apps/api/src/modules/seats/dto/hold-seats.dto.ts",
+      "sha256": "fba623342c279cac25fbf7d1fd64f50b6fb43ab084c4bb5ad5f39938d35f44d8",
+      "gitBlob": "1412cfd58764486d214ada1c79f8ceba3432a1b9"
+    },
+    {
+      "path": "apps/api/src/modules/seats/dto/seat-hold-countdown.dto.ts",
+      "sha256": "62d90a6af1ee9f6e4386afe9506af2533054125ede194ca303ddbbb4f85da5dc",
+      "gitBlob": "c8350644afd90929f7a01d72486664422e8649fe"
+    },
+    {
+      "path": "apps/api/src/modules/seats/interfaces/seat-validator.interface.ts",
+      "sha256": "374f65c4ac40a9668f79044b8d52c7412d78228258e1be382f94e46b32436c39",
+      "gitBlob": "9d9fd729ff5bcbd18fe5c5dd97054d8f984f25e8"
+    },
+    {
+      "path": "apps/api/src/modules/seats/jobs/seat-expiry-job.service.spec.ts",
+      "sha256": "0bd01611f0339163cca602e77a2f58738725c12005f4ddf60f841e22ade2d51a",
+      "gitBlob": "867474cbece77c8ac5cdcd0a07f7772091fafe93"
+    },
+    {
+      "path": "apps/api/src/modules/seats/jobs/seat-expiry-job.service.ts",
+      "sha256": "5943c50c015898af3290fc6d9a79ca918abad580d934dced00916540167e6692",
+      "gitBlob": "48a5580acb9287162c329529941c01d61bd483e5"
+    },
+    {
+      "path": "apps/api/src/modules/seats/queries/seat-availability.query.spec.ts",
+      "sha256": "47b8934b29f122e740d1ec2873d598576f3cb7a1e10625840f6b76a218dd1324",
+      "gitBlob": "d196379ad103e4debc8d8c69240bd19187106bc0"
+    },
+    {
+      "path": "apps/api/src/modules/seats/queries/seat-availability.query.ts",
+      "sha256": "03c3010ac064a74e9ffaca42ddb98e556c9ae16a0b441cd2befd6d6db1fef512",
+      "gitBlob": "570591d050c0e45a6fd104850d3c207ad05fba10"
+    },
+    {
+      "path": "apps/api/src/modules/seats/queries/seat-status-query.service.spec.ts",
+      "sha256": "46d3e7a2bf37f883b206e17be249c768328465597f5a74849fc720aa3fd7f0ce",
+      "gitBlob": "e2857eebbe5804bc6724d279f24ca130c782b3c0"
+    },
+    {
+      "path": "apps/api/src/modules/seats/queries/seat-status-query.service.ts",
+      "sha256": "fc76f24a4f6704946df32613ce27c2c821cf42e74859fb524aab2904d1ccba20",
+      "gitBlob": "72a12e76786570b901577fdcdf2f6c61def7e047"
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.controller.spec.ts",
+      "sha256": "67a11c077b72033b869607166c888d53e8d470ce526d2270a55286ca401d360c",
+      "gitBlob": "bdd04c1157dca69103753e870d60e695ed9db61f"
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.controller.ts",
+      "sha256": "7a7d7042f390251322f722c71526bdaa8a13302a157912ef7212097698472ceb",
+      "gitBlob": "509fc284d949391ff346c3ca07f2f074e681d83b"
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.service.spec.js",
+      "sha256": "74aaf7861a6d3102565f1f2fb9f33d1f3e59afc58d597b0a0fbfdd5ceb2b6ae9",
+      "gitBlob": "052716070441f4995284e79fd13bf2bc45b1b459"
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.service.spec.ts",
+      "sha256": "4d324b5643e143ccb749d822789fb9c09ba18190ed0f6bb3518d5d39d527aef1",
+      "gitBlob": "b0afb1404a35147ed88594161da4e68fbc8622c8"
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.service.ts",
+      "sha256": "63c7193425e26b48d17b043a1ec2b6474682bbf579ac8be050d8e121a29d848f",
+      "gitBlob": "129a559886e6236f927dbe987f92ee16df153622"
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.storage.spec.ts",
+      "sha256": "ee364101a2cce4b02cd7e865a079ab92ee71c6793ab4da7e15af2b91504ca5ef",
+      "gitBlob": "19239b28db91a96b986b6871b5d95b1733f77f9d"
+    },
+    {
+      "path": "apps/api/src/modules/seats/seat-hold.storage.ts",
+      "sha256": "3729ffb62f41d1e8896d8ed1c913d6f8efc0d214dee496140dde41576d85e66e",
+      "gitBlob": "d2141ec72b9b2e78b64c7238005d677768dbd31e"
+    },
+    {
+      "path": "apps/api/src/modules/seats/seats.module.ts",
+      "sha256": "28fe0386bde382228c3371a0bb7e010880f28ea1e17a8f68ca8a680561384254",
+      "gitBlob": "6759e2c3eafabcc053fa7bc9575438ab1a95d011"
+    },
+    {
+      "path": "apps/api/src/modules/seats/services/seat-hold-countdown.service.spec.ts",
+      "sha256": "0082e356886e0369bddece6b7297e7b56e80d09036c33fdd9e93e1ed9c992c9e",
+      "gitBlob": "506d0612efd3d865226325c96f9de5a2b0e96835"
+    },
+    {
+      "path": "apps/api/src/modules/seats/services/seat-hold-countdown.service.ts",
+      "sha256": "7dd1bc78cc68c8341014aaabe6ccf74e732dcf9c5ba63dfb20da042b8f37f537",
+      "gitBlob": "6748ac39f4a43c999672e66788dafefedd14db54"
+    },
+    {
+      "path": "apps/api/src/monitoring/metrics.spec.ts",
+      "sha256": "29ee2aa9730c6b3dc9f2dc018b7f9e68b7be5182cd52d36a90d3427977b16279",
+      "gitBlob": "87c2df0726d0400f3e585054d46bf3f0598d826b"
+    },
+    {
+      "path": "apps/api/src/monitoring/metrics.ts",
+      "sha256": "1b0e1396c631b7920f82b8a412dd1c8cf17779b21b68c430725346623c4a4dd9",
+      "gitBlob": "03a53a1927368886380bc3c3c964233323e6b483"
+    },
+    {
+      "path": "apps/api/src/monitoring/monitoring.module.ts",
+      "sha256": "e9677f3d38f219782521e8db3a1f81d66c10dceab3755fe50a5033855580e5e3",
+      "gitBlob": "d2b01f84d43aa7503ab1b9283495fd1090b8c965"
+    },
+    {
+      "path": "apps/api/src/orders/admission-contract.spec.ts",
+      "sha256": "919b453ad2564436d5e73862ce8cd3ac22ae25a960310fcdc6fdfdd1e880577b",
+      "gitBlob": "7297a35a6dfeab763f35ea7b0a9d8d319d1141a1"
+    },
+    {
+      "path": "apps/api/src/orders/admission-contract.ts",
+      "sha256": "f52dfacb0451f45cedffc214771ac657cc32536f86fd353581612e8c6cb8ed1a",
+      "gitBlob": "fc75d4e9c4086253e512351fcf2ca7c1a064bcc0"
+    },
+    {
+      "path": "apps/api/src/orders/admission-policy.ts",
+      "sha256": "51d89794ab4852d1453c7e4bee53b9e22beeacb018a81b99f671faea71a1874b",
+      "gitBlob": "d0e22da50fafcac2eef786697692dc546cf58a0a"
+    },
+    {
+      "path": "apps/api/src/orders/order-expiration.ts",
+      "sha256": "62e6ad5c167a5d6097f80b6a32d66cae70e9970b33f0b9f1c04f8ed70caa5504",
+      "gitBlob": "2f86493bfa53292a35df87940883df18b071f126"
+    },
+    {
+      "path": "apps/api/src/orders/order-expiry.scheduler.ts",
+      "sha256": "2426704572d23aa9dedd008332353ae53d1632cebf79c648dcb262856538adc9",
+      "gitBlob": "813a1d06a608a38d881836ceb0423d275a549623"
+    },
+    {
+      "path": "apps/api/src/orders/order-expiry.spec.ts",
+      "sha256": "26707cdf75f784c74b8378c872672960eced6fa4dd4ea772b3f1a532a41bc67f",
+      "gitBlob": "20a58b055a16a3b84452ce570cdf68f4bac12692"
+    },
+    {
+      "path": "apps/api/src/orders/orders.controller.ts",
+      "sha256": "b9c016404d702a013706a37de1754a43e5a9cdcb9c688c56cff4e0b466ea5402",
+      "gitBlob": "651aca4419f6ca81f452af0c101a280853bb0830"
+    },
+    {
+      "path": "apps/api/src/orders/orders.module.ts",
+      "sha256": "9ba690ba1a6b5e9a28e0f8e9e3134a87031d1491d2136cc926255745ef93008b",
+      "gitBlob": "a8e458efba314da1c8439099814823510778e41e"
+    },
+    {
+      "path": "apps/api/src/orders/orders.service.spec.ts",
+      "sha256": "83e91629a7597faaabd8072cce452d34bea12a3697574d477b9a4afdc45e9aaf",
+      "gitBlob": "8e105d1edff1f8c7f24ecc178f0425d541f3692a"
+    },
+    {
+      "path": "apps/api/src/orders/orders.service.ts",
+      "sha256": "a9b83fb6156b169b26a8047c8913cafe0bf90674a021bcc13fd368a54d7ef8e6",
+      "gitBlob": "15daf29047d9543085580d825f84eec1dd5b96d3"
+    },
+    {
+      "path": "apps/api/src/orders/ticket-check-in.controller.ts",
+      "sha256": "56e6bdfec23626cb664ced48c93db74c53edcd59889a94381efa922c676b32a0",
+      "gitBlob": "b98fcfbaa8270edcbf1a4e81f10cd10242c39e98"
+    },
+    {
+      "path": "apps/api/src/orders/ticket-check-in.service.ts",
+      "sha256": "d5b25e497151542457f12fcbfbd364973abe84ebe367bf4fc73952e4be0ab398",
+      "gitBlob": "d7e503da9a07767a8a96287ebd5b7723c90f1637"
+    },
+    {
+      "path": "apps/api/src/orders/ticket-qr.controller.ts",
+      "sha256": "acdfb05ef79697d76efbf063fa01c138475b74506fa962e545c74dbe8e1f8a6f",
+      "gitBlob": "03f07413635f5d3c3afe8bbddebb31b35dc458e8"
+    },
+    {
+      "path": "apps/api/src/orders/ticket-qr.service.ts",
+      "sha256": "f251d6131ede1f35e177c7e242af4115c6265385e61e0ab77cdca5392a833026",
+      "gitBlob": "7c2910102ec6c01db3a5d8cb704e61bfc8175e97"
+    },
+    {
+      "path": "apps/api/src/payments/accountant-notifier.ts",
+      "sha256": "b784b21d925bcbf524acf653b6dccc7967b636d4a2e2e736fdaabcdc3611390e",
+      "gitBlob": "645ab2bb2fc15516ef060cc24ff4d4036539764e"
+    },
+    {
+      "path": "apps/api/src/payments/gateways/mock.gateway.spec.ts",
+      "sha256": "7a21c219296ec97d88bda0649b0b7a703b8285c5be1d49969910bc592d53a002",
+      "gitBlob": "14f98853d435aa0f20800c00aa34dde2a2370a3c"
+    },
+    {
+      "path": "apps/api/src/payments/gateways/mock.gateway.ts",
+      "sha256": "3954d5ec3d83bd51a05dcc00a287527dd38c833558bbf71825698952589dd84e",
+      "gitBlob": "b47c08747ced520b43cdca64a22b99701ab17a33"
+    },
+    {
+      "path": "apps/api/src/payments/gateways/momo-signature.spec.ts",
+      "sha256": "f18c51eb02d239cf6e7f6dd912eac72076b64b457d762940a8202a602811c0fc",
+      "gitBlob": "b2575d238719a15e87463ff77a6b00592685a800"
+    },
+    {
+      "path": "apps/api/src/payments/gateways/momo-signature.ts",
+      "sha256": "7e11b3a1c74f5a139f71b013e398c6f38069edf5b01a1ef2ab57a537c7cf2e2f",
+      "gitBlob": "e2189cec1ad0427a5821eb447b7aa848e1e2ac9e"
+    },
+    {
+      "path": "apps/api/src/payments/gateways/momo.gateway.spec.ts",
+      "sha256": "02be4bd79a655d0b7da4addc7d40ebfd4e7f07ce797c392f463fc6dcb2da2517",
+      "gitBlob": "fa561718be11e58f2debd5ed5a7ff6e3c0ad2546"
+    },
+    {
+      "path": "apps/api/src/payments/gateways/momo.gateway.ts",
+      "sha256": "de2d3bb3f19a260a48a8cd7da42011a1be149efe61b289bb274244d21b4870b8",
+      "gitBlob": "7daaf2da2b0912dee6a25d8c96fca28f54c396e5"
+    },
+    {
+      "path": "apps/api/src/payments/gateways/payment-gateway.interface.ts",
+      "sha256": "be40236df1a60a06ff11bf3283f87bf4f5e4ceff57e79114a095ed6d706793bc",
+      "gitBlob": "e2c7d3ad7e677d9b7889dadea41d2162fa82afea"
+    },
+    {
+      "path": "apps/api/src/payments/mock-gateway.controller.spec.ts",
+      "sha256": "8d69d38c05525dddb69b5507b9792e285b369dc7bc78d99be9c5631da60c1590",
+      "gitBlob": "dde3e576a848a178b3c92a82b32d6ca88eff66e2"
+    },
+    {
+      "path": "apps/api/src/payments/mock-gateway.controller.ts",
+      "sha256": "9615353fb3926efa70a1502aee7cef77333f4f6c2eb7e86a5c842a7361aaecf5",
+      "gitBlob": "e6dd321b42d95622fee6e8c2344ec168530fb578"
+    },
+    {
+      "path": "apps/api/src/payments/mock-gateway.service.spec.ts",
+      "sha256": "b65770cf4e4fa480644fc4a238fd08069f301dabcd1b85fd718b0bb3ea82bbfa",
+      "gitBlob": "712e8638aaea9ff1bf5269854adece9eb64eeb1c"
+    },
+    {
+      "path": "apps/api/src/payments/mock-gateway.service.ts",
+      "sha256": "d69d1c79bb26db3bb12ce07263dfb3067d009cf2872ef069cf99209657a8ae88",
+      "gitBlob": "f4164fedab339b3033f6c12de4ba5aa0c118ace7"
+    },
+    {
+      "path": "apps/api/src/payments/payments-config.validator.spec.ts",
+      "sha256": "3d9a6cad1006b0883b38b80b826a2ba28977fbcb11bc2b61f34659de2c99b760",
+      "gitBlob": "4bf0c91f87b4dc49b1b9ba457df48c4f8d10ed6e"
+    },
+    {
+      "path": "apps/api/src/payments/payments-config.validator.ts",
+      "sha256": "0e3edab552acdd90e6b11a0faba0e65cf057ca0f5e80a820636b0bdd53127a76",
+      "gitBlob": "a7990eb2e1bdc8d90f4f8ebf49480e00b85f61a7"
+    },
+    {
+      "path": "apps/api/src/payments/payments.controller.ts",
+      "sha256": "9e6ca41ebadbe6d44c5b0fcd20c497c370801bc23064379d5adecbc84eface42",
+      "gitBlob": "3a4ce167cbbfc07fe5e44efc6f3409f78cd22a2f"
+    },
+    {
+      "path": "apps/api/src/payments/payments.module.ts",
+      "sha256": "bf42aa28729da6cc38adccb813647c4639e1b1bbb2ee68c46e0b32b11d599209",
+      "gitBlob": "ccccc02956f92d08be97a72a2878018ac3e6b6e9"
+    },
+    {
+      "path": "apps/api/src/payments/payments.service.spec.ts",
+      "sha256": "02bc3dbe0d5a1e99ac8e19a856a5d3eaf43f1dc561337eef2d2a210997fd4102",
+      "gitBlob": "d05642f1847352897dbe505e99f70583ce92e00b"
+    },
+    {
+      "path": "apps/api/src/payments/payments.service.ts",
+      "sha256": "ca141bd89f2dde66f67939056fa3656969dd38b9f58cc9c3441b3482efe46cf8",
+      "gitBlob": "9a02bb74a8dcc2c5da74cb0bf901c7611ec1a8e2"
+    },
+    {
+      "path": "apps/api/src/payments/webhook-security.filter.ts",
+      "sha256": "c01d98173983657fdc33b5a2696d83ed6dc93439c624f3646cb432ea8f34a099",
+      "gitBlob": "11e76b7c93e35152428f6c33d9a6b2d07f096599"
+    },
+    {
+      "path": "apps/api/src/prisma/hold-statement-names.spec.ts",
+      "sha256": "9b3def1b84e92412790ed81019e2b9af6d4d0871e7190b4ffbc6f4a87830a204",
+      "gitBlob": "95d4f6442a9f85302ce7d599e2837a1dc5ff27ef"
+    },
+    {
+      "path": "apps/api/src/prisma/hold-statement-names.ts",
+      "sha256": "a3d670f7dc857b1cc4a8f224a861307507934edfe87a232a502265b44ea52818",
+      "gitBlob": "b3087ab1c4a48bc876b56d7bda29355a42e2338c"
+    },
+    {
+      "path": "apps/api/src/prisma/hold-transaction.spec.ts",
+      "sha256": "e9082f7a796483432fddd0625405eea83ddb7c72753d88830249f38ab82080b9",
+      "gitBlob": "45716f5eb41c93d6c59d31cd6afed43d01815772"
+    },
+    {
+      "path": "apps/api/src/prisma/hold-transaction.ts",
+      "sha256": "989f5017482f9accd05025e97d684f070969b9cc94965be4a2e83b20294bed39",
+      "gitBlob": "3bdde24f3900b102f05bdbfa5f333219880386e9"
+    },
+    {
+      "path": "apps/api/src/prisma/prepare-hold-pool.spec.ts",
+      "sha256": "59becb430cae390c6373146eac0c194c307387920d5364936d8007466cf694c2",
+      "gitBlob": "58a6322ba43a625220d1b076bbc209e9b2df5391"
+    },
+    {
+      "path": "apps/api/src/prisma/prepare-hold-pool.ts",
+      "sha256": "4e27991853e4e7b878d924f510b2b52f6773a19f7c2dab8cc342f227d2589afe",
+      "gitBlob": "a1906e3bb514b90e6b861467de11b202ac0efd6f"
+    },
+    {
+      "path": "apps/api/src/prisma/prisma.module.ts",
+      "sha256": "b22b0f4713db5d608943196e014d1898a3e79618fe543772433fb7f995a8f0ec",
+      "gitBlob": "efb7a8dc0bb83ba5f2c99547abdd2c5023d1072d"
+    },
+    {
+      "path": "apps/api/src/prisma/prisma.service.spec.ts",
+      "sha256": "bdc6508377227214802e75fc3c65e146f52323440ee6be0677b3eca9122ec897",
+      "gitBlob": "2be4acf27ec77c99dcc58ce9a3f8cb64016f7802"
+    },
+    {
+      "path": "apps/api/src/prisma/prisma.service.ts",
+      "sha256": "f1648081e350b8687cf70a90e286449dbe1fe6bf09d2eacc228e2003c38933cb",
+      "gitBlob": "105da9b5ec1acea911a84602f342c6090d1f79d6"
+    },
+    {
+      "path": "apps/api/src/redis/redis.module.ts",
+      "sha256": "902e528af10c3b66147400fd9affa50116b81fd576622d85df5598c98ac1c036",
+      "gitBlob": "e834a5069620175d2eaa1b152fa42cf8bc1ed5ac"
+    },
+    {
+      "path": "apps/api/src/redis/redis.service.spec.ts",
+      "sha256": "252b6da41bbc29720e595eb772d45638726afa9f6db16b78428642e30bb2eabb",
+      "gitBlob": "05acd69c0b8b7caa934e44f3657171ae67c107be"
+    },
+    {
+      "path": "apps/api/src/redis/redis.service.ts",
+      "sha256": "8e8fc16bef6d56dd540207bf01596b3dc52f4f7def666602bd4480bff11caffe",
+      "gitBlob": "a51aa34724429585b76cdd542ed0901b102dbe59"
+    },
+    {
+      "path": "apps/api/src/scanner/scanner-benchmark.spec.ts",
+      "sha256": "1568cab5c7bf57c7a37a29b1cb0438ca00399277efe692d0ab5a4c1c245759fe",
+      "gitBlob": "6d83894def3d058f6a550893a3c4cab67d883ba6"
+    },
+    {
+      "path": "apps/api/src/scanner/scanner-crypto.service.spec.ts",
+      "sha256": "c1dae0c1cd36d932bdea32fdf2d7a4e81aec10a766a0a82fee48f82e22834a57",
+      "gitBlob": "5e42e2a2a2b061c29030f1fbea84453b70572c5f"
+    },
+    {
+      "path": "apps/api/src/scanner/scanner-crypto.service.ts",
+      "sha256": "1a20ceeaf26338908e3160e378dd60ef1eeb0948aaa506ed9859e7c91a4503cc",
+      "gitBlob": "9ee4720b0be7c081511b18f4006eb3a395724426"
+    },
+    {
+      "path": "apps/api/src/scanner/scanner.controller.spec.ts",
+      "sha256": "4ecb55960dc89f8bcf7f4ee7d4fbf07c8dae07382d10206729aab47a2cc860e8",
+      "gitBlob": "c6abe4cf9541b87766d60233c4f746305a8619af"
+    },
+    {
+      "path": "apps/api/src/scanner/scanner.controller.ts",
+      "sha256": "ebc8b60376434776c9db695eacd544e8227e81c0f50e0e8a16e4f321170dadeb",
+      "gitBlob": "69a14d1e485fb947eccf896bedf8f43077a368ae"
+    },
+    {
+      "path": "apps/api/src/scanner/scanner.module.ts",
+      "sha256": "385c78aedfba639a7541596467b8658ac5db211ae4f9934d552756ca6f5f633e",
+      "gitBlob": "4d16de8236b1f5fedad6277d79068903cdbeef41"
+    },
+    {
+      "path": "apps/api/src/scanner/scanner.service.spec.ts",
+      "sha256": "b85d9d241a3d491a867e493afd2e3cb3c1b7a61d9ee7d947427c2c1011903110",
+      "gitBlob": "b725aeb39e24298d57e547606d9649c5e3d9a3d7"
+    },
+    {
+      "path": "apps/api/src/scanner/scanner.service.ts",
+      "sha256": "3375c7a294ca2400bb6019958c69d1f993c25d3bad7ac4cdd9e43bf99fb74129",
+      "gitBlob": "840c507921752ce3e0566117f7d64ab61cbe1870"
+    },
+    {
+      "path": "apps/api/src/showtimes/seat-map.spec.ts",
+      "sha256": "bec41d225c18ca075fbf90e434d5c7f785bab2677a41525f1bc0f14747e69694",
+      "gitBlob": "71a9047944fb0a240fe5cc4b66e7ef132521cbc3"
+    },
+    {
+      "path": "apps/api/src/showtimes/seat-map.ts",
+      "sha256": "f25044d231673ccaf53b8bd7a53b069f9c880d718bd5b8c0f0eae227ad2ccd9b",
+      "gitBlob": "8b45f518d41387bc14bdf3cddd349415ac2c87d8"
+    },
+    {
+      "path": "apps/api/src/showtimes/seat-status.sql.ts",
+      "sha256": "05afdb448580510fab6f753ae1b3c4827da69b79ffc9d7c3c1aa32b959e51468",
+      "gitBlob": "4f64828e592a206bdf6e1bff60f43123837de183"
+    },
+    {
+      "path": "apps/api/src/showtimes/showtimes.controller.ts",
+      "sha256": "cd7c189f0e640b2d5b6fdb9b8561cffc9156a4b58b6a3a306af95b67420feb77",
+      "gitBlob": "7b2df4ad03c8fcf31cf0f97dfd76731bc76ae6c7"
+    },
+    {
+      "path": "apps/api/src/showtimes/showtimes.module.ts",
+      "sha256": "6074e47d53a4a9e50e5046f09d66c203c0f311fd34c4a8c2da57a9414190604f",
+      "gitBlob": "98cfe7e02e7fd7e52bb40635b82f3ee6915b2622"
+    },
+    {
+      "path": "apps/api/src/showtimes/showtimes.service.spec.ts",
+      "sha256": "659cd8803b82900af892416a86b8ba03c5f07b84217c7118a120814647d2a570",
+      "gitBlob": "305b172b0693033408c4fcb1c08ef7ede1b35240"
+    },
+    {
+      "path": "apps/api/src/showtimes/showtimes.service.ts",
+      "sha256": "04637a0f7ca1251ed44c58127b3e1f863a0f45ce06a072426bfddcd3608a5387",
+      "gitBlob": "0bdbdb07685755cef6378434b08824071ecfbf71"
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-code.ts",
+      "sha256": "65be3e0ccf6dc04daf2e377497f631a35cfa5a010c8ab6be99366727f0f095c7",
+      "gitBlob": "44a3da33caa8b9e1359f8500eee002c5e3cebb74"
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-email.service.ts",
+      "sha256": "c42a1876548e68797ebd0db75cf9d5a37ec1a065c1106c31c20724e21d478afd",
+      "gitBlob": "c75f60cffe6cd41929714051f138603aeb7a48e7"
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-qr.spec.ts",
+      "sha256": "76c363cc3da5d48ebb1cbbb10b0e63d7bd416e80e38a471a06d9e759441a4d11",
+      "gitBlob": "5f91143dac6bbea5577dc07767cc3e84bc46d256"
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-qr.ts",
+      "sha256": "25e6cae180280ee9f547e5cceea55445ca9a5dadc70457fd35db070b5ed7ef5b",
+      "gitBlob": "3afa236814201e40f834d919e384dd1f348bfe63"
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-reminder.scheduler.spec.ts",
+      "sha256": "14cdc3663577f098953da6d3785a90620490d969fd50ea69e2418b64038d8465",
+      "gitBlob": "604a18263a83dd0aeb4eceab60a5ca2263963fd1"
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-reminder.scheduler.ts",
+      "sha256": "360a77fbc38cf01f6a2b4447ea3137c9d9fefd6aa21c911e988eef4e42544466",
+      "gitBlob": "e4e838651951f748618054fb92c520948b7c7de7"
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-signing-keys.spec.ts",
+      "sha256": "58c04a1bee96f666d14a57a426b9c99c0aa8b882f3938bb8685c064c955d9cb0",
+      "gitBlob": "6faf60259062b13232642b511259e414a938ee52"
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-signing-keys.ts",
+      "sha256": "2ca6170d59787f9cb54bfe355ae816a7d28ba132eeb822164261d7c5f746bb54",
+      "gitBlob": "b8d66cf6fd13ffbda0495ea9a8fb92c7e93005fb"
+    },
+    {
+      "path": "apps/api/src/tickets/ticket-signing.service.ts",
+      "sha256": "7bc5680441983bd944615af942e23cec559b8a4beebb933c3d982e3c5b32829d",
+      "gitBlob": "f4b68752408c096125004e6922a642503a75acbe"
+    },
+    {
+      "path": "apps/api/src/tickets/tickets.controller.ts",
+      "sha256": "e04f37b9c7fa35c3fc3f8f0735fc73e98486ff2649e351d408b3b963afe18d8a",
+      "gitBlob": "b56337f3c7386fc2db093acd6553cfb5448127ca"
+    },
+    {
+      "path": "apps/api/src/tickets/tickets.module.ts",
+      "sha256": "14ee2c7514cd9dc2bdc7934608ea4543a4eff21489d69d3ad0ecb8df1623af4a",
+      "gitBlob": "25c141f8d92a68170659ab4df120b22b6d31791c"
+    },
+    {
+      "path": "apps/api/src/tickets/tickets.service.spec.ts",
+      "sha256": "c6bc4c7981c85507157eb2a6b60155eaaff9a8fc3736cacf7830e3750d49dba7",
+      "gitBlob": "71ac3e36abd7640eac9697c04b06a8c6a98351ba"
+    },
+    {
+      "path": "apps/api/src/tickets/tickets.service.ts",
+      "sha256": "534763318ad31f19c4dd656ee83dab3a25792cdb933c53bb78fa11fd2324b1b3",
+      "gitBlob": "243fcf57ec2b10b8596bfd0fe599f19cbce78b43"
+    },
+    {
+      "path": "apps/api/src/users/activation-delivery.service.ts",
+      "sha256": "eb018acd8b5d042ef9039afb905622f11296f4273c7e76c3cb8ba5d460a868ba",
+      "gitBlob": "594fb6d378c299ecb21309e87b2a31987f80c972"
+    },
+    {
+      "path": "apps/api/src/users/registration-settings.ts",
+      "sha256": "531e9ad48fb10d83719cd916d43a2a6b11234fd8b13c12902594a12667ddf2f5",
+      "gitBlob": "64ec84fd7785cd6d572923a9419c04ea79e3f961"
+    },
+    {
+      "path": "apps/api/src/users/registration.service.spec.ts",
+      "sha256": "c362e38028c435277665ab982264b6d65b7198feba9fc399503e51c774ce9d57",
+      "gitBlob": "0a8a039fc3553ef10eeb898250008f06f7b18f09"
+    },
+    {
+      "path": "apps/api/src/users/registration.service.ts",
+      "sha256": "00b3f0f64be39d9d5a98fa6259aacab4ce312dd88cd8d00720992b2f65bb7dcc",
+      "gitBlob": "ac8e918714f2a16074a9622b17a71089ac5063e0"
+    },
+    {
+      "path": "apps/api/src/users/users.controller.ts",
+      "sha256": "26ce1c1c00389f0ea8a315de21667a11413b42a5f53036a9b239c8569aaf8405",
+      "gitBlob": "b761c06fb71c159fbb67cfd081713aaeae82ac9b"
+    },
+    {
+      "path": "apps/api/src/users/users.module.ts",
+      "sha256": "ffb43c1d07232f03acdd13ff3e2da560758d92df38bd2a5675f6f135fa611d98",
+      "gitBlob": "78c5893ab60f48a31f81b09db740b8e7daf877de"
+    },
+    {
+      "path": "apps/api/src/users/users.service.spec.ts",
+      "sha256": "6094a74e4b63babec3277a862aecd42ef582ac8870e35d98c9b69b2066bfbb06",
+      "gitBlob": "891b1af46c168b011f22d58df2f562095ad0bfce"
+    },
+    {
+      "path": "apps/api/src/users/users.service.ts",
+      "sha256": "60cd53140a37259bd0aecb0955d9ca5fc2f9b13e5517f60405964ce994cf0771",
+      "gitBlob": "2561215b24fc358962be9ae6bc1ffd7453d4ed60"
+    },
+    {
+      "path": "apps/api/test/app.e2e-spec.ts",
+      "sha256": "b4f9e1b8bf38374daa1dc84e663bacc73c65cd589a77c2ae8cbd64528b72b9f8",
+      "gitBlob": "724968e4b36f9c1560a4fa96922fe746e139ef9f"
+    },
+    {
+      "path": "apps/api/test/auth-input-regression.e2e-spec.ts",
+      "sha256": "da028eda90832f4932590d3ad527a77cf54f62ea0747178dfbceb80f35223b52",
+      "gitBlob": "8678717d00edcac2fec8565e78b9f8346cdf62fa"
+    },
+    {
+      "path": "apps/api/test/auth-roles.e2e-spec.ts",
+      "sha256": "3b0a2ba0443aea115e891f8f448980931fe88379df3f1040f7bfceac8e2265ae",
+      "gitBlob": "31aafc88fd201e555285c69fcdda2e7d420e67ac"
+    },
+    {
+      "path": "apps/api/test/events.e2e-spec.ts",
+      "sha256": "7d8db55d77fefaf40527500ac6d6ba5e221476b291e96aa9442672c6de2916b7",
+      "gitBlob": "eaeef3b996b6145a9990a8d32a8ce9610ab12832"
+    },
+    {
+      "path": "apps/api/test/k01-benchmark.ts",
+      "sha256": "9ef56ca0f5d13c50ff959d1940670816f37a32ece7c138f9365220d46f97477f",
+      "gitBlob": "6f57ea9da0a9d5dfaf5d348d3aa55fdb754cf40a"
+    },
+    {
+      "path": "apps/api/test/mock-gateway.e2e-spec.ts",
+      "sha256": "74f27aacf19ce25bd644e015c2f0b11952a99a22baf73a57004b018ef6a52f0e",
+      "gitBlob": "9ba70b508abd2fa7290e8858b4cd678a1febca3e"
+    },
+    {
+      "path": "apps/api/test/orders.e2e-spec.ts",
+      "sha256": "13fff5758679c578b427f3c20f6a1cdb6753c7a54129a4cd6f7618d5d4b56426",
+      "gitBlob": "099fa1a30604ab0933c3f0b13bafad2aa52c0da2"
+    },
+    {
+      "path": "apps/api/test/payments-idempotency.e2e-spec.ts",
+      "sha256": "db84c9ad035046b133688db987d9c3dac5d292c1d4c7e3cf6331ab83d197e6a3",
+      "gitBlob": "6e622ec2d7e4b2fcfe3a84af89f1fad57d00d2f4"
+    },
+    {
+      "path": "apps/api/test/payments-signature-verification.e2e-spec.ts",
+      "sha256": "147b65857deb4d37994fd622bbfe2c9d7c505124a491883ab71f712be8af8097",
+      "gitBlob": "4030da18bd38781a9feba0dbc02032a7b4c08cd2"
+    },
+    {
+      "path": "apps/api/test/payments.e2e-spec.ts",
+      "sha256": "d915e131884588c31d90c76413c909e8a9abaddc93ab5ee4c703b53952c9d154",
+      "gitBlob": "d05e85a1b78a11932bb4bc6d6ecfe4a482175b76"
+    },
+    {
+      "path": "apps/api/test/qr-test-config.ts",
+      "sha256": "0ee5d9dd348e033dd63b457e4c354479cf9bc8b31590d8299086cbf67d1faaa0",
+      "gitBlob": "559a0fbad3d43193cf32bb3421bc332479ad9151"
+    },
+    {
+      "path": "apps/api/test/registration-admission.e2e-spec.ts",
+      "sha256": "34fc6835b8ad6b96f596b282fa84e62a4aeff572586f5c0f13424c627bbadf65",
+      "gitBlob": "6f9ac1f27cf6bcf9840d44da75d28820ed18eb14"
+    },
+    {
+      "path": "apps/api/test/registration.e2e-spec.ts",
+      "sha256": "69f517243f7848eaba3323316267ce2cbf816488b45e943ed551535531d91be4",
+      "gitBlob": "197c8b5f358404f60e87d6a705e264b7cc3599e2"
+    },
+    {
+      "path": "apps/api/test/s15-s16-acceptance.e2e-spec.ts",
+      "sha256": "b18ddd151e2f2f6de69c8bfcc8e74fa7ab55cb68b40e6d18535a01ed26bc14a7",
+      "gitBlob": "760cf4c99da57c8ef9475edb4a9626a962a00e02"
+    },
+    {
+      "path": "apps/api/test/seat-hold-api.e2e-spec.ts",
+      "sha256": "37221b4b3c7df9a791900a2c640e9fc41af627d099f39d2e8b27f656a9241c90",
+      "gitBlob": "6a26d947ee4ea19dcfeae4eaf9067a6b21790ee1"
+    },
+    {
+      "path": "apps/api/test/sprint1-ip.e2e-spec.ts",
+      "sha256": "f7fd154cce7fd3393ae5eaeeee380adfd8e4c1e6e13b4f075c1360416e2ab71f",
+      "gitBlob": "1c5e2aaa197c27c9b6821bfcfb96b6cdbd1ce1d2"
+    },
+    {
+      "path": "apps/api/test/sprint2.e2e-spec.ts",
+      "sha256": "ffc3b49077d1cd6ee90139d33f03d9356046be137bfcd36124eefa06af2ffbff",
+      "gitBlob": "51c2acde56878120757d41d8c8ce04f218ce7181"
+    },
+    {
+      "path": "apps/api/test/ticket-check-in.e2e-spec.ts",
+      "sha256": "32b6e7adc4337c639a8acee019af764267864c4b78cc34e9a1b365187fd19c39",
+      "gitBlob": "235d7f35fcdcfac4f2fd8261fdb46584ef79a53b"
+    },
+    {
+      "path": "apps/api/test/tickets.e2e-spec.ts",
+      "sha256": "d243eebeae3d903d9b0f574730b8c7e6176abdba126b39aed775b34912c8193d",
+      "gitBlob": "b863378dc4ee03bc9ad328fc66a902d58861330b"
+    },
+    {
+      "path": "apps/api/tsconfig.build.json",
+      "sha256": "3519b1e448fa354a5600e24882e4d1c5c6583bff35a875fb001de483ec8e55dd",
+      "gitBlob": "2eafee0e6dbe69f94da01f70cf871e13ff74e8f9"
+    },
+    {
+      "path": "apps/api/tsconfig.json",
+      "sha256": "de82d21d7fcafed33ec1b3d9dc81501571168358e718f930f56d824ade5c125f",
+      "gitBlob": "83a904fb0522417a728f814e1111d448543b9442"
+    },
+    {
+      "path": "apps/api/vitest.config.e2e.ts",
+      "sha256": "070f5fc48e0fde3efe01537df98e0f64fde90355f951c2f6f3567444b008acf2",
+      "gitBlob": "aefb62bf5e6d342a17dce2eb7b82e7e221cf94f7"
+    },
+    {
+      "path": "apps/api/vitest.config.ts",
+      "sha256": "e4b6f1282e831399a41c82dabdb60e0cd38a37eb6057a186c75163664e8c6231",
+      "gitBlob": "9384f47b421897ae94c31c0fc9e660e00de7430a"
+    },
+    {
+      "path": "apps/api/vitest.sprint1-coverage.config.ts",
+      "sha256": "3b21f3b3ed9a897274bf04ba137d7e808836d61a9837c74684a0d065bd483762",
+      "gitBlob": "d536452ac74f638621a4022ae2abaa8bd8e2b193"
+    },
+    {
+      "path": "apps/api/vitest.sprint1-foundation-coverage.config.ts",
+      "sha256": "db9511b3b60e0ae5ea858d871109a1256c4c730468aca9ae6d7ef0c6434f304a",
+      "gitBlob": "13e305e9e52c2c01e4bfe7325af4f683c97c4e2e"
+    },
+    {
+      "path": "apps/web/.gitignore",
+      "sha256": "cfdbd5a321f3ba279e434c025fc9a44bf2d3bd3a1af5affb8429d79bd18af054",
+      "gitBlob": "5ef6a520780202a1d6addd833d800ccb1ecac0bb"
+    },
+    {
+      "path": "apps/web/README.md",
+      "sha256": "3b3ed71ebf50e973209bc634f6849e8ecf235a6c0686c285e1f36af5caa1c2cc",
+      "gitBlob": "e215bc4ccf138bbc38ad58ad57e92135484b3c0f"
+    },
+    {
+      "path": "apps/web/components.json",
+      "sha256": "7e7d964e4a72ef554ea277b69d0fc1eaecd3a385237002c6f68955531f4a2f3c",
+      "gitBlob": "2a427859bad941eca428977a1f77c6df68f8e0ae"
+    },
+    {
+      "path": "apps/web/components/SeatHoldTimer.tsx",
+      "sha256": "cbf8c5bb994f43a3f44929fc1226856289151ac02ebb48f4e8996386b5442692",
+      "gitBlob": "1e743dfb4015675b76e39e65f0aa9707c0b73444"
+    },
+    {
+      "path": "apps/web/eslint.config.mjs",
+      "sha256": "275a07c13fc7c83a652efcfa9fb6a207c451a2f5088e6793415ce44281285720",
+      "gitBlob": "05e726d1b4201bc8c7716d2b058279676582e8c0"
+    },
+    {
+      "path": "apps/web/hooks/useSeatHoldTimer.ts",
+      "sha256": "5a4cfc2c99b36d5c0656987f2f27a3cb99967c1fad47b7c8016d2aab9bd1b1ed",
+      "gitBlob": "ae111ac37eaccf63584f047f75b35162b9eef359"
+    },
+    {
+      "path": "apps/web/next.config.ts",
+      "sha256": "203c5e0758339357a52adb22931f0eb37c3b0d306db510496ef48910e397eb34",
+      "gitBlob": "c206d0beccee40abc10d01dd272b6aaf4070e190"
+    },
+    {
+      "path": "apps/web/package.json",
+      "sha256": "c9eae5bdf6418af97ec5db5c07accd631e52b942e56f92db4331cb3f8dbc6c1e",
+      "gitBlob": "70579f180f197e5ebb31911a81a4d0e878fcb02c"
+    },
+    {
+      "path": "apps/web/postcss.config.mjs",
+      "sha256": "7b299d3d3b16699ddda397c0b2373b3af4f25f8fc9ccc9b3d9e64ef083bc1c21",
+      "gitBlob": "61e36849cf7cfa9f1f71b4a3964a4953e3e243d3"
+    },
+    {
+      "path": "apps/web/public/file.svg",
+      "sha256": "2b67812c325c199a02536cdbeea0c593a72f707d323b72ee3e08dbab06753bd4",
+      "gitBlob": "004145cddf3f9db91b57b9cb596683c8eb420862"
+    },
+    {
+      "path": "apps/web/public/fonts/LICENSE.txt",
+      "sha256": "49bbe9114e49214df2ccc324cb3ac8d1d1aa1c3a0947f94c286765e86647b32e",
+      "gitBlob": "7a4a3ea2424c09fbe48d455aed1eaa94d9124835"
+    },
+    {
+      "path": "apps/web/public/fonts/material-symbols-outlined.woff2",
+      "sha256": "6f29194552efa0b5ecc75d614d45043f0553c9725fc4e372a9efc6bc4d9b350d",
+      "gitBlob": "62a43b6f36cd47dbb6a0ece1a5e5afdf3f7bd53c"
+    },
+    {
+      "path": "apps/web/public/globe.svg",
+      "sha256": "b614b9bf183925957661ac851498fe1d8029fd43a62fbfed86f9e2624a57e7cf",
+      "gitBlob": "567f17b0d7c7fb662c16d4357dd74830caf2dccb"
+    },
+    {
+      "path": "apps/web/public/images/events/autumn-choir-mobile.jpg",
+      "sha256": "d9b88a3cac89d3064b87e53a7278201d4d22f3c61bb8937c665ebe13b78d4925",
+      "gitBlob": "b413a8937a8d03600a01cd405547fbd430d4b053"
+    },
+    {
+      "path": "apps/web/public/images/events/autumn-choir.jpg",
+      "sha256": "d9b88a3cac89d3064b87e53a7278201d4d22f3c61bb8937c665ebe13b78d4925",
+      "gitBlob": "b413a8937a8d03600a01cd405547fbd430d4b053"
+    },
+    {
+      "path": "apps/web/public/images/events/autumn-symphony-banner.jpg",
+      "sha256": "57f35a2a9626575488c91bda5e4aaaa0d8906ef7950b14c0da3ff7f7dcabc911",
+      "gitBlob": "77c96bd7b4d7c4c188b5555495bffb82da6ce802"
+    },
+    {
+      "path": "apps/web/public/images/events/autumn-symphony-mobile.jpg",
+      "sha256": "44134c7ad471a2657ecad9d445e48970d6f2c7093889cf12ef893b4b163e237b",
+      "gitBlob": "c1b91762d72649d1e6fd15fa7bb1e11d5d71a215"
+    },
+    {
+      "path": "apps/web/public/images/events/autumn-symphony.jpg",
+      "sha256": "d85a8049eafb550b2e138a490aa3f477d1a553d710bfc95de84e03ed78924a8c",
+      "gitBlob": "4d06ab80c895a732e17ec5bbc7362861ff66eab7"
+    },
+    {
+      "path": "apps/web/public/images/events/indie-night-mobile.jpg",
+      "sha256": "4bc20942376dc9a182849eca7ce7e3e93e12c03c68ea337f7b351b9e7a3c72dd",
+      "gitBlob": "356edce7cadc0f3e28c1d16107c81ef6d599adaa"
+    },
+    {
+      "path": "apps/web/public/images/events/indie-night.jpg",
+      "sha256": "8af0c7041e0f13e0469c938c449d046d4c4806212c1752d0aadc2de4c5e581bc",
+      "gitBlob": "f9f29def1157585627c66603e8493b7a244747ae"
+    },
+    {
+      "path": "apps/web/public/images/events/mustard-blossom-mobile.jpg",
+      "sha256": "7f161f2c2a77616d53094d367baaa0b74d59e63e05a5be8a9a1eaff87834f13a",
+      "gitBlob": "ff2456ca6e1d839f0a0a21fb5c2af6c668a93b2d"
+    },
+    {
+      "path": "apps/web/public/images/events/mustard-blossom.jpg",
+      "sha256": "ef69206f76c7154dc66722e1cbbe7f7b2cb8d6f0e4fe2107406eeda8e76aa4b4",
+      "gitBlob": "154485fbe8a11af4488bc69ed3010bfe271689a2"
+    },
+    {
+      "path": "apps/web/public/images/events/starlight-piano-mobile.jpg",
+      "sha256": "cc55e2a7b269d0f6fe2d72c04e0a281354d8c9d844d47f68ff1d6087e45298fc",
+      "gitBlob": "f1eb3a20af21951a3f6047f74b8bf33e086efee5"
+    },
+    {
+      "path": "apps/web/public/images/events/starlight-piano.jpg",
+      "sha256": "c77cc1bc758ef929fadd23a176b2e97f54d70be92a460107391e0e26e539acf2",
+      "gitBlob": "5e8c3b8e3bbd4b70bc95f22d61a75ce459ed6b3b"
+    },
+    {
+      "path": "apps/web/public/images/events/trinh-poetry-mobile.jpg",
+      "sha256": "ec575cbd8cf3b2c4e693351326ce32fe7f3592449f386784f6f7102cc7e6a347",
+      "gitBlob": "e1fccf01eec7dda899ec2fa0f9fa9b90b0c6deb3"
+    },
+    {
+      "path": "apps/web/public/images/events/trinh-poetry.jpg",
+      "sha256": "43289db29a7118f439b288dc1674360bf00e031a0e8fb56d88e8767ee9ab02e9",
+      "gitBlob": "ae47caa99e2e35cd9a780f57eed966c6af49f004"
+    },
+    {
+      "path": "apps/web/public/next.svg",
+      "sha256": "55995dfad6ecb4945a1e856ddca03c5e16aa5bf13fd21b4df6a74ae79357bcfc",
+      "gitBlob": "5174b28c565c285e3e312ec5178be64fbeca8398"
+    },
+    {
+      "path": "apps/web/public/vercel.svg",
+      "sha256": "f081337b2fee635b455b63275406a3e7f39d6a014e25ad90dab5a67e62a12ac4",
+      "gitBlob": "77053960334e2e34dc584dea8019925c3b4ccca9"
+    },
+    {
+      "path": "apps/web/public/window.svg",
+      "sha256": "644768c4aaeb4767bce293344eeb0c125fb804a94d801440424072202d85e3a1",
+      "gitBlob": "b2b2a44f6ebc70c450043c05a002e7a93ba5d651"
+    },
+    {
+      "path": "apps/web/scripts/verify-s30-signed-browser.mjs",
+      "sha256": "87658f32e27c4a3f223046032781207456ce62876ce177318f7cb65ca47e0eee",
+      "gitBlob": "a6edc1f168d4ae6018e5718b0c08185ad88a5769"
+    },
+    {
+      "path": "apps/web/scripts/verify-s31-browser.mjs",
+      "sha256": "fefad4a2ba78c427d3e129eaad86074a89dc5071dec6a3b626b398d0f2b21d52",
+      "gitBlob": "85f18a2d0f0af96d9955e88ca031d96271ab1983"
+    },
+    {
+      "path": "apps/web/server.mjs",
+      "sha256": "a2e56f663cfb59738726faa10b60b15a8fe451449e18a5c6b36e98d87da59c39",
+      "gitBlob": "5695bed9b07f969d9a08e69d50628d6d7282e392"
+    },
+    {
+      "path": "apps/web/src/app/account/page.tsx",
+      "sha256": "812ec6d1bb0897e667098619bd5de7521d3172fb94b14d38412d30998ea1e1c0",
+      "gitBlob": "7c3ad5c867acbcf2210218eec09caa1a66ff48bb"
+    },
+    {
+      "path": "apps/web/src/app/activate/page.tsx",
+      "sha256": "6afabd5a3ea9c6858598e324862ea6a8300f805a12d225200165e39a3aa43558",
+      "gitBlob": "4d78792c57aa1ae6ff2d66097ff125677aca4e91"
+    },
+    {
+      "path": "apps/web/src/app/api/[...path]/route.ts",
+      "sha256": "a612f1009b2dbdd1c8c1613fd7402b1d029b0e33329ed7c71fb47ad8ac229cb1",
+      "gitBlob": "233c0172cf4c5d6eda78595a07f9ea966312ebda"
+    },
+    {
+      "path": "apps/web/src/app/check-in/page.tsx",
+      "sha256": "07d2320e06dac181a1082eb6202d30ed6f6e7df137cb6cc899d6b593a1b5f9c3",
+      "gitBlob": "b59ed4bced4703c019bf3888b844a200c03ef650"
+    },
+    {
+      "path": "apps/web/src/app/events/[id]/page.tsx",
+      "sha256": "1f98bf3059571b1c4bea276247f366b6d24b3ef56790187036e1fa293b11f2dd",
+      "gitBlob": "1e27060f199a3f18b855af4939fc03b505814c76"
+    },
+    {
+      "path": "apps/web/src/app/events/new/page.tsx",
+      "sha256": "6931ef3a6f94daa8839a7ed49a5b32d78ecd6483bbd3237e5f2ef500bb660117",
+      "gitBlob": "657cf1919dc1421f631a108647dec64c118fd026"
+    },
+    {
+      "path": "apps/web/src/app/events/page.tsx",
+      "sha256": "9b549713f3315bea0e6d2852bf450143c36ddf0d8e60f81161dbb346d095ef48",
+      "gitBlob": "e727b78e0509380cd026ad26f8c6dd7821d7e358"
+    },
+    {
+      "path": "apps/web/src/app/favicon.ico",
+      "sha256": "2b8ad2d33455a8f736fc3a8ebf8f0bdea8848ad4c0db48a2833bd0f9cd775932",
+      "gitBlob": "718d6fea4835ec2d246af9800eddb7ffb276240c"
+    },
+    {
+      "path": "apps/web/src/app/globals.css",
+      "sha256": "1f5392260b278e3f1c30068c5d1b0ab445cd7de09014fedcfe80db169df78156",
+      "gitBlob": "96baba3d2ca1e35654787b9e96a841ebefde95e8"
+    },
+    {
+      "path": "apps/web/src/app/layout.tsx",
+      "sha256": "0895708b8584449f8f18fc773f46fb47bdabb1e910e0040fd67c6b7cfbbd5937",
+      "gitBlob": "4f31b2f16f227baf806c6f6f4749cf1ab976db4b"
+    },
+    {
+      "path": "apps/web/src/app/login/page.tsx",
+      "sha256": "c43bec598749e27fa39c863b37817facc699634ca582c50a667a5cef28e99916",
+      "gitBlob": "35f68ffde0329f6dc3fbba228a7df5784fb9181b"
+    },
+    {
+      "path": "apps/web/src/app/mock-gateway/pay/page.tsx",
+      "sha256": "c267441ef159c5efc3ae873c06f50ec74db928839e7c4c1a01f9dc5a725bfcd5",
+      "gitBlob": "a9a205982fa1b57bffb0a7b0b1593a63cfef60ad"
+    },
+    {
+      "path": "apps/web/src/app/orders/[id]/page.tsx",
+      "sha256": "774e564c41dec0cfc7ad80ccd2d1369cea836b23752a1836b326411a9d677807",
+      "gitBlob": "c0718476f0d26f8e6cae413e2d438f38d108b6f7"
+    },
+    {
+      "path": "apps/web/src/app/page.tsx",
+      "sha256": "eadc3071efc28d353a4e3c437a264100ad7c711c5a5bca4db357cc7b47a73417",
+      "gitBlob": "6bd7ed2a1f2ead5cf5088a2b2ef3814545234044"
+    },
+    {
+      "path": "apps/web/src/app/payment/result/[orderId]/page.tsx",
+      "sha256": "b944ea703eeece038be8e98fa913a44aebc5e2bc9e91f4234dba0b4471a34949",
+      "gitBlob": "ddc6cb5751750c81eda9023b594000a59e86453a"
+    },
+    {
+      "path": "apps/web/src/app/payment/result/page.tsx",
+      "sha256": "4d5015e40423af72018492a5d658befc89e6cb475c173c98bcf21612035164cf",
+      "gitBlob": "6a9681991d943524ff3e9ce8f09c9cd0435ac565"
+    },
+    {
+      "path": "apps/web/src/app/privacy/page.tsx",
+      "sha256": "f4ac5544db9678faffb7b1324a15c2964bae2c546faf354854a0640a3507db5b",
+      "gitBlob": "ec3a94fe3fb9a92f25af182c33b365f33a9c8e34"
+    },
+    {
+      "path": "apps/web/src/app/product.css",
+      "sha256": "488214539a45c2c4b43fc2ccbb268f48d3d8249d2568fe6b20f3253ac70dcb31",
+      "gitBlob": "c7d08ba5f3ff4e5d62429604630628445b60afe1"
+    },
+    {
+      "path": "apps/web/src/app/register/page.tsx",
+      "sha256": "4eb5dff88993f1edd6e1a42ccd5cdb14b6c9193f51cc46bd076ef04d36deca83",
+      "gitBlob": "d8b1169f438a7818825f277fc66213163c1e3634"
+    },
+    {
+      "path": "apps/web/src/app/resend-activation/page.tsx",
+      "sha256": "e139921bd3c260114df96390a1a676cd31ce3d51bf81b69e663b32b889ba63f4",
+      "gitBlob": "d1880fe24bd83f4a24b54b4b30ffcf1cfde5cd96"
+    },
+    {
+      "path": "apps/web/src/app/scanner/page.tsx",
+      "sha256": "5398fc885d4590ee3e4f587951882c6a772dc931abf0398a7dffb04d0f1e8759",
+      "gitBlob": "9dd563131fcdbf9487b6055e878cfcd6143673a8"
+    },
+    {
+      "path": "apps/web/src/app/scanner/snapshot/page.tsx",
+      "sha256": "022f6bf5f26a7aa11028239888ef5449d6919090ca92f4ef3f561cafaf7f94a7",
+      "gitBlob": "c492e9ad17957f3d8dd6ecdcebeae5cab5e80be2"
+    },
+    {
+      "path": "apps/web/src/app/shows/[id]/page.tsx",
+      "sha256": "fc02283472f85a33aa21a25a8d63bf12c5c635ce938a875158492698929537da",
+      "gitBlob": "7caefd25f0f89af469320e41d79b41a466d5f2bf"
+    },
+    {
+      "path": "apps/web/src/app/shows/[id]/seats/page.tsx",
+      "sha256": "da0489639fbb5ef6c7a5d26ea11dd2ee25ce030304c6c4224b01b19f61378a58",
+      "gitBlob": "7be6306e959492650097ddf692bc9691a6962893"
+    },
+    {
+      "path": "apps/web/src/app/showtimes/[id]/[mode]/page.tsx",
+      "sha256": "5e3bbc72731520ca546b8ec9d0ba6a4bdea50860bc33a9ac22ce857a3acccacf",
+      "gitBlob": "1cd9ca23f19cdbb4c0c098c02d7d3541d2da05ae"
+    },
+    {
+      "path": "apps/web/src/components/activation-form.spec.tsx",
+      "sha256": "b9e3a4a6850fcfd34e5ec52bb03fa420713ccac1e4219e689e5023a62a6271ad",
+      "gitBlob": "a83ff6bdb1260f3c1c7bb2ce2d849a859211d859"
+    },
+    {
+      "path": "apps/web/src/components/activation-form.tsx",
+      "sha256": "93704a42b5bcc9a6a74a9917941b991df23397ce87b544a512a1a9dfdfbbe597",
+      "gitBlob": "d1581920366dd60c78af4497fad1ddfd969fbb58"
+    },
+    {
+      "path": "apps/web/src/components/event-editor.spec.tsx",
+      "sha256": "758e1280b1af729a23dfad8b67cea500061087df71ee5ac507f04866dae5e661",
+      "gitBlob": "ec190decfe4dfb8ffa47c2d3487d84eca9a3dd78"
+    },
+    {
+      "path": "apps/web/src/components/event-editor.tsx",
+      "sha256": "90ea3477927dfa4644413decad61aafacdfb8c4d630503965b292aab0e8475d8",
+      "gitBlob": "09721f58b8bc48c8e72c447d15a781e9d9f9045a"
+    },
+    {
+      "path": "apps/web/src/components/layout/product-layout.tsx",
+      "sha256": "808702905c1ae38f6ad38a6051447b21ec71064a3cb64313b9c0dd69fbcaccdb",
+      "gitBlob": "a9e49970356407a233da085a9f246f9379cf5f99"
+    },
+    {
+      "path": "apps/web/src/components/layout/session-actions.tsx",
+      "sha256": "7340da8912ef66607adbeeb2d49fb1a6c63e932bb0a1e58f1380cd77fbb1b465",
+      "gitBlob": "3a3c44ce066797673c673d31890367d6d26d0590"
+    },
+    {
+      "path": "apps/web/src/components/login-form.spec.tsx",
+      "sha256": "8ae62762648e1c710d543913a0d49e697ee6a65d6bb31fd233d1adccae7c13e3",
+      "gitBlob": "2e921457a971b3d2834fb187ad340181b78b460f"
+    },
+    {
+      "path": "apps/web/src/components/login-form.tsx",
+      "sha256": "3b22faabcd161d57c144db7fe99b7400d07dc8fc22232bfbd0e8cd0a7399f192",
+      "gitBlob": "abe68a4c7b31b0a70c14aeb705e852744f1c2f35"
+    },
+    {
+      "path": "apps/web/src/components/registration-form.spec.tsx",
+      "sha256": "7057e8cca255ae2b8aed74eca04e5077c1a4418f3983dc4faab41f646bf46173",
+      "gitBlob": "8839cff777e689401dc9e12473cf414a312b2413"
+    },
+    {
+      "path": "apps/web/src/components/registration-form.tsx",
+      "sha256": "010d71cdbed3d70093524190c0938ebf59c71c8f1f127f947696c5e84db2555d",
+      "gitBlob": "299bcf95d3a7c75ed589b74df1e5fe925c9086f2"
+    },
+    {
+      "path": "apps/web/src/components/registration-notice.tsx",
+      "sha256": "244ba255f23fd142f032283767537ba5ad0f0705abddfa31359041cfc08cb7ab",
+      "gitBlob": "1f6a10952effcfbc1b104a4c9cffa2a983e08d78"
+    },
+    {
+      "path": "apps/web/src/components/seat-map/seat-map.tsx",
+      "sha256": "fa975e724a0115143342c2fde129c1ef5805b8aa3989b0c8787bd57bb3f6f8c8",
+      "gitBlob": "db5855e888606b07f757635522c87f19427bcdd2"
+    },
+    {
+      "path": "apps/web/src/components/ui/alert.tsx",
+      "sha256": "247895fcce0ea333e06e204579e8d5912196b68b88f149fea3bfe1089f8483fb",
+      "gitBlob": "753782a838ca7b093813ffa859500523db5fd855"
+    },
+    {
+      "path": "apps/web/src/components/ui/badge.tsx",
+      "sha256": "2be62550d46e90b13fc8516d77828dce6eb2f815b47d6da05c2cb3d145a76167",
+      "gitBlob": "860dcbf173e1860305a748fb5ae8eabc929c583d"
+    },
+    {
+      "path": "apps/web/src/components/ui/button.tsx",
+      "sha256": "9066895fd6820ee650075b75be3ebdb32f1dc779d6b815c88cc71b6c285f56ed",
+      "gitBlob": "18407c9c49e4499a6bcb018a780ef72ad2fb84de"
+    },
+    {
+      "path": "apps/web/src/components/ui/dialog.tsx",
+      "sha256": "17ac28ff914d56757a0cbe26cdc1edae2d528cd2440f23b3c02499b6def806d3",
+      "gitBlob": "be9cb50ec3d4dde22cfa8ad0314ae24223e76c66"
+    },
+    {
+      "path": "apps/web/src/components/ui/field.tsx",
+      "sha256": "eb39f388ac4f49d0c6961e72cdb54bc2c91f81f98ae0b0abb64a8671b9527cad",
+      "gitBlob": "f3c75e66b33018d20b2d49e021849343880d47f9"
+    },
+    {
+      "path": "apps/web/src/components/ui/input.tsx",
+      "sha256": "4d646f507aa57999bd4e32460674f9537248cd40657fc3f06ec3f983d64d8813",
+      "gitBlob": "7aa671b8616521b253353547db474097e502fdf0"
+    },
+    {
+      "path": "apps/web/src/components/ui/label.tsx",
+      "sha256": "93c97ae996587c484a8de4f185b1ca47e7a740178da63bb96827b1f3c5ef2d0d",
+      "gitBlob": "5aff7469c384001a3f1b49cc5cf8871b10f10386"
+    },
+    {
+      "path": "apps/web/src/components/ui/material-icon.tsx",
+      "sha256": "ff2a93f8ee622ab9da1178d4baa9637dede05465d220e4e4941c6df8fc38f77e",
+      "gitBlob": "9f5093c85565ca8bd90c1b621613f6a728525a5b"
+    },
+    {
+      "path": "apps/web/src/components/ui/separator.tsx",
+      "sha256": "75d6e99517d7a5cb3f2f106dacd9ee51e0d6bfac7d7bbd6981b11d1aad58bdf6",
+      "gitBlob": "2cd61877baade6f860f41b6113d5831c4ce206fc"
+    },
+    {
+      "path": "apps/web/src/components/ui/skeleton.tsx",
+      "sha256": "9d38dfda575f3c3918db457a4b63883662718f90b97a646e281892076dda8272",
+      "gitBlob": "6181e3b28e8c13c6a44f49a80ef1bbf5fa12ba37"
+    },
+    {
+      "path": "apps/web/src/components/ui/table.tsx",
+      "sha256": "9f06913820ee0e6351331bfa2bfde0b2fa0aaf8a4daf31da895f07f64f376ec4",
+      "gitBlob": "be7510051f13298900ac7c367af310e7f665e6ec"
+    },
+    {
+      "path": "apps/web/src/components/ui/textarea.tsx",
+      "sha256": "dc274a7af0c84382d6777a404a7422b847b1b5bd8548e54d8b1308b14c9e812a",
+      "gitBlob": "5141de794cdc57aa317c8beba328a7284475d767"
+    },
+    {
+      "path": "apps/web/src/features/check-in/check-in.spec.ts",
+      "sha256": "409d0a1e1ba914bb9f3e3e8f9e1470c9919777af633eb2bcf0d2abda599ed056",
+      "gitBlob": "0603ff1ab49fff273e14682c1a5fe2dd5784c3d4"
+    },
+    {
+      "path": "apps/web/src/features/event-catalog/event-catalog.tsx",
+      "sha256": "9d680cb08185948f91f1402e7915db88e9e20bb49db2ee99b09fc06ac12b4f1c",
+      "gitBlob": "43eb0952d1f893a496927386856bd0c62ea20c0b"
+    },
+    {
+      "path": "apps/web/src/features/event-catalog/event-poster.tsx",
+      "sha256": "ae6bc0b4a98a3dc97c2c73866ee57460f2b6bd3332a2164c2d2479efe9a9a219",
+      "gitBlob": "4acc8b01dbae19af31b1d66d99ad1f4e8e6b4a87"
+    },
+    {
+      "path": "apps/web/src/features/event-catalog/public-showtime.tsx",
+      "sha256": "8e829d051247b18c94083b29bc8bc9e989df7bea4c972c6208e69c319ba2966f",
+      "gitBlob": "514be3df0a12b795eb3d092d04cd991ed81d54ee"
+    },
+    {
+      "path": "apps/web/src/features/mock-gateway/mock-gateway-payment.tsx",
+      "sha256": "fa0bd41b5ceed2f6c817d0fa4f2a97482ca6f66c2ed7f9a82fe432075d6faa8f",
+      "gitBlob": "fe36e4a641a7cc46cb912e49a62c5287736cbd2c"
+    },
+    {
+      "path": "apps/web/src/features/mock-gateway/mock-gateway.spec.ts",
+      "sha256": "e6a55e3f1bfacb060fa220f75f266c6767d2d76714e55fc1a1bf9e28ade2a475",
+      "gitBlob": "a4d638c0dca4022878d41872089e7d033d30b397"
+    },
+    {
+      "path": "apps/web/src/features/order-review/order-review.spec.ts",
+      "sha256": "eef70adf690d2da41903adb8500d606605fbf0f7b9f68faef5ed665bd935980a",
+      "gitBlob": "c90d786d7733bd7ff1c42d57abdbbe91d56e2284"
+    },
+    {
+      "path": "apps/web/src/features/order-review/order-review.tsx",
+      "sha256": "3311ad4698bd21c2dda2497a82e3bef3c285af37cd4c1a24c4db58119a4a0bbf",
+      "gitBlob": "67750d351b03dddd45910e02a00fa6e5fb793b89"
+    },
+    {
+      "path": "apps/web/src/features/order-review/signed-tickets.tsx",
+      "sha256": "9c3daafa748f9fc1cea373ec8c6228fb759005c0b01a7822e5fdd51bab62c6d8",
+      "gitBlob": "f9cd208b02efd40a91ae41b042da10aa6eb2c3c0"
+    },
+    {
+      "path": "apps/web/src/features/orders/order-status.tsx",
+      "sha256": "965b738877025851ba50f27a42ea291c983f5fe6501e2a87283e613a8f932c38",
+      "gitBlob": "7e29c55f3a9c1fc5e7ff607deec4e775771595ef"
+    },
+    {
+      "path": "apps/web/src/features/payment-result/payment-result.spec.ts",
+      "sha256": "8ab9d0490a5308cfded526f3996f7979804a6579a40b004386c7976d0a536e34",
+      "gitBlob": "69d53ec054db96b0221fc39986fe61d2ea3a70fc"
+    },
+    {
+      "path": "apps/web/src/features/payment-result/payment-result.tsx",
+      "sha256": "e75a3f22de20abaa4995ca629114ed4d0f901b3af8658e78dd6ba8d5167a1fef",
+      "gitBlob": "b7a144cf90080ec04d8aba0ec7abe5eb81808e84"
+    },
+    {
+      "path": "apps/web/src/features/scanner/offline-scanner.spec.ts",
+      "sha256": "0bcdbba2552dd07d2f1af405693f93b782a5011324cc319861a510b21d3abf24",
+      "gitBlob": "fa18cfd1058f5fd7e7cfd4e59d31770dded34a67"
+    },
+    {
+      "path": "apps/web/src/features/scanner/offline-scanner.ts",
+      "sha256": "050f33f3ae7c82b55c0ad8ffb7d9596422b87d49d772f3f3ce58003977f4353d",
+      "gitBlob": "f8b7181db95df1ae270cf292b14c4ce9d9e27c09"
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-api.ts",
+      "sha256": "72f46f0ccf0e9b9ff81cee7f8daf0f56507f5c725e5bb992830da973581d78d9",
+      "gitBlob": "2b63a9192237ab315d027ffa2089b04054d0e24d"
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-db.ts",
+      "sha256": "a0badd09dae7046d87f8baae2165457c0095b8678ee0dcd44e32778d1aa9fd07",
+      "gitBlob": "de9e60c3be803c7bf3fdfa58d18543f171ca1b83"
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-showtime-selector.tsx",
+      "sha256": "3e448e5f9c2a0e2bb6d315a5d9479c448c1d2bb03c0eee06a393570cb0061d00",
+      "gitBlob": "6cfdda47ed818aaeaa7e00c1dd491af275c318ba"
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-sync.ts",
+      "sha256": "a86e2d9548db5864070aa1ae4f388c48333b870b13f8806e9e33d59c44466596",
+      "gitBlob": "b574c6bceb60867f8d885de8705d7533371af3ef"
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-tickets-view.tsx",
+      "sha256": "c4c58ba28f9fd994f3fabca950cdf908cdab113606817f659da549ec33b90c74",
+      "gitBlob": "d2188a49af32d70c0ed069f50474eb489b694abb"
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner.spec.ts",
+      "sha256": "40b628e72801d65ccfe94ff54de3fed1f3269910cfeb6b796a9b7dccd07fb011",
+      "gitBlob": "53171caa2b7e70310c01fea95d0260d78d7be4d1"
+    },
+    {
+      "path": "apps/web/src/features/seat-map-import/seat-map-import-form.tsx",
+      "sha256": "5377f8f9e1fa5fbac9a97d386cb71a429f605d71d8ea17bde50001981a55facf",
+      "gitBlob": "9798c285c85d1e2770d56e37f780b31dc46ee563"
+    },
+    {
+      "path": "apps/web/src/features/seat-pricing/seat-pricing-form.tsx",
+      "sha256": "a70a7a3f407d182a01e76b9b751ddc3073a0e7ba9cbd3486fa323f888ed57f62",
+      "gitBlob": "db51682b6b2f3f3191c21445f70d235bfd96e5f8"
+    },
+    {
+      "path": "apps/web/src/features/seat-selection/seat-selection.tsx",
+      "sha256": "ad4ed5e1c4a75b6ce8ea357c203d31992d82ff04e3a48a9a088e70c07e27bd66",
+      "gitBlob": "5d984ea447253b61591e2b4d17c57e12e76e683c"
+    },
+    {
+      "path": "apps/web/src/features/seat-selection/server-countdown.spec.ts",
+      "sha256": "600ddc74d5b202af8dd1927b0eaff8ad574cf51fc49411908a1e6626ab7f9a04",
+      "gitBlob": "4b364f85a341ffbb18486b12a1c02d36c39144b2"
+    },
+    {
+      "path": "apps/web/src/features/seat-selection/server-countdown.ts",
+      "sha256": "890d4e41ee4e36e6ba205b6e010337fa1d912d7a15409d71992f8cdd85f08374",
+      "gitBlob": "cd5afad16e413ca90e8f0f4bec33c3d4e05429e4"
+    },
+    {
+      "path": "apps/web/src/features/showtime-management/sale-status-control.tsx",
+      "sha256": "b62cf27ffbe4caad3f5a2cd02c50c82c0bfe23326afbb6dd42de2cb301d9b1a0",
+      "gitBlob": "41903819e6cf9b80677bef7ecc5bd67ac3af9e17"
+    },
+    {
+      "path": "apps/web/src/features/showtime-management/showtime-workspace.tsx",
+      "sha256": "965e4a5df9dbcdb4cd33ff8386fab7c724ba8f5b7917c0769c9d72a5926641ff",
+      "gitBlob": "1e9af2985b9a2db78b77bd09652f3c6ef0920980"
+    },
+    {
+      "path": "apps/web/src/features/showtime-management/ticket-limit-control.tsx",
+      "sha256": "3b0121b99346e1119629cbe4c1d742f39a40d2fcd21b778b87c9716eef7d5aed",
+      "gitBlob": "d175238ce37c4c175f03f1a9d1b3e8bcc38abcea"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/admission-override.tsx",
+      "sha256": "dc4874f0798a77f4d1ee4f7adf440f9e9ccc1fca85c7e890bf606199a08855d4",
+      "gitBlob": "8561113b699721d7afa55b9005b619ce7d643dcb"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/admission-response.spec.ts",
+      "sha256": "417101a140b5f5cd99295366c49e5335263739230090cd02a6ad6c3bb7a1d852",
+      "gitBlob": "e70bfa79fcf6f26abdf0179de89c6f70990f7f8a"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/admission-response.ts",
+      "sha256": "3db8e073cae1efe0414073e83ca55c5db4436be3cea87c6a343138118790e723",
+      "gitBlob": "d2a1dd5c540068be1fdffa0af7f23c3629fbea5d"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/check-in-request.spec.ts",
+      "sha256": "6c1be4bf978cb8e00b93bcbc7dec7e27711f0f0591649820343c6189e7975f5b",
+      "gitBlob": "4bd714c7267cf2a9ce9d6b7f124ce7195403a851"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/check-in-request.ts",
+      "sha256": "134f4871abd2b1a793b3da5dfb2f5b94a30f4cd712315dc0c99b44028d27762e",
+      "gitBlob": "de798b3d04b56712fe753ee77031a20cdfbc67fb"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/network-status.ts",
+      "sha256": "bc74f43e4b6802043f95934a0430bc435358c154931fc52bee79328c4961c455",
+      "gitBlob": "0dea3bfd50cce4bfb891bdaa8899724c5217cc49"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/offline-banner.spec.ts",
+      "sha256": "ab1f35443a7314d46fa4c6ec89cf962d238adacb3f0437b3415acc076ce8c604",
+      "gitBlob": "e1396753711c8f6edc040380e3d4e37031bbed59"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/offline-banner.tsx",
+      "sha256": "0cfeefc0daa996b43bc171dc2771288cae726f224bc041234f1f5442cbf6aaaa",
+      "gitBlob": "755ce42689ae89e75385efb544f332f5271a9678"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/offline-queue.ts",
+      "sha256": "a3597d48bc6ae901b1f164b234be82bb5d335c8d9262c5c0797dd18390310269",
+      "gitBlob": "cf4993d4de0ceff1f50fd6adc1e367c8065f5362"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/offline-sync.spec.ts",
+      "sha256": "2ad78c2eef770f4865b0bbf3ab1c36c911993dad94f369e68ad2499e1bbfa906",
+      "gitBlob": "4fdd02591bfd75db90cc6fc3bb424ac152a9a686"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/sync-manager.ts",
+      "sha256": "e16ba74f8ee30a8b1cffbacae411cbfc6c139372024329f26b81e21bd785012b",
+      "gitBlob": "5e26d8fdb1b1c969e06e177cca0094ae993c6bb9"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/ticket-scanner.tsx",
+      "sha256": "bf1481c20b244e65046b4ee525bd364095cb39ca34998739603e9575cf77e60a",
+      "gitBlob": "fd88d48c405596d1f2024c6fb64ac8bd72fc4ced"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/verify-ticket-qr.ts",
+      "sha256": "7fa9e63e37958ff1f23f137f64613d4df2cc04f486cd4a42c13d8813d02796e1",
+      "gitBlob": "d5887a533bcc632a968f13a13bf31fe8e4b9d244"
+    },
+    {
+      "path": "apps/web/src/features/tickets/order-tickets-api.spec.ts",
+      "sha256": "d1bb452dfe36812b57c125bfdec73327a487f7b8eb207d9617fefff9fd002eae",
+      "gitBlob": "b587f76ffe0753bedeae73312e720c0fe906b271"
+    },
+    {
+      "path": "apps/web/src/features/tickets/order-tickets-api.ts",
+      "sha256": "d26cee1e2c2e5cd0ee42fd754279ab0ebc0f83ef622e9272452322b6e6c5b729",
+      "gitBlob": "50dadf600d4191d13da258e01d9a5c0df2ff8d2a"
+    },
+    {
+      "path": "apps/web/src/features/tickets/order-tickets.tsx",
+      "sha256": "6e2c42d951e88441af0f8992f114a45b62381918579681a62df0eb43bb9f51a3",
+      "gitBlob": "2de03fc11e0b235f075070296f6f98c89409818f"
+    },
+    {
+      "path": "apps/web/src/features/tickets/ticket-qr.spec.ts",
+      "sha256": "45776a26eb75a8a4aa68838807732836a6a81061f300a71acdbe501a57d3ffcd",
+      "gitBlob": "fec19bea1c5625b182a566ad6527368932161dd7"
+    },
+    {
+      "path": "apps/web/src/features/tickets/ticket-qr.ts",
+      "sha256": "e6a50611b65954ef35716eda821ee39b09629e87216934a0600025323a06a8b7",
+      "gitBlob": "f7976b8af9687e08e45c7187b14bc6667ead0f0f"
+    },
+    {
+      "path": "apps/web/src/hooks/useSeatHoldTimer.ts",
+      "sha256": "d29da764f357b9be3db90e2ad5fab0b18c873518b15a44212cc8dd5baed0cb1a",
+      "gitBlob": "a9ac1ac33d9c48ba522e9c5741102e7738682434"
+    },
+    {
+      "path": "apps/web/src/lib/api-check-in-s29.ts",
+      "sha256": "0742f672fd45a33ab2fba3e38e228a87916d6bd2f5fb08ba90be293539c57e5b",
+      "gitBlob": "8ae6037098742a579cf10173e01f3302a86322ea"
+    },
+    {
+      "path": "apps/web/src/lib/api.spec.ts",
+      "sha256": "d2206e18ad96477019f5183af0f7b9ed467df771fc86a340ed4b83b852982362",
+      "gitBlob": "e5ff112823e3ebb08541ae989c12a42743388942"
+    },
+    {
+      "path": "apps/web/src/lib/api.ts",
+      "sha256": "51cc622c68cf26f676de4c66947f190c7635dd3175eec829b3a9cfb803fde36e",
+      "gitBlob": "d0e3b7adb23f386d72bf4adafaf8d1ba224a7a98"
+    },
+    {
+      "path": "apps/web/src/lib/api/client.spec.ts",
+      "sha256": "dad1374425880dd4e5cf77367c38051a9a08db6c7241176ec020bbe949829945",
+      "gitBlob": "9725214ac6d51945ae0d46dde97c375c8722b993"
+    },
+    {
+      "path": "apps/web/src/lib/api/client.ts",
+      "sha256": "3892dfcd2cd9ed99f0aacc5aee9493b63fa7de693eb14e45f9afa9baa2ea828e",
+      "gitBlob": "e102c752f6428322d3713e64c0e456bc5f3e4f28"
+    },
+    {
+      "path": "apps/web/src/lib/contracts/holds.ts",
+      "sha256": "f85b4236f2dffb8307d97a602fcfb272535aa6027fef2a0c4b47c06a5e4658d1",
+      "gitBlob": "20a878afd44f67b44319742fa256152e60a9bd8e"
+    },
+    {
+      "path": "apps/web/src/lib/contracts/orders.spec.ts",
+      "sha256": "3955011d6fd05c87e4db1af318ac37048c9652d2db785fc8ddc27c7cbf1565fa",
+      "gitBlob": "3ee2392b92b788ff115d28bd0b1982950dd73822"
+    },
+    {
+      "path": "apps/web/src/lib/contracts/orders.ts",
+      "sha256": "722b150f5a7d3b6c11f11fe93e6b03f7095f91b2858a551f99e1fb228fda27c9",
+      "gitBlob": "890a43725546f6baf07ea37feb82d384898707c3"
+    },
+    {
+      "path": "apps/web/src/lib/contracts/showtimes.ts",
+      "sha256": "2b1a0a38bf27870d899d00184be4a794d1c0408bc1c4100b53c07af29568d62d",
+      "gitBlob": "a5b0da2a6f821bb68b7ae910037f50b42ccee42a"
+    },
+    {
+      "path": "apps/web/src/lib/formatting/index.ts",
+      "sha256": "bc9ee37f8934e51070017aecfd41ed6fbfc9bfac8bb364a5d990268127f01e80",
+      "gitBlob": "bd1428a6cc7cb5ed2c85b05e3208f26649bf4571"
+    },
+    {
+      "path": "apps/web/src/lib/formatting/vietnam-input.spec.ts",
+      "sha256": "965c73fdca253495a678c1892357284a199913a0c23c6d7af468299dc11817a3",
+      "gitBlob": "2ce080f8807d4134922151fb5108db71e48adc11"
+    },
+    {
+      "path": "apps/web/src/lib/formatting/vietnam-input.ts",
+      "sha256": "6737e55392713b51ce9bd837d6c147743f1ec04631d504d46cd78b11acf0a19e",
+      "gitBlob": "60cf7f582e5df3c77bf4771c64f9cd44feabb2d8"
+    },
+    {
+      "path": "apps/web/src/lib/presentation/seat-category.ts",
+      "sha256": "4e54bc27d51fc0eb07478bb535b9904e92726a32305a05849f3d33ab4aec5f5e",
+      "gitBlob": "49deae798f6ac9ef3c630ce8b9da7acf185d0905"
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.spec.ts",
+      "sha256": "34ba192139fd9ee65946bb2fb01ab9b4b3690a0070dc3199d9c9695ab616531f",
+      "gitBlob": "29a3bf90e587eeb16f36564e3a252977e398079e"
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.ts",
+      "sha256": "dfbc88c4f948b9f4e4f1b2d90e1cc2482bb486313a11e767770174d9c5015f09",
+      "gitBlob": "37a1f6db2e63ecd08f13807cc727f4974df097f4"
+    },
+    {
+      "path": "apps/web/src/lib/server/login-transport.mjs",
+      "sha256": "ac52f765b488743cb518ce1c743854da4c818fffb9a2b2339d270d1261d9ad3a",
+      "gitBlob": "0dacdd4b0b8735b96bfec5ce253d5ae79517aa7c"
+    },
+    {
+      "path": "apps/web/src/lib/server/login-transport.spec.ts",
+      "sha256": "a78b109f4f8d1839e1ba2c084197e0d5d69ed419c4bce639d5d799f766576a9f",
+      "gitBlob": "e3b8d2c1107d93e00f54e5fed5c450c50caca153"
+    },
+    {
+      "path": "apps/web/src/lib/utils.ts",
+      "sha256": "2ea482e63aa411052828077c2ea8276d4ec4da8c2f0f2ca1d7eac13262e09a8b",
+      "gitBlob": "fe0d16987935134462183adc79bc673e421b8df4"
+    },
+    {
+      "path": "apps/web/src/styles/vendor/shadcn-LICENSE.md",
+      "sha256": "1564074e13439397221ffd522e2e504d56561994a23d371aa5e3ad43e4f5423f",
+      "gitBlob": "fad4d887a681dd49233e5ed01ee2c7a1513089a0"
+    },
+    {
+      "path": "apps/web/src/styles/vendor/shadcn-tailwind.css",
+      "sha256": "bc7d83425702955b4cb67cb14ede9d603f9d912376d57a2d81d661094d2a782a",
+      "gitBlob": "7807c58eb94de8b764b9b6b7b5d8cde6d012b17f"
+    },
+    {
+      "path": "apps/web/tests/useSeatHoldTimer.test.ts",
+      "sha256": "8ac1c77e0719657021838ec606e2cd595cb8fa107239f81b5256228c727e7624",
+      "gitBlob": "ea6791ff8695cce650cfbf2e6091d88b429b881d"
+    },
+    {
+      "path": "apps/web/tsconfig.json",
+      "sha256": "f3626f8d8aa43d50c5478e05346983d19aa326b8d436bc12db245250566171fe",
+      "gitBlob": "37becdfbec9c34b991505182290badc83be366ee"
+    },
+    {
+      "path": "apps/web/vitest.config.ts",
+      "sha256": "4f1f6a5d8c09b2739ba4ba1d8b7fd76a9b8380a5bd7210b9bb17550af4c093a0",
+      "gitBlob": "07d5b83f40bd8b46a6a9c8fe72ce52c85f837e47"
+    },
+    {
+      "path": "apps/web/vitest.sprint1-coverage.config.ts",
+      "sha256": "887908e023290ce8da9cfc6493e833b141a2bee226ac3d47c12497d6f59c0007",
+      "gitBlob": "54ad1531d209da01d23b284cb3a8ed7d4fa372ca"
+    },
+    {
+      "path": "deploy/laptop-compat.mjs",
+      "sha256": "0507d8b88e7350fd18d817be84d712afbdc1c681504b99cc1419662c3cc2d1fb",
+      "gitBlob": "229f66c2458969d0bb67f7630ff666f83d041d5f"
+    },
+    {
+      "path": "deploy/laptop-compat.spec.mjs",
+      "sha256": "3fae8ffc90e84d5b96558968fc67dcf8950e1666e61faddfec7637e8d0720191",
+      "gitBlob": "f76be2aed76f2df33adedb3a93d6ade4323d6d4b"
+    },
+    {
+      "path": "deploy/laptop-gateway.mjs",
+      "sha256": "c3748f0b8471c263d2da6f5163bdc688c09c55794a48dc8cdf16cd1300e9ab82",
+      "gitBlob": "d839f37b35de5d718db42885d645635c475d9993"
+    },
+    {
+      "path": "deploy/laptop-gateway.spec.mjs",
+      "sha256": "4c76726db47fb79a9817f5ac76de5f18958a0f6210d58217552bbf1da6a43fc0",
+      "gitBlob": "75eaf7a5f3146d21d23baf3c96d605028439dd08"
+    },
+    {
+      "path": "deploy/laptop-release.mjs",
+      "sha256": "c9fb1dd4694186a08bc61d7366aa0a3755d7c6c3ce7b0e64a8ee81fb06cf9b47",
+      "gitBlob": "b906b3c7f08154d6a42121abb3ae2ada216d9c2e"
+    },
+    {
+      "path": "deploy/laptop-release.spec.mjs",
+      "sha256": "21b5bfc94d7622728ce4e9d2fcad10765be3592bbca1051e2d473287a7718aa0",
+      "gitBlob": "39beeb9585e43c91176b617d24ecc7d7ada1421d"
+    },
+    {
+      "path": "deploy/laptop-resources.mjs",
+      "sha256": "fc309b1aa4afb68632dba196625ddfce15e6db858eb9a755efebe2d841d11a10",
+      "gitBlob": "7cac3fc07673d490cb9ce83f9530464cd860c467"
+    },
+    {
+      "path": "deploy/laptop-resources.spec.mjs",
+      "sha256": "2daf71d906ecab046ba3ffc4514b0f3e33d463db780be269bac82caa59d458a0",
+      "gitBlob": "2556e3608aef97301a1c0aca38fc7e16e1bf212f"
+    },
+    {
+      "path": "deploy/laptop-watcher.spec.mjs",
+      "sha256": "9bb073d3635da6f3b8b99f2fe38c6928a549aa0533a19b364d3d850dcf7d3da0",
+      "gitBlob": "640ab8daeeb3daa30663cfd927dfdc88361d1a80"
+    },
+    {
+      "path": "deploy/next-root-dirs.spec.mjs",
+      "sha256": "71d5e7522e46a235527c84f235ce28271bfd6c82b7993d1403c8589fe76d0fec",
+      "gitBlob": "4be2bc07197f19f5d16553569877c03cc0489f8c"
+    },
+    {
+      "path": "deploy/registration-mail.mjs",
+      "sha256": "a9eaf25b39e529e74aa787e494065dc82bd74fabbc74c0895bd0493db78fa246",
+      "gitBlob": "b0e6830fbafe2bf72ed67573463e7cfea9b476e4"
+    },
+    {
+      "path": "deploy/render-start.mjs",
+      "sha256": "770f98a6f37a11b6aabfc9d6546c93f2e2e5d1528f809daa556b2c6973408a9e",
+      "gitBlob": "ca91dd919fd84ce6f9b41f84dbe6f3efb463a6d1"
+    },
+    {
+      "path": "packages/shared/index.ts",
+      "sha256": "85bde9885250f44a1b40fca615617ca1912e7a3635cba334048fa7fbc803478b",
+      "gitBlob": "c91e4bfefc2933c0f252a9d49abd69d336b2a397"
+    },
+    {
+      "path": "packages/shared/login-peer.d.ts",
+      "sha256": "575d8962114207164c7d03389fe5ae73e127a8a066b8a315e185606e9d58fea4",
+      "gitBlob": "c739354755f7dae671677fefef3cdf703b6acdb2"
+    },
+    {
+      "path": "packages/shared/login-peer.js",
+      "sha256": "1e5f93b4147c9c941c38ad43c92e63cd1657a8808ab9a6e19961af33cea1e7f2",
+      "gitBlob": "4418b61bc3775ed0816a38a712f86dfafa16ae97"
+    },
+    {
+      "path": "packages/shared/package.json",
+      "sha256": "bf08e45937722877962a7d4dbde86840b891416653e15c75d967a218df599e04",
+      "gitBlob": "5fcf4dbf22af0fc4532c9de276dfebd6814185a2"
+    },
+    {
+      "path": "packages/shared/registration-notice.d.ts",
+      "sha256": "c637f125a7d40afc0fdd36691bc65dba388a3206747162666905995b01407b44",
+      "gitBlob": "8f8242bc14608f207b18baca73dab8f4ec2cbe28"
+    },
+    {
+      "path": "packages/shared/registration-notice.js",
+      "sha256": "74dd6b80c1025d315b43e4388c888cc0de6448552c1830cbca81c5c2ded2343c",
+      "gitBlob": "4d12c9c8bb003b609c7faa68aff02f8c6e8debe4"
+    },
+    {
+      "path": "packages/shared/ticket-qr.d.ts",
+      "sha256": "292a0d617da24852f75a9105edf83a5a9fb38c10bdd8c57852e4d602ff67ef4a",
+      "gitBlob": "f56b4dce6ae8e32da82721e442e027d0e2f414ac"
+    },
+    {
+      "path": "packages/shared/ticket-qr.js",
+      "sha256": "0bef1f44fff078e5ae1d3f7e5638bf5bd24aab7f34fe12d8b3ea142e1ec22dd6",
+      "gitBlob": "76f125ff0b200528526b2c023a1445c9be71937d"
+    },
+    {
+      "path": "scripts/benchmark-sprint1-staging.mjs",
+      "sha256": "931c27e64cb841bf5bb49e6ee7ee807e44824d891988e8decdb8f56fbb14935d",
+      "gitBlob": "c3a3bf5168e250b25eed7b99b1220a895368faa9"
+    },
+    {
+      "path": "scripts/capture-correction-before.js",
+      "sha256": "1675e621d343e2eb36826c1c76a162b3b5142afec6680797ed1397603a074ca6",
+      "gitBlob": "8b1654e5218aca463a5992a9a36a5e709581bf03"
+    },
+    {
+      "path": "scripts/correction-browser-flow.js",
+      "sha256": "c469e912f892d590b72906daf8c4714e06ef42b2dc70b3a19d40a4edd67fc722",
+      "gitBlob": "e0290afde32bfbc186b21c17bb26076778bbc8c0"
+    },
+    {
+      "path": "scripts/demo.ps1",
+      "sha256": "7e76d73a3f9647eae6cfece1d09a0d59ee04db482b6338d30f39626ee94f52ca",
+      "gitBlob": "a65d1610b85f7482f4d0d4845534559644674105"
+    },
+    {
+      "path": "scripts/generate-seat-map.mjs",
+      "sha256": "ef650d65eb3e8cdc01f61a2ce8983ae6e517870c6f4ecdf826a7615a19fcdc6e",
+      "gitBlob": "578578846716a514feb01fc2c29690ccbab3cf6e"
+    },
+    {
+      "path": "scripts/generate-ticket-signing-key.mjs",
+      "sha256": "5af7d5e83719f6d3f0db905435dca3292b6f5ff7c012e33790ec8fb2c371615f",
+      "gitBlob": "b3188e2894b7df4136586d9a6adea1f201ffc2d6"
+    },
+    {
+      "path": "scripts/hold-browser-flow.js",
+      "sha256": "33458b7df9f5cd09dce8efc45bb510debb12d8e0442af502bf224fce2ae27c34",
+      "gitBlob": "4badd38ebd35c4ec069e71f7b8713f69518d0f0e"
+    },
+    {
+      "path": "scripts/hold-expired-browser-flow.js",
+      "sha256": "22beaa9b2945b8adcd269299bd1d7d95a913a379e761c5adfaa17b7e230be374",
+      "gitBlob": "75df654a4c7ef486cc8f9797134710e1a24e57ab"
+    },
+    {
+      "path": "scripts/run-sprint2-local.ps1",
+      "sha256": "2f559fbd7a50acdc869d934520af459c54d1e39d465bba020b0511bf1ca8efb7",
+      "gitBlob": "a5cf68340e1e3156a454f5cafb08ded79cac8e1d"
+    },
+    {
+      "path": "scripts/simulate-payment-webhook.mjs",
+      "sha256": "51960ba22a5975ae8b6fb0d9b3a33873655915690868f4249ed8d1cf4aa4604c",
+      "gitBlob": "8699aab6329af893346b7137324a6814012c4066"
+    },
+    {
+      "path": "scripts/sprint1-coverage.mjs",
+      "sha256": "135d2b583885ac53f6a7ed506b04bb8b65be64b8fd9dcd4a58557be9270c8c75",
+      "gitBlob": "803b1afa9b6068ab4bb4b8bfdde6ca2b5eeeb290"
+    },
+    {
+      "path": "scripts/sprint1-demo.ps1",
+      "sha256": "f383ab28948c7504e69ee6007eafb38221e7f329ee67e6dda6340e0d0f506d1d",
+      "gitBlob": "22add9ffca532a85dc2ae2ff7d76e78f0c006026"
+    },
+    {
+      "path": "scripts/sprint1-docker-smoke.mjs",
+      "sha256": "676a8fe0bda3392a1d70fdb71ccbad07efd3e36ad0df7c4e0d7651c5c582bb1e",
+      "gitBlob": "cb677436fc2d94717880feea02bc44c8baaec83a"
+    },
+    {
+      "path": "scripts/sprint1-onboarding-worker.mjs",
+      "sha256": "0eaedc7648143ede8560f967ab3652e8542aee4d6039fa3324f11211a50ce2f8",
+      "gitBlob": "31283df95e672938a159524ac4f38fd9ee9c2013"
+    },
+    {
+      "path": "scripts/sprint1-onboarding.mjs",
+      "sha256": "fee3c7169ca94ca31db41b50df8a041de4269661182f85690a2badaa335d89c8",
+      "gitBlob": "d3f053c2e2fc2395e0627ea7ffbeb7c004144a38"
+    },
+    {
+      "path": "scripts/sprint1-process.ps1",
+      "sha256": "c0b56c0bb9777170b43c9a8b97a4d38fc46d80db5da6c2a2a323e9a17bdce66f",
+      "gitBlob": "1197bd68b68ec159a27557326d5f3ebd82ca6c6e"
+    },
+    {
+      "path": "scripts/sprint1-setup.mjs",
+      "sha256": "7d3d28ca06a03e1d426b39bf70b9f93df0cf380be7ca2b6727060e5c1e0b9ed7",
+      "gitBlob": "f47bcbd2545f9ac8d91207fd4c28dbd44198618e"
+    },
+    {
+      "path": "scripts/sprint1-sources.py",
+      "sha256": "3adc699e23f68b8b6265fb6b1ee59ab39f1a90bf4990b76f5eb6ed012b82fe27",
+      "gitBlob": "309c152ac494fa2c1b25f59069c6be408b23aa5c"
+    },
+    {
+      "path": "scripts/sprint1-staging-access.ps1",
+      "sha256": "45b0ba45e686fa91d09c4eeb29d70c9d27393479d33e5479d944e50649d2787c",
+      "gitBlob": "a72ea87fccc2538e7d8be8c10f6638e16944a9da"
+    },
+    {
+      "path": "scripts/sprint1-staging-client.ps1",
+      "sha256": "b2388ebbe887fa96a0d9dee5850faa2b4786e119531a7af440390626b9b0bec2",
+      "gitBlob": "30ea5e977bb933c337a9250ce9da529f2e8fb493"
+    },
+    {
+      "path": "scripts/sprint1-staging-load-client.mjs",
+      "sha256": "fffbf448028b49b1ba5241a60249245cc697d51c74018abbae0b258af6b59279",
+      "gitBlob": "8176b355cff6d159afa2bb5f5c464fdc2ebb926a"
+    },
+    {
+      "path": "scripts/sprint1-staging-watch.mjs",
+      "sha256": "7ab177f927af0c75d2c966b5616490045be51ab6caec42437e48717a2e246224",
+      "gitBlob": "ee9d1e635fa7048ef0c6cd2564c286c926189a9a"
+    },
+    {
+      "path": "scripts/sprint1-staging.mjs",
+      "sha256": "0d854d58e1c292eb53e630c305969f1d110b750c3356973c683c4542c78171da",
+      "gitBlob": "eb9b3c0e7b2a4039a084e9de69ca5893c99759cb"
+    },
+    {
+      "path": "scripts/sprint1-staging.ps1",
+      "sha256": "660dc3d961f81df4160a65397ab29b55ac452068d7afac611691cb80a59ab815",
+      "gitBlob": "d3cb34f89956be48d486ce12ea58e706b9d0b56b"
+    },
+    {
+      "path": "scripts/sprint1-tests.mjs",
+      "sha256": "020071e29d3d09a0b10ebed163836a29d621180296d3c68a2c6bcb4cc4c4ac7d",
+      "gitBlob": "2bb168bfaa8ac8ac30b8df938bf8d816aefb21af"
+    },
+    {
+      "path": "scripts/sprint2-browser-flow.js",
+      "sha256": "f701f659caf88163608a00e151f7857bc27066a7a07bc88e80d0508654889912",
+      "gitBlob": "cd7df811b49e1a749e442f1415aa095aa328f8c6"
+    },
+    {
+      "path": "scripts/staging-benchmark-client.mjs",
+      "sha256": "10acc3fe56dde40dfc2b8b702eeea961fffb1252d452c6ff7fe5f3cb886f1e4c",
+      "gitBlob": "02df05b6980db8f66e1d3778ccacebad6951418d"
+    },
+    {
+      "path": "scripts/testing/order-response-fault-proxy.mjs",
+      "sha256": "5ca456f9c41b7e097281231384cf26d9bc50767858c55328eda472253d468b3a",
+      "gitBlob": "7c4d804c8cc653f63196290a84da8e1d097c0eb7"
+    },
+    {
+      "path": "scripts/validate-stitch-components.mjs",
+      "sha256": "a28603514943fcdbf00f9c7bcd89bd4c80a2e34e5da3d6715e51ddf03e226399",
+      "gitBlob": "cd2555acb2f592a35fbe245ef2fb2731d8988b31"
+    },
+    {
+      "path": "scripts/verify-hold-browser.ps1",
+      "sha256": "d2d0ffb55a83accce7663f3e808749a0a0b8defdaa4bbe9f248fbc8dd0e643ce",
+      "gitBlob": "df1ad89763209fa4b1a87464269f5eaaebffbea4"
+    },
+    {
+      "path": "scripts/verify-hold-migrations.ps1",
+      "sha256": "f65a471c2f6dc913083fee24fb812d33a79a13cc5d2133d7d2e0d059ded90dc8",
+      "gitBlob": "e2a5c188a1b8cd91a70f6749f899e6787afaaf25"
+    },
+    {
+      "path": "scripts/verify-k01-candidates.ps1",
+      "sha256": "dd22deb1eca283718df0a1b413b82d1b0a76faab5eb4a6cfa503e5afcceddd37",
+      "gitBlob": "7667273a64f6937a778eb29b3a128a81a4d5ab36"
+    },
+    {
+      "path": "scripts/verify-render-profile.py",
+      "sha256": "d2cd0ec683df7b83ab8042ebc39f9eab9e8f6fbd2ad488c18a9b7f08b69dd1bb",
+      "gitBlob": "eb6422f30f0301428db120fc6f83ecded5716be8"
+    },
+    {
+      "path": "scripts/verify-sprint1-api.mjs",
+      "sha256": "def94eb74fa159775b396d6bc2dd3bb06df89b9a561aef6f3304f50f0b7b6521",
+      "gitBlob": "170b5a3cd3e1f3c64ce72155478fb5be20fb0912"
+    },
+    {
+      "path": "scripts/verify-sprint1-browser.mjs",
+      "sha256": "cbf2fa7785faf2f577ca03d6ad50e2207e8b86a896bd7a999a26d953cd53e50c",
+      "gitBlob": "5243e0b7dec56d01694d3c150bfdc66121f9f6ca"
+    },
+    {
+      "path": "scripts/verify-sprint1-load-laptop.mjs",
+      "sha256": "968fee29453e82596b6ce01b147f2a0d81326073a3bc6c98effdf787b6704f03",
+      "gitBlob": "1dc805e944c25981a9ca12fdca2d9f781cb90c5d"
+    },
+    {
+      "path": "scripts/verify-sprint1-staging.mjs",
+      "sha256": "83316188c7d437a19eb903a2a1dc6b8a6b52419c6ba0c4ce330db18fe2a147cd",
+      "gitBlob": "8315947d37799cd183db403c8a22fc3fb92769d3"
+    },
+    {
+      "path": "scripts/verify-sprint2-browser.ps1",
+      "sha256": "949699510bc71549fedbb05bc545e598c283da34e68c4edaf99855fc5eb83867",
+      "gitBlob": "7020f3cdf1f1bb7096919004643100eee4e371c7"
+    },
+    {
+      "path": "scripts/verify-sprint2-gates.ps1",
+      "sha256": "c5ad5c7282c784277d7fb33621803a95c17ff0f30ee723135437db3c548f8fae",
+      "gitBlob": "80f2cf6d313cb0cb95ea321067776880f82e0cfb"
+    },
+    {
+      "path": "scripts/verify-sprint2-migrations.ps1",
+      "sha256": "8c8e89443e0d8a931032b66adc580fb3e5ccdc1841c461fc3bc4ae5755c79057",
+      "gitBlob": "52d9102ec1b94ea7196f37d3d4a4c12d90d77068"
+    },
+    {
+      "path": "scripts/verify-stitch-browser.ps1",
+      "sha256": "ae63a278ccfc5c2796b303c81079781b760f3847379f9d1f293d169ee8e69e3f",
+      "gitBlob": "59606c6434b87c4e0fdf539c21ec193289492ec0"
+    },
+    {
+      "path": "scripts/verify-stitch-correction.ps1",
+      "sha256": "b389a36d01dd59fb9c265fdcea646350fc9bd382f5bb5c43a2ed0c0ba2f48ba8",
+      "gitBlob": "9ea04901be100db6ea0d7b70a47a5ce8ded7b5a6"
+    }
+  ]
+}

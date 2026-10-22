@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -45,10 +46,91 @@ export function requestedSeats(body: unknown): string[] {
   return [...ids].sort();
 }
 
+// S-42 limit cache TTL per API instance (organizer changes apply within it).
+export const S42_LIMIT_CACHE_TTL_MS = 10_000;
+
+// S-42: organizer-set per-account limit. null/undefined = unlimited.
+export function parseTicketLimit(body: unknown): number | null {
+  if (!body || typeof body !== 'object' || Array.isArray(body))
+    throw new BadRequestException('Gửi giới hạn dạng { maxTicketsPerUser }.');
+  const value = (body as Record<string, unknown>).maxTicketsPerUser;
+  if (value === null || value === undefined) return null;
+  if (
+    !Number.isInteger(value) ||
+    (value as number) < 1 ||
+    (value as number) > 2000
+  )
+    throw new BadRequestException(
+      'Giới hạn từ 1 đến 2000 vé, hoặc để trống (không giới hạn).',
+    );
+  return value as number;
+}
+
 @Injectable()
 export class HoldsService {
   private readonly logger = new Logger(HoldsService.name);
+  // S-42 limit cache: T-31/S-43 prove every extra pooled query on the claim
+  // hot path breaks the concurrency/NFR gates, so unlimited showtimes cost
+  // zero PG after the first lookup. Staleness window per API instance; the
+  // organizer-facing half (ticket-limit endpoint) stays strongly consistent.
+  private readonly limitCache = new Map<
+    string,
+    { limit: number | null; at: number }
+  >();
+  // Singleflight: a cold container hit by a 200-way burst must issue one
+  // limit lookup, not 200 — otherwise the lookups flood the 10-connection
+  // hold pool and time out real claims (T-31/S-43 concurrency gates).
+  private readonly limitInflight = new Map<string, Promise<number | null>>();
+  private limitCacheTtlMs = S42_LIMIT_CACHE_TTL_MS;
   constructor(private readonly db: PrismaService) {}
+
+  private async loadLimit(
+    showtimeId: string,
+    client?: HoldConnection,
+  ): Promise<number | null> {
+    try {
+      const [row] = await this.db.seatReadQuery<
+        { maxTicketsPerUser: number | null }[]
+      >(
+        Prisma.sql`SELECT "maxTicketsPerUser" FROM showtimes WHERE id=${showtimeId}::uuid`,
+        client,
+      );
+      // Owner chốt S-42: mặc định 4 vé/tài khoản/suất (migration backfill 4);
+      // NULL = BTC mở không giới hạn. Suất lạ (không có hàng) cũng dùng 4 —
+      // routine giữ ghế sẽ trả 404 sau. `?? null` giữ tương thích test cũ mock
+      // hàng thiếu cột.
+      if (!row) return 4;
+      return row.maxTicketsPerUser ?? null;
+    } catch {
+      // A configured limit must never be bypassed because the read pool is
+      // unavailable. Do not cache the failure: a later claim can retry.
+      this.logger.warn(JSON.stringify({ event: 'ticket_limit_unavailable' }));
+      throw new ServiceUnavailableException(
+        'Không thể kiểm tra giới hạn vé. Vui lòng thử lại.',
+      );
+    }
+  }
+
+  private async ticketLimitFor(
+    showtimeId: string,
+    client?: HoldConnection,
+  ): Promise<number | null> {
+    const now = Date.now();
+    const cached = this.limitCache.get(showtimeId);
+    if (cached && now - cached.at < this.limitCacheTtlMs) return cached.limit;
+    let inflight = this.limitInflight.get(showtimeId);
+    if (!inflight) {
+      inflight = this.loadLimit(showtimeId, client)
+        .then((limit) => {
+          this.limitCache.set(showtimeId, { limit, at: Date.now() });
+          this.limitInflight.delete(showtimeId);
+          return limit;
+        })
+        .finally(() => this.limitInflight.delete(showtimeId));
+      this.limitInflight.set(showtimeId, inflight);
+    }
+    return inflight;
+  }
 
   async claim(
     showtimeId: string,
@@ -58,9 +140,11 @@ export class HoldsService {
     client?: HoldConnection,
   ): Promise<HoldState> {
     const seatIds = requestedSeats(body);
+    await this.enforceTicketLimit(showtimeId, userId, seatIds.length, client);
     const requestId = randomUUID();
     try {
-      // v3 rolls rejected writes back inside its subtransaction; expected
+      // v4 rejects known conflicts without writes; v3 rolls racing rejections
+      // back inside its subtransaction. Expected
       // conflicts are outcomes, not PostgreSQL error/log storms. Await BEGIN
       // and timeout setup before pipelining this validated routine.
       const [result] = await this.db.commitHoldRoutine<
@@ -74,7 +158,7 @@ export class HoldsService {
         }[]
       >(
         Prisma.sql`
-        SELECT * FROM public.claim_hold_v3(
+        SELECT * FROM public.claim_hold_v4(
           ${showtimeId}::uuid, ${userId}::uuid, ${sessionHash}::text,
           ${'{' + seatIds.join(',') + '}'}::uuid[], ${randomUUID()}::uuid, ${randomUUID()}::uuid
         )`,
@@ -125,7 +209,8 @@ export class HoldsService {
           });
         throw new ServiceUnavailableException({
           code: 'HOLD_UNAVAILABLE',
-          message: 'Giữ ghế tạm thời không khả dụng. Tải lại sơ đồ rồi thử lại.',
+          message:
+            'Giữ ghế tạm thời không khả dụng. Tải lại sơ đồ rồi thử lại.',
           requestId,
         });
       }
@@ -263,6 +348,53 @@ export class HoldsService {
         code: 'HOLD_UNAVAILABLE',
         message: 'Giữ ghế tạm thời không khả dụng. Tải lại sơ đồ rồi thử lại.',
         requestId,
+      });
+    }
+  }
+
+  // S-42: owned = unexpired holds (all sessions of this account; PENDING orders
+  // keep their seat_holds rows, so they are already included) + PAID and
+  // NEEDS_REVIEW order seats. Sequential accumulation is blocked here; a
+  // same-millisecond race needs a proc-level check (S-42b).
+  private async enforceTicketLimit(
+    showtimeId: string,
+    userId: string,
+    requested: number,
+    client?: HoldConnection,
+  ): Promise<void> {
+    const limit = await this.ticketLimitFor(showtimeId, client);
+    if (limit === null) return;
+    // One pooled round trip for both counts; only limited showtimes pay it.
+    const [counts] = await this.db.seatReadQuery<
+      { held: number | string | bigint; bought: number | string | bigint }[]
+    >(
+      Prisma.sql`SELECT
+        (SELECT COUNT(DISTINCT h."seatId") FROM seat_holds h
+          JOIN hold_sessions hs ON hs.id = h."holdSessionId"
+          WHERE h."showtimeId"=${showtimeId}::uuid AND hs."userId"=${userId}::uuid
+            AND h."expiresAt" > clock_timestamp()) AS held,
+        (SELECT COUNT(*) FROM order_items oi
+          JOIN orders o ON o.id = oi."orderId"
+          WHERE o."userId"=${userId}::uuid AND o."showtimeId"=${showtimeId}::uuid
+            AND o.status IN ('PAID','NEEDS_REVIEW')) AS bought`,
+      client,
+    );
+    const owned = Number(counts?.held ?? 0) + Number(counts?.bought ?? 0);
+    if (owned + requested > limit) {
+      this.logger.warn(
+        JSON.stringify({
+          event: 'ticket_limit',
+          limit,
+          owned,
+          requested,
+        }),
+      );
+      throw new ForbiddenException({
+        code: 'TICKET_LIMIT',
+        message: `Mỗi tài khoản chỉ được giữ/mua tối đa ${limit} vé cho suất này (bạn đã có ${owned} vé).`,
+        limit,
+        owned,
+        requested,
       });
     }
   }

@@ -1,0 +1,31 @@
+{
+  "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+  "time": "2026-10-16T08:22:52.638Z",
+  "cases": [
+    {
+      "name": "five-required-roles",
+      "status": "PASS"
+    },
+    {
+      "name": "all-six-fixtures-argon2id-and-exact-roles",
+      "status": "PASS"
+    },
+    {
+      "name": "database-rejects-duplicate-email",
+      "status": "PASS"
+    },
+    {
+      "name": "safe-seed-twice-keeps-existing-user-count",
+      "status": "PASS"
+    },
+    {
+      "name": "seed-refuses-wrong-target-before-connection",
+      "status": "PASS"
+    },
+    {
+      "name": "multi-role-allowed-list-and-no-admin-or-other-owner-override",
+      "status": "PASS"
+    }
+  ],
+  "result": "PASS"
+}

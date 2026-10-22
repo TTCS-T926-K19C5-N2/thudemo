@@ -60,7 +60,11 @@ describe('Sprint 2 isolated database integration', () => {
     const target = new URL(process.env.DATABASE_URL ?? '');
     if (
       target.hostname !== '127.0.0.1' ||
-      target.port !== '15432' ||
+      !(
+        target.port === '15432' ||
+        (target.port === '15446' &&
+          process.env.SPRINT1_ISOLATED_TEST === 'true')
+      ) ||
       target.pathname !== '/sprint2_integration'
     )
       throw new Error('Run only on the isolated sprint2_integration database');
@@ -98,24 +102,31 @@ describe('Sprint 2 isolated database integration', () => {
   });
   afterAll(async () => {
     if (db) {
-      const shows = await db.showtime.findMany({
-        where: { eventId },
-        select: { id: true },
-      });
-      const ids = shows.map((s) => s.id);
-      await db.orderItem.deleteMany({
-        where: { order: { showtimeId: { in: ids } } },
-      });
-      await db.order.deleteMany({ where: { showtimeId: { in: ids } } });
-      await db.seatHold.deleteMany({ where: { showtimeId: { in: ids } } });
-      await db.holdSession.deleteMany({ where: { showtimeId: { in: ids } } });
-      await db.seat.deleteMany({ where: { showtimeId: { in: ids } } });
-      await db.seatCategory.deleteMany({ where: { showtimeId: { in: ids } } });
-      await db.showtime.deleteMany({ where: { eventId } });
-      await db.event.delete({ where: { id: eventId } });
-      await db.user.deleteMany({
-        where: { id: { in: [owner, other, buyer, ...extraBuyerIds] } },
-      });
+      if (eventId) {
+        const shows = await db.showtime.findMany({
+          where: { eventId },
+          select: { id: true },
+        });
+        const ids = shows.map((s) => s.id);
+        await db.orderItem.deleteMany({
+          where: { order: { showtimeId: { in: ids } } },
+        });
+        await db.order.deleteMany({ where: { showtimeId: { in: ids } } });
+        await db.seatHold.deleteMany({ where: { showtimeId: { in: ids } } });
+        await db.holdSession.deleteMany({ where: { showtimeId: { in: ids } } });
+        await db.seat.deleteMany({ where: { showtimeId: { in: ids } } });
+        await db.seatCategory.deleteMany({
+          where: { showtimeId: { in: ids } },
+        });
+        await db.showtime.deleteMany({ where: { eventId } });
+        await db.event.delete({ where: { id: eventId } });
+      }
+      const userIds = [owner, other, buyer, ...extraBuyerIds].filter(Boolean);
+      if (userIds.length > 0) {
+        await db.user.deleteMany({
+          where: { id: { in: userIds } },
+        });
+      }
       const report = {
         date: new Date().toISOString(),
         runtime: process.version,
@@ -145,6 +156,34 @@ describe('Sprint 2 isolated database integration', () => {
       await app.close();
     }
   });
+  it('does not expose research Redis routes or accept a caller-supplied prototype owner', async () => {
+    for (const prefix of ['/showtimes', '/api/showtimes']) {
+      for (const cookie of [undefined, buyerCookie]) {
+        const call = request(app.getHttpServer())
+          .post(`${prefix}/st_101/hold-seats`)
+          .set('x-user-id', 'forged-prototype-owner')
+          .send({ userId: 'forged-prototype-owner', seatIds: ['A1'] });
+        if (cookie) call.set('Cookie', cookie);
+        await call.expect(404);
+      }
+      await request(app.getHttpServer())
+        .post(`${prefix}/st_101/release-expired-holds`)
+        .set('Cookie', buyerCookie)
+        .expect(404);
+    }
+    for (const path of [
+      '/api/showtimes/expired-holds',
+      '/api/showtimes/st_101/expired-holds',
+      '/api/showtimes/st_101/countdown?expiresAt=2099-01-01',
+      '/api/showtimes/st_101/seats/A1/countdown',
+      '/api/showtimes/st_101/holds/hold1/countdown',
+    ])
+      await request(app.getHttpServer()).get(path).expect(404);
+    await request(app.getHttpServer())
+      .get('/api/showtimes/st_101/seats?seatIds=A1')
+      .expect(404);
+  });
+
   it('projects sold/held/expired inventory fixtures in the production SQL expression using DB time', async () => {
     const rows = await db.$queryRaw<
       { id: string; status: string }[]
@@ -431,7 +470,78 @@ describe('Sprint 2 isolated database integration', () => {
     ).toBe(false);
     await request(app.getHttpServer()).get('/showtimes?cursor=bad').expect(400);
   }, 30000);
-  it('creates one pending order from live holds, snapshots prices, extends ten minutes and rejects expired seats', async () => {
+  it('known conflicts preserve exact rejected seats, validation precedence, retry deadline and zero partial claims', async () => {
+    const competitor = await account('BUYER');
+    extraBuyerIds.push(competitor.id);
+    const show = await db.showtime.create({
+      data: {
+        eventId,
+        status: 'ON_SALE',
+        startTime: new Date('2099-01-01T00:00:00Z'),
+      },
+    });
+    const category = await db.seatCategory.create({
+      data: { showtimeId: show.id, name: 'fast-rejection-fixture', price: 100 },
+    });
+    const seats = await Promise.all(
+      [1, 2].map((seatNumber) =>
+        db.seat.create({
+          data: {
+            showtimeId: show.id,
+            categoryId: category.id,
+            row: 'FAST',
+            seatNumber,
+          },
+        }),
+      ),
+    );
+    const first = await request(app.getHttpServer())
+      .post(`/showtimes/${show.id}/holds`)
+      .set('Cookie', buyerCookie)
+      .send({ seatIds: [seats[0].id] })
+      .expect(200);
+    const conflict = await request(app.getHttpServer())
+      .post(`/showtimes/${show.id}/holds`)
+      .set('Cookie', competitor.cookie)
+      .send({ seatIds: seats.map((seat) => seat.id) })
+      .expect(409);
+    expect(conflict.body.code).toBe('SEAT_CONFLICT');
+    expect(conflict.body.rejectedSeatIds).toEqual([seats[0].id]);
+    expect(await db.seatHold.count({ where: { seatId: seats[1].id } })).toBe(0);
+    expect(
+      await db.holdSession.count({
+        where: { showtimeId: show.id, userId: competitor.id },
+      }),
+    ).toBe(0);
+    const retry = await request(app.getHttpServer())
+      .post(`/showtimes/${show.id}/holds`)
+      .set('Cookie', buyerCookie)
+      .send({ seatIds: [seats[0].id] })
+      .expect(200);
+    expect(retry.body.hold.id).toBe(first.body.hold.id);
+    expect(retry.body.hold.expiresAt).toBe(first.body.hold.expiresAt);
+    await db.showtime.update({
+      where: { id: show.id },
+      data: { status: 'CLOSED' },
+    });
+    const closed = await request(app.getHttpServer())
+      .post(`/showtimes/${show.id}/holds`)
+      .set('Cookie', competitor.cookie)
+      .send({ seatIds: [seats[0].id] })
+      .expect(409);
+    expect(closed.body.code).toBe('SHOWTIME_CLOSED');
+    await db.showtime.update({
+      where: { id: show.id },
+      data: { status: 'ON_SALE' },
+    });
+    await request(app.getHttpServer())
+      .post(`/showtimes/${show.id}/holds`)
+      .set('Cookie', competitor.cookie)
+      .send({ seatIds: [seats[0].id, randomUUID()] })
+      .expect(400);
+  });
+
+  it('creates one pending order from live holds, snapshots prices, preserves the original deadline and rejects expired seats', async () => {
     const available = await db.seat.findMany({
       where: { showtimeId: showId },
       orderBy: [{ categoryId: 'asc' }, { row: 'asc' }, { seatNumber: 'asc' }],
@@ -448,6 +558,7 @@ describe('Sprint 2 isolated database integration', () => {
       .send({ seatIds: firstSeats.map((seat) => seat.id) })
       .expect(200);
     const holdExpiresAt = Date.parse(held.body.hold.expiresAt);
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     const [placedA, placedB] = await Promise.all([
       request(app.getHttpServer())
@@ -473,17 +584,19 @@ describe('Sprint 2 isolated database integration', () => {
     );
     const paymentExpiresAt = Date.parse(placedA.body.order.paymentExpiresAt);
     // Promise.all preserves input order, not which concurrent request won the lock.
-    // Only the creator gets a new 600-second deadline; the reuser must not extend it.
+    // DEC10/T37: neither the creator nor the reuser may extend the first hold.
     const created = placedA.body.created ? placedA : placedB;
     const reused = placedA.body.created ? placedB : placedA;
-    expect(paymentExpiresAt - Date.parse(created.body.serverTime)).toBe(600000);
+    expect(paymentExpiresAt).toBe(holdExpiresAt);
+    expect(paymentExpiresAt - Date.parse(created.body.serverTime)).toBeLessThan(
+      600000,
+    );
     expect(reused.body.order.paymentExpiresAt).toBe(
       created.body.order.paymentExpiresAt,
     );
     const remaining = paymentExpiresAt - Date.parse(reused.body.serverTime);
     expect(remaining).toBeGreaterThan(0);
     expect(remaining).toBeLessThanOrEqual(600000);
-    expect(paymentExpiresAt).toBeGreaterThanOrEqual(holdExpiresAt);
     expect(
       await db.order.count({
         where: { userId: buyer, showtimeId: showId },
@@ -494,13 +607,23 @@ describe('Sprint 2 isolated database integration', () => {
       .set('Cookie', buyerCookie)
       .expect(200);
     expect(currentOrder.body.order.status).toBe('PENDING_PAYMENT');
-    const extended = await db.seatHold.findMany({
+    const unchangedClaims = await db.seatHold.findMany({
       where: { seatId: { in: firstSeats.map((seat) => seat.id) } },
       select: { expiresAt: true },
     });
     expect(
-      extended.every((seat) => seat.expiresAt.getTime() === paymentExpiresAt),
+      unchangedClaims.every(
+        (seat) => seat.expiresAt.getTime() === holdExpiresAt,
+      ),
     ).toBe(true);
+    expect(unchangedClaims).toHaveLength(firstSeats.length);
+    expect(
+      (
+        await db.holdSession.findUniqueOrThrow({
+          where: { id: held.body.hold.id },
+        })
+      ).expiresAt.getTime(),
+    ).toBe(holdExpiresAt);
 
     const newPrice = (firstCategory.price ?? 0) + 12345;
     await request(app.getHttpServer())
@@ -520,7 +643,7 @@ describe('Sprint 2 isolated database integration', () => {
     await request(app.getHttpServer())
       .get(`/orders/${placedA.body.order.id}`)
       .set('Cookie', secondBuyer.cookie)
-      .expect(404);
+      .expect(403);
     const freshSeat = available.find(
       (seat) =>
         seat.categoryId === firstCategory.id &&

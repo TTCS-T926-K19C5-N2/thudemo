@@ -1,0 +1,29 @@
+{
+  "image": "sprint1-gitflow-render:20261015",
+  "imageId": "sha256:9c4d452a67202a4fadc5bab8540022c1579c28a5d05ef5dc8706cd6306c8c2eb",
+  "source": "Runtime hashes match candidate; image predates later test-only edits",
+  "status": "PASS",
+  "user": "node",
+  "apiHealth": 200,
+  "webHome": 200,
+  "proxyHealth": 200,
+  "login": 200,
+  "cookieFlags": "HttpOnly; Secure; SameSite=Lax",
+  "replayMe": 200,
+  "privateFilesAbsent": true,
+  "files": [
+    {
+      "file": "apps/web/server.mjs",
+      "sha256": "a2e56f663cfb59738726faa10b60b15a8fe451449e18a5c6b36e98d87da59c39"
+    },
+    {
+      "file": "apps/web/src/lib/server/login-transport.mjs",
+      "sha256": "434acffab87d5b1c7831d78af83414b9b735df30b1c08bb0da2bf2e25de43af5"
+    },
+    {
+      "file": "packages/shared/login-peer.js",
+      "sha256": "571c478f108bfc82adf5c7398b3b61b1283dd63d8556b6a9b5dca318e6e364a5"
+    }
+  ],
+  "limitation": "Local Docker with synthetic gateway configuration, no provider call, no staging rollout proof. Secure cookie checked as header; replay was explicit HTTP test client, not browser storage."
+}

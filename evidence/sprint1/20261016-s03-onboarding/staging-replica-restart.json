@@ -1,0 +1,14 @@
+{
+  "time": "2026-10-16T16:13:08.375Z",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "result": "PASS",
+  "assertions": [
+    "Owned replica restarted with exact image and byte-identical server environment",
+    "Persistent registration mail key file unchanged",
+    "Replica dependency health200 and trusted HTTPS active home/health200"
+  ],
+  "limitations": [
+    "No new email sent",
+    "Does not prove abrupt power loss or all outbox delivery cases; separate integration evidence applies"
+  ]
+}
