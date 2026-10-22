@@ -124,7 +124,9 @@ export class BookingAccessService {
     );
     const perIp = boundedConfig(
       this.config.get(`BOOKING_${route.toUpperCase()}_IP_LIMIT`),
-      fallback * 4,
+      // Shared campus/company networks can contain hundreds of buyers.
+      // Per-account limits remain independent; these are starting staging limits.
+      route === 'hold' ? 6000 : 1500,
       1,
       100000,
     );
