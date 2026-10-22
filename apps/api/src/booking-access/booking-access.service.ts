@@ -31,7 +31,7 @@ export const BOOKING_LIMIT_LUA = `
 local retry=0
 for i,key in ipairs(KEYS) do
  local n=tonumber(redis.call('GET',key) or '0')
- if n>=tonumber(ARGV[i]) then retry=math.max(retry,redis.call('TTL',key)) end
+ if n>=tonumber(ARGV[i]) then retry=math.max(retry,1,redis.call('TTL',key)) end
 end
 if retry>0 then return retry end
 for _,key in ipairs(KEYS) do if redis.call('INCR',key)==1 then redis.call('EXPIRE',key,60) end end

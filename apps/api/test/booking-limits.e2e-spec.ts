@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 import { BookingAccessService } from '../src/booking-access/booking-access.service.js';
@@ -70,5 +70,14 @@ describe('S41 real shared-network booking limits', () => {
     expect(
       await access.limit('order', 'another-account', '192.0.2.2'),
     ).toBeGreaterThan(0);
+  });
+  it('does not reopen an exhausted budget during the last fractional second', async () => {
+    const access = service({ BOOKING_HOLD_ACCOUNT_LIMIT: '1' });
+    const user = 'last-fractional-second';
+    expect(await access.limit('hold', user, '192.0.2.3')).toBe(0);
+    const key = `booking:${profile}:limit:hold:user:${createHash('sha256').update(user).digest('hex')}`;
+    await redis.pexpire(key, 400);
+    expect(await access.limit('hold', user, '192.0.2.3')).toBeGreaterThan(0);
+    expect(await redis.get(key)).toBe('1');
   });
 });
