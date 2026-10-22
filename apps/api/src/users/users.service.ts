@@ -292,4 +292,37 @@ export class UsersService {
       hasNext: users.length > 20,
     };
   }
+
+  async createStaff(email: string, password: string) {
+    if (!password || password.length < 8) {
+      throw new BadRequestException('Mật khẩu phải có ít nhất 8 ký tự.');
+    }
+    const existing = await this.prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      throw new BadRequestException('Email đã được sử dụng.');
+    }
+    const hashedPassword = await argon2.hash(password, {
+      type: argon2.argon2id,
+    });
+    const user = await this.prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        isActive: true,
+        isEmailVerified: true,
+        userRoles: {
+          create: { role: { connect: { name: 'STAFF' } } },
+        },
+      },
+    });
+    return { message: 'Staff account created successfully', id: user.id };
+  }
+
+  async disableAccount(id: string) {
+    await this.prisma.user.update({
+      where: { id },
+      data: { isActive: false },
+    });
+    return { message: 'Account disabled successfully' };
+  }
 }

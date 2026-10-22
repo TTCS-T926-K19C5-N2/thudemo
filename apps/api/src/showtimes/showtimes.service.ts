@@ -5,6 +5,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import { Prisma, ShowtimeStatus } from '@prisma/client';
 import type { Redis } from 'ioredis';
@@ -14,6 +15,9 @@ import { SEAT_STATUS_SQL } from './seat-status.sql.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { validateSeatMap, type ImportedSeat } from './seat-map.js';
 import { parseTicketLimit } from '../holds/holds.service.js';
+import { SeatEventsService } from './seat-events.service.js';
+import type { MessageEvent } from '@nestjs/common';
+import { EMPTY, type Observable } from 'rxjs';
 type Tx = Prisma.TransactionClient;
 type SeatRow = {
   id: string;
@@ -23,9 +27,26 @@ type SeatRow = {
   price: number | null;
   status: 'AVAILABLE' | 'HELD' | 'SOLD';
 };
+type SalesCategory = {
+  name: string;
+  price: number | null;
+  totalSeats: number;
+  sold: number;
+  held: number;
+  available: number;
+  revenue: number;
+};
+export type ShowtimeSales = {
+  showtimeId: string;
+  generatedAt: string;
+  isDemo: boolean;
+  totals: Omit<SalesCategory, 'name' | 'price'>;
+  categories: SalesCategory[];
+};
 type PublicRow = {
   id: string;
   eventId: string;
+  isDemo: boolean;
   posterPath: string | null;
   mobilePosterPath: string | null;
   categoryLabel: string | null;
@@ -44,10 +65,12 @@ export class ShowtimesService {
     private readonly db: PrismaService,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
     config: ConfigService,
+    @Optional() private readonly seatEvents?: SeatEventsService,
   ) {
     const target = new URL(config.getOrThrow<string>('DATABASE_URL'));
     const identity = `${target.hostname}:${target.port}${target.pathname}`;
-    this.cacheNamespace = `catalog:showtimes:contract-v3:${createHash('sha256').update(identity).digest('hex').slice(0, 16)}`;
+    this.cacheNamespace = `catalog:showtimes:contract-v4:${createHash('sha256').update(identity).digest('hex').slice(0, 16)}`;
+    this.seatEvents?.setSnapshotLoader?.((id) => this.publicSeats(id));
   }
   private async owned(tx: Tx, id: string, owner: string, lock = false) {
     if (lock)
@@ -166,7 +189,96 @@ export class ShowtimesService {
       });
     });
   }
-  async status(id: string, owner: string, body: unknown) {    const next =
+  async clone(id: string, owner: string, body: unknown) {
+    const value =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const raw = value.startTime;
+    if (
+      Object.keys(value).some((key) => key !== 'startTime') ||
+      typeof raw !== 'string' ||
+      !/(?:Z|[+-]\d{2}:\d{2})$/i.test(raw)
+    ) {
+      throw new BadRequestException({
+        message: 'Thời gian cần có múi giờ.',
+        errors: { startTime: 'Chọn giờ bắt đầu hợp lệ.' },
+      });
+    }
+    const startTime = new Date(raw);
+    if (Number.isNaN(startTime.getTime()) || startTime <= new Date()) {
+      throw new BadRequestException({
+        message: 'Thời gian bắt đầu phải ở tương lai.',
+        errors: { startTime: 'Chọn giờ trong tương lai.' },
+      });
+    }
+    return this.db.$transaction(async (tx) => {
+      const source = await this.owned(tx, id, owner, true);
+      const duplicate = await tx.showtime.findFirst({
+        where: { eventId: source.eventId, startTime },
+        select: { id: true },
+      });
+      if (duplicate)
+        throw new ConflictException('Sự kiện đã có suất vào thời gian này.');
+
+      const sourceSeats = await tx.seat.findMany({
+        where: { showtimeId: id },
+        select: { row: true, seatNumber: true, categoryId: true },
+        orderBy: [{ row: 'asc' }, { seatNumber: 'asc' }],
+      });
+      const created = await tx.showtime.create({
+        data: {
+          eventId: source.eventId,
+          startTime,
+          status: ShowtimeStatus.DRAFT,
+          isDemo: source.isDemo,
+          structureLocked: false,
+          maxTicketsPerUser: source.maxTicketsPerUser,
+        },
+      });
+      const categoryIds = new Map<string, string>();
+      const categories = source.categories.map((category) => {
+        const categoryId = randomUUID();
+        categoryIds.set(category.id, categoryId);
+        return {
+          id: categoryId,
+          showtimeId: created.id,
+          name: category.name,
+          price: category.price,
+        };
+      });
+      if (categories.length)
+        await tx.seatCategory.createMany({ data: categories });
+      if (sourceSeats.length) {
+        await tx.seat.createMany({
+          data: sourceSeats.map((seat) => ({
+            id: randomUUID(),
+            showtimeId: created.id,
+            categoryId: categoryIds.get(seat.categoryId)!,
+            row: seat.row,
+            seatNumber: seat.seatNumber,
+          })),
+        });
+      }
+      if (source.seatMapId) {
+        await tx.showtime.update({
+          where: { id: created.id },
+          data: { seatMapId: created.id },
+        });
+      }
+      await this.invalidate(tx);
+      return {
+        id: created.id,
+        startTime: created.startTime,
+        status: created.status,
+        isDemo: created.isDemo,
+        seatCount: sourceSeats.length,
+        categoryCount: categories.length,
+      };
+    });
+  }
+  async status(id: string, owner: string, body: unknown) {
+    const next =
       body && typeof body === 'object'
         ? (body as Record<string, unknown>).status
         : undefined;
@@ -186,6 +298,7 @@ export class ShowtimesService {
           throw new ConflictException({ message: reasons.join(' '), reasons });
       } else if (show.status === 'DRAFT')
         throw new ConflictException('Suất nháp chưa mở bán.');
+      if (show.status === next) return show;
       const updated = await tx.showtime.update({
         where: { id },
         data: {
@@ -193,9 +306,84 @@ export class ShowtimesService {
           ...(next === 'ON_SALE' ? { structureLocked: true } : {}),
         },
       });
+      await tx.domainAudit.create({
+        data: {
+          entityType: 'showtime',
+          entityId: id,
+          actorId: owner,
+          actorType: 'USER',
+          action: 'SHOWTIME_STATUS_CHANGED',
+          beforeState: { status: show.status },
+          afterState: { status: updated.status },
+        },
+      });
       await this.invalidate(tx);
       return updated;
     });
+  }
+  async sales(id: string, owner: string): Promise<ShowtimeSales> {
+    const [show] = await this.db.seatReadQuery<
+      { organizerId: string; isDemo: boolean }[]
+    >(
+      Prisma.sql`SELECT e."organizerId", s."isDemo" FROM showtimes s JOIN events e ON e.id=s."eventId" WHERE s.id=${id}::uuid`,
+    );
+    if (!show) throw new NotFoundException('Không tìm thấy suất diễn.');
+    if (show.organizerId !== owner)
+      throw new ForbiddenException('Bạn không có quyền xem suất diễn này.');
+    const [row] = await this.db.seatReadQuery<
+      { generatedAt: Date | string; categories: SalesCategory[] }[]
+    >(Prisma.sql`WITH seat_state AS (
+        SELECT s."categoryId",
+          COUNT(*) AS total,
+          COUNT(*) FILTER (WHERE s."isSold") AS sold,
+          COUNT(*) FILTER (WHERE NOT s."isSold" AND h."expiresAt" > clock_timestamp()) AS held
+        FROM seats s LEFT JOIN seat_holds h ON h."seatId"=s.id
+        WHERE s."showtimeId"=${id}::uuid GROUP BY s."categoryId"
+      ), paid AS (
+        SELECT s."categoryId", SUM(oi."unitPrice") AS revenue
+        FROM order_items oi
+        JOIN orders o ON o.id=oi."orderId"
+        JOIN seats s ON s.id=oi."seatId"
+        WHERE o."showtimeId"=${id}::uuid AND o.status='PAID'
+        GROUP BY s."categoryId"
+      )
+      SELECT clock_timestamp() AS "generatedAt",
+        COALESCE(json_agg(json_build_object(
+          'name', c.name,
+          'price', c.price,
+          'totalSeats', COALESCE(st.total, 0),
+          'sold', COALESCE(st.sold, 0),
+          'held', COALESCE(st.held, 0),
+          'available', COALESCE(st.total - st.sold - st.held, 0),
+          'revenue', COALESCE(p.revenue, 0)
+        ) ORDER BY c.name), '[]'::json) AS categories
+      FROM seat_categories c
+      LEFT JOIN seat_state st ON st."categoryId"=c.id
+      LEFT JOIN paid p ON p."categoryId"=c.id
+      WHERE c."showtimeId"=${id}::uuid`);
+    const categories = row.categories.map((category) => ({
+      ...category,
+      totalSeats: Number(category.totalSeats),
+      sold: Number(category.sold),
+      held: Number(category.held),
+      available: Number(category.available),
+      revenue: Number(category.revenue),
+    }));
+    const sum = (key: keyof Omit<SalesCategory, 'name' | 'price'>) =>
+      categories.reduce((total, category) => total + category[key], 0);
+    return {
+      showtimeId: id,
+      generatedAt: new Date(row.generatedAt).toISOString(),
+      isDemo: show.isDemo,
+      totals: {
+        totalSeats: sum('totalSeats'),
+        sold: sum('sold'),
+        held: sum('held'),
+        available: sum('available'),
+        revenue: sum('revenue'),
+      },
+      categories,
+    };
   }
   async detail(id: string) {
     const show = await this.db.showtime.findUnique({
@@ -204,6 +392,7 @@ export class ShowtimesService {
         id: true,
         startTime: true,
         status: true,
+        isDemo: true,
         event: {
           select: {
             id: true,
@@ -220,7 +409,10 @@ export class ShowtimesService {
         categories: { select: { name: true, price: true } },
       },
     });
-    if (!show || show.status !== 'ON_SALE')
+    if (
+      !show ||
+      (show.status !== 'ON_SALE' && !(show.isDemo && show.status === 'DRAFT'))
+    )
       throw new NotFoundException('Suất diễn chưa mở bán hoặc đã đóng.');
     const siblings = await this.db.showtime.findMany({
       where: {
@@ -228,6 +420,7 @@ export class ShowtimesService {
         OR: [
           { status: 'ON_SALE' },
           { status: 'CLOSED', structureLocked: true },
+          { status: 'DRAFT', isDemo: true },
         ],
       },
       orderBy: [{ startTime: 'asc' }, { id: 'asc' }],
@@ -235,6 +428,7 @@ export class ShowtimesService {
         id: true,
         startTime: true,
         status: true,
+        isDemo: true,
         categories: { select: { name: true, price: true } },
       },
     });
@@ -276,6 +470,7 @@ export class ShowtimesService {
         return JSON.parse(cached) as {
           items: PublicRow[];
           nextCursor: string | null;
+          totalCount: number;
         };
     } catch {
       /* DB fallback; never fake data. */
@@ -283,18 +478,27 @@ export class ShowtimesService {
     const filter = after
       ? Prisma.sql`AND (s."startTime", s.id) > (${new Date(after.time)}::timestamptz, ${after.id}::uuid)`
       : Prisma.empty;
+    const visibility = Prisma.sql`(s.status = 'ON_SALE' OR (s.status = 'DRAFT' AND s."isDemo" = true)) AND e.status = 'PUBLISHED'`;
+    const [countRow] = await this.db.$queryRaw<
+      { totalCount: number }[]
+    >(Prisma.sql`
+      SELECT COUNT(DISTINCT s.id)::int AS "totalCount"
+      FROM showtimes s JOIN events e ON e.id = s."eventId"
+      JOIN seat_categories c ON c."showtimeId" = s.id
+      WHERE ${visibility}`);
     const rows = await this.db.$queryRaw<PublicRow[]>(Prisma.sql`
-      SELECT s.id, e.id AS "eventId", s."startTime", e.name, e.description, e.location, e."posterPath", e."mobilePosterPath", e."categoryLabel",
+      SELECT s.id, e.id AS "eventId", s."startTime", s."isDemo", e.name, e.description, e.location, e."posterPath", e."mobilePosterPath", e."categoryLabel",
         json_agg(json_build_object('name',c.name,'price',c.price) ORDER BY c.name) AS categories,
         MIN(c.price)::int AS "minPrice", MAX(c.price)::int AS "maxPrice"
       FROM showtimes s JOIN events e ON e.id = s."eventId"
       JOIN seat_categories c ON c."showtimeId" = s.id
-      WHERE s.status = 'ON_SALE' ${filter}
+      WHERE ${visibility} ${filter}
       GROUP BY s.id, e.id ORDER BY s."startTime", s.id LIMIT 13`);
     const items = rows.slice(0, 12);
     const last = items.at(-1);
     const result = {
       items,
+      totalCount: countRow?.totalCount ?? 0,
       nextCursor:
         rows.length > 12 && last
           ? Buffer.from(
@@ -316,14 +520,20 @@ export class ShowtimesService {
     // One live snapshot for visibility and inventory, not two network queries.
     // A single JSON column avoids parsing six driver fields for each of 2000 rows.
     const [show] = await this.db.seatReadQuery<
-      { status: string; seats: SeatRow[] }[]
+      { status: string; isDemo: boolean; seats: SeatRow[] }[]
     >(
-      Prisma.sql`SELECT sh.status, (${this.seatProjection(id)}) AS seats
-        FROM showtimes sh WHERE sh.id=${id}::uuid AND sh.status='ON_SALE'`,
+      Prisma.sql`SELECT sh.status, sh."isDemo", (${this.seatProjection(id)}) AS seats
+        FROM showtimes sh WHERE sh.id=${id}::uuid AND (sh.status='ON_SALE' OR (sh.status='DRAFT' AND sh."isDemo"=true))`,
     );
-    if (!show || show.status !== 'ON_SALE')
+    if (
+      !show ||
+      (show.status !== 'ON_SALE' && !(show.isDemo && show.status === 'DRAFT'))
+    )
       throw new NotFoundException('Suất diễn chưa mở bán hoặc đã đóng.');
     return show.seats;
+  }
+  seatStream(id: string): Observable<MessageEvent> {
+    return this.seatEvents?.stream(id) ?? EMPTY;
   }
   async ownedSeats(id: string, owner: string) {
     const [show] = await this.db.seatReadQuery<{ organizerId: string }[]>(

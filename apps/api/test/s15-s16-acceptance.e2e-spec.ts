@@ -1,3 +1,4 @@
+import { assertIntegrationDatabase } from './integration-database.js';
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -90,19 +91,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
   }
 
   beforeAll(async () => {
-    const target = new URL(process.env.DATABASE_URL ?? '');
-    if (
-      target.hostname !== '127.0.0.1' ||
-      !(
-        target.port === '15432' ||
-        (target.port === '15446' &&
-          process.env.SPRINT1_ISOLATED_TEST === 'true')
-      ) ||
-      target.pathname !== '/sprint2_integration'
-    )
-      throw Error(
-        'Acceptance tests require the isolated sprint2_integration database on port 15432',
-      );
+    assertIntegrationDatabase();
     if ((process.env.HOLD_EXPIRY_MODE ?? 'off') !== 'off')
       throw Error(
         'Disable the automatic expiry worker: these tests control cleanup explicitly',
@@ -972,7 +961,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
         const [row] = await db.$queryRaw<{ waiting: boolean }[]>`
           SELECT EXISTS(SELECT 1 FROM pg_stat_activity
             WHERE datname=current_database() AND wait_event_type='Lock'
-              AND query LIKE '%public.claim_hold_v4(%') AS waiting`;
+              AND query LIKE '%public.claim_hold_v5(%') AS waiting`;
         if (row.waiting) {
           waiting = true;
           break;

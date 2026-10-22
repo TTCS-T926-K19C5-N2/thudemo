@@ -32,14 +32,14 @@ export class TicketQrService {
     const [count] = await this.db.$queryRaw<{ total: number }[]>(Prisma.sql`
       SELECT count(*)::int AS total FROM order_items oi JOIN orders o ON o.id=oi."orderId"
       JOIN tickets t ON t."orderId"=o.id AND t."seatId"=oi."seatId"
-      WHERE o."userId"=${userId}::uuid AND o.status='PAID'::"OrderStatus"`);
+      WHERE o."userId"=${userId}::uuid AND o.status IN ('PAID','CANCELLED')`);
     const ids = await this.db.$queryRaw<
       { ticketId: string; orderId: string }[]
     >(Prisma.sql`
       SELECT oi.id AS "ticketId",o.id AS "orderId" FROM order_items oi
       JOIN orders o ON o.id=oi."orderId" JOIN showtimes st ON st.id=o."showtimeId"
       JOIN tickets t ON t."orderId"=o.id AND t."seatId"=oi."seatId"
-      WHERE o."userId"=${userId}::uuid AND o.status='PAID'::"OrderStatus"
+      WHERE o."userId"=${userId}::uuid AND o.status IN ('PAID','CANCELLED')
       ORDER BY CASE WHEN st."startTime">=CURRENT_TIMESTAMP THEN 0 ELSE 1 END,
         CASE WHEN st."startTime">=CURRENT_TIMESTAMP THEN st."startTime" END ASC,
         CASE WHEN st."startTime"<CURRENT_TIMESTAMP THEN st."startTime" END DESC,oi.id
@@ -73,7 +73,7 @@ export class TicketQrService {
       const [order] = await tx.$queryRaw<{ status: string }[]>(Prisma.sql`
         SELECT status FROM orders WHERE id=${orderId}::uuid AND "userId"=${userId}::uuid FOR SHARE`);
       if (!order) throw new NotFoundException('Không tìm thấy đơn hàng.');
-      if (order.status !== 'PAID')
+      if (!['PAID', 'CANCELLED'].includes(order.status))
         throw new ConflictException({
           code: 'TICKETS_NOT_READY',
           message: 'Vé chỉ sẵn sàng sau khi thanh toán được xác nhận.',

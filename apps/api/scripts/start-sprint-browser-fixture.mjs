@@ -1,0 +1,13 @@
+import {spawn} from 'node:child_process';
+import {resolve} from 'node:path';
+import {openSync} from 'node:fs';
+if(!/^\/codegym_sprint_\d+$/.test(new URL(process.env.DATABASE_URL).pathname))throw Error('Only the isolated sprint DB is allowed.');
+const base={...process.env,WEB_ORIGIN:'http://localhost:3393',REGISTRATION_PUBLIC_ORIGIN:'http://localhost:3393',APP_ENV:'sprint-browser',LIFECYCLE_WORKER:'off',TICKET_MAIL_WORKER:'false',REGISTRATION_DELIVERY_MODE:'off',REGISTRATION_MAIL_MODE:'catcher',SMTP_HOST:'127.0.0.1',SMTP_PORT:'9',SMTP_FROM:'fixture@local.invalid',WAITING_ROOM_CAPACITY:'50',MONITORING_ENABLED:'false'};
+const dir=resolve(import.meta.dirname,'../../../.cache/sprint4-8-evidence/20261022');
+const apiLog=openSync(resolve(dir,'browser-api.log'),'a'),webLog=openSync(resolve(dir,'browser-web.log'),'a');
+const api=spawn(process.execPath,['dist/main.js'],{cwd:resolve(import.meta.dirname,'..'),env:{...base,PORT:'3392'},stdio:['ignore',apiLog,apiLog],windowsHide:true});
+const web=spawn(process.execPath,['server.mjs','--dev'],{cwd:resolve(import.meta.dirname,'../../web'),env:{...base,WEB_PORT:'3393',API_INTERNAL_URL:'http://127.0.0.1:3392',NEXT_DIST_DIR:'.next-sprint-browser'},stdio:['ignore',webLog,webLog],windowsHide:true});
+for(const [name,child] of [['API',api],['Web',web]])child.on('exit',code=>console.log(`${name} fixture stopped: ${code}`));
+process.on('SIGINT',()=>{api.kill();web.kill();});
+process.on('SIGTERM',()=>{api.kill();web.kill();});
+console.log('Isolated browser fixture: web3393/API3392, test database only, all real mail workers disabled.');

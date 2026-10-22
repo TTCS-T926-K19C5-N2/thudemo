@@ -2,6 +2,120 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model DomainAudit {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  entityType String
+  entityId String @db.Uuid
+  orderId String? @db.Uuid
+  actorId String? @db.Uuid
+  actorType String
+  action String
+  beforeState Json?
+  afterState Json?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([orderId, createdAt], map: "domain_audit_order_time")
+  @@index([entityId, createdAt], map: "domain_audit_entity_time")
+  @@map("domain_audit")
+}
+
+model Refund {
+  id String @id @default(uuid()) @db.Uuid
+  orderId String @unique @db.Uuid
+  order Order @relation(fields:[orderId], references:[id], onDelete:NoAction, onUpdate:NoAction)
+  amount Int
+  status String @default("QUEUED")
+  reason String
+  actorId String @db.Uuid
+  actor User @relation("RefundActor",fields:[actorId], references:[id], onDelete:NoAction, onUpdate:NoAction)
+  attemptLogs RefundAttempt[]
+  attempts Int @default(0)
+  nextAttemptAt DateTime @default(now()) @db.Timestamptz(3)
+  leaseUntil DateTime? @db.Timestamptz(3)
+  leaseToken String? @db.Uuid
+  providerRef String? @unique
+  failureCode String?
+  completedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([status, nextAttemptAt])
+  @@map("refunds")
+}
+
+model RefundAttempt {
+  id String @id @default(uuid()) @db.Uuid
+  refundId String @db.Uuid
+  refund Refund @relation(fields:[refundId], references:[id], onDelete:NoAction, onUpdate:NoAction)
+  attempt Int
+  status String
+  reason String?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@unique([refundId, attempt])
+  @@map("refund_attempts")
+}
+
+model ShowtimeCancellation {
+  showtimeId String @id @db.Uuid
+  showtime Showtime @relation(fields:[showtimeId], references:[id], onDelete:NoAction, onUpdate:NoAction)
+  actorId String @db.Uuid
+  actor User @relation("ShowCancellationActor",fields:[actorId], references:[id], onDelete:NoAction, onUpdate:NoAction)
+  reason String
+  status String @default("QUEUED")
+  failureCode String?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @db.Timestamptz(3)
+  @@map("showtime_cancellations")
+}
+
+model OperationMail {
+  id String @id @default(uuid()) @db.Uuid
+  orderId String @unique @db.Uuid
+  order Order @relation(fields:[orderId], references:[id], onDelete:NoAction, onUpdate:NoAction)
+  status String @default("QUEUED")
+  attempts Int @default(0)
+  nextAttemptAt DateTime @default(now()) @db.Timestamptz(3)
+  leaseUntil DateTime? @db.Timestamptz(3)
+  leaseToken String? @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  sentAt DateTime? @db.Timestamptz(3)
+  @@map("operation_mail")
+}
+
+model ReconciliationRun {
+  id String @id @default(uuid()) @db.Uuid
+  fileHash String @unique
+  actorId String @db.Uuid
+  actor User @relation(fields:[actorId], references:[id], onDelete:NoAction, onUpdate:NoAction)
+  periodStart DateTime @db.Timestamptz(3)
+  periodEnd DateTime @db.Timestamptz(3)
+  result Json
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@map("reconciliation_runs")
+}
+
+model ConsentEvent {
+  id String @id @default(uuid()) @db.Uuid
+  eventNo Int @unique @default(autoincrement())
+  userId String @db.Uuid
+  user User @relation(fields:[userId], references:[id], onDelete:NoAction, onUpdate:NoAction)
+  purpose String
+  version String
+  status String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([userId, createdAt])
+  @@map("consent_events")
+}
+
+model ErasureRequest {
+  userId String @id @db.Uuid
+  user User @relation("ErasureSubject",fields:[userId], references:[id], onDelete:NoAction, onUpdate:NoAction)
+  status String @default("REQUESTED")
+  approvedBy String? @db.Uuid
+  approver User? @relation("ErasureApprover",fields:[approvedBy], references:[id], onDelete:NoAction, onUpdate:NoAction)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  completedAt DateTime? @db.Timestamptz(3)
+  @@map("erasure_requests")
+}
+
 datasource db {
   provider = "postgresql"
 }
@@ -29,6 +143,12 @@ model User {
   scannerSnapshotCursors ScannerSnapshotCursor[]
   registrationConsent RegistrationConsent?
   activationTokens    ActivationToken[]
+  refundActions Refund[] @relation("RefundActor")
+  showCancellations ShowtimeCancellation[] @relation("ShowCancellationActor")
+  reconciliations ReconciliationRun[]
+  consentEvents ConsentEvent[]
+  erasureRequest ErasureRequest? @relation("ErasureSubject")
+  erasureApprovals ErasureRequest[] @relation("ErasureApprover")
 
   @@map("users")
 }
@@ -162,6 +282,7 @@ model Showtime {
   admissions        TicketAdmission[]
   offlineScanLogs   OfflineScanLog[]
   scannerSnapshotCursors ScannerSnapshotCursor[]
+  cancellationJob ShowtimeCancellation?
 
   @@index([eventId])
   @@map("showtimes")
@@ -270,6 +391,8 @@ model Order {
   logs             OrderLog[]
   tickets          Ticket[]
   ticketMail       TicketMailDelivery[]
+  refund Refund?
+  cancellationMail OperationMail?
   createdAt        DateTime     @default(now()) @db.Timestamptz(3)
   updatedAt        DateTime     @updatedAt @db.Timestamptz(3)
 
