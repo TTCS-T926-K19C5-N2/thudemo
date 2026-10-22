@@ -1,0 +1,53 @@
+{
+  "group": "g1-foundations-retry",
+  "start_head": "b66aa28decd373b73e19e237badae065ea441221",
+  "branch": "integration/candidate-1",
+  "redis_test_db": 8,
+  "input_manifest_sha256": "208750014928009d4a3cb63389ac90241c155334200ee522aa58df561ad7eae3",
+  "stories": [
+    "S-01",
+    "S-02",
+    "S-04",
+    "K-01"
+  ],
+  "gates": {
+    "migrate": {
+      "exit_code": 0,
+      "seconds": 2.36,
+      "log_sha256": "a2d4e9afb074a256d4d651e1c9b437a53574df6d233842b72b1af53074e6d0ea"
+    },
+    "build": {
+      "exit_code": 0,
+      "seconds": 18.64,
+      "log_sha256": "faec977dd1b4a0f34f0660bb3d890ce82d19a00e4481c0fd5acac51833382675"
+    },
+    "lint": {
+      "exit_code": 0,
+      "seconds": 14.25,
+      "log_sha256": "d373900d6e6e76a0d033b38483711b7b6ab7d7a6171649c58367cf6392bf1b25"
+    },
+    "typecheck": {
+      "exit_code": 0,
+      "seconds": 10.02,
+      "log_sha256": "c3931a99f2b75a1e6ccc16ca092c6b39fb0b1d9c5632834fee5dc8a003a85f44"
+    },
+    "test": {
+      "exit_code": 0,
+      "seconds": 16.51,
+      "log_sha256": "016a8e861f887ce92cc57e0214ad27441386a36e858174aec946237986b7bf80"
+    },
+    "e2e": {
+      "exit_code": 0,
+      "seconds": 120.11,
+      "log_sha256": "366b91c2c1c7d64d4836a9942fae45ddd318ee144912832cedf82bad3b306bdd"
+    }
+  },
+  "test_counts": {
+    "api_web": [
+      420,
+      157
+    ],
+    "deployment": 27
+  },
+  "e2e_passed": 151
+}

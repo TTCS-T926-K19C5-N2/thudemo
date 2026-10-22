@@ -1,4 +1,12 @@
-# STATUS — B1 phương án A, dừng trước Sprint 1–3
+# STATUS — tích hợp Sprint 1–3 đã được duyệt sau B1 A
+
+## Rủi ro hiệu năng được người dùng yêu cầu giữ lại
+
+> p95 giữ ghế đạt 297,88 ms nhưng vòng 1 (khởi động nguội) cao 381-531 ms ở mọi lần chạy; xử lý sau tích hợp bằng làm nóng pool hoặc xác nhận NFR với nhóm.
+
+Đây là số đo B1, không phải phép đo mới. Nhãn “khởi động nguội” trong ghi chú trên mô tả rủi ro vòng đầu; protocol B1 đã qua health/tiền kiểm và có pool được mở sẵn, nên chưa chứng minh thời gian khởi động một tiến trình hoàn toàn nguội. Không tối ưu/warmup mới trong lượt Sprint 1–3.
+
+Sprint 1–3 đang thực hiện theo Deps; xem [sổ tích hợp](SPRINT_1_3_INTEGRATION.md). Không chạy lại tải ngoài slice chạm trực tiếp luồng giữ ghế. Các số đo/điểm dừng B1 bên dưới là snapshot lịch sử đã được người dùng xác nhận và cho phép đi tiếp.
 
 ## Kiểm chứng được duyệt ngày 22/10/2026
 

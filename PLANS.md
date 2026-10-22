@@ -2,6 +2,7 @@
 
 ## Quyết định đã chốt
 
+- Sau B1, người dùng xác nhận phương án A và duyệt **chỉ Sprint 1–3 theo Deps**. Mỗi nhóm story phải pass build/lint/typecheck/test/E2E trước commit; dừng sau Sprint 1–3. Không tối ưu hiệu năng trong lượt này; chỉ chạy lại tải nếu story trực tiếp sửa luồng giữ ghế.
 - Người dùng chọn **A**, chỉ cho phép kiểm chứng B1 và tối ưu SQL bằng migration forward mới trong đợt này. Dừng sau báo cáo; chưa được tích hợp Sprint 1–3.
 - Giữ lineage candidate ngày 22/10: **v6 recovery → v5 quota/demo/audit → v4**, cùng chữ ký đầu vào và sáu trường trả về. Không đổi caller hoặc hợp đồng HTTP.
 - Hai đường migration bắt buộc: DB trống và DB tái dựng 35 migration từ staging lịch sử `34deec00c18ac987a7db56e9d1c61abac2222bca`. Đây là DB fixture cô lập, không phải bản sao dữ liệu staging thật.
@@ -26,7 +27,7 @@ Không sửa hoặc loại bất kỳ migration gốc đã có của candidate. 
 
 ## Phần đang chờ
 
-1. Chờ người dùng xác nhận sau báo cáo B1. Không bắt đầu Sprint 1–3 trong lượt này.
+1. Sprint 1–3 đã được duyệt sau B1; thực hiện theo [sổ tích hợp](docs/SPRINT_1_3_INTEGRATION.md), rồi dừng. Sprint 4–5 và 6–8 vẫn chờ xác nhận riêng.
 2. Khi được phép: theo Deps, Sprint 1–3 → dừng; Sprint 4–5 → dừng; Sprint 6–8 → dừng. Mỗi nhóm báo build/lint/typecheck/test/E2E thực chạy.
 3. S-44 không chặn tiến độ: khi tới slice đó, dùng polling nếu đúng AC hoặc ghi không tích hợp; không tự thay API trong B1.
 4. Review độc lập và xác nhận/nghiệm thu staging cần người thật. Local fixture/test không thay thế các gate này; `DoD_complete` vẫn false.
