@@ -12,7 +12,10 @@ describe('S41 real shared-network booking limits', () => {
     for (const route of ['HOLD', 'ORDER'])
       for (const scope of ['ACCOUNT', 'IP'])
         vi.stubEnv(`BOOKING_${route}_${scope}_LIMIT`, undefined);
-    const url = new URL(process.env.REDIS_URL!);
+    const url = new URL(
+      process.env.REDIS_URL ??
+        `redis://${process.env.REDIS_HOST ?? '127.0.0.1'}:${process.env.REDIS_PORT ?? '6379'}`,
+    );
     if (
       url.hostname !== '127.0.0.1' ||
       !['16462', '6379', '16382'].includes(url.port)
