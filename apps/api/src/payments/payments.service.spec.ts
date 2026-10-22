@@ -137,7 +137,7 @@ describe('PaymentsService Unit Tests', () => {
       );
     });
 
-    it('calculates total strictly from DB seat prices and creates INITIATED payment', async () => {
+    it('uses stored order-item prices after a catalogue price change and creates INITIATED payment', async () => {
       mockPrisma.order.findUnique.mockResolvedValue({
         id: orderId,
         userId,
@@ -149,7 +149,7 @@ describe('PaymentsService Unit Tests', () => {
             seatId,
             unitPrice: 50000,
             seat: {
-              category: { price: 75000 }, // Authoritative DB price
+              category: { price: 75000 }, // New catalogue price; existing order retains50000
             },
           },
         ],
@@ -165,13 +165,13 @@ describe('PaymentsService Unit Tests', () => {
       expect(mockGateway.createPayment).toHaveBeenCalledWith(
         expect.objectContaining({
           orderId,
-          amount: 75000, // Must use DB seat price, not unitPrice or order totalAmount
+          amount: 50000, // Use the immutable DB order-item snapshot
         }),
       );
       expect(mockPrisma.payment.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           orderId,
-          amount: 75000,
+          amount: 50000,
           status: PaymentStatus.INITIATED,
         }),
       });
@@ -221,6 +221,7 @@ describe('PaymentsService Unit Tests', () => {
         items: [
           {
             seatId,
+            unitPrice: 100000,
             seat: { category: { price: 100000 } }, // System amount is 100k
           },
         ],
@@ -267,6 +268,7 @@ describe('PaymentsService Unit Tests', () => {
         items: [
           {
             seatId,
+            unitPrice: 100000,
             seat: { category: { price: 100000 } },
           },
         ],
@@ -325,7 +327,7 @@ describe('PaymentsService Unit Tests', () => {
         id: orderId,
         status: currentOrderStatus,
         expiresAt: new Date(Date.now() + 600000),
-        items: [{ seatId, seat: { category: { price: 100000 } } }],
+        items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
       }));
       mockPrisma.payment.findFirst.mockImplementation(async () => {
         if (currentOrderStatus === OrderStatus.PAID) {
@@ -369,7 +371,7 @@ describe('PaymentsService Unit Tests', () => {
         id: orderId,
         status: OrderStatus.PENDING,
         expiresAt: new Date(Date.now() - 60000), // Expired 1 minute ago
-        items: [{ seatId, seat: { category: { price: 100000 } } }],
+        items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
       });
       mockPrisma.payment.findFirst.mockResolvedValue({
         id: 'pay_init',
@@ -414,7 +416,7 @@ describe('PaymentsService Unit Tests', () => {
         id: orderId,
         status: OrderStatus.PENDING,
         expiresAt: new Date(Date.now() + 600000),
-        items: [{ seatId, seat: { category: { price: 100000 } } }],
+        items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
       });
 
       // Simulate concurrent transaction throwing P2002 Unique constraint failed
@@ -444,7 +446,7 @@ describe('PaymentsService Unit Tests', () => {
         id: orderId,
         status: OrderStatus.PENDING,
         expiresAt: new Date(Date.now() + 600000),
-        items: [{ seatId, seat: { category: { price: 100000 } } }],
+        items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
       });
 
       // Simulate a failure in DB connection inside transaction
@@ -471,7 +473,7 @@ describe('PaymentsService Unit Tests', () => {
         id: orderId,
         status: OrderStatus.PENDING,
         expiresAt: new Date(Date.now() + 600000),
-        items: [{ seatId, seat: { category: { price: 100000 } } }],
+        items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
       });
       mockPrisma.payment.findFirst.mockResolvedValue({
         id: 'pay_init',
@@ -507,7 +509,7 @@ describe('PaymentsService Unit Tests', () => {
           id: orderId,
           status: OrderStatus.PENDING,
           expiresAt: new Date(Date.now() - 60000), // 1 min ago
-          items: [{ seatId, seat: { category: { price: 100000 } } }],
+          items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
         });
 
         const res = await service.handleWebhook({}, {});
@@ -548,7 +550,7 @@ describe('PaymentsService Unit Tests', () => {
           id: orderId,
           status: OrderStatus.PENDING,
           expiresAt: new Date(Date.now() + 1000), // looks valid initially
-          items: [{ seatId, seat: { category: { price: 100000 } } }],
+          items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
         });
 
         // In transaction: advisory lock succeeds ($executeRaw), but atomic updateMany returns 0 rows (job expired it right before)
@@ -588,7 +590,7 @@ describe('PaymentsService Unit Tests', () => {
           id: orderId,
           status: OrderStatus.PENDING,
           expiresAt: new Date(Date.now() + 10000),
-          items: [{ seatId, seat: { category: { price: 100000 } } }],
+          items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
         });
 
         // In transaction: advisory lock succeeds, but atomic update returns 0
@@ -626,7 +628,7 @@ describe('PaymentsService Unit Tests', () => {
           status: OrderStatus.PENDING,
           expiresAt: originalExpiresAt,
           paymentExpiresAt: originalExpiresAt,
-          items: [{ seatId, seat: { category: { price: 100000 } } }],
+          items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
         });
 
         mockPrisma.payment.findFirst.mockResolvedValue({
@@ -668,7 +670,7 @@ describe('PaymentsService Unit Tests', () => {
           userId,
           status: OrderStatus.PENDING,
           expiresAt: new Date(Date.now() + 300000),
-          items: [{ seatId, seat: { category: { price: 150000 } } }],
+          items: [{ seatId, unitPrice: 150000, seat: { category: { price: 150000 } } }],
         });
 
         // Previous payment attempt existed
@@ -716,7 +718,7 @@ describe('PaymentsService Unit Tests', () => {
           userId,
           status: OrderStatus.PENDING,
           expiresAt: new Date(Date.now() - 5000), // expired
-          items: [{ seatId, seat: { category: { price: 100000 } } }],
+          items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
         });
 
         await expect(service.initiatePayment(orderId, userId)).rejects.toThrow(
@@ -742,7 +744,7 @@ describe('PaymentsService Unit Tests', () => {
           userId,
           status: OrderStatus.PENDING,
           expiresAt: new Date(Date.now() + 600000),
-          items: [{ seatId, seat: { category: { price: 100000 } } }],
+          items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
         });
         mockPrisma.payment.findFirst.mockResolvedValueOnce(null);
         await service.initiatePayment(orderId, userId);
@@ -753,7 +755,7 @@ describe('PaymentsService Unit Tests', () => {
           userId,
           status: OrderStatus.PENDING,
           expiresAt: new Date(Date.now() + 600000),
-          items: [{ seatId, seat: { category: { price: 100000 } } }],
+          items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
         });
         mockPrisma.payment.findFirst.mockResolvedValueOnce({
           id: 'p1',
@@ -768,7 +770,7 @@ describe('PaymentsService Unit Tests', () => {
           userId,
           status: OrderStatus.PENDING,
           expiresAt: new Date(Date.now() + 600000),
-          items: [{ seatId, seat: { category: { price: 100000 } } }],
+          items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
         });
         mockPrisma.payment.findFirst.mockResolvedValueOnce({
           id: 'p2',
@@ -809,7 +811,7 @@ describe('PaymentsService Unit Tests', () => {
           id: orderId,
           status: OrderStatus.PENDING,
           expiresAt: new Date(Date.now() + 300000),
-          items: [{ seatId, seat: { category: { price: 100000 } } }],
+          items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
         });
 
         // Payment is ALREADY FAILED
@@ -840,7 +842,7 @@ describe('PaymentsService Unit Tests', () => {
           id: orderId,
           status: OrderStatus.PAID,
           expiresAt: new Date(Date.now() + 300000),
-          items: [{ seatId, seat: { category: { price: 100000 } } }],
+          items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
         });
 
         mockPrisma.payment.findFirst.mockResolvedValueOnce({
@@ -876,7 +878,7 @@ describe('PaymentsService Unit Tests', () => {
           id: orderId,
           status: OrderStatus.PAID,
           expiresAt: new Date(Date.now() + 300000),
-          items: [{ seatId, seat: { category: { price: 100000 } } }],
+          items: [{ seatId, unitPrice: 100000, seat: { category: { price: 100000 } } }],
         });
 
         // Existing payment for attempt 2 is currently INITIATED

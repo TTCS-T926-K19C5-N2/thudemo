@@ -43,3 +43,6 @@ Localhost is a browser secure context: camera/service worker work at `http://loc
 ## Boundaries
 
 [POST_DEMO_BACKLOG.md](POST_DEMO_BACKLOG.md) records device/provider/performance and integration limitations. No Internet email, real payment/refund or physical outdoor camera proof is implied. Old Sprint1 guides under `docs/` remain historical; this entrypoint is the Sprint4–5 handoff.
+# Profile integration candidate-1 — Sprint 1–3
+
+Trong workspace integration đã có dependencies và hai container audit riêng, chạy `node .integration-s123/serve.mjs` để mở web3394/API3395 cùng expiry worker và DB demo riêng. Ctrl+C dừng đúng child của launcher; giữ DB/keys. Profile này dùng dữ liệu giả, mock payment và tắt mail tương tác; credentials chỉ lưu dưới `.git`, không in giá trị. Kết quả API smoke, các gate và giới hạn nghiệm thu xem [sổ tích hợp](docs/SPRINT_1_3_INTEGRATION.md). Dừng phạm vi sau Sprint1–3; chưa nghiệm thu staging/production.

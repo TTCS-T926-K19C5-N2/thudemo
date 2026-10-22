@@ -165,6 +165,9 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
           })
         ).map((s) => s.id);
         const scope = { showtimeId: { in: ids } };
+        await db.ticketLog.deleteMany({ where: { ticket: scope } });
+        await db.ticketMailDelivery.deleteMany({ where: { order: scope } });
+        await db.ticket.deleteMany({ where: scope });
         await db.payment.deleteMany({ where: { order: scope } });
         await db.orderItem.deleteMany({ where: { order: scope } });
         await db.order.deleteMany({ where: scope });
@@ -346,6 +349,30 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     const fresh = await place(otherBuyer).expect(200);
     expect(fresh.body.order.items[0].unitPrice).toBe(1500000);
     expect(fresh.body.order.totalAmount).toBe(1500000);
+    const payment = await request(app.getHttpServer())
+      .post(`/orders/${old.body.order.id}/pay`)
+      .set('Cookie', buyer.cookie)
+      .send({ amount: 1 })
+      .expect(200);
+    expect(new URL(payment.body.redirectUrl).searchParams.get('amount')).toBe('1200000');
+    const payload: Record<string, unknown> = {
+      orderId: payment.body.gatewayRef, amount: 1200000, resultCode: 0,
+      transId: randomUUID(),
+      extraData: Buffer.from(JSON.stringify({ orderId: old.body.order.id })).toString('base64'),
+    };
+    payload.signature = buildMomoSignature(payload, MOCK_ACCESS_KEY,
+      process.env.PAYMENT_WEBHOOK_SECRET ?? 'mock_webhook_secret_dev');
+    for (let replay = 0; replay < 2; replay++) {
+      const result = await request(app.getHttpServer())
+        .post('/payments/webhook').send(payload).expect(200);
+      expect(result.body.status).toBe('PAID');
+    }
+    expect(await db.payment.count({ where: { orderId: old.body.order.id } })).toBe(1);
+    expect(await db.ticket.count({ where: { orderId: old.body.order.id } })).toBe(1);
+    const newPayment = await request(app.getHttpServer())
+      .post(`/orders/${fresh.body.order.id}/pay`)
+      .set('Cookie', otherBuyer.cookie).send({}).expect(200);
+    expect(new URL(newPayment.body.redirectUrl).searchParams.get('amount')).toBe('1500000');
   });
 
   it('TC-S16-01: creates exactly the held seats at server prices with the unchanged original deadline', async () => {

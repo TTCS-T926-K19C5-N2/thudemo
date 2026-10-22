@@ -5,6 +5,8 @@ c=importlib.util.module_from_spec(spec);spec.loader.exec_module(c)
 label=sys.argv[1];cache=int(sys.argv[2]);assert label.replace('-','').isalnum() and 0<=cache<16
 c.OUT=ROOT/'.integration-s123'/label;c.OUT.mkdir(exist_ok=False)
 c.env.update(REDIS_URL=f'redis://127.0.0.1:16382/{cache}',REDIS_PORT='16382',WEB_ORIGIN='http://localhost:3000',S32_ISOLATED_TEST='true')
+if '--fresh-store' in sys.argv:
+    c.env['DATABASE_URL']=c.env['DATABASE_URL'].replace(':15446/',':15432/')
 for key in list(c.env):
     if key.startswith('BOOKING_'):c.env.pop(key)
 def git(*args):return subprocess.check_output(['git',*args],cwd=ROOT,text=True,encoding='utf-8').strip()

@@ -17,7 +17,7 @@ S-03 thuộc Sprint 3 theo refinement. S-11/S-14/S-18 ngoài R0/chưa xếp Spri
 
 RETAINED: CI/Docker/launcher/deployment có trong R19 `ae40a377`; events service trùng nội dung chuẩn hóa ở cả 27 nguồn; roles.guard cũng trùng 27 nguồn. Event editor trùng nhóm R20/R19. Auth service R11/R19 giữ hướng dẫn kích hoạt sau xác minh mật khẩu và thông báo disabled account; donor R02 cũ gộp các tình huống thành lỗi generic nên không nhập lùi. Không sửa UI hoặc API nhóm này.
 
-Các gate mới và receipt được ghi sau khi hoàn tất tại `.integration-s123/g1-foundations/`. CI/deploy/staging/rollback thật chưa chạy ở candidate này; giữ S-01 Partial. K-01 thiếu bằng chứng DoD độc lập, giữ Partial. Không suy quyền phê duyệt từ tài liệu K-01 lịch sử.
+Các gate PASS và receipt tại `.integration-s123/g1-foundations-retry/`; lần đầu bị guard Redis từ chối được giữ riêng. CI/deploy/staging/rollback thật chưa chạy ở candidate này; giữ S-01 Partial. K-01 thiếu bằng chứng DoD độc lập, giữ Partial. Không suy quyền phê duyệt từ tài liệu K-01 lịch sử.
 
 Lần G1 đầu bị guard suite S-41 từ chối Redis16383; chỉ sửa runner sang Redis16382 của integration, DB8 xác nhận trống. Rerun đầy đủ năm gate pass, không sửa guard. Local launcher `.integration-s123/serve.mjs` compose các entrypoint API/web/expiry hiện có, DB riêng `integration_s123_demo`, cổng3394/3395; smoke thật trả API health200 và web home200, tự dừng đúng tiến trình do nó tạo. Khóa test/credentials bền trong `.git/integration-s123-demo/runtime.json`, không in giá trị, không đưa vào Git. Đăng ký/email transport profile tương tác tắt; luồng đăng ký/kích hoạt được kiểm bằng transport test ở E2E, không tuyên bố email Internet.
 
@@ -29,9 +29,10 @@ RETAINED theo thứ tự S-05 → S-06/S-09 → S-15 prerequisite → S-07 → S
 
 | Nhóm | Build | Lint | Typecheck | Test | API E2E | Quyết định |
 |---|---|---|---|---|---|---|
-| g3-configurable-hold (S-10, S-12, S-13) | PASS | PASS (warning có sẵn) | PASS | 604 PASS | 156 PASS | [receipt](../.integration-s123/g3-configurable-hold/summary.json) |
-| g2-seatmap-pricing-sale (S-05, S-06, S-09, S-15, S-07, S-08) | PASS | PASS (warning có sẵn) | PASS | 604 PASS | 151 PASS | [receipt](../.integration-s123/g2-seatmap-pricing-sale/summary.json) |
 | g1-foundations-retry (S-01, S-02, S-04, K-01) | PASS | PASS (warning có sẵn) | PASS | 604 PASS | 151 PASS | [receipt](../.integration-s123/g1-foundations-retry/summary.json) |
+| g2-seatmap-pricing-sale (S-05, S-06, S-09, S-15, S-07, S-08) | PASS | PASS (warning có sẵn) | PASS | 604 PASS | 151 PASS | [receipt](../.integration-s123/g2-seatmap-pricing-sale/summary.json) |
+| g3-configurable-hold (S-10, S-12, S-13) | PASS | PASS (warning có sẵn) | PASS | 604 PASS | 156 PASS | [receipt](../.integration-s123/g3-configurable-hold/summary.json) |
+| g4-registration-orders-payment-retry (S-03, S-16, S-17, S-19, S-20, S-21, S-22, S-23, S-24) | PASS | PASS (warning có sẵn) | PASS | 604 PASS | 156 PASS | [receipt](../.integration-s123/g4-registration-orders-payment-retry/summary.json) |
 
 Raw/log và manifest ở `.integration-s123/<group>/`; báo cáo cuối nêu rõ phần giữ base, phần nhập mới, các lỗi còn mở và loại bằng chứng. Raw lớn giữ local, receipt/hash được commit. Ma trận `STORY_SOURCE_MATRIX.csv` vẫn là snapshot nguồn audit A/B0, không gán thay đổi integration cho thư mục donor chỉ đọc.
 
@@ -45,4 +46,54 @@ Năm gate PASS:604 test và156 E2E. Migration **47/47 mới,35→47 upgrade PASS
 
 ## Các gate còn cần người thật
 
+### G4 — giữ đăng ký/đơn/mock, nối snapshot giá S-15 qua thanh toán
+
+RETAINED: đăng ký S-03 trùng R02/R03/R19; thông báo/consent phiên bản đã duyệt, activation, ownership/session, S-16 expiry gốc, S-17 server total, T-40/mock S-19 và S-20–S-24 được kiểm lại bằng toàn bộ E2E. Không nhập cây donor cũ làm mất contract và các guard. S-18 sandbox thật vẫn ngoài R0.
+
+RESOLVED: các donor đã kiểm và R19 đều đọc `seat.category.price` ở initiate/callback, trong khi luồng tạo đơn đã lưu snapshot `OrderItem.unitPrice`. Ca TC-S15-03 mở rộng chứng minh lỗi trên DB thật: đơn1.200.000đ bị gửi sang gateway1.500.000đ sau đổi giá; [log trước sửa](../.integration-s123/g4-payment-regression/snapshot-before-fix.log). Chỉ nối hai điểm tính tiền với snapshot DB sẵn có theo Backlog!L12; không thay API, schema, query/lock/pool hoặc thuật toán hold. Giữ các unit case, bổ sung trường unitPrice mà DB bắt buộc vào mock; sửa assertion cũ dùng giá hiện hành vì trái AC, không xóa test. TC-S15-03 kiểm cả amount client giả, gateway amount cũ, signed success/replay không nhân vé/thanh toán, và đơn mới lấy giá mới. Teardown chỉ dọn fixture của suite.
+
+## Khởi động và smoke đã chạy
+
+Tại root integration có dependencies/runtime và container audit riêng đã tạo:
+
+```powershell
+node .integration-s123/serve.mjs
+```
+
+Web `http://localhost:3394`, API `http://localhost:3395`; Ctrl+C dừng đúng các child do launcher tạo. DB demo riêng giữ dữ liệu/keys qua lần chạy. Profile dùng dữ liệu giả/mock; email tắt ở launcher, không gọi SMTP bên ngoài. Credentials/keys nằm trong file riêng dưới `.git` mà launcher chỉ báo đường dẫn; không in giá trị hoặc commit. Đã chạy `--smoke` với health200/home200 ở G1; lần cuối sau G4 cũng health200/home200; [receipt](../.integration-s123/g4-registration-orders-payment-retry/startup.json).
+
+| Luồng smoke | Bằng chứng có trong API E2E/kiểm local |
+|---|---|
+| Đăng ký → activation/expired/resend | registration, registration-admission; test mail transport, không Internet |
+| Login → roles/default-deny/lock/logout | auth-roles, auth-input-regression, sprint1-ip |
+| Tạo/sửa sự kiện, suất và ownership | events |
+| Import valid/invalid/rollback → giá → mở bán | sprint2, s15-s16-acceptance |
+| Đọc ghế → hold → expiry/recovery | seat-hold-api, account-hold-recovery, configurable-hold-ttl |
+| Đặt đơn → giá snapshot/deadline → retry | orders, s15-s16-acceptance |
+| Mock payment → signature/idempotency/failure/late | mock-gateway, payments, payments-signature-verification, payments-idempotency |
+| PAID → ticket/QR → soát lại | tickets, ticket-check-in; hồi quy mã đã có, không phải tích hợp Sprint4 |
+
+Đây là các luồng API trên DB/Redis thật và mock/test transport, không phải bằng chứng toàn chuỗi thao tác UI/camera/email Internet. Không có UI component nào được sửa trong lượt này.
+
+## Mười rủi ro/khoảng trống còn mở
+
+| # | Phạm vi | Kết quả còn thiếu / tác động |
+|---|---|---|
+| 1 | S-10/S-13 | p95 mới353,36ms, vòng đầu438,25ms; xử lý sau theo chỉ dẫn, không tối ưu lượt này |
+| 2 | S-01 | CI/deploy/rollback staging đúng SHA cuối chưa chạy; local startup200 không thay thế |
+| 3 | DoD chung | Chưa member review, staging acceptance và dependency scan đúng candidate; Must Done0/32, riêng nhóm này0/19 |
+| 4 | S-05/S-06/S-08/S-09/S-17/S-22 | API/unit có kiểm; browser/mobile/2000-seat render và UI polling thực chưa nghiệm thu ở candidate |
+| 5 | S-03 | Email activation/resend dùng test transport; launcher tương tác tắt mail, chưa nghiệm thu gửi/nhận staging |
+| 6 | S-18 | Sandbox thật ngoài R0, chưa đầu vào/provider proof; mock không đóng story này |
+| 7 | S-44 | SSE endpoint404 trong audit; theo chỉ dẫn không chặn, để nhóm6 xử lý/polling/không nhập |
+| 8 | S-45–S-48 | Policy hủy/hoàn tiền chưa chốt theo hai nguồn; chưa thuộc lượt này |
+| 9 | S-53–S-55 | Phạm vi privacy/backup offhost/restore vận hành còn chưa nghiệm thu; chưa thuộc lượt này |
+| 10 | S-56/58/59/60/62/63 | Không có donor usable trong audit; Could/backlog chưa Sprint, không tự phát triển |
+
+Các mục ngoài R0 không tự biến thành blocker tích hợp Sprint1–3. Không có story bị bỏ sau hai lần sửa không qua; G4 lần đầu timeout5s ở ca bulk2000 ghế dù regression giá đã pass, giữ log và rerun cả năm gate trên PostgreSQL test trống riêng15432/RedisDB13, không tăng timeout/đổi code sau lỗi; lần G1 lỗi cấu hình Redis đã sửa và rerun cả năm gate pass. G3 NFR fail được giữ thành rủi ro đã nêu, không đổi thành PASS hoặc DoD Done.
+
+**DỪNG sau Sprint1–3. Chưa lấy thêm code Sprint4–5 hoặc6–8; chờ người dùng xác nhận nhóm tiếp theo.**
+
 Review của thành viên khác, xác nhận môi trường và nghiệm thu AC staging, CI đúng SHA/quét dependency còn riêng. Tích hợp local không làm `DoD_complete=true`; bảng STATUS tiếp tục phân biệt Partial với Done đủ DoD.
+
+Đã kiểm chốt [an toàn nguồn và manifest](../.integration-s123/safety-summary.json); không sửa nguồn/API contract, không push/main/develop hoặc tối ưu hiệu năng. Các container chỉ thuộc integration được dừng, dữ liệu giữ lại.

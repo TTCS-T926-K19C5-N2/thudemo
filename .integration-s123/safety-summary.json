@@ -1,0 +1,10 @@
+{
+  "source_dirs_unchanged": 27,
+  "source_files_unchanged": 1202,
+  "existing_migration_sql_unchanged": 46,
+  "requirements_unchanged": true,
+  "ui_source_unchanged": true,
+  "tested_input_manifest_matches": true,
+  "payment_test_cases_preserved": true,
+  "branch": "integration/candidate-1"
+}

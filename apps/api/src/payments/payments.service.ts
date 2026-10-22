@@ -82,10 +82,10 @@ export class PaymentsService {
       });
     }
 
-    // Authoritative calculation strictly from DB prices
+    // S-15: pay the server-persisted order snapshot, including after repricing.
     let authoritativeTotal = 0;
     for (const item of order.items) {
-      const price = item.seat?.category?.price ?? item.unitPrice;
+      const price = item.unitPrice;
       authoritativeTotal += price;
     }
 
@@ -456,10 +456,10 @@ export class PaymentsService {
       }
     }
 
-    // 4. Calculate authoritative order total from DB
+    // 4. Verify against the same immutable DB order-item prices used at checkout.
     let orderTotal = 0;
     for (const item of order.items) {
-      orderTotal += item.seat?.category?.price ?? item.unitPrice;
+      orderTotal += item.unitPrice;
     }
 
     // 5. Amount mismatch check
