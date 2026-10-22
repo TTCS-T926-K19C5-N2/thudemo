@@ -104,8 +104,6 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     await app.init();
     db = app.get(PrismaService);
     owner = await account('ORGANIZER');
-    buyer = await account('BUYER');
-    otherBuyer = await account('BUYER');
     eventId = (
       await db.event.create({
         data: {
@@ -120,6 +118,10 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
 
   beforeEach(async () => {
     if (!eventId) throw Error('Fixture setup did not complete');
+    // Each scenario has its own buyer identities; previous scenarios must not
+    // consume this one's real S41 account budget. The rate guard stays enabled.
+    buyer = await account('BUYER');
+    otherBuyer = await account('BUYER');
     showId = (
       await db.showtime.create({
         // Bulk-hold acceptance proves the routine, not S-42 limits (covered by
