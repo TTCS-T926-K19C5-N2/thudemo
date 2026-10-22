@@ -284,14 +284,13 @@ export class PaymentsService {
               },
             });
           }
-        });
-
         await this.accountantNotifier.notifyLatePayment({
           orderId: order.id,
           amount: event.amount,
           transactionId: event.transactionId,
           gatewayRef: event.gatewayRef,
           reason: 'Trả trùng khi đơn đã được thanh toán, cần hoàn tiền',
+        }, tx);
         });
 
         return { received: true, status: 'LATE' };
@@ -391,14 +390,13 @@ export class PaymentsService {
               },
             });
           }
-        });
-
         await this.accountantNotifier.notifyLatePayment({
           orderId: order.id,
           amount: event.amount,
           transactionId: event.transactionId,
           gatewayRef: event.gatewayRef,
           reason: 'Thanh toán sau khi đơn hết hạn, cần hoàn tiền',
+        }, tx);
         });
 
         return { received: true, status: 'LATE' };
@@ -496,8 +494,6 @@ export class PaymentsService {
             },
           });
         }
-      });
-
       await this.accountantNotifier.notifyAmountMismatch({
         orderId: order.id,
         expectedAmount: orderTotal,
@@ -506,6 +502,7 @@ export class PaymentsService {
         gatewayRef: event.gatewayRef,
         reason:
           'Số tiền thanh toán nhận từ cổng không khớp với tổng tiền đơn hàng',
+      }, tx);
       });
 
       return { received: true, status: 'AMOUNT_MISMATCH' };
@@ -619,15 +616,13 @@ export class PaymentsService {
               });
             }
 
-            setTimeout(() => {
-              void this.accountantNotifier.notifyLatePayment({
+            await this.accountantNotifier.notifyLatePayment({
                 orderId: order.id,
                 amount: event.amount,
                 transactionId: event.transactionId,
                 gatewayRef: event.gatewayRef,
                 reason: 'Thanh toán sau khi đơn hết hạn, cần hoàn tiền',
-              });
-            }, 0);
+            }, tx);
 
             return { received: true, status: 'LATE' };
           }

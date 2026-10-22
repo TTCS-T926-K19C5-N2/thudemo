@@ -33,6 +33,6 @@ import {
       inject: [ConfigService, MailService],
     },
   ],
-  exports: [TicketSigningService, TicketsService, TicketEmailService],
+  exports: [TicketSigningService, TicketsService, TicketEmailService, TicketDeliveryService],
 })
 export class TicketsModule {}

@@ -246,6 +246,7 @@ describe('PaymentsService Unit Tests', () => {
           expectedAmount: 100000,
           receivedAmount: 50000,
         }),
+        mockPrisma,
       );
     });
 
@@ -395,6 +396,7 @@ describe('PaymentsService Unit Tests', () => {
           amount: 100000,
           transactionId: 'momo_tx_late',
         }),
+        mockPrisma,
       );
     });
 
@@ -528,6 +530,7 @@ describe('PaymentsService Unit Tests', () => {
             orderId,
             reason: expect.stringContaining('hết hạn'),
           }),
+        mockPrisma,
         );
       });
 
@@ -905,6 +908,7 @@ describe('PaymentsService Unit Tests', () => {
             orderId,
             reason: expect.stringContaining('Trả trùng'),
           }),
+        mockPrisma,
         );
       });
     });

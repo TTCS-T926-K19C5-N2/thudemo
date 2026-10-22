@@ -314,7 +314,12 @@ describe('Payments S-20 Idempotency & Concurrency E2E Integration', () => {
         amount: 250000,
         transactionId: transId,
       }),
+      expect.objectContaining({ ticketMailDelivery: expect.any(Object) }),
     );
+    const alerts = await db.ticketMailDelivery.findMany({ where: { orderId: order.id } });
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0].notification).toMatchObject({ kind: 'ACCOUNTANT' });
+    expect(alerts[0].status).toBe('QUEUED');
   });
 
   it('AC 4: Webhook arrives before user returns to result page: user immediately sees PAID order', async () => {

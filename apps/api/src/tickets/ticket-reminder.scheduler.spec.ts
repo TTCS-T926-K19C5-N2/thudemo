@@ -13,8 +13,7 @@ describe('TicketReminderScheduler', () => {
       showtime: { findMany: vi.fn().mockResolvedValue([]) },
       ticket: { findMany: vi.fn().mockResolvedValue([]), update: vi.fn().mockResolvedValue({}) },
     };
-    const config = { get: vi.fn().mockReturnValue(undefined) } as any;
-    emailService = new TicketEmailService(config);
+    emailService = new TicketEmailService({ enqueueNotification: vi.fn() } as any);
     vi.spyOn(emailService, 'sendReminder').mockResolvedValue(undefined);
     scheduler = new TicketReminderScheduler(db, emailService);
   });
@@ -32,6 +31,7 @@ describe('TicketReminderScheduler', () => {
       db.ticket.findMany.mockResolvedValueOnce([
         {
           id: 'ticket-1',
+          orderId: 'order-1',
           showtimeId: 'showtime-1',
           seatLabel: 'VIP-1',
           code: 'TK-11111-22222',
@@ -57,20 +57,16 @@ describe('TicketReminderScheduler', () => {
       });
 
       expect(emailService.sendReminder).toHaveBeenCalledWith({
-        toEmail: 'buyer@example.com',
-        eventName: 'Concert A',
+        orderId: 'order-1', ticketId: 'ticket-1',
         showtimeStart,
         location: 'Opera House',
-        seatLabel: 'VIP-1',
-        ticketCode: 'TK-11111-22222',
-        qrPayload: expect.stringContaining('TK-11111-22222'),
         type: 'REMINDER',
       });
 
       expect(db.ticket.update).toHaveBeenCalledWith({
         where: { id: 'ticket-1' },
         data: {
-          reminderSentAt: expect.any(Date),
+          reminderSentAt: null,
           remindedStartTime: showtimeStart,
         },
       });
@@ -117,6 +113,7 @@ describe('TicketReminderScheduler', () => {
       db.ticket.findMany.mockResolvedValueOnce([
         {
           id: 'ticket-rescheduled-1',
+          orderId: 'order-2',
           showtimeId: 'showtime-1',
           seatLabel: 'C-10',
           code: 'TK-77777-88888',
@@ -138,21 +135,17 @@ describe('TicketReminderScheduler', () => {
       await scheduler.sweep();
 
       expect(emailService.sendReminder).toHaveBeenCalledWith({
-        toEmail: 'customer@example.com',
-        eventName: 'Vở kịch Mùa Thu',
+        orderId: 'order-2', ticketId: 'ticket-rescheduled-1',
         showtimeStart: newStartTime,
         previousStart: oldStartTime,
         location: 'Nhà hát Lớn',
-        seatLabel: 'C-10',
-        ticketCode: 'TK-77777-88888',
-        qrPayload: expect.stringContaining('TK-77777-88888'),
         type: 'RESCHEDULED',
       });
 
       expect(db.ticket.update).toHaveBeenCalledWith({
         where: { id: 'ticket-rescheduled-1' },
         data: {
-          reminderSentAt: expect.any(Date),
+          reminderSentAt: null,
           remindedStartTime: newStartTime,
         },
       });

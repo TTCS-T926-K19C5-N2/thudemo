@@ -1,5 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { createHash } from 'node:crypto';
+import type { Prisma } from '@prisma/client';
+import { TicketDeliveryService } from '../tickets/ticket-delivery.service.js';
 
 export interface MismatchAlertPayload {
   orderId: string;
@@ -22,9 +25,9 @@ export interface LatePaymentAlertPayload {
 export class AccountantNotifier {
   private readonly logger = new Logger(AccountantNotifier.name);
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(private readonly config: ConfigService, private readonly deliveries: TicketDeliveryService) {}
 
-  async notifyAmountMismatch(payload: MismatchAlertPayload): Promise<void> {
+  async notifyAmountMismatch(payload: MismatchAlertPayload, tx?: Prisma.TransactionClient): Promise<void> {
     const accountantEmail = this.config.get<string>('ACCOUNTANT_EMAIL');
 
     this.logger.error(
@@ -33,20 +36,15 @@ export class AccountantNotifier {
         alert: 'ACCOUNTANT_ALERT',
         message: 'Số tiền thanh toán nhận được khác với tổng tiền đơn hàng trong hệ thống!',
         ...payload,
-        notifiedEmail: accountantEmail ?? null,
+        recipientConfigured: !!accountantEmail,
         timestamp: new Date().toISOString(),
       }),
     );
 
-    if (accountantEmail) {
-      // In production/staging with an email transport, dispatch alert email here.
-      this.logger.warn(
-        `[AccountantAlert] Sent email alert to ${accountantEmail} for order ${payload.orderId}`,
-      );
-    }
+    await this.queue('AMOUNT_MISMATCH', payload.orderId, payload.gatewayRef ?? payload.transactionId ?? '', 'Cảnh báo: sai số tiền thanh toán', `Đơn ${payload.orderId}: số tiền kỳ vọng ${payload.expectedAmount} VND, nhận ${payload.receivedAmount} VND. Cần kiểm tra đối soát.`, tx);
   }
 
-  async notifyLatePayment(payload: LatePaymentAlertPayload): Promise<void> {
+  async notifyLatePayment(payload: LatePaymentAlertPayload, tx?: Prisma.TransactionClient): Promise<void> {
     const accountantEmail = this.config.get<string>('ACCOUNTANT_EMAIL');
 
     this.logger.error(
@@ -55,15 +53,16 @@ export class AccountantNotifier {
         alert: 'ACCOUNTANT_ALERT',
         message: 'Khách hàng thanh toán sau khi đơn hàng đã hết hạn!',
         ...payload,
-        notifiedEmail: accountantEmail ?? null,
+        recipientConfigured: !!accountantEmail,
         timestamp: new Date().toISOString(),
       }),
     );
 
-    if (accountantEmail) {
-      this.logger.warn(
-        `[AccountantAlert] Sent late payment alert to ${accountantEmail} for order ${payload.orderId}`,
-      );
-    }
+    await this.queue('LATE_PAYMENT', payload.orderId, payload.gatewayRef ?? payload.transactionId ?? '', 'Cảnh báo: thanh toán quá hạn hoặc trả trùng', `Đơn ${payload.orderId}: ghi nhận ${payload.amount} VND cần kiểm tra và xử lý hoàn tiền. Không tự cấp thêm vé.`, tx);
   }
+  private async queue(kind: string, orderId: string, reference: string, subject: string, text: string, tx?: Prisma.TransactionClient) {
+    const key = createHash('sha256').update(`${kind}:${orderId}:${reference}`).digest('hex');
+    await this.deliveries.enqueueNotification(orderId, `accountant:${key}`, { kind: 'ACCOUNTANT', subject, text }, tx);
+  }
+
 }

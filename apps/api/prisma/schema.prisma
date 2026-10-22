@@ -428,6 +428,7 @@ model TicketMailDelivery {
   orderId       String    @db.Uuid
   order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
   dedupeKey     String    @unique
+  notification  Json?
   status        String    @default("QUEUED")
   attempts      Int       @default(0)
   nextAttemptAt DateTime  @default(now()) @db.Timestamptz(3)

@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { TicketStatus, OrderStatus } from '@prisma/client';
-import { encodeTicketQr } from './ticket-qr.js';
 import { TicketEmailService } from './ticket-email.service.js';
 
 @Injectable()
@@ -79,36 +78,23 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
       });
 
       for (const ticket of tickets) {
-        const email = (ticket as any).ownerEmail || ticket.order?.user?.email;
+        const email = ticket.ownerEmail || ticket.order?.user?.email;
         if (!email) continue;
-
-        const qrPayload =
-          ticket.keyId && ticket.signature
-            ? encodeTicketQr({
-                keyId: ticket.keyId,
-                code: ticket.code,
-                showtimeId: ticket.showtimeId,
-                signature: ticket.signature,
-              })
-            : null;
 
         try {
           await this.emailService.sendReminder({
-            toEmail: email,
-            eventName: showtime.event.name,
+            orderId: ticket.orderId!,
+            ticketId: ticket.id,
             showtimeStart: showtime.startTime,
             location: showtime.event.location,
-            seatLabel: ticket.seatLabel,
-            ticketCode: ticket.code,
-            qrPayload,
             type: 'REMINDER',
           });
 
-          // Idempotency: mark both reminderSentAt and remindedStartTime
+          // The durable outbox owns delivery/retry; enqueue is not SMTP receipt.
           await this.db.ticket.update({
             where: { id: ticket.id },
             data: {
-              reminderSentAt: new Date(),
+              reminderSentAt: null,
               remindedStartTime: showtime.startTime,
             },
           });
@@ -155,37 +141,24 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
         ticket.showtime.startTime.getTime() !==
         ticket.remindedStartTime.getTime()
       ) {
-        const email = (ticket as any).ownerEmail || ticket.order?.user?.email;
+        const email = ticket.ownerEmail || ticket.order?.user?.email;
         if (!email) continue;
-
-        const qrPayload =
-          ticket.keyId && ticket.signature
-            ? encodeTicketQr({
-                keyId: ticket.keyId,
-                code: ticket.code,
-                showtimeId: ticket.showtimeId,
-                signature: ticket.signature,
-              })
-            : null;
 
         try {
           await this.emailService.sendReminder({
-            toEmail: email,
-            eventName: ticket.showtime.event.name,
+            orderId: ticket.orderId!,
+            ticketId: ticket.id,
             showtimeStart: ticket.showtime.startTime,
             previousStart: ticket.remindedStartTime,
             location: ticket.showtime.event.location,
-            seatLabel: ticket.seatLabel,
-            ticketCode: ticket.code,
-            qrPayload,
             type: 'RESCHEDULED',
           });
 
-          // Idempotency: update remindedStartTime to the new startTime
+          // Record the scheduled version; the worker alone records sentAt.
           await this.db.ticket.update({
             where: { id: ticket.id },
             data: {
-              reminderSentAt: new Date(),
+              reminderSentAt: null,
               remindedStartTime: ticket.showtime.startTime,
             },
           });

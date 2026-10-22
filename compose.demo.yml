@@ -69,6 +69,7 @@ services:
       MOCK_WEBHOOK_DELAY_MS: "0"
       API_INTERNAL_URL: http://api:3001
       TICKET_MAIL_WORKER: "true"
+      ACCOUNTANT_EMAIL: ${ACCOUNTANT_EMAIL:-}
       TICKET_MAIL_MODE: catcher
       TICKET_SMTP_HOST: mailpit
       TICKET_SMTP_PORT: "1025"
