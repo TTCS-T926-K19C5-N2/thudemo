@@ -1,3 +1,5 @@
+import { assertIntegrationDatabase } from './integration-database.js';
+assertIntegrationDatabase();
 import { generateKeyPairSync } from 'node:crypto';
 // Isolated test-only keys. Production never generates keys at startup.
 const pair = generateKeyPairSync('ed25519');

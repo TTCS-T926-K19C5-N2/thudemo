@@ -1,3 +1,4 @@
+import { assertIntegrationDatabase } from './integration-database.js';
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -130,18 +131,7 @@ describe('Payments S-20 Idempotency & Concurrency E2E Integration', () => {
   }
 
   beforeAll(async () => {
-    const target = new URL(process.env.DATABASE_URL ?? '');
-    if (
-      target.hostname !== '127.0.0.1' ||
-      !(
-        target.port === '15432' ||
-        (target.port === '15446' &&
-          process.env.SPRINT1_ISOLATED_TEST === 'true')
-      ) ||
-      target.pathname !== '/sprint2_integration'
-    ) {
-      throw new Error('Run only on the isolated sprint2_integration database');
-    }
+    assertIntegrationDatabase();
 
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],

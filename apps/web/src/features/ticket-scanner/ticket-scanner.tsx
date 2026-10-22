@@ -123,6 +123,8 @@ export function TicketScanner({
     requestId: string;
   } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const qrImageInputRef = useRef<HTMLInputElement>(null);
+  const [imageDecoding, setImageDecoding] = useState(false);
   const [status, setStatus] = useState<ScanStatus>("SCANNING");
   const [message, setMessage] = useState(
     "Chọn suất diễn và tải cửa được phân công để bắt đầu.",
@@ -865,6 +867,49 @@ export function TicketScanner({
     }
   }, [showtimeId, gateId, validateTicket]);
 
+  // Decode a QR from an uploaded image locally (the file never leaves the
+  // browser), then reuse the exact camera validation path.
+  const scanImage = useCallback(
+    async (file: File | undefined) => {
+      if (!file || scanInProgress.current) return;
+      if (!showtimeId.trim() || !gateId) {
+        setStatus("ERROR");
+        setMessage("Chọn suất diễn và cửa được cấp quyền trước khi tải ảnh QR.");
+        return;
+      }
+      if (!file.type.startsWith("image/") || file.size > 10 * 1024 * 1024) {
+        setStatus("INVALID");
+        setMessage("Chỉ nhận tệp ảnh (PNG, JPG...) dung lượng tối đa 10 MB.");
+        return;
+      }
+      setImageDecoding(true);
+      setUsed(null);
+      setResult(null);
+      setStatus("SCANNING");
+      setMessage("Đang đọc mã QR từ ảnh...");
+      let decoded: string | null = null;
+      try {
+        if (cameraActive) await stopCamera();
+        const { Html5Qrcode } = await import("html5-qrcode");
+        const reader = new Html5Qrcode("ticket-qr-file-reader");
+        try {
+          decoded = await reader.scanFile(file, false);
+        } finally {
+          reader.clear();
+        }
+      } catch {
+        setStatus("INVALID");
+        setMessage(
+          "Không tìm thấy mã QR trong ảnh. Hãy dùng ảnh rõ nét, chụp thẳng và đủ toàn bộ mã.",
+        );
+      } finally {
+        setImageDecoding(false);
+      }
+      if (decoded) await validateTicket(decoded);
+    },
+    [showtimeId, gateId, cameraActive, stopCamera, validateTicket],
+  );
+
   const scanNext = useCallback(() => {
     if (scanInProgress.current) return;
     scanAction.current = null;
@@ -1242,6 +1287,35 @@ export function TicketScanner({
                 Bật camera
               </button>
             )}
+
+            <div className="space-y-2 rounded-lg border bg-card p-4">
+              <label htmlFor="ticket-qr-image" className="block font-medium">
+                Hoặc tải ảnh mã QR lên
+              </label>
+              <p className="text-sm text-muted-foreground">
+                Ảnh được đọc ngay trên trình duyệt và kiểm tra giống như khi
+                quét bằng camera.
+              </p>
+              <input
+                id="ticket-qr-image"
+                ref={qrImageInputRef}
+                type="file"
+                accept="image/*"
+                disabled={requestPending || imageDecoding || !gateId}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  event.target.value = "";
+                  void scanImage(file);
+                }}
+                className="block w-full text-sm file:mr-3 file:rounded-md file:border file:bg-background file:px-4 file:py-2 file:font-semibold disabled:opacity-60"
+              />
+              {imageDecoding && (
+                <p className="text-sm" role="status">
+                  Đang đọc ảnh...
+                </p>
+              )}
+              <div id="ticket-qr-file-reader" className="hidden" aria-hidden="true" />
+            </div>
 
             <form
               className="space-y-2 rounded-lg border bg-card p-4"

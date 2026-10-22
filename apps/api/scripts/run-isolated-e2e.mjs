@@ -1,0 +1,17 @@
+import {spawnSync} from 'node:child_process';
+import {writeFileSync,openSync,closeSync,readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+const url=new URL(process.env.DATABASE_URL);
+if(!['localhost','127.0.0.1'].includes(url.hostname))throw Error('Local source configuration required.');
+const user=decodeURIComponent(url.username),name=`codegym_e2e_${Date.now()}`;
+let r=spawnSync('docker',['exec','thudemo-postgres-1','createdb','-U','postgres','-O',user,name],{windowsHide:true});if(r.status)throw Error('Cannot create disposable E2E DB.');
+url.pathname='/'+name;
+const redis=new URL(process.env.REDIS_URL ?? 'redis://127.0.0.1:6379');redis.pathname='/15';
+const env={...process.env,PAYMENT_GATEWAY:'mock',MOMO_ACCESS_KEY:'MOCK_ACCESS_KEY',MOMO_SECRET_KEY:process.env.PAYMENT_WEBHOOK_SECRET ?? 'mock_webhook_secret_dev',HOLD_EXPIRY_MODE:'off',DATABASE_URL:url.href,SPRINT_E2E_DATABASE:name,REDIS_URL:redis.href,WAITING_ROOM_CAPACITY:'0',MONITORING_ENABLED:'false',LIFECYCLE_WORKER:'off',TICKET_MAIL_WORKER:'false',REGISTRATION_DELIVERY_MODE:'off',REGISTRATION_MAIL_MODE:'off',BOOKING_HOLD_ACCOUNT_LIMIT:'10000',BOOKING_HOLD_IP_LIMIT:'100000',BOOKING_ORDER_ACCOUNT_LIMIT:'10000',BOOKING_ORDER_IP_LIMIT:'100000'};
+const cwd=resolve(import.meta.dirname,'..'),dir=resolve(cwd,'../../.cache/sprint4-8-evidence/20261022');
+r=spawnSync(process.execPath,[resolve(cwd,'node_modules/prisma/build/index.js'),'migrate','deploy'],{cwd,env,encoding:'utf8',windowsHide:true});writeFileSync(resolve(dir,'full-e2e-migrations.log'),r.stdout+r.stderr);if(r.status)throw Error('Disposable E2E migration failed.');
+console.log('Running full E2E suite in disposable DB '+name+' and RedisDB15; mail workers disabled.');
+env.VERIFICATION_EVIDENCE_DIR=dir;
+const outputFile=resolve(dir,'full-e2e.log');const output=openSync(outputFile,'w');
+r=spawnSync('pnpm exec vitest run --config vitest.config.e2e.ts --maxWorkers=1',{cwd,env,shell:true,windowsHide:true,encoding:'utf8',stdio:['ignore',output,output]});
+closeSync(output);console.log(readFileSync(outputFile,'utf8').split(/\r?\n/).slice(-15).join('\n'));process.exitCode=r.status ?? 1;

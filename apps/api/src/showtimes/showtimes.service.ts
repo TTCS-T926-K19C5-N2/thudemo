@@ -70,6 +70,7 @@ export class ShowtimesService {
     const target = new URL(config.getOrThrow<string>('DATABASE_URL'));
     const identity = `${target.hostname}:${target.port}${target.pathname}`;
     this.cacheNamespace = `catalog:showtimes:contract-v4:${createHash('sha256').update(identity).digest('hex').slice(0, 16)}`;
+    this.seatEvents?.setSnapshotLoader?.((id) => this.publicSeats(id));
   }
   private async owned(tx: Tx, id: string, owner: string, lock = false) {
     if (lock)
@@ -246,7 +247,8 @@ export class ShowtimesService {
           price: category.price,
         };
       });
-      if (categories.length) await tx.seatCategory.createMany({ data: categories });
+      if (categories.length)
+        await tx.seatCategory.createMany({ data: categories });
       if (sourceSeats.length) {
         await tx.seat.createMany({
           data: sourceSeats.map((seat) => ({
@@ -275,7 +277,8 @@ export class ShowtimesService {
       };
     });
   }
-  async status(id: string, owner: string, body: unknown) {    const next =
+  async status(id: string, owner: string, body: unknown) {
+    const next =
       body && typeof body === 'object'
         ? (body as Record<string, unknown>).status
         : undefined;
@@ -295,11 +298,23 @@ export class ShowtimesService {
           throw new ConflictException({ message: reasons.join(' '), reasons });
       } else if (show.status === 'DRAFT')
         throw new ConflictException('Suất nháp chưa mở bán.');
+      if (show.status === next) return show;
       const updated = await tx.showtime.update({
         where: { id },
         data: {
           status: next as ShowtimeStatus,
           ...(next === 'ON_SALE' ? { structureLocked: true } : {}),
+        },
+      });
+      await tx.domainAudit.create({
+        data: {
+          entityType: 'showtime',
+          entityId: id,
+          actorId: owner,
+          actorType: 'USER',
+          action: 'SHOWTIME_STATUS_CHANGED',
+          beforeState: { status: show.status },
+          afterState: { status: updated.status },
         },
       });
       await this.invalidate(tx);
@@ -396,8 +411,7 @@ export class ShowtimesService {
     });
     if (
       !show ||
-      (show.status !== 'ON_SALE' &&
-        !(show.isDemo && show.status === 'DRAFT'))
+      (show.status !== 'ON_SALE' && !(show.isDemo && show.status === 'DRAFT'))
     )
       throw new NotFoundException('Suất diễn chưa mở bán hoặc đã đóng.');
     const siblings = await this.db.showtime.findMany({
@@ -465,7 +479,9 @@ export class ShowtimesService {
       ? Prisma.sql`AND (s."startTime", s.id) > (${new Date(after.time)}::timestamptz, ${after.id}::uuid)`
       : Prisma.empty;
     const visibility = Prisma.sql`(s.status = 'ON_SALE' OR (s.status = 'DRAFT' AND s."isDemo" = true)) AND e.status = 'PUBLISHED'`;
-    const [countRow] = await this.db.$queryRaw<{ totalCount: number }[]>(Prisma.sql`
+    const [countRow] = await this.db.$queryRaw<
+      { totalCount: number }[]
+    >(Prisma.sql`
       SELECT COUNT(DISTINCT s.id)::int AS "totalCount"
       FROM showtimes s JOIN events e ON e.id = s."eventId"
       JOIN seat_categories c ON c."showtimeId" = s.id
@@ -511,8 +527,7 @@ export class ShowtimesService {
     );
     if (
       !show ||
-      (show.status !== 'ON_SALE' &&
-        !(show.isDemo && show.status === 'DRAFT'))
+      (show.status !== 'ON_SALE' && !(show.isDemo && show.status === 'DRAFT'))
     )
       throw new NotFoundException('Suất diễn chưa mở bán hoặc đã đóng.');
     return show.seats;

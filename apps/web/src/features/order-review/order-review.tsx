@@ -1,4 +1,6 @@
 "use client";
+import { OrderCancellation } from "@/features/lifecycle/order-cancellation";
+import { OrderAudit } from "@/features/lifecycle/order-audit";
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
@@ -532,6 +534,8 @@ export function OrderReview({ id, page = 1, onPay }: OrderReviewProps) {
               </div>
             </div>
 
+            {["PAID", "CANCELLED"].includes(order.status) && <OrderCancellation id={order.id} />}
+            <OrderAudit id={order.id} />
             {order.status === "PAID" && (
               <>
                 <SignedTickets key={order.id} orderId={order.id} />

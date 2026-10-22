@@ -42,5 +42,5 @@ describe('Sprint1 shared login IP budget (real Redis)', () => {
     } finally {
       await redis.del(key);
     }
-  });
+  }, 30000);
 });

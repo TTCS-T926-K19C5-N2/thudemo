@@ -6,6 +6,8 @@ describe("Login return path allowlist", () => {
       "/events/new",
       "/events/12345678-1234-1234-1234-123456789abc",
       "/shows/12345678-1234-1234-1234-123456789abc/seats",
+      "/orders",
+      "/account/tickets",
     ])
       expect(safeReturnTo(path)).toBe(path);
     for (const path of [
@@ -16,7 +18,7 @@ describe("Login return path allowlist", () => {
       "/events/new?next=https://attacker.invalid",
       "/events/../account",
       "/events/new#x",
-      "/orders",
+      "/admin",
       "/events/not-uuid",
       "/events/%6eew",
     ])

@@ -1,0 +1,11 @@
+import { spawnSync } from 'node:child_process';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+const db = new URL(process.env.DATABASE_URL);
+if (!['localhost', '127.0.0.1'].includes(db.hostname)) throw Error('Local database required');
+const target = resolve(import.meta.dirname, '../../../.cache/sprint4-8-evidence/20261022');
+mkdirSync(target, { recursive: true });
+const result = spawnSync('docker', ['exec', 'thudemo-postgres-1', 'pg_dump', '-U', decodeURIComponent(db.username), '-d', db.pathname.slice(1), '-Fc'], { maxBuffer: 100 * 1024 * 1024, windowsHide: true });
+if (result.status !== 0) throw Error('Database backup failed');
+writeFileSync(resolve(target, 'before-sprint-implementation.dump'), result.stdout);
+console.log('Local database backup saved (no database changes).');

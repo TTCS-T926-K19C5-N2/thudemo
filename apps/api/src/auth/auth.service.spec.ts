@@ -18,6 +18,8 @@ describe('Login account and transport budgets', () => {
     const prisma = {
       user: { findMany: vi.fn().mockResolvedValue([user]) },
       session: { create: vi.fn(), deleteMany: vi.fn() },
+      $transaction: vi.fn(async (cb: any) => cb(prisma)),
+      $queryRaw: vi.fn().mockResolvedValue([{ id: user.id }]),
     };
     const redis = {
       loginIpRetryAfter: vi.fn().mockResolvedValue(0),
@@ -94,7 +96,7 @@ describe('Login account and transport budgets', () => {
     });
     expect(f.redis.loginIpRetryAfter).not.toHaveBeenCalled();
   });
-  it.each(['unknown', 'ambiguous', 'password', 'inactive'])(
+  it.each(['unknown', 'ambiguous', 'password'])(
     'keeps one generic error and charges failed account/IP attempts for %s',
     async (reason) => {
       const f = fixture();
@@ -102,7 +104,6 @@ describe('Login account and transport budgets', () => {
       if (reason === 'ambiguous')
         f.prisma.user.findMany.mockResolvedValue([f.user, f.user]);
       if (reason === 'password') cryptoMock.verify.mockResolvedValue(false);
-      if (reason === 'inactive') f.user.isActive = false;
       f.redis.incrementLoginFailures.mockResolvedValue(5);
       await expect(
         f.service.login('owner@example.invalid', 'invalid', '192.0.2.1'),
@@ -131,6 +132,20 @@ describe('Login account and transport budgets', () => {
       'owner@example.invalid',
     );
     expect(f.redis.recordLoginIpFailure).not.toHaveBeenCalled();
+    expect(f.prisma.session.create).not.toHaveBeenCalled();
+  });
+  it('rejects login for disabled account with administrator contact message (S-28 AC)', async () => {
+    const f = fixture();
+    f.user.isActive = false;
+    await expect(
+      f.service.login('owner@example.invalid', 'valid', '192.0.2.1'),
+    ).rejects.toMatchObject({
+      status: 401,
+      response: {
+        code: 'ACCOUNT_DISABLED',
+        message: 'Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.',
+      },
+    });
     expect(f.prisma.session.create).not.toHaveBeenCalled();
   });
   it.each(['precheck', 'failure-counter', 'clear-success'])(

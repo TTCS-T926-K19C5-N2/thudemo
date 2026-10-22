@@ -54,10 +54,14 @@ export function LoginForm({
           "Phiên đăng nhập chưa được xác nhận. Hãy đăng nhập lại.",
         );
       notifySessionChanged();
+      const privacy = await api('/privacy/me', object);
+      if (privacy.requiresAcceptance === true) {
+        router.replace('/account/privacy');
+        router.refresh();
+        return;
+      }
       router.replace(
-        (user.roles.length === 1 && user.roles.includes("STAFF")
-          ? "/check-in"
-          : safeReturnTo(returnTo ?? null)) ??
+        safeReturnTo(returnTo ?? null) ??
           (user.roles.includes("ORGANIZER")
             ? "/events"
             : user.roles.includes("STAFF")

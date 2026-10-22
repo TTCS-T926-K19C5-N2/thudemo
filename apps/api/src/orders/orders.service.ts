@@ -157,6 +157,7 @@ export class OrdersService {
           );
           if (!buyers.length)
             throw new NotFoundException('Không tìm thấy người mua.');
+          await tx.$queryRaw`SELECT set_config('app.actor_id',${userId},true)`;
 
           const shows = await tx.$queryRaw<
             { status: string; eventId: string; isDemo: boolean }[]
@@ -360,6 +361,20 @@ export class OrdersService {
     }
 
     return this.db.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM users WHERE id=${userId}::uuid FOR UPDATE`;
+      await tx.$queryRaw`SELECT set_config('app.actor_id',${userId},true)`;
+      const [currentShow] = await tx.$queryRaw<
+        { status: string; isDemo: boolean }[]
+      >`SELECT status,"isDemo" FROM showtimes WHERE id=${showtimeId}::uuid FOR SHARE`;
+      if (
+        !currentShow ||
+        currentShow.status !== 'ON_SALE' ||
+        currentShow.isDemo
+      )
+        throw new ConflictException({
+          code: 'SHOWTIME_CLOSED',
+          message: 'Suất diễn không còn mở bán.',
+        });
       const now = new Date();
       const holdSession = await tx.holdSession.findFirst({
         where: {

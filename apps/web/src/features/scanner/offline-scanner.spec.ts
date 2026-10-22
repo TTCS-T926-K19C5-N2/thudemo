@@ -310,6 +310,7 @@ describe('S-34 Offline Scanner (processOfflineScan & syncOfflineScanQueue)', () 
         gateId: 'gate-1',
         gateName: 'Cửa VIP',
         deviceId: 'device-test-1',
+        staffId: 'staff-test-1',
       });
 
       expect(outcome.success).toBe(true);

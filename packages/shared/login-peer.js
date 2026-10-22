@@ -13,11 +13,12 @@ export function isLoginProxyPath(path) {
 // Reuse the same transport-owned peer boundary for mail admission. Keep login
 // classification unchanged so existing login lockout evidence remains applicable.
 export function isPeerProtectedProxyPath(path) {
+  const normalized=decodeURIComponent(path).replace(/\/+$/, "").toLowerCase();
   return (
     isLoginProxyPath(path) ||
     ["/api/users/register", "/api/users/resend-activation"].includes(
       decodeURIComponent(path).replace(/\/+$/, "").toLowerCase(),
-    )
+    ) || normalized === '/api/orders' || /^\/api\/showtimes\/[0-9a-f-]{36}\/(holds|orders)$/.test(normalized)
   );
 }
 export function canonicalPeer(ip) {

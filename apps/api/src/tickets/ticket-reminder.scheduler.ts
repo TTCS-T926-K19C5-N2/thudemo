@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { TicketStatus, OrderStatus } from '@prisma/client';
 import { encodeTicketQr } from './ticket-qr.js';
@@ -107,10 +112,10 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
               remindedStartTime: showtime.startTime,
             },
           });
-        } catch (error) {
+        } catch {
           // Failure: do NOT update remindedStartTime to allow retry on next sweep
           this.logger.error(
-            `Failed to send reminder email for ticket ${ticket.id} to ${email}: ${(error as Error).message}`,
+            `Reminder delivery failed for ticket ${ticket.id}; retry deferred`,
           );
         }
       }
@@ -146,7 +151,10 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
       if (!ticket.showtime || !ticket.remindedStartTime) continue;
 
       // Detect showtime start time change
-      if (ticket.showtime.startTime.getTime() !== ticket.remindedStartTime.getTime()) {
+      if (
+        ticket.showtime.startTime.getTime() !==
+        ticket.remindedStartTime.getTime()
+      ) {
         const email = (ticket as any).ownerEmail || ticket.order?.user?.email;
         if (!email) continue;
 
@@ -181,9 +189,9 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
               remindedStartTime: ticket.showtime.startTime,
             },
           });
-        } catch (error) {
+        } catch {
           this.logger.error(
-            `Failed to send rescheduled email for ticket ${ticket.id} to ${email}: ${(error as Error).message}`,
+            `Reschedule delivery failed for ticket ${ticket.id}; retry deferred`,
           );
         }
       }

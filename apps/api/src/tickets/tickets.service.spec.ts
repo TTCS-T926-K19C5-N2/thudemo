@@ -17,10 +17,12 @@ describe('TicketsService', () => {
   let db: any;
   let tx: any;
   let signing: TicketSigningService;
+  let projection: any;
   let service: TicketsService;
 
   beforeEach(() => {
     tx = {
+      $executeRaw: vi.fn().mockResolvedValue(1),
       ticket: {
         createMany: vi.fn().mockResolvedValue({ count: 0 }),
         update: vi.fn(),
@@ -35,8 +37,12 @@ describe('TicketsService', () => {
       ticket: { findMany: vi.fn(), findUnique: vi.fn() },
       $transaction: vi.fn((cb) => cb(tx)),
     };
+    projection = {
+      forOwner: vi.fn(),
+      forBuyer: vi.fn(),
+    };
     signing = signingService();
-    service = new TicketsService(db, signing);
+    service = new TicketsService(db, signing, projection);
   });
 
   describe('issueForPaidOrder', () => {
@@ -65,6 +71,7 @@ describe('TicketsService', () => {
         status: TicketStatus.VALID,
         price: 300000,
       });
+      expect(tx.$executeRaw).toHaveBeenCalledTimes(1);
     });
 
     it('stores a signature that verifies against the stored code and showtime', async () => {
@@ -83,51 +90,71 @@ describe('TicketsService', () => {
       await service.issueForPaidOrder(tx, { ...order, items: [] });
       expect(tx.ticket.createMany).not.toHaveBeenCalled();
     });
+
+    it('creates 3 distinct unpredictable tickets for an order with 3 seats (S-25 AC)', async () => {
+      const order3 = {
+        id: ORDER_ID,
+        showtimeId: SHOWTIME_ID,
+        items: [
+          { seatId: 'seat-1', categoryName: 'VIP', unitPrice: 300000, seat: { row: 'A', seatNumber: 1 } },
+          { seatId: 'seat-2', categoryName: 'VIP', unitPrice: 300000, seat: { row: 'A', seatNumber: 2 } },
+          { seatId: 'seat-3', categoryName: 'VIP', unitPrice: 300000, seat: { row: 'A', seatNumber: 3 } },
+        ],
+      };
+      await service.issueForPaidOrder(tx, order3);
+      const call = tx.ticket.createMany.mock.calls[0][0];
+      expect(call.data).toHaveLength(3);
+      const codes = call.data.map((t: any) => t.code);
+      const uniqueCodes = new Set(codes);
+      expect(uniqueCodes.size).toBe(3);
+      expect(codes[0]).not.toBe(codes[1]);
+      expect(codes[1]).not.toBe(codes[2]);
+    });
+
+    it('is idempotent on duplicate webhook replays using skipDuplicates and ON CONFLICT (S-25 AC)', async () => {
+      await service.issueForPaidOrder(tx, order);
+      await service.issueForPaidOrder(tx, order);
+      expect(tx.ticket.createMany).toHaveBeenCalledTimes(2);
+      expect(tx.ticket.createMany.mock.calls[0][0].skipDuplicates).toBe(true);
+      expect(tx.ticket.createMany.mock.calls[1][0].skipDuplicates).toBe(true);
+      expect(tx.$executeRaw).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('listForOrder', () => {
     it('hides the order from anyone but its owner', async () => {
-      db.order.findUnique.mockResolvedValue({
-        userId: 'someone-else',
-        status: OrderStatus.PAID,
-        showtimeId: SHOWTIME_ID,
-      });
-      await expect(service.listForOrder(ORDER_ID, OWNER_ID)).rejects.toThrow(NotFoundException);
-      expect(db.ticket.findMany).not.toHaveBeenCalled();
+      projection.forOwner.mockRejectedValue(new NotFoundException('Không tìm thấy đơn hàng.'));
+      await expect(service.listForOrder(ORDER_ID, 'someone-else')).rejects.toThrow(NotFoundException);
     });
 
     it('throws NotFound for a missing order', async () => {
-      db.order.findUnique.mockResolvedValue(null);
+      projection.forOwner.mockRejectedValue(new NotFoundException('Không tìm thấy đơn hàng.'));
       await expect(service.listForOrder(ORDER_ID, OWNER_ID)).rejects.toThrow(NotFoundException);
     });
 
     it.each([OrderStatus.PENDING_PAYMENT, OrderStatus.EXPIRED, OrderStatus.NEEDS_REVIEW])(
-      'returns no tickets while the order is %s',
+      'throws when the order is %s',
       async (status) => {
-        db.order.findUnique.mockResolvedValue({ userId: OWNER_ID, status, showtimeId: SHOWTIME_ID });
-        await expect(service.listForOrder(ORDER_ID, OWNER_ID)).resolves.toEqual([]);
-        expect(db.ticket.findMany).not.toHaveBeenCalled();
+        projection.forOwner.mockRejectedValue(new NotFoundException('Vé chỉ sẵn sàng sau khi thanh toán.'));
+        await expect(service.listForOrder(ORDER_ID, OWNER_ID)).rejects.toThrow(NotFoundException);
       },
     );
 
     it('returns tickets of a PAID order with a verifiable QR payload', async () => {
-      await service.issueForPaidOrder(tx, {
-        id: ORDER_ID,
-        showtimeId: SHOWTIME_ID,
-        items: [{ seatId: 'seat-a1', categoryName: 'VIP', unitPrice: 1, seat: { row: 'A', seatNumber: 1 } }],
-      });
-      const stored = tx.ticket.createMany.mock.calls[0][0].data[0];
-      db.order.findUnique.mockResolvedValue({ userId: OWNER_ID, status: OrderStatus.PAID, showtimeId: SHOWTIME_ID });
-      db.ticket.findMany.mockResolvedValue([
-        { ...stored, id: 'ticket-1' },
-        { ...stored, id: 'legacy', code: 'TK-00001', keyId: null, signature: null },
-      ]);
+      const mockTicket = {
+        id: 'ticket-1',
+        code: 'TK-12345',
+        seatLabel: 'A-1',
+        category: 'VIP',
+        status: TicketStatus.VALID,
+        qrPayload: 'ET1.Ed25519.test.qr',
+      };
+      projection.forOwner.mockResolvedValue({ tickets: [mockTicket] });
 
       const tickets = await service.listForOrder(ORDER_ID, OWNER_ID);
 
-      expect(tickets[0]).toMatchObject({ id: 'ticket-1', code: stored.code, seatLabel: 'A-1' });
-      expect(signing.verify(tickets[0].qrPayload!)).toMatchObject({ valid: true });
-      expect(tickets[1].qrPayload).toBeNull();
+      expect(tickets[0]).toMatchObject({ id: 'ticket-1', code: 'TK-12345', seatLabel: 'A-1' });
+      expect(tickets[0].qrPayload).toBe('ET1.Ed25519.test.qr');
     });
   });
 

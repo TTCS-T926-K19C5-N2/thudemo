@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { WaitingRoomNotice } from "@/features/lifecycle/waiting-room-notice";
 import {
   Clock3,
   CircleAlert,
@@ -128,12 +129,20 @@ export function SeatSelection({ id }: { id: string }) {
           eventSource = new EventSource(`/api/showtimes/${id}/seats/stream`);
           eventSource.onmessage = (event) => {
             if (!alive.current) return;
+            let snapshot: Seat[] | null = null;
             try {
               const change = JSON.parse(event.data) as {
                 showtimeId?: string;
                 kind?: string;
+                seats?: unknown;
               };
-              if (change.showtimeId !== id || change.kind !== "refresh") return;
+              if (
+                change.showtimeId !== id ||
+                !["refresh", "snapshot"].includes(change.kind ?? "")
+              )
+                return;
+              if (change.kind === "snapshot")
+                snapshot = decodeSeats(change.seats);
             } catch {
               // Ignore malformed notifications and keep the normal reconnect path.
               return;
@@ -142,6 +151,34 @@ export function SeatSelection({ id }: { id: string }) {
               if (!alive.current) return;
               if (busy.current) {
                 window.setTimeout(sync, 250);
+                return;
+              }
+              if (snapshot) {
+                const map = snapshot;
+                setSeats(map);
+                setDraft((current) =>
+                  current.flatMap((seat) => {
+                    const next = map.find(
+                      (s) => s.id === seat.id && s.status === "AVAILABLE",
+                    );
+                    return next ? [next] : [];
+                  }),
+                );
+                // Only owners of a changed hold need a private authority read;
+                // every other viewer receives the complete public snapshot.
+                if (
+                  authority.current?.seatIds.some(
+                    (seatId) =>
+                      map.find((s) => s.id === seatId)?.status !== "HELD",
+                  )
+                )
+                  void api(`/showtimes/${id}/holds`, decodeHoldState)
+                    .then((state) => {
+                      if (alive.current) apply(state);
+                    })
+                    .catch(() =>
+                      setError("Không xác nhận được lượt giữ hiện tại."),
+                    );
                 return;
               }
               void refresh().catch(() =>
@@ -348,6 +385,7 @@ export function SeatSelection({ id }: { id: string }) {
     );
   return (
     <>
+      {!show.isDemo && <WaitingRoomNotice id={id} />}
       <MobileShowHeader
         href={`/shows/${id}`}
         title={show.isDemo ? "Sơ đồ ghế tham khảo" : "Chọn và giữ ghế"}
@@ -390,8 +428,14 @@ export function SeatSelection({ id }: { id: string }) {
           </span>
           <h1>{show.event.name}</h1>
           <div className="selection-show-facts">
-            <span><CalendarDays />{formatShowtime(show.startTime)}</span>
-            <span><MapPin />{show.event.location}</span>
+            <span>
+              <CalendarDays />
+              {formatShowtime(show.startTime)}
+            </span>
+            <span>
+              <MapPin />
+              {show.event.location}
+            </span>
           </div>
         </div>
         <Link href={`/shows/${id}`} className="selection-show-link">
@@ -457,7 +501,10 @@ export function SeatSelection({ id }: { id: string }) {
             <h2>Hạng vé tham khảo</h2>
             {show.categories.map((category) => (
               <div className="hold-seat" key={category.name}>
-                <span><b>{category.name}</b><small>Giá mô phỏng</small></span>
+                <span>
+                  <b>{category.name}</b>
+                  <small>Giá mô phỏng</small>
+                </span>
                 <b>{formatVnd(category.price)}</b>
               </div>
             ))}
@@ -468,119 +515,123 @@ export function SeatSelection({ id }: { id: string }) {
             </Button>
           </aside>
         ) : (
-        <aside className="seat-summary">
-          <div className={`hold-clock ${expired ? "hold-clock-expired" : ""}`}>
-            <span>
-              <Clock3 size={20} />
-              {expired ? "Cần xác nhận lại ghế" : "Thời gian giữ vé"}
-            </span>
-            <output aria-label="Thời gian giữ ghế">
-              {expired ? "--:--" : hold ? countdownLabel(remaining) : "--:--"}
-            </output>
-          </div>
-          <p className="hold-rule">
-            10 phút tính từ ghế đầu tiên được máy chủ xác nhận. Thêm ghế không
-            gia hạn.
-          </p>
-          {hold && !expired && remaining > 0 && (
-            <Badge variant="secondary">
-              <Check size={12} /> <span>Máy chủ đã xác nhận</span>
-            </Badge>
-          )}
-          <h2>
-            {conflict.length
-              ? "Ghế bị từ chối"
-              : hold
-                ? "Ghế đã giữ"
-                : "Ghế đang chọn"}{" "}
-            ({summary.length})
-          </h2>
-          {summary.length ? (
-            summary.map((s) => (
-              <div
-                className={`hold-seat ${conflict.length ? "hold-seat-conflict" : ""}`}
-                key={s.id}
-              >
-                <span>
-                  <b>
-                    {s.row}-{s.seatNumber}
-                  </b>
-                  <small>
-                    {s.category} ·{" "}
-                    {conflict.length
-                      ? "Bị trùng / Đã có người giữ"
-                      : ownedIds.includes(s.id)
-                        ? "Đã giữ"
-                        : "Chưa giữ"}
-                  </small>
-                </span>
-                <b>{formatVnd(s.price)}</b>
-              </div>
-            ))
-          ) : (
-            <div className="hold-empty">
-              <Armchair size={28} />
-              <b>Chưa có ghế nào được chọn</b>
-              <span>Chạm vào ghế trống trên sơ đồ.</span>
+          <aside className="seat-summary">
+            <div
+              className={`hold-clock ${expired ? "hold-clock-expired" : ""}`}
+            >
+              <span>
+                <Clock3 size={20} />
+                {expired ? "Cần xác nhận lại ghế" : "Thời gian giữ vé"}
+              </span>
+              <output aria-label="Thời gian giữ ghế">
+                {expired ? "--:--" : hold ? countdownLabel(remaining) : "--:--"}
+              </output>
             </div>
-          )}
-          <Separator className="my-4" />
-          <p>Tổng tạm tính</p>
-          <strong>
-            {formatVnd(
-              (conflict.length ? held : summary).reduce(
-                (sum, s) => sum + (s.price ?? 0),
-                0,
-              ),
+            <p className="hold-rule">
+              10 phút tính từ ghế đầu tiên được máy chủ xác nhận. Thêm ghế không
+              gia hạn.
+            </p>
+            {hold && !expired && remaining > 0 && (
+              <Badge variant="secondary">
+                <Check size={12} /> <span>Máy chủ đã xác nhận</span>
+              </Badge>
             )}
-          </strong>
-          {conflict.length > 0 ? (
-            <Button onClick={retry}>
-              <RotateCw /> Làm mới sơ đồ & Chọn lại
-            </Button>
-          ) : expired ? (
-            <Button
-              onClick={() => {
-                setExpired(false);
-                void retry();
-              }}
-            >
-              <RotateCw /> Chọn lại ghế
-            </Button>
-          ) : (
-            <Button
-              disabled={
-                pending || !draft.length || Boolean(hold && remaining === 0)
-              }
-              onClick={claim}
-            >
-              {pending ? "Đang xác nhận…" : hold ? "Giữ thêm ghế" : "Giữ ghế"}
-            </Button>
-          )}
-          {!hold && !expired && (
-            <p>Đồng hồ chỉ bắt đầu khi máy chủ xác nhận giữ ghế thành công.</p>
-          )}
-          {hold && remaining === 0 && (
-            <p role="status">Đang kiểm tra thời hạn trên máy chủ…</p>
-          )}
-          {hold && (
-            <>
+            <h2>
+              {conflict.length
+                ? "Ghế bị từ chối"
+                : hold
+                  ? "Ghế đã giữ"
+                  : "Ghế đang chọn"}{" "}
+              ({summary.length})
+            </h2>
+            {summary.length ? (
+              summary.map((s) => (
+                <div
+                  className={`hold-seat ${conflict.length ? "hold-seat-conflict" : ""}`}
+                  key={s.id}
+                >
+                  <span>
+                    <b>
+                      {s.row}-{s.seatNumber}
+                    </b>
+                    <small>
+                      {s.category} ·{" "}
+                      {conflict.length
+                        ? "Bị trùng / Đã có người giữ"
+                        : ownedIds.includes(s.id)
+                          ? "Đã giữ"
+                          : "Chưa giữ"}
+                    </small>
+                  </span>
+                  <b>{formatVnd(s.price)}</b>
+                </div>
+              ))
+            ) : (
+              <div className="hold-empty">
+                <Armchair size={28} />
+                <b>Chưa có ghế nào được chọn</b>
+                <span>Chạm vào ghế trống trên sơ đồ.</span>
+              </div>
+            )}
+            <Separator className="my-4" />
+            <p>Tổng tạm tính</p>
+            <strong>
+              {formatVnd(
+                (conflict.length ? held : summary).reduce(
+                  (sum, s) => sum + (s.price ?? 0),
+                  0,
+                ),
+              )}
+            </strong>
+            {conflict.length > 0 ? (
+              <Button onClick={retry}>
+                <RotateCw /> Làm mới sơ đồ & Chọn lại
+              </Button>
+            ) : expired ? (
+              <Button
+                onClick={() => {
+                  setExpired(false);
+                  void retry();
+                }}
+              >
+                <RotateCw /> Chọn lại ghế
+              </Button>
+            ) : (
               <Button
                 disabled={
-                  pending || expired || remaining === 0 || draft.length > 0
+                  pending || !draft.length || Boolean(hold && remaining === 0)
                 }
-                onClick={placeOrder}
+                onClick={claim}
               >
-                {ordering ? "Đang tạo đơn…" : "Đặt vé"}
+                {pending ? "Đang xác nhận…" : hold ? "Giữ thêm ghế" : "Giữ ghế"}
               </Button>
+            )}
+            {!hold && !expired && (
               <p>
-                {draft.length
-                  ? "Hãy giữ các ghế đang chọn trước khi đặt vé."
-                  : "Sau khi tạo đơn, ghế được giữ thêm 10 phút để thanh toán."}
+                Đồng hồ chỉ bắt đầu khi máy chủ xác nhận giữ ghế thành công.
               </p>
-            </>
-          )}
-        </aside>
+            )}
+            {hold && remaining === 0 && (
+              <p role="status">Đang kiểm tra thời hạn trên máy chủ…</p>
+            )}
+            {hold && (
+              <>
+                <Button
+                  disabled={
+                    pending || expired || remaining === 0 || draft.length > 0
+                  }
+                  onClick={placeOrder}
+                >
+                  {ordering ? "Đang tạo đơn…" : "Đặt vé"}
+                </Button>
+                <p>
+                  {draft.length
+                    ? "Hãy giữ các ghế đang chọn trước khi đặt vé."
+                    : "Sau khi tạo đơn, ghế được giữ thêm 10 phút để thanh toán."}
+                </p>
+              </>
+            )}
+          </aside>
         )}
       </div>
     </>

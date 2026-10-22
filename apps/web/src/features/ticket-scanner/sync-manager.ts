@@ -119,7 +119,7 @@ export async function syncPendingScans(
             const data = object(value);
             if (data.version !== 2 || !Array.isArray(data.results))
               throw Error("Không đọc được ACK đồng bộ. Hàng đợi được giữ lại.");
-            const expected = new Set(batch.map((s) => s.id)),
+            const expected = new Set(batch.map((s) => s.requestId)),
               seen = new Set<string>();
             return data.results.map((raw) => {
               const ack = object(raw);
@@ -132,12 +132,12 @@ export async function syncPendingScans(
                 ) ||
                 ack.ticketCode !==
                   parseTicketQr(
-                    batch.find((s) => s.id === ack.scanId)!.ticketId,
+                    batch.find((s) => s.requestId === ack.scanId)!.ticketId,
                   )?.ticketId
               )
                 throw Error("ACK không khớp lượt quét. Hàng đợi được giữ lại.");
               seen.add(ack.scanId);
-              return { id: ack.scanId, status: String(ack.status) };
+              return { id: batch.find((s) => s.requestId === ack.scanId)!.id, status: String(ack.status) };
             });
           },
           {

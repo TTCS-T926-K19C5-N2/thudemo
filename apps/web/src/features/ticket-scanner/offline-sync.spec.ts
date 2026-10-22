@@ -1,435 +1,50 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  addPendingScan,
-  getPendingScanByTicket,
-  getPendingScanCount,
-  getPendingScans,
-  subscribePendingCount,
-  _resetMemoryQueueForTesting,
-  type PendingScan,
-} from "./offline-queue";
-import {
-  getCurrentNetworkStatus,
-  markServerOffline,
-  markServerOnline,
-  subscribeNetworkStatus,
-  _setMockServerReachableForTesting,
-} from "./network-status";
-import { syncPendingScans } from "./sync-manager";
-import { ApiError } from "@/lib/api/client";
-
-// Mock client api
-vi.mock("@/lib/api/client", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/lib/api/client")>();
-  return {
-    ...actual,
-    api: vi.fn(),
-  };
-});
-
-import { api } from "@/lib/api/client";
-const mockedApi = vi.mocked(api);
-
-describe("S-37: Offline Status & Pending Scan Counter", () => {
-  const showtimeId = "showtime-uuid-001";
-  const gateId = "gate-uuid-001";
-
-  beforeEach(async () => {
-    vi.clearAllMocks();
-    _resetMemoryQueueForTesting();
-    _setMockServerReachableForTesting(null);
-    markServerOnline();
-  });
-
-  describe("1. Online, không có dữ liệu chờ", () => {
-    it("báo trạng thái trực tuyến và bộ đếm bằng 0", async () => {
-      markServerOnline();
-      const status = getCurrentNetworkStatus();
-      expect(status.isOnline).toBe(true);
-
-      const count = await getPendingScanCount(showtimeId);
-      expect(count).toBe(0);
-    });
-  });
-
-  describe("2. Mất mạng & phát hiện trạng thái ngoại tuyến", () => {
-    it("chuyển sang Offline kịp thời và giữ đúng số lượt chờ", async () => {
-      let latestOnline = true;
-      const unsubscribe = subscribeNetworkStatus((state) => {
-        latestOnline = state.isOnline;
-      });
-
-      // Mất mạng
-      markServerOffline("Mất kết nối mạng");
-      expect(latestOnline).toBe(false);
-      expect(getCurrentNetworkStatus().isOnline).toBe(false);
-
-      const count = await getPendingScanCount(showtimeId);
-      expect(count).toBe(0);
-
-      unsubscribe();
-    });
-  });
-
-  describe("3. Tạo lượt quét khi ngoại tuyến (AC1)", () => {
-    it("lưu lượt quét vào hàng đợi offline và bộ đếm tăng chính xác", async () => {
-      markServerOffline();
-
-      let subscriberCount = 0;
-      const unsub = subscribePendingCount((cnt) => {
-        subscriberCount = cnt;
-      });
-
-      const scan1: PendingScan = {
-        id: "req-1",
-        showtimeId,
-        ticketId: "TK-001",
-        gateId,
-        requestId: "req-1",
-        createdAt: new Date().toISOString(),
-        status: "pending",
-        retryCount: 0,
-      };
-
-      await addPendingScan(scan1);
-      expect(subscriberCount).toBe(1);
-      expect(await getPendingScanCount(showtimeId)).toBe(1);
-
-      const scan2: PendingScan = {
-        id: "req-2",
-        showtimeId,
-        ticketId: "TK-002",
-        gateId,
-        requestId: "req-2",
-        createdAt: new Date(Date.now() + 1000).toISOString(),
-        status: "pending",
-        retryCount: 0,
-      };
-
-      await addPendingScan(scan2);
-      expect(subscriberCount).toBe(2);
-      expect(await getPendingScanCount(showtimeId)).toBe(2);
-
-      // Dữ liệu quét được lưu trữ đầy đủ
-      const stored = await getPendingScans(showtimeId);
-      expect(stored).toHaveLength(2);
-      expect(stored[0].ticketId).toBe("TK-001");
-      expect(stored[1].ticketId).toBe("TK-002");
-
-      unsub();
-    });
-
-    it("phát hiện lượt quét trùng ngay khi ngoại tuyến", async () => {
-      const scan: PendingScan = {
-        id: "req-1",
-        showtimeId,
-        ticketId: "TK-DUPLICATE",
-        gateId,
-        requestId: "req-1",
-        createdAt: new Date().toISOString(),
-        status: "pending",
-        retryCount: 0,
-      };
-
-      await addPendingScan(scan);
-      const duplicate = await getPendingScanByTicket(showtimeId, "TK-DUPLICATE");
-      expect(duplicate).not.toBeNull();
-      expect(duplicate?.requestId).toBe("req-1");
-    });
-  });
-
-  describe("4. Có mạng trở lại & bắt đầu đồng bộ (AC2)", () => {
-    it("giữ nguyên bộ đếm trong lúc request đang gửi, không giảm trước khi server xác nhận", async () => {
-      const scan: PendingScan = {
-        id: "req-1",
-        showtimeId,
-        ticketId: "TK-001",
-        gateId,
-        requestId: "req-1",
-        createdAt: new Date().toISOString(),
-        status: "pending",
-        retryCount: 0,
-      };
-      await addPendingScan(scan);
-      expect(await getPendingScanCount(showtimeId)).toBe(1);
-
-      let countDuringSync = -1;
-      // Server xử lý chậm, trong lúc request bay đi kiểm tra count
-      mockedApi.mockImplementationOnce(async () => {
-        countDuringSync = await getPendingScanCount(showtimeId);
-        return {
-          status: "SUCCESS",
-          ticketId: "TK-001",
-          gateName: "Cửa 1",
-          kind: "NORMAL",
-          seat: { category: "VIP", row: "A", number: 1, label: "A-1" },
-          checkedInAt: new Date().toISOString(),
-        };
-      });
-
-      await syncPendingScans({ showtimeId, checkServerBeforeSync: false });
-
-      // Trong lúc request đang gửi, bộ đếm không giảm!
-      expect(countDuringSync).toBe(1);
-
-      // Sau khi server xác nhận thành công, bộ đếm mới giảm về 0
-      expect(await getPendingScanCount(showtimeId)).toBe(0);
-    });
-  });
-
-  describe("5. Đồng bộ thành công (AC2)", () => {
-    it("đánh dấu hoàn tất, giảm bộ đếm và trở về 0 khi xong toàn bộ", async () => {
-      _setMockServerReachableForTesting(true);
-      markServerOffline();
-
-      await addPendingScan({
-        id: "req-1",
-        showtimeId,
-        ticketId: "TK-001",
-        gateId,
-        requestId: "req-1",
-        createdAt: new Date(Date.now() - 2000).toISOString(),
-        status: "pending",
-        retryCount: 0,
-      });
-
-      await addPendingScan({
-        id: "req-2",
-        showtimeId,
-        ticketId: "TK-002",
-        gateId,
-        requestId: "req-2",
-        createdAt: new Date(Date.now() - 1000).toISOString(),
-        status: "pending",
-        retryCount: 0,
-      });
-
-      expect(await getPendingScanCount(showtimeId)).toBe(2);
-
-      // Mock server trả về 200 cho cả 2 lượt
-      mockedApi.mockResolvedValue({
-        status: "SUCCESS",
-        ticketId: "TK-test",
-        gateName: "Cửa 1",
-        kind: "NORMAL",
-        seat: { category: "VIP", row: "A", number: 1, label: "A-1" },
-        checkedInAt: new Date().toISOString(),
-      });
-
-      const result = await syncPendingScans({
-        showtimeId,
-        checkServerBeforeSync: false,
-      });
-
-      expect(result.syncedCount).toBe(2);
-      expect(result.remainingCount).toBe(0);
-      expect(await getPendingScanCount(showtimeId)).toBe(0);
-      expect(getCurrentNetworkStatus().isOnline).toBe(true);
-    });
-
-    it("xử lý phản hồi ALREADY_RECORDED như thành công (idempotent)", async () => {
-      await addPendingScan({
-        id: "req-replay",
-        showtimeId,
-        ticketId: "TK-REPLAY",
-        gateId,
-        requestId: "req-replay",
-        createdAt: new Date().toISOString(),
-        status: "pending",
-        retryCount: 0,
-      });
-
-      // Server trả về ALREADY_RECORDED vì requestId đã tồn tại
-      mockedApi.mockResolvedValueOnce({
-        status: "ALREADY_RECORDED",
-        ticketId: "TK-REPLAY",
-        gateName: "Cửa 1",
-        kind: "NORMAL",
-        seat: { category: "VIP", row: "A", number: 1, label: "A-1" },
-        checkedInAt: new Date().toISOString(),
-      });
-
-      const result = await syncPendingScans({
-        showtimeId,
-        checkServerBeforeSync: false,
-      });
-
-      expect(result.syncedCount).toBe(1);
-      expect(result.remainingCount).toBe(0);
-      expect(await getPendingScanCount(showtimeId)).toBe(0);
-    });
-  });
-
-  describe("6. Đồng bộ thất bại hoặc timeout (AC1 & AC2)", () => {
-    it("giữ nguyên dữ liệu trong hàng đợi khi gặp lỗi mạng và dừng tiến trình", async () => {
-      await addPendingScan({
-        id: "req-net-fail",
-        showtimeId,
-        ticketId: "TK-FAIL",
-        gateId,
-        requestId: "req-net-fail",
-        createdAt: new Date().toISOString(),
-        status: "pending",
-        retryCount: 0,
-      });
-
-      // Mock lỗi mạng (status 0)
-      mockedApi.mockRejectedValueOnce(
-        new ApiError("Không thể kết nối máy chủ", 0, "NETWORK_ERROR"),
-      );
-
-      const result = await syncPendingScans({
-        showtimeId,
-        checkServerBeforeSync: false,
-      });
-
-      expect(result.stoppedDueToNetwork).toBe(true);
-      expect(result.remainingCount).toBe(1);
-
-      // Không mất dữ liệu, lượt quét vẫn còn trong hàng đợi
-      const pending = await getPendingScans(showtimeId);
-      expect(pending).toHaveLength(1);
-      expect(pending[0].id).toBe("req-net-fail");
-      expect(pending[0].retryCount).toBe(1);
-
-      // Trạng thái mạng chuyển sang offline
-      expect(getCurrentNetworkStatus().isOnline).toBe(false);
-    });
-
-    it("loại bỏ lỗi nghiệp vụ 4xx không thể khắc phục để tránh retry vô hạn", async () => {
-      await addPendingScan({
-        id: "req-invalid",
-        showtimeId,
-        ticketId: "TK-INVALID",
-        gateId,
-        requestId: "req-invalid",
-        createdAt: new Date().toISOString(),
-        status: "pending",
-        retryCount: 0,
-      });
-
-      // 400 Bad Request
-      mockedApi.mockRejectedValueOnce(
-        new ApiError("Chữ ký QR không hợp lệ", 400, "INVALID_QR_SIGNATURE"),
-      );
-
-      const result = await syncPendingScans({
-        showtimeId,
-        checkServerBeforeSync: false,
-      });
-
-      expect(result.failedCount).toBe(1);
-      expect(result.remainingCount).toBe(0);
-      expect(await getPendingScanCount(showtimeId)).toBe(0);
-    });
-
-    it("giữ lượt quét chưa xác nhận khi máy chủ trả lỗi 5xx", async () => {
-      await addPendingScan({
-        id: "req-server-error",
-        showtimeId,
-        ticketId: "TK-SERVER-ERROR",
-        gateId,
-        requestId: "req-server-error",
-        createdAt: new Date().toISOString(),
-        status: "pending",
-        retryCount: 0,
-      });
-      mockedApi.mockRejectedValueOnce(
-        new ApiError("Máy chủ tạm thời không khả dụng", 503, "HTTP_503"),
-      );
-
-      const result = await syncPendingScans({
-        showtimeId,
-        checkServerBeforeSync: false,
-      });
-
-      expect(result.stoppedDueToNetwork).toBe(true);
-      expect(result.remainingCount).toBe(1);
-      expect(await getPendingScanCount(showtimeId)).toBe(1);
-      expect((await getPendingScans(showtimeId))[0].retryCount).toBe(1);
-    });
-  });
-
-  describe("7. Khởi động lại ứng dụng / Khôi phục hàng đợi", () => {
-    it("khôi phục chính xác danh sách và số lượng lượt chờ sau khi mở lại", async () => {
-      await addPendingScan({
-        id: "scan-persist-1",
-        showtimeId,
-        ticketId: "TK-P1",
-        gateId,
-        requestId: "scan-persist-1",
-        createdAt: "2026-10-13T10:00:00.000Z",
-        status: "pending",
-        retryCount: 0,
-      });
-
-      await addPendingScan({
-        id: "scan-persist-2",
-        showtimeId,
-        ticketId: "TK-P2",
-        gateId,
-        requestId: "scan-persist-2",
-        createdAt: "2026-10-13T10:01:00.000Z",
-        status: "pending",
-        retryCount: 0,
-      });
-
-      // Query lại từ nguồn dữ liệu
-      const reloadedScans = await getPendingScans(showtimeId);
-      expect(reloadedScans).toHaveLength(2);
-      expect(reloadedScans[0].ticketId).toBe("TK-P1");
-      expect(reloadedScans[1].ticketId).toBe("TK-P2");
-      expect(await getPendingScanCount(showtimeId)).toBe(2);
-    });
-  });
-
-  describe("8. Chống đồng bộ trùng lặp (Concurrency Guard)", () => {
-    it("ngăn chặn chạy nhiều tiến trình đồng bộ cùng lúc", async () => {
-      await addPendingScan({
-        id: "req-slow",
-        showtimeId,
-        ticketId: "TK-SLOW",
-        gateId,
-        requestId: "req-slow",
-        createdAt: new Date().toISOString(),
-        status: "pending",
-        retryCount: 0,
-      });
-
-      // Lần gọi 1 kéo dài thời gian
-      let resolveFirstCall: (value: unknown) => void = () => {};
-      const firstCallPromise = new Promise((resolve) => {
-        resolveFirstCall = resolve;
-      });
-
-      mockedApi.mockImplementationOnce(() => firstCallPromise as Promise<never>);
-
-      const syncPromise1 = syncPendingScans({
-        showtimeId,
-        checkServerBeforeSync: false,
-      });
-
-      // Lần gọi 2 được kích hoạt ngay khi lần 1 đang chạy
-      const syncPromise2 = syncPendingScans({
-        showtimeId,
-        checkServerBeforeSync: false,
-      });
-
-      const res2 = await syncPromise2;
-      expect(res2.errors).toContain("Tiến trình đồng bộ khác đang chạy.");
-
-      // Kết thúc lần 1
-      resolveFirstCall({
-        status: "SUCCESS",
-        ticketId: "TK-SLOW",
-        gateName: "Cửa 1",
-        kind: "NORMAL",
-        seat: { category: "VIP", row: "A", number: 1, label: "A-1" },
-        checkedInAt: new Date().toISOString(),
-      });
-
-      const res1 = await syncPromise1;
-      expect(res1.syncedCount).toBe(1);
-    });
-  });
+import {beforeEach,describe,expect,it,vi} from "vitest";
+import {randomUUID} from "node:crypto";
+import {ticketQrInput,parseTicketQr} from "shared/ticket-qr";
+import {api,ApiError} from "@/lib/api/client";
+import {loadCurrentUser} from "@/lib/api";
+import {addPendingScan,getPendingScans,getPendingScanCount,_resetMemoryQueueForTesting,subscribePendingCount,type PendingScan} from "./offline-queue";
+import {syncPendingScans,isSyncing} from "./sync-manager";
+import {markServerOnline,getCurrentNetworkStatus,_setMockServerReachableForTesting} from "./network-status";
+vi.mock("@/lib/api/client",async original=>({...await original<typeof import("@/lib/api/client")>(),api:vi.fn()}));
+vi.mock("@/lib/api",()=>({loadCurrentUser:vi.fn()}));
+const actor={id:randomUUID(),email:"scanner@fixture.invalid",roles:["STAFF"]};
+const showtimeId=randomUUID(),gateId=randomUUID(),deviceId="fixture-device-1";
+const mocked=vi.mocked(api);
+function scan(overrides:Partial<PendingScan>={}):PendingScan{
+  const id=randomUUID(),ticketId=randomUUID();
+  return {id,requestId:id,showtimeId,gateId,deviceId,staffId:actor.id,ticketId:`${ticketQrInput({keyId:"fixture",showtimeId,ticketId})}.${"A".repeat(86)}`,createdAt:new Date().toISOString(),status:"pending",retryCount:0,mode:"offline_admission",...overrides};
+}
+function ack(s:PendingScan,status="synced"){return {scanId:s.requestId,ticketCode:parseTicketQr(s.ticketId)!.ticketId,status};}
+function reply(value:unknown){mocked.mockImplementation(async(_path,decode)=>decode(value));}
+beforeEach(()=>{vi.clearAllMocks();_resetMemoryQueueForTesting();_setMockServerReachableForTesting(null);markServerOnline();vi.mocked(loadCurrentUser).mockResolvedValue(actor);});
+describe("S35/S37 durable batch ACK protocol",()=>{
+ it("empty queue is online with zero pending",async()=>{expect((await syncPendingScans({checkServerBeforeSync:false})).remainingCount).toBe(0);expect(getCurrentNetworkStatus().isOnline).toBe(true);expect(mocked).not.toHaveBeenCalled();});
+ it("keeps counter until matching v2 ACK, then marks only that record synced",async()=>{
+  const s=scan();await addPendingScan(s);let resolve!:(v:unknown)=>void;
+  mocked.mockImplementation(async(_path,decode)=>decode(await new Promise(r=>{resolve=r;})));
+  const work=syncPendingScans({checkServerBeforeSync:false});await vi.waitFor(()=>expect(mocked).toHaveBeenCalled());
+  expect(await getPendingScanCount()).toBe(1);expect(isSyncing()).toBe(true);
+  resolve({version:2,results:[ack(s)]});expect((await work).remainingCount).toBe(0);
+  expect(mocked.mock.calls[0][0]).toBe("/scanner/sync-scans");expect(isSyncing()).toBe(false);
+ });
+ it("maps stable scanId to local record even when legacy local id differs",async()=>{const s=scan({id:"legacy-local-id",requestId:randomUUID()});await addPendingScan(s);reply({version:2,results:[ack(s)]});expect((await syncPendingScans({checkServerBeforeSync:false})).syncedCount).toBe(1);});
+ it("sends41scans as40+1 while retaining original timestamp, gate and device",async()=>{
+  const scans=Array.from({length:41},()=>scan());for(const s of scans)await addPendingScan(s);
+  mocked.mockImplementation(async(_p,decode,options)=>{const body=options!.body as {scans:{scanId:string;ticketCode:string}[]};return decode({version:2,results:body.scans.map(s=>({...s,status:"synced"}))});});
+  expect((await syncPendingScans({checkServerBeforeSync:false})).remainingCount).toBe(0);expect(mocked).toHaveBeenCalledTimes(2);
+  const body=mocked.mock.calls[0][2]!.body as {scans:Record<string,unknown>[]};expect(body.scans).toHaveLength(40);expect(body.scans[0]).toMatchObject({scanId:scans[0].requestId,gateId,deviceId,scannedAt:scans[0].createdAt,mode:"offline_admission"});
+ });
+ it.each([401,403,400,409,429,500,503,0])("retains queue and same UUID on HTTP%s without durable ACK",async status=>{const s=scan();await addPendingScan(s);mocked.mockRejectedValue(new ApiError("fixture",status,"FIXTURE"));const r=await syncPendingScans({checkServerBeforeSync:false});expect(r.remainingCount).toBe(1);expect((await getPendingScans())[0].requestId).toBe(s.requestId);expect((await getPendingScans())[0].status).toBe("pending");});
+ it.each(["wrong-version","unknown-id","duplicate","wrong-ticket","legacy-success"])("rejects invalid %s ACK and never drops data",async kind=>{
+   const s=scan();await addPendingScan(s);let value:unknown={version:2,results:[ack(s)]};
+   if(kind==="wrong-version")value={version:1,results:[ack(s)]};if(kind==="unknown-id")value={version:2,results:[{...ack(s),scanId:randomUUID()}]};if(kind==="duplicate")value={version:2,results:[ack(s),ack(s)]};if(kind==="wrong-ticket")value={version:2,results:[{...ack(s),ticketCode:randomUUID()}]};if(kind==="legacy-success")value={success:true};
+   reply(value);expect((await syncPendingScans({checkServerBeforeSync:false})).remainingCount).toBe(1);
+ });
+ it("partial ACK processes confirmed item only and retains remaining scan",async()=>{const a=scan(),b=scan();await addPendingScan(a);await addPendingScan(b);reply({version:2,results:[ack(a)]});const r=await syncPendingScans({checkServerBeforeSync:false});expect(r.remainingCount).toBe(1);expect((await getPendingScans())[0].id).toBe(b.id);});
+ it.each(["conflict","rejected"])("accepts durable %s ACK for report followup",async status=>{const s=scan();await addPendingScan(s);reply({version:2,results:[ack(s,status)]});const r=await syncPendingScans({checkServerBeforeSync:false});expect(r.remainingCount).toBe(0);expect(r.failedCount).toBe(1);});
+ it("does not send another staff member's queue or unsigned legacy QR",async()=>{await addPendingScan(scan({staffId:randomUUID()}));await addPendingScan(scan({ticketId:"TK-legacy"}));const r=await syncPendingScans({checkServerBeforeSync:false});expect(r.remainingCount).toBe(2);expect(mocked).not.toHaveBeenCalled();});
+ it("requires a current STAFF identity",async()=>{await addPendingScan(scan());vi.mocked(loadCurrentUser).mockResolvedValue({...actor,roles:["BUYER"]});expect((await syncPendingScans({checkServerBeforeSync:false})).remainingCount).toBe(1);expect(mocked).not.toHaveBeenCalled();});
+ it("prevents overlapping synchronization runs",async()=>{const s=scan();await addPendingScan(s);let resolve!:(v:unknown)=>void;mocked.mockImplementation(async(_p,decode)=>decode(await new Promise(r=>{resolve=r;})));const first=syncPendingScans({checkServerBeforeSync:false});await vi.waitFor(()=>expect(mocked).toHaveBeenCalled());expect((await syncPendingScans({checkServerBeforeSync:false})).errors).toHaveLength(1);resolve({version:2,results:[ack(s)]});await first;expect(mocked).toHaveBeenCalledOnce();});
+ it("notifies subscribers from durable count",async()=>{let count=0;const off=subscribePendingCount(n=>{count=n;});await addPendingScan(scan());expect(count).toBe(1);off();});
 });

@@ -99,18 +99,26 @@ export class HoldsService {
   ): Promise<number | null> {
     try {
       const [row] = await this.db.seatReadQuery<
-        { maxTicketsPerUser: number | null }[]
+        { maxTicketsPerUser: number | null; isDemo?: boolean | null }[]
       >(
-        Prisma.sql`SELECT "maxTicketsPerUser" FROM showtimes WHERE id=${showtimeId}::uuid`,
+        Prisma.sql`SELECT "maxTicketsPerUser", "isDemo" FROM showtimes WHERE id=${showtimeId}::uuid`,
         client,
       );
+      if (row?.isDemo) {
+        throw new ConflictException({
+          code: 'DEMO_NOT_BOOKABLE',
+          message:
+            'Đây là suất diễn mô phỏng; sơ đồ ghế chỉ dùng để tham khảo.',
+        });
+      }
       // Owner chốt S-42: mặc định 4 vé/tài khoản/suất (migration backfill 4);
       // NULL = BTC mở không giới hạn. Suất lạ (không có hàng) cũng dùng 4 —
       // routine giữ ghế sẽ trả 404 sau. `?? null` giữ tương thích test cũ mock
       // hàng thiếu cột.
       if (!row) return 4;
       return row.maxTicketsPerUser ?? null;
-    } catch {
+    } catch (err) {
+      if (err instanceof HttpException) throw err;
       // A configured limit must never be bypassed because the read pool is
       // unavailable. Do not cache the failure: a later claim can retry.
       this.logger.warn(JSON.stringify({ event: 'ticket_limit_unavailable' }));
@@ -149,16 +157,9 @@ export class HoldsService {
     client?: HoldConnection,
   ): Promise<HoldState> {
     const seatIds = requestedSeats(body);
-    const [showtime] = await this.db.seatReadQuery<{ isDemo: boolean }[]>(
-      Prisma.sql`SELECT "isDemo" FROM showtimes WHERE id=${showtimeId}::uuid`,
-      client,
-    );
-    if (showtime?.isDemo)
-      throw new ConflictException({
-        code: 'DEMO_NOT_BOOKABLE',
-        message: 'Đây là suất diễn mô phỏng; sơ đồ ghế chỉ dùng để tham khảo.',
-      });
-    await this.enforceTicketLimit(showtimeId, userId, seatIds.length, client);
+    // Authoritative quota is checked under the account lock by claim_hold_v5.
+    // Keep the cached lookup only as an early demo-mode rejection.
+    await this.ticketLimitFor(showtimeId, client);
     const requestId = randomUUID();
     try {
       // v4 rejects known conflicts without writes; v3 rolls racing rejections
@@ -176,13 +177,23 @@ export class HoldsService {
         }[]
       >(
         Prisma.sql`
-        SELECT * FROM public.claim_hold_v4(
+        SELECT * FROM public.claim_hold_v5(
           ${showtimeId}::uuid, ${userId}::uuid, ${sessionHash}::text,
           ${'{' + seatIds.join(',') + '}'}::uuid[], ${randomUUID()}::uuid, ${randomUUID()}::uuid
         )`,
         client,
       );
       if (result.failure) {
+        if (result.failure === 'H0007')
+          throw new ForbiddenException({
+            code: 'TICKET_LIMIT',
+            message: 'Tổng ghế đang giữ và đã mua vượt giới hạn của suất diễn.',
+          });
+        if (result.failure === 'H0008')
+          throw new ConflictException({
+            code: 'DEMO_NOT_BOOKABLE',
+            message: 'Suất mô phỏng không cho đặt vé.',
+          });
         if (result.failure === 'H0001')
           throw new NotFoundException('Không tìm thấy suất diễn.');
         if (result.failure === 'H0002')
@@ -375,48 +386,6 @@ export class HoldsService {
   // keep their seat_holds rows, so they are already included) + PAID and
   // NEEDS_REVIEW order seats. Sequential accumulation is blocked here; a
   // same-millisecond race needs a proc-level check (S-42b).
-  private async enforceTicketLimit(
-    showtimeId: string,
-    userId: string,
-    requested: number,
-    client?: HoldConnection,
-  ): Promise<void> {
-    const limit = await this.ticketLimitFor(showtimeId, client);
-    if (limit === null) return;
-    // One pooled round trip for both counts; only limited showtimes pay it.
-    const [counts] = await this.db.seatReadQuery<
-      { held: number | string | bigint; bought: number | string | bigint }[]
-    >(
-      Prisma.sql`SELECT
-        (SELECT COUNT(DISTINCT h."seatId") FROM seat_holds h
-          JOIN hold_sessions hs ON hs.id = h."holdSessionId"
-          WHERE h."showtimeId"=${showtimeId}::uuid AND hs."userId"=${userId}::uuid
-            AND h."expiresAt" > clock_timestamp()) AS held,
-        (SELECT COUNT(*) FROM order_items oi
-          JOIN orders o ON o.id = oi."orderId"
-          WHERE o."userId"=${userId}::uuid AND o."showtimeId"=${showtimeId}::uuid
-            AND o.status IN ('PAID','NEEDS_REVIEW')) AS bought`,
-      client,
-    );
-    const owned = Number(counts?.held ?? 0) + Number(counts?.bought ?? 0);
-    if (owned + requested > limit) {
-      this.logger.warn(
-        JSON.stringify({
-          event: 'ticket_limit',
-          limit,
-          owned,
-          requested,
-        }),
-      );
-      throw new ForbiddenException({
-        code: 'TICKET_LIMIT',
-        message: `Mỗi tài khoản chỉ được giữ/mua tối đa ${limit} vé cho suất này (bạn đã có ${owned} vé).`,
-        limit,
-        owned,
-        requested,
-      });
-    }
-  }
 
   current(showtimeId: string, userId: string, sessionHash: string) {
     return this.state(this.db, showtimeId, userId, sessionHash);

@@ -16,6 +16,7 @@ class MetricsExporter implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(MetricsExporter.name);
   onModuleInit() {
     if (process.env.MONITORING_ENABLED !== 'true') return;
+    metrics.safe(() => metrics.producer.set({ subsystem: 'webhook' }, 1));
     try {
       metrics.safe(() =>
         metrics.workerEnabled.set(
