@@ -20,6 +20,8 @@ describe('Payments S-21 Signature Verification E2E Integration', () => {
   let seatId: string;
   let orderId: string;
   let gatewayRef: string;
+  let eventId: string;
+  const fixtureUsers: string[] = [];
 
   const momoAccessKey = process.env.MOMO_ACCESS_KEY ?? 'F8BBA842ECF85';
   const momoSecretKey =
@@ -42,6 +44,7 @@ describe('Payments S-21 Signature Verification E2E Integration', () => {
       },
     });
     const token = randomBytes(32).toString('base64url');
+    fixtureUsers.push(user.id);
     await db.session.create({
       data: {
         tokenHash: hashSessionToken(token),
@@ -93,6 +96,7 @@ describe('Payments S-21 Signature Verification E2E Integration', () => {
         status: 'ON_SALE',
       },
     });
+    eventId = event.id;
     showtimeId = showtime.id;
 
     const cat = await db.seatCategory.create({
@@ -148,18 +152,23 @@ describe('Payments S-21 Signature Verification E2E Integration', () => {
   });
 
   afterAll(async () => {
-    if (db) {
-      await db.payment.deleteMany();
-      await db.orderItem.deleteMany();
-      await db.order.deleteMany();
-      await db.seatHold.deleteMany();
-      await db.holdSession.deleteMany();
-      await db.seat.deleteMany();
-      await db.seatCategory.deleteMany();
-      await db.showtime.deleteMany();
-      await db.event.deleteMany();
+    if (db && showtimeId) {
+      await db.payment.deleteMany({ where: { order: { showtimeId } } });
+      await db.orderItem.deleteMany({ where: { order: { showtimeId } } });
+      await db.order.deleteMany({ where: { showtimeId } });
+      await db.seatHold.deleteMany({ where: { showtimeId } });
+      await db.holdSession.deleteMany({ where: { showtimeId } });
+      await db.seat.deleteMany({ where: { showtimeId } });
+      await db.seatCategory.deleteMany({ where: { showtimeId } });
+      await db.showtime.deleteMany({ where: { id: showtimeId } });
+      await db.event.deleteMany({ where: { id: eventId } });
+      await db.user.deleteMany({ where: { id: { in: fixtureUsers } } });
     }
-    await app.close();
+    logWarnSpy.mockRestore();
+    if (app) {
+      await app.get('REDIS_CLIENT').quit();
+      await app.close();
+    }
   });
 
   it('AC 1: Webhook with invalid signature returns 401, leaves DB unchanged and logs client IP without secrets', async () => {
