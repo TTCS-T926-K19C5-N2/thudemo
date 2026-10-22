@@ -11,9 +11,14 @@ describe('TicketReminderScheduler', () => {
   beforeEach(() => {
     db = {
       showtime: { findMany: vi.fn().mockResolvedValue([]) },
-      ticket: { findMany: vi.fn().mockResolvedValue([]), update: vi.fn().mockResolvedValue({}) },
+      ticket: {
+        findMany: vi.fn().mockResolvedValue([]),
+        update: vi.fn().mockResolvedValue({}),
+      },
     };
-    emailService = new TicketEmailService({ enqueueNotification: vi.fn() } as any);
+    emailService = new TicketEmailService({
+      enqueueNotification: vi.fn(),
+    } as any);
     vi.spyOn(emailService, 'sendReminder').mockResolvedValue(undefined);
     scheduler = new TicketReminderScheduler(db, emailService);
   });
@@ -25,6 +30,7 @@ describe('TicketReminderScheduler', () => {
         {
           id: 'showtime-1',
           startTime: showtimeStart,
+          updatedAt: new Date(),
           event: { name: 'Concert A', location: 'Opera House' },
         },
       ]);
@@ -57,8 +63,10 @@ describe('TicketReminderScheduler', () => {
       });
 
       expect(emailService.sendReminder).toHaveBeenCalledWith({
-        orderId: 'order-1', ticketId: 'ticket-1',
+        orderId: 'order-1',
+        ticketId: 'ticket-1',
         showtimeStart,
+        scheduleVersion: expect.any(Date),
         location: 'Opera House',
         type: 'REMINDER',
       });
@@ -91,7 +99,9 @@ describe('TicketReminderScheduler', () => {
         },
       ]);
 
-      vi.spyOn(emailService, 'sendReminder').mockRejectedValueOnce(new Error('SMTP Connection timeout'));
+      vi.spyOn(emailService, 'sendReminder').mockRejectedValueOnce(
+        new Error('SMTP Connection timeout'),
+      );
 
       await scheduler.sweep();
 
@@ -102,6 +112,36 @@ describe('TicketReminderScheduler', () => {
   });
 
   describe('sweepRescheduled (AC: đổi giờ diễn thì gửi email cập nhật)', () => {
+    it('does not starve a changed ticket behind 100 unchanged tickets', async () => {
+      const start = new Date('2026-11-01T19:00:00Z');
+      const unchanged = Array.from({ length: 100 }, (_, index) => ({
+        id: `unchanged-${index}`,
+        remindedStartTime: start,
+        showtime: { startTime: start, event: { location: 'Hall' } },
+      }));
+      db.ticket.findMany
+        .mockResolvedValueOnce(unchanged)
+        .mockResolvedValueOnce([
+          {
+            id: 'changed-101',
+            orderId: 'order-101',
+            remindedStartTime: start,
+            showtime: {
+              startTime: new Date(start.getTime() + 3600000),
+              event: { location: 'Hall' },
+            },
+            order: { user: { email: 'fixture@example.invalid' } },
+          },
+        ]);
+      await scheduler.sweepRescheduled();
+      expect(emailService.sendReminder).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ticketId: 'changed-101',
+          type: 'RESCHEDULED',
+        }),
+      );
+      expect(db.ticket.findMany).toHaveBeenCalledTimes(2);
+    });
     it('detects rescheduled showtimes and sends update emails with new time', async () => {
       const oldStartTime = new Date('2026-11-01T19:00:00Z');
       const newStartTime = new Date('2026-11-01T20:30:00Z');
@@ -124,6 +164,7 @@ describe('TicketReminderScheduler', () => {
           showtime: {
             id: 'showtime-1',
             startTime: newStartTime,
+            updatedAt: new Date(),
             event: { name: 'Vở kịch Mùa Thu', location: 'Nhà hát Lớn' },
           },
           order: {
@@ -135,8 +176,10 @@ describe('TicketReminderScheduler', () => {
       await scheduler.sweep();
 
       expect(emailService.sendReminder).toHaveBeenCalledWith({
-        orderId: 'order-2', ticketId: 'ticket-rescheduled-1',
+        orderId: 'order-2',
+        ticketId: 'ticket-rescheduled-1',
         showtimeStart: newStartTime,
+        scheduleVersion: expect.any(Date),
         previousStart: oldStartTime,
         location: 'Nhà hát Lớn',
         type: 'RESCHEDULED',

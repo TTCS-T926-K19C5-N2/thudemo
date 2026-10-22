@@ -86,6 +86,7 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
             orderId: ticket.orderId!,
             ticketId: ticket.id,
             showtimeStart: showtime.startTime,
+            scheduleVersion: showtime.updatedAt,
             location: showtime.event.location,
             type: 'REMINDER',
           });
@@ -114,60 +115,68 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
    */
   async sweepRescheduled() {
     // Find tickets that have already received a reminder but whose showtime startTime has changed
-    const tickets = await this.db.ticket.findMany({
-      where: {
-        status: TicketStatus.VALID,
-        remindedStartTime: { not: null },
-        order: {
-          status: OrderStatus.PAID,
+    let cursor: string | undefined;
+    while (true) {
+      const tickets = await this.db.ticket.findMany({
+        where: {
+          status: TicketStatus.VALID,
+          remindedStartTime: { not: null },
+          order: {
+            status: OrderStatus.PAID,
+          },
         },
-      },
-      include: {
-        showtime: {
-          include: { event: true },
+        include: {
+          showtime: {
+            include: { event: true },
+          },
+          order: {
+            include: { user: true },
+          },
         },
-        order: {
-          include: { user: true },
-        },
-      },
-      take: 100,
-    });
+        take: 100,
+        orderBy: { id: 'asc' },
+        ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+      });
 
-    for (const ticket of tickets) {
-      if (!ticket.showtime || !ticket.remindedStartTime) continue;
+      for (const ticket of tickets) {
+        if (!ticket.showtime || !ticket.remindedStartTime) continue;
 
-      // Detect showtime start time change
-      if (
-        ticket.showtime.startTime.getTime() !==
-        ticket.remindedStartTime.getTime()
-      ) {
-        const email = ticket.ownerEmail || ticket.order?.user?.email;
-        if (!email) continue;
+        // Detect showtime start time change
+        if (
+          ticket.showtime.startTime.getTime() !==
+          ticket.remindedStartTime.getTime()
+        ) {
+          const email = ticket.ownerEmail || ticket.order?.user?.email;
+          if (!email) continue;
 
-        try {
-          await this.emailService.sendReminder({
-            orderId: ticket.orderId!,
-            ticketId: ticket.id,
-            showtimeStart: ticket.showtime.startTime,
-            previousStart: ticket.remindedStartTime,
-            location: ticket.showtime.event.location,
-            type: 'RESCHEDULED',
-          });
+          try {
+            await this.emailService.sendReminder({
+              orderId: ticket.orderId!,
+              ticketId: ticket.id,
+              showtimeStart: ticket.showtime.startTime,
+              scheduleVersion: ticket.showtime.updatedAt,
+              previousStart: ticket.remindedStartTime,
+              location: ticket.showtime.event.location,
+              type: 'RESCHEDULED',
+            });
 
-          // Record the scheduled version; the worker alone records sentAt.
-          await this.db.ticket.update({
-            where: { id: ticket.id },
-            data: {
-              reminderSentAt: null,
-              remindedStartTime: ticket.showtime.startTime,
-            },
-          });
-        } catch {
-          this.logger.error(
-            `Reschedule delivery failed for ticket ${ticket.id}; retry deferred`,
-          );
+            // Record the scheduled version; the worker alone records sentAt.
+            await this.db.ticket.update({
+              where: { id: ticket.id },
+              data: {
+                reminderSentAt: null,
+                remindedStartTime: ticket.showtime.startTime,
+              },
+            });
+          } catch {
+            this.logger.error(
+              `Reschedule delivery failed for ticket ${ticket.id}; retry deferred`,
+            );
+          }
         }
       }
+      if (tickets.length < 100) break;
+      cursor = tickets[tickets.length - 1].id;
     }
   }
 

@@ -30,14 +30,15 @@ it('delivers a queued accounting alert for an unpaid review order without granti
   }));
 });
 
-it('queues reminders durably with one key per ticket and showtime rather than reporting a log as sent', async () => {
+it('queues reminders durably with one key per ticket and schedule revision rather than reporting a log as sent', async () => {
   const queue = { enqueueNotification: vi.fn().mockResolvedValue(undefined) };
   const email = new TicketEmailService(queue as unknown as TicketDeliveryService);
   await email.sendReminder({
     orderId: 'order', ticketId: 'ticket',
     showtimeStart: new Date('2026-11-01T12:00:00Z'),
+    scheduleVersion: new Date('2026-10-22T03:00:00Z'),
     location: 'Room A', type: 'REMINDER',
   });
   expect(queue.enqueueNotification).toHaveBeenCalledWith('order',
-    'reminder:ticket:2026-11-01T12:00:00.000Z', expect.objectContaining({ kind: 'REMINDER', ticketId: 'ticket' }));
+    'reminder:ticket:REMINDER:2026-11-01T12:00:00.000Z:2026-10-22T03:00:00.000Z', expect.objectContaining({ kind: 'REMINDER', ticketId: 'ticket' }));
 });
