@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   Param,
   Patch,
   Post,
@@ -64,6 +65,13 @@ export class ShowtimesController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.service.ownedSeats(id, req.user.id);
+  }
+  // S-50: polled by the organizer page, so never cached.
+  @Roles('ORGANIZER') @Get(':id/manage/sales') @Header('Cache-Control', 'no-store') sales(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.service.sales(id, req.user.id);
   }
   @Public() @Get(':id') detail(@Param('id', ParseUUIDPipe) id: string) {
     return this.service.detail(id);
