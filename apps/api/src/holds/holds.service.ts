@@ -177,7 +177,7 @@ export class HoldsService {
         }[]
       >(
         Prisma.sql`
-        SELECT * FROM public.claim_hold_v5(
+        SELECT * FROM public.claim_hold_v6(
           ${showtimeId}::uuid, ${userId}::uuid, ${sessionHash}::text,
           ${'{' + seatIds.join(',') + '}'}::uuid[], ${randomUUID()}::uuid, ${randomUUID()}::uuid
         )`,
@@ -327,7 +327,7 @@ export class HoldsService {
         const rejected = await this.db.seatReadQuery<{ seatId: string }[]>(
           Prisma.sql`SELECT h."seatId" FROM seat_holds h JOIN hold_sessions hs ON hs.id=h."holdSessionId"
             WHERE h."seatId" IN (${Prisma.join(seatIds.map((id) => Prisma.sql`${id}::uuid`))}) AND h."expiresAt">clock_timestamp()
-            AND NOT (hs."userId"=${userId}::uuid AND hs."sessionHash"=${sessionHash})`,
+            AND hs."userId"<>${userId}::uuid`,
         );
         this.logger.warn(
           JSON.stringify({
@@ -387,17 +387,16 @@ export class HoldsService {
   // NEEDS_REVIEW order seats. Sequential accumulation is blocked here; a
   // same-millisecond race needs a proc-level check (S-42b).
 
-  current(showtimeId: string, userId: string, sessionHash: string) {
-    return this.state(this.db, showtimeId, userId, sessionHash);
+  current(showtimeId: string, userId: string, _sessionHash: string) {
+    return this.state(this.db, showtimeId, userId);
   }
 
   private async state(
     tx: HoldQueryable,
     showtimeId: string,
     userId: string,
-    sessionHash: string,
   ): Promise<HoldState> {
-    const [result] = await tx.$queryRaw<
+    const results = await tx.$queryRaw<
       {
         serverTime: Date;
         id: string | null;
@@ -408,9 +407,15 @@ export class HoldsService {
       SELECT clock_timestamp() AS "serverTime", hs.id, hs."expiresAt",
         COALESCE(array_agg(h."seatId" ORDER BY h."seatId") FILTER (WHERE h."seatId" IS NOT NULL),'{}'::uuid[]) AS "seatIds"
       FROM (SELECT 1) anchor LEFT JOIN hold_sessions hs ON hs."showtimeId"=${showtimeId}::uuid
-        AND hs."userId"=${userId}::uuid AND hs."sessionHash"=${sessionHash} AND hs."expiresAt">clock_timestamp()
+        AND hs."userId"=${userId}::uuid AND hs."expiresAt">clock_timestamp()
       LEFT JOIN seat_holds h ON h."holdSessionId"=hs.id AND h.token=hs.token AND h."expiresAt">clock_timestamp()
       GROUP BY hs.id,hs."expiresAt"`);
+    if (results.filter((row) => row.id !== null).length > 1)
+      throw new ServiceUnavailableException({
+        code: 'HOLD_AMBIGUOUS',
+        message: 'Tài khoản có nhiều lượt giữ cũ còn hạn. Hãy chờ hạn gốc kết thúc rồi thử lại.',
+      });
+    const result = results[0];
     return {
       serverTime: result.serverTime,
       hold:

@@ -55,6 +55,7 @@ describe('OrdersService & isOrderExpired', () => {
           .mockResolvedValue([{ status: 'ON_SALE', isDemo: false }]),
         $transaction: vi.fn(async (cb) => cb(mockPrisma)),
         holdSession: {
+          count: vi.fn().mockResolvedValue(1),
           findFirst: vi.fn(),
         },
         seat: {
