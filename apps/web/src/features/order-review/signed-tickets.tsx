@@ -5,10 +5,14 @@ import { ResendTickets } from "../tickets/resend-tickets";
 import { Button } from "@/components/ui/button";
 import { api, object, ApiError } from "@/lib/api/client";
 import { parseTicketQr } from "shared/ticket-qr";
+import { formatShowtime } from "@/lib/formatting";
 type Ticket = {
   ticketId: string;
+  eventName: string;
+  showtimeStart: string;
   seatLabel: string;
   category: string;
+  tier: string | null;
   status: string;
   qrPayload: string | null;
 };
@@ -20,8 +24,11 @@ function decodeTickets(value: unknown): Ticket[] {
     const item = object(raw);
     if (
       typeof item.ticketId !== "string" ||
+      typeof item.eventName !== "string" ||
+      typeof item.showtimeStart !== "string" ||
       typeof item.seatLabel !== "string" ||
       typeof item.category !== "string" ||
+      (item.tier !== null && typeof item.tier !== "string") ||
       !["VALID", "CHECKED_IN", "CANCELLED"].includes(String(item.status)) ||
       (item.status === "CANCELLED"
         ? item.qrPayload !== null
@@ -119,8 +126,17 @@ export function SignedTickets({ orderId }: { orderId: string }) {
               />
             </div>
           )}
-          <p className="font-semibold">
-            Ghế {ticket.seatLabel} · {ticket.category}
+          <p className="text-center font-semibold" data-testid="ticket-event">
+            {ticket.eventName}
+          </p>
+          <p data-testid="ticket-showtime">
+            {formatShowtime(ticket.showtimeStart)}
+          </p>
+          <p className="font-semibold" data-testid="ticket-seat">
+            Ghế {ticket.seatLabel} · Hạng {ticket.category}
+            {ticket.tier && ticket.tier !== ticket.category
+              ? ` (${ticket.tier})`
+              : ""}
           </p>
           <p>
             {ticket.status === "CANCELLED"

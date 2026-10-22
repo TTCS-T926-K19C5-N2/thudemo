@@ -16,6 +16,7 @@ type TicketRow = {
   row: string;
   seatNumber: number;
   categoryName: string;
+  tierName: string | null;
   cancelled: boolean;
   used: boolean;
 };
@@ -86,7 +87,7 @@ export class TicketQrService {
           ownerEmail: string | null;
         })[]
       >(Prisma.sql`
-        SELECT oi.id,o."showtimeId",oi."seatId",oi."checkedInAt",s.row,s."seatNumber",oi."categoryName",
+        SELECT oi.id,o."showtimeId",oi."seatId",oi."checkedInAt",s.row,s."seatNumber",oi."categoryName",oi."tierName",
           e.name AS "eventName",st."startTime" AS "showtimeStart",
           EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CANCELLED') AS cancelled,
           EXISTS(SELECT 1 FROM tickets t WHERE t."orderId"=o.id AND t."seatId"=oi."seatId" AND t.status='CHECKED_IN') AS used,
@@ -113,6 +114,7 @@ export class TicketQrService {
           showtimeStart: item.showtimeStart.toISOString(),
           seatLabel: `${item.row}-${item.seatNumber}`,
           category: item.categoryName,
+          tier: item.tierName,
           ticketType: item.categoryName,
           status: item.cancelled
             ? ('CANCELLED' as const)
