@@ -7,8 +7,11 @@ import { PublicLayout } from "@/components/layout/product-layout";
 import { Button } from "@/components/ui/button";
 import { TicketQrImage } from "./ticket-qr-image";
 import { ResendTickets } from "./resend-tickets";
+import { TicketTransfer } from "./ticket-transfer";
 
 type Ticket = {
+  id: string;
+  canViewOrder?: boolean;
   ticketId: string;
   orderId: string;
   eventName: string;
@@ -34,6 +37,7 @@ function decode(value: unknown): View {
   const tickets = data.tickets.map((raw) => {
     const t = object(raw);
     for (const key of [
+      "id",
       "ticketId",
       "orderId",
       "eventName",
@@ -59,6 +63,7 @@ function decode(value: unknown): View {
   };
 }
 export function MyTickets({ page }: { page: number }) {
+  const [message, setMessage] = useState("");
   const [view, setView] = useState<View | null>(null),
     [error, setError] = useState(""),
     [login, setLogin] = useState(false),
@@ -100,6 +105,7 @@ export function MyTickets({ page }: { page: number }) {
   return (
     <PublicLayout signedIn={!login}>
       <div className="operations-page mx-auto max-w-5xl space-y-5 px-4 py-8">
+        {message && <p role="status">{message}</p>}
         <h1 className="text-2xl font-bold">Vé của tôi</h1>
         <p>Vé sắp diễn trước, vé đã qua sau. Mỗi QR chỉ dùng một lần.</p>
         {error ? (
@@ -161,7 +167,20 @@ export function MyTickets({ page }: { page: number }) {
                       seatLabel={ticket.seatLabel}
                     />
                   )}
-                  <Link href={`/orders/${ticket.orderId}`}>Xem đơn hàng</Link>
+                  {ticket.canViewOrder !== false && (
+                    <Link href={`/orders/${ticket.orderId}`}>Xem đơn hàng</Link>
+                  )}
+                  {ticket.status === "VALID" && (
+                    <TicketTransfer
+                      orderId={ticket.orderId}
+                      ticketId={ticket.id}
+                      onTransferred={() => {
+                        setMessage("Đã chuyển vé. QR cũ đã hết hiệu lực.");
+                        setView(null);
+                        setVersion((v) => v + 1);
+                      }}
+                    />
+                  )}
                   {ticket.status !== "CANCELLED" && (
                     <ResendTickets orderId={ticket.orderId} />
                   )}

@@ -10,6 +10,7 @@ import { Prisma } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ScannerCryptoService } from './scanner-crypto.service.js';
+import { isRevokedTicket } from '../orders/ticket-revocation.js';
 import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js';
 import {
   offlineScanCommands,
@@ -122,6 +123,28 @@ export class OfflineAdmissionsService {
       >(Prisma.sql`
         SELECT oi."orderId",oi."seatId",oi."checkedInAt",o.status='PAID' AS paid FROM order_items oi JOIN orders o ON o.id=oi."orderId"
         WHERE oi.id=${scan.ticketCode}::uuid AND o."showtimeId"=${scan.showtimeId}::uuid FOR UPDATE OF oi,o`);
+      if (
+        !ticket &&
+        (await isRevokedTicket(tx, scan.ticketCode, scan.showtimeId))
+      ) {
+        const [clock] = await tx.$queryRaw<{ now: Date }[]>(
+          Prisma.sql`SELECT clock_timestamp() AS now`,
+        );
+        const ack: Ack = {
+          scanId: scan.scanId,
+          ticketCode: scan.ticketCode,
+          status: 'rejected',
+          code: 'TICKET_CANCELLED',
+          message:
+            'QR cũ đã bị thu hồi khi chuyển nhượng; lượt quét không cấp quyền vào cửa.',
+        };
+        await tx.$executeRaw(Prisma.sql`
+          INSERT INTO offline_scan_logs(id,"scanId","ticketCode","showtimeId","gateId","staffId","deviceId","scannedAt",status,message,"payloadHash",receipt,mode,"deviceSentAt","clockOffsetMs","createdAt")
+          VALUES(${randomUUID()}::uuid,${scan.scanId}::uuid,${scan.ticketCode},${scan.showtimeId}::uuid,${scan.gateId}::uuid,${request.user.id}::uuid,
+            ${scan.deviceId},${new Date(scan.scannedAt)},'INVALID',${ack.message},${payloadHash},${JSON.stringify(ack)}::jsonb,
+            ${scan.mode},${new Date(scan.deviceSentAt)},${clock.now.getTime() - Date.parse(scan.deviceSentAt)},${clock.now})`);
+        return ack;
+      }
       if (!ticket)
         throw new NotFoundException({
           code: 'UNKNOWN_TICKET',

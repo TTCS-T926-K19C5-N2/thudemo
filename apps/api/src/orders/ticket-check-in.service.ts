@@ -1,3 +1,4 @@
+import { isRevokedTicket } from './ticket-revocation.js';
 import {
   BadRequestException,
   ConflictException,
@@ -149,6 +150,11 @@ export class TicketCheckInService {
         FROM order_items oi JOIN orders o ON o.id = oi."orderId" JOIN seats s ON s.id = oi."seatId"
         WHERE oi.id = ${ticketId}::uuid AND o."showtimeId" = ${showtimeId}::uuid
           AND s."showtimeId" = ${showtimeId}::uuid AND o.status = 'PAID'::"OrderStatus" FOR UPDATE OF oi,o`);
+      if (!ticket && (await isRevokedTicket(tx, ticketId, showtimeId)))
+        throw new BadRequestException({
+          code: 'TICKET_CANCELLED',
+          message: 'QR này đã bị thu hồi khi chuyển nhượng vé.',
+        });
       if (!ticket)
         throw new NotFoundException({
           code: 'UNKNOWN_TICKET',

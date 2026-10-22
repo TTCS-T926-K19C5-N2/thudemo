@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BadRequestException, HttpException, ServiceUnavailableException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TicketDeliveryService } from './ticket-delivery.service.js';
 
@@ -50,7 +54,12 @@ describe('TicketDeliveryService', () => {
   describe('lifecycle (onModuleInit & onModuleDestroy)', () => {
     it('does not start timer if TICKET_MAIL_WORKER is not true', () => {
       const disabledConfig = new ConfigService({ TICKET_MAIL_WORKER: 'false' });
-      const disabledService = new TicketDeliveryService(db, projection, mail, disabledConfig);
+      const disabledService = new TicketDeliveryService(
+        db,
+        projection,
+        mail,
+        disabledConfig,
+      );
       const drainSpy = vi.spyOn(disabledService, 'drain');
 
       disabledService.onModuleInit();
@@ -59,7 +68,12 @@ describe('TicketDeliveryService', () => {
 
     it('does not start timer if mail transport is not ready', () => {
       const unreadyMail = { ready: false, send: vi.fn() } as any;
-      const unreadyService = new TicketDeliveryService(db, projection, unreadyMail, config);
+      const unreadyService = new TicketDeliveryService(
+        db,
+        projection,
+        unreadyMail,
+        config,
+      );
       const drainSpy = vi.spyOn(unreadyService, 'drain');
 
       unreadyService.onModuleInit();
@@ -78,21 +92,25 @@ describe('TicketDeliveryService', () => {
 
   describe('resend', () => {
     it('rejects invalid or missing requestId', async () => {
-      await expect(service.resend(ORDER_ID, USER_ID, null)).rejects.toThrow(BadRequestException);
-      await expect(service.resend(ORDER_ID, USER_ID, { requestId: 'not-a-uuid' })).rejects.toThrow(BadRequestException);
-      await expect(service.resend(ORDER_ID, USER_ID, { requestId: 12345 })).rejects.toThrow(BadRequestException);
+      await expect(service.resend(ORDER_ID, USER_ID, null)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(
+        service.resend(ORDER_ID, USER_ID, { requestId: 'not-a-uuid' }),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        service.resend(ORDER_ID, USER_ID, { requestId: 12345 }),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('rejects when order has no valid tickets with QR payload', async () => {
       projection.forOwner.mockResolvedValue({
-        tickets: [
-          { ticketId: 't1', qrPayload: null, status: 'CANCELLED' },
-        ],
+        tickets: [{ ticketId: 't1', qrPayload: null, status: 'CANCELLED' }],
       });
 
-      await expect(service.resend(ORDER_ID, USER_ID, { requestId: VALID_REQUEST_ID })).rejects.toThrow(
-        'Đơn không còn vé hợp lệ để gửi.',
-      );
+      await expect(
+        service.resend(ORDER_ID, USER_ID, { requestId: VALID_REQUEST_ID }),
+      ).rejects.toThrow('Đơn không còn vé hợp lệ để gửi.');
     });
 
     it('rejects with 503 if mail service is unavailable or worker disabled', async () => {
@@ -110,7 +128,9 @@ describe('TicketDeliveryService', () => {
       );
 
       await expect(
-        unreadyService.resend(ORDER_ID, USER_ID, { requestId: VALID_REQUEST_ID }),
+        unreadyService.resend(ORDER_ID, USER_ID, {
+          requestId: VALID_REQUEST_ID,
+        }),
       ).rejects.toThrow(ServiceUnavailableException);
     });
 
@@ -127,9 +147,14 @@ describe('TicketDeliveryService', () => {
         status: 'QUEUED',
       });
 
-      const result = await service.resend(ORDER_ID, USER_ID, { requestId: VALID_REQUEST_ID });
+      const result = await service.resend(ORDER_ID, USER_ID, {
+        requestId: VALID_REQUEST_ID,
+      });
 
-      expect(result).toEqual({ deliveryId: 'delivery-existing-1', status: 'QUEUED' });
+      expect(result).toEqual({
+        deliveryId: 'delivery-existing-1',
+        status: 'QUEUED',
+      });
       expect(db.ticketMailDelivery.create).not.toHaveBeenCalled();
     });
 
@@ -180,13 +205,19 @@ describe('TicketDeliveryService', () => {
         status: 'QUEUED',
       });
 
-      const result = await service.resend(ORDER_ID, USER_ID, { requestId: VALID_REQUEST_ID });
+      const result = await service.resend(ORDER_ID, USER_ID, {
+        requestId: VALID_REQUEST_ID,
+      });
 
-      expect(result).toEqual({ deliveryId: 'delivery-new-1', status: 'QUEUED' });
+      expect(result).toEqual({
+        deliveryId: 'delivery-new-1',
+        status: 'QUEUED',
+      });
       expect(db.ticketMailDelivery.create).toHaveBeenCalledWith({
         data: {
           orderId: ORDER_ID,
           dedupeKey: `resend:${USER_ID}:${VALID_REQUEST_ID.toLowerCase()}`,
+          notification: { kind: 'OWNER_TICKETS', ownerId: USER_ID },
         },
       });
     });
@@ -351,7 +382,9 @@ describe('TicketDeliveryService', () => {
         contentType: 'image/png',
         cid: 'qr-t-11111111-ec16-43bf-b58f-287968560181',
       });
-      expect(mailCall.html).toContain('cid:qr-t-11111111-ec16-43bf-b58f-287968560181');
+      expect(mailCall.html).toContain(
+        'cid:qr-t-11111111-ec16-43bf-b58f-287968560181',
+      );
 
       // NFR: NO payment details
       const combinedEmail = `${mailCall.subject} ${mailCall.text} ${mailCall.html}`;
@@ -407,7 +440,8 @@ describe('TicketDeliveryService', () => {
         }),
       });
 
-      const updatedData = db.ticketMailDelivery.updateMany.mock.calls[0][0].data;
+      const updatedData =
+        db.ticketMailDelivery.updateMany.mock.calls[0][0].data;
       const scheduledDiff = updatedData.nextAttemptAt.getTime() - before;
       expect(scheduledDiff).toBeGreaterThanOrEqual(4500);
       expect(scheduledDiff).toBeLessThanOrEqual(5500);
@@ -434,7 +468,8 @@ describe('TicketDeliveryService', () => {
       const before = Date.now();
       await service.drain();
 
-      const updatedData = db.ticketMailDelivery.updateMany.mock.calls[0][0].data;
+      const updatedData =
+        db.ticketMailDelivery.updateMany.mock.calls[0][0].data;
       expect(updatedData.status).toBe('QUEUED');
       expect(updatedData.failureCode).toBe('DELIVERY_RETRY');
       const scheduledDiff = updatedData.nextAttemptAt.getTime() - before;

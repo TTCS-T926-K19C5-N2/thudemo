@@ -5,7 +5,9 @@ import { ResendTickets } from "../tickets/resend-tickets";
 import { Button } from "@/components/ui/button";
 import { api, object, ApiError } from "@/lib/api/client";
 import { parseTicketQr } from "shared/ticket-qr";
+import { TicketTransfer } from "../tickets/ticket-transfer";
 type Ticket = {
+  id: string;
   ticketId: string;
   seatLabel: string;
   category: string;
@@ -20,6 +22,7 @@ function decodeTickets(value: unknown): Ticket[] {
     const item = object(raw);
     if (
       typeof item.ticketId !== "string" ||
+      typeof item.id !== "string" ||
       typeof item.seatLabel !== "string" ||
       typeof item.category !== "string" ||
       !["VALID", "CHECKED_IN", "CANCELLED"].includes(String(item.status)) ||
@@ -40,6 +43,7 @@ export function SignedTickets({ orderId }: { orderId: string }) {
   const [error, setError] = useState("");
   const [version, setVersion] = useState(0);
   const [selected, setSelected] = useState("");
+  const [message, setMessage] = useState("");
   useEffect(() => {
     const controller = new AbortController();
     void api(`/orders/${orderId}/tickets`, decodeTickets, {
@@ -71,6 +75,7 @@ export function SignedTickets({ orderId }: { orderId: string }) {
         Mở QR tại đây trước khi vào cửa. Mỗi vé chỉ dùng một lần.
       </p>
       <div role="status" aria-live="polite">
+        {message && <p>{message}</p>}
         {!tickets && !error && <p className="py-6">Đang tải QR vé…</p>}
         {error && (
           <>
@@ -132,6 +137,17 @@ export function SignedTickets({ orderId }: { orderId: string }) {
           <p className="text-xs text-muted-foreground">
             Mã vé: {ticket.ticketId.slice(0, 8)}
           </p>
+          {ticket.status === "VALID" && (
+            <TicketTransfer
+              orderId={orderId}
+              ticketId={ticket.id}
+              onTransferred={() => {
+                setMessage("Đã chuyển vé. QR cũ đã hết hiệu lực.");
+                setTickets(null);
+                setVersion((v) => v + 1);
+              }}
+            />
+          )}
         </div>
       )}
       {!!tickets?.some((item) => item.qrPayload) && (
