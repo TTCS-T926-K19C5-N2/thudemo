@@ -23,8 +23,13 @@ Lần G1 đầu bị guard suite S-41 từ chối Redis16383; chỉ sửa runner
 
 ## Kết quả nhóm và bằng chứng
 
+### G2 — sơ đồ, giá và mở bán (phần giữ base)
+
+RETAINED theo thứ tự S-05 → S-06/S-09 → S-15 prerequisite → S-07 → S-08. `seat-map.ts` cùng nội dung với các donor có implementation (R22/R19 và nhiều nguồn); parser JSON vị trí dòng/cột chỉ có ở R19 nên giữ. Sale-status control, pricing form, catalogue và seat-status SQL đã có, không ghi đè bằng cây cũ. G2 kiểm lại import transaction/rollback, all-errors, sold/held overwrite guard, giá nguyên đồng, chặn thiếu giá, ownership và catalogue qua suite hiện có. Phần giá snapshot khi đi qua payment còn được xử lý ở G4 sau dependency đơn/mock; không coi riêng test đọc đơn là đã kiểm đủ thanh toán.
+
 | Nhóm | Build | Lint | Typecheck | Test | API E2E | Quyết định |
 |---|---|---|---|---|---|---|
+| g2-seatmap-pricing-sale (S-05, S-06, S-09, S-15, S-07, S-08) | PASS | PASS (warning có sẵn) | PASS | 604 PASS | 151 PASS | [receipt](../.integration-s123/g2-seatmap-pricing-sale/summary.json) |
 | g1-foundations-retry (S-01, S-02, S-04, K-01) | PASS | PASS (warning có sẵn) | PASS | 604 PASS | 151 PASS | [receipt](../.integration-s123/g1-foundations-retry/summary.json) |
 
 Raw/log và manifest ở `.integration-s123/<group>/`; báo cáo cuối nêu rõ phần giữ base, phần nhập mới, các lỗi còn mở và loại bằng chứng. Raw lớn giữ local, receipt/hash được commit. Ma trận `STORY_SOURCE_MATRIX.csv` vẫn là snapshot nguồn audit A/B0, không gán thay đổi integration cho thư mục donor chỉ đọc.
