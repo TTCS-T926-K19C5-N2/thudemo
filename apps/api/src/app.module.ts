@@ -18,6 +18,9 @@ import { CheckInModuleS29 } from './check-in/check-in-s29.module.js';
 import { TicketsModule } from './tickets/tickets.module.js';
 import { WebhookSecurityFilter } from './payments/webhook-security.filter.js';
 import { ScannerModule } from './scanner/scanner.module.js';
+import { BookingAccessModule } from './booking-access/booking-access.module.js';
+import { LifecycleModule } from './lifecycle/lifecycle.module.js';
+import { LocalDashboardModule } from './monitoring/local-dashboard.js';
 
 @Module({
   imports: [
@@ -43,6 +46,9 @@ import { ScannerModule } from './scanner/scanner.module.js';
     CheckInModuleS29,
     TicketsModule,
     ScannerModule,
+    BookingAccessModule,
+    LifecycleModule,
+    LocalDashboardModule,
   ],
   controllers: [AppController],
   providers: [

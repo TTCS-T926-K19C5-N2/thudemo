@@ -28,6 +28,7 @@ import {
   type Seat,
 } from "@/lib/contracts/showtimes";
 import { seatCategoryToken } from "@/lib/presentation/seat-category";
+import { parseSeatMapJson } from "./parse-seat-map";
 export function SeatMapImportForm({
   id,
   locked,
@@ -70,7 +71,7 @@ export function SeatMapImportForm({
     }
     setValidating(true);
     try {
-      const body: unknown = JSON.parse(await file.text());
+      const body = parseSeatMapJson(await file.text());
       const result = await api("/showtimes/validate-map", decodeIssues, {
         method: "POST",
         body,
@@ -86,7 +87,7 @@ export function SeatMapImportForm({
             field: "file",
             message:
               e instanceof SyntaxError
-                ? "JSON không hợp lệ. Kiểm tra dấu ngoặc và dấu phẩy."
+                ? e.message
                 : e instanceof Error
                   ? e.message
                   : "Không đọc được tệp.",

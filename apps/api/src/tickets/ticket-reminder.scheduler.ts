@@ -1,7 +1,11 @@
-import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { TicketStatus, OrderStatus } from '@prisma/client';
-import { encodeTicketQr } from './ticket-qr.js';
 import { TicketEmailService } from './ticket-email.service.js';
 
 @Injectable()
@@ -74,43 +78,31 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
       });
 
       for (const ticket of tickets) {
-        const email = (ticket as any).ownerEmail || ticket.order?.user?.email;
+        const email = ticket.ownerEmail || ticket.order?.user?.email;
         if (!email) continue;
-
-        const qrPayload =
-          ticket.keyId && ticket.signature
-            ? encodeTicketQr({
-                keyId: ticket.keyId,
-                code: ticket.code,
-                showtimeId: ticket.showtimeId,
-                signature: ticket.signature,
-              })
-            : null;
 
         try {
           await this.emailService.sendReminder({
-            toEmail: email,
-            eventName: showtime.event.name,
+            orderId: ticket.orderId!,
+            ticketId: ticket.id,
             showtimeStart: showtime.startTime,
+            scheduleVersion: showtime.updatedAt,
             location: showtime.event.location,
-            seatLabel: ticket.seatLabel,
-            ticketCode: ticket.code,
-            qrPayload,
             type: 'REMINDER',
           });
 
-          // Idempotency: mark both reminderSentAt and remindedStartTime
+          // The durable outbox owns delivery/retry; enqueue is not SMTP receipt.
           await this.db.ticket.update({
             where: { id: ticket.id },
             data: {
-              reminderSentAt: new Date(),
+              reminderSentAt: null,
               remindedStartTime: showtime.startTime,
             },
           });
-        } catch (error) {
+        } catch {
           // Failure: do NOT update remindedStartTime to allow retry on next sweep
           this.logger.error(
-            `Failed to send reminder email for ticket ${ticket.id} to ${email}: ${(error as Error).message}`,
+            `Reminder delivery failed for ticket ${ticket.id}; retry deferred`,
           );
         }
       }
@@ -123,70 +115,68 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
    */
   async sweepRescheduled() {
     // Find tickets that have already received a reminder but whose showtime startTime has changed
-    const tickets = await this.db.ticket.findMany({
-      where: {
-        status: TicketStatus.VALID,
-        remindedStartTime: { not: null },
-        order: {
-          status: OrderStatus.PAID,
+    let cursor: string | undefined;
+    while (true) {
+      const tickets = await this.db.ticket.findMany({
+        where: {
+          status: TicketStatus.VALID,
+          remindedStartTime: { not: null },
+          order: {
+            status: OrderStatus.PAID,
+          },
         },
-      },
-      include: {
-        showtime: {
-          include: { event: true },
+        include: {
+          showtime: {
+            include: { event: true },
+          },
+          order: {
+            include: { user: true },
+          },
         },
-        order: {
-          include: { user: true },
-        },
-      },
-      take: 100,
-    });
+        take: 100,
+        orderBy: { id: 'asc' },
+        ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+      });
 
-    for (const ticket of tickets) {
-      if (!ticket.showtime || !ticket.remindedStartTime) continue;
+      for (const ticket of tickets) {
+        if (!ticket.showtime || !ticket.remindedStartTime) continue;
 
-      // Detect showtime start time change
-      if (ticket.showtime.startTime.getTime() !== ticket.remindedStartTime.getTime()) {
-        const email = (ticket as any).ownerEmail || ticket.order?.user?.email;
-        if (!email) continue;
+        // Detect showtime start time change
+        if (
+          ticket.showtime.startTime.getTime() !==
+          ticket.remindedStartTime.getTime()
+        ) {
+          const email = ticket.ownerEmail || ticket.order?.user?.email;
+          if (!email) continue;
 
-        const qrPayload =
-          ticket.keyId && ticket.signature
-            ? encodeTicketQr({
-                keyId: ticket.keyId,
-                code: ticket.code,
-                showtimeId: ticket.showtimeId,
-                signature: ticket.signature,
-              })
-            : null;
+          try {
+            await this.emailService.sendReminder({
+              orderId: ticket.orderId!,
+              ticketId: ticket.id,
+              showtimeStart: ticket.showtime.startTime,
+              scheduleVersion: ticket.showtime.updatedAt,
+              previousStart: ticket.remindedStartTime,
+              location: ticket.showtime.event.location,
+              type: 'RESCHEDULED',
+            });
 
-        try {
-          await this.emailService.sendReminder({
-            toEmail: email,
-            eventName: ticket.showtime.event.name,
-            showtimeStart: ticket.showtime.startTime,
-            previousStart: ticket.remindedStartTime,
-            location: ticket.showtime.event.location,
-            seatLabel: ticket.seatLabel,
-            ticketCode: ticket.code,
-            qrPayload,
-            type: 'RESCHEDULED',
-          });
-
-          // Idempotency: update remindedStartTime to the new startTime
-          await this.db.ticket.update({
-            where: { id: ticket.id },
-            data: {
-              reminderSentAt: new Date(),
-              remindedStartTime: ticket.showtime.startTime,
-            },
-          });
-        } catch (error) {
-          this.logger.error(
-            `Failed to send rescheduled email for ticket ${ticket.id} to ${email}: ${(error as Error).message}`,
-          );
+            // Record the scheduled version; the worker alone records sentAt.
+            await this.db.ticket.update({
+              where: { id: ticket.id },
+              data: {
+                reminderSentAt: null,
+                remindedStartTime: ticket.showtime.startTime,
+              },
+            });
+          } catch {
+            this.logger.error(
+              `Reschedule delivery failed for ticket ${ticket.id}; retry deferred`,
+            );
+          }
         }
       }
+      if (tickets.length < 100) break;
+      cursor = tickets[tickets.length - 1].id;
     }
   }
 

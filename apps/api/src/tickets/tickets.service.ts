@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { TicketStatus, Prisma } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -78,7 +82,10 @@ export class TicketsService {
       ON CONFLICT ("dedupeKey") DO NOTHING`);
   }
 
-  async listForOrder(orderId: string, userId: string): Promise<OrderTicketItem[]> {
+  async listForOrder(
+    orderId: string,
+    userId: string,
+  ): Promise<OrderTicketItem[]> {
     return (await this.projection.forOwner(orderId, userId)).tickets;
   }
 
@@ -99,14 +106,16 @@ export class TicketsService {
       select: { email: true },
     });
     if (user?.email && user.email.toLowerCase() === normalizedEmail) {
-      throw new BadRequestException('Không thể chuyển nhượng vé cho chính mình.');
+      throw new BadRequestException(
+        'Không thể chuyển nhượng vé cho chính mình.',
+      );
     }
 
     const order = await this.db.order.findUnique({
       where: { id: orderId },
-      select: { userId: true },
+      select: { userId: true, status: true },
     });
-    if (!order || order.userId !== userId) {
+    if (!order) {
       throw new NotFoundException('Không tìm thấy đơn hàng.');
     }
 
@@ -116,33 +125,79 @@ export class TicketsService {
     if (!ticket || ticket.orderId !== orderId) {
       throw new NotFoundException('Không tìm thấy vé.');
     }
+    const owns = ticket.ownerEmail
+      ? ticket.ownerEmail.toLowerCase() === user?.email.toLowerCase()
+      : order.userId === userId;
+    if (!owns)
+      throw new NotFoundException('Không tìm thấy vé thuộc tài khoản.');
     if (ticket.status !== TicketStatus.VALID) {
       throw new BadRequestException('Chỉ có thể chuyển nhượng vé hợp lệ.');
     }
-    if (ticket.ownerEmail && ticket.ownerEmail.toLowerCase() === normalizedEmail) {
+    if (
+      ticket.ownerEmail &&
+      ticket.ownerEmail.toLowerCase() === normalizedEmail
+    ) {
       throw new BadRequestException('Vé đã thuộc về người nhận này.');
     }
 
     await this.db.$transaction(async (tx) => {
+      // Use the same order/item/ticket locks as admission and cancellation.
+      // Financial ownership stays on the original order. Only an unused
+      // admission identity is rotated; existing admissions are never rewritten.
+      const [identity] = await tx.$queryRaw<
+        {
+          id: string;
+          checkedInAt: Date | null;
+          admitted: boolean;
+          paid: boolean;
+        }[]
+      >(Prisma.sql`
+        SELECT oi.id,oi."checkedInAt",o.status='PAID' AS paid,
+          EXISTS(SELECT 1 FROM ticket_admissions a WHERE a."ticketId"=oi.id) AS admitted
+        FROM orders o JOIN order_items oi ON oi."orderId"=o.id
+          JOIN tickets t ON t."orderId"=o.id AND t."seatId"=oi."seatId"
+        WHERE o.id=${orderId}::uuid AND t.id=${ticketId}::uuid
+        FOR UPDATE OF o,oi,t`);
+      if (
+        !identity ||
+        !identity.paid ||
+        identity.checkedInAt ||
+        identity.admitted
+      )
+        throw new BadRequestException(
+          'Vé đã sử dụng, bị thay thế hoặc đơn không còn được chuyển nhượng.',
+        );
       // Atomic status update: if concurrent requests try to transfer the same ticket,
       // only one matches status: VALID and gets count === 1.
       const updated = await tx.ticket.updateMany({
         where: {
           id: ticketId,
           status: TicketStatus.VALID,
+          checkedInAt: null,
+          orderId,
         },
         data: {
           status: TicketStatus.CANCELLED,
           cancelledAt: new Date(),
           transferredToEmail: normalizedEmail,
+          // Free the current (order,seat) projection slot while retaining the
+          // revoked ticket row and its history. The original QR ID is audited.
+          orderId: null,
         },
       });
 
       if (updated.count === 0) {
-        throw new BadRequestException('Vé đã bị huỷ hoặc chuyển nhượng trước đó.');
+        throw new BadRequestException(
+          'Vé đã bị huỷ hoặc chuyển nhượng trước đó.',
+        );
       }
 
       const code = generateTicketCode();
+      const replacementQrId = randomUUID();
+      await tx.orderItem.update({
+        where: { id: identity.id },
+        data: { id: replacementQrId },
+      });
       const { keyId, signature } = this.signing.sign({
         code,
         showtimeId: ticket.showtimeId,
@@ -150,6 +205,7 @@ export class TicketsService {
 
       const newTicket = await tx.ticket.create({
         data: {
+          orderId,
           showtimeId: ticket.showtimeId,
           seatId: ticket.seatId,
           code,
@@ -168,7 +224,13 @@ export class TicketsService {
           ticketId: ticket.id,
           action: 'TRANSFERRED',
           actorId: userId,
-          detail: { toEmail: normalizedEmail, newTicketId: newTicket.id },
+          detail: {
+            toEmail: normalizedEmail,
+            newTicketId: newTicket.id,
+            orderId,
+            revokedQrId: identity.id,
+            replacementQrId,
+          },
         },
       });
       await tx.ticketLog.create({

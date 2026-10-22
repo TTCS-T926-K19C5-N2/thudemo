@@ -47,6 +47,7 @@ describe('Existing account input regressions (e2e)', () => {
   });
 
   afterAll(async () => {
+    await prisma.consentEvent.deleteMany({ where: { userId: { in: ids } } });
     await prisma.user.deleteMany({ where: { id: { in: ids } } });
     await app.close();
   });

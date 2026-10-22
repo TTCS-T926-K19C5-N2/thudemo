@@ -107,7 +107,8 @@ export class PaymentsService {
     const payment = await this.db.$transaction(async (tx) => {
       // Lock order to serialize concurrent attempt creations
       if (typeof (tx as any).$executeRaw === 'function') {
-        await (tx as any).$executeRaw`SELECT id FROM orders WHERE id = ${order.id}::uuid FOR UPDATE`;
+        await (tx as any)
+          .$executeRaw`SELECT id FROM orders WHERE id = ${order.id}::uuid FOR UPDATE`;
       }
 
       const previousPayment = await tx.payment.findFirst({
@@ -202,6 +203,36 @@ export class PaymentsService {
       throw new NotFoundException('Không tìm thấy đơn hàng.');
     }
 
+    if (order.status === OrderStatus.CANCELLED) {
+      // Keep cancelled inventory closed even after the old payment deadline.
+      // Preserve successful historical transactions; an additional incoming
+      // payment needs accountant review, never a new ticket issuance.
+      if (event.status === 'SUCCESS') {
+        await this.db.payment.updateMany({
+          where: {
+            gatewayRef: event.gatewayRef,
+            status: { not: PaymentStatus.SUCCEEDED },
+          },
+          data: {
+            status: PaymentStatus.LATE,
+            transactionId: event.transactionId,
+          },
+        });
+        await this.db.orderLog.create({
+          data: {
+            orderId: order.id,
+            type: 'PAYMENT_AFTER_CANCELLATION',
+            detail: {
+              gatewayRef: event.gatewayRef,
+              transactionId: event.transactionId,
+              amount: event.amount,
+            },
+          },
+        });
+      }
+      return { received: true, status: 'CANCELLED' };
+    }
+
     // Fast check: If order is already PAID
     if (order.status === OrderStatus.PAID) {
       const existingPaymentCheck = await this.db.payment.findFirst({
@@ -253,14 +284,13 @@ export class PaymentsService {
               },
             });
           }
-        });
-
         await this.accountantNotifier.notifyLatePayment({
           orderId: order.id,
           amount: event.amount,
           transactionId: event.transactionId,
           gatewayRef: event.gatewayRef,
           reason: 'Trả trùng khi đơn đã được thanh toán, cần hoàn tiền',
+        }, tx);
         });
 
         return { received: true, status: 'LATE' };
@@ -325,8 +355,8 @@ export class PaymentsService {
             ${order.holdSessionId ? Prisma.sql`AND "holdSessionId" = ${order.holdSessionId}::uuid` : Prisma.empty}
           `);
 
-          await tx.order.update({
-            where: { id: order.id },
+          await tx.order.updateMany({
+            where: { id: order.id, status: { not: OrderStatus.CANCELLED } },
             data: { status: OrderStatus.NEEDS_REVIEW },
           });
 
@@ -360,14 +390,13 @@ export class PaymentsService {
               },
             });
           }
-        });
-
         await this.accountantNotifier.notifyLatePayment({
           orderId: order.id,
           amount: event.amount,
           transactionId: event.transactionId,
           gatewayRef: event.gatewayRef,
           reason: 'Thanh toán sau khi đơn hết hạn, cần hoàn tiền',
+        }, tx);
         });
 
         return { received: true, status: 'LATE' };
@@ -436,8 +465,8 @@ export class PaymentsService {
     // 5. Amount mismatch check
     if (event.status === 'SUCCESS' && event.amount !== orderTotal) {
       await this.db.$transaction(async (tx) => {
-        await tx.order.update({
-          where: { id: order.id },
+        await tx.order.updateMany({
+          where: { id: order.id, status: { not: OrderStatus.CANCELLED } },
           data: { status: OrderStatus.NEEDS_REVIEW },
         });
 
@@ -465,8 +494,6 @@ export class PaymentsService {
             },
           });
         }
-      });
-
       await this.accountantNotifier.notifyAmountMismatch({
         orderId: order.id,
         expectedAmount: orderTotal,
@@ -475,6 +502,7 @@ export class PaymentsService {
         gatewayRef: event.gatewayRef,
         reason:
           'Số tiền thanh toán nhận từ cổng không khớp với tổng tiền đơn hàng',
+      }, tx);
       });
 
       return { received: true, status: 'AMOUNT_MISMATCH' };
@@ -486,15 +514,34 @@ export class PaymentsService {
         return await this.db.$transaction(async (tx) => {
           // Advisory lock using gatewayRef to prevent race conditions
           if (typeof (tx as any).$executeRaw === 'function') {
-            await (tx as any).$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${event.gatewayRef}))`;
+            await (tx as any)
+              .$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${event.gatewayRef}))`;
           }
 
           // Check if order was already updated to PAID while waiting for lock
+          if (typeof tx.$executeRaw === 'function')
+            await tx.$executeRaw`SELECT id FROM orders WHERE id=${order.id}::uuid FOR UPDATE`;
           const freshOrder = await tx.order.findUnique({
             where: { id: order.id },
           });
           if (!freshOrder || freshOrder.status === OrderStatus.PAID) {
             return { received: true, status: 'PAID' };
+          }
+          if (freshOrder.status === OrderStatus.CANCELLED) {
+            // Cancellation owns inventory now. A late callback may require
+            // accounting, but must never resurrect the order or its tickets.
+            await tx.orderLog.create({
+              data: {
+                orderId: order.id,
+                type: 'PAYMENT_AFTER_CANCELLATION',
+                detail: {
+                  gatewayRef: event.gatewayRef,
+                  transactionId: event.transactionId,
+                  amount: event.amount,
+                },
+              },
+            });
+            return { received: true, status: 'CANCELLED' };
           }
 
           // (a) Conditional atomic update: only update if order is still PENDING / PENDING_PAYMENT
@@ -503,7 +550,9 @@ export class PaymentsService {
           const updateResult = await tx.order.updateMany({
             where: {
               id: order.id,
-              status: { in: [OrderStatus.PENDING, OrderStatus.PENDING_PAYMENT] },
+              status: {
+                in: [OrderStatus.PENDING, OrderStatus.PENDING_PAYMENT],
+              },
               ...(order.paymentExpiresAt
                 ? { paymentExpiresAt: { gt: serverNow } }
                 : order.expiresAt
@@ -567,15 +616,13 @@ export class PaymentsService {
               });
             }
 
-            setTimeout(() => {
-              void this.accountantNotifier.notifyLatePayment({
+            await this.accountantNotifier.notifyLatePayment({
                 orderId: order.id,
                 amount: event.amount,
                 transactionId: event.transactionId,
                 gatewayRef: event.gatewayRef,
                 reason: 'Thanh toán sau khi đơn hết hạn, cần hoàn tiền',
-              });
-            }, 0);
+            }, tx);
 
             return { received: true, status: 'LATE' };
           }

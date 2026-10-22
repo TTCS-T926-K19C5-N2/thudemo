@@ -32,6 +32,15 @@ type Claim = {
   orderId: string;
   attempts: number;
   leaseToken: string;
+  notification?: {
+    kind: string;
+    subject?: string;
+    text?: string;
+    ticketId?: string;
+    ownerId?: string;
+    showtimeStart?: string;
+    location?: string;
+  } | null;
 };
 
 @Injectable()
@@ -104,7 +113,11 @@ export class TicketDeliveryService implements OnModuleInit, OnModuleDestroy {
           429,
         );
       const delivery = await tx.ticketMailDelivery.create({
-        data: { orderId, dedupeKey: key },
+        data: {
+          orderId,
+          dedupeKey: key,
+          notification: { kind: 'OWNER_TICKETS', ownerId: userId },
+        },
       });
       return { deliveryId: delivery.id, status: delivery.status };
     });
@@ -121,6 +134,30 @@ export class TicketDeliveryService implements OnModuleInit, OnModuleDestroy {
       },
       orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
       take: 50,
+    });
+  }
+  async enqueueNotification(
+    orderId: string,
+    dedupeKey: string,
+    notification: Prisma.InputJsonObject,
+    tx: Prisma.TransactionClient = this.db,
+  ) {
+    await tx.ticketMailDelivery.createMany({
+      data: [{ orderId, dedupeKey, notification }],
+      skipDuplicates: true,
+    });
+  }
+  private async sent(job: Claim) {
+    await this.db.ticketMailDelivery.updateMany({
+      where: { id: job.id, leaseToken: job.leaseToken, status: 'SENDING' },
+      data: {
+        status: 'SENT',
+        sentAt: new Date(),
+        failureCode: null,
+        leaseUntil: null,
+        leaseToken: null,
+        updatedAt: new Date(),
+      },
     });
   }
   async drain(): Promise<void> {
@@ -147,17 +184,38 @@ export class TicketDeliveryService implements OnModuleInit, OnModuleDestroy {
           ORDER BY "createdAt",id FOR UPDATE SKIP LOCKED LIMIT 1)
         UPDATE ticket_mail_deliveries d SET status='SENDING',attempts=d.attempts+1,"leaseToken"=${leaseToken}::uuid,
           "leaseUntil"=clock_timestamp()+interval '60 seconds',"updatedAt"=clock_timestamp()
-        FROM candidate c WHERE d.id=c.id RETURNING d.id,d."orderId",d.attempts,d."leaseToken"`);
+        FROM candidate c WHERE d.id=c.id RETURNING d.id,d."orderId",d.attempts,d."leaseToken",d.notification`);
       if (!claims.length) return;
       const job = claims[0],
         where = { id: job.id, leaseToken: job.leaseToken, status: 'SENDING' };
       try {
+        if (job.notification?.kind === 'ACCOUNTANT') {
+          const to = this.config.get<string>('ACCOUNTANT_EMAIL');
+          if (!to || !job.notification.subject || !job.notification.text)
+            throw new Error('Accounting recipient is not configured');
+          await this.mail.send({
+            to,
+            subject: job.notification.subject,
+            text: job.notification.text,
+            messageId: `<notification-${job.id}@thudemo.local>`,
+          });
+          await this.sent(job);
+          continue;
+        }
         const order = await this.db.order.findUnique({
           where: { id: job.orderId },
           select: {
             userId: true,
             status: true,
-            user: { select: { email: true } },
+            user: {
+              select: { email: true, isActive: true, isEmailVerified: true },
+            },
+            showtime: {
+              select: {
+                startTime: true,
+                event: { select: { location: true } },
+              },
+            },
           },
         });
         if (!order || order.status !== 'PAID') {
@@ -172,10 +230,40 @@ export class TicketDeliveryService implements OnModuleInit, OnModuleDestroy {
           });
           continue;
         }
-        const view = await this.projection.forOwner(job.orderId, order.userId);
+        let ownerId = job.notification?.ownerId ?? order.userId;
+        if (job.notification?.ticketId) {
+          const current = await this.db.ticket.findUnique({
+            where: { id: job.notification.ticketId },
+            select: { ownerEmail: true },
+          });
+          if (current?.ownerEmail) {
+            const owner = await this.db.user.findUnique({
+              where: { email: current.ownerEmail },
+              select: { id: true },
+            });
+            if (!owner) throw new Error('Recipient account is not available');
+            ownerId = owner.id;
+          }
+        }
+        const recipient =
+          ownerId === order.userId
+            ? order.user
+            : await this.db.user.findUnique({
+                where: { id: ownerId },
+                select: { email: true, isActive: true, isEmailVerified: true },
+              });
+        if (
+          !recipient ||
+          recipient.isActive === false ||
+          recipient.isEmailVerified === false
+        )
+          throw new Error('Recipient account is not available');
+        const view = await this.projection.forOwner(job.orderId, ownerId);
         const tickets = view.tickets.filter(
           (t): t is typeof t & { qrPayload: string } =>
-            !!t.qrPayload && t.status !== 'CANCELLED',
+            !!t.qrPayload &&
+            t.status !== 'CANCELLED' &&
+            (!job.notification?.ticketId || t.id === job.notification.ticketId),
         );
         if (!tickets.length) {
           await this.db.ticketMailDelivery.updateMany({
@@ -205,13 +293,35 @@ export class TicketDeliveryService implements OnModuleInit, OnModuleDestroy {
           when = new Date(first.showtimeStart).toLocaleString('vi-VN', {
             timeZone: 'Asia/Ho_Chi_Minh',
           });
+        const reminder =
+          job.notification?.kind === 'REMINDER' ||
+          job.notification?.kind === 'RESCHEDULED';
+        if (
+          reminder &&
+          job.notification?.showtimeStart !== first.showtimeStart
+        ) {
+          await this.db.ticketMailDelivery.updateMany({
+            where,
+            data: {
+              status: 'CANCELLED',
+              failureCode: 'SCHEDULE_SUPERSEDED',
+              leaseToken: null,
+              leaseUntil: null,
+            },
+          });
+          continue;
+        }
+        const subject = reminder
+          ? `${job.notification?.kind === 'RESCHEDULED' ? 'Cập nhật giờ diễn' : 'Nhắc lịch diễn'} — ${first.eventName}`
+          : `Vé điện tử — ${first.eventName}`;
         await this.mail.send({
-          to: order.user.email,
-          subject: `Vé điện tử — ${first.eventName}`,
+          to: recipient.email,
+          subject,
           messageId: `<ticket-${job.id}@thudemo.local>`,
           text: [
             first.eventName,
             when,
+            ...(reminder ? [order.showtime.event.location] : []),
             ...tickets.map(
               (t) => `${t.category} · ${t.seatLabel} · ${t.ticketId}`,
             ),
@@ -219,17 +329,12 @@ export class TicketDeliveryService implements OnModuleInit, OnModuleDestroy {
           html: `<h1>${escape(first.eventName)}</h1><p>${escape(when)}</p>${tickets.map((t) => `<section><p>${escape(t.category)} · ${escape(t.seatLabel)}</p><img src="cid:qr-${t.ticketId}" alt="QR vé ${escape(t.seatLabel)}" width="320" height="320"></section>`).join('')}`,
           attachments,
         });
-        await this.db.ticketMailDelivery.updateMany({
-          where,
-          data: {
-            status: 'SENT',
-            sentAt: new Date(),
-            failureCode: null,
-            leaseUntil: null,
-            leaseToken: null,
-            updatedAt: new Date(),
-          },
-        });
+        await this.sent(job);
+        if (reminder && job.notification?.ticketId)
+          await this.db.ticket.updateMany({
+            where: { id: job.notification.ticketId },
+            data: { reminderSentAt: new Date() },
+          });
       } catch {
         await this.db.ticketMailDelivery.updateMany({
           where,

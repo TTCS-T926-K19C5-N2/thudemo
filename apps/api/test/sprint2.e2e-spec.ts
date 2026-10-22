@@ -1,3 +1,4 @@
+import { assertIntegrationDatabase } from './integration-database.js';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -57,17 +58,7 @@ describe('Sprint 2 isolated database integration', () => {
     return { id: user.id, cookie: `${SESSION_COOKIE}=${token}` };
   }
   beforeAll(async () => {
-    const target = new URL(process.env.DATABASE_URL ?? '');
-    if (
-      target.hostname !== '127.0.0.1' ||
-      !(
-        target.port === '15432' ||
-        (target.port === '15446' &&
-          process.env.SPRINT1_ISOLATED_TEST === 'true')
-      ) ||
-      target.pathname !== '/sprint2_integration'
-    )
-      throw new Error('Run only on the isolated sprint2_integration database');
+    assertIntegrationDatabase();
     const module = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -86,6 +77,7 @@ describe('Sprint 2 isolated database integration', () => {
     const e = await db.event.create({
       data: {
         name: 'Concert integration fixture',
+        status: 'PUBLISHED',
         posterPath: '/images/events/autumn-symphony.jpg',
         categoryLabel: 'Thính phòng',
         description: 'Dữ liệu giả',
@@ -96,7 +88,7 @@ describe('Sprint 2 isolated database integration', () => {
     eventId = e.id;
     showId = (
       await db.showtime.create({
-        data: { eventId, startTime: new Date('2026-10-16T12:00:00Z') },
+        data: { eventId, startTime: new Date('2099-01-01T12:00:00Z') },
       })
     ).id;
   });
@@ -391,7 +383,7 @@ describe('Sprint 2 isolated database integration', () => {
     const created = await db.showtime.createManyAndReturn({
       data: Array.from({ length: 199 }, () => ({
         eventId,
-        startTime: new Date('2026-10-16T12:00:00Z'),
+        startTime: new Date('2099-01-01T12:00:00Z'),
         status: 'ON_SALE' as const,
       })),
     });

@@ -1,3 +1,4 @@
+import { assertIntegrationDatabase } from './integration-database.js';
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -43,20 +44,7 @@ describe('Signed offline admission transaction and replay', () => {
     return { id: user.id, cookie: `${SESSION_COOKIE}=${token}` };
   }
   beforeAll(async () => {
-    const target = new URL(process.env.DATABASE_URL ?? '');
-    if (
-      target.hostname !== '127.0.0.1' ||
-      !(
-        (target.port === '15432' &&
-          target.pathname === '/sprint2_integration') ||
-        (target.port === '15446' &&
-          target.pathname === '/sprint2_integration' &&
-          process.env.SPRINT1_ISOLATED_TEST === 'true')
-      )
-    )
-      throw Error(
-        'Only the explicitly isolated integration database is allowed',
-      );
+    assertIntegrationDatabase();
     const module = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();

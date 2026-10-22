@@ -11,6 +11,8 @@ export function holdStatementNames() {
       !sql.includes('public.claim_hold_v2(') &&
       !sql.includes('public.claim_hold_v3(') &&
       !sql.includes('public.claim_hold_v4(') &&
+      !sql.includes('public.claim_hold_v5(') &&
+      !sql.includes('public.claim_hold_v6(') &&
       !sql.includes('json_agg(seat ORDER BY') &&
       !sql.includes('FROM sessions s JOIN users u') &&
       !sql.includes('FROM (SELECT 1) anchor')

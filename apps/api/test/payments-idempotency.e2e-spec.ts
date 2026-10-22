@@ -1,3 +1,4 @@
+import { assertIntegrationDatabase } from './integration-database.js';
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -130,18 +131,7 @@ describe('Payments S-20 Idempotency & Concurrency E2E Integration', () => {
   }
 
   beforeAll(async () => {
-    const target = new URL(process.env.DATABASE_URL ?? '');
-    if (
-      target.hostname !== '127.0.0.1' ||
-      !(
-        target.port === '15432' ||
-        (target.port === '15446' &&
-          process.env.SPRINT1_ISOLATED_TEST === 'true')
-      ) ||
-      target.pathname !== '/sprint2_integration'
-    ) {
-      throw new Error('Run only on the isolated sprint2_integration database');
-    }
+    assertIntegrationDatabase();
 
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
@@ -324,7 +314,12 @@ describe('Payments S-20 Idempotency & Concurrency E2E Integration', () => {
         amount: 250000,
         transactionId: transId,
       }),
+      expect.objectContaining({ ticketMailDelivery: expect.any(Object) }),
     );
+    const alerts = await db.ticketMailDelivery.findMany({ where: { orderId: order.id } });
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0].notification).toMatchObject({ kind: 'ACCOUNTANT' });
+    expect(alerts[0].status).toBe('QUEUED');
   });
 
   it('AC 4: Webhook arrives before user returns to result page: user immediately sees PAID order', async () => {

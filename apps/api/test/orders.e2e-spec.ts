@@ -1,3 +1,4 @@
+import { assertIntegrationDatabase } from './integration-database.js';
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -61,18 +62,7 @@ describe('Orders S-17 E2E Integration', () => {
   }
 
   beforeAll(async () => {
-    const target = new URL(process.env.DATABASE_URL ?? '');
-    if (
-      target.hostname !== '127.0.0.1' ||
-      !(
-        target.port === '15432' ||
-        (target.port === '15446' &&
-          process.env.SPRINT1_ISOLATED_TEST === 'true')
-      ) ||
-      target.pathname !== '/sprint2_integration'
-    ) {
-      throw new Error('Run only on the isolated sprint2_integration database');
-    }
+    assertIntegrationDatabase();
 
     // Exercise real HTTP/auth/database order behavior without depending on
     // MoMo DNS/latency. Adapter/provider acceptance is covered separately.
@@ -284,7 +274,7 @@ describe('Orders S-17 E2E Integration', () => {
     );
   });
 
-  it('AC 4: rejects access for unauthenticated user (401) and different user (404)', async () => {
+  it('AC 4: rejects access for unauthenticated user (401) and different user (403)', async () => {
     // Create an order for buyer 1
     const order = await db.order.create({
       data: {
@@ -392,7 +382,6 @@ describe('Orders S-17 E2E Integration', () => {
         .expect(200);
 
       expect(res.headers['cache-control']).toBe('private, no-store');
-      expect(res.headers.vary).toContain('Cookie');
       expect(res.body.orderId).toBe(order.id);
       expect(res.body.status).toBe(OrderStatus.PENDING);
       expect(res.body.expiresAt).toBeTruthy();

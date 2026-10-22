@@ -52,10 +52,18 @@ export function LoginForm({
           "Phiên đăng nhập chưa được xác nhận. Hãy đăng nhập lại.",
         );
       notifySessionChanged();
+      const privacy = await api('/privacy/me', object);
+      if (privacy.requiresAcceptance === true) {
+        router.replace('/account/privacy');
+        router.refresh();
+        return;
+      }
+      const returnPath = safeReturnTo(returnTo ?? null);
+      const allowedReturn = returnPath?.startsWith("/events/") && !user.roles.includes("ORGANIZER")
+        ? null
+        : returnPath;
       router.replace(
-        (user.roles.length === 1 && user.roles.includes("STAFF")
-          ? "/check-in"
-          : safeReturnTo(returnTo ?? null)) ??
+        allowedReturn ??
           (user.roles.includes("ORGANIZER")
             ? "/events"
             : user.roles.includes("STAFF")

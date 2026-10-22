@@ -23,16 +23,16 @@ describe('OrdersService & isOrderExpired', () => {
 
     it('returns true for EXPIRED order regardless of expiresAt', () => {
       const future = new Date(Date.now() + 60000);
-      expect(isOrderExpired({ status: OrderStatus.EXPIRED, expiresAt: future })).toBe(
-        true,
-      );
+      expect(
+        isOrderExpired({ status: OrderStatus.EXPIRED, expiresAt: future }),
+      ).toBe(true);
     });
 
     it('returns false for PAID order even after original expiresAt', () => {
       const past = new Date(Date.now() - 60000);
-      expect(isOrderExpired({ status: OrderStatus.PAID, expiresAt: past })).toBe(
-        false,
-      );
+      expect(
+        isOrderExpired({ status: OrderStatus.PAID, expiresAt: past }),
+      ).toBe(false);
     });
   });
 
@@ -50,8 +50,12 @@ describe('OrdersService & isOrderExpired', () => {
 
     beforeEach(() => {
       mockPrisma = {
+        $queryRaw: vi
+          .fn()
+          .mockResolvedValue([{ status: 'ON_SALE', isDemo: false }]),
         $transaction: vi.fn(async (cb) => cb(mockPrisma)),
         holdSession: {
+          count: vi.fn().mockResolvedValue(1),
           findFirst: vi.fn(),
         },
         seat: {

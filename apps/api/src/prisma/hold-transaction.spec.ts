@@ -232,7 +232,7 @@ describe('hold transaction on the existing Prisma pool', () => {
     expect(f.query.mock.calls.map(([sql]) => sql)).toEqual([begin, 'ROLLBACK']);
   });
 
-  it.each(['v2', 'v3', 'v4'])(
+  it.each(['v2', 'v3', 'v4', 'v5', 'v6'])(
     'awaits BEGIN, then pipelines only validated %s claim and commit',
     async (version) => {
       const f = fixture();
@@ -254,7 +254,7 @@ describe('hold transaction on the existing Prisma pool', () => {
       const pending = holdTransaction(
         f.pool,
         (tx) =>
-          tx.$queryRaw(Prisma.sql`SELECT * FROM public.claim_hold_v2(${1})`),
+          tx.$queryRaw(Prisma.sql`${Prisma.raw(`SELECT * FROM public.claim_hold_${version}(`)}${1})`),
         holdStatementNames(),
         { maxWait: 10000, timeout: 10000, validatedRoutine: true },
       );

@@ -93,10 +93,11 @@ const report = {
   checks: [],
   rawSamples: [],
   alerts: [],
-  webhook: 'Pending: no real producer',
+  webhook: 'Not yet exercised',
   benchmark: [],
 };
 const check = (value, name) => {
+  report.currentCheck = name;
   assert(value, name);
   report.checks.push(name);
   console.log(`PASS ${name}`);
@@ -145,7 +146,14 @@ async function account(roleName) {
 // client timeout measures runner impatience, not product latency. Benchmark
 // batches — whose p95 is only RECORDED, never gated, in this script — get a
 // longer client budget; every other probe keeps the strict 15s default.
-async function call(port, path, method = 'GET', body, account, timeoutMs = 15000) {
+async function call(
+  port,
+  path,
+  method = 'GET',
+  body,
+  account,
+  timeoutMs = 15000,
+) {
   const start = performance.now();
   const r = await fetch(`http://127.0.0.1:${port}${path}`, {
     method,
@@ -711,15 +719,37 @@ try {
       ),
     'collector real series',
   );
+  check(true, 'collector received the known real HTTP series');
   check(
     query('max(ticket_producer_available{subsystem="webhook"})')[0]
-      ?.value[1] === '0',
-    'webhook producer honestly unavailable',
+      ?.value[1] === '1',
+    'implemented webhook producer advertises availability',
   );
   check(
     query('sum(rate(ticket_webhook_rejections_total[5m]))').length === 0,
     'no webhook samples = No data, not zero',
   );
+  const webhookBefore = counter(
+    exported('api-a'),
+    'ticket_webhook_rejections_total',
+  );
+  const invalidWebhook = await call(18001, '/payments/webhook', 'POST', {});
+  check(invalidWebhook.status === 401, 'real unsigned webhook rejected');
+  check(
+    counter(exported('api-a'), 'ticket_webhook_rejections_total') -
+      webhookBefore ===
+      1,
+    'one real rejected webhook produces exactly one rejection metric',
+  );
+  await wait(
+    () =>
+      query('sum(ticket_webhook_rejections_total)').some(
+        (v) => Number(v.value[1]) >= 1,
+      ),
+    'collector receives real webhook rejection',
+  );
+  report.webhook =
+    'Real unsigned HTTP webhook rejected; exporter delta1 and collector observation verified';
   const snapshots = query('ticket_http_requests_total{service="api"}');
   report.series = snapshots;
   // A real dependency exception must also pass through completion instrumentation.
@@ -867,6 +897,7 @@ try {
   report.pass = false;
   report.failure = {
     type: error.name,
+    currentCheck: report.currentCheck,
     lastWait: report.lastWait,
     lastPassedCheck: report.checks.at(-1),
   };

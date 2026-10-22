@@ -142,7 +142,7 @@ export class OrdersService {
   async createFromHold(
     showtimeId: string,
     userId: string,
-    sessionHash: string,
+    _sessionHash: string,
   ) {
     try {
       return await this.db.$transaction(
@@ -152,6 +152,7 @@ export class OrdersService {
           );
           if (!buyers.length)
             throw new NotFoundException('Không tìm thấy người mua.');
+          await tx.$queryRaw`SELECT set_config('app.actor_id',${userId},true)`;
 
           const [lookupClock] = await tx.$queryRaw<{ serverTime: Date }[]>(
             Prisma.sql`SELECT clock_timestamp() AS "serverTime"`,
@@ -195,9 +196,14 @@ export class OrdersService {
           const holds = await tx.$queryRaw<HoldAuthority[]>(Prisma.sql`
             SELECT id,token,"expiresAt","expectedSeatIds" FROM hold_sessions
             WHERE "showtimeId"=${showtimeId}::uuid AND "userId"=${userId}::uuid
-              AND "sessionHash"=${sessionHash}
             FOR UPDATE`);
-          const hold = holds[0];
+          const activeHolds = holds.filter((h) => h.expiresAt > lookupClock.serverTime);
+          if (activeHolds.length > 1)
+            throw new ConflictException({
+              code: 'HOLD_CHANGED',
+              message: 'Tài khoản có nhiều lượt giữ cũ còn hạn. Hãy chờ hạn gốc kết thúc rồi thử lại.',
+            });
+          const hold = activeHolds[0] ?? holds.sort((a, b) => b.expiresAt.getTime() - a.expiresAt.getTime())[0];
           if (!hold)
             throw new ConflictException({
               code: 'HOLD_REQUIRED',
@@ -304,7 +310,7 @@ export class OrdersService {
 
   async createOrder(
     userId: string,
-    sessionHash: string,
+    _sessionHash: string,
     body: unknown,
   ): Promise<OrderDetailResponse> {
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
@@ -334,12 +340,30 @@ export class OrdersService {
     }
 
     return this.db.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM users WHERE id=${userId}::uuid FOR UPDATE`;
+      await tx.$queryRaw`SELECT set_config('app.actor_id',${userId},true)`;
+      const [currentShow] = await tx.$queryRaw<
+        { status: string; isDemo: boolean }[]
+      >`SELECT status,"isDemo" FROM showtimes WHERE id=${showtimeId}::uuid FOR SHARE`;
+      if (
+        !currentShow ||
+        currentShow.status !== 'ON_SALE' ||
+        currentShow.isDemo
+      )
+        throw new ConflictException({
+          code: 'SHOWTIME_CLOSED',
+          message: 'Suất diễn không còn mở bán.',
+        });
       const now = new Date();
+      if ((await tx.holdSession.count({ where: { showtimeId, userId, expiresAt: { gt: now } } })) > 1)
+        throw new ConflictException({
+          code: 'HOLD_CHANGED',
+          message: 'Tài khoản có nhiều lượt giữ cũ còn hạn. Hãy chờ hạn gốc kết thúc rồi thử lại.',
+        });
       const holdSession = await tx.holdSession.findFirst({
         where: {
           showtimeId,
           userId,
-          sessionHash,
           expiresAt: { gt: now },
         },
         include: {

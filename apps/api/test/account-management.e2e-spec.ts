@@ -1,3 +1,4 @@
+import { assertIntegrationDatabase } from './integration-database.js';
 import { randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -38,13 +39,7 @@ describe('S-28 account management with real stores', () => {
     };
   }
   beforeAll(async () => {
-    const target = new URL(process.env.DATABASE_URL ?? '');
-    if (
-      target.hostname !== '127.0.0.1' ||
-      target.pathname !== '/sprint2_integration' ||
-      !['15449', '15432'].includes(target.port)
-    )
-      throw Error('Requires isolated integration database');
+    assertIntegrationDatabase();
     const module = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();

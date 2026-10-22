@@ -99,6 +99,7 @@ describe('S03 registration, consent and durable activation (real PostgreSQL/Redi
   });
 
   afterAll(async () => {
+    await db.consentEvent.deleteMany({where:{user:{email:{startsWith:prefix}}}});
     await db.user.deleteMany({ where: { email: { startsWith: prefix } } });
     await app.close();
     await redis.quit();
