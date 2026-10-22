@@ -1,0 +1,7 @@
+{
+  "baseline_database": "b1a_empty_20261022135843",
+  "final_database": "b1a_empty_20261022140815",
+  "same_normalized_schema_dump": true,
+  "baseline_sha256": "c6a852c62e89e2d1c8bf4395bcc0f6158d379ccbcfad5a4a06dd95e97d4465ab",
+  "final_sha256": "c6a852c62e89e2d1c8bf4395bcc0f6158d379ccbcfad5a4a06dd95e97d4465ab"
+}
