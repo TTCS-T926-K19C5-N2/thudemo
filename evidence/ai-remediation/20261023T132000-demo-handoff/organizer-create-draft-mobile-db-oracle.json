@@ -1,0 +1,43 @@
+{
+  "capturedAt": "2026-10-23T08:06:44.331Z",
+  "mode": "profile-guarded Prisma transaction with exact run-bound fixture cleanup",
+  "result": {
+    "profile": "s1demo-384da3d43b41",
+    "database": "sprint1_demo_384da3d43b41",
+    "fixture": {
+      "id": "76e74a6d-62c4-44c7-b6ab-7973f029764e",
+      "name": "AI-TEST-R34M-20261023T1517",
+      "status": "DRAFT",
+      "ownedBySyntheticOrganizer": true,
+      "childCounts": {
+        "showtimes": 0,
+        "orders": 0,
+        "coupons": 0
+      }
+    },
+    "before": {
+      "events": 41,
+      "showtimes": 42,
+      "orders": 2,
+      "tickets": 2
+    },
+    "after": {
+      "events": 40,
+      "showtimes": 42,
+      "orders": 2,
+      "tickets": 2
+    },
+    "cleanup": {
+      "deletedExactRunBoundDraft": 1,
+      "fixtureAbsent": true
+    },
+    "assertions": {
+      "draft": true,
+      "organizerOwnership": true,
+      "noShowtimesOrOrdersOrCoupons": true,
+      "cleanupOnlyExactFixture": true,
+      "durableCatalogCountsRestored": true,
+      "durableOrderAndTicketCountsUnchanged": true
+    }
+  }
+}

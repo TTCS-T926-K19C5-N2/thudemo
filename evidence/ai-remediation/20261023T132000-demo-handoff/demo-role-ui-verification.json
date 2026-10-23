@@ -1,0 +1,68 @@
+{
+  "recordedAt": "2026-10-23T06:36:29.446Z",
+  "environment": "clean prepared file tree; isolated local demo DB and mock providers",
+  "credentials": "synthetic only; values remain in private ignored .sprint1-demo/config.json and are not in evidence",
+  "roles": [
+    {
+      "role": "BUYER",
+      "uiLogin": "verified earlier on same proof profile",
+      "observed": [
+        "event catalog and detail",
+        "seat booking and mock payment success",
+        "ticket list and QR",
+        "ticket email received by local Mailpit catcher"
+      ],
+      "limitations": [
+        "does not prove Internet email or real gateway"
+      ]
+    },
+    {
+      "role": "ADMIN",
+      "uiLogin": "verified earlier on same proof profile",
+      "observed": [
+        "user management screen",
+        "assigned synthetic staff to demo showtime and gate"
+      ],
+      "limitations": [
+        "no production account/permission changed"
+      ]
+    },
+    {
+      "role": "ORGANIZER",
+      "uiLogin": "verified earlier on same proof profile",
+      "observed": [
+        "40-event catalog management",
+        "41 existing showtimes before scanner rehearsal",
+        "long original event description remains editable and unchanged after save"
+      ],
+      "limitations": [
+        "no complete event CRUD workflow coverage"
+      ]
+    },
+    {
+      "role": "STAFF",
+      "uiLogin": "verified this checkpoint, fresh login redirected to /scanner",
+      "observed": [
+        "today demo showtime visible",
+        "selected showtime and loaded Cửa demo",
+        "scanner ready after gate selection",
+        "invalid unsigned dummy QR rejected"
+      ],
+      "limitations": [
+        "no camera permission or physical scan; no valid rehearsal ticket scan"
+      ]
+    },
+    {
+      "role": "ACCOUNTANT",
+      "uiLogin": "verified this checkpoint",
+      "observed": [
+        "/operations refund queue empty-state and mock reconciliation form",
+        "/admin/users rendered explicit no-access"
+      ],
+      "limitations": [
+        "no refund reconciliation/write workflow was run"
+      ]
+    }
+  ],
+  "status": "All 5 synthetic roles have UI login evidence, but not all role functions are complete; no demo readiness claim."
+}

@@ -1,0 +1,1194 @@
+{
+  "createdAt": "2026-10-23T05:32:12.627Z",
+  "scope": "Read-only UI/assets and selected demo catalog source snapshot; excludes private .env, DB, keys and caches.",
+  "files": [
+    {
+      "path": "apps/api/prisma/schema.prisma",
+      "sha256": "9602a102b16bc0cd686f68a0b2fd52d0d37672546f6c85ac6e3535653a7341f4",
+      "bytes": 29229,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/api/prisma/seed-demo.mjs",
+      "sha256": "2a918eea1573ec1844ac0c3981f17832f2f58a599df2787cb2ffd124b354a2b9",
+      "bytes": 3165,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/api/scripts/import-theater-demo.mjs",
+      "sha256": "58fc55f63f233181a396369f644dcd3fb604c80239779ad9ca7e18f078893ccb",
+      "bytes": 23947,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/fonts/LICENSE.txt",
+      "sha256": "49bbe9114e49214df2ccc324cb3ac8d1d1aa1c3a0947f94c286765e86647b32e",
+      "bytes": 11558,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/fonts/material-symbols-outlined.woff2",
+      "sha256": "6f29194552efa0b5ecc75d614d45043f0553c9725fc4e372a9efc6bc4d9b350d",
+      "bytes": 15656,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/autumn-choir-mobile.jpg",
+      "sha256": "d9b88a3cac89d3064b87e53a7278201d4d22f3c61bb8937c665ebe13b78d4925",
+      "bytes": 58257,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/autumn-choir.jpg",
+      "sha256": "d9b88a3cac89d3064b87e53a7278201d4d22f3c61bb8937c665ebe13b78d4925",
+      "bytes": 58257,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/autumn-symphony-banner.jpg",
+      "sha256": "57f35a2a9626575488c91bda5e4aaaa0d8906ef7950b14c0da3ff7f7dcabc911",
+      "bytes": 29707,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/autumn-symphony-mobile.jpg",
+      "sha256": "44134c7ad471a2657ecad9d445e48970d6f2c7093889cf12ef893b4b163e237b",
+      "bytes": 52196,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/autumn-symphony.jpg",
+      "sha256": "d85a8049eafb550b2e138a490aa3f477d1a553d710bfc95de84e03ed78924a8c",
+      "bytes": 65525,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/indie-night-mobile.jpg",
+      "sha256": "4bc20942376dc9a182849eca7ce7e3e93e12c03c68ea337f7b351b9e7a3c72dd",
+      "bytes": 70099,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/indie-night.jpg",
+      "sha256": "8af0c7041e0f13e0469c938c449d046d4c4806212c1752d0aadc2de4c5e581bc",
+      "bytes": 50562,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/mustard-blossom-mobile.jpg",
+      "sha256": "7f161f2c2a77616d53094d367baaa0b74d59e63e05a5be8a9a1eaff87834f13a",
+      "bytes": 42559,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/mustard-blossom.jpg",
+      "sha256": "ef69206f76c7154dc66722e1cbbe7f7b2cb8d6f0e4fe2107406eeda8e76aa4b4",
+      "bytes": 48842,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/starlight-piano-mobile.jpg",
+      "sha256": "cc55e2a7b269d0f6fe2d72c04e0a281354d8c9d844d47f68ff1d6087e45298fc",
+      "bytes": 50754,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/starlight-piano.jpg",
+      "sha256": "c77cc1bc758ef929fadd23a176b2e97f54d70be92a460107391e0e26e539acf2",
+      "bytes": 61239,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/Ngheu_so_oc_hen.jpg",
+      "sha256": "9a283f9e904e752137022962a4a4a22138f7952689613b0854bf297ab80f5381",
+      "bytes": 52091,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/benh_si.jpg",
+      "sha256": "8a68d438bd9fe000600a92d47da338b10346a58b27e0e13e0ee91f0feda8a49b",
+      "bytes": 143933,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/benh_si_2.jpg",
+      "sha256": "601aa1153399264ee86be68b3b596d2761b74a19002039c7e2e8190ea9296197",
+      "bytes": 342242,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/benh_si_3.jpg",
+      "sha256": "c6f495d91c977fe8c53771aa1ace420a43d474756e2f794c3cd747ea3183ef7e",
+      "bytes": 114905,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/dem_trang.jpg",
+      "sha256": "9b2a0f7bbc7bea452096fed0be9887318734ec54f1769e7a7957b10005a7eb8a",
+      "bytes": 346477,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/hamlet.jpg",
+      "sha256": "741e38f1ebf2dc767e30cd03ff433487b8b7f63fc97b42045fed98f7e7e52272",
+      "bytes": 126245,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/hoa_nhac_toyota.jpg",
+      "sha256": "76745b66ea1155e08c49e136ffb7819bd8bcfb82e322cc9400dac1741ccc2424",
+      "bytes": 143181,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/hoa_nhac_toyota.png",
+      "sha256": "ff4ac43a525a4e6805b0ae797717ba8f66870044faeb8308b1ab45b269b97b30",
+      "bytes": 752484,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/hon_truong_ba_da_hang_thịt.jpg",
+      "sha256": "684b9b4da2ab4d06df413774127fb07378f603c0356a00aae8cf4b974d3944c2",
+      "bytes": 99757,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/in_gratitude.jpg",
+      "sha256": "a5f86a5f29e101c0e59ea000e04996fb1b932358ea69f4a00d51eb16cb954040",
+      "bytes": 91775,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/kieu.jpg",
+      "sha256": "306d8b0ccab878f9ce948167de61945a5e79d0cd331846328b61f1281161c441",
+      "bytes": 440765,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/ky_uc_dong_thuong.jpg",
+      "sha256": "a8409ce98aabf1f3b1abd82a9baa02b6ccd9bf28eb109a408454e30f61541f45",
+      "bytes": 46707,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/nguoc_chieu_binh_an.jpg",
+      "sha256": "fe0895b68d533795425d35f87a40fb1437048c6e2c3e43473dcb9e5f60b9f97d",
+      "bytes": 37571,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/nguoi_tot_nha_so_5.jpg",
+      "sha256": "0f76442c9ad6154093fabe2c4d2671a8d2c4a772c09a34e57c1e88b2e7b1ccdb",
+      "bytes": 480179,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/nguoi_trong_coi_nho.jpg",
+      "sha256": "a8bc6caae002475ba1387f209aa89768d9200fd23b1cecaf674e4a354fc32a7b",
+      "bytes": 210432,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/nhan_the.webp",
+      "sha256": "6e971af1ff43f07f41d647066a464e34b8dc21a6374f78fe2bbf59cef5cf208e",
+      "bytes": 47364,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/quan_thanh_tra.jpg",
+      "sha256": "26e86988a79e2bb0b2e56dda3b32b98229ef0f8860acdc07ce6f8dde182a9b8e",
+      "bytes": 190801,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/subscriptionVNSOban_giao_huong_VNSO_subscription_concert.jpg",
+      "sha256": "60385aaee1bcfdbd15d3c68d9e7ecd5efadbb2059a49753f23c984635944d340",
+      "bytes": 197661,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/thien_menh.png",
+      "sha256": "195c87a30a0c547cc683e45e1aaf5a70915b44f75d03e5bbbcf1940155b42ae4",
+      "bytes": 526099,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/tieng_vi_cam_trong_can_nha_co.jpg",
+      "sha256": "3ce0682f6145fd295fe523e6890e724b8ab54c99ec4f28bf4d58d1010b3ca53c",
+      "bytes": 103857,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/tham-khao/tieng_vong_truyen_thong.jpg",
+      "sha256": "1c444c2286b293faf9e6fd17577705c423507f284a8a4a42e647795442720fd5",
+      "bytes": 373804,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/trinh-poetry-mobile.jpg",
+      "sha256": "ec575cbd8cf3b2c4e693351326ce32fe7f3592449f386784f6f7102cc7e6a347",
+      "bytes": 50510,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/events/trinh-poetry.jpg",
+      "sha256": "43289db29a7118f439b288dc1674360bf00e031a0e8fb56d88e8767ee9ab02e9",
+      "bytes": 52362,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/public/images/hero-symphony-banner.png",
+      "sha256": "f90216dcd9faa7e472883f3cff485cb385b903f8bb821db2859450ff79d4c329",
+      "bytes": 1772456,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/account/page.tsx",
+      "sha256": "1667d50185bf9b235cd1bbe438f25d428c21854d91a51cc9ab53beb9edd4e821",
+      "bytes": 5103,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/account/privacy/page.tsx",
+      "sha256": "75a53dec0144ba3d0b5404dd50a9acda6c5f606e72f5ac95670e6e3d9a79d910",
+      "bytes": 6045,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/account/tickets/page.tsx",
+      "sha256": "b88f8749dee5ace6a5ea97dc50e31cacd76db39b228ce8d4fba89f53418582d6",
+      "bytes": 896,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/activate/page.tsx",
+      "sha256": "8780e2801994ebeb1ead4021b65e8f8d2a2f45d21b9a9954b67d1b419acb33fd",
+      "bytes": 139,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/admin/users/page.tsx",
+      "sha256": "7e41aea8503e6e64cf5761ddb6e5c89a3b07eccd09c025fda13c8210df0e06e6",
+      "bytes": 12458,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/api/[...path]/route.ts",
+      "sha256": "a612f1009b2dbdd1c8c1613fd7402b1d029b0e33329ed7c71fb47ad8ac229cb1",
+      "bytes": 442,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/check-in/page.tsx",
+      "sha256": "6d6014830c3e5ee27e63a2d5302876bd5187559ff024d39566951b87733fbb5d",
+      "bytes": 195,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/events/[id]/page.tsx",
+      "sha256": "1f98bf3059571b1c4bea276247f366b6d24b3ef56790187036e1fa293b11f2dd",
+      "bytes": 231,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/events/new/page.tsx",
+      "sha256": "6931ef3a6f94daa8839a7ed49a5b32d78ecd6483bbd3237e5f2ef500bb660117",
+      "bytes": 132,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/events/page.tsx",
+      "sha256": "9b549713f3315bea0e6d2852bf450143c36ddf0d8e60f81161dbb346d095ef48",
+      "bytes": 11736,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/favicon.ico",
+      "sha256": "2b8ad2d33455a8f736fc3a8ebf8f0bdea8848ad4c0db48a2833bd0f9cd775932",
+      "bytes": 25931,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/forgot-password/page.tsx",
+      "sha256": "ff95264f3004ce77c38dce65e315418eb969163d6168db23303c81f17ac4363a",
+      "bytes": 136,
+      "gitStatus": "??"
+    },
+    {
+      "path": "apps/web/src/app/globals.css",
+      "sha256": "7b52aca572fe79db8b94a9f1e0abaf3f7c394d44cb4cb08389a798a3bc4c6443",
+      "bytes": 2495,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/layout.tsx",
+      "sha256": "6ec7a29df0134231f981ed85a45286248d3a8ac6d1ecd1dac6fad72e31aa9c65",
+      "bytes": 1711,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/login/page.tsx",
+      "sha256": "c43bec598749e27fa39c863b37817facc699634ca582c50a667a5cef28e99916",
+      "bytes": 957,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/mock-gateway/pay/page.tsx",
+      "sha256": "c267441ef159c5efc3ae873c06f50ec74db928839e7c4c1a01f9dc5a725bfcd5",
+      "bytes": 1503,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/operations/page.tsx",
+      "sha256": "d05363ac64fadeda20aa96d8eaea869b2f281c0c81c282dfbf8eb4fba41b5f5f",
+      "bytes": 21751,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/app/orders/[id]/page.tsx",
+      "sha256": "520ca22cf076da1bff06b1624bf718f34f19b85d9be111ffb7cdf74f083398d7",
+      "bytes": 504,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/orders/page.tsx",
+      "sha256": "1da7d8a36eca79de2f1ad82bd5901395134698d70cd1deb4fdc3e12da2d32093",
+      "bytes": 370,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/page.tsx",
+      "sha256": "eadc3071efc28d353a4e3c437a264100ad7c711c5a5bca4db357cc7b47a73417",
+      "bytes": 236,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/payment/result/[orderId]/page.tsx",
+      "sha256": "b944ea703eeece038be8e98fa913a44aebc5e2bc9e91f4234dba0b4471a34949",
+      "bytes": 285,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/payment/result/page.tsx",
+      "sha256": "4d5015e40423af72018492a5d658befc89e6cb475c173c98bcf21612035164cf",
+      "bytes": 304,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/privacy/page.tsx",
+      "sha256": "97b60e43b1c26ca7cb0a9b84879fb3e2aec4c1d6b53c29788843543c3de823f3",
+      "bytes": 273,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/product.css",
+      "sha256": "ffc547c37118a7c26c92a1ccad3152430536af3dd4d1087d15fc339837908e74",
+      "bytes": 124050,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/register/page.tsx",
+      "sha256": "da76398ccfaf2ae1de9bcc51aa4f8227f6ba5a6fd2105e74435df658a9bb87da",
+      "bytes": 145,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/resend-activation/page.tsx",
+      "sha256": "61300ba26bbfd52c5237e192344ac987edae26e52db8a8bdea53f77e34753fa4",
+      "bytes": 160,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/reset-password/page.tsx",
+      "sha256": "7db5cad6fda2e9f2e94fd9529ea8cb7c2978553b977884d2bcf6301a522f9317",
+      "bytes": 142,
+      "gitStatus": "??"
+    },
+    {
+      "path": "apps/web/src/app/scanner/page.tsx",
+      "sha256": "5398fc885d4590ee3e4f587951882c6a772dc931abf0398a7dffb04d0f1e8759",
+      "bytes": 323,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/scanner/reports/[showtimeId]/page.tsx",
+      "sha256": "aea66574cab804731ea40d50132b53141bc2fd6e91b1dabfe6e0c11d4d7a41f7",
+      "bytes": 468,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/scanner/snapshot/page.tsx",
+      "sha256": "022f6bf5f26a7aa11028239888ef5449d6919090ca92f4ef3f561cafaf7f94a7",
+      "bytes": 981,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/shows/[id]/page.tsx",
+      "sha256": "fc02283472f85a33aa21a25a8d63bf12c5c635ce938a875158492698929537da",
+      "bytes": 1240,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/shows/[id]/seats/page.tsx",
+      "sha256": "da0489639fbb5ef6c7a5d26ea11dd2ee25ce030304c6c4224b01b19f61378a58",
+      "bytes": 367,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/showtimes/[id]/[mode]/page.tsx",
+      "sha256": "5e3bbc72731520ca546b8ec9d0ba6a4bdea50860bc33a9ac22ce857a3acccacf",
+      "bytes": 865,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/app/theater-theme.css",
+      "sha256": "b9162c37c9eb8ec3694a69c453a2692f10efc55d23858d8c0e5b8be911b3267d",
+      "bytes": 25130,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/components/activation-form.spec.tsx",
+      "sha256": "f4466289564f24cf3ef8bbe1b75e001ff4e077cc9b25367dcf71b289f339e9e1",
+      "bytes": 4195,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/activation-form.tsx",
+      "sha256": "a0352f1696894b17959a38a50dfd7a8ceeeb79f9acf1fa1707b71c64bc9835a0",
+      "bytes": 4634,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/event-editor.spec.tsx",
+      "sha256": "741a89f1f364e2471678b0d0b44970ca4148427d542baa0669152781f3123094",
+      "bytes": 6082,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/components/event-editor.tsx",
+      "sha256": "1cc77a272dc031952fda7200c20977519bf858aeb739e9bd6efd7809308f2edb",
+      "bytes": 19175,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/components/layout/product-layout.tsx",
+      "sha256": "d2f2e28cf4871ee169ac756db9a68d55b99d46f5d192852c9ab1eaf7764044aa",
+      "bytes": 8631,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/layout/session-actions.tsx",
+      "sha256": "7d6679be00897b5f1f09b8b4dc08e5b77f2ecd1274713f2a39e3e5022c55bfaf",
+      "bytes": 1439,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/login-form.spec.tsx",
+      "sha256": "ebf3f9a7735fb468ccdfe5f41d935a8e1a5c37830a8f8d327dab6ee9307874e1",
+      "bytes": 2768,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/login-form.tsx",
+      "sha256": "7cb0265a61cc658accb9d1b0511cced8ca5469b3388d9370e3503f9afacba92f",
+      "bytes": 9718,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/components/registration-form.spec.tsx",
+      "sha256": "f0bdd3408f11eb8e7611f1409cce65583db89a9207d918a00569fea6024b4d97",
+      "bytes": 5055,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/registration-form.tsx",
+      "sha256": "8f242791199df86cb9393e0482da12771515d4d242a80cbd7e87bd8236814881",
+      "bytes": 14831,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/registration-notice.tsx",
+      "sha256": "3a234274424e6e2f76b2d4cfaea6ac3faf7e910022e337e65d15e17e1e5bf4f4",
+      "bytes": 730,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/seat-map/seat-map.tsx",
+      "sha256": "e1c08042a5e5c15333dbd0219dc2ba998885ccd55268a01c8767cdf59cfee639",
+      "bytes": 19652,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/ui/alert.tsx",
+      "sha256": "247895fcce0ea333e06e204579e8d5912196b68b88f149fea3bfe1089f8483fb",
+      "bytes": 2125,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/ui/badge.tsx",
+      "sha256": "2be62550d46e90b13fc8516d77828dce6eb2f815b47d6da05c2cb3d145a76167",
+      "bytes": 1912,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/ui/button.tsx",
+      "sha256": "9066895fd6820ee650075b75be3ebdb32f1dc779d6b815c88cc71b6c285f56ed",
+      "bytes": 3441,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/ui/dialog.tsx",
+      "sha256": "17ac28ff914d56757a0cbe26cdc1edae2d528cd2440f23b3c02499b6def806d3",
+      "bytes": 4362,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/ui/field.tsx",
+      "sha256": "eb39f388ac4f49d0c6961e72cdb54bc2c91f81f98ae0b0abb64a8671b9527cad",
+      "bytes": 6532,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/ui/input.tsx",
+      "sha256": "4d646f507aa57999bd4e32460674f9537248cd40657fc3f06ec3f983d64d8813",
+      "bytes": 976,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/ui/label.tsx",
+      "sha256": "93c97ae996587c484a8de4f185b1ca47e7a740178da63bb96827b1f3c5ef2d0d",
+      "bytes": 619,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/ui/material-icon.tsx",
+      "sha256": "ff2a93f8ee622ab9da1178d4baa9637dede05465d220e4e4941c6df8fc38f77e",
+      "bytes": 3399,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/ui/separator.tsx",
+      "sha256": "75d6e99517d7a5cb3f2f106dacd9ee51e0d6bfac7d7bbd6981b11d1aad58bdf6",
+      "bytes": 668,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/ui/skeleton.tsx",
+      "sha256": "9d38dfda575f3c3918db457a4b63883662718f90b97a646e281892076dda8272",
+      "bytes": 282,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/ui/table.tsx",
+      "sha256": "9f06913820ee0e6351331bfa2bfde0b2fa0aaf8a4daf31da895f07f64f376ec4",
+      "bytes": 2523,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/components/ui/textarea.tsx",
+      "sha256": "dc274a7af0c84382d6777a404a7422b847b1b5bd8548e54d8b1308b14c9e812a",
+      "bytes": 849,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/check-in/check-in.spec.ts",
+      "sha256": "2b27b8364a9d6c5e70aa0587b795e31725ce79492a3df0e129835a416c935a60",
+      "bytes": 7147,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/check-in/selection-storage.ts",
+      "sha256": "d453baa135a3fc857e846f2b1f3c200044de2ac71c360737262745cd510af29b",
+      "bytes": 282,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/check-in/staff-assignment.tsx",
+      "sha256": "dd473846619479bc9198a54cb9eea6078b8fd67638ae98fb367d23a2ce90b89d",
+      "bytes": 5519,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/core/core-ui.spec.tsx",
+      "sha256": "6c66556dc3859b7888beffcaf1e8766dbb937e8fc064b4ebfdb760ea438e3ea9",
+      "bytes": 4034,
+      "gitStatus": "??"
+    },
+    {
+      "path": "apps/web/src/features/core/mail-failures.tsx",
+      "sha256": "09e528cc14c1e0d309095736cb8f3bfdadbd14ccf2c15e86ad868495eb529393",
+      "bytes": 7993,
+      "gitStatus": "??"
+    },
+    {
+      "path": "apps/web/src/features/core/password-recovery.tsx",
+      "sha256": "93257b620bb930967f5b8f491afe8c99cd7dc451f243beba4a2206daaee3e25c",
+      "bytes": 4857,
+      "gitStatus": "??"
+    },
+    {
+      "path": "apps/web/src/features/core/publication-control.tsx",
+      "sha256": "b30913c0bda9d6e2392dc25a90476a333f607664ec78449919f00e86e561faa1",
+      "bytes": 2309,
+      "gitStatus": "??"
+    },
+    {
+      "path": "apps/web/src/features/core/reschedule-form.tsx",
+      "sha256": "ac6870ccd5946120d3c235437a80fd0373baa7c2a1bfd8f039924936de77529f",
+      "bytes": 3242,
+      "gitStatus": "??"
+    },
+    {
+      "path": "apps/web/src/features/coupons/event-coupons-manager.tsx",
+      "sha256": "2590e9d44cb97e1c5383c305727753f887514fead2a9a968dc589c46ecde348e",
+      "bytes": 8195,
+      "gitStatus": "??"
+    },
+    {
+      "path": "apps/web/src/features/event-catalog/event-catalog.tsx",
+      "sha256": "474c82c4389ec914aee8b74ad0056a54543d1b45d034e4c1e62a77f0f388731c",
+      "bytes": 18435,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/event-catalog/event-poster.tsx",
+      "sha256": "ad4b2e4aa3b6b13b76f3e4472f03ecdd276771a1f862d0d4fc660d9b350516bb",
+      "bytes": 3309,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/event-catalog/public-showtime.tsx",
+      "sha256": "c8df544ef5937be4d30d093ad07416a45e793724c92b9010092a46172105d499",
+      "bytes": 21497,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/lifecycle/order-audit.tsx",
+      "sha256": "05da7e352f40073157999fb68208ea4998790ca0a18d53a5d1cda35f2adf2156",
+      "bytes": 1983,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/lifecycle/order-cancellation.tsx",
+      "sha256": "10b552fdf704c2001a80580fae45ef2534d70ed6133f3f7b6e1eb9f3ef6e60c2",
+      "bytes": 3541,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/lifecycle/waiting-room-notice.spec.tsx",
+      "sha256": "10f861d548232bfcd0290104c1133c570c8302dbb0604a01bc5750ccd2fdbfc5",
+      "bytes": 1454,
+      "gitStatus": "??"
+    },
+    {
+      "path": "apps/web/src/features/lifecycle/waiting-room-notice.tsx",
+      "sha256": "aec6343ba5264b25ef633d2cecc9f63e084b20a15646ee8dfe86038f53b0d23c",
+      "bytes": 2038,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/features/mock-gateway/mock-gateway-payment.tsx",
+      "sha256": "fa0bd41b5ceed2f6c817d0fa4f2a97482ca6f66c2ed7f9a82fe432075d6faa8f",
+      "bytes": 6373,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/mock-gateway/mock-gateway.spec.ts",
+      "sha256": "e6a55e3f1bfacb060fa220f75f266c6767d2d76714e55fc1a1bf9e28ade2a475",
+      "bytes": 1399,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/order-review/order-review.coupon.spec.tsx",
+      "sha256": "d33b27d3797af81c8ee652e0e47f64430d63bbd97d444bae8cb0069fcc91cf9c",
+      "bytes": 7327,
+      "gitStatus": "??"
+    },
+    {
+      "path": "apps/web/src/features/order-review/order-review.spec.ts",
+      "sha256": "eef70adf690d2da41903adb8500d606605fbf0f7b9f68faef5ed665bd935980a",
+      "bytes": 5049,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/order-review/order-review.tsx",
+      "sha256": "b2068d5ebe582649033a51cbaa3e30ee38d0226ae81b4c401ff6a042a8763e62",
+      "bytes": 29142,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/features/order-review/signed-tickets.tsx",
+      "sha256": "c9aca272b298339e8f10dcb2e0ab891f188d98ef2accb00473b60f6b4f57630c",
+      "bytes": 4910,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/orders/order-badge.tsx",
+      "sha256": "b41310cf8f6876fedf13132a84a10797ddd5b03f28ff5fdfa0b0adbe415d005d",
+      "bytes": 766,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/orders/order-feedback.tsx",
+      "sha256": "a709fd0173d3c7d9956e9cce0f4a3d542b206774e79be666214e4e141aa03258",
+      "bytes": 2638,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/orders/order-history.tsx",
+      "sha256": "d91fc889f285b23ae5050e1d9dbdb72d2600d1d9f767aceb6c1683ca9542da15",
+      "bytes": 8824,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/orders/order-status.tsx",
+      "sha256": "965b738877025851ba50f27a42ea291c983f5fe6501e2a87283e613a8f932c38",
+      "bytes": 4074,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/orders/use-order-read.ts",
+      "sha256": "31639b4dbe24ed2a99eab0e177e706edba2c9c7cbf3692f8ce3911e8c0c9239e",
+      "bytes": 3493,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/payment-result/payment-result.spec.ts",
+      "sha256": "8ab9d0490a5308cfded526f3996f7979804a6579a40b004386c7976d0a536e34",
+      "bytes": 7945,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/payment-result/payment-result.tsx",
+      "sha256": "e75a3f22de20abaa4995ca629114ed4d0f901b3af8658e78dd6ba8d5167a1fef",
+      "bytes": 25781,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/scanner/conflict-report.tsx",
+      "sha256": "f5163c4ff4a79996615ccd73b9a77a091f7fdeef21e367553b0014e5335771d4",
+      "bytes": 10346,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/features/scanner/durable-scans.ts",
+      "sha256": "a3da32416bc7e2139025249964e36796f6d99661be384530ac108ddc5adf10b0",
+      "bytes": 5035,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/scanner/offline-scanner.spec.ts",
+      "sha256": "2c5018394f92e75b3811ad3f7bf037adf3391dd6d419eb50db9c80174571ce4e",
+      "bytes": 13311,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/features/scanner/offline-scanner.ts",
+      "sha256": "e932f1879879da10ac61944665cc706e5cd26fdcda9a8657a63becad534d28c0",
+      "bytes": 6411,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/features/scanner/offline-shell.ts",
+      "sha256": "038be60ec170c22f911c7f73e5792fbc01b2d50f4d9685ee74cc331e0a94793b",
+      "bytes": 3006,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-api.ts",
+      "sha256": "9420e37fab8a7650139d4f5ca4c1d6512c9aeed1a38c0a5c01b8c8ec61e98833",
+      "bytes": 3483,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-db.ts",
+      "sha256": "de1590cb23497dc6dc381ba0d89e20cc8733d59afdc6af3cfbd60a0ee8be5f32",
+      "bytes": 16870,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-showtime-selector.tsx",
+      "sha256": "7378c2b385aea9df02ad3b4baa449d380602944a279fedebc76a64325afbb884",
+      "bytes": 7490,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-sync.ts",
+      "sha256": "2dd7a80f8be31eec334556811e8c3f36b56b0994316e5525e2b5c606a9cbbc1b",
+      "bytes": 5046,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner-tickets-view.tsx",
+      "sha256": "c4c58ba28f9fd994f3fabca950cdf908cdab113606817f659da549ec33b90c74",
+      "bytes": 14520,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/scanner/scanner.spec.ts",
+      "sha256": "18d9b7242c0aee431fe4fd0ab04232d2c802f9e0350751793c14db8efa5c6b28",
+      "bytes": 1533,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/features/seat-map-import/seat-map-import-form.tsx",
+      "sha256": "5377f8f9e1fa5fbac9a97d386cb71a429f605d71d8ea17bde50001981a55facf",
+      "bytes": 10990,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/seat-pricing/seat-pricing-form.tsx",
+      "sha256": "a70a7a3f407d182a01e76b9b751ddc3073a0e7ba9cbd3486fa323f888ed57f62",
+      "bytes": 9116,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/seat-selection/seat-selection.tsx",
+      "sha256": "98805d37429ea09e92eba26b911a163949550e79402befefa8b4ea0494136d04",
+      "bytes": 24194,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/features/seat-selection/server-countdown.spec.ts",
+      "sha256": "600ddc74d5b202af8dd1927b0eaff8ad574cf51fc49411908a1e6626ab7f9a04",
+      "bytes": 1302,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/seat-selection/server-countdown.ts",
+      "sha256": "890d4e41ee4e36e6ba205b6e010337fa1d912d7a15409d71992f8cdd85f08374",
+      "bytes": 647,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/showtime-management/clone-showtime-form.tsx",
+      "sha256": "00967b49d9419c3e0d2bcf483768332c261c474353fc60bfb53ee22c12f11804",
+      "bytes": 3166,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/showtime-management/hold-conversion-report.tsx",
+      "sha256": "e0757325f8eae2b458725fa72e2fc97a25bc5fac0f6c3918959931213cba2731",
+      "bytes": 5844,
+      "gitStatus": "??"
+    },
+    {
+      "path": "apps/web/src/features/showtime-management/sale-status-control.tsx",
+      "sha256": "b62cf27ffbe4caad3f5a2cd02c50c82c0bfe23326afbb6dd42de2cb301d9b1a0",
+      "bytes": 4750,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/showtime-management/seat-map-pdf-download.tsx",
+      "sha256": "06ae3b813448b73ceafeb5720596fb8a8dc678b7a0507c32138e4b4471538ba6",
+      "bytes": 1555,
+      "gitStatus": "??"
+    },
+    {
+      "path": "apps/web/src/features/showtime-management/showtime-sales-report.tsx",
+      "sha256": "ff5967dfc0ab55d9bad88a0997fb694146d7730d4e2348153fcd52092dcdc17a",
+      "bytes": 9646,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/features/showtime-management/showtime-workspace.tsx",
+      "sha256": "f16755aa3c2d93b50b96d34a34670c434c035913cedc598e765c60fb303a435b",
+      "bytes": 9081,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/features/showtime-management/ticket-limit-control.tsx",
+      "sha256": "3b0121b99346e1119629cbe4c1d742f39a40d2fcd21b778b87c9716eef7d5aed",
+      "bytes": 3417,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/admission-override.tsx",
+      "sha256": "dc4874f0798a77f4d1ee4f7adf440f9e9ccc1fca85c7e890bf606199a08855d4",
+      "bytes": 6570,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/admission-response.spec.ts",
+      "sha256": "417101a140b5f5cd99295366c49e5335263739230090cd02a6ad6c3bb7a1d852",
+      "bytes": 1854,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/admission-response.ts",
+      "sha256": "1797028d25f7454e53ad44e193f63b6484055fa488a6a79257ba491ae9ec8a67",
+      "bytes": 2435,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/check-in-request.spec.ts",
+      "sha256": "6c1be4bf978cb8e00b93bcbc7dec7e27711f0f0591649820343c6189e7975f5b",
+      "bytes": 2977,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/check-in-request.ts",
+      "sha256": "134f4871abd2b1a793b3da5dfb2f5b94a30f4cd712315dc0c99b44028d27762e",
+      "bytes": 786,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/network-status.ts",
+      "sha256": "7be5fd7fde7a6a911f8c6b48c37e3e4cc54dcb57a75113fe3428b54b4854e99c",
+      "bytes": 5329,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/offline-banner.spec.ts",
+      "sha256": "ab1f35443a7314d46fa4c6ec89cf962d238adacb3f0437b3415acc076ce8c604",
+      "bytes": 1669,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/offline-banner.tsx",
+      "sha256": "0cfeefc0daa996b43bc171dc2771288cae726f224bc041234f1f5442cbf6aaaa",
+      "bytes": 5719,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/offline-queue.ts",
+      "sha256": "423ff92e459c271d6d4c7484dd1b820e8c20ad6a58280384c92beacf138ad318",
+      "bytes": 1016,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/offline-sync.spec.ts",
+      "sha256": "0288871b1def922ff1b4432ace86367955843bc6d717ff4468ef37790f41b869",
+      "bytes": 6829,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/sync-manager.ts",
+      "sha256": "e5d7921c9abe82cb514c9a80a78a3a05479b099d275922ea6d638e1f5d105504",
+      "bytes": 7498,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/ticket-scanner.tsx",
+      "sha256": "3e0d5a9a1886573b46d2e1fc7c7bcb6696aa011b761ad3ec02279141ce18c75b",
+      "bytes": 50440,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/features/ticket-scanner/verify-ticket-qr.ts",
+      "sha256": "7fa9e63e37958ff1f23f137f64613d4df2cc04f486cd4a42c13d8813d02796e1",
+      "bytes": 2390,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/tickets/my-tickets.tsx",
+      "sha256": "c7cf28eeb5bf586fda1db06343e045ead83de7899bd673a3bbca7e216572411e",
+      "bytes": 6792,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/tickets/order-tickets-api.spec.ts",
+      "sha256": "d1bb452dfe36812b57c125bfdec73327a487f7b8eb207d9617fefff9fd002eae",
+      "bytes": 1372,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/tickets/order-tickets-api.ts",
+      "sha256": "d26cee1e2c2e5cd0ee42fd754279ab0ebc0f83ef622e9272452322b6e6c5b729",
+      "bytes": 1799,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/tickets/order-tickets.tsx",
+      "sha256": "6e2c42d951e88441af0f8992f114a45b62381918579681a62df0eb43bb9f51a3",
+      "bytes": 8780,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/tickets/resend-tickets.tsx",
+      "sha256": "9b755e62fefe63c14a24806e61ad811877d25063f5325e2b796c278d8ca1874b",
+      "bytes": 1687,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/tickets/ticket-qr-image.tsx",
+      "sha256": "5618190f8246ce9b05d3ed5f5b78502c27616b2bd48bca65aab9b1a2603a29be",
+      "bytes": 1449,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/tickets/ticket-qr.spec.ts",
+      "sha256": "8244b0195c626c7af76b32fe02d74f4269546f6aee586a8f15a1dad77a5d03b5",
+      "bytes": 5133,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/features/tickets/ticket-qr.ts",
+      "sha256": "e6a50611b65954ef35716eda821ee39b09629e87216934a0600025323a06a8b7",
+      "bytes": 4548,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/features/waitlist/waitlist-signup.tsx",
+      "sha256": "e06c0043a03ceb157ac7701e954c2eeca5b0d32f5d377fceb455cffe22729cf3",
+      "bytes": 4224,
+      "gitStatus": "??"
+    },
+    {
+      "path": "apps/web/src/hooks/useSeatHoldTimer.ts",
+      "sha256": "d29da764f357b9be3db90e2ad5fab0b18c873518b15a44212cc8dd5baed0cb1a",
+      "bytes": 4669,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/api-check-in-s29.ts",
+      "sha256": "0742f672fd45a33ab2fba3e38e228a87916d6bd2f5fb08ba90be293539c57e5b",
+      "bytes": 749,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/api.spec.ts",
+      "sha256": "5d5c61a449f83d156adb5c9e0270924c9be74cc34a44ba1ac08c99a451381f78",
+      "bytes": 823,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/api.ts",
+      "sha256": "cb232a116d041787002b3e4136979ba9da3f2251e9b69a7b972cafebbc7932ef",
+      "bytes": 2562,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/api/client.spec.ts",
+      "sha256": "dad1374425880dd4e5cf77367c38051a9a08db6c7241176ec020bbe949829945",
+      "bytes": 4465,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/api/client.ts",
+      "sha256": "3892dfcd2cd9ed99f0aacc5aee9493b63fa7de693eb14e45f9afa9baa2ea828e",
+      "bytes": 2231,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/contracts/holds.ts",
+      "sha256": "f85b4236f2dffb8307d97a602fcfb272535aa6027fef2a0c4b47c06a5e4658d1",
+      "bytes": 1094,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/contracts/order-history.ts",
+      "sha256": "a9f3660bbcb54662ce350015f9340918d4277d07d8f37bfd9bb2e38aa6c871aa",
+      "bytes": 4746,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/contracts/orders.spec.ts",
+      "sha256": "3955011d6fd05c87e4db1af318ac37048c9652d2db785fc8ddc27c7cbf1565fa",
+      "bytes": 1600,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/contracts/orders.ts",
+      "sha256": "28bbaa5420a706c949cc504f90b2370735937fd74b8a5e6f66b1923289d27d7a",
+      "bytes": 9694,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/lib/contracts/showtimes.ts",
+      "sha256": "bfce7a8fe592eafeab4d606d57491de7a98ed90279be6201c782bb29516b86ff",
+      "bytes": 8856,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/formatting/index.ts",
+      "sha256": "bc9ee37f8934e51070017aecfd41ed6fbfc9bfac8bb364a5d990268127f01e80",
+      "bytes": 1527,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/formatting/vietnam-input.spec.ts",
+      "sha256": "9efadac44b9280752c2a174e532b3f7352e99e943ca94d3e556f007967b5e52a",
+      "bytes": 762,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/formatting/vietnam-input.ts",
+      "sha256": "9bb9a998478cdb7ac338d563ce07fd4cc020dd557e256d8047ead568e5cca1b3",
+      "bytes": 621,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/presentation/seat-category.ts",
+      "sha256": "4e54bc27d51fc0eb07478bb535b9904e92726a32305a05849f3d33ab4aec5f5e",
+      "bytes": 444,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.spec.ts",
+      "sha256": "aa19f01461b6c857caf1914e9081712b6e5482f8de9c500e33a18d750e546af8",
+      "bytes": 6012,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/lib/server/api-proxy.ts",
+      "sha256": "d4e6cd371234c9dddd1e91bc65f3c69042f8cfbd1a2d3d5be919821ab4a15878",
+      "bytes": 3931,
+      "gitStatus": "M"
+    },
+    {
+      "path": "apps/web/src/lib/server/login-transport.mjs",
+      "sha256": "5c6eb3a1968e4aa910c21666afbb6313ba2f8658e1370c014ab12a047053369d",
+      "bytes": 1555,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/server/login-transport.spec.ts",
+      "sha256": "15c5b287d0a8dd5fb216726ed2a1ee48c47a4a45f5760c1dcbba65f55f9243e0",
+      "bytes": 4055,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/session-events.ts",
+      "sha256": "e1d83c40568815e3bf960a491379bd66883f1022cd65d8ccba03dbc20ff1457b",
+      "bytes": 592,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/lib/utils.ts",
+      "sha256": "2ea482e63aa411052828077c2ea8276d4ec4da8c2f0f2ca1d7eac13262e09a8b",
+      "bytes": 26,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/styles/vendor/shadcn-LICENSE.md",
+      "sha256": "a14c2d6fb5ba9925cba04633226a3b93e6c5566ca6b550dbfaead7ab3fa93b24",
+      "bytes": 1084,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "apps/web/src/styles/vendor/shadcn-tailwind.css",
+      "sha256": "f221d959e80b4738fba93b4b4f01472b11cccaf6043ba7f6f9376f6768dad28e",
+      "bytes": 16670,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "scripts/import-real-productions.mjs",
+      "sha256": "dbfddd17c5a93d29645f7686060349042c55178eeb04d2b7c8e3e896691ed3df",
+      "bytes": 16317,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "su_kien_nha_hat_40_su_kien_chi_tiet_2026.json",
+      "sha256": "e40bc432963bcc9c486d5a315588307fb23d9f54167b042f7050ac0ca9c4c671",
+      "bytes": 1526976,
+      "gitStatus": "clean"
+    },
+    {
+      "path": "theater_chamber_events_seed.json",
+      "sha256": "a7927cc1ae88dadab48d659f9028981df15cdd392994e5c59848c9724bea02de",
+      "bytes": 221065,
+      "gitStatus": "clean"
+    }
+  ]
+}

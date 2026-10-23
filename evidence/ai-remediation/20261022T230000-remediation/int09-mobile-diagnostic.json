@@ -1,0 +1,52 @@
+{
+  "body": "Vận hành và báo cáo\nVề tài khoản\n\nThanh toán và hoàn tiền ở đây là giả lập cho đồ án local. Báo cáo suất tự cập nhật mỗi 15 giây.\n\nBáo cáo theo suất diễn\nSuất diễn \nAI remediation fixture 20261022T230000-remediation (11:53:55 28/10/2026)\nAI remediation fixture 20261022T230000-remediation (11:53:55 29/10/2026)\nDoanh thu và tồn vé · VND\nHạng vé\tĐã bán\tĐang giữ\tCòn trống\tĐã thu\tĐã hoàn\tCòn lại\nQA fixture\t2\t0\t2\t2000\t0\t2000\n\nCập nhật: 2026-10-23T04:55:51.340Z\n\nKhách vào cửa\n\nĐã vào: 1 · Chưa vào: 1\n\nPhút (UTC)\tCửa\tLượt khách\n2026-10-23T04:53:00.000Z\tCửa Đông\t1\n\nLoại trừ lượt ngoại lệ trùng khách. Lượt offline được cập nhật sau khi đồng bộ.\n\nHuỷ suất diễn\n\nĐóng bán và huỷ vé; hoàn 100% từng đơn qua cổng mock. Các đơn được xử lý theo lô có thể tiếp tục sau gián đoạn.\n\nTrạng thái: QUEUED\n\nChưa có dữ liệu.",
+  "selects": [
+    {
+      "value": "61b08993-4395-4255-9527-6819ed232f37",
+      "options": [
+        {
+          "value": "61b08993-4395-4255-9527-6819ed232f37",
+          "text": "AI remediation fixture 20261022T230000-remediation (11:53:55 28/10/2026)"
+        },
+        {
+          "value": "fcb8a24e-df30-4021-abd2-e5a69b21421f",
+          "text": "AI remediation fixture 20261022T230000-remediation (11:53:55 29/10/2026)"
+        }
+      ]
+    }
+  ],
+  "responses": [
+    {
+      "path": "/api/auth/login",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/privacy/me",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/scanner/showtimes",
+      "status": 200
+    },
+    {
+      "path": "/api/showtimes/{fixture}/financial-report",
+      "status": 200
+    },
+    {
+      "path": "/api/showtimes/{fixture}/attendance-report",
+      "status": 200
+    },
+    {
+      "path": "/api/showtimes/{fixture}/cancellation",
+      "status": 200
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+[
+  {
+    "id": "S-36-AC01",
+    "requirement_id": "S-36",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Xung đột soát vé ở hai cửa được phát hiện khi đồng bộ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L38"
+    },
+    "original_requirement": "Giả sử vé được quét ở cửa A và cửa B trong lúc cả hai mất mạng, Khi hai máy đồng bộ, Thì lần quét sớm hơn theo giờ thiết bị được tính là lần vào, lần kia thành xung đột",
+    "fixture": "Hai máy offline quét cùng vé lúc T1<T2; upload theo thứ tự đảo; giờ thiết bị lệch.",
+    "surfaces": "/scanner/reports/:showtimeId; /scanner/showtimes/:id/conflicts",
+    "code_candidates": "apps/api/src/scanner/; apps/web/src/features/scanner/conflict-report.tsx",
+    "test_candidates": "scanner-attendance.spec.ts; offline-sync.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: vé được quét ở cửa A và cửa B trong lúc cả hai mất mạng.",
+      "Thực hiện trên /scanner/reports/:showtimeId; /scanner/showtimes/:id/conflicts: hai máy đồng bộ.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Cho scan muộn đồng bộ trước, scan sớm sau; kiểm kết quả theo giờ thiết bị như AC gốc, giữ cả cửa/thời điểm và offset. Nếu hợp đồng đã duyệt dùng luật khác, báo hai kết quả, không âm thầm đổi tiêu chí.",
+    "expected": [
+      "lần quét sớm hơn theo giờ thiết bị được tính là lần vào, lần kia thành xung đột"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-36-AC02",
+    "requirement_id": "S-36",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Xung đột soát vé ở hai cửa được phát hiện khi đồng bộ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L38"
+    },
+    "original_requirement": "Giả sử có xung đột, Khi ban tổ chức mở báo cáo suất, Thì thấy danh sách vé, hai cửa, hai thời điểm",
+    "fixture": "Hai máy offline quét cùng vé lúc T1<T2; upload theo thứ tự đảo; giờ thiết bị lệch.",
+    "surfaces": "/scanner/reports/:showtimeId; /scanner/showtimes/:id/conflicts",
+    "code_candidates": "apps/api/src/scanner/; apps/web/src/features/scanner/conflict-report.tsx",
+    "test_candidates": "scanner-attendance.spec.ts; offline-sync.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: có xung đột.",
+      "Thực hiện trên /scanner/reports/:showtimeId; /scanner/showtimes/:id/conflicts: ban tổ chức mở báo cáo suất.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Cho scan muộn đồng bộ trước, scan sớm sau; kiểm kết quả theo giờ thiết bị như AC gốc, giữ cả cửa/thời điểm và offset. Nếu hợp đồng đã duyệt dùng luật khác, báo hai kết quả, không âm thầm đổi tiêu chí.",
+    "expected": [
+      "thấy danh sách vé, hai cửa, hai thời điểm"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-36-NFR",
+    "requirement_id": "S-36",
+    "kind": "NFR",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Xung đột soát vé ở hai cửa được phát hiện khi đồng bộ — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N38"
+    },
+    "original_requirement": "giờ thiết bị lệch được ghi lại lúc đồng bộ để đọc báo cáo đúng. Ước lượng thô 3 SP — tier Next",
+    "fixture": "Hai máy offline quét cùng vé lúc T1<T2; upload theo thứ tự đảo; giờ thiết bị lệch.",
+    "surfaces": "/scanner/reports/:showtimeId; /scanner/showtimes/:id/conflicts",
+    "code_candidates": "apps/api/src/scanner/; apps/web/src/features/scanner/conflict-report.tsx",
+    "test_candidates": "scanner-attendance.spec.ts; offline-sync.spec.ts",
+    "steps": [
+      "Cho scan muộn đồng bộ trước, scan sớm sau; kiểm kết quả theo giờ thiết bị như AC gốc, giữ cả cửa/thời điểm và offset. Nếu hợp đồng đã duyệt dùng luật khác, báo hai kết quả, không âm thầm đổi tiêu chí.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "giờ thiết bị lệch được ghi lại lúc đồng bộ để đọc báo cáo đúng. Ước lượng thô 3 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

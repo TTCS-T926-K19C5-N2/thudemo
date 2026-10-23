@@ -1,0 +1,25 @@
+{
+  "exitCode": 0,
+  "command": "corepack pnpm test",
+  "sourceTree": "D:/Merge_2/Codegym-clean-package-proof-20261023T1544",
+  "startedAt": "2026-10-23T14:56:22+07:00",
+  "finishedAt": "2026-10-23T14:57:08+07:00",
+  "api": {
+    "testFilesPassed": 61,
+    "testsPassed": 481,
+    "failed": 0
+  },
+  "web": {
+    "testFilesPassed": 28,
+    "testsPassed": 162,
+    "failed": 0
+  },
+  "laptopDeployment": {
+    "tests": 20,
+    "passed": 20,
+    "failed": 0,
+    "skipped": 0
+  },
+  "databaseEnvironment": "cleared; no integration profile or main DB used",
+  "rawLog": "r30-full-regression.log"
+}

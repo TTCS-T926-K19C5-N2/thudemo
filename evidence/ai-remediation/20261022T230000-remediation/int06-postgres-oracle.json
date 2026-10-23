@@ -1,0 +1,57 @@
+{
+  "runId": "20261022T230000-remediation",
+  "fixture": {
+    "showtimeId": "2f35ac06-bd19-4e09-b004-b8fcfffc67cc",
+    "ticketItemId": "03d059a6-46ea-4800-8b57-d814c449e539"
+  },
+  "rule": "D05 earlier original device scan timestamp wins; preserve both observations and device/server offsets.",
+  "syncOrder": [
+    "mobile-device-B (later timestamp)",
+    "desktop-device-A (earlier timestamp)"
+  ],
+  "scans": [
+    {
+      "scanId": "5ce1ba21-65fd-41b0-8425-b0ddcd6896d7",
+      "deviceId": "a6df29a0-8e38-457f-867f-f1f63fce8e2a",
+      "gateId": "1f8b7861-84f0-4eb2-a23d-e322b41bd2b6",
+      "scannedAt": "2026-10-23T04:35:16.741Z",
+      "receivedAt": "2026-10-23T04:35:18.301Z",
+      "clockOffsetMs": 14,
+      "status": "ACCEPTED"
+    },
+    {
+      "scanId": "816cf934-a884-4316-9bc1-c0b0c3b48a8b",
+      "deviceId": "0ab6c329-7639-4c7d-baea-fe2c45de523b",
+      "gateId": "998ef0ef-ea2a-4dfc-a38f-8c7c23bea7a3",
+      "scannedAt": "2026-10-23T04:35:18.023Z",
+      "receivedAt": "2026-10-23T04:35:18.243Z",
+      "clockOffsetMs": 17,
+      "status": "CONFLICT"
+    }
+  ],
+  "winner": {
+    "requestId": "5ce1ba21-65fd-41b0-8425-b0ddcd6896d7",
+    "gateId": "1f8b7861-84f0-4eb2-a23d-e322b41bd2b6",
+    "enteredAt": "2026-10-23T04:35:16.741Z",
+    "orderItemCheckedInAt": "2026-10-23T04:35:16.741Z"
+  },
+  "conflictUi": [
+    {
+      "visible": true,
+      "ticketCode": "03d059a6-46ea-4800-8b57-d814c449e539",
+      "winningGate": "R19 Gate A",
+      "losingGate": "R19 Gate B",
+      "offsetsVisible": true,
+      "device": "desktop-device-A"
+    },
+    {
+      "visible": true,
+      "ticketCode": "03d059a6-46ea-4800-8b57-d814c449e539",
+      "winningGate": "R19 Gate A",
+      "losingGate": "R19 Gate B",
+      "offsetsVisible": true,
+      "device": "mobile-device-B"
+    }
+  ],
+  "retainedOriginalObservations": true
+}

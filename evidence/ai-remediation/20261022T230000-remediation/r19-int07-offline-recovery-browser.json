@@ -1,0 +1,129 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Single persistent browser context, current local web/API build, isolated PostgreSQL; HTTP fault injection only at API response boundary; no real network/provider.",
+  "viewports": [
+    "390x844"
+  ],
+  "failuresInjected": [
+    {
+      "status": 401,
+      "requestIdPreserved": "cf7c5a6e-971b-40e6-813c-b412a3f292e6",
+      "pendingCount": 1,
+      "retryCount": 1
+    },
+    {
+      "status": 403,
+      "requestIdPreserved": "cf7c5a6e-971b-40e6-813c-b412a3f292e6",
+      "pendingCount": 1,
+      "retryCount": 2
+    },
+    {
+      "status": 409,
+      "requestIdPreserved": "cf7c5a6e-971b-40e6-813c-b412a3f292e6",
+      "pendingCount": 1,
+      "retryCount": 3
+    },
+    {
+      "status": 500,
+      "requestIdPreserved": "cf7c5a6e-971b-40e6-813c-b412a3f292e6",
+      "pendingCount": 1,
+      "retryCount": 4
+    },
+    {
+      "status": 503,
+      "requestIdPreserved": "cf7c5a6e-971b-40e6-813c-b412a3f292e6",
+      "pendingCount": 1,
+      "retryCount": 5
+    }
+  ],
+  "http": [
+    {
+      "method": "POST",
+      "status": 200,
+      "path": "/api/scanner/sync-scans"
+    },
+    {
+      "method": "POST",
+      "status": 401,
+      "path": "/api/scanner/sync-scans"
+    },
+    {
+      "method": "POST",
+      "status": 403,
+      "path": "/api/scanner/sync-scans"
+    },
+    {
+      "method": "POST",
+      "status": 409,
+      "path": "/api/scanner/sync-scans"
+    },
+    {
+      "method": "POST",
+      "status": 500,
+      "path": "/api/scanner/sync-scans"
+    },
+    {
+      "method": "POST",
+      "status": 503,
+      "path": "/api/scanner/sync-scans"
+    },
+    {
+      "method": "POST",
+      "status": 200,
+      "path": "/api/scanner/sync-scans"
+    }
+  ],
+  "pageErrors": [],
+  "screenshots": [
+    "int07-commit-response-lost-mobile.png",
+    "int07-http-failures-retained-mobile.png",
+    "int07-alternate-account-queue-retained-mobile.png"
+  ],
+  "committedScanId": "ab1d8717-12b5-498b-9ff3-34a73bdca7fa",
+  "committedTicketCode": "b7fbe0ad-2811-44b2-a279-16b76d5a3105",
+  "commitThenDrop": {
+    "backendStatus": 200,
+    "serverAckCount": 1,
+    "serverAck": "synced",
+    "recovery": {
+      "status": 200,
+      "ackCount": 1,
+      "ackStatus": "synced",
+      "ackCode": "SCAN_RECORDED"
+    }
+  },
+  "afterLostResponse": {
+    "pendingCount": 1,
+    "sameRequestId": true,
+    "retryCount": 1
+  },
+  "protectedScanId": "cf7c5a6e-971b-40e6-813c-b412a3f292e6",
+  "protectedTicketCode": "3b837f18-9780-43fd-9a4e-b940f91f3b60",
+  "accountSwitch": {
+    "previousStaffId": "965d0ebc-d8e6-4502-a0d1-5b65bfc289bb",
+    "alternateStaffId": "e53f5aa1-a9c1-41ff-9501-c12184854539",
+    "syncPostsForForeignQueue": 0,
+    "pendingCount": 1,
+    "sameRequestId": "cf7c5a6e-971b-40e6-813c-b412a3f292e6"
+  },
+  "finalRecovery": {
+    "status": 200,
+    "ackCount": 1,
+    "ackStatus": "synced",
+    "ackCode": "SCAN_RECORDED"
+  },
+  "finalLocalQueue": [
+    {
+      "requestId": "ab1d8717-12b5-498b-9ff3-34a73bdca7fa",
+      "ticketCode": "b7fbe0ad-2811-44b2-a279-16b76d5a3105",
+      "status": "synced",
+      "staffId": "965d0ebc-d8e6-4502-a0d1-5b65bfc289bb"
+    },
+    {
+      "requestId": "cf7c5a6e-971b-40e6-813c-b412a3f292e6",
+      "ticketCode": "3b837f18-9780-43fd-9a4e-b940f91f3b60",
+      "status": "synced",
+      "staffId": "965d0ebc-d8e6-4502-a0d1-5b65bfc289bb"
+    }
+  ]
+}

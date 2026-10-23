@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-48-AC",
+    "requirement_id": "T-48",
+    "parent_requirement": "S-21",
+    "kind": "TASK_AC",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Kiểm chữ ký webhook trước khi đọc nội dung",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G49"
+    },
+    "original_requirement": "Webhook sửa một ký tự nội dung thì bị 401; webhook đúng thì đi tiếp",
+    "fixture": "Payload đúng, sửa 1 byte, thiếu chữ ký, JSON hỏng và chữ ký sai, order không có.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/webhook-security.filter.ts; apps/api/src/payments/gateways/",
+    "test_candidates": "payments-signature-verification.e2e-spec.ts; momo-signature.spec.ts",
+    "steps": [
+      "Gửi raw body bảo toàn byte; sai chữ ký trả 401 trước parse/nghiệp vụ và không thay DB. Hợp lệ nhưng order không tồn tại trả 404. Kiểm structured log có nguồn và mã lỗi, không payload thanh toán; review so sánh constant-time.",
+      "Kiểm riêng tiêu chí task T-48: Webhook sửa một ký tự nội dung thì bị 401; webhook đúng thì đi tiếp",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Webhook sửa một ký tự nội dung thì bị 401; webhook đúng thì đi tiếp"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-48-NFR",
+    "requirement_id": "T-48",
+    "parent_requirement": "S-21",
+    "kind": "TASK_NFR",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Kiểm chữ ký webhook trước khi đọc nội dung",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I49"
+    },
+    "original_requirement": "so sánh chữ ký bằng hàm so sánh thời gian không đổi",
+    "fixture": "Payload đúng, sửa 1 byte, thiếu chữ ký, JSON hỏng và chữ ký sai, order không có.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/webhook-security.filter.ts; apps/api/src/payments/gateways/",
+    "test_candidates": "payments-signature-verification.e2e-spec.ts; momo-signature.spec.ts",
+    "steps": [
+      "Gửi raw body bảo toàn byte; sai chữ ký trả 401 trước parse/nghiệp vụ và không thay DB. Hợp lệ nhưng order không tồn tại trả 404. Kiểm structured log có nguồn và mã lỗi, không payload thanh toán; review so sánh constant-time.",
+      "Kiểm riêng tiêu chí task T-48: so sánh chữ ký bằng hàm so sánh thời gian không đổi",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "so sánh chữ ký bằng hàm so sánh thời gian không đổi"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

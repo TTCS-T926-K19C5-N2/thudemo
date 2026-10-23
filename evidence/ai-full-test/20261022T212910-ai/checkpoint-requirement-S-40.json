@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-40-AC01",
+    "requirement_id": "S-40",
+    "kind": "AC",
+    "group": "Vận hành",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "6",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Hàng đợi phòng chờ khi lượng truy cập vượt ngưỡng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L44"
+    },
+    "original_requirement": "Vượt ngưỡng người đang chọn ghế thì người mới vào phòng chờ theo thứ tự đến, thấy vị trí của mình, tới lượt thì được vào trang chọn ghế với một lượt có thời hạn; hết lượt không thao tác thì mất chỗ. Chưa refine chi tiết — tier Later, ước lượng thô 8 SP, cần chẻ ít nhất ba story khi lên Next",
+    "fixture": "Capacity thử=1; A đang active, B/C chờ theo thứ tự; TTL theo cấu hình.",
+    "surfaces": "Phòng chờ trước giữ ghế/đặt đơn",
+    "code_candidates": "apps/api/src/booking-access/; apps/web/src/features/lifecycle/waiting-room-notice.tsx",
+    "test_candidates": "booking-access.guard.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Chuẩn bị fixture: Capacity thử=1; A đang active, B/C chờ theo thứ tự; TTL theo cấu hình.",
+      "Cho A vào rồi B/C xếp hàng; vị trí FIFO đúng. A hết lượt/thoát thì B được vào có hạn, C còn chờ; gọi thẳng hold/order không bypass admission. Quota/ngưỡng là giá trị cần quyết định được duyệt.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Cho A vào rồi B/C xếp hàng; vị trí FIFO đúng. A hết lượt/thoát thì B được vào có hạn, C còn chờ; gọi thẳng hold/order không bypass admission. Quota/ngưỡng là giá trị cần quyết định được duyệt.",
+    "expected": [
+      "Vượt ngưỡng người đang chọn ghế thì người mới vào phòng chờ theo thứ tự đến, thấy vị trí của mình, tới lượt thì được vào trang chọn ghế với một lượt có thời hạn; hết lượt không thao tác thì mất chỗ. Chưa refine chi tiết — tier Later, ước lượng thô 8 SP, cần chẻ ít nhất ba story khi lên Next"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-40-NFR",
+    "requirement_id": "S-40",
+    "kind": "NFR",
+    "group": "Vận hành",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "6",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Hàng đợi phòng chờ khi lượng truy cập vượt ngưỡng — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N44"
+    },
+    "original_requirement": "chưa refine — cần chốt ngưỡng, thời gian giữ lượt, và hàng đợi đặt ở Redis hay ở tầng trước ứng dụng",
+    "fixture": "Capacity thử=1; A đang active, B/C chờ theo thứ tự; TTL theo cấu hình.",
+    "surfaces": "Phòng chờ trước giữ ghế/đặt đơn",
+    "code_candidates": "apps/api/src/booking-access/; apps/web/src/features/lifecycle/waiting-room-notice.tsx",
+    "test_candidates": "booking-access.guard.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Cho A vào rồi B/C xếp hàng; vị trí FIFO đúng. A hết lượt/thoát thì B được vào có hạn, C còn chờ; gọi thẳng hold/order không bypass admission. Quota/ngưỡng là giá trị cần quyết định được duyệt.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt ngưỡng, thời gian giữ lượt, và hàng đợi đặt ở Redis hay ở tầng trước ứng dụng"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

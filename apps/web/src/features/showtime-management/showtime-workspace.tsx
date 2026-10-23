@@ -19,6 +19,8 @@ import { SaleStatusControl } from "./sale-status-control";
 import { TicketLimitControl } from "./ticket-limit-control";
 import { ShowtimeSalesReport } from "./showtime-sales-report";
 import { CloneShowtimeForm } from "./clone-showtime-form";
+import { RescheduleForm } from "@/features/core/reschedule-form";
+import { SeatMapPdfDownload } from "./seat-map-pdf-download";
 export function ShowtimeWorkspace({
   id,
   mode,
@@ -126,9 +128,20 @@ export function ShowtimeWorkspace({
             </Button>
           )}
           {mode === "manage" && (
-            <Button asChild>
-              <Link href={`/events/${show.event.id}`}>Tạo suất diễn mới</Link>
-            </Button>
+            <>
+              <SeatMapPdfDownload showtimeId={id} />
+              <Button variant="outline" asChild>
+                <a
+                  href={`/api/showtimes/${id}/attendance-conflicts.csv`}
+                  download={`attendance-${id}.csv`}
+                >
+                  Xuất điểm danh CSV
+                </a>
+              </Button>
+              <Button asChild>
+                <Link href={`/events/${show.event.id}`}>Tạo suất diễn mới</Link>
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -197,6 +210,7 @@ export function ShowtimeWorkspace({
           <div>
             <SaleStatusControl key={id} show={show} onChanged={refresh} />
             <TicketLimitControl key={`limit-${id}`} show={show} onChanged={refresh} />
+            <RescheduleForm key={`reschedule-${id}`} id={id} startTime={show.startTime} onChanged={refresh} />
           </div>
         </div>
       )}

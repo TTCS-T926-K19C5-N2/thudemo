@@ -1,0 +1,6 @@
+import{readFileSync}from'node:fs';import{createRequire}from'node:module';
+const b='D:/Merge_2/Codegym-demo-proof-20261023T1530',c=JSON.parse(readFileSync(b+'/.sprint1-demo/config.json','utf8'));
+if(c.profile!=='s1demo-384da3d43b41'||c.database!=='sprint1_demo_384da3d43b41'||c.ports.postgres!==15460)throw Error('profile guard');
+const r=createRequire(b+'/apps/api/package.json'),{PrismaClient}=r('@prisma/client'),{PrismaPg}=r('@prisma/adapter-pg');const db=new PrismaClient({adapter:new PrismaPg({connectionString:`postgresql://${encodeURIComponent(c.user)}:${encodeURIComponent(c.dbPassword)}@127.0.0.1:${c.ports.postgres}/${c.database}?schema=public`,max:1})});
+try{const x=await db.$transaction(async t=>{await t.$executeRawUnsafe('SET TRANSACTION READ ONLY');const s=await t.user.findUnique({where:{email:c.accounts.find(a=>a.name==='staff').email},select:{id:true,showtimeStaff:{where:{showtimeId:'914556a8-ba19-4766-9e20-00a3d93df432'},select:{showtimeId:true}},checkInPermissions:{where:{gate:{showtimeId:'914556a8-ba19-4766-9e20-00a3d93df432',name:'R44 demo gate'}},select:{gate:{select:{id:true,name:true,showtimeId:true}},canOverride:true}}}});return{userFound:!!s,staffAssignmentCount:s?.showtimeStaff.length,gatePermissionCount:s?.checkInPermissions.length,gate:s?.checkInPermissions[0]?.gate}});console.log(JSON.stringify(x))}finally{await db.$disconnect()}
+

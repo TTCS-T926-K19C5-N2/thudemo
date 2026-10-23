@@ -1,0 +1,12 @@
+{
+  "profile": "s1demo-384da3d43b41",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "role": "ORGANIZER",
+  "organizerMenuVisible": true,
+  "accountingReconciliationVisible": false,
+  "pageErrors": [],
+  "logoutStatus": 200
+}

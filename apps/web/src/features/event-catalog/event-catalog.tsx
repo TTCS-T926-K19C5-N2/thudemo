@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -103,24 +103,41 @@ function getEventBadgeInfo(startTime: string, isDemo = false) {
   };
 }
 
-export function EventCatalog() {
+export function EventCatalog({ initialQuery = "" }: { initialQuery?: string }) {
   const [data, setData] = useState<CatalogPage | null>(null),
-    [cursor, setCursor] = useState<string | null>(null),
-    [history, setHistory] = useState<(string | null)[]>([]),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true),
+    [loadingMore, setLoadingMore] = useState(false),
+    [loadMoreError, setLoadMoreError] = useState(""),
+    [loadedPages, setLoadedPages] = useState(0),
     [retry, setRetry] = useState(0);
-  const [query, setQuery] = useState("");
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const loadingMoreRef = useRef(false);
+  const [query, setQuery] = useState(initialQuery);
+  const [location, setLocation] = useState("");
   const [category, setCategory] = useState("Tất cả");
   const [sort, setSort] = useState("soon");
   useEffect(() => {
     const controller = new AbortController();
-    api(
-      `/showtimes${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`,
-      decodeCatalog,
-      { signal: controller.signal },
-    )
-      .then(setData)
+    const searchAcrossCatalog = !!initialQuery.trim();
+    (async () => {
+      let page = await api("/showtimes", decodeCatalog, {
+        signal: controller.signal,
+      });
+      const items = [...page.items];
+      let pages = 1;
+      while (searchAcrossCatalog && page.nextCursor && pages < 100) {
+        page = await api(
+          `/showtimes?cursor=${encodeURIComponent(page.nextCursor)}`,
+          decodeCatalog,
+          { signal: controller.signal },
+        );
+        items.push(...page.items);
+        pages++;
+      }
+      setData({ ...page, items });
+      setLoadedPages(pages);
+    })()
       .catch((e) => {
         if (!controller.signal.aborted) setError(e.message);
       })
@@ -128,15 +145,86 @@ export function EventCatalog() {
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [cursor, retry]);
-  function next(c: string | null) {
-    setLoading(true);
-    setError("");
-    setCursor(c);
-  }
+  }, [initialQuery, retry]);
+  const loadMore = useCallback(async () => {
+    const nextCursor = data?.nextCursor;
+    if (!nextCursor || loading || loadingMoreRef.current) return;
+    loadingMoreRef.current = true;
+    setLoadingMore(true);
+    setLoadMoreError("");
+    try {
+      const page = await api(
+        `/showtimes?cursor=${encodeURIComponent(nextCursor)}`,
+        decodeCatalog,
+      );
+      setData((current) =>
+        current
+          ? {
+              ...page,
+              items: [...current.items, ...page.items],
+            }
+          : page,
+      );
+      setLoadedPages((count) => count + 1);
+    } catch (cause) {
+      setLoadMoreError(
+        cause instanceof Error ? cause.message : "Không tải thêm được danh sách.",
+      );
+    } finally {
+      loadingMoreRef.current = false;
+      setLoadingMore(false);
+    }
+  }, [data?.nextCursor, loading]);
+  const loadAllPages = useCallback(async () => {
+    if (!data?.nextCursor || loadingMoreRef.current) return;
+    loadingMoreRef.current = true;
+    setLoadingMore(true);
+    setLoadMoreError("");
+    let page = data;
+    const items = [...data.items];
+    let pages = loadedPages;
+    try {
+      while (page.nextCursor && pages < 100) {
+        page = await api(
+          `/showtimes?cursor=${encodeURIComponent(page.nextCursor)}`,
+          decodeCatalog,
+        );
+        items.push(...page.items);
+        pages++;
+      }
+      setData({ ...page, items });
+      setLoadedPages(pages);
+    } catch (cause) {
+      setLoadMoreError(
+        cause instanceof Error ? cause.message : "Không tải đủ danh sách để lọc địa điểm.",
+      );
+    } finally {
+      loadingMoreRef.current = false;
+      setLoadingMore(false);
+    }
+  }, [data, loadedPages]);
+  useEffect(() => {
+    if (location && data?.nextCursor && !loading) void loadAllPages();
+  }, [data?.nextCursor, loadAllPages, loading, location]);
+  useEffect(() => {
+    if (query.trim() && data?.nextCursor && !loading) void loadAllPages();
+  }, [data?.nextCursor, loadAllPages, loading, query]);
+  useEffect(() => {
+    const target = loadMoreRef.current;
+    if (!target || !data?.nextCursor || loading || error || loadMoreError) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) void loadMore();
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [data?.nextCursor, loading, error, loadMoreError, loadMore]);
   function reload() {
     setLoading(true);
     setError("");
+    setLoadedPages(0);
     setRetry((v) => v + 1);
   }
   const categories = useMemo(
@@ -150,6 +238,8 @@ export function EventCatalog() {
     const term = query.trim().toLocaleLowerCase("vi-VN");
     const items = (data?.items ?? []).filter((item) => {
       const matchesCategory = category === "Tất cả" || item.categoryLabel === category;
+      const matchesLocation =
+        !location || item.location.toLocaleLowerCase("vi-VN").includes(location.toLocaleLowerCase("vi-VN"));
       const searchable = [
         item.name,
         item.description,
@@ -159,15 +249,21 @@ export function EventCatalog() {
       ]
         .join(" ")
         .toLocaleLowerCase("vi-VN");
-      return matchesCategory && (!term || searchable.includes(term));
+      return matchesCategory && matchesLocation && (!term || searchable.includes(term));
     });
     return items.toSorted((a, b) => {
       if (sort === "price-asc") return a.minPrice - b.minPrice;
       if (sort === "price-desc") return b.minPrice - a.minPrice;
       return Date.parse(a.startTime) - Date.parse(b.startTime);
     });
-  }, [category, data, query, sort]);
-  const featuredEvent = data?.items[0];
+  }, [category, data, location, query, sort]);
+  const hasCatalogFilter =
+    category !== "Tất cả" || !!query.trim() || !!location;
+  const featuredEvent = hasCatalogFilter ? undefined : data?.items[0];
+  const selectCategory = (value: string) => {
+    setCategory(value);
+    void loadAllPages();
+  };
   const demoCatalog = !!data?.items.length && data.items.every((item) => item.isDemo);
   const featuredBadge = featuredEvent
     ? getEventBadgeInfo(featuredEvent.startTime, featuredEvent.isDemo)
@@ -265,7 +361,7 @@ export function EventCatalog() {
         <Search />
         <Input
           placeholder="Tìm theo tên sự kiện, nghệ sĩ..."
-          aria-label="Tìm theo tên sự kiện"
+          aria-label="Tìm sự kiện trong các suất đã tải"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
@@ -275,13 +371,30 @@ export function EventCatalog() {
           <Search />
           <Input
             placeholder="Tìm sự kiện, địa điểm, hạng vé..."
-            aria-label="Tìm sự kiện trên trang hiện tại"
+            aria-label="Tìm sự kiện trong các suất đã tải"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
         </div>
-        <Filters categories={categories} selected={category} onSelect={setCategory} />
-        <Filters mobile categories={categories} selected={category} onSelect={setCategory} />
+        <Filters categories={categories} selected={category} onSelect={selectCategory} />
+        <Filters mobile categories={categories} selected={category} onSelect={selectCategory} />
+        <label className="catalog-location-filter">
+          <MapPin aria-hidden="true" />
+          <span>Địa điểm</span>
+          <select
+            aria-label="Lọc theo địa điểm"
+            value={location}
+            onChange={(event) => {
+              setLocation(event.target.value);
+              void loadAllPages();
+            }}
+          >
+            <option value="">Tất cả địa điểm</option>
+            <option value="Hà Nội">Hà Nội</option>
+            <option value="Bắc Ninh">Bắc Ninh</option>
+            <option value="Thành phố Hồ Chí Minh">TP. Hồ Chí Minh</option>
+          </select>
+        </label>
       </div>
       <div
         id="lich-dien"
@@ -301,7 +414,11 @@ export function EventCatalog() {
             {loading
               ? "Đang tải danh sách sự kiện…"
               : `Khám phá ${data?.totalCount ?? data?.items.length ?? 0} chương trình`}{" "}
-            {!loading && <small>{visibleItems.length} kết quả trên trang này</small>}
+              {!loading && (
+                <small>
+                  {visibleItems.length} kết quả trong {data?.items.length ?? 0} suất đã tải
+                </small>
+              )}
           </h2>
           <p>
             {demoCatalog
@@ -312,7 +429,10 @@ export function EventCatalog() {
         <select
           aria-label="Sắp xếp sự kiện"
           value={sort}
-          onChange={(event) => setSort(event.target.value)}
+          onChange={(event) => {
+            setSort(event.target.value);
+            if (event.target.value !== "soon") void loadAllPages();
+          }}
         >
           <option value="soon">Gần nhất</option>
           <option value="price-asc">{demoCatalog ? "Giá tham khảo thấp trước" : "Giá thấp trước"}</option>
@@ -442,6 +562,7 @@ export function EventCatalog() {
               if (data?.items.length) {
                 setQuery("");
                 setCategory("Tất cả");
+                setLocation("");
               } else reload();
             }}
           >
@@ -452,32 +573,29 @@ export function EventCatalog() {
       <div className="catalog-pagination">
         {!loading && (
           <p>
-            {visibleItems.length} suất trên trang này
+            {visibleItems.length} kết quả trong {data?.items.length ?? 0} suất đã tải
           </p>
         )}
-        <div>
-          <span>Trang {history.length + 1}</span>
-          <Button
-            variant="outline"
-            disabled={loading || !!error || !history.length}
-            onClick={() => {
-              const previous = history.at(-1) ?? null;
-              setHistory((v) => v.slice(0, -1));
-              next(previous);
-            }}
-          >
-            Trước
-          </Button>
-          <Button
-            variant="outline"
-            disabled={loading || !!error || !data?.nextCursor}
-            onClick={() => {
-              setHistory((v) => [...v, cursor]);
-              next(data?.nextCursor ?? null);
-            }}
-          >
-            Sau
-          </Button>
+        <div ref={loadMoreRef}>
+          {data?.nextCursor && (
+            <Button
+              variant="outline"
+              disabled={loading || loadingMore || !!error}
+              onClick={() => void loadMore()}
+            >
+              {loadingMore ? "Đang tải thêm…" : "Tải thêm chương trình"}
+            </Button>
+          )}
+          {loadMoreError && (
+            <p role="alert" className="catalog-error-banner">
+              {loadMoreError}{" "}
+              <Button variant="outline" onClick={() => void loadMore()}>
+                Thử lại
+              </Button>
+            </p>
+          )}
+          {loadingMore && <p aria-live="polite">Đang tải thêm chương trình…</p>}
+          {!loading && !error && <span>Đã tải {loadedPages} trang</span>}
         </div>
       </div>
       {!loading && !error && (

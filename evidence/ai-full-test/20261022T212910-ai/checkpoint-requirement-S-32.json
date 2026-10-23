@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-32-AC01",
+    "requirement_id": "S-32",
+    "kind": "AC",
+    "group": "Đơn hàng",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Xem lịch sử đơn hàng của tôi",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L29"
+    },
+    "original_requirement": "Giả sử tôi có nhiều đơn, Khi mở lịch sử, Thì thấy danh sách mới nhất trước với trạng thái, sự kiện, số ghế và tổng tiền, phân trang",
+    "fixture": "A có hơn 20 order đủ trạng thái; B có order riêng.",
+    "surfaces": "/orders; GET /orders/me",
+    "code_candidates": "apps/api/src/orders/order-history.service.ts; apps/web/src/features/orders/order-history.tsx",
+    "test_candidates": "orders.e2e-spec.ts; docs/ORDER_HISTORY.md",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi có nhiều đơn.",
+      "Thực hiện trên /orders; GET /orders/me: mở lịch sử.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Duyệt phân trang mới nhất trước, kiểm status/event/số ghế/tổng; expired/cancelled vẫn xuất hiện. Không trùng/sót; B đọc chi tiết/status/tickets của A phải 403; lịch sử không chứa order B.",
+    "expected": [
+      "thấy danh sách mới nhất trước với trạng thái, sự kiện, số ghế và tổng tiền, phân trang"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-32-AC02",
+    "requirement_id": "S-32",
+    "kind": "AC",
+    "group": "Đơn hàng",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Xem lịch sử đơn hàng của tôi",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L29"
+    },
+    "original_requirement": "Giả sử tôi gọi API với mã đơn của người khác, Khi xử lý, Thì bị từ chối 403",
+    "fixture": "A có hơn 20 order đủ trạng thái; B có order riêng.",
+    "surfaces": "/orders; GET /orders/me",
+    "code_candidates": "apps/api/src/orders/order-history.service.ts; apps/web/src/features/orders/order-history.tsx",
+    "test_candidates": "orders.e2e-spec.ts; docs/ORDER_HISTORY.md",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi gọi API với mã đơn của người khác.",
+      "Thực hiện trên /orders; GET /orders/me: xử lý.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Duyệt phân trang mới nhất trước, kiểm status/event/số ghế/tổng; expired/cancelled vẫn xuất hiện. Không trùng/sót; B đọc chi tiết/status/tickets của A phải 403; lịch sử không chứa order B.",
+    "expected": [
+      "bị từ chối 403"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-32-AC03",
+    "requirement_id": "S-32",
+    "kind": "AC",
+    "group": "Đơn hàng",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Xem lịch sử đơn hàng của tôi",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L29"
+    },
+    "original_requirement": "Giả sử đơn đã hết hạn hoặc đã huỷ, Khi xem, Thì vẫn thấy trong lịch sử với trạng thái tương ứng",
+    "fixture": "A có hơn 20 order đủ trạng thái; B có order riêng.",
+    "surfaces": "/orders; GET /orders/me",
+    "code_candidates": "apps/api/src/orders/order-history.service.ts; apps/web/src/features/orders/order-history.tsx",
+    "test_candidates": "orders.e2e-spec.ts; docs/ORDER_HISTORY.md",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: đơn đã hết hạn hoặc đã huỷ.",
+      "Thực hiện trên /orders; GET /orders/me: xem.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Duyệt phân trang mới nhất trước, kiểm status/event/số ghế/tổng; expired/cancelled vẫn xuất hiện. Không trùng/sót; B đọc chi tiết/status/tickets của A phải 403; lịch sử không chứa order B.",
+    "expected": [
+      "vẫn thấy trong lịch sử với trạng thái tương ứng"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-32-NFR",
+    "requirement_id": "S-32",
+    "kind": "NFR",
+    "group": "Đơn hàng",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Xem lịch sử đơn hàng của tôi — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N29"
+    },
+    "original_requirement": "phân trang, không tải toàn bộ lịch sử một lần. Ước lượng thô 2 SP — tier Next",
+    "fixture": "A có hơn 20 order đủ trạng thái; B có order riêng.",
+    "surfaces": "/orders; GET /orders/me",
+    "code_candidates": "apps/api/src/orders/order-history.service.ts; apps/web/src/features/orders/order-history.tsx",
+    "test_candidates": "orders.e2e-spec.ts; docs/ORDER_HISTORY.md",
+    "steps": [
+      "Duyệt phân trang mới nhất trước, kiểm status/event/số ghế/tổng; expired/cancelled vẫn xuất hiện. Không trùng/sót; B đọc chi tiết/status/tickets của A phải 403; lịch sử không chứa order B.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "phân trang, không tải toàn bộ lịch sử một lần. Ước lượng thô 2 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

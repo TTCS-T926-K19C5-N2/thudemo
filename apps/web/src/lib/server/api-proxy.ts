@@ -104,7 +104,7 @@ export async function proxyApi(
       cache: "no-store",
     });
     const responseHeaders = new Headers({ "Cache-Control": "no-store" });
-    for (const name of ["content-type", "retry-after"]) {
+    for (const name of ["content-type", "content-disposition", "retry-after"]) {
       const value = upstream.headers.get(name);
       if (value) responseHeaders.set(name, value);
     }

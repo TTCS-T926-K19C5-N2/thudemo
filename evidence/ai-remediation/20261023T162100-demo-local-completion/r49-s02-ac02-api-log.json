@@ -1,0 +1,13 @@
+{
+  "profile": "s1demo-384da3d43b41",
+  "role": "BUYER",
+  "method": "POST",
+  "route": "/events",
+  "status": 403,
+  "deniedCreateLogDelta": 0,
+  "runtimeLogObserved": false,
+  "logoutStatus": 200,
+  "payloadSynthetic": true,
+  "noFixtureCreated": true,
+  "logLimit": "Detached API worker runtime log stream is not persisted in .sprint1-demo/api.log; source contains RolesGuard Logger.warn, but runtime emission is not independently observable in this profile."
+}

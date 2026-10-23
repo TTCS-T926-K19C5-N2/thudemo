@@ -1,0 +1,240 @@
+[
+  {
+    "id": "S-04-AC01",
+    "requirement_id": "S-04",
+    "kind": "AC",
+    "group": "Sự kiện",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Tạo sự kiện và suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L5"
+    },
+    "original_requirement": "Giả sử đã đăng nhập bằng vai trò ban tổ chức, Khi tạo sự kiện với tên, mô tả và địa điểm hợp lệ, Thì sự kiện được lưu ở trạng thái nháp và chưa hiện với người mua",
+    "fixture": "Hai organizer khác chủ; sự kiện nháp; giờ quá khứ/tương lai/trùng, ISO timezone.",
+    "surfaces": "/events; /events/new; /events/:id; POST /events/:id/showtimes",
+    "code_candidates": "apps/api/src/events/; apps/web/src/components/event-editor.tsx",
+    "test_candidates": "events.e2e-spec.ts; events.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: đã đăng nhập bằng vai trò ban tổ chức.",
+      "Thực hiện trên /events; /events/new; /events/:id; POST /events/:id/showtimes: tạo sự kiện với tên, mô tả và địa điểm hợp lệ.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Organizer A tạo/sửa sự kiện, thêm suất; B truy cập URL và API manage của A. Kiểm draft không công khai, quá khứ bị chặn, trùng giờ cảnh báo nhưng lưu được. So UTC trong DB và giờ Asia/Ho_Chi_Minh trên UI, kể cả gần nửa đêm.",
+    "expected": [
+      "sự kiện được lưu ở trạng thái nháp và chưa hiện với người mua"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-04-AC02",
+    "requirement_id": "S-04",
+    "kind": "AC",
+    "group": "Sự kiện",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Tạo sự kiện và suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L5"
+    },
+    "original_requirement": "Giả sử sự kiện đã tồn tại, Khi thêm một suất diễn có thời điểm bắt đầu trong tương lai, Thì suất diễn được lưu và gắn với sự kiện",
+    "fixture": "Hai organizer khác chủ; sự kiện nháp; giờ quá khứ/tương lai/trùng, ISO timezone.",
+    "surfaces": "/events; /events/new; /events/:id; POST /events/:id/showtimes",
+    "code_candidates": "apps/api/src/events/; apps/web/src/components/event-editor.tsx",
+    "test_candidates": "events.e2e-spec.ts; events.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: sự kiện đã tồn tại.",
+      "Thực hiện trên /events; /events/new; /events/:id; POST /events/:id/showtimes: thêm một suất diễn có thời điểm bắt đầu trong tương lai.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Organizer A tạo/sửa sự kiện, thêm suất; B truy cập URL và API manage của A. Kiểm draft không công khai, quá khứ bị chặn, trùng giờ cảnh báo nhưng lưu được. So UTC trong DB và giờ Asia/Ho_Chi_Minh trên UI, kể cả gần nửa đêm.",
+    "expected": [
+      "suất diễn được lưu và gắn với sự kiện"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-04-AC03",
+    "requirement_id": "S-04",
+    "kind": "AC",
+    "group": "Sự kiện",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Tạo sự kiện và suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L5"
+    },
+    "original_requirement": "Giả sử nhập thời điểm bắt đầu ở quá khứ, Khi lưu suất diễn, Thì bị chặn kèm thông báo rõ lý do",
+    "fixture": "Hai organizer khác chủ; sự kiện nháp; giờ quá khứ/tương lai/trùng, ISO timezone.",
+    "surfaces": "/events; /events/new; /events/:id; POST /events/:id/showtimes",
+    "code_candidates": "apps/api/src/events/; apps/web/src/components/event-editor.tsx",
+    "test_candidates": "events.e2e-spec.ts; events.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: nhập thời điểm bắt đầu ở quá khứ.",
+      "Thực hiện trên /events; /events/new; /events/:id; POST /events/:id/showtimes: lưu suất diễn.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Organizer A tạo/sửa sự kiện, thêm suất; B truy cập URL và API manage của A. Kiểm draft không công khai, quá khứ bị chặn, trùng giờ cảnh báo nhưng lưu được. So UTC trong DB và giờ Asia/Ho_Chi_Minh trên UI, kể cả gần nửa đêm.",
+    "expected": [
+      "bị chặn kèm thông báo rõ lý do"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-04-AC04",
+    "requirement_id": "S-04",
+    "kind": "AC",
+    "group": "Sự kiện",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Tạo sự kiện và suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L5"
+    },
+    "original_requirement": "Giả sử hai suất diễn cùng sự kiện trùng hoàn toàn thời gian, Khi lưu suất thứ hai, Thì cảnh báo nhưng vẫn cho lưu — một sự kiện có thể diễn song song ở hai phòng",
+    "fixture": "Hai organizer khác chủ; sự kiện nháp; giờ quá khứ/tương lai/trùng, ISO timezone.",
+    "surfaces": "/events; /events/new; /events/:id; POST /events/:id/showtimes",
+    "code_candidates": "apps/api/src/events/; apps/web/src/components/event-editor.tsx",
+    "test_candidates": "events.e2e-spec.ts; events.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: hai suất diễn cùng sự kiện trùng hoàn toàn thời gian.",
+      "Thực hiện trên /events; /events/new; /events/:id; POST /events/:id/showtimes: lưu suất thứ hai.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Organizer A tạo/sửa sự kiện, thêm suất; B truy cập URL và API manage của A. Kiểm draft không công khai, quá khứ bị chặn, trùng giờ cảnh báo nhưng lưu được. So UTC trong DB và giờ Asia/Ho_Chi_Minh trên UI, kể cả gần nửa đêm.",
+    "expected": [
+      "cảnh báo nhưng vẫn cho lưu — một sự kiện có thể diễn song song ở hai phòng"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-04-AC05",
+    "requirement_id": "S-04",
+    "kind": "AC",
+    "group": "Sự kiện",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Tạo sự kiện và suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L5"
+    },
+    "original_requirement": "Giả sử tài khoản ban tổ chức khác, Khi mở sự kiện không phải của mình, Thì bị từ chối",
+    "fixture": "Hai organizer khác chủ; sự kiện nháp; giờ quá khứ/tương lai/trùng, ISO timezone.",
+    "surfaces": "/events; /events/new; /events/:id; POST /events/:id/showtimes",
+    "code_candidates": "apps/api/src/events/; apps/web/src/components/event-editor.tsx",
+    "test_candidates": "events.e2e-spec.ts; events.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tài khoản ban tổ chức khác.",
+      "Thực hiện trên /events; /events/new; /events/:id; POST /events/:id/showtimes: mở sự kiện không phải của mình.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Organizer A tạo/sửa sự kiện, thêm suất; B truy cập URL và API manage của A. Kiểm draft không công khai, quá khứ bị chặn, trùng giờ cảnh báo nhưng lưu được. So UTC trong DB và giờ Asia/Ho_Chi_Minh trên UI, kể cả gần nửa đêm.",
+    "expected": [
+      "bị từ chối"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-04-NFR",
+    "requirement_id": "S-04",
+    "kind": "NFR",
+    "group": "Sự kiện",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Tạo sự kiện và suất diễn — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N5"
+    },
+    "original_requirement": "thời gian lưu ở UTC, hiển thị theo múi giờ Việt Nam",
+    "fixture": "Hai organizer khác chủ; sự kiện nháp; giờ quá khứ/tương lai/trùng, ISO timezone.",
+    "surfaces": "/events; /events/new; /events/:id; POST /events/:id/showtimes",
+    "code_candidates": "apps/api/src/events/; apps/web/src/components/event-editor.tsx",
+    "test_candidates": "events.e2e-spec.ts; events.service.spec.ts",
+    "steps": [
+      "Organizer A tạo/sửa sự kiện, thêm suất; B truy cập URL và API manage của A. Kiểm draft không công khai, quá khứ bị chặn, trùng giờ cảnh báo nhưng lưu được. So UTC trong DB và giờ Asia/Ho_Chi_Minh trên UI, kể cả gần nửa đêm.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "thời gian lưu ở UTC, hiển thị theo múi giờ Việt Nam"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

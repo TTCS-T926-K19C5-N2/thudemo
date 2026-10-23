@@ -1,0 +1,31 @@
+{
+  "capturedAt": "2026-10-23T08:20:33.324Z",
+  "profile": "s1demo-384da3d43b41",
+  "cleanup": "exact-run-fixture only",
+  "outcome": {
+    "removedEventId": "b9eecb6f-1de2-4f1d-8dc1-8391937a894c",
+    "removedShowtimeId": "8955005d-d389-4885-9a3b-b7892acf82a2",
+    "removedOnlyAfterExactOwnerNameStatusAndChildGuards": true,
+    "children": {
+      "orders": 0,
+      "seats": 0,
+      "categories": 0,
+      "coupons": 0,
+      "gates": 0,
+      "waitlist": 0
+    },
+    "after": {
+      "eventCount": 40,
+      "showtimeCount": 42,
+      "orderCount": 2,
+      "ticketCount": 2
+    }
+  },
+  "expectedAfter": {
+    "eventCount": 40,
+    "showtimeCount": 42,
+    "orderCount": 2,
+    "ticketCount": 2
+  },
+  "status": "PASS"
+}

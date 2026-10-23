@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-23T14:15:32.502Z",
+  "scope": "all git-dirty/untracked non-evidence files; excludes ignored local runtime state",
+  "checked": 185,
+  "matched": 183,
+  "mismatches": [
+    {
+      "path": "DEMO_HANDOFF.md",
+      "result": "HASH_MISMATCH"
+    },
+    {
+      "path": "docs/testing/AI_REMEDIATION_PLAN_20261022/DEMO_5H_PROMPT_20261023.md",
+      "result": "MISSING_FROM_PREPARED"
+    }
+  ],
+  "conclusion": "No application/package/migration/demo-data/asset file mismatch found; observed differences are documentation-only."
+}

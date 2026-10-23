@@ -1,5 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  Optional,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { randomUUID } from 'node:crypto';
+import QRCode from 'qrcode';
+import { MailService } from '../mail/mail.service.js';
+import { TICKET_MAIL_TRANSPORT } from './ticket-mail-transport.js';
 
 export type EmailNotificationType = 'REMINDER' | 'RESCHEDULED';
 
@@ -19,12 +29,22 @@ export interface EmailSender {
   send(payload: TicketReminderEmailPayload): Promise<void>;
 }
 
+const escape = (value: string) =>
+  value.replace(/[&<>"']/g, (character) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[
+      character
+    ]!,
+  );
+
 @Injectable()
 export class TicketEmailService {
   private readonly logger = new Logger(TicketEmailService.name);
   private customSender?: EmailSender;
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    @Optional() @Inject(TICKET_MAIL_TRANSPORT) private readonly transport?: MailService,
+  ) {}
 
   setSender(sender?: EmailSender) {
     this.customSender = sender;
@@ -35,32 +55,39 @@ export class TicketEmailService {
       await this.customSender.send(payload);
       return;
     }
+    if (this.config.get<string>('TICKET_MAIL_MODE') === 'off' || !this.transport?.ready)
+      throw new ServiceUnavailableException('Dịch vụ email chưa sẵn sàng.');
 
-    const smtpHost = this.config.get<string>('SMTP_HOST');
-    const smtpUser = this.config.get<string>('SMTP_USER');
-
-    if (smtpHost && smtpUser) {
-      this.logger.log(
-        `[SMTP Dispatch] ${payload.type} notification transport selected`,
-      );
-      return;
-    }
-
-    // Dev environment per T-08 specification: log structured email payload
-    this.logger.log(
-      JSON.stringify({
-        event:
-          payload.type === 'RESCHEDULED'
-            ? 'ticket_rescheduled_email'
-            : 'ticket_reminder_email',
-        type: payload.type,
-        showtimeStart: payload.showtimeStart.toISOString(),
-        previousStart: payload.previousStart
-          ? payload.previousStart.toISOString()
-          : undefined,
-        hasQr: Boolean(payload.qrPayload),
-        timestamp: new Date().toISOString(),
-      }),
-    );
+    const id = randomUUID();
+    const title = payload.type === 'RESCHEDULED' ? 'Thông báo đổi giờ diễn' : 'Nhắc lịch diễn';
+    const lines = [
+      title,
+      payload.eventName,
+      `Giờ diễn: ${payload.showtimeStart.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`,
+      ...(payload.previousStart
+        ? [`Giờ cũ: ${payload.previousStart.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`]
+        : []),
+      payload.location,
+      `Ghế: ${payload.seatLabel}`,
+      `Mã vé: ${payload.ticketCode}`,
+    ];
+    const attachments = payload.qrPayload
+      ? [
+          {
+            filename: 'ma-qr-ve.png',
+            content: await QRCode.toBuffer(payload.qrPayload, { width: 512, margin: 4 }),
+            contentType: 'image/png' as const,
+          },
+        ]
+      : [];
+    await this.transport.send({
+      to: payload.toEmail,
+      subject: `${title} — ${payload.eventName}`,
+      messageId: `<${id}@codegym.local>`,
+      text: lines.join('\n'),
+      html: lines.map((line) => `<p>${escape(line)}</p>`).join(''),
+      attachments,
+    });
+    this.logger.log(`Accepted ${payload.type} message by configured transport.`);
   }
 }

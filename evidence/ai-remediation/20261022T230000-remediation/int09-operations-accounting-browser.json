@@ -1,0 +1,106 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Run-bound dual-role synthetic organizer/accountant; isolated API/PostgreSQL/Mailpit; lifecycle worker off during UI review.",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "http": [
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/operations/refunds",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/{fixture}/cancellation",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/{fixture}/cancellation",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/{fixture}/cancellation",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/operations/refunds",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/{fixture}/cancellation",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/{fixture}/cancellation",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/{fixture}/cancellation",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/{fixture}/cancellation",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/{fixture}/cancellation",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/{fixture}/cancellation",
+      "status": 200
+    }
+  ],
+  "screenshots": [
+    "int09-operations-accounting-desktop.png",
+    "int09-operations-accounting-mobile.png"
+  ],
+  "errors": [],
+  "assertions": [
+    {
+      "viewport": "1440x1000",
+      "jobStatus": "COMPLETED",
+      "refundSummary": "SUCCEEDED 22",
+      "accountantPanel": true,
+      "mobileOverflow": true
+    },
+    {
+      "viewport": "390x844",
+      "jobStatus": "COMPLETED",
+      "refundSummary": "SUCCEEDED 22",
+      "accountantPanel": true,
+      "mobileOverflow": true
+    }
+  ]
+}

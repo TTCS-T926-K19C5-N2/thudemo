@@ -1,0 +1,281 @@
+[
+  {
+    "id": "GOV-01",
+    "requirement_id": "DoD",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C2"
+    },
+    "title": "Code review đã duyệt bởi ít nhất một thành viên khác",
+    "original_requirement": "Code review đã duyệt bởi ít nhất một thành viên khác",
+    "blocking_rule": "—",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "Code review đã duyệt bởi ít nhất một thành viên khác"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "GOV-02",
+    "requirement_id": "DoD",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C3"
+    },
+    "title": "Unit test cho nhánh logic mới; độ phủ trên phần thay đổi không giảm",
+    "original_requirement": "Unit test cho nhánh logic mới; độ phủ trên phần thay đổi không giảm",
+    "blocking_rule": "—",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "Unit test cho nhánh logic mới; độ phủ trên phần thay đổi không giảm"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "GOV-03",
+    "requirement_id": "DoD",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C4"
+    },
+    "title": "CI xanh: build, lint, typecheck, test",
+    "original_requirement": "CI xanh: build, lint, typecheck, test",
+    "blocking_rule": "—",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "CI xanh: build, lint, typecheck, test"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "GOV-04",
+    "requirement_id": "DoD",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C5"
+    },
+    "title": "Không có secret trong mã nguồn; quét phụ thuộc sạch",
+    "original_requirement": "Không có secret trong mã nguồn; quét phụ thuộc sạch",
+    "blocking_rule": "—",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "Không có secret trong mã nguồn; quét phụ thuộc sạch"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "GOV-05",
+    "requirement_id": "DoD",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C6"
+    },
+    "title": "AC pass trên môi trường staging, không chỉ trên máy cá nhân",
+    "original_requirement": "AC pass trên môi trường staging, không chỉ trên máy cá nhân",
+    "blocking_rule": "—",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "AC pass trên môi trường staging, không chỉ trên máy cá nhân"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "GOV-06",
+    "requirement_id": "DoD",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C7"
+    },
+    "title": "Story chạm tiền hoặc chạm ghế: có test đồng thời chứng minh không bán trùng và không ghi nhận hai lần",
+    "original_requirement": "Story chạm tiền hoặc chạm ghế: có test đồng thời chứng minh không bán trùng và không ghi nhận hai lần",
+    "blocking_rule": "—",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "Story chạm tiền hoặc chạm ghế: có test đồng thời chứng minh không bán trùng và không ghi nhận hai lần"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "GOV-07",
+    "requirement_id": "DoD",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C8"
+    },
+    "title": "Job nền và webhook: chạy lại nhiều lần cho cùng kết quả",
+    "original_requirement": "Job nền và webhook: chạy lại nhiều lần cho cùng kết quả",
+    "blocking_rule": "—",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "Job nền và webhook: chạy lại nhiều lần cho cùng kết quả"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "GOV-08",
+    "requirement_id": "DoD",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C9"
+    },
+    "title": "Không log dữ liệu định danh cá nhân và không log thông tin thanh toán",
+    "original_requirement": "Không log dữ liệu định danh cá nhân và không log thông tin thanh toán",
+    "blocking_rule": "—",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "Không log dữ liệu định danh cá nhân và không log thông tin thanh toán"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "GOV-09",
+    "requirement_id": "DoD",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C10"
+    },
+    "title": "README hoặc tài liệu cập nhật nếu đổi hành vi công khai hoặc thêm biến môi trường",
+    "original_requirement": "README hoặc tài liệu cập nhật nếu đổi hành vi công khai hoặc thêm biến môi trường",
+    "blocking_rule": "—",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "README hoặc tài liệu cập nhật nếu đổi hành vi công khai hoặc thêm biến môi trường"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

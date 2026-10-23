@@ -1,0 +1,3 @@
+﻿ticket_code,seat,entry_time_utc,gate,conflict
+"AI-20261022T230000-remediation-1","QA-1","2026-10-23T04:26:09.242Z","Cửa Đông","true"
+"AI-20261022T230000-remediation-2","QA-2","2026-10-23T04:26:10.246Z","Cửa Tây","true"

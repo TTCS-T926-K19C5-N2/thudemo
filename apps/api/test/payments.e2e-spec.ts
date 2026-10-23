@@ -56,7 +56,7 @@ describe('Payments S-18 E2E Integration', () => {
 
     originalFetch = globalThis.fetch;
     globalThis.fetch = vi.fn(async (url: any, init: any) => {
-      if (typeof url === 'string' && url.includes('momo.vn')) {
+      if (typeof url === 'string' && url.endsWith('/v2/gateway/api/create')) {
         return {
           ok: true,
           json: async () => ({

@@ -4,12 +4,12 @@ export type CheckInResult = {
   ticketId: string;
   gateName: string;
   kind: string;
-  seat: { category: string; row: string; number: number; label: string };
-  checkedInAt: string;
+  seat?: { category: string; row: string; number: number; label: string };
+  checkedInAt?: string;
 };
 export type UsedTicket = {
-  checkedInAt: string;
-  gateName: string;
+  checkedInAt?: string;
+  gateName?: string;
   canOverride: boolean;
 };
 export function decodeCheckIn(value: unknown): CheckInResult {

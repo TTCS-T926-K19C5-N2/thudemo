@@ -1,0 +1,125 @@
+{
+  "checkpoint": "R77",
+  "at": "2026-10-23T15:17:15.269Z",
+  "docs": [
+    "DEMO_HANDOFF.md",
+    "DEMO_WALKTHROUGH.md",
+    "DEMO_ACCOUNTS.md",
+    "demo-role-feature-matrix.json",
+    "README.md"
+  ],
+  "matrix": {
+    "rows": 32,
+    "validStatuses": true,
+    "statusCounts": {
+      "VERIFIED_DEMO": 8,
+      "IMPLEMENTED_NOT_VERIFIED": 23,
+      "FAIL": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "EXTERNAL_ONLY": 1
+    }
+  },
+  "privateAccountConfig": {
+    "exists": true,
+    "count": 7,
+    "accounts": [
+      {
+        "name": "admin",
+        "email": "admin@s1demo-384da3d43b41.demo.invalid",
+        "roles": [
+          "ADMIN"
+        ],
+        "passwordStored": true
+      },
+      {
+        "name": "organizer-a",
+        "email": "organizer-a@s1demo-384da3d43b41.demo.invalid",
+        "roles": [
+          "ORGANIZER"
+        ],
+        "passwordStored": true
+      },
+      {
+        "name": "organizer-b",
+        "email": "organizer-b@s1demo-384da3d43b41.demo.invalid",
+        "roles": [
+          "ORGANIZER"
+        ],
+        "passwordStored": true
+      },
+      {
+        "name": "buyer",
+        "email": "buyer@s1demo-384da3d43b41.demo.invalid",
+        "roles": [
+          "BUYER"
+        ],
+        "passwordStored": true
+      },
+      {
+        "name": "staff",
+        "email": "staff@s1demo-384da3d43b41.demo.invalid",
+        "roles": [
+          "STAFF"
+        ],
+        "passwordStored": true
+      },
+      {
+        "name": "accountant",
+        "email": "accountant@s1demo-384da3d43b41.demo.invalid",
+        "roles": [
+          "ACCOUNTANT"
+        ],
+        "passwordStored": true
+      },
+      {
+        "name": "lock-test",
+        "email": "lock-test@s1demo-384da3d43b41.demo.invalid",
+        "roles": [
+          "BUYER"
+        ],
+        "passwordStored": true
+      }
+    ],
+    "secretsCopied": false
+  },
+  "currentResultRows": 521,
+  "currentResultStatusCounts": {
+    "NOT_RUN": 326,
+    "PASS": 180,
+    "BLOCKED": 9,
+    "NEEDS_DECISION": 5,
+    "MISSING": 1
+  },
+  "transferCodeHashesCurrent": [
+    {
+      "file": "apps/api/src/tickets/tickets.service.ts",
+      "sha256": "6ab56928b246013ee45bf27b800161f33964b071fa89161d708c34065a217033"
+    },
+    {
+      "file": "apps/api/src/orders/ticket-qr.service.ts",
+      "sha256": "e3474aaa517636b81af463d9da54ebed3f15eae5b36f6292785307bffe856cfb"
+    },
+    {
+      "file": "apps/api/src/tickets/ticket-delivery.service.ts",
+      "sha256": "bd732a26afecf2d276b653c9493a833c3a8c7ee557ea508e959dada20e703893"
+    },
+    {
+      "file": "apps/api/src/orders/ticket-check-in.service.ts",
+      "sha256": "2d04c78caa301ec9ed6d3826ed85b73f59ef386fc22fdf7f555f9d07b3c8c789"
+    },
+    {
+      "file": "apps/api/src/scanner/scanner-snapshot.service.ts",
+      "sha256": "a59f17ce4c17cbbd91700f15a6fbe0e21ed0b648d13f6e2e5908a21cf251b031"
+    },
+    {
+      "file": "apps/web/src/features/tickets/my-tickets.tsx",
+      "sha256": "e35c6c72fc63ca49692aa276e43923723ef5a69df356c820148706460d98d9e6"
+    }
+  ],
+  "transferCodeHashesMatchPrepared": true,
+  "docsOnlyChangesInR77": true,
+  "cleanPackageProof": false,
+  "browserRecheck": false,
+  "testsRunForDocs": false
+}

@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-27-AC",
+    "requirement_id": "T-27",
+    "parent_requirement": "S-12",
+    "kind": "TASK_AC",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Job nền quét và nhả ghế quá hạn, chạy lặp lại được",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G28"
+    },
+    "original_requirement": "Tạo giữ chỗ quá hạn thủ công rồi chạy job thì ghế trở lại trống; chạy job hai lần liên tiếp không gây lỗi; log ghi số bản ghi đã dọn",
+    "fixture": "Hold hết hạn, còn hạn và đã chuyển sang order; worker off/on.",
+    "surfaces": "Worker hết hạn và GET ghế",
+    "code_candidates": "apps/api/src/holds/hold-expiry.scheduler.ts; apps/api/src/hold-expiry-worker.ts",
+    "test_candidates": "hold-expiry.scheduler.spec.ts; seat-expiry-job.service.spec.ts",
+    "steps": [
+      "Khi worker tắt, hold quá hạn vẫn được truy vấn như trống. Chạy job hai lần, restart job sau backlog; chỉ dọn hết hạn, không dọn bảo lưu đơn đang chờ. Dùng fake clock/DB fixture, không chỉnh giờ hệ điều hành.",
+      "Kiểm riêng tiêu chí task T-27: Tạo giữ chỗ quá hạn thủ công rồi chạy job thì ghế trở lại trống; chạy job hai lần liên tiếp không gây lỗi; log ghi số bản ghi đã dọn",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Tạo giữ chỗ quá hạn thủ công rồi chạy job thì ghế trở lại trống; chạy job hai lần liên tiếp không gây lỗi; log ghi số bản ghi đã dọn"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-27-NFR",
+    "requirement_id": "T-27",
+    "parent_requirement": "S-12",
+    "kind": "TASK_NFR",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Job nền quét và nhả ghế quá hạn, chạy lặp lại được",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I28"
+    },
+    "original_requirement": "job ghi log số bản ghi đã dọn mỗi lần chạy để theo dõi được",
+    "fixture": "Hold hết hạn, còn hạn và đã chuyển sang order; worker off/on.",
+    "surfaces": "Worker hết hạn và GET ghế",
+    "code_candidates": "apps/api/src/holds/hold-expiry.scheduler.ts; apps/api/src/hold-expiry-worker.ts",
+    "test_candidates": "hold-expiry.scheduler.spec.ts; seat-expiry-job.service.spec.ts",
+    "steps": [
+      "Khi worker tắt, hold quá hạn vẫn được truy vấn như trống. Chạy job hai lần, restart job sau backlog; chỉ dọn hết hạn, không dọn bảo lưu đơn đang chờ. Dùng fake clock/DB fixture, không chỉnh giờ hệ điều hành.",
+      "Kiểm riêng tiêu chí task T-27: job ghi log số bản ghi đã dọn mỗi lần chạy để theo dõi được",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "job ghi log số bản ghi đã dọn mỗi lần chạy để theo dõi được"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

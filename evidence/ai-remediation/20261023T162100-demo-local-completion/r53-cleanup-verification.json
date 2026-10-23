@@ -1,0 +1,19 @@
+{
+  "runId": "R53-1792755391661",
+  "exactSessionMatched": true,
+  "exactOrphanSessionDeleted": 1,
+  "before": {
+    "orders": 5,
+    "tickets": 5,
+    "activeShowtimeHolds": 0,
+    "holdSessions": 5
+  },
+  "after": {
+    "orders": 5,
+    "tickets": 5,
+    "activeShowtimeHolds": 0,
+    "holdSessions": 4
+  },
+  "countsRestored": true,
+  "seatFree": true
+}

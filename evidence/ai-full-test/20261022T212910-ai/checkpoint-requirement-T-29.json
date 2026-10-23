@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-29-AC",
+    "requirement_id": "T-29",
+    "parent_requirement": "S-13",
+    "kind": "TASK_AC",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Ràng buộc ở tầng cơ sở dữ liệu chặn hai giữ chỗ cùng ghế còn hiệu lực",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G30"
+    },
+    "original_requirement": "Chèn thủ công hai bản ghi giữ chỗ cùng ghế bằng SQL thì bản thứ hai bị từ chối; bản cũ đã hết hạn thì bản mới chèn được",
+    "fixture": "100 ghế; 200 request, đúng 2 người/request cạnh tranh mỗi ghế, quota đủ cao.",
+    "surfaces": "API hold và ràng buộc PostgreSQL",
+    "code_candidates": "apps/api/src/prisma/hold-transaction.ts; apps/api/prisma/migrations/",
+    "test_candidates": "apps/api/test/k01-benchmark.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Đồng bộ barrier cho 200 request tranh 100 ghế, đúng 100 thành công và 100 conflict, lặp 10 vòng với dữ liệu mới. Thử 5 ghế có ghế thứ 3 bận phải rollback cả 5; thử hold cũ hết hạn và chèn SQL cạnh tranh để chứng minh DB bảo vệ.",
+      "Kiểm riêng tiêu chí task T-29: Chèn thủ công hai bản ghi giữ chỗ cùng ghế bằng SQL thì bản thứ hai bị từ chối; bản cũ đã hết hạn thì bản mới chèn được",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Chèn thủ công hai bản ghi giữ chỗ cùng ghế bằng SQL thì bản thứ hai bị từ chối; bản cũ đã hết hạn thì bản mới chèn được"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-29-NFR",
+    "requirement_id": "T-29",
+    "parent_requirement": "S-13",
+    "kind": "TASK_NFR",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Ràng buộc ở tầng cơ sở dữ liệu chặn hai giữ chỗ cùng ghế còn hiệu lực",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I30"
+    },
+    "original_requirement": "ràng buộc phải đúng cả khi giữ chỗ cũ đã hết hạn — hết hạn thì không tính là còn hiệu lực",
+    "fixture": "100 ghế; 200 request, đúng 2 người/request cạnh tranh mỗi ghế, quota đủ cao.",
+    "surfaces": "API hold và ràng buộc PostgreSQL",
+    "code_candidates": "apps/api/src/prisma/hold-transaction.ts; apps/api/prisma/migrations/",
+    "test_candidates": "apps/api/test/k01-benchmark.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Đồng bộ barrier cho 200 request tranh 100 ghế, đúng 100 thành công và 100 conflict, lặp 10 vòng với dữ liệu mới. Thử 5 ghế có ghế thứ 3 bận phải rollback cả 5; thử hold cũ hết hạn và chèn SQL cạnh tranh để chứng minh DB bảo vệ.",
+      "Kiểm riêng tiêu chí task T-29: ràng buộc phải đúng cả khi giữ chỗ cũ đã hết hạn — hết hạn thì không tính là còn hiệu lực",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "ràng buộc phải đúng cả khi giữ chỗ cũ đã hết hạn — hết hạn thì không tính là còn hiệu lực"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

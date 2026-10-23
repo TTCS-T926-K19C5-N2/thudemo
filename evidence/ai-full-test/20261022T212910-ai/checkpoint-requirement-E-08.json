@@ -1,0 +1,61 @@
+[
+  {
+    "id": "E-08-AC",
+    "requirement_id": "E-08",
+    "kind": "EPIC",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Later",
+    "priority": "Should",
+    "readiness": "SPECIFIED",
+    "title": "Huỷ vé và hoàn tiền",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "G10"
+    },
+    "original_requirement": "Huỷ vé thì tiền hoàn đúng chính sách và ghế bán lại được; mọi lệnh hoàn đều có trạng thái cuối rõ ràng",
+    "steps": [
+      "Đối chiếu tập story con và các hành trình đầu-cuối trong kế hoạch.",
+      "Kiểm từng mệnh đề ở cấp tích hợp; mọi story đơn lẻ PASS chưa tự chứng minh epic PASS."
+    ],
+    "expected": [
+      "Huỷ vé thì tiền hoàn đúng chính sách và ghế bán lại được; mọi lệnh hoàn đều có trạng thái cuối rõ ràng"
+    ],
+    "evidence_required": [
+      "Liên kết các case con và E2E đã chạy"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "E-08-NFR",
+    "requirement_id": "E-08",
+    "kind": "EPIC_NFR",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Later",
+    "priority": "Should",
+    "readiness": "SPECIFIED",
+    "title": "Huỷ vé và hoàn tiền",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "I10"
+    },
+    "original_requirement": "mọi lần hoàn tiền ghi nhật ký kèm người thực hiện và lý do",
+    "steps": [
+      "Kiểm NFR ở phạm vi epic, đối chiếu các story con và số đo tích hợp; không chỉ suy từ unit test."
+    ],
+    "expected": [
+      "mọi lần hoàn tiền ghi nhật ký kèm người thực hiện và lý do"
+    ],
+    "evidence_required": [
+      "Bằng chứng kỹ thuật hoặc số đo tương ứng"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

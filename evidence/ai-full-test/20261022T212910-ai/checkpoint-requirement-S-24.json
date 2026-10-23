@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-24-AC01",
+    "requirement_id": "S-24",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Thanh toán thất bại thì đơn vẫn chờ và ghế còn giữ tới hết hạn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L26"
+    },
+    "original_requirement": "Giả sử cổng trả về thất bại, Khi hệ thống nhận kết quả, Thì đơn vẫn ở trạng thái chờ, ghế vẫn được giữ tới hết thời hạn thanh toán, và trang đơn hiện nút thanh toán lại",
+    "fixture": "Order pending còn hạn; gateway mock fail rồi success, biến thể đã quá hạn.",
+    "surfaces": "/orders/:id; POST /orders/:id/pay",
+    "code_candidates": "apps/api/src/payments/; apps/web/src/features/order-review/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: cổng trả về thất bại.",
+      "Thực hiện trên /orders/:id; POST /orders/:id/pay: hệ thống nhận kết quả.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Chọn thất bại: order/hold/TTL không đổi, có log lần thử. Thanh toán lại dùng cùng orderId; double click không tạo hai attempt đang xử lý. Quá hạn thì cả UI/API chặn retry.",
+    "expected": [
+      "đơn vẫn ở trạng thái chờ, ghế vẫn được giữ tới hết thời hạn thanh toán, và trang đơn hiện nút thanh toán lại"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-24-AC02",
+    "requirement_id": "S-24",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Thanh toán thất bại thì đơn vẫn chờ và ghế còn giữ tới hết hạn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L26"
+    },
+    "original_requirement": "Giả sử tôi bấm thanh toán lại, Khi tới cổng, Thì cùng mã đơn được dùng, không tạo đơn mới",
+    "fixture": "Order pending còn hạn; gateway mock fail rồi success, biến thể đã quá hạn.",
+    "surfaces": "/orders/:id; POST /orders/:id/pay",
+    "code_candidates": "apps/api/src/payments/; apps/web/src/features/order-review/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi bấm thanh toán lại.",
+      "Thực hiện trên /orders/:id; POST /orders/:id/pay: tới cổng.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Chọn thất bại: order/hold/TTL không đổi, có log lần thử. Thanh toán lại dùng cùng orderId; double click không tạo hai attempt đang xử lý. Quá hạn thì cả UI/API chặn retry.",
+    "expected": [
+      "cùng mã đơn được dùng, không tạo đơn mới"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-24-AC03",
+    "requirement_id": "S-24",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Thanh toán thất bại thì đơn vẫn chờ và ghế còn giữ tới hết hạn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L26"
+    },
+    "original_requirement": "Giả sử thời hạn đã hết, Khi bấm thanh toán lại, Thì bị từ chối và S-23 xử lý đơn như thường",
+    "fixture": "Order pending còn hạn; gateway mock fail rồi success, biến thể đã quá hạn.",
+    "surfaces": "/orders/:id; POST /orders/:id/pay",
+    "code_candidates": "apps/api/src/payments/; apps/web/src/features/order-review/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: thời hạn đã hết.",
+      "Thực hiện trên /orders/:id; POST /orders/:id/pay: bấm thanh toán lại.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Chọn thất bại: order/hold/TTL không đổi, có log lần thử. Thanh toán lại dùng cùng orderId; double click không tạo hai attempt đang xử lý. Quá hạn thì cả UI/API chặn retry.",
+    "expected": [
+      "bị từ chối và S-23 xử lý đơn như thường"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-24-NFR",
+    "requirement_id": "S-24",
+    "kind": "NFR",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Thanh toán thất bại thì đơn vẫn chờ và ghế còn giữ tới hết hạn — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N26"
+    },
+    "original_requirement": "số lần thử lại ghi vào nhật ký đơn",
+    "fixture": "Order pending còn hạn; gateway mock fail rồi success, biến thể đã quá hạn.",
+    "surfaces": "/orders/:id; POST /orders/:id/pay",
+    "code_candidates": "apps/api/src/payments/; apps/web/src/features/order-review/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments.e2e-spec.ts",
+    "steps": [
+      "Chọn thất bại: order/hold/TTL không đổi, có log lần thử. Thanh toán lại dùng cùng orderId; double click không tạo hai attempt đang xử lý. Quá hạn thì cả UI/API chặn retry.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "số lần thử lại ghi vào nhật ký đơn"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

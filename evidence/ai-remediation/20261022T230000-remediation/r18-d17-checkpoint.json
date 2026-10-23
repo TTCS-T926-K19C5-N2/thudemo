@@ -1,0 +1,60 @@
+{
+  "run_id": "20261022T230000-remediation",
+  "checkpoint": "R18 / INT-14 after D17 approval",
+  "recorded_at": "2026-10-23T04:23:39.764Z",
+  "changed_cases": [
+    "INT-14",
+    "INT-14.01",
+    "INT-14.02",
+    "INT-14.03"
+  ],
+  "counts": {
+    "NOT_RUN": 360,
+    "PASS": 70,
+    "BLOCKED": 4,
+    "NEEDS_DECISION": 4,
+    "MISSING": 1
+  },
+  "decision": {
+    "id": "D17",
+    "topic": "Payment gateway ambiguous initiation failure and safe retry/reconciliation",
+    "status": "APPROVED_USER",
+    "approval_source": "User reply in current conversation",
+    "choice": "C — explicit rejection permits retry; ambiguous timeout/transport failure blocks retry and requires reconciliation.",
+    "affected": [
+      "R18",
+      "INT-14",
+      "S-20",
+      "S-23"
+    ],
+    "notes": "Implemented and verified locally: definitive rejection marks FAILED; ambiguous result retains INITIATED and blocks another attempt. Real provider/staging behavior remains unverified."
+  },
+  "limitations": [
+    "Mock/local gateway only; no real provider or staging verification.",
+    "Browser injects the ambiguous outcome at the API boundary; API persistence behavior is independently checked by isolated PostgreSQL E2E.",
+    "Repository remediation remains incomplete outside this local slice."
+  ],
+  "evidence_files": [
+    "r18-d17-full-api-e2e-final.log",
+    "r18-d17-full-api-e2e-final.exitcode",
+    "r18-d17-payment-unit-final.log",
+    "r18-d17-payment-unit-final.exitcode",
+    "r18-d17-order-review-ui-unit.log",
+    "r18-d17-order-review-ui-unit.exitcode",
+    "d17-browser-verification.json",
+    "d17-payment-unknown-desktop.png",
+    "d17-payment-unknown-mobile.png",
+    "apps/api/test/mock-gateway.e2e-spec.ts",
+    "apps/api/src/payments/payments.service.ts",
+    "apps/web/src/features/order-review/order-review.tsx",
+    "browser-fixture-cleanup.json",
+    "r18-d17-api-build.log",
+    "r18-d17-web-build.log",
+    "r18-d17-api-typecheck-final.log",
+    "r18-d17-web-typecheck-final.log",
+    "r18-d17-api-lint.log",
+    "r18-d17-web-lint.log",
+    "r18-d17-api-full-unit.log",
+    "r18-d17-web-full-unit.log"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "run": "R56",
+  "showtimeId": "f66556a1-e3f7-4f9e-a4bd-8e4298e2e772",
+  "viewport": "1280x900",
+  "visibleClosedMessage": true,
+  "bodyText": "BẢN DEMO · s1demo-384da3d43b41 · Sự kiện, lịch và giá dùng để trình diễn; đặt vé và thanh toán chỉ chạy trong môi trường local, không thu tiền thật.\nconfirmation_number\nVé Sự Kiện\nsearch\nTìm\nSự kiện\nNhà hát\nVé của tôi\nĐăng nhập\nSuất diễn chưa mở bán hoặc đã đóng.Thử lại\nconfirmation_number\nVé Sự Kiện\n\n© 2026 Vé Sự Kiện\n\nĐiều khoản dịch vụ\nChính sách hoàn vé\nQuy định sơ đồ ghế\nHỗ trợ",
+  "emptySeatGridRendered": false,
+  "loginRedirected": false,
+  "relevantHttp": [
+    {
+      "path": "/api/showtimes/f66556a1-e3f7-4f9e-a4bd-8e4298e2e772",
+      "status": 404
+    }
+  ],
+  "pageErrors": [],
+  "screenshot": "r56-empty-seatmap-ui.png",
+  "dbOracle": "r55-showtime-map-inventory.json"
+}

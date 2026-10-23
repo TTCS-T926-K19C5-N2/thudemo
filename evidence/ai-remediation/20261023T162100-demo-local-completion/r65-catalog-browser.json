@@ -1,0 +1,32 @@
+{
+  "runId": "20261023T162100-demo-local-completion-R65",
+  "checkedAt": "2026-10-23T12:52:52.977Z",
+  "profile": "s1demo-384da3d43b41",
+  "runtimeBuild": "R65 current prepared source after official Restart",
+  "databaseWrites": false,
+  "providerCalls": false,
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 720,
+      "headerSearch": "visible and enabled",
+      "crossPageSearch": "PASS: Số 186 found after loading 43/43 cursor results; one matching result",
+      "locationFilter": "PASS: 2 Bắc Ninh results after loading all 43 cursor results",
+      "priceSort": {
+        "resultCount": 43,
+        "minPricesMonotonicAscending": true,
+        "first": 190000,
+        "last": 450000
+      },
+      "pageErrors": []
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "search": "PASS: cross-page result found",
+      "locationFilter": "PASS: two Bắc Ninh results after loading all 43",
+      "horizontalOverflow": false,
+      "pageErrors": []
+    }
+  }
+}

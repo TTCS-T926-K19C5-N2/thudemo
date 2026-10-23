@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-27-AC01",
+    "requirement_id": "S-27",
+    "kind": "AC",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Vé gửi qua email kèm mã QR",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L28"
+    },
+    "original_requirement": "Giả sử đơn chuyển sang đã trả, Khi hệ thống xử lý xong, Thì một email có đủ vé kèm ảnh QR được gửi tới địa chỉ tài khoản trong vòng 1 phút",
+    "fixture": "SMTP catcher local thành công/lỗi; worker off/on; order 3 vé.",
+    "surfaces": "POST /orders/:id/tickets/resend; SMTP/outbox",
+    "code_candidates": "apps/api/src/tickets/ticket-delivery.service.ts; apps/api/src/mail/",
+    "test_candidates": "ticket-delivery.service.spec.ts; docs/SPRINT45_TICKET_DELIVERY.md",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: đơn chuyển sang đã trả.",
+      "Thực hiện trên POST /orders/:id/tickets/resend; SMTP/outbox: hệ thống xử lý xong.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Bật worker trong fixture, trả tiền và đo từ PAID đến catcher nhận đủ 3 PNG dưới 60 giây. Làm SMTP lỗi và kiểm backoff/FAILED theo số lần được chốt. Gửi lại phải cùng QR; worker off phải báo chưa gửi, không coi QUEUED là SENT.",
+    "expected": [
+      "một email có đủ vé kèm ảnh QR được gửi tới địa chỉ tài khoản trong vòng 1 phút"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-27-AC02",
+    "requirement_id": "S-27",
+    "kind": "AC",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Vé gửi qua email kèm mã QR",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L28"
+    },
+    "original_requirement": "Giả sử gửi email thất bại, Khi thử lại, Thì tối đa 3 lần cách nhau tăng dần, rồi ghi nhận lỗi để quản trị xử lý tay",
+    "fixture": "SMTP catcher local thành công/lỗi; worker off/on; order 3 vé.",
+    "surfaces": "POST /orders/:id/tickets/resend; SMTP/outbox",
+    "code_candidates": "apps/api/src/tickets/ticket-delivery.service.ts; apps/api/src/mail/",
+    "test_candidates": "ticket-delivery.service.spec.ts; docs/SPRINT45_TICKET_DELIVERY.md",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: gửi email thất bại.",
+      "Thực hiện trên POST /orders/:id/tickets/resend; SMTP/outbox: thử lại.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Bật worker trong fixture, trả tiền và đo từ PAID đến catcher nhận đủ 3 PNG dưới 60 giây. Làm SMTP lỗi và kiểm backoff/FAILED theo số lần được chốt. Gửi lại phải cùng QR; worker off phải báo chưa gửi, không coi QUEUED là SENT.",
+    "expected": [
+      "tối đa 3 lần cách nhau tăng dần, rồi ghi nhận lỗi để quản trị xử lý tay"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-27-AC03",
+    "requirement_id": "S-27",
+    "kind": "AC",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Vé gửi qua email kèm mã QR",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L28"
+    },
+    "original_requirement": "Giả sử người mua bấm \"gửi lại vé\", Khi xử lý, Thì gửi lại đúng vé đã có, không sinh vé mới",
+    "fixture": "SMTP catcher local thành công/lỗi; worker off/on; order 3 vé.",
+    "surfaces": "POST /orders/:id/tickets/resend; SMTP/outbox",
+    "code_candidates": "apps/api/src/tickets/ticket-delivery.service.ts; apps/api/src/mail/",
+    "test_candidates": "ticket-delivery.service.spec.ts; docs/SPRINT45_TICKET_DELIVERY.md",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: người mua bấm \"gửi lại vé\".",
+      "Thực hiện trên POST /orders/:id/tickets/resend; SMTP/outbox: xử lý.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Bật worker trong fixture, trả tiền và đo từ PAID đến catcher nhận đủ 3 PNG dưới 60 giây. Làm SMTP lỗi và kiểm backoff/FAILED theo số lần được chốt. Gửi lại phải cùng QR; worker off phải báo chưa gửi, không coi QUEUED là SENT.",
+    "expected": [
+      "gửi lại đúng vé đã có, không sinh vé mới"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-27-NFR",
+    "requirement_id": "S-27",
+    "kind": "NFR",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Vé gửi qua email kèm mã QR — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N28"
+    },
+    "original_requirement": "email không chứa thông tin thanh toán; dùng lớp gửi email ở T-08. Ước lượng thô 2 SP — tier Next",
+    "fixture": "SMTP catcher local thành công/lỗi; worker off/on; order 3 vé.",
+    "surfaces": "POST /orders/:id/tickets/resend; SMTP/outbox",
+    "code_candidates": "apps/api/src/tickets/ticket-delivery.service.ts; apps/api/src/mail/",
+    "test_candidates": "ticket-delivery.service.spec.ts; docs/SPRINT45_TICKET_DELIVERY.md",
+    "steps": [
+      "Bật worker trong fixture, trả tiền và đo từ PAID đến catcher nhận đủ 3 PNG dưới 60 giây. Làm SMTP lỗi và kiểm backoff/FAILED theo số lần được chốt. Gửi lại phải cùng QR; worker off phải báo chưa gửi, không coi QUEUED là SENT.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "email không chứa thông tin thanh toán; dùng lớp gửi email ở T-08. Ước lượng thô 2 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

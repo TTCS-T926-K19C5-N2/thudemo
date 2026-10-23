@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-50-AC01",
+    "requirement_id": "S-50",
+    "kind": "AC",
+    "group": "Báo cáo và dữ liệu",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "8",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Xem doanh thu và tồn vé theo suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L55"
+    },
+    "original_requirement": "Bảng theo suất diễn có số vé đã bán, số ghế đang giữ, số ghế còn, doanh thu theo hạng, cập nhật không trễ quá 1 phút. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP",
+    "fixture": "Giá 3 hạng; free/hold/pending/paid/refunded; oracle độc lập.",
+    "surfaces": "GET /showtimes/:id/manage/sales; /financial-report",
+    "code_candidates": "apps/api/src/lifecycle/reports.service.ts; apps/web/src/features/showtime-management/showtime-sales-report.tsx",
+    "test_candidates": "lifecycle.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Chuẩn bị fixture: Giá 3 hạng; free/hold/pending/paid/refunded; oracle độc lập.",
+      "Đối chiếu sold/held/free và doanh thu từng hạng với tập ID/order item, không cộng trùng join; đổi một trạng thái rồi đo cập nhật ≤60 giây. Organizer khác không xem được; nêu rõ doanh thu gộp/ròng theo quyết định.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Đối chiếu sold/held/free và doanh thu từng hạng với tập ID/order item, không cộng trùng join; đổi một trạng thái rồi đo cập nhật ≤60 giây. Organizer khác không xem được; nêu rõ doanh thu gộp/ròng theo quyết định.",
+    "expected": [
+      "Bảng theo suất diễn có số vé đã bán, số ghế đang giữ, số ghế còn, doanh thu theo hạng, cập nhật không trễ quá 1 phút. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-50-NFR",
+    "requirement_id": "S-50",
+    "kind": "NFR",
+    "group": "Báo cáo và dữ liệu",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "8",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Xem doanh thu và tồn vé theo suất diễn — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N55"
+    },
+    "original_requirement": "chưa refine — cần chốt tính thời gian thực hay tổng hợp theo lô",
+    "fixture": "Giá 3 hạng; free/hold/pending/paid/refunded; oracle độc lập.",
+    "surfaces": "GET /showtimes/:id/manage/sales; /financial-report",
+    "code_candidates": "apps/api/src/lifecycle/reports.service.ts; apps/web/src/features/showtime-management/showtime-sales-report.tsx",
+    "test_candidates": "lifecycle.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Đối chiếu sold/held/free và doanh thu từng hạng với tập ID/order item, không cộng trùng join; đổi một trạng thái rồi đo cập nhật ≤60 giây. Organizer khác không xem được; nêu rõ doanh thu gộp/ròng theo quyết định.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt tính thời gian thực hay tổng hợp theo lô"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

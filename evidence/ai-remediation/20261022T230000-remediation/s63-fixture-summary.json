@@ -1,0 +1,15 @@
+{
+  "runId": "20261022T230000-remediation",
+  "eventId": "539066b2-7eae-4866-85d5-0ef2adc193bc",
+  "showtimeId": "4ad9e650-9c65-4177-9958-55b279bcab9d",
+  "cohortSessionCount": 10,
+  "endBoundarySentinelCount": 1,
+  "inclusiveStartBoundary": "2026-09-22T17:00:00.000Z",
+  "exclusiveEndBoundary": "2026-10-23T17:00:00.000Z",
+  "orderCount": 5,
+  "paidCount": 3,
+  "expiredSessionCount": 5,
+  "pendingAtCutoff": 1,
+  "multiSeatHoldSample": true,
+  "syntheticOnly": true
+}

@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-39-AC",
+    "requirement_id": "T-39",
+    "parent_requirement": "S-17",
+    "kind": "TASK_AC",
+    "group": "Đơn hàng",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Trang tóm tắt đơn: ghế, hạng, đơn giá, tổng tiền, thời gian còn lại",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G40"
+    },
+    "original_requirement": "Thấy đủ thông tin; hết hạn thì nút thanh toán ẩn; mở đơn người khác thì 403",
+    "fixture": "Order A pending/expired; B đăng nhập; hai hạng giá khác nhau.",
+    "surfaces": "/orders/:id; GET /orders/:id",
+    "code_candidates": "apps/web/src/features/order-review/; apps/api/src/orders/",
+    "test_candidates": "orders.e2e-spec.ts; order-review.spec.ts",
+    "steps": [
+      "UI hiển thị từng dòng, tổng và thời gian; so SUM(unitPrice) với server. Gửi giá/tổng sửa bằng API; B đọc ID của A phải 403. Hết hạn thì nút trả tiền ẩn và API cũng từ chối.",
+      "Kiểm riêng tiêu chí task T-39: Thấy đủ thông tin; hết hạn thì nút thanh toán ẩn; mở đơn người khác thì 403",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Thấy đủ thông tin; hết hạn thì nút thanh toán ẩn; mở đơn người khác thì 403"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-39-NFR",
+    "requirement_id": "T-39",
+    "parent_requirement": "S-17",
+    "kind": "TASK_NFR",
+    "group": "Đơn hàng",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Trang tóm tắt đơn: ghế, hạng, đơn giá, tổng tiền, thời gian còn lại",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I40"
+    },
+    "original_requirement": "không hiện thông tin thanh toán nhạy cảm",
+    "fixture": "Order A pending/expired; B đăng nhập; hai hạng giá khác nhau.",
+    "surfaces": "/orders/:id; GET /orders/:id",
+    "code_candidates": "apps/web/src/features/order-review/; apps/api/src/orders/",
+    "test_candidates": "orders.e2e-spec.ts; order-review.spec.ts",
+    "steps": [
+      "UI hiển thị từng dòng, tổng và thời gian; so SUM(unitPrice) với server. Gửi giá/tổng sửa bằng API; B đọc ID của A phải 403. Hết hạn thì nút trả tiền ẩn và API cũng từ chối.",
+      "Kiểm riêng tiêu chí task T-39: không hiện thông tin thanh toán nhạy cảm",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "không hiện thông tin thanh toán nhạy cảm"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

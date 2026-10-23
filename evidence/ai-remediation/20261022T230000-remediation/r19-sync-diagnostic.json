@@ -1,0 +1,34 @@
+{
+  "runId": "20261022T230000-remediation",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 401
+    }
+  ],
+  "failedRequests": [],
+  "pageErrors": [],
+  "state": {
+    "navigatorOnline": true,
+    "networkStatus": "Trực tuyến",
+    "pendingText": "1 lượt quét chờ đồng bộ",
+    "syncMessage": null,
+    "inputDisabled": null
+  }
+}

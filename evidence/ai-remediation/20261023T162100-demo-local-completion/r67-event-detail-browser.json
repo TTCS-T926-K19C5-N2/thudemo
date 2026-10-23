@@ -1,0 +1,34 @@
+{
+  "run": "R67",
+  "profile": "s1demo-384da3d43b41",
+  "readOnly": true,
+  "providerCalls": false,
+  "results": [
+    {
+      "viewport": "desktop",
+      "width": 1280,
+      "height": 720,
+      "detailPath": "/shows/6ce1aa53-fc92-42de-ae37-46a7b09ad408",
+      "expectedTitleVisible": true,
+      "venueVisible": true,
+      "scheduleVisible": true,
+      "priceVisible": true,
+      "seatRouteLink": 4,
+      "horizontalOverflow": false,
+      "pageErrors": []
+    },
+    {
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "detailPath": "/shows/6ce1aa53-fc92-42de-ae37-46a7b09ad408",
+      "expectedTitleVisible": true,
+      "venueVisible": true,
+      "scheduleVisible": true,
+      "priceVisible": true,
+      "seatRouteLink": 4,
+      "horizontalOverflow": false,
+      "pageErrors": []
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+[
+  {
+    "id": "E-03-AC",
+    "requirement_id": "E-03",
+    "kind": "EPIC",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Ready",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Sự kiện, suất diễn và sơ đồ ghế",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "G4"
+    },
+    "original_requirement": "Ban tổ chức tạo được sự kiện có nhiều suất diễn, nạp được sơ đồ ghế và đặt giá theo hạng cho từng suất; người mua thấy đúng ghế còn trống và đúng giá của suất mình chọn",
+    "steps": [
+      "Đối chiếu tập story con và các hành trình đầu-cuối trong kế hoạch.",
+      "Kiểm từng mệnh đề ở cấp tích hợp; mọi story đơn lẻ PASS chưa tự chứng minh epic PASS."
+    ],
+    "expected": [
+      "Ban tổ chức tạo được sự kiện có nhiều suất diễn, nạp được sơ đồ ghế và đặt giá theo hạng cho từng suất; người mua thấy đúng ghế còn trống và đúng giá của suất mình chọn"
+    ],
+    "evidence_required": [
+      "Liên kết các case con và E2E đã chạy"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "E-03-NFR",
+    "requirement_id": "E-03",
+    "kind": "EPIC_NFR",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Ready",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Sự kiện, suất diễn và sơ đồ ghế",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "I4"
+    },
+    "original_requirement": "một suất diễn 2000 ghế phải hiển thị sơ đồ dưới 2 giây ở p95",
+    "steps": [
+      "Kiểm NFR ở phạm vi epic, đối chiếu các story con và số đo tích hợp; không chỉ suy từ unit test."
+    ],
+    "expected": [
+      "một suất diễn 2000 ghế phải hiển thị sơ đồ dưới 2 giây ở p95"
+    ],
+    "evidence_required": [
+      "Bằng chứng kỹ thuật hoặc số đo tương ứng"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

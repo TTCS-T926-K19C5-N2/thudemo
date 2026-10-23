@@ -36,7 +36,7 @@ describe('live seat-map reads without detail overfetch', () => {
   it('keeps empty inventory distinct from a missing show and rereads status', async () => {
     const { db, service } = fixture();
     db.seatReadQuery
-      .mockResolvedValueOnce([{ status: 'ON_SALE', seats: [] }])
+      .mockResolvedValueOnce([{ status: 'ON_SALE', isDemo: false, eventStatus: 'PUBLISHED', seats: [] }])
       .mockResolvedValueOnce([{ status: 'CLOSED' }]);
     await expect(service.publicSeats(id)).resolves.toEqual([]);
     await expect(service.publicSeats(id)).rejects.toMatchObject({
@@ -58,13 +58,14 @@ describe('live seat-map reads without detail overfetch', () => {
       },
     ];
     db.seatReadQuery.mockResolvedValueOnce([
-      { status: 'ON_SALE', seats: rows },
+      { status: 'ON_SALE', isDemo: false, eventStatus: 'PUBLISHED', seats: rows },
     ]);
     await expect(service.publicSeats(id)).resolves.toBe(rows);
     const sql = db.seatReadQuery.mock.calls[0][0];
     expect(sql.text).toContain('clock_timestamp()');
     expect(sql.text).toContain('ORDER BY seat.row,seat."seatNumber"');
     expect(sql.text).toContain("sh.status='ON_SALE'");
+    expect(sql.text).toContain("e.status='PUBLISHED'");
     expect(db.seatReadQuery).toHaveBeenCalledOnce();
     expect(sql.text).not.toContain('holderId');
     expect(sql.text).not.toContain('sessionHash');

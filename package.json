@@ -8,10 +8,10 @@
   },
   "scripts": {
     "dev": "node scripts/dev-local.mjs",
-    "build": "pnpm -r run build",
-    "test": "pnpm -r run test && node --test deploy/laptop-gateway.spec.mjs deploy/laptop-release.spec.mjs deploy/laptop-compat.spec.mjs deploy/next-root-dirs.spec.mjs deploy/laptop-watcher.spec.mjs deploy/laptop-resources.spec.mjs",
-    "lint": "pnpm -r run lint",
-    "typecheck": "pnpm --filter api run typecheck && pnpm --filter web run typecheck",
+    "build": "corepack pnpm -r run build",
+    "test": "corepack pnpm -r run test && node --test deploy/laptop-gateway.spec.mjs deploy/laptop-release.spec.mjs deploy/laptop-compat.spec.mjs deploy/next-root-dirs.spec.mjs deploy/laptop-watcher.spec.mjs deploy/laptop-resources.spec.mjs",
+    "lint": "corepack pnpm -r run lint",
+    "typecheck": "corepack pnpm --filter api run typecheck && corepack pnpm --filter web run typecheck",
     "seed:real": "node scripts/import-real-productions.mjs"
   },
   "dependencies": {},

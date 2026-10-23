@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-11-AC",
+    "requirement_id": "T-11",
+    "parent_requirement": "S-05",
+    "kind": "TASK_AC",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Bảng `seats` và `seat_categories` kèm migration",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G12"
+    },
+    "original_requirement": "Migration tiến và lùi được; có ràng buộc unique trên bộ ba suất diễn, hàng, số ghế; có chỉ mục trên khoá ngoại suất diễn",
+    "fixture": "JSON 6 ghế và 2.000 ghế; suất chưa bán/đang giữ/đã bán.",
+    "surfaces": "POST /showtimes/:id/seat-map",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/api/src/showtimes/showtimes.service.ts",
+    "test_candidates": "sprint2.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Nạp qua UI/API; đếm ghế/hạng sau import. Thay map khi chưa có giao dịch; thử thay khi có giữ hoặc vé. Trong DB thử, chèn lỗi ở ghế 1.500 và cuối tệp; xác minh rollback toàn bộ và map cũ còn nguyên.",
+      "Kiểm riêng tiêu chí task T-11: Migration tiến và lùi được; có ràng buộc unique trên bộ ba suất diễn, hàng, số ghế; có chỉ mục trên khoá ngoại suất diễn",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Migration tiến và lùi được; có ràng buộc unique trên bộ ba suất diễn, hàng, số ghế; có chỉ mục trên khoá ngoại suất diễn"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-11-NFR",
+    "requirement_id": "T-11",
+    "parent_requirement": "S-05",
+    "kind": "TASK_NFR",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Bảng `seats` và `seat_categories` kèm migration",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I12"
+    },
+    "original_requirement": "có chỉ mục trên khoá ngoại suất diễn vì mọi truy vấn ghế đều lọc theo nó",
+    "fixture": "JSON 6 ghế và 2.000 ghế; suất chưa bán/đang giữ/đã bán.",
+    "surfaces": "POST /showtimes/:id/seat-map",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/api/src/showtimes/showtimes.service.ts",
+    "test_candidates": "sprint2.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Nạp qua UI/API; đếm ghế/hạng sau import. Thay map khi chưa có giao dịch; thử thay khi có giữ hoặc vé. Trong DB thử, chèn lỗi ở ghế 1.500 và cuối tệp; xác minh rollback toàn bộ và map cũ còn nguyên.",
+      "Kiểm riêng tiêu chí task T-11: có chỉ mục trên khoá ngoại suất diễn vì mọi truy vấn ghế đều lọc theo nó",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "có chỉ mục trên khoá ngoại suất diễn vì mọi truy vấn ghế đều lọc theo nó"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

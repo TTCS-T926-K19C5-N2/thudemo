@@ -63,23 +63,12 @@ type Gate = { gateId: string; gateName: string; canOverride: boolean };
 function createOfflineCheckInResult(
   ticketCode: string,
   gateName: string,
-  ticketType: string,
-  seatLabel: string,
-  checkedInAt: string,
 ): CheckInResult {
-  const [rowPart, numPart] = seatLabel.split("-");
   return {
     status: "SUCCESS",
     ticketId: ticketCode,
     gateName,
     kind: "NORMAL",
-    seat: {
-      category: ticketType || "Tiêu chuẩn",
-      row: rowPart || seatLabel,
-      number: numPart ? parseInt(numPart, 10) || 0 : 0,
-      label: seatLabel || "Ghế",
-    },
-    checkedInAt,
   };
 }
 
@@ -396,7 +385,13 @@ export function TicketScanner({
           initialShowtimeId ||
           localStorage.getItem("checkin_showtime_s29") ||
           "";
-        setShowtimeId(shows.some((s) => s.id === saved) ? saved : "");
+        const selectedShowtime = shows.some((s) => s.id === saved) ? saved : "";
+        setShowtimeId(selectedShowtime);
+        // The offline service-worker shell is cached at /scanner without query
+        // parameters. Persist an accepted initialShowtimeId just like a manual
+        // selection so a reopened offline scanner can restore its grant.
+        if (selectedShowtime)
+          localStorage.setItem("checkin_showtime_s29", selectedShowtime);
       })
       .catch(async (reason: unknown) => {
         if (reason instanceof ApiError && [401, 403].includes(reason.status)) {
@@ -550,18 +545,12 @@ export function TicketScanner({
                 offlineOutcome.ticket?.code ?? scannedTicketId,
                 gates.find((g) => g.gateId === gateId)?.gateName ??
                   "Cửa soát vé",
-                offlineOutcome.ticket?.ticketType ?? "Tiêu chuẩn",
-                offlineOutcome.ticket?.seatLabel ?? "Ghế",
-                offlineOutcome.ticket?.checkedInAt ?? new Date().toISOString(),
               ),
             );
             setStatus("SUCCESS");
             setMessage("Vé hợp lệ. Check-in thành công (ngoại tuyến).");
           } else if (offlineOutcome.code === "ALREADY_CHECKED_IN") {
             setUsed({
-              checkedInAt:
-                offlineOutcome.previousCheckedInAt ?? new Date().toISOString(),
-              gateName: "cửa trước đó",
               canOverride: false,
             });
             setStatus("USED");
@@ -1244,17 +1233,21 @@ export function TicketScanner({
                     : message}
               </p>
               {used && (
-                <p className="mt-2">
-                  Đã vào lúc {admissionTime(used.checkedInAt)} tại cửa{" "}
-                  {used.gateName}.
-                </p>
+                used.checkedInAt && used.gateName ? (
+                  <p className="mt-2">
+                    Đã vào lúc {admissionTime(used.checkedInAt)} tại cửa{" "}
+                    {used.gateName}.
+                  </p>
+                ) : null
               )}
               {result && (
                 <div className="mt-3 space-y-1">
                   <p>Cửa: {result.gateName}</p>
-                  <p>Hạng ghế: {result.seat.category}</p>
-                  <p>Số ghế: {result.seat.label}</p>
-                  <p>Thời điểm check-in: {admissionTime(result.checkedInAt)}</p>
+                  {result.seat && <p>Hạng ghế: {result.seat.category}</p>}
+                  {result.seat && <p>Số ghế: {result.seat.label}</p>}
+                  {result.checkedInAt && (
+                    <p>Thời điểm check-in: {admissionTime(result.checkedInAt)}</p>
+                  )}
                 </div>
               )}
             </div>

@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-39-AC01",
+    "requirement_id": "S-39",
+    "kind": "AC",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Quét vé sai suất diễn, vé đã huỷ hay mã lạ thì báo rõ lý do",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L41"
+    },
+    "original_requirement": "Giả sử quét vé của suất khác, Khi từ chối, Thì hiện \"vé của suất X lúc Y\" để khách biết mình nhầm giờ",
+    "fixture": "Vé sai suất, huỷ có ngày, QR lạ/sai chữ ký.",
+    "surfaces": "/check-in; /scanner",
+    "code_candidates": "apps/api/src/orders/ticket-check-in.service.ts; apps/web/src/features/ticket-scanner/admission-response.ts",
+    "test_candidates": "admission-response.spec.ts; ticket-check-in.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: quét vé của suất khác.",
+      "Thực hiện trên /check-in; /scanner: từ chối.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Quét từng mẫu online và offline; kiểm message suất X/giờ Y, ngày huỷ và mã ngoài hệ thống, màu/biểu tượng. Mỗi từ chối có reason code riêng trong log, không lộ PII ngoài quyền.",
+    "expected": [
+      "hiện \"vé của suất X lúc Y\" để khách biết mình nhầm giờ"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-39-AC02",
+    "requirement_id": "S-39",
+    "kind": "AC",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Quét vé sai suất diễn, vé đã huỷ hay mã lạ thì báo rõ lý do",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L41"
+    },
+    "original_requirement": "Giả sử quét vé đã huỷ và hoàn tiền, Khi từ chối, Thì hiện \"vé đã huỷ ngày Z\"",
+    "fixture": "Vé sai suất, huỷ có ngày, QR lạ/sai chữ ký.",
+    "surfaces": "/check-in; /scanner",
+    "code_candidates": "apps/api/src/orders/ticket-check-in.service.ts; apps/web/src/features/ticket-scanner/admission-response.ts",
+    "test_candidates": "admission-response.spec.ts; ticket-check-in.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: quét vé đã huỷ và hoàn tiền.",
+      "Thực hiện trên /check-in; /scanner: từ chối.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Quét từng mẫu online và offline; kiểm message suất X/giờ Y, ngày huỷ và mã ngoài hệ thống, màu/biểu tượng. Mỗi từ chối có reason code riêng trong log, không lộ PII ngoài quyền.",
+    "expected": [
+      "hiện \"vé đã huỷ ngày Z\""
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-39-AC03",
+    "requirement_id": "S-39",
+    "kind": "AC",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Quét vé sai suất diễn, vé đã huỷ hay mã lạ thì báo rõ lý do",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L41"
+    },
+    "original_requirement": "Giả sử quét mã lạ, Khi từ chối, Thì hiện \"không phải vé của hệ thống\"",
+    "fixture": "Vé sai suất, huỷ có ngày, QR lạ/sai chữ ký.",
+    "surfaces": "/check-in; /scanner",
+    "code_candidates": "apps/api/src/orders/ticket-check-in.service.ts; apps/web/src/features/ticket-scanner/admission-response.ts",
+    "test_candidates": "admission-response.spec.ts; ticket-check-in.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: quét mã lạ.",
+      "Thực hiện trên /check-in; /scanner: từ chối.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Quét từng mẫu online và offline; kiểm message suất X/giờ Y, ngày huỷ và mã ngoài hệ thống, màu/biểu tượng. Mỗi từ chối có reason code riêng trong log, không lộ PII ngoài quyền.",
+    "expected": [
+      "hiện \"không phải vé của hệ thống\""
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-39-NFR",
+    "requirement_id": "S-39",
+    "kind": "NFR",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Quét vé sai suất diễn, vé đã huỷ hay mã lạ thì báo rõ lý do — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N41"
+    },
+    "original_requirement": "mỗi lý do từ chối là một mã riêng trong log để đếm được. Ước lượng thô 2 SP — tier Next",
+    "fixture": "Vé sai suất, huỷ có ngày, QR lạ/sai chữ ký.",
+    "surfaces": "/check-in; /scanner",
+    "code_candidates": "apps/api/src/orders/ticket-check-in.service.ts; apps/web/src/features/ticket-scanner/admission-response.ts",
+    "test_candidates": "admission-response.spec.ts; ticket-check-in.e2e-spec.ts",
+    "steps": [
+      "Quét từng mẫu online và offline; kiểm message suất X/giờ Y, ngày huỷ và mã ngoài hệ thống, màu/biểu tượng. Mỗi từ chối có reason code riêng trong log, không lộ PII ngoài quyền.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "mỗi lý do từ chối là một mã riêng trong log để đếm được. Ước lượng thô 2 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

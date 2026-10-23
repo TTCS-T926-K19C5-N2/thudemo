@@ -1,0 +1,531 @@
+[
+  {
+    "id": "R43",
+    "title": "Final exact-file regression and demo profile integrity check",
+    "dependencies": [
+      "R42"
+    ],
+    "status": "VERIFIED",
+    "actual": "On the updated clean exact-file proof tree, pnpm test passed API 61 files/481 tests, web 28 files/163 tests and laptop/deploy 20 tests with zero failures/skips. Typecheck passed. Lint exited 0 with existing warnings (2 web unused-variable warnings and API type-aware warnings); full monorepo build passed. Main isolated demo launcher Status returned READY; a read-only PostgreSQL oracle confirmed 40 events, 42 showtimes, 2 PAID orders and 2 tickets after all run fixtures were cleaned. Public Buyer home remains on the catalog. No source changes occurred after R42. Overall remains DEMO_PARTIAL because many cases remain NOT_RUN/BLOCKED/NEEDS_DECISION/MISSING and full role action matrix/external conditions are not proven.",
+    "evidence": [
+      "r43-final-regression-test.log",
+      "r43-final-regression-test.exitcode",
+      "r43-final-regression-typecheck.log",
+      "r43-final-regression-typecheck.exitcode",
+      "r43-final-regression-lint.log",
+      "r43-final-regression-lint.exitcode",
+      "r43-final-regression-build.log",
+      "r43-final-regression-build.exitcode",
+      "r43-demo-db-final-oracle.json",
+      "prepared-fileset-current.json"
+    ]
+  },
+  {
+    "id": "R45",
+    "title": "Nối tìm kiếm danh mục và lọc địa điểm cho demo",
+    "dependencies": [
+      "R43"
+    ],
+    "status": "VERIFIED",
+    "actual": "Đã cài source R46 vào profile cô lập mà không reset dữ liệu. Search/filter/sort được kiểm trên browser desktop và mobile trong R46; mobile search phân trang được sửa tiếp và có test hồi quy.",
+    "evidence": [
+      "r46-catalog-browser.json",
+      "r46-search-desktop.png",
+      "r46-location-mobile.png",
+      "r47-web-test.log"
+    ]
+  },
+  {
+    "id": "R46",
+    "title": "Recheck runtime demo và ghi nhận UI hiện hành",
+    "dependencies": [
+      "R45"
+    ],
+    "status": "VERIFIED",
+    "actual": "Phát hiện mobile search chỉ xét 12 kết quả đã tải dù desktop header search xét toàn danh mục. Thêm tải hết cursor pages khi mobile search có query. Focused component 5/5, full web 29 files/168 tests PASS, typecheck PASS, lint exit 0 (2 warnings), browser desktop/mobile PASS, build profile vẫn READY và DB chỉ đọc không đổi (40 event, 44 suất, 5 order, 5 ticket).",
+    "evidence": [
+      "r46-mobile-search-diagnostic.png",
+      "r46-mobile-search-test-before-fix.log",
+      "r46-mobile-search-test.log",
+      "r46-catalog-browser.json",
+      "r47-web-test.log",
+      "r47-web-typecheck.log",
+      "r47-web-lint.log",
+      "r47-demo-db-oracle.json"
+    ]
+  },
+  {
+    "id": "R47",
+    "title": "Đóng regression web và đồng bộ bằng chứng search/filter/sort",
+    "dependencies": [
+      "R46"
+    ],
+    "status": "VERIFIED",
+    "actual": "Full monorepo regression on current source: API 61 files/481 tests PASS; web 29 files/168 tests PASS; deployment/laptop 20/20 PASS; zero failed or skipped tests. Web typecheck PASS; ESLint exit 0 with two unused-variable warnings in existing browser harnesses. Source R46 built and installed via official demo Restart. Chromium desktop/mobile search/location/price sort PASS. Read-only PostgreSQL: 40 events, 44 showtimes, 5 orders, 5 tickets. No DB write/provider call/reset/fixture seed in R47. Original 494-row matrix unchanged; combined results 502 rows.",
+    "evidence": [
+      "r47-full-regression.log",
+      "r47-full-regression.exitcode",
+      "r47-web-test.log",
+      "r47-web-typecheck.log",
+      "r47-web-lint.log",
+      "r46-catalog-browser.json",
+      "r47-demo-db-oracle.json"
+    ]
+  },
+  {
+    "id": "R48",
+    "title": "Xác minh ba ca Organizer mobile trên browser và PostgreSQL",
+    "dependencies": [
+      "R47"
+    ],
+    "status": "VERIFIED",
+    "actual": "Ở viewport mobile 390×844, Organizer B tạo fixture DRAFT qua UI; thời gian quá khứ bị chặn, hiện rõ lý do và không gửi POST; hai suất cùng giờ được lưu với cảnh báo; Organizer A truy cập bị HTTP 403. PostgreSQL oracle xác nhận owner/status/timestamps và không có seat/order/ticket phát sinh. Guarded cleanup xóa đúng draft + 2 showtimes, khôi phục DB counts về baseline 40 events/44 showtimes/5 orders/5 tickets/5904 seats. Không sửa source sản phẩm, không gọi provider. Sáu source assertions (3 parent + 3 mobile child) chuyển PASS theo bằng chứng desktop đã có và mobile mới.",
+    "evidence": [
+      "r48-s04-mobile-browser.json",
+      "r48-s04-mobile-browser.log",
+      "r48-s04-mobile-browser.exitcode",
+      "r48-s04-mobile-db-oracle.json",
+      "r48-s04-mobile-cleanup.json",
+      "r48-s04-ac03-mobile.png",
+      "r48-s04-ac04-mobile.png",
+      "r48-s04-ac05-mobile-denied.png"
+    ]
+  },
+  {
+    "id": "R49",
+    "title": "Rà quyền truy cập Organizer/Buyer và kiểm chứng đăng nhập local",
+    "dependencies": [
+      "R48"
+    ],
+    "status": "VERIFIED",
+    "actual": "Chromium desktop đăng nhập Organizer: mục Sự kiện hiện, mục Đối soát kế toán vắng mặt, logout 200. Synthetic Buyer gọi direct POST /events: HTTP 403, không tạo event, logout 200. Hai mệnh đề S-02-AC01 đã tách và PASS; S-02-AC02.01 PASS. Phần ghi log runtime chưa quan sát được do API worker detached không ghi stdio vào api.log; S-02-AC02 và .02 giữ BLOCKED, dù source có Logger.warn. Không sửa code sản phẩm; không còn fixture nghiệp vụ.",
+    "evidence": [
+      "r49-s02-ac01-browser.json",
+      "r49-s02-ac01-organizer-nav-desktop.png",
+      "r49-s02-ac02-api-log.json"
+    ]
+  },
+  {
+    "id": "R50",
+    "title": "Kiểm thử khóa đăng nhập 5 lần sai và lần thứ sáu trên UI mobile",
+    "dependencies": [
+      "R49"
+    ],
+    "status": "VERIFIED",
+    "actual": "Dedicated synthetic lock-test role: 5 incorrect CLI login attempts each returned 401; Redis account lock was set; sixth attempt via mobile browser returned HTTP 429, retryAfterSeconds=899 and visible “15 phút” message. Exact Redis lock/failure/IP keys and TTLs were snapshotted and restored; no DB write or provider call. S-02-AC03 parent and .01/.02 PASS with separate assertions.",
+    "evidence": [
+      "r50-s02-ac03-lockout.json",
+      "r50-s02-ac03-lockout-mobile.png"
+    ]
+  },
+  {
+    "id": "R51",
+    "title": "Thử tiếp luồng Buyer tới sơ đồ ghế trên browser local",
+    "dependencies": [
+      "R50"
+    ],
+    "status": "PARTIAL",
+    "actual": "Browser Chromium riêng dùng tài khoản BUYER giả của profile local, mở suất demo đang bán qua UI. Sau khi submit form đăng nhập, phiên không tới được /seats và màn hình quay lại /login; không phát sinh lỗi JavaScript, không tạo đơn/hold/ticket/provider call. Chỉ thử một lần; chưa xác định được account state hay nguyên nhân xác thực, nên không đổi status S-09-AC01/02 hoặc S-02-AC04. Trang UI và ảnh được lưu; bước authenticated seat-map vẫn chưa chứng minh.",
+    "evidence": [
+      "r51-seat-map-ui-desktop.png",
+      "r51-seat-map-ui.json"
+    ]
+  },
+  {
+    "id": "R52",
+    "title": "Đăng nhập Buyer và mở sơ đồ ghế bằng UI",
+    "dependencies": [
+      "R51"
+    ],
+    "status": "VERIFIED",
+    "actual": "Read-only oracle confirmed synthetic Buyer is verified, active, correct role/password and unlocked. Chromium filled the actual UI fields by ID; /api/auth/login, /api/auth/me and /api/privacy/me returned 200; UI reached active seat map showing all 120 seats. Logout returned 200; orders/tickets/holds unchanged; no JS errors.",
+    "evidence": [
+      "r51-auth-diagnostic.mjs",
+      "r52-buyer-seat-map-ui.json",
+      "r52-buyer-seat-map-desktop.png"
+    ]
+  },
+  {
+    "id": "R53",
+    "title": "Hai Buyer kiểm tra hold và reload sơ đồ ghế",
+    "dependencies": [
+      "R52"
+    ],
+    "status": "VERIFIED",
+    "actual": "Hai Buyer ở hai browser context: cả hai ban đầu thấy A-3 trống; Buyer A giữ ghế qua UI, Buyer B reload và thấy “Đang được giữ”. Buyer A nhả qua UI. Guarded cleanup gỡ đúng HoldSession rỗng run-created sau khi xác minh không có seat/order; DB counts về baseline 5 orders, 5 tickets, 0 active holds, 4 sessions.",
+    "evidence": [
+      "r53-cross-buyer-hold-refresh.json",
+      "r53-fixture.json",
+      "r53-buyer-a-hold-confirmed.png",
+      "r53-buyer-b-sees-held-after-reload.png",
+      "r53-buyer-a-after-release.png",
+      "r53-cleanup-verification.json"
+    ]
+  },
+  {
+    "id": "R54",
+    "title": "Session hết hạn trả 401 và chuyển browser về login",
+    "dependencies": [
+      "R52"
+    ],
+    "status": "VERIFIED",
+    "actual": "Buyer signed in through UI; the exact new session was expired in the isolated demo DB. Credentialed /api/auth/me returned 401; reloading the protected seat route redirected to /login with the original returnTo preserved. Exact session was removed; Redis locks/failure counters and orders/tickets remained unchanged.",
+    "evidence": [
+      "r54-expired-session-redirect-ui.json",
+      "r54-expired-session-login-redirect.png"
+    ]
+  },
+  {
+    "id": "R56",
+    "title": "Xác minh UI suất chưa mở bán không hiện lưới ghế rỗng",
+    "dependencies": [
+      "R55"
+    ],
+    "status": "VERIFIED",
+    "actual": "R55 read-only DB oracle found a draft showtime without a seat map and with 0 seats. Chromium desktop on isolated profile displayed the exact closed-showtime message, no seat grid/canvas, and did not redirect to login; public detail API returned 404. No DB/provider writes. S-09-AC03 PASS.",
+    "evidence": [
+      "r55-showtime-map-inventory.json",
+      "r56-empty-seatmap-ui.json",
+      "r56-empty-seatmap-ui.png"
+    ]
+  },
+  {
+    "id": "R57",
+    "title": "Kiểm tra phóng to và chạm đúng ghế trên mobile",
+    "dependencies": [
+      "R56"
+    ],
+    "status": "VERIFIED",
+    "actual": "Chromium touch viewport 390×844 authenticated synthetic Buyer, zoomed from 62% to 82%, tapped available seat A-3 and the inspector selected exactly A-3. Hold POST returned 200; PostgreSQL confirmed fixture ownership; release DELETE returned 200. Exact run-created empty HoldSession cleanup restored 5 orders/5 tickets/4 sessions/0 holds; no page errors/provider calls. S-09-AC05 PASS.",
+    "evidence": [
+      "r57-mobile-seat-tap.json",
+      "r57-mobile-seat-selected.png",
+      "r57-cleanup-verification.json"
+    ]
+  },
+  {
+    "id": "R58",
+    "title": "Kiểm tra xử lý ghế vừa được Buyer khác giữ",
+    "dependencies": [
+      "R57"
+    ],
+    "status": "VERIFIED",
+    "actual": "Two Buyers loaded A-3 available; A held it through UI/API. For a controlled stale-snapshot race, B SSE was deliberately blocked while the browser UI remained active; B selected and submitted A-3 in UI. API returned 409; UI showed “Ghế A-3 vừa được người khác giữ”, removed rejected selection and refreshed the map; inspector showed HELD. A released via UI. Exact cleanup restored 5 orders/5 tickets/0 holds/4 sessions. S-10-AC02 PASS.",
+    "evidence": [
+      "r58-stale-seat-conflict.json",
+      "r58-buyer-a-held-seat.png",
+      "r58-buyer-b-conflict.png"
+    ]
+  },
+  {
+    "id": "R59",
+    "title": "Kiểm tra ba ghế dùng chung hạn giữ đầu tiên",
+    "dependencies": [
+      "R58"
+    ],
+    "status": "VERIFIED",
+    "actual": "Synthetic Buyer selected A-3/A-4/A-5 in UI at 1.1-second intervals. Single hold action returned 200; PostgreSQL showed one identical expiresAt for all three and UI displayed one 10:00 timer with the no-extension message. UI released each seat; DB returned to 5 orders/5 tickets/4 sessions/0 holds, no page errors/provider calls. S-10-AC03 PASS.",
+    "evidence": [
+      "r59-shared-hold-expiry.json",
+      "r59-three-seats-selected.png",
+      "r59-three-seat-hold-confirmed.png"
+    ]
+  },
+  {
+    "id": "R60",
+    "title": "Phát hiện và vá cảnh báo giữ ghế khi suất vừa đóng",
+    "dependencies": [
+      "R59"
+    ],
+    "status": "BLOCKED",
+    "actual": "Pre-fix UI/API/DB test reproduced: close the exact active ON_SALE showtime after Buyer selected A-3, then submit via UI. API correctly returned 409 SHOWTIME_CLOSED, but finally refresh returned seats 404 and overwrote the specific message with a generic reconciliation error. No hold/order/ticket; exact status restored, DB counts baseline. Narrow UI fix added to canonical and prepared source; focused web typecheck and ESLint passed. Official demo Restart stopped the profile and refused rebuild because free RAM was 0.79GiB (guard requires 2GiB); source fix remains unbuilt and browser retest BLOCKED. Do not count fix as verified.",
+    "evidence": [
+      "r60-closed-showtime-hold-ui.json",
+      "r60-closed-showtime-hold-ui.png",
+      "r60-web-typecheck.log",
+      "r60-web-lint.log"
+    ]
+  },
+  {
+    "id": "R61",
+    "title": "Coupon service unit regression while demo runtime is stopped",
+    "dependencies": [
+      "R60"
+    ],
+    "status": "VERIFIED",
+    "actual": "Ran the focused coupon service unit suite without database/profile access: 1 file, 5 tests PASS. This is a narrow logic regression check only; source-derived S-56 acceptance status is unchanged. Current free RAM observed at 1.13GiB, below the official 2GiB Restart guard; isolated runtime remains stopped and R60 browser retest remains blocked.",
+    "evidence": [
+      "r61-coupon-unit.log",
+      "r61-coupon-unit.log.exitcode"
+    ]
+  },
+  {
+    "id": "R62",
+    "title": "Focused payment and ticket-delivery unit regression",
+    "dependencies": [
+      "R61"
+    ],
+    "status": "VERIFIED",
+    "actual": "Four isolated API unit suites passed (mock gateway, payment service/webhook, ticket delivery retries and signing keys): 60/60. Narrow unit evidence only; no live DB/provider/browser/email claim and no change to source acceptance statuses.",
+    "evidence": [
+      "r62-payment-ticket-unit.log",
+      "r62-payment-ticket-unit.log.exitcode"
+    ]
+  },
+  {
+    "id": "R63",
+    "title": "Focused offline scanner and check-in unit regression",
+    "dependencies": [
+      "R62"
+    ],
+    "status": "VERIFIED",
+    "actual": "API scanner/check-in 34 tests and web offline scanner 17 tests passed (7 files/51 total). No live browser, DB, device camera or 4G tested; source acceptance statuses remain unchanged.",
+    "evidence": [
+      "r63-offline-checkin-unit.log",
+      "r63-offline-checkin-unit.log.exitcode",
+      "r63-offline-checkin-web-unit.log",
+      "r63-offline-checkin-web-unit.log.exitcode"
+    ]
+  },
+  {
+    "id": "R64",
+    "title": "Focused auth, registration and activation unit regression",
+    "dependencies": [
+      "R63"
+    ],
+    "status": "VERIFIED",
+    "actual": "API auth/registration/activation 39 tests and web login/activation 9 tests passed (6 files/48 total). This does not establish browser-auth success, consent/database effects, password-reset Mailpit delivery, or real email.",
+    "evidence": [
+      "r64-auth-email-unit-api.log",
+      "r64-auth-email-unit-api.log.exitcode",
+      "r64-auth-email-unit-web.log",
+      "r64-auth-email-unit-web.log.exitcode"
+    ]
+  },
+  {
+    "id": "R65",
+    "title": "Rebuild isolated demo and verify closed-showtime hold error fix",
+    "dependencies": [
+      "R64"
+    ],
+    "status": "VERIFIED",
+    "actual": "Official Restart passed at 2.21GiB free RAM, migrated/guarded-seeded idempotently, built current prepared source and returned READY. Status verified at web/API/Mailpit local URLs. Browser retest selected A-3, exact isolated showtime was closed between selection and hold: POST 409, specific error preserved despite follow-up seats GET 404, zero page errors; fixture restored and DB counts remained 5 orders/5 tickets/0 holds/4 sessions. S-10-AC04 is now PASS. Catalog/order/ticket retention is checked in the next oracle step. Read-only post-restart oracle confirmed 40 events/44 showtimes/5 orders/5 tickets and exact rehearsal showtime ON_SALE; R65 desktop/mobile catalog search/filter/sort smoke also passed.",
+    "evidence": [
+      "r65-closed-showtime-hold-ui.json",
+      "r65-closed-showtime-hold-ui.png",
+      "r60-pre-fix-reproduction-reconstructed.json",
+      "r65-restart-status.log",
+      "r65-profile-oracle.json"
+    ]
+  },
+  {
+    "id": "R66",
+    "title": "Current post-restart catalog desktop/mobile smoke and persistence oracle",
+    "dependencies": [
+      "R65"
+    ],
+    "status": "VERIFIED",
+    "actual": "Fresh Chromium contexts after current source restart checked catalog search/filter/sort at desktop and mobile viewports, no JS errors/overflow. Read-only PostgreSQL confirms catalog and order/ticket counts survived. No write/provider call.",
+    "evidence": [
+      "r65-catalog-browser.json",
+      "r65-search-desktop.png",
+      "r65-search-mobile.png",
+      "r65-location-desktop.png",
+      "r65-location-mobile.png",
+      "r65-profile-oracle.json",
+      "r65-restart-status.log"
+    ]
+  },
+  {
+    "id": "R67",
+    "title": "Post-restart event detail read-only UI smoke",
+    "dependencies": [
+      "R66"
+    ],
+    "status": "VERIFIED",
+    "actual": "Final harness run passed event detail on desktop/mobile with the original event content, venue, schedule, price and links; no JS errors/overflow. Two prior failures were test harness locator/path issues; they were not product failures.",
+    "evidence": [
+      "r67-event-detail-browser.json",
+      "r67-event-detail-desktop.png",
+      "r67-event-detail-mobile.png",
+      "r67-event-detail-browser-retry.log",
+      "r67-event-detail-browser-retry.log.exitcode",
+      "r67-event-detail-browser-attempt3.log",
+      "r67-event-detail-browser-attempt3.log.exitcode"
+    ]
+  },
+  {
+    "id": "R69",
+    "title": "Prepare isolated PostgreSQL harness for S-15/S-16 acceptance",
+    "dependencies": [
+      "R68"
+    ],
+    "status": "BLOCKED",
+    "actual": "Separate test profile started; migration deploy failed at schema engine before writes/tests. No test ran; exact test containers stopped, database volume preserved. Demo profile status separately verified READY. Need diagnose migration harness before retry.",
+    "evidence": [
+      "r69-s15-s16-migrate.log",
+      "r69-s15-s16-migrate.log.exitcode",
+      "../20261022T230000-remediation/migration-deploy.log"
+    ]
+  },
+  {
+    "id": "R70",
+    "title": "Full regression on current prepared source before handoff checkpoint",
+    "dependencies": [
+      "R69"
+    ],
+    "status": "VERIFIED",
+    "actual": "Current-source API 61/481, web 29/168 and deployment/laptop 20/20 passed with exit code 0 and no skips. Current source build was made by official R65 Restart; focused typecheck/lint passed for the R60 component change. Functional acceptance coverage remains incomplete, so this is a regression pass only.",
+    "evidence": [
+      "r70-api-full-regression.log",
+      "r70-api-full-regression.log.exitcode",
+      "r70-web-full-regression.log",
+      "r70-web-full-regression.log.exitcode",
+      "r70-deployment-full-regression.log",
+      "r70-deployment-full-regression.log.exitcode",
+      "r60-web-typecheck.log",
+      "r60-web-lint.log",
+      "r65-restart-status.log"
+    ]
+  },
+  {
+    "id": "R71",
+    "title": "Current runtime sign-in and feature-route smoke for all five demo roles",
+    "dependencies": [
+      "R70"
+    ],
+    "status": "VERIFIED",
+    "actual": "Five synthetic roles completed browser login, /auth/me role confirmation, representative route heading and logout with 200 responses and no page errors. No business fixture writes. Harness now navigates directly after login rather than assuming safeReturnTo applies to privileged routes.",
+    "evidence": [
+      "r71-five-role-browser-smoke.json",
+      "r71-five-role-browser-attempt5.log",
+      "r71-five-role-browser-attempt5.log.exitcode",
+      "r71-session-oracle.mjs"
+    ]
+  },
+  {
+    "id": "R72",
+    "title": "Enable password-reset delivery in the isolated Mailpit demo profile",
+    "dependencies": [
+      "R71"
+    ],
+    "status": "PARTIAL",
+    "actual": "Detected demo launcher omitted PASSWORD_RESET_WORKER although SMTP points to local catcher and reset encryption key/origin are valid. Added the worker flag to canonical+prepared local launcher templates and the isolated profile .env; core.spec unit suite passed 13/13. Active web/API/Mailpit endpoints still respond (HTTP 200/401/405, reachability only), but official launcher Status refuses READY because source changed since build. Free RAM is 1.67GiB (<2GiB); safe Restart is deferred. Mailpit browser test not run and no reset token/email fixture created. This worker is isolated to demo Mailpit and is not enabled on the primary system.",
+    "evidence": [
+      "r72-profile-email-config-sanitized.json",
+      "r72-password-reset-worker-unit.log",
+      "r72-password-reset-worker-unit.log.exitcode",
+      "r72-launcher-syntax.log",
+      "r72-launcher-syntax.log.exitcode"
+    ]
+  },
+  {
+    "id": "R73",
+    "title": "Reconcile current runtime state and handoff after R72 configuration change",
+    "dependencies": [
+      "R72"
+    ],
+    "status": "PARTIAL",
+    "actual": "Historical R73 checkpoint: launcher refused READY and RAM was below the restart guard at that time. Superseded by R79 official Restart and READY status; password-reset/transfer Mailpit delivery remains unverified.",
+    "evidence": [
+      "r73-runtime-check.json"
+    ]
+  },
+  {
+    "id": "R74",
+    "title": "Recheck restart guard and triage remaining Ready/Must assertions",
+    "dependencies": [
+      "R73"
+    ],
+    "status": "PARTIAL",
+    "actual": "Historical R74 checkpoint: RAM was below guard at that time. Superseded by R79, which built the current source and returned READY; current RAM after build is now 0.74GiB, so full regression is deferred.",
+    "evidence": [
+      "r74-runtime-check.json"
+    ]
+  },
+  {
+    "id": "R75",
+    "title": "Retest and close the transfer-ticket entitlement bug within the verified scope",
+    "dependencies": [
+      "R74"
+    ],
+    "status": "PARTIAL",
+    "actual": "R75 initially reused the post-fix browser and PostgreSQL proof and promoted S-57-AC01. R76 refined the supplemental integration split: the narrow entitlement/outbox assertion is PASS, but the compound INT-16.01 remains NOT_RUN until SMTP receipt is verified; INT-16.04 is BLOCKED pending safe restart. The original baseline reproduction remains preserved.",
+    "evidence": [
+      "r75-int16-transfer-postfix-browser.json",
+      "r75-int16-transfer-postgres-oracle.json",
+      "r75-int16-owner-desktop.png",
+      "r75-int16-recipient-desktop.png",
+      "r75-int16-recipient-mobile.png",
+      "r75-int16-source-fingerprint.json",
+      "r75-transfer-focused-tests.log",
+      "r75-transfer-focused-tests.exitcode",
+      "r75-result-counts.json"
+    ]
+  },
+  {
+    "id": "R76",
+    "title": "Split transfer evidence by assertion and block unverified Mailpit delivery",
+    "dependencies": [
+      "R75"
+    ],
+    "status": "PARTIAL",
+    "actual": "Historical R76 checkpoint: source was stale and RAM below guard then. R79 superseded runtime state with official Restart/READY and read-only DB retention proof. Transfer SMTP receipt remains NOT_RUN; INT-16.03 entitlement assertion remains PASS.",
+    "evidence": [
+      "r76-runtime-check.json",
+      "r76-result-counts.json",
+      "r75-int16-source-fingerprint.json",
+      "r75-int16-transfer-postfix-browser.json",
+      "r75-int16-transfer-postgres-oracle.json",
+      "r75-transfer-focused-tests.log"
+    ]
+  },
+  {
+    "id": "R77",
+    "title": "Prepare reviewable role matrix, walkthrough and safe local account guide",
+    "dependencies": [
+      "R76"
+    ],
+    "status": "PARTIAL",
+    "actual": "Created 32-row role-feature matrix, eight-scene local walkthrough, local-only demo account guide and concise handoff; added README links. Matrix labels verified slices and unverified actions/external-only limits. R79 later expanded matrix to 33 entries and restored runtime READY; clean-package proof and full role walkthrough remain unverified.",
+    "evidence": [
+      "r77-handoff-docs-validation.json",
+      "DEMO_HANDOFF.md",
+      "DEMO_WALKTHROUGH.md",
+      "DEMO_ACCOUNTS.md",
+      "demo-role-feature-matrix.json"
+    ]
+  },
+  {
+    "id": "R78",
+    "title": "Sửa scheduler nhắc/đổi lịch cho vé chuyển nhượng",
+    "dependencies": [
+      "R77"
+    ],
+    "status": "PARTIAL",
+    "actual": "Reminder and reschedule selectors now include valid orderless tickets with ISSUED_FROM_TRANSFER and address the current ticket owner. Focused scheduler suite 8/8, API typecheck and focused lint PASS. Added only source/API change in this slice. No SMTP receipt tested.",
+    "evidence": [
+      "r78-transferred-ticket-reminders.log",
+      "r78-api-typecheck.log",
+      "r78-api-lint-focused.log",
+      "bugs.md"
+    ]
+  },
+  {
+    "id": "R79",
+    "title": "Cài source R78 lên profile bền, xác minh runtime, UI và dữ liệu",
+    "dependencies": [
+      "R78"
+    ],
+    "status": "PARTIAL",
+    "actual": "Official Restart returned READY after build; no pending migration, no seed/catalog/demo-showtime replay. Read-only PostgreSQL retained 40 events, 44 showtimes, 5 paid orders, 5 tickets, 5904 seats and zero active holds. Independent parity check found no content mismatch across 793 selected source/assets; prepared tree has only two additional generated build files. Browser at 543x764 mobile layout confirmed public catalog/detail and login gate; no booking performed. One browser login form showed saved autofill; no submission/message and unsafe screenshots removed. Mailpit has 3 retained recipients outside .invalid and no transfer/reminder/reset subject in demo-domain messages; raw messages not read/deleted. Free RAM 0.74GiB, so full regression deferred.",
+    "evidence": [
+      "r79-runtime-check.json",
+      "r79-demo-db-oracle.json",
+      "r79-demo-status.log",
+      "r79-public-catalog-browser.json",
+      "r79-mailpit-inventory.json",
+      "r79-result-counts.json"
+    ]
+  }
+]

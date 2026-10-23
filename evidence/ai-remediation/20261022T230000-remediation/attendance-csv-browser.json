@@ -1,0 +1,11 @@
+{
+  "runId": "20261022T230000-remediation",
+  "reportPage": true,
+  "downloaded": true,
+  "utf8Bom": true,
+  "header": "ticket_code,seat,entry_time_utc,gate,conflict",
+  "dataRows": 2,
+  "expectedCodes": true,
+  "conflictsMarked": true,
+  "piiColumns": false
+}

@@ -1,0 +1,76 @@
+{
+  "capturedAt": "2026-10-23T07:42:44.425Z",
+  "mode": "read-only transaction",
+  "result": {
+    "profile": "s1demo-384da3d43b41",
+    "database": "sprint1_demo_384da3d43b41",
+    "order": {
+      "id": "0626cd37-b0f6-4aed-aa20-e6b0ccacf9a0",
+      "status": "PAID",
+      "totalAmount": 380000,
+      "subtotalAmount": 380000,
+      "discountAmount": 0,
+      "showtimeId": "914556a8-ba19-4766-9e20-00a3d93df432",
+      "itemCount": 1,
+      "items": [
+        {
+          "categoryName": "STANDARD",
+          "tierName": "STANDARD",
+          "unitPrice": 380000,
+          "seatLabel": "D-1",
+          "isSold": true,
+          "hasActiveHold": false
+        }
+      ]
+    },
+    "payments": [
+      {
+        "gateway": "mock",
+        "status": "SUCCEEDED",
+        "amount": 380000,
+        "attemptNo": 1,
+        "transactionId": "mock_tx_1792740984299_f0bbae7a"
+      }
+    ],
+    "tickets": [
+      {
+        "status": "VALID",
+        "price": 380000,
+        "seatLabel": "D-1"
+      }
+    ],
+    "ticketCodeHashes": [
+      "e22ac6a4c7368a26e7eaad6e0a967fb129e9b8fc18fd1dfb52bd2fbe2bf31e18"
+    ],
+    "ticketInventorySummary": [
+      {
+        "status": "VALID",
+        "seatLabel": "A-1",
+        "price": 580000
+      },
+      {
+        "status": "VALID",
+        "seatLabel": "D-1",
+        "price": 380000
+      }
+    ],
+    "uniqueTicketCodeCount": 2,
+    "catalogCounts": {
+      "events": 40,
+      "showtimes": 42,
+      "orders": 2,
+      "paidOrders": 2,
+      "tickets": 2
+    },
+    "ticketMailJobCount": 2,
+    "assertions": {
+      "paid": true,
+      "exactTotal": true,
+      "oneItem": true,
+      "oneSucceededPayment": true,
+      "oneValidTicket": true,
+      "seatSold": true,
+      "holdReleased": true
+    }
+  }
+}

@@ -182,6 +182,10 @@ export class OrderHistoryService {
           where: { id, userId },
           select: {
             ...summaryProjection,
+            // The order review renders the persisted coupon price snapshot.
+            subtotalAmount: true,
+            discountAmount: true,
+            couponCodeSnapshot: true,
             _count: {
               select: {
                 items: true,
@@ -243,6 +247,9 @@ export class OrderHistoryService {
         };
         return {
           ...view,
+          subtotalAmount: Number(order.subtotalAmount),
+          discountAmount: Number(order.discountAmount),
+          couponCode: order.couponCodeSnapshot,
           rawStatus: order.status,
           serverTime: clock.serverTime.toISOString(),
           paymentExpiresAt: expiresAt,

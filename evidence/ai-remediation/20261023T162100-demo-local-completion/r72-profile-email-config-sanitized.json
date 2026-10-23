@@ -1,0 +1,8 @@
+{
+  "profile": "s1demo-384da3d43b41",
+  "activeRuntimeBeforeLocalConfigChange": {"passwordResetWorker": false, "smtpHost": "127.0.0.1", "smtpPort": 24930, "mailMode": "catcher"},
+  "isolatedProfileEnvAfterChange": {"passwordResetWorker": true, "smtpHost": "127.0.0.1", "smtpPort": 24930, "registrationEncryptionKeyConfigured": true, "publicOrigin": "http://localhost:3000"},
+  "primarySystemWorkerChanged": false,
+  "restart": "deferred; latest observed free RAM 1.00 GiB, official guard requires at least 2 GiB",
+  "resetRequestCreated": false
+}

@@ -30,6 +30,7 @@ describe('TicketsService', () => {
         create: vi.fn().mockResolvedValue({ id: 'new-ticket-1' }),
       },
       ticketLog: { create: vi.fn() },
+      ticketMailDelivery: { create: vi.fn() },
     };
     db = {
       user: { findUnique: vi.fn().mockResolvedValue({ email: 'owner@example.com' }) },
@@ -256,6 +257,14 @@ describe('TicketsService', () => {
           action: 'ISSUED_FROM_TRANSFER',
           actorId: OWNER_ID,
         }),
+      });
+      expect(tx.ticketMailDelivery.create).toHaveBeenCalledWith({
+        data: {
+          orderId: ORDER_ID,
+          recipientEmail: EMAIL,
+          ticketId: 'new-ticket-1',
+          dedupeKey: 'transfer:new-ticket-1',
+        },
       });
     });
   });

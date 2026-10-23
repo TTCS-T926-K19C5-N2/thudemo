@@ -1,0 +1,90 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Isolated Codegym app on loopback backed by run-bound PostgreSQL; no camera/provider/real network.",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "camera": false,
+  "checks": [
+    "assigned showtime rendered",
+    "full snapshot reports exactly one paid ticket",
+    "snapshot contains no fixture email or staff name",
+    "IndexedDB durably stores download time, verification key, valid ticket identity and check-in state",
+    "offline scan is durably queued in IndexedDB before the UI reports success",
+    "offline scan UI has no horizontal overflow at desktop",
+    "same durable queue record and stable request ID survive browser process relaunch",
+    "scanner input remains enabled after offline browser relaunch",
+    "offline queue survives browser context close/reopen at 390px without horizontal overflow"
+  ],
+  "screenshots": [
+    "r19-snapshot-desktop.png",
+    "r19-offline-queued-desktop.png",
+    "r19-offline-reopened-mobile.png"
+  ],
+  "api": [
+    {
+      "method": "GET",
+      "path": "/scanner/snapshot",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/showtimes",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/showtimes/bc619b8d-9947-4ad3-b202-3e6c7217ffd1/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/showtimes/bc619b8d-9947-4ad3-b202-3e6c7217ffd1/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/scanner/snapshot",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/scanner/snapshot",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/qr-keys",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/scanner/sync-scans",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "localSnapshotSummary": {
+    "hasValidDownloadTime": true,
+    "metaStatus": "ready",
+    "hasVerificationKey": true,
+    "ticketCount": 1,
+    "ticketMatchesFixture": true,
+    "ticketStatus": "valid",
+    "checkedInAtIsNull": true
+  },
+  "offlineReopenState": {
+    "inputDisabled": false,
+    "showtimeId": "bc619b8d-9947-4ad3-b202-3e6c7217ffd1",
+    "selectedGate": "R19 Gate A",
+    "alerts": [
+      "ĐANG NGOẠI TUYẾN — 1 lượt quét chưa đồng bộDữ liệu quét được lưu an toàn trên máy. Không tắt thiết bị khi còn dữ liệu chưa đẩy lên.Thử kết nối lại"
+    ],
+    "persistedShowtimeSelected": true,
+    "persistedStaffIdentity": true,
+    "persistedShowtimeGrant": true
+  },
+  "syncedRequestId": "a2c0d693-c857-431e-a9be-88ff6dfa9611",
+  "failure": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Thử kết nối lại' })\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"pointer-events-auto self-start rounded-md border border-amber-600 bg-white px-3 py-1.5 text-xs font-semibold text-amber-950 shadow-sm transition hover:bg-amber-100 disabled:opacity-50 dark:bg-amber-900 dark:text-amber-100 sm:self-center\">Thử kết nối lại</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m  - element was detached from the DOM, retrying\u001b[22m\n"
+}

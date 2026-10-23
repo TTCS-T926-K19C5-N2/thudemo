@@ -1,0 +1,141 @@
+{
+  "run_id": "20261022T230000-remediation",
+  "checkpoint": "R19 / INT-09 full local cancellation batches, catcher and operations UI; INT-10 role/session",
+  "recorded_at": "2026-10-23T05:14:23.895Z",
+  "source_fingerprint_sha256": "739b15ec32377000bdc82855215cec3808b6a1db6dacdee65b6acf350724de5f",
+  "touched_fingerprint_sha256": "f536ec06f46223b774d4fa5703f07bba565e0606dc6a85645d317f300309f835",
+  "changed_cases": [
+    "INT-09.01",
+    "INT-09.02",
+    "INT-09.03",
+    "INT-10",
+    "INT-10.01",
+    "INT-10.02",
+    "INT-10.03",
+    "INT-09.04"
+  ],
+  "counts": {
+    "BLOCKED": 4,
+    "NEEDS_DECISION": 4,
+    "NOT_RUN": 355,
+    "MISSING": 1,
+    "PASS": 95
+  },
+  "evidence_files": [
+    "int09-show-cancel-browser.json",
+    "int09-postgres-oracle.json",
+    "int09-show-cancel-browser-attempt3.log",
+    "int09-show-cancel-queued-desktop.png",
+    "int09-show-cancel-queued-mobile.png",
+    "browser-fixture-verify-int09.log",
+    "browser-fixture-cleanup.log",
+    "int09-show-cancel-browser-attempt1-failure.json",
+    "int09-show-cancel-attempt2-failure.json",
+    "int09-mobile-diagnostic.json",
+    "apps/web/scripts/ai-remediation-int09-browser.mjs",
+    "apps/api/scripts/ai-remediation-browser-fixture.mjs",
+    "apps/api/scripts/ai-remediation-profile.mjs",
+    "r19-int10-role-session-browser.json",
+    "int10-postgres-oracle.json",
+    "r19-int10-browser-run1.log",
+    "r19-int10-browser-run1.exitcode",
+    "r19-int10-browser-run1-failure.json",
+    "r19-int10-browser-run2.log",
+    "r19-int10-browser-run2.exitcode",
+    "r19-int10-browser-run2-failure.json",
+    "r19-int10-browser-run3.log",
+    "r19-int10-browser-run3.exitcode",
+    "r19-fixture-verify-int10.log",
+    "r19-fixture-cleanup.log",
+    "int10-role-revoked-queue-mobile.png",
+    "int10-disabled-queue-mobile.png",
+    "int10-restored-sync-mobile.png",
+    "int10-role-revoked-queue-desktop.png",
+    "int10-disabled-queue-desktop.png",
+    "int10-restored-sync-desktop.png",
+    "apps/web/scripts/ai-remediation-int10-browser.mjs",
+    "apps/api/scripts/ai-remediation-r19-fixture.mjs",
+    "int09-batch-postgres-oracle.json",
+    "int09-batch-cleanup.json",
+    "int09-batch-seed.log",
+    "int09-batch-cancel.log",
+    "int09-batch-show-batch.log",
+    "int09-batch-refund-fail-one.log",
+    "int09-batch-worker-batch.log",
+    "int09-batch-verify.log",
+    "int09-batch-cleanup.log",
+    "apps/api/scripts/ai-remediation-int09-batch.mjs",
+    "int09-mailpit-catcher-oracle.json",
+    "int09-batch-mail-worker.log",
+    "int09-batch-mail-worker.log.previous-2026-10-23T05-08-05-540Z",
+    "int09-operations-accounting-browser.json",
+    "int09-operations-accounting-desktop.png",
+    "int09-operations-accounting-mobile.png",
+    "apps/web/scripts/ai-remediation-int09-operations-browser.mjs"
+  ],
+  "execution": {
+    "INT09": {
+      "viewports": [
+        "1440x1000",
+        "390x844"
+      ],
+      "ui_post_status": 200,
+      "job": "QUEUED",
+      "postgres": {
+        "showtime": "CLOSED",
+        "pendingOrder": "CANCELLED",
+        "paidOrderBeforeWorker": "PAID",
+        "refundRows": 0,
+        "outboxRows": 0
+      },
+      "buyerHold": {
+        "status": 409,
+        "code": "SHOWTIME_CLOSED"
+      },
+      "worker": "multiple fresh node processes across 22 paid orders; bounded batches; injected failure retried after backoff",
+      "result": "PASS local isolated profile: immediate freeze, 22-order multi-process batch/retry, 22/22 catcher messages, accounting operations UI desktop/mobile, DB oracle and fixture cleanup",
+      "post_batch": {
+        "paidOrdersCancelled": 22,
+        "refundsSucceeded": 22,
+        "ticketsCancelled": 22,
+        "uniqueRefundOrders": 22,
+        "mailOutboxSent": 0,
+        "attemptRows": 23,
+        "retriedRefunds": 1,
+        "fixtureCleanup": "completed",
+        "seatsStillSold": 0,
+        "mailOutboxQueued": 22
+      },
+      "mailDelivery": {
+        "smtpCatcher": "Mailpit",
+        "fixtureMessagesMatched": 22,
+        "operationMailSent": 22,
+        "realEmailSent": false,
+        "worker": "Nest lifecycle module in isolated profile only"
+      }
+    },
+    "INT10": {
+      "viewports": [
+        "390x844",
+        "1440x1000"
+      ],
+      "roleRevokedSyncManagerPosts": 0,
+      "directRolePostStatus": 403,
+      "directDisabledPostStatus": 401,
+      "queueRetained": true,
+      "restoredSyncStatus": 200,
+      "postgres": {
+        "acceptedScans": 2,
+        "normalAdmissions": 2,
+        "duplicates": 0
+      },
+      "fixtureCleanup": "completed",
+      "result": "PASS local isolated profile"
+    }
+  },
+  "limitations": [
+    "Local Chromium and isolated PostgreSQL are not staging, physical-device or provider evidence.",
+    "No real email was sent; INT-09 worker was off.",
+    "INT-09 passed against mock refund and local Mailpit only; it does not establish real-provider/staging behavior or recipient Inbox delivery."
+  ]
+}

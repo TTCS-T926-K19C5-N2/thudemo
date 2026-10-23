@@ -16,6 +16,7 @@ import {
   Ticket,
 } from "@/components/ui/material-icon";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { SignedTickets } from "./signed-tickets";
@@ -30,7 +31,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { PublicLayout } from "@/components/layout/product-layout";
-import { api, ApiError } from "@/lib/api/client";
+import { api, ApiError, object } from "@/lib/api/client";
 import { loadCurrentUser } from "@/lib/api";
 import {
   decodeOrderDetail,
@@ -64,6 +65,11 @@ export function OrderReview({ id, page = 1, onPay }: OrderReviewProps) {
   const [notFound, setNotFound] = useState<boolean>(false);
   const [paying, setPaying] = useState<boolean>(false);
   const [payError, setPayError] = useState<string>("");
+  const [paymentOutcomeUnknown, setPaymentOutcomeUnknown] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponBusy, setCouponBusy] = useState(false);
+  const [couponError, setCouponError] = useState("");
+  const [couponMessage, setCouponMessage] = useState("");
   const alive = useRef(true);
   const reader = useRef<AbortController | null>(null);
   const [readVersion, setReadVersion] = useState(0);
@@ -119,6 +125,7 @@ export function OrderReview({ id, page = 1, onPay }: OrderReviewProps) {
       });
       if (controller.signal.aborted) return;
       setOrder(data);
+      setPaymentOutcomeUnknown(data.latestPayment?.status === "INITIATED");
       const serverAnchor: ServerClock = {
         serverMs: Date.parse(data.serverTime),
         receivedAt: performance.now(),
@@ -175,6 +182,7 @@ export function OrderReview({ id, page = 1, onPay }: OrderReviewProps) {
       });
       if (controller.signal.aborted) return;
       setOrder(data);
+      setPaymentOutcomeUnknown(data.latestPayment?.status === "INITIATED");
 
       const serverAnchor: ServerClock = {
         serverMs: Date.parse(data.serverTime),
@@ -258,11 +266,61 @@ export function OrderReview({ id, page = 1, onPay }: OrderReviewProps) {
       }
     } catch (err) {
       setPayError(
-        err instanceof Error
+        err instanceof ApiError && err.code === "PAYMENT_OUTCOME_UNKNOWN"
+          ? "Chưa xác định được kết quả khởi tạo. Đang chờ đối soát; vui lòng không thanh toán lại."
+          : err instanceof Error
           ? err.message
           : "Không thể khởi tạo thanh toán. Vui lòng thử lại.",
       );
       setPaying(false);
+      if (!(err instanceof ApiError && err.code === "PAYMENT_REJECTED"))
+        setPaymentOutcomeUnknown(true);
+      void refresh();
+    }
+  };
+
+  const applyCoupon = async () => {
+    if (couponBusy || !couponCode.trim()) return;
+    setCouponBusy(true);
+    setCouponError("");
+    setCouponMessage("");
+    try {
+      const result = await api(
+        `/orders/${id}/coupon`,
+        (value) => ({ confirmedFree: object(value).confirmedFree === true }),
+        { method: "POST", body: { code: couponCode.trim() } },
+      );
+      setCouponCode("");
+      await refresh();
+      setCouponMessage(
+        result.confirmedFree
+          ? "Đơn 0₫ đã được xác nhận. Vé sẽ xuất hiện trong đơn hàng."
+          : "Đã áp dụng mã giảm giá.",
+      );
+    } catch (err) {
+      setCouponError(err instanceof Error ? err.message : "Không áp dụng được mã giảm giá.");
+    } finally {
+      setCouponBusy(false);
+    }
+  };
+
+  const removeCoupon = async () => {
+    if (couponBusy) return;
+    setCouponBusy(true);
+    setCouponError("");
+    setCouponMessage("");
+    try {
+      await api(
+        `/orders/${id}/coupon`,
+        (value) => object(value),
+        { method: "DELETE" },
+      );
+      await refresh();
+      setCouponMessage("Đã bỏ mã giảm giá.");
+    } catch (err) {
+      setCouponError(err instanceof Error ? err.message : "Không bỏ được mã giảm giá.");
+    } finally {
+      setCouponBusy(false);
     }
   };
 
@@ -513,6 +571,36 @@ export function OrderReview({ id, page = 1, onPay }: OrderReviewProps) {
                 </TableBody>
               </Table>
               <Separator />
+              {!expired && (order.status === "PENDING" || order.status === "PENDING_PAYMENT") && (
+                <section className="space-y-3 rounded-md border p-4" aria-labelledby="order-coupon-title">
+                  <div>
+                    <h2 id="order-coupon-title" className="font-semibold">Mã giảm giá</h2>
+                    <p className="text-sm text-muted-foreground">Mỗi đơn áp dụng tối đa một mã.</p>
+                  </div>
+                  {couponError && <p role="alert" className="text-sm text-destructive">{couponError}</p>}
+                  {couponMessage && <p role="status" className="text-sm">{couponMessage}</p>}
+                  {order.couponCode ? (
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <p>Đang áp dụng <strong>{order.couponCode}</strong>.</p>
+                      <Button type="button" variant="outline" onClick={() => void removeCoupon()} disabled={couponBusy || order.latestPayment?.status === "INITIATED"}>
+                        {couponBusy ? "Đang cập nhật…" : "Bỏ mã"}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <Input aria-label="Mã giảm giá" value={couponCode} onChange={(event) => setCouponCode(event.target.value.toUpperCase())} maxLength={32} autoComplete="off" disabled={couponBusy || order.latestPayment?.status === "INITIATED"} />
+                      <Button type="button" onClick={() => void applyCoupon()} disabled={couponBusy || !couponCode.trim() || order.latestPayment?.status === "INITIATED"}>
+                        {couponBusy ? "Đang áp dụng…" : "Áp dụng mã"}
+                      </Button>
+                    </div>
+                  )}
+                  {order.latestPayment?.status === "INITIATED" && <p className="text-sm text-muted-foreground">Đang có giao dịch chờ xác nhận; chưa thể đổi mã hoặc tổng tiền.</p>}
+                </section>
+              )}
+              <div className="space-y-1 p-5 text-right text-sm">
+                <p>Tạm tính: <strong>{formatVnd(order.subtotalAmount)}</strong></p>
+                <p>Giảm giá: <strong>{formatVnd(order.discountAmount)}</strong></p>
+              </div>
               <div className="p-5 bg-card flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="text-sm text-muted-foreground">
                   Tổng cộng:{" "}
@@ -573,8 +661,8 @@ export function OrderReview({ id, page = 1, onPay }: OrderReviewProps) {
                   <CircleAlert className="h-4 w-4 text-blue-600" />
                   <AlertTitle>Giao dịch đang chờ xác nhận</AlertTitle>
                   <AlertDescription>
-                    Bạn có một giao dịch đang chờ xác nhận, thanh toán lại có
-                    thể bị trừ tiền hai lần.
+                    Giao dịch đang chờ đối soát. Vui lòng không thanh toán lại
+                    để tránh bị trừ tiền hai lần.
                   </AlertDescription>
                 </Alert>
               )}
@@ -614,7 +702,7 @@ export function OrderReview({ id, page = 1, onPay }: OrderReviewProps) {
                     size="lg"
                     className="w-full sm:w-auto min-w-[200px] text-base font-semibold shadow-md"
                     onClick={defaultPayHandler}
-                    disabled={paying}
+                    disabled={paying || paymentOutcomeUnknown || order.latestPayment?.status === "INITIATED"}
                     data-testid="pay-button"
                   >
                     {paying ? (
@@ -622,8 +710,9 @@ export function OrderReview({ id, page = 1, onPay }: OrderReviewProps) {
                         <RotateCw className="mr-2 h-4 w-4 animate-spin" />
                         Đang kết nối cổng thanh toán...
                       </>
-                    ) : order.latestPayment?.status === "FAILED" ||
-                      order.latestPayment?.status === "INITIATED" ? (
+                    ) : paymentOutcomeUnknown || order.latestPayment?.status === "INITIATED" ? (
+                      "Đang chờ đối soát"
+                    ) : order.latestPayment?.status === "FAILED" ? (
                       "Thanh toán lại"
                     ) : (
                       "Thanh toán ngay"

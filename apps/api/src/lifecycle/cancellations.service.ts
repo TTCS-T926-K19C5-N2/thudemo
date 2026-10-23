@@ -161,8 +161,17 @@ export class CancellationsService {
           where: { holdSessionId: order.holdSessionId, token: order.holdToken },
         });
       // Old cancellation callbacks must never release another buyer's sold seat.
-      await tx.$executeRaw`UPDATE seats s SET "isSold"=false WHERE s.id IN (SELECT "seatId" FROM order_items WHERE "orderId"=${orderId}::uuid)
+      const releasedCount = await tx.$executeRaw`UPDATE seats s SET "isSold"=false WHERE s.id IN (SELECT "seatId" FROM order_items WHERE "orderId"=${orderId}::uuid)
         AND NOT EXISTS(SELECT 1 FROM order_items oi JOIN orders o ON o.id=oi."orderId" WHERE oi."seatId"=s.id AND o.status IN ('PAID','NEEDS_REVIEW'))`;
+      if (releasedCount > 0) {
+        const waiting = await tx.waitlistEntry.count({
+          where: { showtimeId: initial.showtimeId, status: 'ACTIVE' },
+        });
+        if (waiting > 0)
+          await tx.waitlistAvailabilitySignal.create({
+            data: { showtimeId: initial.showtimeId, releasedCount },
+          });
+      }
       const result = await tx.refund.create({
         data: {
           orderId,
@@ -231,6 +240,18 @@ export class CancellationsService {
         data: { status: 'CANCELLED' },
       });
       await tx.seatHold.deleteMany({ where: { showtimeId } });
+      await tx.waitlistAvailabilitySignal.updateMany({
+        where: { showtimeId, status: 'PENDING' },
+        data: { status: 'CANCELLED', processedAt: new Date() },
+      });
+      await tx.waitlistNotification.updateMany({
+        where: { entry: { showtimeId }, status: { in: ['QUEUED', 'SENDING'] } },
+        data: { status: 'CANCELLED', leaseToken: null, leaseUntil: null, failureCode: 'SHOWTIME_CLOSED' },
+      });
+      await tx.waitlistEntry.updateMany({
+        where: { showtimeId, status: { in: ['ACTIVE', 'NOTICE_QUEUED', 'NOTIFIED'] } },
+        data: { status: 'CANCELLED', cancelledAt: new Date() },
+      });
       return tx.showtimeCancellation.upsert({
         where: { showtimeId },
         create: { showtimeId, actorId: actor.id, reason: reason.trim() },

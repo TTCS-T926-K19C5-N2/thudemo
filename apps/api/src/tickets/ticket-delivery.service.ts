@@ -32,6 +32,8 @@ type Claim = {
   orderId: string;
   attempts: number;
   leaseToken: string;
+  recipientEmail: string | null;
+  ticketId: string | null;
 };
 
 @Injectable()
@@ -147,7 +149,7 @@ export class TicketDeliveryService implements OnModuleInit, OnModuleDestroy {
           ORDER BY "createdAt",id FOR UPDATE SKIP LOCKED LIMIT 1)
         UPDATE ticket_mail_deliveries d SET status='SENDING',attempts=d.attempts+1,"leaseToken"=${leaseToken}::uuid,
           "leaseUntil"=clock_timestamp()+interval '60 seconds',"updatedAt"=clock_timestamp()
-        FROM candidate c WHERE d.id=c.id RETURNING d.id,d."orderId",d.attempts,d."leaseToken"`);
+        FROM candidate c WHERE d.id=c.id RETURNING d.id,d."orderId",d.attempts,d."leaseToken",d."recipientEmail",d."ticketId"`);
       if (!claims.length) return;
       const job = claims[0],
         where = { id: job.id, leaseToken: job.leaseToken, status: 'SENDING' };
@@ -172,11 +174,29 @@ export class TicketDeliveryService implements OnModuleInit, OnModuleDestroy {
           });
           continue;
         }
-        const view = await this.projection.forOwner(job.orderId, order.userId);
-        const tickets = view.tickets.filter(
-          (t): t is typeof t & { qrPayload: string } =>
-            !!t.qrPayload && t.status !== 'CANCELLED',
-        );
+        const transfer = job.ticketId && job.recipientEmail
+          ? await this.projection.forTransferredTicket(job.ticketId, job.recipientEmail)
+          : null;
+        const transferPayload = transfer?.qrPayload;
+        if (job.ticketId && !transferPayload) {
+          await this.db.ticketMailDelivery.updateMany({
+            where,
+            data: {
+              status: 'CANCELLED',
+              leaseToken: null,
+              leaseUntil: null,
+              failureCode: 'TRANSFER_NO_LONGER_CURRENT',
+            },
+          });
+          continue;
+        }
+        const view = job.ticketId ? null : await this.projection.forOwner(job.orderId, order.userId);
+        const tickets = transfer && transferPayload
+          ? [{ ...transfer, qrPayload: transferPayload }]
+          : (view?.tickets ?? []).filter(
+              (t): t is typeof t & { qrPayload: string } =>
+                !!t.qrPayload && t.status !== 'CANCELLED',
+            );
         if (!tickets.length) {
           await this.db.ticketMailDelivery.updateMany({
             where,
@@ -206,7 +226,7 @@ export class TicketDeliveryService implements OnModuleInit, OnModuleDestroy {
             timeZone: 'Asia/Ho_Chi_Minh',
           });
         await this.mail.send({
-          to: order.user.email,
+          to: job.recipientEmail ?? order.user.email,
           subject: `Vé điện tử — ${first.eventName}`,
           messageId: `<ticket-${job.id}@thudemo.local>`,
           text: [

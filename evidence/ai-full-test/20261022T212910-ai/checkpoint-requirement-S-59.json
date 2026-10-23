@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-59-AC01",
+    "requirement_id": "S-59",
+    "kind": "AC",
+    "group": "Mở rộng",
+    "tier": "Later",
+    "priority": "Could",
+    "sprint": null,
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Danh sách chờ khi suất diễn hết vé",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L59"
+    },
+    "original_requirement": "Suất hết ghế thì hiện nút đăng ký chờ; khi có ghế về kho do huỷ hay hết hạn, người chờ nhận email theo thứ tự đăng ký. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP. Phần đệm, chưa xếp sprint",
+    "fixture": "Suất hết ghế, A/B đăng ký chờ theo thứ tự; SMTP catcher; quy tắc giữ riêng cần chốt.",
+    "surfaces": "Danh sách chờ khi hết vé; khác phòng chờ S-40",
+    "code_candidates": "Chưa tìm thấy module waitlist trong inventory hiện tại",
+    "test_candidates": "Chưa xác định suite chuyên biệt",
+    "steps": [
+      "Chuẩn bị fixture: Suất hết ghế, A/B đăng ký chờ theo thứ tự; SMTP catcher; quy tắc giữ riêng cần chốt.",
+      "Tìm UI/API/schema; nếu chưa có ghi MISSING, không dùng S-40 thay thế. Khi ghế được nhả do huỷ/hết hạn, email lần lượt đúng FIFO và không spam retry; chốt ghế có được dành riêng hay không.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Tìm UI/API/schema; nếu chưa có ghi MISSING, không dùng S-40 thay thế. Khi ghế được nhả do huỷ/hết hạn, email lần lượt đúng FIFO và không spam retry; chốt ghế có được dành riêng hay không.",
+    "expected": [
+      "Suất hết ghế thì hiện nút đăng ký chờ; khi có ghế về kho do huỷ hay hết hạn, người chờ nhận email theo thứ tự đăng ký. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP. Phần đệm, chưa xếp sprint"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-59-NFR",
+    "requirement_id": "S-59",
+    "kind": "NFR",
+    "group": "Mở rộng",
+    "tier": "Later",
+    "priority": "Could",
+    "sprint": null,
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Danh sách chờ khi suất diễn hết vé — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N59"
+    },
+    "original_requirement": "chưa refine — cần chốt có giữ ghế riêng cho người được báo trong một khoảng ngắn không",
+    "fixture": "Suất hết ghế, A/B đăng ký chờ theo thứ tự; SMTP catcher; quy tắc giữ riêng cần chốt.",
+    "surfaces": "Danh sách chờ khi hết vé; khác phòng chờ S-40",
+    "code_candidates": "Chưa tìm thấy module waitlist trong inventory hiện tại",
+    "test_candidates": "Chưa xác định suite chuyên biệt",
+    "steps": [
+      "Tìm UI/API/schema; nếu chưa có ghi MISSING, không dùng S-40 thay thế. Khi ghế được nhả do huỷ/hết hạn, email lần lượt đúng FIFO và không spam retry; chốt ghế có được dành riêng hay không.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt có giữ ghế riêng cho người được báo trong một khoảng ngắn không"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

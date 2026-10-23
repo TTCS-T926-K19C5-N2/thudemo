@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-08-AC",
+    "requirement_id": "T-08",
+    "parent_requirement": "S-03",
+    "kind": "TASK_AC",
+    "group": "Tài khoản",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Gửi email xác nhận và kích hoạt tài khoản",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G9"
+    },
+    "original_requirement": "Đăng ký xong thì trong log dev thấy email kèm liên kết; bấm liên kết thì tài khoản chuyển sang đã kích hoạt; bấm lần hai thì báo đã dùng",
+    "fixture": "Email mới/trùng, mật khẩu 7/8 ký tự, token mới/đã dùng/24 giờ, SMTP catcher.",
+    "surfaces": "/register; /activate; /resend-activation; /users/register",
+    "code_candidates": "apps/api/src/users/registration.service.ts; apps/api/src/users/activation-delivery.service.ts",
+    "test_candidates": "registration.e2e-spec.ts; registration-admission.e2e-spec.ts; registration.service.spec.ts",
+    "steps": [
+      "Đăng ký ở UI và API; so phản hồi email có/không tồn tại; bắt email local, kích hoạt một lần rồi replay. Dùng fake time cho 24 giờ; gửi lại lần 5 và 6 trong một giờ; kiểm tài khoản chưa kích hoạt không đăng nhập được.",
+      "Kiểm riêng tiêu chí task T-08: Đăng ký xong thì trong log dev thấy email kèm liên kết; bấm liên kết thì tài khoản chuyển sang đã kích hoạt; bấm lần hai thì báo đã dùng",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Đăng ký xong thì trong log dev thấy email kèm liên kết; bấm liên kết thì tài khoản chuyển sang đã kích hoạt; bấm lần hai thì báo đã dùng"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-08-NFR",
+    "requirement_id": "T-08",
+    "parent_requirement": "S-03",
+    "kind": "TASK_NFR",
+    "group": "Tài khoản",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Gửi email xác nhận và kích hoạt tài khoản",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I9"
+    },
+    "original_requirement": "không log mã kích hoạt ở môi trường staging trở lên",
+    "fixture": "Email mới/trùng, mật khẩu 7/8 ký tự, token mới/đã dùng/24 giờ, SMTP catcher.",
+    "surfaces": "/register; /activate; /resend-activation; /users/register",
+    "code_candidates": "apps/api/src/users/registration.service.ts; apps/api/src/users/activation-delivery.service.ts",
+    "test_candidates": "registration.e2e-spec.ts; registration-admission.e2e-spec.ts; registration.service.spec.ts",
+    "steps": [
+      "Đăng ký ở UI và API; so phản hồi email có/không tồn tại; bắt email local, kích hoạt một lần rồi replay. Dùng fake time cho 24 giờ; gửi lại lần 5 và 6 trong một giờ; kiểm tài khoản chưa kích hoạt không đăng nhập được.",
+      "Kiểm riêng tiêu chí task T-08: không log mã kích hoạt ở môi trường staging trở lên",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "không log mã kích hoạt ở môi trường staging trở lên"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

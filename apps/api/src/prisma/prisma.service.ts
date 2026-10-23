@@ -53,11 +53,18 @@ export class PrismaService
     this.readyConnections = readyConnections;
   }
 
-  async holdTransaction<T>(callback: (tx: HoldQueryable) => Promise<T>) {
+  async holdTransaction<T>(
+    callback: (tx: HoldQueryable) => Promise<T>,
+    client?: HoldConnection,
+  ) {
     await this.$connect();
     const pool = this.holdAdapter.pool;
     if (!pool) throw Error('Hold connection pool is unavailable');
-    return holdTransaction(pool, callback, this.holdNames);
+    return holdTransaction(pool, callback, this.holdNames, {
+      maxWait: 10000,
+      timeout: 10000,
+      client,
+    });
   }
 
   async sessionQuery<T>(

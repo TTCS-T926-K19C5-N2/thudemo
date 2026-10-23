@@ -387,6 +387,60 @@ export class HoldsService {
   // NEEDS_REVIEW order seats. Sequential accumulation is blocked here; a
   // same-millisecond race needs a proc-level check (S-42b).
 
+  async releaseSeat(
+    showtimeId: string,
+    userId: string,
+    sessionHash: string,
+    seatId: string,
+    client?: HoldConnection,
+  ): Promise<HoldState> {
+    const result = await this.db.holdTransaction(async (tx) => {
+      // Match create-order's lock so release and order creation serialize.
+      const sessions = await tx.$queryRaw<
+        { id: string; token: string }[]
+      >(Prisma.sql`SELECT id, token FROM hold_sessions
+        WHERE "showtimeId"=${showtimeId}::uuid AND "userId"=${userId}::uuid
+          AND "sessionHash"=${sessionHash} FOR UPDATE`);
+      const session = sessions[0];
+      const target = await tx.$queryRaw<
+        { holdSessionId: string; userId: string; sessionHash: string }[]
+      >(Prisma.sql`SELECT h."holdSessionId", hs."userId", hs."sessionHash"
+        FROM seat_holds h JOIN hold_sessions hs ON hs.id=h."holdSessionId"
+        WHERE h."seatId"=${seatId}::uuid AND h."showtimeId"=${showtimeId}::uuid
+          AND h."expiresAt">clock_timestamp()`);
+      if (!target.length) throw new NotFoundException('Ghế không còn được giữ.');
+      if (
+        !session || target[0].holdSessionId !== session.id ||
+        target[0].userId !== userId || target[0].sessionHash !== sessionHash
+      ) throw new ForbiddenException('Bạn không sở hữu lượt giữ ghế này.');
+
+      const activeOrders = await tx.$queryRaw<{ id: string }[]>(Prisma.sql`
+        SELECT id FROM orders WHERE "holdSessionId"=${session.id}::uuid
+          AND status NOT IN ('CANCELLED','EXPIRED') LIMIT 1`);
+      if (activeOrders.length)
+        throw new ConflictException({ code: 'HOLD_ORDER_STARTED', message: 'Không thể đổi ghế sau khi đơn đã được tạo.' });
+
+      const deleted = await tx.$queryRaw<{ seatId: string }[]>(Prisma.sql`
+        DELETE FROM seat_holds h USING hold_sessions hs
+        WHERE h."seatId"=${seatId}::uuid AND h."showtimeId"=${showtimeId}::uuid
+          AND h."holdSessionId"=hs.id AND h.token=hs.token
+          AND hs.id=${session.id}::uuid AND hs."userId"=${userId}::uuid
+          AND hs."sessionHash"=${sessionHash} AND h."expiresAt">clock_timestamp()
+          AND hs."expiresAt">clock_timestamp()
+        RETURNING h."seatId"`);
+      if (!deleted.length) throw new NotFoundException('Ghế không còn được giữ.');
+      await tx.$queryRaw(Prisma.sql`UPDATE hold_sessions
+        SET "expectedSeatIds"=array_remove("expectedSeatIds", ${seatId}::uuid)
+        WHERE id=${session.id}::uuid AND token=${session.token}::uuid`);
+      await tx.$queryRaw(Prisma.sql`INSERT INTO waitlist_availability_signals(id,"showtimeId","releasedCount")
+        SELECT gen_random_uuid(),${showtimeId}::uuid,1
+        WHERE EXISTS (SELECT 1 FROM waitlist_entries WHERE "showtimeId"=${showtimeId}::uuid AND status='ACTIVE')`);
+      return this.state(tx, showtimeId, userId, sessionHash);
+    }, client);
+    this.seatEvents?.invalidate(showtimeId);
+    return result;
+  }
+
   current(showtimeId: string, userId: string, sessionHash: string) {
     return this.state(this.db, showtimeId, userId, sessionHash);
   }
@@ -441,9 +495,21 @@ export class HoldsService {
   async cleanupBatch(candidates: ExpiredClaim[]): Promise<number> {
     if (!candidates.length) return 0;
     // Snapshot token AND current expiry are checked again: an old job cannot delete a new right.
-    const deleted = await this.db
-      .$executeRaw(Prisma.sql`DELETE FROM seat_holds h USING jsonb_to_recordset(${JSON.stringify(candidates)}::jsonb) AS old("seatId" uuid,token uuid)
-      WHERE h."seatId"=old."seatId" AND h.token=old.token AND h."expiresAt"<=clock_timestamp()`);
+    const [cleanup] = await this.db.$queryRaw<{ deleted: number }[]>(Prisma.sql`
+      WITH deleted AS (
+        DELETE FROM seat_holds h USING jsonb_to_recordset(${JSON.stringify(candidates)}::jsonb) AS old("seatId" uuid,token uuid)
+        WHERE h."seatId"=old."seatId" AND h.token=old.token AND h."expiresAt"<=clock_timestamp()
+        RETURNING h."showtimeId"
+      ), grouped AS (
+        SELECT "showtimeId",count(*)::int AS released_count FROM deleted GROUP BY "showtimeId"
+      ), signals AS (
+        INSERT INTO waitlist_availability_signals(id,"showtimeId","releasedCount")
+        SELECT gen_random_uuid(),g."showtimeId",g.released_count
+        FROM grouped g WHERE EXISTS (
+          SELECT 1 FROM waitlist_entries e WHERE e."showtimeId"=g."showtimeId" AND e.status='ACTIVE'
+        ) RETURNING id
+      ) SELECT (SELECT count(*)::int FROM deleted) AS deleted`);
+    const deleted = cleanup?.deleted ?? 0;
     if (deleted > 0 && this.seatEvents) {
       for (const showtimeId of new Set(
         candidates

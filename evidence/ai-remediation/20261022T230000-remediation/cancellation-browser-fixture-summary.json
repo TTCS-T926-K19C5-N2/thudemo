@@ -1,0 +1,10 @@
+{
+  "runId": "20261022T230000-remediation",
+  "eventId": "d4ae5c33-9621-4328-8131-890cca448fa8",
+  "showtimeId": "37869760-505e-4367-a774-5241ac3740a1",
+  "orderId": "55782721-65f8-4665-a8cc-8ed5ab30be79",
+  "seatCount": 2,
+  "orderTotalVnd": 250000,
+  "paymentGateway": "mock",
+  "synthetic": true
+}

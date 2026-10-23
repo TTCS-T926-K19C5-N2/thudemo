@@ -1,0 +1,48 @@
+## 10. Cách ghi kết quả và điều kiện nghiệm thu
+
+### 10.1. Trạng thái từng case
+
+| Status | Ý nghĩa |
+|---|---|
+| NOT_RUN | Có trong kế hoạch nhưng chưa thực hiện. Tất cả case giao lần này ở trạng thái này. |
+| PASS | Đã chạy đầy đủ mệnh đề, đúng oracle và có bằng chứng đúng source/môi trường. |
+| FAIL | Đã chạy và quan sát hành vi trái expected, kèm bước tái hiện. |
+| BLOCKED | Có prerequisite thiếu như app không boot, quyền browser, sandbox hay thiết bị; ghi chính xác blocker và case bị ảnh hưởng. |
+| MISSING | Chưa có chức năng sau khi kiểm code/route/UI/schema; không dùng khi app chỉ đang không boot. |
+| NEEDS_DECISION | Có mâu thuẫn hoặc tham số/nghiệp vụ chưa được chốt; vẫn ghi phần hành vi đã đo. |
+| NOT_APPLICABLE | Chỉ khi có lý do/phạm vi được xác nhận. Không dùng để giấu Later thiếu hoặc test khó. |
+
+Phân biệt lỗi sản phẩm, test lỗi thời, fixture lỗi và môi trường lỗi. Một unit test fail không tự chứng minh màn hình tương ứng hỏng; đồng thời không được báo suite đạt. Nếu test fail do môi trường thì ghi `BLOCKED` cho nghiệm thu hành vi và giữ log suite thất bại; không sửa test expected chỉ để xanh.
+
+### 10.2. Bằng chứng bắt buộc cho mỗi lần chạy
+
+`run-id`, thời gian UTC + giờ Việt Nam, HEAD/branch/fingerprint dirty tree, workbook hash, source requirements, URL/cổng/environment, DB thử đã che URL, browser/device/network, seed/fixture, command hoặc thao tác, actual/expected, exit code, kết quả và file evidence.
+
+Đặt tại `evidence/ai-full-test/<run-id>/` khi chạy, gồm:
+
+- `run-manifest.json`: phiên bản và môi trường, không secret.
+- `results.json`: case ID/status/actual/evidence, giữ nguyên ô yêu cầu gốc và override riêng.
+- `bugs.md`: severity, requirement/case, expected/actual, bước tái hiện, ảnh/log và điều kiện môi trường.
+- `report.md`: kết luận theo nhóm, backlog/tier, UI/API/DB/NFR/local/staging/device và các giới hạn.
+- Log, ảnh/video, HTTP đã che thông tin và số đo thô trong thư mục theo case/nhóm.
+
+Không paste full cookie, token kích hoạt/reset, QR có quyền sử dụng thật, private key, tên/email thật vào bằng chứng. Báo cáo gắn PII canary giả nếu cần kiểm erasure.
+
+### 10.3. Coverage và lỗi
+
+Tính coverage theo **yêu cầu**, không lấy tổng unit test làm số chức năng đạt:
+
+- Tổng AC/NFR trong baseline, số đã có case, số đã chạy, PASS/FAIL/BLOCKED/MISSING/NEEDS_DECISION/NOT_RUN.
+- Báo riêng Ready, Next, Later; Must/Should/Could; 55 task kỹ thuật; epic; DoD/DoR; nhóm EXT.
+- Yêu cầu có nhiều case chỉ đạt khi mọi case bắt buộc đạt; một NFR còn chưa đo thì story chưa đạt đầy đủ.
+- Tỷ lệ thực thi = (PASS + FAIL) / số case thuộc phạm vi phải chạy. Công bố cả blocked/missing/needs-decision; không loại chúng khỏi mẫu số để làm đẹp số liệu. Tỷ lệ đạt = PASS / tổng case trong phạm vi, N/A chỉ trừ khi đã có lý do chấp thuận.
+- Tách “đủ mapping” khỏi “đã thực thi” và “đã nghiệm thu”. Case bổ sung có thể overlap AC, không cộng ra số story mới.
+
+Severity đề xuất: P0 = bán trùng/vượt sức chứa, ghi nhận tiền/hoàn/soát trùng, mất queue, lộ dữ liệu nghiêm trọng; P1 = gãy luồng chính hoặc sai quyền; P2 = thiếu tiêu chí/hiệu năng/trải nghiệm có cách đi tiếp; P3 = chi tiết hiển thị không phá AC/NFR. Severity lỗi khác Must/Should/Could của yêu cầu.
+
+### 10.4. Kết luận cuối cùng
+
+Chỉ ghi “Đạt phạm vi nghiệm thu đã chốt” khi mọi AC/NFR/task/gate bắt buộc trong scope đó đã được kiểm và đạt, không còn P0/P1 và lỗi khác vi phạm AC/NFR. Hoàn tất local với mock không thành sandbox provider thật/staging/device PASS. Không ghi “tất cả chức năng đạt” khi còn thiếu evidence camera, 4G, off-host backup hoặc route chưa được kiểm.
+
+Nếu chưa đủ điều kiện, báo rõ “Chưa đủ điều kiện nghiệm thu”, liệt kê chức năng lỗi/thiếu/bị chặn/cần quyết định và phần đã chứng minh. Không cần kết luận toàn dự án thất bại chỉ vì một Later chưa vào scope, nhưng phải đưa nó vào danh sách gap.
+

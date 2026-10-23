@@ -41,8 +41,7 @@ export class MockPaymentGateway implements PaymentGateway {
   }
 
   async createPayment(params: CreatePaymentParams): Promise<CreatePaymentResult> {
-    const nonce = Math.random().toString(36).substring(2, 8);
-    const gatewayRef = `${params.orderId}_${Date.now()}_${nonce}`;
+    const gatewayRef = params.gatewayRef;
 
     const redirectUrl = `${this.webOrigin}/mock-gateway/pay?orderId=${encodeURIComponent(
       params.orderId,

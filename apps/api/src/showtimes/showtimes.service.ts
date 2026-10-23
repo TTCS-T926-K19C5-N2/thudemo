@@ -12,6 +12,7 @@ import type { Redis } from 'ioredis';
 import { randomUUID, createHash } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 import { SEAT_STATUS_SQL } from './seat-status.sql.js';
+import { createSeatMapPdf } from './seat-map-pdf.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { validateSeatMap, type ImportedSeat } from './seat-map.js';
 import { parseTicketLimit } from '../holds/holds.service.js';
@@ -396,6 +397,7 @@ export class ShowtimesService {
         event: {
           select: {
             id: true,
+            status: true,
             name: true,
             description: true,
             location: true,
@@ -411,6 +413,7 @@ export class ShowtimesService {
     });
     if (
       !show ||
+      show.event.status !== 'PUBLISHED' ||
       (show.status !== 'ON_SALE' && !(show.isDemo && show.status === 'DRAFT'))
     )
       throw new NotFoundException('Suất diễn chưa mở bán hoặc đã đóng.');
@@ -520,19 +523,34 @@ export class ShowtimesService {
     // One live snapshot for visibility and inventory, not two network queries.
     // A single JSON column avoids parsing six driver fields for each of 2000 rows.
     const [show] = await this.db.seatReadQuery<
-      { status: string; isDemo: boolean; seats: SeatRow[] }[]
+      { status: string; isDemo: boolean; eventStatus: string; seats: SeatRow[] }[]
     >(
-      Prisma.sql`SELECT sh.status, sh."isDemo", (${this.seatProjection(id)}) AS seats
-        FROM showtimes sh WHERE sh.id=${id}::uuid AND (sh.status='ON_SALE' OR (sh.status='DRAFT' AND sh."isDemo"=true))`,
+      Prisma.sql`SELECT sh.status, sh."isDemo", e.status AS "eventStatus", (${this.seatProjection(id)}) AS seats
+        FROM showtimes sh JOIN events e ON e.id=sh."eventId"
+        WHERE sh.id=${id}::uuid AND e.status='PUBLISHED'
+          AND (sh.status='ON_SALE' OR (sh.status='DRAFT' AND sh."isDemo"=true))`,
     );
     if (
       !show ||
+      show.eventStatus !== 'PUBLISHED' ||
       (show.status !== 'ON_SALE' && !(show.isDemo && show.status === 'DRAFT'))
     )
       throw new NotFoundException('Suất diễn chưa mở bán hoặc đã đóng.');
     return show.seats;
   }
-  seatStream(id: string): Observable<MessageEvent> {
+  async seatStream(id: string): Promise<Observable<MessageEvent>> {
+    const show = await this.db.showtime.findFirst({
+      where: {
+        id,
+        event: { status: 'PUBLISHED' },
+        OR: [
+          { status: 'ON_SALE' },
+          { status: 'DRAFT', isDemo: true },
+        ],
+      },
+      select: { id: true },
+    });
+    if (!show) throw new NotFoundException('Suất diễn chưa mở bán hoặc đã đóng.');
     return this.seatEvents?.stream(id) ?? EMPTY;
   }
   async ownedSeats(id: string, owner: string) {
@@ -543,6 +561,22 @@ export class ShowtimesService {
     if (show.organizerId !== owner)
       throw new ForbiddenException('Bạn không có quyền sửa suất diễn này.');
     return this.querySeats(id);
+  }
+  async ownedSeatMapPdf(id: string, owner: string) {
+    const [snapshot] = await this.db.seatReadQuery<{
+      eventName: string;
+      organizerId: string;
+      showtime: Date;
+      generatedAt: Date;
+      seats: SeatRow[];
+    }[]>(Prisma.sql`SELECT e.name AS "eventName", e."organizerId", sh."startTime" AS showtime,
+        transaction_timestamp() AS "generatedAt", (${this.seatProjection(id)}) AS seats
+      FROM showtimes sh JOIN events e ON e.id=sh."eventId"
+      WHERE sh.id=${id}::uuid AND e."organizerId"=${owner}::uuid`);
+    if (!snapshot) throw new NotFoundException('Không tìm thấy sơ đồ ghế của suất diễn này.');
+    const pdf = await createSeatMapPdf(snapshot);
+    const filename = `seat-map-${id}.pdf`;
+    return { pdf, filename };
   }
   private async querySeats(id: string) {
     const [result] = await this.db.seatReadQuery<{ seats: SeatRow[] }[]>(

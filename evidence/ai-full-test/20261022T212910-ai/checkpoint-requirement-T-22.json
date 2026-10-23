@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-22-AC",
+    "requirement_id": "T-22",
+    "parent_requirement": "S-10",
+    "kind": "TASK_AC",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Bảng `seat_holds` có thời điểm hết hạn kèm migration",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G23"
+    },
+    "original_requirement": "Migration tiến và lùi được; có chỉ mục trên thời điểm hết hạn để job dọn quét nhanh; T-19 hiện đúng ghế đang giữ",
+    "fixture": "BUYER A/B; 3 ghế trống; cấu hình hold mặc định 10 phút, client lệch ±5 phút.",
+    "surfaces": "POST /showtimes/:id/holds; màn chọn ghế",
+    "code_candidates": "apps/api/src/holds/; apps/web/src/features/seat-selection/server-countdown.ts",
+    "test_candidates": "seat-hold-api.e2e-spec.ts; server-countdown.spec.ts",
+    "steps": [
+      "A chọn ghế theo các thời điểm khác nhau, so expiresAt dùng chung từ lần đầu. B tranh ghế; đóng suất rồi giữ mới. Dùng context browser mô phỏng lệch đồng hồ; đổi cấu hình ở profile thử để chứng minh không hard-code TTL.",
+      "Kiểm riêng tiêu chí task T-22: Migration tiến và lùi được; có chỉ mục trên thời điểm hết hạn để job dọn quét nhanh; T-19 hiện đúng ghế đang giữ",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Migration tiến và lùi được; có chỉ mục trên thời điểm hết hạn để job dọn quét nhanh; T-19 hiện đúng ghế đang giữ"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-22-NFR",
+    "requirement_id": "T-22",
+    "parent_requirement": "S-10",
+    "kind": "TASK_NFR",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Bảng `seat_holds` có thời điểm hết hạn kèm migration",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I23"
+    },
+    "original_requirement": "thời điểm hết hạn lưu ở UTC",
+    "fixture": "BUYER A/B; 3 ghế trống; cấu hình hold mặc định 10 phút, client lệch ±5 phút.",
+    "surfaces": "POST /showtimes/:id/holds; màn chọn ghế",
+    "code_candidates": "apps/api/src/holds/; apps/web/src/features/seat-selection/server-countdown.ts",
+    "test_candidates": "seat-hold-api.e2e-spec.ts; server-countdown.spec.ts",
+    "steps": [
+      "A chọn ghế theo các thời điểm khác nhau, so expiresAt dùng chung từ lần đầu. B tranh ghế; đóng suất rồi giữ mới. Dùng context browser mô phỏng lệch đồng hồ; đổi cấu hình ở profile thử để chứng minh không hard-code TTL.",
+      "Kiểm riêng tiêu chí task T-22: thời điểm hết hạn lưu ở UTC",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "thời điểm hết hạn lưu ở UTC"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

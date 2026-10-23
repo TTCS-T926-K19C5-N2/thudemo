@@ -2,6 +2,7 @@ import { createHash, randomBytes, generateKeyPairSync } from "node:crypto";
 import { createServer } from "node:net";
 import {
   readFileSync,
+  readdirSync,
   writeFileSync,
   mkdirSync,
   existsSync,
@@ -15,6 +16,11 @@ import { parseEnv } from "node:util";
 
 const root = realpathSync(resolve(import.meta.dirname, ".."));
 process.chdir(root);
+const demoCatalog = JSON.parse(
+  readFileSync(resolve(root, "demo-data/catalog.source.json"), "utf8"),
+);
+if (demoCatalog.catalog?.length !== 40)
+  throw new Error("Expected the preserved 40-event demo catalog.");
 const action = process.argv[2] ?? "Start";
 if (!["Start", "Stop", "Status", "Restart"].includes(action))
   throw Error("Use Start, Stop, Status or Restart");
@@ -57,18 +63,34 @@ const fail = (message) => {
 };
 
 function fingerprint() {
-  const files = new Set(
-    (
+  const files = new Set();
+  if (existsSync(resolve(root, ".git"))) {
+    for (const path of (
       git("ls-files") +
       "\n" +
       git("ls-files", "--others", "--exclude-standard")
-    ).split(/\r?\n/),
-  );
+    ).split(/\r?\n/))
+      if (path) files.add(path);
+  } else {
+    const ignored = new Set([
+      ".git", "node_modules", ".next", "dist", ".sprint1-demo",
+      ".cache", "evidence", "coverage",
+    ]);
+    const walk = (directory, prefix = "") => {
+      for (const entry of readdirSync(directory, { withFileTypes: true })) {
+        if (entry.isDirectory() && ignored.has(entry.name)) continue;
+        const relative = prefix ? `${prefix}/${entry.name}` : entry.name;
+        if (entry.isDirectory()) walk(resolve(directory, entry.name), relative);
+        else if (!/^\.env(?:\.|$)/.test(entry.name)) files.add(relative);
+      }
+    };
+    walk(root);
+  }
   const hash = createHash("sha256");
   for (const path of [...files]
     .filter(
       (path) =>
-        /^(apps\/(api|web)\/|packages\/shared\/|scripts\/sprint1-onboarding|pnpm-lock.yaml$|package.json$)/.test(
+        /^(apps\/(api|web)\/|packages\/shared\/|scripts\/(sprint1-onboarding|create-demo-showtime|create-demo-scanner-showtime)|demo-data\/|pnpm-lock.yaml$|package.json$)/.test(
           path,
         ) &&
         !path.startsWith("apps/web/.next/") &&
@@ -236,27 +258,39 @@ async function health() {
 }
 
 async function smoke() {
+  const api = `http://127.0.0.1:${config.ports.api}`;
   const origin = `http://localhost:${config.ports.web}`;
-  const buyer = config.accounts.find((a) => a.name === "buyer");
-  const login = await fetch(origin + "/api/auth/login", {
-    method: "POST",
-    headers: { origin, "content-type": "application/json" },
-    body: JSON.stringify({ email: buyer.email, password: buyer.password }),
-  });
-  if (login.status !== 200) fail("Fixture login smoke failed");
-  const cookie = login.headers.getSetCookie()[0]?.split(";")[0];
-  if (!cookie) fail("Session smoke failed");
-  const me = await fetch(origin + "/api/auth/me", { headers: { cookie } });
-  if (me.status !== 200 || !(await me.json()).roles.includes("BUYER"))
-    fail("Current-user smoke failed");
-  const logout = await fetch(origin + "/api/auth/logout", {
-    method: "POST",
-    headers: { origin, cookie, "content-type": "application/json" },
-    body: "{}",
-  });
-  if (logout.status !== 200) fail("Logout smoke failed");
-  const replay = await fetch(origin + "/api/auth/me", { headers: { cookie } });
-  if (replay.status !== 401) fail("Logout replay smoke failed");
+  const required = [
+    ["admin", "ADMIN"],
+    ["organizer-a", "ORGANIZER"],
+    ["buyer", "BUYER"],
+    ["staff", "STAFF"],
+    ["accountant", "ACCOUNTANT"],
+  ];
+  for (const [name, role] of required) {
+    const account = config.accounts.find((item) => item.name === name);
+    const login = await fetch(api + "/auth/login", {
+      method: "POST",
+      headers: { origin, "content-type": "application/json" },
+      body: JSON.stringify({ email: account.email, password: account.password }),
+    });
+    if (login.status !== 200) fail(`Role login smoke failed: ${role}`);
+    const cookie = login.headers.getSetCookie()[0]?.split(";")[0];
+    if (!cookie) fail(`Role session missing: ${role}`);
+    const me = await fetch(api + "/auth/me", { headers: { cookie } });
+    if (me.status !== 200 || !(await me.json()).roles.includes(role))
+      fail(`Role session smoke failed: ${role}`);
+    const logout = await fetch(api + "/auth/logout", {
+      method: "POST",
+      headers: { origin, cookie, "content-type": "application/json" },
+      body: "{}",
+    });
+    if (logout.status !== 200) fail(`Role logout smoke failed: ${role}`);
+    if (name === "buyer") {
+      const replay = await fetch(api + "/auth/me", { headers: { cookie } });
+      if (replay.status !== 401) fail("Logout replay smoke failed");
+    }
+  }
 }
 
 function ready() {
@@ -306,11 +340,20 @@ try {
       mailKey: secret(),
       webhookSecret: secret(),
       ports,
+      demoShowtime: {
+        eventId: demoCatalog.catalog[0].id,
+        sourceShowtimeId: demoCatalog.catalog[0].showtimes[0].id,
+        startTime: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .replace(/T\d{2}:\d{2}:\d{2}\.\d{3}Z$/, "T12:30:00.000Z"),
+      },
       accounts: [
         "admin",
         "organizer-a",
         "organizer-b",
         "buyer",
+        "staff",
+        "accountant",
         "lock-test",
       ].map((name) => ({
         name,
@@ -321,7 +364,11 @@ try {
             ? "ADMIN"
             : name.startsWith("organizer")
               ? "ORGANIZER"
-              : "BUYER",
+              : name === "staff"
+                ? "STAFF"
+                : name === "accountant"
+                  ? "ACCOUNTANT"
+                  : "BUYER",
         ],
       })),
     };
@@ -362,6 +409,15 @@ try {
         `TICKET_SIGNING_ACTIVE_KEY_ID=${profile}`,
         `TICKET_SIGNING_PRIVATE_KEY=${pair.privateKey.export({ type: "pkcs8", format: "der" }).toString("base64")}`,
         `TICKET_SIGNING_PUBLIC_KEYS='${publicKeys}'`,
+        "TICKET_MAIL_WORKER=true",
+        "TICKET_MAIL_MODE=catcher",
+        "PASSWORD_RESET_WORKER=true",
+        "TICKET_SMTP_HOST=127.0.0.1",
+        `TICKET_SMTP_PORT=${ports.smtp}`,
+        "TICKET_SMTP_FROM=tickets@sprint1.demo.invalid",
+        "LIFECYCLE_WORKER=on",
+        "NEXT_PUBLIC_DEMO_PROFILE_NOTICE=1",
+        `NEXT_PUBLIC_DEMO_PROFILE_LABEL=${profile}`,
         "ORDER_EXPIRY_MODE=off",
         "HOLD_EXPIRY_MODE=off",
         "REGISTRATION_MAIL_MODE=catcher",
@@ -415,7 +471,7 @@ try {
           },
         },
         mailpit: {
-          image: "axllent/mailpit:v1.31.6",
+          image: "axllent/mailpit:v1.27",
           labels,
           ports: [
             `127.0.0.1:${ports.smtp}:1025`,
@@ -430,8 +486,23 @@ try {
   } else {
     config = JSON.parse(readFileSync(configFile));
   }
-  const env = { ...process.env, ...assertConfig() };
+  mkdirSync(resolve(dir, "tmp"), { recursive: true });
+  const env = {
+    ...process.env,
+    ...assertConfig(),
+    PNPM_STORE_DIR: resolve(dir, "pnpm-store"),
+    TEMP: resolve(dir, "tmp"),
+    TMP: resolve(dir, "tmp"),
+  };
   const savedBuildMatches = state.built && state.fingerprint === fingerprint();
+  // An owned profile that reached READY already has durable demo data. Source
+  // changes may require a rebuild, but must never replay catalog/user/showtime
+  // initialization on Restart. The private state file is scoped to this exact
+  // root/profile and is written only after health + smoke succeeded.
+  const profilePreviouslyReady =
+    state.built === true &&
+    typeof state.readyAt === "string" &&
+    typeof state.fingerprint === "string";
   if (process.argv.includes("--skip-build") && !savedBuildMatches)
     fail("SkipBuild requires an unchanged previously built checkout");
   const resumeBuild =
@@ -460,14 +531,14 @@ try {
     ),
   );
   if (
-    resources.freeC < (resumeBuild ? 0.5 : 12) * 2 ** 30 ||
+    resources.freeC < (resumeBuild ? 0.5 : 1) * 2 ** 30 ||
     resources.freeRoot < (resumeBuild ? 0.5 : 5) * 2 ** 30 ||
     resources.freeRam < (resumeBuild ? 0.5 : 2) * 2 ** 30
   )
     fail(
       resumeBuild
         ? "Need free system/workspace disk and RAM>=512MiB to resume the verified build"
-        : "Need free C>=12GiB, workspace drive>=5GiB and RAM>=2GiB before install/build",
+        : "Need free C>=1GiB, workspace drive>=5GiB and RAM>=2GiB; install cache and temp files stay in the demo profile",
     );
   jsonWrite(resolve(dir, "resources.json"), {
     time: new Date().toISOString(),
@@ -480,22 +551,36 @@ try {
   validateContainers();
   compose("up", "-d", "--wait", "--wait-timeout", "90");
   if (!resumeBuild) {
-    runLog("install", "corepack pnpm install --frozen-lockfile", env);
+    runLog(
+      "install",
+      `corepack pnpm install --frozen-lockfile --store-dir ${env.PNPM_STORE_DIR.replaceAll("\\", "/")}`,
+      env,
+    );
     runLog("generate", "corepack pnpm --filter api exec prisma generate", env);
     runLog(
       "migrate",
       "corepack pnpm --filter api exec prisma migrate deploy",
       env,
     );
-    runLog("seed", "node apps/api/scripts/seed-sprint1-onboarding.mjs", env);
+    if (!profilePreviouslyReady) {
+      runLog("seed", "node apps/api/scripts/seed-sprint1-onboarding.mjs", env);
+      runLog("catalog", "node apps/api/scripts/seed-demo-catalog.mjs", env);
+    } else
+      console.log(
+        "Demo: preserving initialized profile users and catalog; no reseed performed.",
+      );
     runLog("build", "corepack pnpm build", { ...env, NODE_ENV: "production" });
   } else
     console.log(
       "Demo: resuming unchanged verified build; install/migration/seed/build already recorded.",
     );
   state = {
-    source: git("rev-parse", "HEAD"),
-    localDiff: !!git("status", "--porcelain"),
+    source: existsSync(resolve(root, ".git"))
+      ? git("rev-parse", "HEAD")
+      : "prepared-file-tree",
+    localDiff: existsSync(resolve(root, ".git"))
+      ? !!git("status", "--porcelain")
+      : true,
     built: true,
     fingerprint: fingerprint(),
     processes: [],
@@ -541,6 +626,18 @@ try {
     fail(
       "Demo did not become healthy; inspect .sprint1-demo/*.log. READY not reached.",
     );
+  if (!profilePreviouslyReady) {
+    runLog("demo-showtime", "node apps/api/scripts/create-demo-showtime.mjs", env);
+    runLog(
+      "demo-scanner-showtime",
+      "node apps/api/scripts/create-demo-scanner-showtime.mjs",
+      env,
+    );
+  } else
+    console.log(
+      "Demo: retaining existing showtimes, purchases, and seat state; no fixture recreation performed.",
+    );
+  await health();
   await smoke();
   state.readyAt = new Date().toISOString();
   jsonWrite(stateFile, state);

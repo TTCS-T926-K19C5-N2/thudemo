@@ -1,0 +1,43 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Authenticated Chromium; isolated local app/PostgreSQL on loopback. No 4G throttling or physical device.",
+  "workload": {
+    "paidTickets": 5000,
+    "repetitions": 1
+  },
+  "rawLatencyMs": [
+    857.339
+  ],
+  "pageErrors": [],
+  "screenshots": [
+    "r19-5000-desktop.png",
+    "r19-5000-mobile.png"
+  ],
+  "p95Ms": 857.339,
+  "maxMs": 857.339,
+  "errorRate": 0,
+  "serverResponseStatus": 200,
+  "snapshot": {
+    "mode": "full",
+    "totalTickets": 5000,
+    "returnedRecords": 5000,
+    "rawJsonBytes": 978839,
+    "cursorPresent": true
+  },
+  "local": {
+    "count": 5000,
+    "keys": [
+      "code",
+      "showtimeId",
+      "status"
+    ],
+    "allCodesPresent": true,
+    "allStatusesPresent": true,
+    "forbiddenFieldNames": [],
+    "containsSyntheticPII": false,
+    "metaStatus": "ready",
+    "ticketCount": 5000
+  },
+  "mobileNoOverflow": true,
+  "localNetworkOnly": true
+}

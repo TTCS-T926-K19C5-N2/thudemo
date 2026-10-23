@@ -26,6 +26,7 @@ describe("Runtime same-origin API proxy", () => {
     vi.stubEnv("API_INTERNAL_URL", "https://sang-api.onrender.com");
     const headers = new Headers({
       "content-type": "application/json",
+      "content-disposition": 'attachment; filename="report.pdf"',
       "retry-after": "60",
     });
     headers.append(
@@ -54,6 +55,7 @@ describe("Runtime same-origin API proxy", () => {
     );
     expect(res.status).toBe(429);
     expect(res.headers.get("retry-after")).toBe("60");
+    expect(res.headers.get("content-disposition")).toBe('attachment; filename="report.pdf"');
     expect(res.headers.get("set-cookie")).toContain("HttpOnly");
     const forwarded = fetchMock.mock.calls[0][1].headers as Headers;
     expect(forwarded.get("origin")).toBe("https://sang-web.onrender.com");
@@ -92,6 +94,23 @@ describe("Runtime same-origin API proxy", () => {
       ["Auth", "LOGIN"],
     );
     expect(result.status).toBe(503);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+  it("requires transport peer attestation on forgot and reset password variants", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    for (const [url, path] of [
+      ["/api/auth/forgot-password", ["auth", "forgot-password"]],
+      ["/API/AUTH/FORGOT-PASSWORD/", ["AUTH", "FORGOT-PASSWORD"]],
+      ["/api/auth/%66orgot-password/", ["auth", "%66orgot-password"]],
+      ["/api/auth/reset-password", ["auth", "reset-password"]],
+    ] as const) {
+      const response = await proxyApi(
+        new Request(`http://localhost${url}`, { method: "POST", body: "{}" }),
+        [...path],
+      );
+      expect(response.status).toBe(503);
+    }
     expect(fetchMock).not.toHaveBeenCalled();
   });
   it("fails closed without exposing upstream credentials and bounds body before forwarding", async () => {

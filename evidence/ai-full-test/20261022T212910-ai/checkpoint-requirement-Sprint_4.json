@@ -1,0 +1,30 @@
+{
+  "id": "SPRINT-4-GOAL",
+  "requirement_id": "Sprint 4",
+  "kind": "SPRINT_GOAL",
+  "group": "Mục tiêu tích hợp",
+  "tier": "GOVERNANCE",
+  "priority": "Theo scope Sprint",
+  "readiness": "SPECIFIED",
+  "title": "Người mua nhận vé QR không làm giả được và nhân viên soát được vé tại cửa, mỗi vé một lần",
+  "source": {
+    "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+    "sheet": "Sprints",
+    "range": "D5"
+  },
+  "original_requirement": "Người mua nhận vé QR không làm giả được và nhân viên soát được vé tại cửa, mỗi vé một lần",
+  "steps": [
+    "Xác định các story có Sprint tương ứng trong baseline.",
+    "Đi trọn hành trình tích hợp cho Sprint Goal; đối chiếu dependency và bằng chứng môi trường, không chỉ cộng số story PASS."
+  ],
+  "expected": [
+    "Người mua nhận vé QR không làm giả được và nhân viên soát được vé tại cửa, mỗi vé một lần"
+  ],
+  "evidence_required": [
+    "Liên kết case story và hành trình tích hợp đã chạy"
+  ],
+  "status": "NOT_RUN",
+  "actual": null,
+  "evidence_files": [],
+  "approved_override": null
+}

@@ -1,0 +1,6 @@
+## Tái kiểm
+Case fail nào được thử lại, source trước/sau, kết quả và regression.
+```
+
+Không có yêu cầu sửa mã trong lượt lập kế hoạch này. Bộ test tạo ra để giao chatbot chạy sau; mọi kết quả hiện là `NOT_RUN`.
+

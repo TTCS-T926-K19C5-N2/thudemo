@@ -1,0 +1,200 @@
+[
+  {
+    "id": "S-34-AC01",
+    "requirement_id": "S-34",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Soát vé ngoại tuyến bằng danh sách đã tải",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L36"
+    },
+    "original_requirement": "Giả sử máy mất mạng và đã có danh sách ở S-33, Khi quét vé hợp lệ, Thì máy kiểm chữ ký QR bằng khoá công khai, tra mã trong danh sách, báo xanh và ghi lần quét vào hàng đợi cục bộ",
+    "fixture": "Thiết bị đã tải/chưa tải snapshot và public key; 2 context; IndexedDB từ chối ghi.",
+    "surfaces": "/scanner; IndexedDB; offline shell",
+    "code_candidates": "apps/web/src/features/scanner/offline-scanner.ts; apps/web/src/features/ticket-scanner/offline-queue.ts",
+    "test_candidates": "offline-scanner.spec.ts; offline-sync.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: máy mất mạng và đã có danh sách ở S-33.",
+      "Thực hiện trên /scanner; IndexedDB; offline shell: quét vé hợp lệ.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Ngắt mạng thật trong context, quét vé: verify signature và membership, ghi bền rồi mới xanh. Quét lần hai đỏ; đóng/mở browser còn queue. Không snapshot/key phải chặn. Full reload khi offline và lỗi lưu IndexedDB không được báo vào thành công.",
+    "expected": [
+      "máy kiểm chữ ký QR bằng khoá công khai, tra mã trong danh sách, báo xanh và ghi lần quét vào hàng đợi cục bộ"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-34-AC02",
+    "requirement_id": "S-34",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Soát vé ngoại tuyến bằng danh sách đã tải",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L36"
+    },
+    "original_requirement": "Giả sử vé đã được đánh dấu đã vào trong danh sách tải về, Khi quét ngoại tuyến, Thì báo đỏ như khi có mạng",
+    "fixture": "Thiết bị đã tải/chưa tải snapshot và public key; 2 context; IndexedDB từ chối ghi.",
+    "surfaces": "/scanner; IndexedDB; offline shell",
+    "code_candidates": "apps/web/src/features/scanner/offline-scanner.ts; apps/web/src/features/ticket-scanner/offline-queue.ts",
+    "test_candidates": "offline-scanner.spec.ts; offline-sync.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: vé đã được đánh dấu đã vào trong danh sách tải về.",
+      "Thực hiện trên /scanner; IndexedDB; offline shell: quét ngoại tuyến.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Ngắt mạng thật trong context, quét vé: verify signature và membership, ghi bền rồi mới xanh. Quét lần hai đỏ; đóng/mở browser còn queue. Không snapshot/key phải chặn. Full reload khi offline và lỗi lưu IndexedDB không được báo vào thành công.",
+    "expected": [
+      "báo đỏ như khi có mạng"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-34-AC03",
+    "requirement_id": "S-34",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Soát vé ngoại tuyến bằng danh sách đã tải",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L36"
+    },
+    "original_requirement": "Giả sử cùng máy quét một vé hai lần khi mất mạng, Khi quét lần hai, Thì bị từ chối nhờ hàng đợi cục bộ",
+    "fixture": "Thiết bị đã tải/chưa tải snapshot và public key; 2 context; IndexedDB từ chối ghi.",
+    "surfaces": "/scanner; IndexedDB; offline shell",
+    "code_candidates": "apps/web/src/features/scanner/offline-scanner.ts; apps/web/src/features/ticket-scanner/offline-queue.ts",
+    "test_candidates": "offline-scanner.spec.ts; offline-sync.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: cùng máy quét một vé hai lần khi mất mạng.",
+      "Thực hiện trên /scanner; IndexedDB; offline shell: quét lần hai.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Ngắt mạng thật trong context, quét vé: verify signature và membership, ghi bền rồi mới xanh. Quét lần hai đỏ; đóng/mở browser còn queue. Không snapshot/key phải chặn. Full reload khi offline và lỗi lưu IndexedDB không được báo vào thành công.",
+    "expected": [
+      "bị từ chối nhờ hàng đợi cục bộ"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-34-AC04",
+    "requirement_id": "S-34",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Soát vé ngoại tuyến bằng danh sách đã tải",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L36"
+    },
+    "original_requirement": "Giả sử máy chưa tải danh sách, Khi mất mạng, Thì màn hình báo không soát được và hướng dẫn tải khi có mạng",
+    "fixture": "Thiết bị đã tải/chưa tải snapshot và public key; 2 context; IndexedDB từ chối ghi.",
+    "surfaces": "/scanner; IndexedDB; offline shell",
+    "code_candidates": "apps/web/src/features/scanner/offline-scanner.ts; apps/web/src/features/ticket-scanner/offline-queue.ts",
+    "test_candidates": "offline-scanner.spec.ts; offline-sync.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: máy chưa tải danh sách.",
+      "Thực hiện trên /scanner; IndexedDB; offline shell: mất mạng.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Ngắt mạng thật trong context, quét vé: verify signature và membership, ghi bền rồi mới xanh. Quét lần hai đỏ; đóng/mở browser còn queue. Không snapshot/key phải chặn. Full reload khi offline và lỗi lưu IndexedDB không được báo vào thành công.",
+    "expected": [
+      "màn hình báo không soát được và hướng dẫn tải khi có mạng"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-34-NFR",
+    "requirement_id": "S-34",
+    "kind": "NFR",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Soát vé ngoại tuyến bằng danh sách đã tải — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N36"
+    },
+    "original_requirement": "hàng đợi cục bộ sống qua việc đóng và mở lại ứng dụng. Ước lượng thô 5 SP — tier Next, cần chẻ khi lên Ready",
+    "fixture": "Thiết bị đã tải/chưa tải snapshot và public key; 2 context; IndexedDB từ chối ghi.",
+    "surfaces": "/scanner; IndexedDB; offline shell",
+    "code_candidates": "apps/web/src/features/scanner/offline-scanner.ts; apps/web/src/features/ticket-scanner/offline-queue.ts",
+    "test_candidates": "offline-scanner.spec.ts; offline-sync.spec.ts",
+    "steps": [
+      "Ngắt mạng thật trong context, quét vé: verify signature và membership, ghi bền rồi mới xanh. Quét lần hai đỏ; đóng/mở browser còn queue. Không snapshot/key phải chặn. Full reload khi offline và lỗi lưu IndexedDB không được báo vào thành công.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "hàng đợi cục bộ sống qua việc đóng và mở lại ứng dụng. Ước lượng thô 5 SP — tier Next, cần chẻ khi lên Ready"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "requirement": "S-56",
+  "case": "S-56-AC01.01",
+  "browser": "ChatGPT in-app browser, local isolated application",
+  "url": "http://127.0.0.1:3410/events/da9e6c76-b1de-4aed-aacf-df6a4b1b601a",
+  "viewport_pixels": "535x756 (observed screenshot; narrow/mobile-sized view)",
+  "steps": [
+    "Đăng nhập tài khoản organizer tổng hợp run-bound",
+    "Mở chi tiết fixture event",
+    "Tạo mã UIR12QA, loại phần trăm, giá trị 12, maxUses 3",
+    "Kiểm tra thông báo Đã tạo mã giảm giá và danh sách render UIR12QA 12% · 0/3 lượt · Đang bật"
+  ],
+  "observed": "POST create và GET list thành công qua UI/API proxy; UI hiển thị trạng thái success, mã và lượt dùng",
+  "desktop_viewport": "BLOCKED: in-app browser viewport override không được cung cấp",
+  "buyer_apply_ui": "NOT_RUN",
+  "loading_empty_error": "empty and success observed; loading/error not exercised",
+  "screenshot": "Screenshot was captured in the browser session; only structured observation retained in this checkpoint.",
+  "synthetic_fixture": true
+}

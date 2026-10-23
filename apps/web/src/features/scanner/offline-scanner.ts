@@ -23,11 +23,7 @@ export interface OfflineScanOutcome {
   message: string;
   ticket?: {
     code: string;
-    seatLabel: string;
-    ticketType: string;
-    checkedInAt: string;
   };
-  previousCheckedInAt?: string | null;
 }
 
 export interface ProcessOfflineScanParams {
@@ -177,18 +173,20 @@ export async function processOfflineScan(
   }
 
   // 6. Check if already checked in in downloaded list (AC #2)
-  if (ticket.status === "checked_in" && !ticket.localCheckedIn) {
+  const alreadyScannedOnDevice = await hasOfflineScanForTicket(
+    showtimeId,
+    qr.ticketId,
+  );
+  if (ticket.status === "checked_in" && !alreadyScannedOnDevice) {
     return {
       success: false,
       code: "ALREADY_CHECKED_IN",
       message: "Vé đã sử dụng.",
-      previousCheckedInAt: ticket.checkedInAt,
     };
   }
 
   // 7. Check if already checked in on this device (AC #3)
   const isDuplicateOnDevice =
-    Boolean(ticket.localCheckedIn) ||
     (await hasOfflineScanForTicket(showtimeId, qr.ticketId));
 
   if (isDuplicateOnDevice) {
@@ -216,8 +214,6 @@ export async function processOfflineScan(
     staffId,
     offline: true,
     syncStatus: "pending",
-    seatLabel: ticket.seatLabel,
-    ticketType: ticket.ticketType,
   };
 
   await saveOfflineScanAtomic(scanRecord);
@@ -228,9 +224,6 @@ export async function processOfflineScan(
     message: "Vé hợp lệ. Check-in thành công (ngoại tuyến).",
     ticket: {
       code: ticket.code,
-      seatLabel: ticket.seatLabel,
-      ticketType: ticket.ticketType,
-      checkedInAt: scannedAt,
     },
   };
 }

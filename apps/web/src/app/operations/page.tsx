@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { api, object } from "@/lib/api/client";
 import { loadCurrentUser, type CurrentUser } from "@/lib/api";
+import { MailFailures } from "@/features/core/mail-failures";
 
 type Row = Record<string, unknown>;
 const rows = (v: unknown): Row[] =>
@@ -538,6 +539,9 @@ export default function OperationsPage() {
               />
             </section>
           </>
+        )}
+        {admin && (
+          <MailFailures />
         )}
         {admin && (
           <section className="operations-panel">

@@ -1,0 +1,80 @@
+{
+  "run_id": "20261022T230000-remediation",
+  "checkpoint": "R19 / INT-07 offline durable queue retry and account isolation",
+  "recorded_at": "2026-10-23T04:48:31.978Z",
+  "source_fingerprint_sha256": "7bdb8a32a6e66b47caf773be375251bdd2a08462691c304c51d60d85c0e971f8",
+  "latest_touched_source_fingerprint_sha256": "84154421b527e5fe806e9c79282c41d98f8e5af2cf72c4df7daa3f979ffa498c",
+  "changed_cases": [
+    "INT-07",
+    "INT-07.01",
+    "INT-07.02",
+    "INT-07.03"
+  ],
+  "counts": {
+    "NOT_RUN": 357,
+    "PASS": 86,
+    "BLOCKED": 4,
+    "NEEDS_DECISION": 4,
+    "MISSING": 1
+  },
+  "evidence_files": [
+    "r19-int07-offline-recovery-browser.json",
+    "int07-postgres-oracle.json",
+    "r19-int07-offline-recovery-browser-desktop.json",
+    "int07-postgres-oracle-desktop.json",
+    "r19-int07-browser-run1-failure.json",
+    "r19-int07-browser-run1.log",
+    "r19-int07-browser-run1.exitcode",
+    "r19-int07-browser-run2.log",
+    "r19-int07-browser-run2.exitcode",
+    "r19-int07-browser-desktop.log",
+    "r19-int07-browser-desktop.exitcode",
+    "int07-api-build.log",
+    "int07-api-build.exitcode",
+    "int07-web-build.log",
+    "int07-web-build.exitcode",
+    "r19-fixture-verify-int07.log",
+    "r19-fixture-verify-int07-desktop.log",
+    "r19-fixture-cleanup.log",
+    "int07-commit-response-lost-mobile.png",
+    "int07-http-failures-retained-mobile.png",
+    "int07-alternate-account-queue-retained-mobile.png",
+    "int07-commit-response-lost-desktop.png",
+    "int07-http-failures-retained-desktop.png",
+    "int07-alternate-account-queue-retained-desktop.png",
+    "apps/web/scripts/ai-remediation-int07-browser.mjs",
+    "apps/api/scripts/ai-remediation-r19-fixture.mjs",
+    "apps/api/scripts/ai-remediation-profile.mjs"
+  ],
+  "execution": {
+    "fixtures": 2,
+    "viewports": [
+      "390x844 mobile",
+      "1440x1000 desktop"
+    ],
+    "http_faults": [
+      401,
+      403,
+      409,
+      500,
+      503
+    ],
+    "commit_then_drop": "API committed/ACKed; browser response aborted; same requestId replayed",
+    "account_isolation": "alternate synthetic STAFF sent zero sync requests; original staff recovered",
+    "database_oracle_per_fixture": {
+      "accepted_offline_scan_rows": 2,
+      "normal_admissions": 2,
+      "duplicates": 0
+    },
+    "browser_page_errors": 0,
+    "api_build_exit": 0,
+    "web_build_exit": 0,
+    "cleanup": "fixture rows deleted, API/Web stopped; isolated DB/Redis/Mailpit retained and healthy",
+    "result": "PASS local isolated profile only"
+  },
+  "limitations": [
+    "401/403/409/5xx were injected at the API response boundary; this does not represent live provider behavior.",
+    "Local Chromium responsive viewports are not physical scanners or a 4G/device test.",
+    "No staging or real mail/provider was used; no claim of external readiness."
+  ]
+}

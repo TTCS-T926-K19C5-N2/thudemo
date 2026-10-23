@@ -1,0 +1,39 @@
+
+ RUN  v4.1.11 D:/Merge_2/Codegym/apps/api
+
+ ❯ test/waitlist.e2e-spec.ts (9 tests | 1 failed) 965ms
+     × suppresses a queued email if the account is inactive before dispatch 9ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 passed (9)
+   Start at  10:42:02
+   Duration  2.57s (transform 614ms, setup 34ms, import 1.37s, tests 965ms, environment 0ms)
+
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/waitlist.e2e-spec.ts > S-59 waitlist FIFO and SMTP catcher on isolated PostgreSQL > suppresses a queued email if the account is inactive before dispatch
+PrismaClientKnownRequestError: 
+Invalid `db.waitlistEntry.create()` invocation in
+D:/Merge_2/Codegym/apps/api/test/waitlist.e2e-spec.ts:251:42
+
+  248 });
+  249 
+  250 it('suppresses a queued email if the account is inactive before dispatch', async () => {
+→ 251   const entry = await db.waitlistEntry.create(
+Unique constraint failed on the constraint: `waitlist_entries_active_user_showtime_key`
+ ❯ vn.handleRequestError ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:238:12
+ ❯ vn.handleAndLogRequestError ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:184:11
+ ❯ vn.request ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:153:11
+ ❯ a ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:1014:23
+ ❯ test/waitlist.e2e-spec.ts:251:19
+    249|
+    250|   it('suppresses a queued email if the account is inactive before disp…
+    251|     const entry = await db.waitlistEntry.create({
+       |                   ^
+    252|       data: { showtimeId, userId: users[0], status: 'NOTICE_QUEUED' },
+    253|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

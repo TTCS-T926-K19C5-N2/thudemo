@@ -1,0 +1,29 @@
+{
+  "runId": "20261022T230000-remediation",
+  "build": "current local standalone web build",
+  "apiBoundary": "synthetic route interception for unknown outcome; API behavior separately verified by isolated PostgreSQL E2E",
+  "outputs": [
+    {
+      "name": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "unknownResultMessageVisible": true,
+      "retryButtonDisabled": true,
+      "paymentPostCount": 1,
+      "pageErrors": 0
+    },
+    {
+      "name": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "unknownResultMessageVisible": true,
+      "retryButtonDisabled": true,
+      "paymentPostCount": 1,
+      "pageErrors": 0
+    }
+  ]
+}

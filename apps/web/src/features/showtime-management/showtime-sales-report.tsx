@@ -19,6 +19,7 @@ import {
   type ShowtimeSales,
 } from "@/lib/contracts/showtimes";
 import { formatVnd } from "@/lib/formatting";
+import { HoldConversionReport } from "./hold-conversion-report";
 
 const REFRESH_INTERVAL_MS = 30_000;
 const number = (value: number) => value.toLocaleString("vi-VN");
@@ -241,6 +242,7 @@ export function ShowtimeSalesReport({
         đang chờ xử lý chưa được tính. Số khách vào cửa được tổng hợp từ vé đã
         soát và tự làm mới cùng báo cáo.
       </p>
+      {!report.isDemo && <HoldConversionReport showtimeId={id} />}
     </section>
   );
 }

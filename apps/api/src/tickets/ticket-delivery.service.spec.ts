@@ -33,6 +33,7 @@ describe('TicketDeliveryService', () => {
     projection = {
       forOwner: vi.fn(),
       forBuyer: vi.fn(),
+      forTransferredTicket: vi.fn(),
     };
 
     mail = {
@@ -372,6 +373,56 @@ describe('TicketDeliveryService', () => {
           leaseToken: null,
           leaseUntil: null,
         }),
+      });
+    });
+
+    it('delivers only the current transferred ticket to its recipient', async () => {
+      const mockClaim = {
+        id: 'job-transfer-1', orderId: ORDER_ID, attempts: 1,
+        leaseToken: 'token-transfer', recipientEmail: 'new-owner@example.com',
+        ticketId: 'ticket-new',
+      };
+      db.$queryRaw.mockResolvedValueOnce([mockClaim]).mockResolvedValue([]);
+      db.order.findUnique.mockResolvedValue({
+        userId: USER_ID, status: 'PAID', user: { email: 'buyer@example.com' },
+      });
+      const transferred = {
+        ticketId: 'ticket-new', eventName: 'Đêm Nhạc',
+        showtimeStart: '2026-12-01T19:30:00.000Z', category: 'VIP',
+        seatLabel: 'A-1', qrPayload: 'ET1.transfer.signature', status: 'VALID',
+      };
+      projection.forTransferredTicket.mockResolvedValue(transferred);
+
+      await service.drain();
+
+      expect(projection.forTransferredTicket).toHaveBeenCalledWith('ticket-new', 'new-owner@example.com');
+      expect(projection.forOwner).not.toHaveBeenCalled();
+      expect(mail.send).toHaveBeenCalledTimes(1);
+      expect(mail.send.mock.calls[0][0]).toMatchObject({
+        to: 'new-owner@example.com',
+        attachments: [expect.objectContaining({ filename: 've-ticket-new.png' })],
+      });
+    });
+
+    it('cancels stale transfer delivery without sending buyer order tickets', async () => {
+      const mockClaim = {
+        id: 'job-transfer-stale', orderId: ORDER_ID, attempts: 1,
+        leaseToken: 'token-transfer', recipientEmail: 'new-owner@example.com',
+        ticketId: 'ticket-stale',
+      };
+      db.$queryRaw.mockResolvedValueOnce([mockClaim]).mockResolvedValue([]);
+      db.order.findUnique.mockResolvedValue({
+        userId: USER_ID, status: 'PAID', user: { email: 'buyer@example.com' },
+      });
+      projection.forTransferredTicket.mockResolvedValue(null);
+
+      await service.drain();
+
+      expect(projection.forOwner).not.toHaveBeenCalled();
+      expect(mail.send).not.toHaveBeenCalled();
+      expect(db.ticketMailDelivery.updateMany).toHaveBeenCalledWith({
+        where: { id: 'job-transfer-stale', leaseToken: 'token-transfer', status: 'SENDING' },
+        data: expect.objectContaining({ status: 'CANCELLED', failureCode: 'TRANSFER_NO_LONGER_CURRENT' }),
       });
     });
 

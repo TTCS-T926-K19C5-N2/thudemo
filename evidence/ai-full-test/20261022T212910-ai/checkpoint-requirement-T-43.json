@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-43-AC",
+    "requirement_id": "T-43",
+    "parent_requirement": "S-19",
+    "kind": "TASK_AC",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Trang giả lập cổng có nút thanh toán thành công và thất bại",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G44"
+    },
+    "original_requirement": "Luồng đặt vé chạy đầu-cuối bằng cổng giả lập; nút thất bại cho ra đúng hành vi của S-24",
+    "fixture": "Profile mock riêng và profile APP_ENV production biệt lập.",
+    "surfaces": "/mock-gateway/pay; /mock-gateway/submit",
+    "code_candidates": "apps/api/src/payments/gateways/mock.gateway.ts; apps/web/src/features/mock-gateway/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments-config.validator.spec.ts",
+    "steps": [
+      "Chọn success/failure trên gateway; kiểm webhook có chữ ký qua cùng luồng nghiệp vụ. Thay cấu hình provider không sửa nghiệp vụ; production bật mock phải fail startup, route mock không được dùng trong bản production.",
+      "Kiểm riêng tiêu chí task T-43: Luồng đặt vé chạy đầu-cuối bằng cổng giả lập; nút thất bại cho ra đúng hành vi của S-24",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Luồng đặt vé chạy đầu-cuối bằng cổng giả lập; nút thất bại cho ra đúng hành vi của S-24"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-43-NFR",
+    "requirement_id": "T-43",
+    "parent_requirement": "S-19",
+    "kind": "TASK_NFR",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Trang giả lập cổng có nút thanh toán thành công và thất bại",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I44"
+    },
+    "original_requirement": "trang giả lập chỉ tồn tại khi cấu hình bật, không có trong bản production",
+    "fixture": "Profile mock riêng và profile APP_ENV production biệt lập.",
+    "surfaces": "/mock-gateway/pay; /mock-gateway/submit",
+    "code_candidates": "apps/api/src/payments/gateways/mock.gateway.ts; apps/web/src/features/mock-gateway/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments-config.validator.spec.ts",
+    "steps": [
+      "Chọn success/failure trên gateway; kiểm webhook có chữ ký qua cùng luồng nghiệp vụ. Thay cấu hình provider không sửa nghiệp vụ; production bật mock phải fail startup, route mock không được dùng trong bản production.",
+      "Kiểm riêng tiêu chí task T-43: trang giả lập chỉ tồn tại khi cấu hình bật, không có trong bản production",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "trang giả lập chỉ tồn tại khi cấu hình bật, không có trong bản production"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

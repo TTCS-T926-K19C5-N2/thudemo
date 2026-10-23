@@ -1,0 +1,29 @@
+{
+  "runId": "20261022T230000-remediation",
+  "baseUrl": "http://127.0.0.1:3410",
+  "views": [
+    {
+      "viewport": "desktop",
+      "loadingStateVisible": true,
+      "state": "admitted",
+      "headingVisible": true,
+      "leaseTextVisible": true
+    },
+    {
+      "viewport": "mobile",
+      "state": "queued",
+      "position": 1,
+      "visible": true,
+      "width": {
+        "scroll": 390,
+        "client": 390
+      },
+      "noHorizontalOverflow": true
+    }
+  ],
+  "errors": [],
+  "errorState": {
+    "visible": true,
+    "source": "browser-intercepted HTTP 503; API/Redis error state display only"
+  }
+}

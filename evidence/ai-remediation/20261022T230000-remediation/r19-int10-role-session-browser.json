@@ -1,0 +1,51 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "One Chromium context, same persistent IndexedDB across reloads, isolated PostgreSQL/API; role and active mutations scoped to synthetic fixture; no real provider or email.",
+  "stages": [
+    {
+      "viewport": "mobile",
+      "scanId": "b6f9e0de-b23d-456f-8f5c-d9472ef0b39d",
+      "ticketId": "fe3d521c-e7fb-4b11-88f9-666b53005ea7",
+      "roleSyncPosts": 0,
+      "pendingWhileUnauthorized": true,
+      "directRolePostStatus": 403,
+      "directDisabledPostStatus": 401,
+      "finalSyncStatus": 200
+    },
+    {
+      "viewport": "desktop",
+      "scanId": "f771a747-6ab4-4b07-8574-7666ff048c25",
+      "ticketId": "95d70954-d3a6-4350-a718-bd3cb3ffadbc",
+      "roleSyncPosts": 0,
+      "pendingWhileUnauthorized": true,
+      "directRolePostStatus": 403,
+      "directDisabledPostStatus": 401,
+      "finalSyncStatus": 200
+    }
+  ],
+  "api": [
+    403,
+    401,
+    200,
+    403,
+    401,
+    200
+  ],
+  "pageErrors": [],
+  "screenshots": [
+    "int10-role-revoked-queue-mobile.png",
+    "int10-disabled-queue-mobile.png",
+    "int10-restored-sync-mobile.png",
+    "int10-role-revoked-queue-desktop.png",
+    "int10-disabled-queue-desktop.png",
+    "int10-restored-sync-desktop.png"
+  ],
+  "httpStatuses": [
+    403,
+    401,
+    200,
+    403,
+    401,
+    200
+  ]
+}

@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-47-AC",
+    "requirement_id": "T-47",
+    "parent_requirement": "S-20",
+    "kind": "TASK_AC",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Kịch bản gửi lại cùng một webhook 5 lần và đếm số vé sinh ra",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G48"
+    },
+    "original_requirement": "Cả hai kiểu gửi đều cho một bản ghi và một bộ vé; CI đỏ nếu khác",
+    "fixture": "Một payload ký hợp lệ; transactionId cố định; pending và expired.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/payments.service.ts; apps/api/prisma/migrations/",
+    "test_candidates": "payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Gửi 5 lần tuần tự rồi các bản đồng thời trên order khác; đếm payment/event, order transition, ticket và outbox trước/sau. Webhook trùng trả 200 theo T-46; expired không thành paid, có dấu cần kiểm tra/hoàn; không 500.",
+      "Kiểm riêng tiêu chí task T-47: Cả hai kiểu gửi đều cho một bản ghi và một bộ vé; CI đỏ nếu khác",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Cả hai kiểu gửi đều cho một bản ghi và một bộ vé; CI đỏ nếu khác"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-47-NFR",
+    "requirement_id": "T-47",
+    "parent_requirement": "S-20",
+    "kind": "TASK_NFR",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Kịch bản gửi lại cùng một webhook 5 lần và đếm số vé sinh ra",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I48"
+    },
+    "original_requirement": "test dùng cổng giả lập ở T-43 để ký webhook",
+    "fixture": "Một payload ký hợp lệ; transactionId cố định; pending và expired.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/payments.service.ts; apps/api/prisma/migrations/",
+    "test_candidates": "payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Gửi 5 lần tuần tự rồi các bản đồng thời trên order khác; đếm payment/event, order transition, ticket và outbox trước/sau. Webhook trùng trả 200 theo T-46; expired không thành paid, có dấu cần kiểm tra/hoàn; không 500.",
+      "Kiểm riêng tiêu chí task T-47: test dùng cổng giả lập ở T-43 để ký webhook",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "test dùng cổng giả lập ở T-43 để ký webhook"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

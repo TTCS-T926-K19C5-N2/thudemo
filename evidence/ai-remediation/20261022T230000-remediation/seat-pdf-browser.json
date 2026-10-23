@@ -1,0 +1,17 @@
+{
+  "runId": "20261022T230000-remediation",
+  "ownerDownload": true,
+  "nonOwnerDenied": true,
+  "uiErrorState": true,
+  "uiLoadingState": true,
+  "contentType": "application/pdf",
+  "cacheControl": "no-store",
+  "pageCount": 1,
+  "embeddedFont": true,
+  "pdfBytes": 39260,
+  "fixtureSeatCount": 2002,
+  "mediaBoxPoints": [
+    1262,
+    1814
+  ]
+}

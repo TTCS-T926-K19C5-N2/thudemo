@@ -1,0 +1,61 @@
+[
+  {
+    "id": "E-04-AC",
+    "requirement_id": "E-04",
+    "kind": "EPIC",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Ready",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Chọn ghế và giữ chỗ có thời hạn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "G5"
+    },
+    "original_requirement": "Chạy 200 yêu cầu đồng thời vào 100 ghế thì đúng 100 giữ chỗ thành công, không hơn không kém",
+    "steps": [
+      "Đối chiếu tập story con và các hành trình đầu-cuối trong kế hoạch.",
+      "Kiểm từng mệnh đề ở cấp tích hợp; mọi story đơn lẻ PASS chưa tự chứng minh epic PASS."
+    ],
+    "expected": [
+      "Chạy 200 yêu cầu đồng thời vào 100 ghế thì đúng 100 giữ chỗ thành công, không hơn không kém"
+    ],
+    "evidence_required": [
+      "Liên kết các case con và E2E đã chạy"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "E-04-NFR",
+    "requirement_id": "E-04",
+    "kind": "EPIC_NFR",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Ready",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Chọn ghế và giữ chỗ có thời hạn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "I5"
+    },
+    "original_requirement": "giữ chỗ hết hạn phải được nhả kể cả khi tiến trình nền vừa khởi động lại",
+    "steps": [
+      "Kiểm NFR ở phạm vi epic, đối chiếu các story con và số đo tích hợp; không chỉ suy từ unit test."
+    ],
+    "expected": [
+      "giữ chỗ hết hạn phải được nhả kể cả khi tiến trình nền vừa khởi động lại"
+    ],
+    "evidence_required": [
+      "Bằng chứng kỹ thuật hoặc số đo tương ứng"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

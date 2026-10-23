@@ -195,9 +195,6 @@ describe('S-34 Offline Scanner (processOfflineScan & syncOfflineScanQueue)', () 
         showtimeId,
         code: ticketId,
         status: 'cancelled',
-        checkedInAt: null,
-        seatLabel: 'A-01',
-        ticketType: 'VIP',
       });
 
       const qrPayload = createSignedQr(ticketId, showtimeId);
@@ -212,7 +209,6 @@ describe('S-34 Offline Scanner (processOfflineScan & syncOfflineScanQueue)', () 
     });
 
     it('Step 6 (AC #2): returns ALREADY_CHECKED_IN when ticket was already checked in on server before download', async () => {
-      const checkedInTime = '2026-10-12T10:00:00.000Z';
       vi.spyOn(scannerDb, 'getShowtimeMeta').mockResolvedValue({
         showtimeId,
         showtimeName: 'Test Showtime',
@@ -228,11 +224,8 @@ describe('S-34 Offline Scanner (processOfflineScan & syncOfflineScanQueue)', () 
         showtimeId,
         code: ticketId,
         status: 'checked_in',
-        checkedInAt: checkedInTime,
-        seatLabel: 'A-01',
-        ticketType: 'VIP',
-        localCheckedIn: false,
       });
+      vi.spyOn(scannerDb, 'hasOfflineScanForTicket').mockResolvedValue(false);
 
       const qrPayload = createSignedQr(ticketId, showtimeId);
       const outcome = await processOfflineScan({
@@ -242,7 +235,6 @@ describe('S-34 Offline Scanner (processOfflineScan & syncOfflineScanQueue)', () 
 
       expect(outcome.success).toBe(false);
       expect(outcome.code).toBe('ALREADY_CHECKED_IN');
-      expect(outcome.previousCheckedInAt).toBe(checkedInTime);
       expect(outcome.message).toContain('Vé đã sử dụng');
     });
 
@@ -258,16 +250,12 @@ describe('S-34 Offline Scanner (processOfflineScan & syncOfflineScanQueue)', () 
         publicKey: testPublicKeyPem,
         status: 'ready',
       });
-      // Ticket was already checked in locally on this device
       vi.spyOn(scannerDb, 'getTicketByCode').mockResolvedValue({
         showtimeId,
         code: ticketId,
         status: 'checked_in',
-        checkedInAt: '2026-10-12T11:00:00.000Z',
-        seatLabel: 'A-01',
-        ticketType: 'VIP',
-        localCheckedIn: true,
       });
+      vi.spyOn(scannerDb, 'hasOfflineScanForTicket').mockResolvedValue(true);
 
       const qrPayload = createSignedQr(ticketId, showtimeId);
       const outcome = await processOfflineScan({
@@ -296,9 +284,6 @@ describe('S-34 Offline Scanner (processOfflineScan & syncOfflineScanQueue)', () 
         showtimeId,
         code: ticketId,
         status: 'valid',
-        checkedInAt: null,
-        seatLabel: 'A-01',
-        ticketType: 'VIP',
       });
       vi.spyOn(scannerDb, 'hasOfflineScanForTicket').mockResolvedValue(false);
       const saveSpy = vi.spyOn(scannerDb, 'saveOfflineScanAtomic').mockResolvedValue();
@@ -316,8 +301,6 @@ describe('S-34 Offline Scanner (processOfflineScan & syncOfflineScanQueue)', () 
       expect(outcome.success).toBe(true);
       expect(outcome.code).toBe('OK');
       expect(outcome.ticket?.code).toBe(ticketId);
-      expect(outcome.ticket?.seatLabel).toBe('A-01');
-      expect(outcome.ticket?.ticketType).toBe('VIP');
       expect(saveSpy).toHaveBeenCalledTimes(1);
       const savedRecord = saveSpy.mock.calls[0][0];
       expect(savedRecord.ticketCode).toBe(ticketId);

@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-25-AC",
+    "requirement_id": "T-25",
+    "parent_requirement": "S-11",
+    "kind": "TASK_AC",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "API huỷ giữ chỗ của chính mình",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G26"
+    },
+    "original_requirement": "Huỷ ghế mình giữ thì bản ghi biến mất; huỷ ghế người khác thì 403; huỷ ghế không ai giữ thì 404",
+    "fixture": "A giữ 3 ghế; B có session riêng.",
+    "surfaces": "DELETE /showtimes/:id/hold-seats hoặc route được UI sử dụng",
+    "code_candidates": "apps/api/src/modules/seats/seat-hold.controller.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-hold.controller.spec.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "A bỏ một ghế, B giữ ngay ghế vừa nhả; hai ghế còn nguyên hạn. B xoá hold của A phải 403; xoá ghế không giữ theo hợp đồng T-25 trả 404. Bỏ ghế cuối làm đồng hồ biến mất; đếm một request thao tác.",
+      "Kiểm riêng tiêu chí task T-25: Huỷ ghế mình giữ thì bản ghi biến mất; huỷ ghế người khác thì 403; huỷ ghế không ai giữ thì 404",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Huỷ ghế mình giữ thì bản ghi biến mất; huỷ ghế người khác thì 403; huỷ ghế không ai giữ thì 404"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-25-NFR",
+    "requirement_id": "T-25",
+    "parent_requirement": "S-11",
+    "kind": "TASK_NFR",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "API huỷ giữ chỗ của chính mình",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I26"
+    },
+    "original_requirement": "kiểm quyền sở hữu trong cùng câu lệnh xoá, không kiểm rồi mới xoá",
+    "fixture": "A giữ 3 ghế; B có session riêng.",
+    "surfaces": "DELETE /showtimes/:id/hold-seats hoặc route được UI sử dụng",
+    "code_candidates": "apps/api/src/modules/seats/seat-hold.controller.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-hold.controller.spec.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "A bỏ một ghế, B giữ ngay ghế vừa nhả; hai ghế còn nguyên hạn. B xoá hold của A phải 403; xoá ghế không giữ theo hợp đồng T-25 trả 404. Bỏ ghế cuối làm đồng hồ biến mất; đếm một request thao tác.",
+      "Kiểm riêng tiêu chí task T-25: kiểm quyền sở hữu trong cùng câu lệnh xoá, không kiểm rồi mới xoá",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "kiểm quyền sở hữu trong cùng câu lệnh xoá, không kiểm rồi mới xoá"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

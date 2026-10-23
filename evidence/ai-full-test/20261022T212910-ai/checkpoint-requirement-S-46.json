@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-46-AC01",
+    "requirement_id": "S-46",
+    "kind": "AC",
+    "group": "Huỷ và hoàn",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "7",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Ghế của vé đã huỷ quay lại kho bán",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L48"
+    },
+    "original_requirement": "Vé huỷ xong thì ghế trở lại trạng thái trống trên sơ đồ và giữ được như ghế thường. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP",
+    "fixture": "Vé huỷ hợp lệ; buyer B; retry refund thất bại.",
+    "surfaces": "Map sau huỷ/hoàn và API holds",
+    "code_candidates": "apps/api/src/lifecycle/cancellations.service.ts; apps/api/src/showtimes/",
+    "test_candidates": "lifecycle.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Chuẩn bị fixture: Vé huỷ hợp lệ; buyer B; retry refund thất bại.",
+      "Sau điểm chuyển trạng thái đã chốt, B thấy ghế trống và giữ/mua lại được; QR cũ không vào cửa được. Cho cancel và B giữ race; không có hai chủ ghế còn hiệu lực, retry hoàn không thu hồi ghế đã bán lại.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Sau điểm chuyển trạng thái đã chốt, B thấy ghế trống và giữ/mua lại được; QR cũ không vào cửa được. Cho cancel và B giữ race; không có hai chủ ghế còn hiệu lực, retry hoàn không thu hồi ghế đã bán lại.",
+    "expected": [
+      "Vé huỷ xong thì ghế trở lại trạng thái trống trên sơ đồ và giữ được như ghế thường. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-46-NFR",
+    "requirement_id": "S-46",
+    "kind": "NFR",
+    "group": "Huỷ và hoàn",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "7",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Ghế của vé đã huỷ quay lại kho bán — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N48"
+    },
+    "original_requirement": "chưa refine — cần chốt mở bán lại tự động hay chờ ban tổ chức duyệt",
+    "fixture": "Vé huỷ hợp lệ; buyer B; retry refund thất bại.",
+    "surfaces": "Map sau huỷ/hoàn và API holds",
+    "code_candidates": "apps/api/src/lifecycle/cancellations.service.ts; apps/api/src/showtimes/",
+    "test_candidates": "lifecycle.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Sau điểm chuyển trạng thái đã chốt, B thấy ghế trống và giữ/mua lại được; QR cũ không vào cửa được. Cho cancel và B giữ race; không có hai chủ ghế còn hiệu lực, retry hoàn không thu hồi ghế đã bán lại.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt mở bán lại tự động hay chờ ban tổ chức duyệt"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

@@ -7,6 +7,7 @@ import { PublicLayout } from "@/components/layout/product-layout";
 import { Button } from "@/components/ui/button";
 import { TicketQrImage } from "./ticket-qr-image";
 import { ResendTickets } from "./resend-tickets";
+import { TransferTicket } from "./transfer-ticket";
 
 type Ticket = {
   ticketId: string;
@@ -17,6 +18,7 @@ type Ticket = {
   seatLabel: string;
   status: string;
   qrPayload: string | null;
+  transferred?: boolean;
 };
 type View = {
   tickets: Ticket[];
@@ -147,6 +149,7 @@ export function MyTickets({ page }: { page: number }) {
                   <p>
                     {ticket.category} · Ghế {ticket.seatLabel}
                   </p>
+                  {ticket.transferred && <p>Vé được chuyển nhượng cho tài khoản này.</p>}
                   <p>
                     {ticket.status === "CANCELLED"
                       ? "Vé đã huỷ"
@@ -161,9 +164,21 @@ export function MyTickets({ page }: { page: number }) {
                       seatLabel={ticket.seatLabel}
                     />
                   )}
-                  <Link href={`/orders/${ticket.orderId}`}>Xem đơn hàng</Link>
-                  {ticket.status !== "CANCELLED" && (
+                  {!ticket.transferred && <Link href={`/orders/${ticket.orderId}`}>Xem đơn hàng</Link>}
+                  {!ticket.transferred && ticket.status !== "CANCELLED" && (
                     <ResendTickets orderId={ticket.orderId} />
+                  )}
+                  {!ticket.transferred && ticket.status === "VALID" && (
+                    <TransferTicket
+                      orderId={ticket.orderId}
+                      ticketId={ticket.ticketId}
+                      seatLabel={ticket.seatLabel}
+                      onTransferred={() => {
+                        setView(null);
+                        setError("");
+                        setVersion((v) => v + 1);
+                      }}
+                    />
                   )}
                 </article>
               ))}

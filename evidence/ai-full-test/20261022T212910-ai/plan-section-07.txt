@@ -1,0 +1,18 @@
+## 7. Ma trận quyền tối thiểu
+
+| Bề mặt | Ẩn danh | BUYER | ORGANIZER | STAFF | ACCOUNTANT | ADMIN |
+|---|---|---|---|---|---|---|
+| Catalog/chi tiết đang bán | Public | Public | Public | Public theo UI role | Public theo UI role | Public theo UI role |
+| Register/activate/login/forgot/reset | Chỉ endpoint public opt-in | Theo chức năng | Theo chức năng | Theo chức năng | Theo chức năng | Theo chức năng |
+| Tạo/sửa event, map, giá, trạng thái/clone/publication/reschedule | Từ chối | Từ chối | Đúng chủ | Từ chối | Từ chối | Không mặc định có quyền nếu route không cấp |
+| Hold/order/pay/history/tickets/resend/transfer | Từ chối | Chỉ của mình | Không suy quyền BUYER | Từ chối | Từ chối | Theo route thực và quyết định được duyệt |
+| Check-in/snapshot/keys/attendance | Từ chối, trừ public key được public có chủ đích | Từ chối | Theo phạm vi sự kiện | Theo suất/cửa phân công | Từ chối | Theo route/phạm vi |
+| Offline sync | Từ chối | Từ chối | Theo route chốt | STAFF và scope hợp lệ | Từ chối | Không suy quyền nếu chỉ route STAFF |
+| Users/role/status/assignment | Từ chối | Từ chối | Từ chối | Từ chối | Từ chối | ADMIN |
+| Financial/attendance owner report | Từ chối | Từ chối | Đúng chủ | Theo route riêng nếu có | Theo quyết định, không tự cấp | Theo route |
+| Refund operations/reconciliation | Từ chối | Từ chối | Theo route riêng nếu có | Từ chối | Cho phép | Cho phép |
+| Mail failures/retry, erasure approve | Từ chối | Từ chối | Từ chối | Từ chối | Từ chối nếu không cấp rõ | ADMIN |
+| Consent/erasure request | Từ chối | Chính mình | Chính mình | Chính mình | Chính mình | Chính mình |
+
+Đây là hướng dẫn tạo case từ yêu cầu và decorator đã đọc, không phải tự thiết kế lại quyền. Lập bảng từng METHOD+path theo route runtime; nơi Excel và implementation khác nhau phải ghi discrepancy. Mỗi route private chạy tối thiểu anonymous, đúng role, sai role, đúng chủ và khác chủ khi có owner. Đọc public key không chứa private key; route public key có thể public có chủ đích.
+

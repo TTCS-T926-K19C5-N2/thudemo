@@ -1,0 +1,1 @@
+import fs from 'node:fs';const p='D:/Merge_2/Codegym/evidence/ai-remediation/20261023T132000-demo-handoff/bugs.md';let s=fs.readFileSync(p,'utf8');const i=s.indexOf('\\n## BUG-R40-01');if(i<0)throw Error('marker not found');const tail=s.slice(i).replaceAll('\\n','\n');fs.writeFileSync(p,s.slice(0,i)+tail);console.log('repaired');

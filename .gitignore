@@ -90,7 +90,7 @@ evidence/s43/runtime/
 
 # Next.js build output
 .next
-.next-sprint-*
+.next*
 out
 
 # Nuxt.js build / generate output

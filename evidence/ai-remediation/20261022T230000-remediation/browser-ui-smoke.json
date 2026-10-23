@@ -1,0 +1,87 @@
+{
+  "runId": "20261022T230000-remediation",
+  "baseUrl": "http://127.0.0.1:3410",
+  "views": [
+    {
+      "name": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "loadingObserved": true,
+      "emptyStateObserved": true,
+      "fixtureEventVisible": false,
+      "zeroCountVisible": true
+    },
+    {
+      "name": "desktop-delayed",
+      "artificialApiDelayMs": 900,
+      "loadingStateObserved": true,
+      "emptyStateObserved": true,
+      "fixtureEventVisible": false
+    },
+    {
+      "name": "desktop-error",
+      "apiFailureInjected": true,
+      "errorStateObserved": true
+    },
+    {
+      "name": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "loadingObserved": true,
+      "emptyStateObserved": false,
+      "fixtureEventVisible": true,
+      "zeroCountVisible": false
+    }
+  ],
+  "errors": [],
+  "forgotFlow": {
+    "linkNavigated": true,
+    "genericSuccessVisible": true,
+    "catcherCheckedSeparately": true
+  },
+  "publicationAttempt": {
+    "statusTexts": [
+      "Sự kiện đã được công bố."
+    ],
+    "alertTexts": [
+      "Chi tiết sự kiện"
+    ]
+  },
+  "publicationFlow": {
+    "ownerLogin": true,
+    "publishAction": true,
+    "eventVisibleInCatalog": true
+  },
+  "rescheduleAttempt": {
+    "statusTexts": [
+      "Đã đổi giờ; thông báo được xếp hàng (QUEUED). Worker thông báo đang tắt, thư chưa được gửi."
+    ],
+    "alertTexts": [
+      ""
+    ]
+  },
+  "rescheduleFlow": {
+    "invalidPastDateRejected": true,
+    "futureDateAccepted": true,
+    "noticeStatesWorkerOff": true
+  },
+  "attendanceCsvFlow": {
+    "reportPageVisible": true,
+    "downloadSucceeded": true,
+    "utf8Bom": true,
+    "rowCount": 2,
+    "fixtureCodesMatched": true,
+    "minimalColumnsOnly": true,
+    "conflictsMarked": true
+  },
+  "adminMailFlow": {
+    "adminLogin": true,
+    "mailFailuresPanelVisible": true,
+    "emptyStateVisible": true,
+    "retriesNotTriggered": true
+  }
+}

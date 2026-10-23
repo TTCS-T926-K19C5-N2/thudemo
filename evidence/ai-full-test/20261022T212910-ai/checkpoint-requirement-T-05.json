@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-05-AC",
+    "requirement_id": "T-05",
+    "parent_requirement": "S-02",
+    "kind": "TASK_AC",
+    "group": "Tài khoản",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Đăng nhập bằng email và mật khẩu",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G6"
+    },
+    "original_requirement": "Đăng nhập đúng thì vào được trang chính; sai 5 lần thì lần thứ 6 bị khoá 15 phút; khởi động lại ứng dụng thì khoá vẫn còn",
+    "fixture": "BUYER A/B, ORGANIZER A/B, STAFF, ACCOUNTANT, ADMIN; session còn hạn/hết hạn.",
+    "surfaces": "/login; /auth/login; /auth/me",
+    "code_candidates": "apps/api/src/auth/; apps/web/src/components/login-form.tsx",
+    "test_candidates": "auth-roles.e2e-spec.ts; auth-input-regression.e2e-spec.ts; sprint1-ip.e2e-spec.ts",
+    "steps": [
+      "Mỗi vai trò đăng nhập và gọi trực tiếp API được phép/cấm. Sai mật khẩu 5 lần, thử lần 6; kiểm khoá 15 phút qua restart trên fixture. Đổi IP hoặc tài khoản để kiểm hai chiều quota; dùng route fixture chưa khai báo quyền để kiểm mặc định đóng.",
+      "Kiểm riêng tiêu chí task T-05: Đăng nhập đúng thì vào được trang chính; sai 5 lần thì lần thứ 6 bị khoá 15 phút; khởi động lại ứng dụng thì khoá vẫn còn",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Đăng nhập đúng thì vào được trang chính; sai 5 lần thì lần thứ 6 bị khoá 15 phút; khởi động lại ứng dụng thì khoá vẫn còn"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-05-NFR",
+    "requirement_id": "T-05",
+    "parent_requirement": "S-02",
+    "kind": "TASK_NFR",
+    "group": "Tài khoản",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Đăng nhập bằng email và mật khẩu",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I6"
+    },
+    "original_requirement": "thông báo lỗi không tiết lộ email có tồn tại hay không",
+    "fixture": "BUYER A/B, ORGANIZER A/B, STAFF, ACCOUNTANT, ADMIN; session còn hạn/hết hạn.",
+    "surfaces": "/login; /auth/login; /auth/me",
+    "code_candidates": "apps/api/src/auth/; apps/web/src/components/login-form.tsx",
+    "test_candidates": "auth-roles.e2e-spec.ts; auth-input-regression.e2e-spec.ts; sprint1-ip.e2e-spec.ts",
+    "steps": [
+      "Mỗi vai trò đăng nhập và gọi trực tiếp API được phép/cấm. Sai mật khẩu 5 lần, thử lần 6; kiểm khoá 15 phút qua restart trên fixture. Đổi IP hoặc tài khoản để kiểm hai chiều quota; dùng route fixture chưa khai báo quyền để kiểm mặc định đóng.",
+      "Kiểm riêng tiêu chí task T-05: thông báo lỗi không tiết lộ email có tồn tại hay không",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "thông báo lỗi không tiết lộ email có tồn tại hay không"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

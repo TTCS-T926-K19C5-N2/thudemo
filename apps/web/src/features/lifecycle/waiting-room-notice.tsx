@@ -41,7 +41,8 @@ export function WaitingRoomNotice({ id }: { id: string }) {
     };
   }, [id]);
   if (error) return <p role="alert">{error}</p>;
-  if (!state?.enabled) return null;
+  if (!state) return <p role="status">Đang kiểm tra lượt đặt vé…</p>;
+  if (!state.enabled) return null;
   return (
     <section className="operations-panel" aria-live="polite">
       <h2>

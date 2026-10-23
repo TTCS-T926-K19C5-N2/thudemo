@@ -79,7 +79,15 @@ export class ScannerSnapshotService {
           COALESCE(oi."checkedInAt",t."checkedInAt") AS "checkedInAt",s.row||'-'||s."seatNumber" AS "seatLabel",oi."categoryName" AS "ticketType",ARRAY[t.code] AS "legacyCodes"
         FROM order_items oi JOIN orders o ON o.id=oi."orderId" JOIN seats s ON s.id=oi."seatId"
         JOIN tickets t ON t."orderId"=o.id AND t."seatId"=oi."seatId"
-        WHERE o."showtimeId"=${showtimeId}::uuid AND s."showtimeId"=o."showtimeId" ORDER BY oi.id`);
+        WHERE o."showtimeId"=${showtimeId}::uuid AND s."showtimeId"=o."showtimeId"
+        UNION ALL
+        SELECT t.code AS code,CASE WHEN t.status='CANCELLED' THEN 'cancelled'
+          WHEN t.status='CHECKED_IN' THEN 'checked_in' ELSE 'valid' END AS status,
+          t."checkedInAt",t."seatLabel",t."ticketType",ARRAY[t.code] AS "legacyCodes"
+        FROM tickets t JOIN ticket_logs l ON l."ticketId"=t.id AND l.action='ISSUED_FROM_TRANSFER'
+          JOIN tickets source ON source.id=(l.detail->>'fromTicketId')::uuid
+          JOIN order_items oi ON oi."orderId"=source."orderId" AND oi."seatId"=source."seatId"
+        WHERE t."showtimeId"=${showtimeId}::uuid AND t."ownerEmail" IS NOT NULL ORDER BY code`);
         const tickets: Ticket[] = rows.map((r) => ({
           ...r,
           checkedInAt: r.checkedInAt?.toISOString() ?? null,

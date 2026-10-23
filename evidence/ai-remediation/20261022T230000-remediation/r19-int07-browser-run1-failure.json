@@ -1,0 +1,16 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Single persistent browser context, current local web/API build, isolated PostgreSQL; HTTP fault injection only at API response boundary; no real network/provider.",
+  "viewports": [
+    "390x844"
+  ],
+  "failuresInjected": [],
+  "http": [],
+  "pageErrors": [
+    "TypeError: page.waitForRequestFailed is not a function\n    at file:///D:/Merge_2/Codegym/apps/web/scripts/ai-remediation-int07-browser.mjs:100:30"
+  ],
+  "screenshots": [],
+  "committedScanId": "763a6083-8bdd-4001-a03a-c2c6a4c5096e",
+  "committedTicketCode": "b7fbe0ad-2811-44b2-a279-16b76d5a3105",
+  "failure": "page.waitForRequestFailed is not a function"
+}

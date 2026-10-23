@@ -11,7 +11,6 @@ import { TicketEmailService } from './ticket-email.service.js';
 
 @Injectable()
 export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
-  private timer?: ReturnType<typeof setInterval>;
   private running?: Promise<void>;
   private readonly logger = new Logger(TicketReminderScheduler.name);
 
@@ -21,8 +20,8 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   onModuleInit() {
-    this.tick();
-    this.timer = setInterval(() => this.tick(), 60000);
+    // The durable CoreWorker is the sole automatic reminder/reschedule sender.
+    // Keep these methods for explicit legacy migrations and targeted tests only.
   }
 
   private tick() {
@@ -61,24 +60,29 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
 
     for (const showtime of showtimes) {
       // Find all valid tickets that haven't been reminded yet
-      const tickets = await this.db.ticket.findMany({
-        where: {
-          showtimeId: showtime.id,
-          status: TicketStatus.VALID,
-          remindedStartTime: null,
-          order: {
-            status: OrderStatus.PAID,
+      let afterId = '';
+      while (true) {
+        const tickets = await this.db.ticket.findMany({
+          where: {
+            showtimeId: showtime.id,
+            status: TicketStatus.VALID,
+            remindedStartTime: null,
+            id: { gt: afterId },
+            OR: [
+              { order: { status: OrderStatus.PAID } },
+              {
+                orderId: null,
+                logs: { some: { action: 'ISSUED_FROM_TRANSFER' } },
+              },
+            ],
           },
-        },
-        include: {
-          order: {
-            include: { user: true },
-          },
-        },
-        take: 100,
-      });
-
-      for (const ticket of tickets) {
+          include: { order: { include: { user: true } } },
+          orderBy: { id: 'asc' },
+          take: 100,
+        });
+        if (!tickets.length) break;
+        afterId = tickets[tickets.length - 1].id;
+        for (const ticket of tickets) {
         const email = (ticket as any).ownerEmail || ticket.order?.user?.email;
         if (!email) continue;
 
@@ -118,6 +122,7 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
             `Reminder delivery failed for ticket ${ticket.id}; retry deferred`,
           );
         }
+        }
       }
     }
   }
@@ -128,26 +133,28 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
    */
   async sweepRescheduled() {
     // Find tickets that have already received a reminder but whose showtime startTime has changed
-    const tickets = await this.db.ticket.findMany({
-      where: {
-        status: TicketStatus.VALID,
-        remindedStartTime: { not: null },
-        order: {
-          status: OrderStatus.PAID,
+    let afterId = '';
+    while (true) {
+      const tickets = await this.db.ticket.findMany({
+        where: {
+          status: TicketStatus.VALID,
+          remindedStartTime: { not: null },
+          id: { gt: afterId },
+          OR: [
+            { order: { status: OrderStatus.PAID } },
+            {
+              orderId: null,
+              logs: { some: { action: 'ISSUED_FROM_TRANSFER' } },
+            },
+          ],
         },
-      },
-      include: {
-        showtime: {
-          include: { event: true },
-        },
-        order: {
-          include: { user: true },
-        },
-      },
-      take: 100,
-    });
-
-    for (const ticket of tickets) {
+        include: { showtime: { include: { event: true } }, order: { include: { user: true } } },
+        orderBy: { id: 'asc' },
+        take: 100,
+      });
+      if (!tickets.length) break;
+      afterId = tickets[tickets.length - 1].id;
+      for (const ticket of tickets) {
       if (!ticket.showtime || !ticket.remindedStartTime) continue;
 
       // Detect showtime start time change
@@ -195,11 +202,11 @@ export class TicketReminderScheduler implements OnModuleInit, OnModuleDestroy {
           );
         }
       }
+      }
     }
   }
 
   async onModuleDestroy() {
-    if (this.timer) clearInterval(this.timer);
     await this.running;
   }
 }

@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  BadGatewayException,
+  ConflictException,
   Inject,
   Injectable,
   Logger,
@@ -7,6 +9,7 @@ import {
   Optional,
   UnauthorizedException,
 } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 import { OrderStatus, PaymentStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -16,6 +19,10 @@ import {
   PAYMENT_GATEWAY,
   type PaymentGateway,
 } from './gateways/payment-gateway.interface.js';
+import {
+  PaymentGatewayOutcomeUnknownError,
+  PaymentGatewayRejectedError,
+} from './gateways/payment-gateway.errors.js';
 import { AccountantNotifier } from './accountant-notifier.js';
 import { TicketsService } from '../tickets/tickets.service.js';
 import { SeatEventsService } from '../showtimes/seat-events.service.js';
@@ -39,101 +46,68 @@ export class PaymentsService {
     userId: string,
     returnUrl?: string,
   ): Promise<{ redirectUrl: string; gatewayRef: string; paymentId: string }> {
-    const order = await this.db.order.findUnique({
-      where: { id: orderId },
-      include: {
-        items: {
-          include: {
-            seat: {
-              include: {
-                category: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!order || order.userId !== userId) {
-      throw new NotFoundException('Không tìm thấy đơn hàng.');
-    }
-
-    const now = new Date();
-    const isPending =
-      order.status === OrderStatus.PENDING ||
-      order.status === OrderStatus.PENDING_PAYMENT;
-    if (!isPending || isOrderExpired(order, now)) {
-      // Record RETRY_REJECTED_EXPIRED event if rejected due to expiration / non-pending status
-      await this.db.orderLog.create({
-        data: {
-          orderId: order.id,
-          type: 'RETRY_REJECTED_EXPIRED',
-          attemptNo: null,
-          detail: {
-            status: order.status,
-            reason: isOrderExpired(order, now)
-              ? 'ORDER_EXPIRED'
-              : 'ORDER_NOT_PENDING',
-          },
-        },
-      });
-
-      throw new BadRequestException({
-        code: 'ORDER_EXPIRED',
-        message: 'Đơn hàng đã hết hạn hoặc không ở trạng thái chờ thanh toán.',
-      });
-    }
-
-    // Authoritative calculation strictly from DB prices
-    let authoritativeTotal = 0;
-    for (const item of order.items) {
-      const price = item.seat?.category?.price ?? item.unitPrice;
-      authoritativeTotal += price;
-    }
-
-    if (authoritativeTotal <= 0) {
-      throw new BadRequestException('Tổng tiền đơn hàng không hợp lệ.');
-    }
-
     const webOrigin =
       this.config.get<string>('WEB_ORIGIN') ?? 'http://localhost:3000';
-    const finalReturnUrl =
-      returnUrl || `${webOrigin}/payment/result/${order.id}`;
+    const pendingGatewayRef = `${orderId}_${Date.now()}_${randomUUID().replace(/-/g, '').slice(0, 8)}`;
+    let reserved: { orderId: string; amount: number; paymentId: string; attemptNo: number };
+    try {
+      reserved = await this.db.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM orders WHERE id=${orderId}::uuid FOR UPDATE`;
+      const order = await tx.order.findFirst({
+        where: { id: orderId, userId },
+        include: { items: { select: { unitPrice: true } } },
+      });
+      if (!order) throw new NotFoundException('Không tìm thấy đơn hàng.');
+      const now = new Date();
+      const isPending =
+        order.status === OrderStatus.PENDING ||
+        order.status === OrderStatus.PENDING_PAYMENT;
+      if (!isPending || isOrderExpired(order, now))
+        throw new BadRequestException({
+          code: 'ORDER_EXPIRED',
+          message: 'Đơn hàng đã hết hạn hoặc không ở trạng thái chờ thanh toán.',
+        });
 
-    const gatewayResult = await this.gateway.createPayment({
-      orderId: order.id,
-      amount: authoritativeTotal,
-      returnUrl: finalReturnUrl,
-    });
-
-    const payment = await this.db.$transaction(async (tx) => {
-      // Lock order to serialize concurrent attempt creations
-      if (typeof (tx as any).$executeRaw === 'function') {
-        await (tx as any)
-          .$executeRaw`SELECT id FROM orders WHERE id = ${order.id}::uuid FOR UPDATE`;
-      }
-
+      // Persist an INITIATED attempt while holding the order lock, before the
+      // external call. Coupon changes serialize against this row and cannot
+      // alter the amount while the gateway request is in flight.
+      const subtotalSnapshot = order.items.reduce(
+        (sum, item) => sum + item.unitPrice,
+        0,
+      );
+      if (
+        subtotalSnapshot !== order.subtotalAmount ||
+        order.totalAmount !== order.subtotalAmount - order.discountAmount
+      )
+        throw new BadRequestException(
+          'Snapshot tổng tiền đơn hàng không hợp lệ. Hãy liên hệ hỗ trợ.',
+        );
+      const authoritativeTotal = order.totalAmount;
+      if (authoritativeTotal <= 0)
+        throw new BadRequestException('Tổng tiền đơn hàng không hợp lệ.');
       const previousPayment = await tx.payment.findFirst({
-        where: { orderId: order.id },
+        where: { orderId },
         orderBy: { attemptNo: 'desc' },
       });
-
+      if (previousPayment?.status === PaymentStatus.INITIATED)
+        throw new ConflictException({
+          code: 'PAYMENT_RECONCILIATION_REQUIRED',
+          message: 'Giao dịch trước đang chờ đối soát; không thể khởi tạo lần thanh toán mới.',
+        });
       const attemptNo = (previousPayment?.attemptNo ?? 0) + 1;
-
-      const createdPayment = await tx.payment.create({
+      const payment = await tx.payment.create({
         data: {
-          orderId: order.id,
+          orderId,
           amount: authoritativeTotal,
           status: PaymentStatus.INITIATED,
           gateway: this.gateway.name,
-          gatewayRef: gatewayResult.gatewayRef,
+          gatewayRef: pendingGatewayRef,
           attemptNo,
         },
       });
-
       await tx.orderLog.create({
         data: {
-          orderId: order.id,
+          orderId,
           type: 'PAYMENT_ATTEMPT',
           attemptNo,
           detail:
@@ -145,18 +119,94 @@ export class PaymentsService {
                 }
               : {
                   gateway: this.gateway.name,
-                  gatewayRef: gatewayResult.gatewayRef,
+                  paymentInitialization: 'reserved_before_gateway_call',
                 },
         },
       });
+        return { orderId, amount: authoritativeTotal, paymentId: payment.id, attemptNo };
+      });
+    } catch (error) {
+      const response = error instanceof BadRequestException ? error.getResponse() : null;
+      if (
+        response &&
+        typeof response === 'object' &&
+        'code' in response &&
+        response.code === 'ORDER_EXPIRED'
+      ) {
+        await this.db.orderLog.create({
+          data: { orderId, type: 'RETRY_REJECTED_EXPIRED' },
+        });
+      }
+      throw error;
+    }
 
-      return createdPayment;
-    });
+    const finalReturnUrl = returnUrl || `${webOrigin}/payment/result/${reserved.orderId}`;
+    let gatewayResult: Awaited<ReturnType<PaymentGateway['createPayment']>>;
+    try {
+      gatewayResult = await this.gateway.createPayment({
+        orderId: reserved.orderId,
+        gatewayRef: pendingGatewayRef,
+        amount: reserved.amount,
+        returnUrl: finalReturnUrl,
+      });
+    } catch (error) {
+      if (error instanceof PaymentGatewayRejectedError) {
+        await this.db.$transaction(async (tx) => {
+          await tx.payment.updateMany({
+            where: { id: reserved.paymentId, gatewayRef: pendingGatewayRef, status: PaymentStatus.INITIATED },
+            data: { status: PaymentStatus.FAILED },
+          });
+          await tx.orderLog.create({
+            data: {
+              orderId: reserved.orderId,
+              type: 'PAYMENT_INITIATION_REJECTED',
+              attemptNo: reserved.attemptNo,
+              detail: { providerCode: error.providerCode },
+            },
+          });
+        });
+        throw new BadGatewayException({
+          code: 'PAYMENT_REJECTED',
+          message: 'Cổng thanh toán đã từ chối yêu cầu. Bạn có thể thử lại.',
+        });
+      }
+
+      const reason = error instanceof PaymentGatewayOutcomeUnknownError
+        ? error.reason
+        : 'UNCLASSIFIED_GATEWAY_ERROR';
+      await this.db.orderLog.create({
+        data: {
+          orderId: reserved.orderId,
+          type: 'PAYMENT_INITIATION_UNKNOWN',
+          attemptNo: reserved.attemptNo,
+          detail: { gateway: this.gateway.name, reason },
+        },
+      });
+      throw new BadGatewayException({
+        code: 'PAYMENT_OUTCOME_UNKNOWN',
+        message: 'Chưa xác định được kết quả khởi tạo. Hệ thống đang chờ đối soát; vui lòng không thanh toán lại.',
+      });
+    }
+
+    if (gatewayResult.gatewayRef !== pendingGatewayRef) {
+      await this.db.orderLog.create({
+        data: {
+          orderId: reserved.orderId,
+          type: 'PAYMENT_INITIATION_UNKNOWN',
+          attemptNo: reserved.attemptNo,
+          detail: { gateway: this.gateway.name, reason: 'GATEWAY_REFERENCE_MISMATCH' },
+        },
+      });
+      throw new BadGatewayException({
+        code: 'PAYMENT_OUTCOME_UNKNOWN',
+        message: 'Chưa xác định được kết quả khởi tạo. Hệ thống đang chờ đối soát; vui lòng không thanh toán lại.',
+      });
+    }
 
     return {
       redirectUrl: gatewayResult.redirectUrl,
       gatewayRef: gatewayResult.gatewayRef,
-      paymentId: payment.id,
+      paymentId: reserved.paymentId,
     };
   }
 
@@ -462,11 +512,8 @@ export class PaymentsService {
       }
     }
 
-    // 4. Calculate authoritative order total from DB
-    let orderTotal = 0;
-    for (const item of order.items) {
-      orderTotal += item.seat?.category?.price ?? item.unitPrice;
-    }
+    // Webhook must match the immutable amount snapshot charged for this order.
+    const orderTotal = order.totalAmount;
 
     // 5. Amount mismatch check
     if (event.status === 'SUCCESS' && event.amount !== orderTotal) {

@@ -1,0 +1,45 @@
+{
+  "runId": "20261022T230000-remediation",
+  "fixture": {
+    "showtimeId": "7c02a35a-22ec-4b39-a2ab-21afbd8abf2b",
+    "orderId": "88fc6897-11a3-4a6a-b23f-2c575a907e4a",
+    "orderItemId": "145a1c5a-24ec-4e6c-8927-66d07bc155a6"
+  },
+  "order": {
+    "status": "PAID",
+    "totalAmountVnd": 125000,
+    "originalBuyerStillOwner": true
+  },
+  "itemUnitPriceVnd": 125000,
+  "tickets": [
+    {
+      "id": "533dfa00-427e-487d-994b-6527bbf2ec09",
+      "orderId": "88fc6897-11a3-4a6a-b23f-2c575a907e4a",
+      "code": "INT16-20261022T230000-remediation-aea1ecff-43ca-40a8-89d0-15e6ec312be1",
+      "status": "CANCELLED",
+      "ownerEmail": null,
+      "transferredToEmail": "20261022t230000-remediation.e05d8e38-05e1-4326-bedc-e3ecceab41e3@int16-recipient.invalid",
+      "price": 125000,
+      "seatId": "9b391f69-4926-437c-9207-a6fd04fdbfa5"
+    },
+    {
+      "id": "bc14a815-436d-44ed-aadd-8401ed059279",
+      "orderId": null,
+      "code": "eK8_aN6o5Jrdy8c2qqT8yw",
+      "status": "VALID",
+      "ownerEmail": "20261022t230000-remediation.e05d8e38-05e1-4326-bedc-e3ecceab41e3@int16-recipient.invalid",
+      "transferredToEmail": null,
+      "price": 125000,
+      "seatId": "9b391f69-4926-437c-9207-a6fd04fdbfa5"
+    }
+  ],
+  "ticketCount": 2,
+  "validTicketCount": 1,
+  "recipientOwnedValidTicketCount": 1,
+  "transferMailOutboxRows": 1,
+  "auditActions": [
+    "TRANSFERRED",
+    "ISSUED_FROM_TRANSFER"
+  ],
+  "ticketCountMatchesPaidItems": true
+}

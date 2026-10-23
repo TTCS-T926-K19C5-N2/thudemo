@@ -1,0 +1,56 @@
+{
+  "capturedAt": "2026-10-23T07:40:04.056Z",
+  "profile": "s1demo-384da3d43b41",
+  "environment": "local isolated web/API/PostgreSQL/Mailpit; PAYMENT_GATEWAY=mock",
+  "orderId": "0626cd37-b0f6-4aed-aa20-e6b0ccacf9a0",
+  "showtimeId": "914556a8-ba19-4766-9e20-00a3d93df432",
+  "journey": [
+    {
+      "step": "Public event detail",
+      "actual": "Bệnh sĩ; original description/artwork; 07/12/2026 19:30 sale rehearsal listed with venue and fare tiers."
+    },
+    {
+      "step": "Buyer login",
+      "actual": "Synthetic buyer logged into isolated profile; returned to seat page."
+    },
+    {
+      "step": "Seat selection and hold",
+      "actual": "D-1 STANDARD selected; UI 119/120 -> 118/120 available; 380000 VND; server confirmed 10-minute hold."
+    },
+    {
+      "step": "Order review",
+      "actual": "One D-1 STANDARD item, subtotal/discount/total 380000/0/380000 VND; countdown 10:00."
+    },
+    {
+      "step": "Mock payment page",
+      "actual": "Internal mock gateway displayed order id and 380000 VND, with success and failure actions."
+    },
+    {
+      "step": "Mock success result",
+      "actual": "Mock gateway success returned; UI confirmed paid and ticket ready."
+    },
+    {
+      "step": "Order and ticket detail",
+      "actual": "Order PAID; one valid D-1 ticket, ticket QR rendered and downloadable; re-send action accepted."
+    },
+    {
+      "step": "Mailpit",
+      "actual": "Local catcher shows 3 messages; latest synthetic ticket email for Bệnh sĩ / D-1 received. Not Internet/Inbox delivery."
+    }
+  ],
+  "security": {
+    "rawGatewayQueryOmitted": true,
+    "signatureOmitted": true,
+    "cookiesOmitted": true,
+    "credentialValuesOmitted": true,
+    "ticketCodeOmitted": true
+  },
+  "screenshots": "Current journey screenshots were visible in browser but are not persisted as image files; accessibility-state observations retained in this JSON.",
+  "postRestart": {
+    "observedAt": "2026-10-23T07:43:11.558Z",
+    "orderDetail": "Reload after isolated profile Restart remained PAID; D-1 STANDARD 380000 VND; QR rendered and ticket VALID.",
+    "myTickets": "Buyer page showed two VALID Bệnh sĩ tickets, A-1 VIP and D-1 STANDARD, each with QR image and order link.",
+    "orders": "Buyer order list showed two PAID orders newest first; each row displayed event/showtime, one seat, amount, state; page indicator 1/1.",
+    "limitation": "Only one page of order history is present; multi-page navigation is not proven."
+  }
+}

@@ -1,0 +1,40 @@
+
+ RUN  v4.1.11 D:/Merge_2/Codegym/apps/api
+
+ ❯ test/waitlist.e2e-spec.ts (9 tests) 1063ms
+
+ Test Files  1 failed (1)
+      Tests  9 passed (9)
+   Start at  10:42:42
+   Duration  2.78s (transform 639ms, setup 36ms, import 1.45s, tests 1.06s, environment 0ms)
+
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/waitlist.e2e-spec.ts > S-59 waitlist FIFO and SMTP catcher on isolated PostgreSQL
+PrismaClientKnownRequestError: 
+Invalid `tx.user.deleteMany()` invocation in
+D:/Merge_2/Codegym/apps/api/test/waitlist.e2e-spec.ts:110:23
+
+  107 await tx.showtime.delete({ where: { id: showtimeId } });
+  108 await tx.event.delete({ where: { id: eventId } });
+  109 await tx.erasureRequest.deleteMany({ where: { userId: { in: users } } });
+→ 110 await tx.user.deleteMany(
+Foreign key constraint violated on the constraint: `consent_events_userId_fkey`
+ ❯ vn.handleRequestError ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:238:12
+ ❯ vn.handleAndLogRequestError ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:184:11
+ ❯ vn.request ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:153:11
+ ❯ a ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:1014:23
+ ❯ test/waitlist.e2e-spec.ts:110:9
+    108|         await tx.event.delete({ where: { id: eventId } });
+    109|         await tx.erasureRequest.deleteMany({ where: { userId: { in: us…
+    110|         await tx.user.deleteMany({ where: { id: { in: users } } });
+       |         ^
+    111|       });
+    112|     }
+ ❯ Proxy._transactionWithCallback ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:861:17
+ ❯ test/waitlist.e2e-spec.ts:97:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

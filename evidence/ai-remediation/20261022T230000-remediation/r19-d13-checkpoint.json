@@ -1,0 +1,80 @@
+{
+  "runId": "20261022T230000-remediation",
+  "checkpoint": "R19 D13 privacy migration + offline browser retest",
+  "recordedLocal": "2026-10-23T03:17:08+07:00",
+  "statuses": {
+    "S-33-AC01": "PASS",
+    "S-33-NFR": "PASS",
+    "S-35-AC02": "PASS"
+  },
+  "resultCounts": {
+    "NOT_RUN": 366,
+    "PASS": 47,
+    "BLOCKED": 8,
+    "NEEDS_DECISION": 4,
+    "MISSING": 2
+  },
+  "migration": {
+    "runId": "20261022T230000-remediation",
+    "type": "Chromium IndexedDB upgrade against current application bundle",
+    "beforeVersion": 3,
+    "expectedVersion": 4,
+    "assertions": {
+      "version": true,
+      "ticketKeys": [
+        "code",
+        "showtimeId",
+        "status"
+      ],
+      "ticketSanitized": true,
+      "pendingQueuePreserved": true,
+      "showtimeMetadataPreserved": true
+    },
+    "screenshot": "r19-idb-migration.png"
+  },
+  "browser": {
+    "checks": 13,
+    "fieldSet": "showtimeId, code, status",
+    "pageErrors": 0
+  },
+  "fixture": {
+    "verify": "PASS",
+    "cleanup": "PASS"
+  },
+  "profile": {
+    "api": "stopped",
+    "web": "stopped",
+    "isolatedCompose": "preserved healthy; workers off"
+  },
+  "harnessSha256": {
+    "apps/web/scripts/ai-remediation-r19-browser.mjs": "260a74e3193fe516b6b5eaa740c798bae1dead4e5a9e92719c7a42c75faba89a",
+    "apps/web/scripts/ai-remediation-r19-idb-migration.mjs": "b14e212f73e5a89cab65a71204b859b7f3039ae126a2e6c6687629e7c2b7485c",
+    "apps/web/scripts/ai-remediation-r19-5000-browser.mjs": "4d07d5b150aac01c5cec830f5a1fe5f610617badd33d5918700d7ce6aca83467"
+  },
+  "limitations": [
+    "local Chromium and isolated PostgreSQL only",
+    "no physical device/camera/4G verification",
+    "R19 and overall remediation remain incomplete",
+    "5,000-ticket sample is N=1 local loopback; not representative 4G/device performance"
+  ],
+  "capacitySample": {
+    "environment": "local loopback only",
+    "paidTickets": 5000,
+    "repetitions": 1,
+    "rawLatencyMs": [
+      857.339
+    ],
+    "p95Ms": 857.339,
+    "maxMs": 857.339,
+    "errorRate": 0,
+    "httpStatus": 200,
+    "rawJsonBytes": 978839,
+    "indexedDbFieldSet": [
+      "showtimeId",
+      "code",
+      "status"
+    ],
+    "mobileNoOverflow": true,
+    "cleanup": "PASS"
+  }
+}

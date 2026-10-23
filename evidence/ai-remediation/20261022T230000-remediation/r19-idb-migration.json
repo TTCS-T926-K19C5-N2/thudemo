@@ -1,0 +1,18 @@
+{
+  "runId": "20261022T230000-remediation",
+  "type": "Chromium IndexedDB upgrade against current application bundle",
+  "beforeVersion": 3,
+  "expectedVersion": 4,
+  "assertions": {
+    "version": true,
+    "ticketKeys": [
+      "code",
+      "showtimeId",
+      "status"
+    ],
+    "ticketSanitized": true,
+    "pendingQueuePreserved": true,
+    "showtimeMetadataPreserved": true
+  },
+  "screenshot": "r19-idb-migration.png"
+}

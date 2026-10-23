@@ -1,0 +1,57 @@
+{
+  "run": "R71",
+  "profile": "s1demo-384da3d43b41",
+  "syntheticAccountsOnly": true,
+  "routes": [
+    {
+      "role": "ADMIN",
+      "route": "/admin/users",
+      "loginStatus": 200,
+      "currentUserStatus": 200,
+      "roleConfirmed": true,
+      "expectedHeadingVisible": true,
+      "logoutStatus": 200,
+      "pageErrors": []
+    },
+    {
+      "role": "ORGANIZER",
+      "route": "/events",
+      "loginStatus": 200,
+      "currentUserStatus": 200,
+      "roleConfirmed": true,
+      "expectedHeadingVisible": true,
+      "logoutStatus": 200,
+      "pageErrors": []
+    },
+    {
+      "role": "BUYER",
+      "route": "/account",
+      "loginStatus": 200,
+      "currentUserStatus": 200,
+      "roleConfirmed": true,
+      "expectedHeadingVisible": true,
+      "logoutStatus": 200,
+      "pageErrors": []
+    },
+    {
+      "role": "STAFF",
+      "route": "/scanner",
+      "loginStatus": 200,
+      "currentUserStatus": 200,
+      "roleConfirmed": true,
+      "expectedHeadingVisible": true,
+      "logoutStatus": 200,
+      "pageErrors": []
+    },
+    {
+      "role": "ACCOUNTANT",
+      "route": "/operations",
+      "loginStatus": 200,
+      "currentUserStatus": 200,
+      "roleConfirmed": true,
+      "expectedHeadingVisible": true,
+      "logoutStatus": 200,
+      "pageErrors": []
+    }
+  ]
+}

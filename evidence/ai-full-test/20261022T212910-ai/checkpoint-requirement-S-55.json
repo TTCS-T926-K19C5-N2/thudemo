@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-55-AC01",
+    "requirement_id": "S-55",
+    "kind": "AC",
+    "group": "Hạ tầng",
+    "tier": "Later",
+    "priority": "Must",
+    "sprint": "8",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Sao lưu cơ sở dữ liệu hằng ngày và diễn tập khôi phục",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L52"
+    },
+    "original_requirement": "Job sao lưu chạy mỗi đêm, bản sao lưu đẩy ra ngoài máy chủ ứng dụng, giữ 14 bản gần nhất; đã khôi phục thử lên môi trường tạm và ứng dụng chạy được với dữ liệu đó; quy trình khôi phục ghi trong README. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP",
+    "fixture": "DB thử có dữ liệu nhận diện; 16 backup giả; kho ngoài host và key thử được bảo vệ.",
+    "surfaces": "Job backup và restore drill",
+    "code_candidates": "apps/api/scripts/sprint-backup.mjs; deploy/install-daily-backup.ps1",
+    "test_candidates": "sprint-backup.spec.mjs; verify-backup-drill.mjs",
+    "steps": [
+      "Chuẩn bị fixture: DB thử có dữ liệu nhận diện; 16 backup giả; kho ngoài host và key thử được bảo vệ.",
+      "Kiểm lịch nightly, upload off-host và retention đúng 14 bản; một backup lỗi không xoá bản tốt. Restore sang DB mới, mở app/đơn/vé/QR kiểm integrity. Giữ key giải mã qua restart; local drill không chứng minh off-host hoặc lịch chạy mỗi đêm.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Kiểm lịch nightly, upload off-host và retention đúng 14 bản; một backup lỗi không xoá bản tốt. Restore sang DB mới, mở app/đơn/vé/QR kiểm integrity. Giữ key giải mã qua restart; local drill không chứng minh off-host hoặc lịch chạy mỗi đêm.",
+    "expected": [
+      "Job sao lưu chạy mỗi đêm, bản sao lưu đẩy ra ngoài máy chủ ứng dụng, giữ 14 bản gần nhất; đã khôi phục thử lên môi trường tạm và ứng dụng chạy được với dữ liệu đó; quy trình khôi phục ghi trong README. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-55-NFR",
+    "requirement_id": "S-55",
+    "kind": "NFR",
+    "group": "Hạ tầng",
+    "tier": "Later",
+    "priority": "Must",
+    "sprint": "8",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Sao lưu cơ sở dữ liệu hằng ngày và diễn tập khôi phục — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N52"
+    },
+    "original_requirement": "chưa refine — cần chốt nơi lưu bản sao lưu và mã hoá",
+    "fixture": "DB thử có dữ liệu nhận diện; 16 backup giả; kho ngoài host và key thử được bảo vệ.",
+    "surfaces": "Job backup và restore drill",
+    "code_candidates": "apps/api/scripts/sprint-backup.mjs; deploy/install-daily-backup.ps1",
+    "test_candidates": "sprint-backup.spec.mjs; verify-backup-drill.mjs",
+    "steps": [
+      "Kiểm lịch nightly, upload off-host và retention đúng 14 bản; một backup lỗi không xoá bản tốt. Restore sang DB mới, mở app/đơn/vé/QR kiểm integrity. Giữ key giải mã qua restart; local drill không chứng minh off-host hoặc lịch chạy mỗi đêm.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt nơi lưu bản sao lưu và mã hoá"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

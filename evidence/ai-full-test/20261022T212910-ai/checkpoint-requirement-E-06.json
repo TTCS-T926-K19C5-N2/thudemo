@@ -1,0 +1,61 @@
+[
+  {
+    "id": "E-06-AC",
+    "requirement_id": "E-06",
+    "kind": "EPIC",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Next",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Vé điện tử và soát vé",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "G8"
+    },
+    "original_requirement": "Vé quét được tại cửa; quét lần hai bị từ chối; mất mạng vẫn soát được và đồng bộ đúng khi có mạng lại; không tạo được vé giả ngoài hệ thống",
+    "steps": [
+      "Đối chiếu tập story con và các hành trình đầu-cuối trong kế hoạch.",
+      "Kiểm từng mệnh đề ở cấp tích hợp; mọi story đơn lẻ PASS chưa tự chứng minh epic PASS."
+    ],
+    "expected": [
+      "Vé quét được tại cửa; quét lần hai bị từ chối; mất mạng vẫn soát được và đồng bộ đúng khi có mạng lại; không tạo được vé giả ngoài hệ thống"
+    ],
+    "evidence_required": [
+      "Liên kết các case con và E2E đã chạy"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "E-06-NFR",
+    "requirement_id": "E-06",
+    "kind": "EPIC_NFR",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Next",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Vé điện tử và soát vé",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "I8"
+    },
+    "original_requirement": "mã QR không đoán được từ mã đơn hàng; ảnh QR không lộ thông tin cá nhân",
+    "steps": [
+      "Kiểm NFR ở phạm vi epic, đối chiếu các story con và số đo tích hợp; không chỉ suy từ unit test."
+    ],
+    "expected": [
+      "mã QR không đoán được từ mã đơn hàng; ảnh QR không lộ thông tin cá nhân"
+    ],
+    "evidence_required": [
+      "Bằng chứng kỹ thuật hoặc số đo tương ứng"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

@@ -1,0 +1,1163 @@
+## 12. Danh mục chức năng và hướng dẫn thực hiện theo yêu cầu gốc
+
+Mỗi mục bên dưới có bề mặt, dữ liệu, cách thử và các AC gốc được đặt ID. Các NFR được giữ riêng trong `test-cases.json`. “Code/test ứng viên” là điểm bắt đầu tìm kiếm, không phải kết quả đạt; tên file chỉ ghi tên phải được resolve đúng trong repo trước khi chạy.
+
+
+### S-01 — Khung ứng dụng chạy được trên staging
+
+- Nguồn: `Backlog!A2:O2`; **Ready / Must**, Sprint 1; dependency: không .
+- Bề mặt: `/`.
+- Code ứng viên: `scripts/sprint1-demo.ps1; deploy/; .github/workflows/ci.yml`.
+- Dữ liệu: Clone/checkout kiểm thử riêng; profile DB/Redis riêng; môi trường staging được phép kiểm tra.
+- Cách thử: Khởi động bằng README; ghi URL và source thực chạy. Trên nhánh/CI thử riêng, gây lỗi lint/test và lỗi image, kiểm pipeline dừng và phiên bản cũ vẫn healthy. Đo CI dưới 5 phút và merge tới healthy dưới 10 phút theo T-02/T-03.
+- Test tái sử dụng sau khi kiểm fixture: `deploy/*.spec.mjs; apps/api/test/app.e2e-spec.ts`.
+
+**S-01-AC01** — Giả sử máy chủ staging đã sẵn sàng, Khi merge vào nhánh chính, Thì pipeline build, chạy test và triển khai tự động, và trang chủ trả về HTTP 200
+
+**S-01-AC02** — Giả sử một bài test thất bại, Khi pipeline chạy, Thì dừng lại và không triển khai
+
+**S-01-AC03** — Giả sử thành viên mới lấy mã nguồn về, Khi chạy lệnh khởi động đã ghi trong README, Thì ứng dụng, PostgreSQL và Redis chạy được trên máy cá nhân
+
+**S-01-AC04** — Giả sử lần triển khai mới thất bại giữa chừng, Khi kiểm tra staging, Thì phiên bản cũ vẫn đang chạy
+
+**S-01-NFR** — bí mật nạp từ biến môi trường; log không in chuỗi kết nối cơ sở dữ liệu
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-02 — Đăng nhập và phân quyền theo vai trò
+
+- Nguồn: `Backlog!A3:O3`; **Ready / Must**, Sprint 1; dependency: S-01 .
+- Bề mặt: `/login; /auth/login; /auth/me`.
+- Code ứng viên: `apps/api/src/auth/; apps/web/src/components/login-form.tsx`.
+- Dữ liệu: BUYER A/B, ORGANIZER A/B, STAFF, ACCOUNTANT, ADMIN; session còn hạn/hết hạn.
+- Cách thử: Mỗi vai trò đăng nhập và gọi trực tiếp API được phép/cấm. Sai mật khẩu 5 lần, thử lần 6; kiểm khoá 15 phút qua restart trên fixture. Đổi IP hoặc tài khoản để kiểm hai chiều quota; dùng route fixture chưa khai báo quyền để kiểm mặc định đóng.
+- Test tái sử dụng sau khi kiểm fixture: `auth-roles.e2e-spec.ts; auth-input-regression.e2e-spec.ts; sprint1-ip.e2e-spec.ts`.
+
+**S-02-AC01** — Giả sử tài khoản có vai trò ban tổ chức, Khi đăng nhập, Thì thấy mục quản lý sự kiện và không thấy mục đối soát kế toán
+
+**S-02-AC02** — Giả sử tài khoản có vai trò người mua vé, Khi gọi thẳng API tạo sự kiện bằng công cụ dòng lệnh, Thì máy chủ trả về 403 và ghi nhật ký lần thử đó
+
+**S-02-AC03** — Giả sử nhập sai mật khẩu 5 lần liên tiếp, Khi thử lần thứ 6, Thì khoá đăng nhập 15 phút và thông báo thời gian còn lại
+
+**S-02-AC04** — Giả sử phiên đăng nhập đã hết hạn, Khi gọi API bất kỳ, Thì trả về 401 và chuyển về trang đăng nhập
+
+**S-02-AC05** — Giả sử một route mới chưa khai báo quyền, Khi có người gọi tới, Thì bị từ chối — mặc định là đóng, không phải mở
+
+**S-02-NFR** — mật khẩu hash bằng argon2id; chống dò mật khẩu theo cả IP và theo tài khoản
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-03 — Người mua tự đăng ký tài khoản bằng email
+
+- Nguồn: `Backlog!A4:O4`; **Ready / Must**, Sprint 1; dependency: S-02 .
+- Bề mặt: `/register; /activate; /resend-activation; /users/register`.
+- Code ứng viên: `apps/api/src/users/registration.service.ts; apps/api/src/users/activation-delivery.service.ts`.
+- Dữ liệu: Email mới/trùng, mật khẩu 7/8 ký tự, token mới/đã dùng/24 giờ, SMTP catcher.
+- Cách thử: Đăng ký ở UI và API; so phản hồi email có/không tồn tại; bắt email local, kích hoạt một lần rồi replay. Dùng fake time cho 24 giờ; gửi lại lần 5 và 6 trong một giờ; kiểm tài khoản chưa kích hoạt không đăng nhập được.
+- Test tái sử dụng sau khi kiểm fixture: `registration.e2e-spec.ts; registration-admission.e2e-spec.ts; registration.service.spec.ts`.
+
+**S-03-AC01** — Giả sử email chưa có trong hệ thống, Khi gửi form đăng ký hợp lệ, Thì tài khoản được tạo ở trạng thái chờ xác nhận và một email chứa liên kết kích hoạt được gửi đi
+
+**S-03-AC02** — Giả sử email đã tồn tại, Khi gửi form, Thì thông báo chung "nếu email hợp lệ, bạn sẽ nhận được hướng dẫn" — không tiết lộ email đã có tài khoản
+
+**S-03-AC03** — Giả sử mật khẩu dưới 8 ký tự, Khi gửi form, Thì bị chặn ở cả trình duyệt lẫn máy chủ
+
+**S-03-AC04** — Giả sử liên kết kích hoạt đã quá 24 giờ, Khi bấm vào, Thì báo hết hạn và cho gửi lại liên kết mới
+
+**S-03-AC05** — Giả sử tài khoản chưa kích hoạt, Khi đăng nhập, Thì bị từ chối kèm hướng dẫn kích hoạt
+
+**S-03-NFR** — mã kích hoạt sinh ngẫu nhiên đủ dài và chỉ dùng được một lần; giới hạn 5 lần gửi lại mỗi giờ cho một email
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-04 — Tạo sự kiện và suất diễn
+
+- Nguồn: `Backlog!A5:O5`; **Ready / Must**, Sprint 1; dependency: S-02 .
+- Bề mặt: `/events; /events/new; /events/:id; POST /events/:id/showtimes`.
+- Code ứng viên: `apps/api/src/events/; apps/web/src/components/event-editor.tsx`.
+- Dữ liệu: Hai organizer khác chủ; sự kiện nháp; giờ quá khứ/tương lai/trùng, ISO timezone.
+- Cách thử: Organizer A tạo/sửa sự kiện, thêm suất; B truy cập URL và API manage của A. Kiểm draft không công khai, quá khứ bị chặn, trùng giờ cảnh báo nhưng lưu được. So UTC trong DB và giờ Asia/Ho_Chi_Minh trên UI, kể cả gần nửa đêm.
+- Test tái sử dụng sau khi kiểm fixture: `events.e2e-spec.ts; events.service.spec.ts`.
+
+**S-04-AC01** — Giả sử đã đăng nhập bằng vai trò ban tổ chức, Khi tạo sự kiện với tên, mô tả và địa điểm hợp lệ, Thì sự kiện được lưu ở trạng thái nháp và chưa hiện với người mua
+
+**S-04-AC02** — Giả sử sự kiện đã tồn tại, Khi thêm một suất diễn có thời điểm bắt đầu trong tương lai, Thì suất diễn được lưu và gắn với sự kiện
+
+**S-04-AC03** — Giả sử nhập thời điểm bắt đầu ở quá khứ, Khi lưu suất diễn, Thì bị chặn kèm thông báo rõ lý do
+
+**S-04-AC04** — Giả sử hai suất diễn cùng sự kiện trùng hoàn toàn thời gian, Khi lưu suất thứ hai, Thì cảnh báo nhưng vẫn cho lưu — một sự kiện có thể diễn song song ở hai phòng
+
+**S-04-AC05** — Giả sử tài khoản ban tổ chức khác, Khi mở sự kiện không phải của mình, Thì bị từ chối
+
+**S-04-NFR** — thời gian lưu ở UTC, hiển thị theo múi giờ Việt Nam
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### K-01 — Chọn cơ chế giữ chỗ có thời hạn
+
+- Nguồn: `Backlog!A6:O6`; **Ready / Must**, Sprint 1; dependency: S-01 .
+- Bề mặt: `Không có màn hình; spike và quyết định kiến trúc`.
+- Code ứng viên: `apps/api/scripts/k01/; apps/api/scripts/k01-spike.mjs; docs/k01-seat-holding-report.md`.
+- Dữ liệu: Hai candidate Redis/PostgreSQL trên profile thử; 200 yêu cầu cùng ghế.
+- Cách thử: Đọc quyết định và số đo gốc của cả hai phương án. Kiểm timebox/mentor và ngoại lệ được duyệt; benchmark lại chỉ chứng minh kỹ thuật hiện tại, không tạo lại bằng chứng lịch sử đã thiếu.
+- Test tái sử dụng sau khi kiểm fixture: `scripts/verify-k01-candidates.ps1; apps/api/test/k01-benchmark.ts`.
+
+**K-01-AC01** — Đầu ra là một quyết định có nêu cơ chế đã chọn, con số đo được của cả hai phương án, và lý do loại phương án kia
+
+**K-01-NFR** — không viết mã sản phẩm trong spike; kết quả là kiến thức và một đoạn mã thử vứt đi được
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-05 — Nạp sơ đồ ghế từ tệp JSON đúng định dạng
+
+- Nguồn: `Backlog!A7:O7`; **Ready / Must**, Sprint 2; dependency: S-04 .
+- Bề mặt: `POST /showtimes/:id/seat-map`.
+- Code ứng viên: `apps/api/src/showtimes/seat-map.ts; apps/api/src/showtimes/showtimes.service.ts`.
+- Dữ liệu: JSON 6 ghế và 2.000 ghế; suất chưa bán/đang giữ/đã bán.
+- Cách thử: Nạp qua UI/API; đếm ghế/hạng sau import. Thay map khi chưa có giao dịch; thử thay khi có giữ hoặc vé. Trong DB thử, chèn lỗi ở ghế 1.500 và cuối tệp; xác minh rollback toàn bộ và map cũ còn nguyên.
+- Test tái sử dụng sau khi kiểm fixture: `sprint2.e2e-spec.ts; showtimes.service.spec.ts`.
+
+**S-05-AC01** — Giả sử tệp JSON đúng định dạng, Khi tải lên cho một suất diễn, Thì toàn bộ ghế được tạo kèm hàng, số ghế và hạng, và các hạng ghế chưa có được tạo theo tên trong tệp
+
+**S-05-AC02** — Giả sử suất diễn đã có sơ đồ nhưng chưa bán vé nào, Khi tải sơ đồ mới, Thì sơ đồ cũ được thay toàn bộ
+
+**S-05-AC03** — Giả sử suất diễn đã bán vé hoặc đang có người giữ ghế, Khi tải sơ đồ mới đè lên, Thì bị chặn kèm lý do
+
+**S-05-AC04** — Giả sử việc ghi gặp lỗi ở ghế thứ 1500, Khi giao dịch kết thúc, Thì không có ghế nào được lưu — không nạp một nửa
+
+**S-05-NFR** — tệp 2000 ghế nạp xong dưới 5 giây; toàn bộ việc nạp nằm trong một giao dịch
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-06 — Tệp sơ đồ sai bị từ chối toàn bộ và chỉ rõ chỗ sai
+
+- Nguồn: `Backlog!A8:O8`; **Ready / Must**, Sprint 2; dependency: S-05 .
+- Bề mặt: `POST /showtimes/validate-map; màn import/xem trước`.
+- Code ứng viên: `apps/api/src/showtimes/seat-map.ts; apps/web/src/features/seat-map-import/`.
+- Dữ liệu: JSON malformed, thiếu field, trùng hàng/số, nhiều lỗi, tệp sát/vượt 5 MB.
+- Cách thử: Upload từng tệp; kiểm danh sách vị trí lỗi và nút xác nhận. Preview tệp đúng rồi huỷ, so count/checksum DB không đổi. Kiểm lỗi cú pháp có vị trí, API không 500; giới hạn dung lượng phải kiểm cả client lẫn server.
+- Test tái sử dụng sau khi kiểm fixture: `seat-map.spec.ts; sprint2.e2e-spec.ts`.
+
+**S-06-AC01** — Giả sử tệp thiếu trường bắt buộc ở một ghế, Khi tải lên, Thì từ chối toàn bộ tệp và chỉ rõ ghế nào thiếu trường nào
+
+**S-06-AC02** — Giả sử tệp có hai ghế trùng hàng và số, Khi tải lên, Thì từ chối và chỉ ra cặp trùng
+
+**S-06-AC03** — Giả sử tệp có nhiều lỗi, Khi tải lên, Thì thấy đủ danh sách lỗi trong một lần, không phải sửa từng lỗi rồi thử lại
+
+**S-06-AC04** — Giả sử tệp không phải JSON hợp lệ, Khi tải lên, Thì báo lỗi định dạng kèm vị trí ký tự, không hiện lỗi 500
+
+**S-06-AC05** — Giả sử tệp hợp lệ, Khi xem trước, Thì thấy lưới ghế đúng số hàng, số ghế, màu theo hạng trước khi bấm xác nhận nạp
+
+**S-06-NFR** — kiểm tra chạy trước giao dịch ghi, không ghi rồi mới phát hiện sai; giới hạn kích thước tệp 5 MB
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-09 — Xem sơ đồ ghế còn trống của một suất diễn
+
+- Nguồn: `Backlog!A9:O9`; **Ready / Must**, Sprint 2; dependency: S-05 .
+- Bề mặt: `/shows/:id/seats; GET /showtimes/:id/seats`.
+- Code ứng viên: `apps/api/src/showtimes/seat-status.sql.ts; apps/web/src/features/seat-selection/`.
+- Dữ liệu: Suất 2.000 ghế, có FREE/HELD/SOLD; desktop và điện thoại.
+- Cách thử: Mở map, so toàn bộ trạng thái với DB; người B giữ rồi A refresh. Thử suất chưa có map; zoom/pan/chọn chính xác trên điện thoại; ghế bán không chọn được. Đo truy vấn dưới 200 ms và render đầy đủ dưới 2 giây; theo dõi query count để phát hiện N+1.
+- Test tái sử dụng sau khi kiểm fixture: `seat-availability.query.spec.ts; sprint2.e2e-spec.ts`.
+
+**S-09-AC01** — Giả sử suất diễn đã có sơ đồ ghế, Khi mở trang chọn ghế, Thì thấy toàn bộ ghế với ba trạng thái phân biệt được bằng màu và ký hiệu: trống, đang có người giữ, đã bán
+
+**S-09-AC02** — Giả sử một ghế vừa bị người khác giữ, Khi tôi tải lại trang, Thì ghế đó chuyển sang trạng thái đang có người giữ
+
+**S-09-AC03** — Giả sử suất diễn chưa nạp sơ đồ ghế, Khi mở trang chọn ghế, Thì hiện thông báo suất diễn chưa mở bán, không hiện lưới rỗng
+
+**S-09-AC04** — Giả sử suất diễn có 2000 ghế, Khi mở trang, Thì sơ đồ hiện đầy đủ dưới 2 giây
+
+**S-09-AC05** — Giả sử mở trên điện thoại, Khi xem sơ đồ, Thì phóng to thu nhỏ được và vẫn bấm trúng ghế
+
+**S-09-NFR** — trạng thái ghế lấy trong một truy vấn, không gọi một lần cho mỗi ghế
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-10 — Chọn ghế và hệ thống giữ chỗ trong 10 phút
+
+- Nguồn: `Backlog!A10:O10`; **Ready / Must**, Sprint 2; dependency: S-09, K-01 .
+- Bề mặt: `POST /showtimes/:id/holds; màn chọn ghế`.
+- Code ứng viên: `apps/api/src/holds/; apps/web/src/features/seat-selection/server-countdown.ts`.
+- Dữ liệu: BUYER A/B; 3 ghế trống; cấu hình hold mặc định 10 phút, client lệch ±5 phút.
+- Cách thử: A chọn ghế theo các thời điểm khác nhau, so expiresAt dùng chung từ lần đầu. B tranh ghế; đóng suất rồi giữ mới. Dùng context browser mô phỏng lệch đồng hồ; đổi cấu hình ở profile thử để chứng minh không hard-code TTL.
+- Test tái sử dụng sau khi kiểm fixture: `seat-hold-api.e2e-spec.ts; server-countdown.spec.ts`.
+
+**S-10-AC01** — Giả sử ghế đang trống, Khi tôi bấm chọn, Thì ghế chuyển sang trạng thái tôi đang giữ và màn hình hiện đồng hồ đếm ngược 10 phút
+
+**S-10-AC02** — Giả sử ghế đang có người khác giữ, Khi tôi bấm chọn, Thì bị từ chối kèm thông báo "ghế vừa có người chọn" và sơ đồ tự cập nhật
+
+**S-10-AC03** — Giả sử tôi chọn 3 ghế cách nhau vài giây, Khi xem đồng hồ, Thì cả ba ghế dùng chung một thời hạn tính từ ghế đầu tiên — không có ba đồng hồ khác nhau
+
+**S-10-AC04** — Giả sử suất diễn đã đóng bán, Khi tôi bấm chọn, Thì bị từ chối kèm thông báo suất không còn mở bán
+
+**S-10-AC05** — Giả sử đồng hồ máy tôi lệch 5 phút so với máy chủ, Khi xem đồng hồ đếm ngược, Thì thời gian còn lại vẫn đúng theo máy chủ
+
+**S-10-NFR** — thời hạn giữ chỗ là tham số cấu hình, không ghi cứng trong mã; API giữ ghế trả lời dưới 300ms ở p95
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-11 — Bỏ chọn ghế đang giữ để trả lại ngay cho người khác
+
+- Nguồn: `Backlog!A11:O11`; **Ready / Should**, Sprint 2; dependency: S-10 .
+- Bề mặt: `DELETE /showtimes/:id/hold-seats hoặc route được UI sử dụng`.
+- Code ứng viên: `apps/api/src/modules/seats/seat-hold.controller.ts; apps/web/src/features/seat-selection/`.
+- Dữ liệu: A giữ 3 ghế; B có session riêng.
+- Cách thử: A bỏ một ghế, B giữ ngay ghế vừa nhả; hai ghế còn nguyên hạn. B xoá hold của A phải 403; xoá ghế không giữ theo hợp đồng T-25 trả 404. Bỏ ghế cuối làm đồng hồ biến mất; đếm một request thao tác.
+- Test tái sử dụng sau khi kiểm fixture: `seat-hold.controller.spec.ts; seat-hold-api.e2e-spec.ts`.
+
+**S-11-AC01** — Giả sử tôi đang giữ 3 ghế, Khi tôi bỏ chọn một ghế, Thì ghế đó trở lại trạng thái trống ngay lập tức cho người khác chọn và hai ghế còn lại giữ nguyên thời hạn
+
+**S-11-AC02** — Giả sử tôi bỏ chọn ghế cuối cùng, Khi không còn ghế nào, Thì đồng hồ đếm ngược biến mất
+
+**S-11-AC03** — Giả sử tôi gọi API bỏ chọn với ghế của người khác đang giữ, Khi xử lý, Thì bị từ chối 403 và ghế người kia không đổi
+
+**S-11-NFR** — bỏ chọn phản hồi dưới 300ms; chỉ chủ giữ chỗ mới huỷ được
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-12 — Ghế được nhả tự động khi hết hạn giữ chỗ
+
+- Nguồn: `Backlog!A12:O12`; **Ready / Must**, Sprint 2; dependency: S-10 .
+- Bề mặt: `Worker hết hạn và GET ghế`.
+- Code ứng viên: `apps/api/src/holds/hold-expiry.scheduler.ts; apps/api/src/hold-expiry-worker.ts`.
+- Dữ liệu: Hold hết hạn, còn hạn và đã chuyển sang order; worker off/on.
+- Cách thử: Khi worker tắt, hold quá hạn vẫn được truy vấn như trống. Chạy job hai lần, restart job sau backlog; chỉ dọn hết hạn, không dọn bảo lưu đơn đang chờ. Dùng fake clock/DB fixture, không chỉnh giờ hệ điều hành.
+- Test tái sử dụng sau khi kiểm fixture: `hold-expiry.scheduler.spec.ts; seat-expiry-job.service.spec.ts`.
+
+**S-12-AC01** — Giả sử một giữ chỗ đã quá hạn, Khi job nền chạy, Thì giữ chỗ bị huỷ và ghế trở lại trạng thái trống
+
+**S-12-AC02** — Giả sử giữ chỗ vừa hết hạn nhưng job chưa chạy tới, Khi người khác truy vấn ghế trống, Thì ghế đó vẫn được tính là trống — truy vấn lọc theo thời điểm hết hạn chứ không chờ job
+
+**S-12-AC03** — Giả sử tiến trình nền vừa khởi động lại sau sự cố, Khi chạy lần đầu, Thì dọn hết mọi giữ chỗ quá hạn tồn đọng
+
+**S-12-AC04** — Giả sử một giữ chỗ đã chuyển thành đơn hàng đang chờ thanh toán, Khi job dọn chạy, Thì không đụng tới ghế đó
+
+**S-12-NFR** — job dọn chạy được nhiều lần trên cùng dữ liệu mà kết quả không đổi
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-13 — Ghế đã có người giữ thì không ai khác chọn được, kể cả khi bấm cùng lúc
+
+- Nguồn: `Backlog!A13:O13`; **Ready / Must**, Sprint 2; dependency: S-10 .
+- Bề mặt: `API hold và ràng buộc PostgreSQL`.
+- Code ứng viên: `apps/api/src/prisma/hold-transaction.ts; apps/api/prisma/migrations/`.
+- Dữ liệu: 100 ghế; 200 request, đúng 2 người/request cạnh tranh mỗi ghế, quota đủ cao.
+- Cách thử: Đồng bộ barrier cho 200 request tranh 100 ghế, đúng 100 thành công và 100 conflict, lặp 10 vòng với dữ liệu mới. Thử 5 ghế có ghế thứ 3 bận phải rollback cả 5; thử hold cũ hết hạn và chèn SQL cạnh tranh để chứng minh DB bảo vệ.
+- Test tái sử dụng sau khi kiểm fixture: `apps/api/test/k01-benchmark.ts; seat-hold-api.e2e-spec.ts`.
+
+**S-13-AC01** — Giả sử 200 yêu cầu giữ chỗ được bắn đồng thời vào 100 ghế, Khi tất cả xử lý xong, Thì đúng 100 giữ chỗ thành công và 100 yêu cầu nhận lỗi trùng
+
+**S-13-AC02** — Giả sử hai người bấm chọn cùng một ghế trong cùng một khoảnh khắc, Khi cả hai yêu cầu tới máy chủ, Thì đúng một người giữ được và người kia thấy thông báo "ghế vừa có người chọn"
+
+**S-13-AC03** — Giả sử yêu cầu giữ 5 ghế mà ghế thứ 3 đã có người giữ, Khi xử lý, Thì không ghế nào bị giữ và trả về danh sách ghế bị từ chối
+
+**S-13-AC04** — Giả sử giữ chỗ bị từ chối, Khi giao diện nhận lỗi, Thì sơ đồ tự làm mới để hiện trạng thái đúng
+
+**S-13-AC05** — Giả sử một giữ chỗ cũ trên ghế đó đã hết hạn, Khi người mới giữ, Thì thành công — ràng buộc chỉ tính giữ chỗ còn hiệu lực
+
+**S-13-NFR** — bảo đảm chống trùng nằm ở tầng cơ sở dữ liệu, không dựa vào kiểm tra ở tầng ứng dụng — kiểm tra rồi ghi là sai vì có khoảng trống giữa hai bước
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-14 — Giữ chỗ còn nguyên khi người mua tải lại trang hoặc mở lại trình duyệt
+
+- Nguồn: `Backlog!A14:O14`; **Ready / Should**, Sprint 2; dependency: S-10 .
+- Bề mặt: `GET /showtimes/:id/holds; trang chọn ghế`.
+- Code ứng viên: `apps/api/src/holds/; apps/web/src/features/seat-selection/`.
+- Dữ liệu: A giữ 2 ghế, đã trôi 4 phút; context browser thứ hai đăng nhập cùng tài khoản.
+- Cách thử: Refresh rồi đóng/mở lại browser và đăng nhập thiết bị thứ hai; danh sách và hạn lấy từ server, không bắt đầu lại 10 phút. Làm hết hạn ở fixture rồi mở lại, không phục hồi ghế cũ; B không đọc được hold A.
+- Test tái sử dụng sau khi kiểm fixture: `useSeatHoldTimer.test.ts; seat-hold-api.e2e-spec.ts`.
+
+**S-14-AC01** — Giả sử tôi đang giữ 2 ghế còn 6 phút, Khi tải lại trang, Thì thấy đúng 2 ghế đó ở trạng thái đang giữ và đồng hồ còn 6 phút
+
+**S-14-AC02** — Giả sử tôi đóng trình duyệt rồi mở lại trong thời hạn trên máy khác, Khi đăng nhập và vào lại suất đó, Thì vẫn thấy ghế đang giữ
+
+**S-14-AC03** — Giả sử giữ chỗ đã hết hạn trong lúc tôi vắng, Khi mở lại trang, Thì ghế hiện trống và không có đồng hồ
+
+**S-14-NFR** — trạng thái giữ chỗ lấy từ máy chủ, không lưu ở bộ nhớ trình duyệt
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-07 — Ban tổ chức mở bán và đóng bán một suất diễn
+
+- Nguồn: `Backlog!A15:O15`; **Ready / Must**, Sprint 2; dependency: S-04 .
+- Bề mặt: `PATCH /showtimes/:id/status`.
+- Code ứng viên: `apps/api/src/showtimes/; apps/web/src/features/showtime-management/sale-status-control.tsx`.
+- Dữ liệu: Suất nháp thiếu map/giá; suất đủ điều kiện; hold và order đang chờ.
+- Cách thử: Thử mọi cặp trạng thái DRAFT/ON_SALE/CLOSED. Đóng bán ngăn giữ mới, giữ/đơn cũ vẫn tiếp tục đúng hạn; mở lại và đối chiếu audit actor. Phân biệt đóng bán và huỷ suất.
+- Test tái sử dụng sau khi kiểm fixture: `showtimes.service.spec.ts; sprint2.e2e-spec.ts`.
+
+**S-07-AC01** — Giả sử suất diễn đang ở trạng thái nháp và đã có sơ đồ ghế, Khi bấm mở bán, Thì suất chuyển sang đang bán và xuất hiện trên trang công khai
+
+**S-07-AC02** — Giả sử suất diễn chưa có sơ đồ ghế, Khi bấm mở bán, Thì bị chặn kèm lý do
+
+**S-07-AC03** — Giả sử suất đang bán, Khi bấm đóng bán, Thì người mua không chọn ghế mới được nữa nhưng giữ chỗ và đơn đang chờ vẫn được xử lý tới hết hạn
+
+**S-07-AC04** — Giả sử suất đã đóng bán, Khi mở lại, Thì trở về đang bán — trạng thái đổi qua lại được, không phải một chiều
+
+**S-07-NFR** — đổi trạng thái ghi nhật ký kèm người thao tác
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-08 — Người mua xem danh sách sự kiện đang mở bán và chi tiết suất diễn
+
+- Nguồn: `Backlog!A16:O16`; **Ready / Must**, Sprint 2; dependency: S-07 .
+- Bề mặt: `/; /shows/:id; GET /showtimes`.
+- Code ứng viên: `apps/api/src/showtimes/; apps/web/src/features/event-catalog/`.
+- Dữ liệu: Ẩn danh; 21+ sự kiện và bộ 200 suất; draft/closed/on-sale; cache nóng/lạnh.
+- Cách thử: Đi từ trang chủ tới chọn ghế tối đa hai lần bấm. Lật hết các trang, đối chiếu tập ID không trùng/sót và thứ tự ngày. Gọi URL draft/closed trực tiếp; kiểm khoảng giá và thông tin. Đo p95 và TTL cache 30 giây, quan sát cache invalidation khi đổi trạng thái.
+- Test tái sử dụng sau khi kiểm fixture: `sprint2.e2e-spec.ts; apps/web/src/lib/contracts/`.
+
+**S-08-AC01** — Giả sử có suất diễn đang bán, Khi mở trang chủ mà chưa đăng nhập, Thì thấy danh sách sự kiện kèm suất gần nhất, sắp theo ngày diễn
+
+**S-08-AC02** — Giả sử suất diễn ở trạng thái nháp hoặc đã đóng, Khi mở trang chi tiết bằng đường dẫn trực tiếp, Thì thấy thông báo không mở bán, không thấy sơ đồ
+
+**S-08-AC03** — Giả sử mở trang chi tiết suất đang bán, Khi trang tải xong, Thì thấy tên sự kiện, thời gian, địa điểm, khoảng giá và nút vào chọn ghế
+
+**S-08-AC04** — Giả sử có hơn 20 sự kiện, Khi cuộn xuống cuối, Thì tải thêm trang tiếp theo
+
+**S-08-NFR** — trang danh sách phản hồi dưới 500ms ở p95 khi có 200 suất diễn; cache 30 giây
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-15 — Đặt giá vé cho từng hạng ghế của suất diễn
+
+- Nguồn: `Backlog!A17:O17`; **Ready / Must**, Sprint 3; dependency: S-05 .
+- Bề mặt: `PATCH /showtimes/:id/prices`.
+- Code ứng viên: `apps/api/src/showtimes/; apps/web/src/features/seat-pricing/`.
+- Dữ liệu: 3 hạng VIP/STD/ECO; giá 200000/100000/50000; đơn pending giá cũ.
+- Cách thử: Nhập/lưu giá, hover/click ghế. Thử âm, chữ, số thập phân và thiếu giá; kiểm phía server. Đổi giá sau khi có order: order cũ không đổi, order tạo sau dùng giá mới. Kiểm schema integer VND, hiển thị 200.000.
+- Test tái sử dụng sau khi kiểm fixture: `s15-s16-acceptance.e2e-spec.ts; showtimes.service.spec.ts`.
+
+**S-15-AC01** — Giả sử suất diễn đã có sơ đồ với ba hạng ghế, Khi tôi nhập giá cho từng hạng và lưu, Thì trang chọn ghế hiện đúng giá khi trỏ vào ghế
+
+**S-15-AC02** — Giả sử một hạng ghế chưa có giá, Khi bấm mở bán, Thì bị chặn kèm tên hạng còn thiếu giá
+
+**S-15-AC03** — Giả sử suất đã có đơn hàng đang chờ, Khi đổi giá, Thì đơn đang chờ giữ nguyên giá cũ, chỉ đơn tạo sau mới dùng giá mới
+
+**S-15-AC04** — Giả sử nhập giá âm hoặc không phải số, Khi lưu, Thì bị chặn ngay tại ô
+
+**S-15-NFR** — giá lưu bằng số nguyên đơn vị đồng, không dùng số thực
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-16 — Tạo đơn hàng từ các ghế đang giữ
+
+- Nguồn: `Backlog!A18:O18`; **Ready / Must**, Sprint 3; dependency: S-13, S-15 .
+- Bề mặt: `POST /showtimes/:id/orders; POST /orders`.
+- Code ứng viên: `apps/api/src/orders/orders.service.ts; apps/api/src/orders/orders.controller.ts`.
+- Dữ liệu: A giữ 2 ghế còn hạn; biến thể một hold hết hạn, ghế do B giữ.
+- Cách thử: Tạo order từ hold server; gửi thêm seatIds/total giả phải không thay tập ghế hợp lệ. Gửi hai request đồng thời và retry: một order, đúng items/giá, gia hạn giữ cùng transaction; lỗi giữa chừng không để order hoặc gia hạn một nửa.
+- Test tái sử dụng sau khi kiểm fixture: `orders.e2e-spec.ts; s15-s16-acceptance.e2e-spec.ts`.
+
+**S-16-AC01** — Giả sử tôi đang giữ 2 ghế còn hiệu lực, Khi bấm "đặt vé", Thì một đơn ở trạng thái chờ thanh toán được tạo với đúng 2 ghế và tổng tiền theo giá hạng, và thời hạn giữ chỗ được gia hạn bằng thời hạn thanh toán
+
+**S-16-AC02** — Giả sử một trong các giữ chỗ đã hết hạn, Khi bấm "đặt vé", Thì không tạo đơn và báo ghế nào đã mất
+
+**S-16-AC03** — Giả sử tôi đã có một đơn đang chờ cho suất này, Khi bấm "đặt vé" lần nữa, Thì được đưa về đơn đang chờ đó thay vì tạo đơn thứ hai
+
+**S-16-AC04** — Giả sử tôi bấm "đặt vé" hai lần liên tiếp, Khi xử lý, Thì chỉ có một đơn được tạo
+
+**S-16-NFR** — tạo đơn và gia hạn giữ chỗ là một giao dịch; thời hạn thanh toán là tham số cấu hình
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-17 — Xem lại chi tiết đơn trước khi thanh toán
+
+- Nguồn: `Backlog!A19:O19`; **Ready / Should**, Sprint 3; dependency: S-16 .
+- Bề mặt: `/orders/:id; GET /orders/:id`.
+- Code ứng viên: `apps/web/src/features/order-review/; apps/api/src/orders/`.
+- Dữ liệu: Order A pending/expired; B đăng nhập; hai hạng giá khác nhau.
+- Cách thử: UI hiển thị từng dòng, tổng và thời gian; so SUM(unitPrice) với server. Gửi giá/tổng sửa bằng API; B đọc ID của A phải 403. Hết hạn thì nút trả tiền ẩn và API cũng từ chối.
+- Test tái sử dụng sau khi kiểm fixture: `orders.e2e-spec.ts; order-review.spec.ts`.
+
+**S-17-AC01** — Giả sử đơn vừa được tạo, Khi mở trang đơn, Thì thấy tên sự kiện, suất, từng ghế kèm hạng và đơn giá, tổng tiền và thời gian còn lại để thanh toán
+
+**S-17-AC02** — Giả sử tôi sửa tổng tiền trong yêu cầu gửi lên, Khi máy chủ xử lý, Thì tổng vẫn được tính lại từ giá hạng ghế, số sửa bị bỏ qua
+
+**S-17-AC03** — Giả sử thời hạn thanh toán đã hết, Khi mở trang đơn, Thì thấy đơn đã hết hạn và nút thanh toán bị ẩn
+
+**S-17-NFR** — trang đơn chỉ chủ đơn xem được
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-18 — Thanh toán đơn hàng qua cổng sandbox
+
+- Nguồn: `Backlog!A20:O20`; **Ready / Must**, Sprint 3; dependency: S-16 .
+- Bề mặt: `POST /orders/:id/pay; POST /payments/webhook`.
+- Code ứng viên: `apps/api/src/payments/; apps/api/src/payments/gateways/momo.gateway.ts`.
+- Dữ liệu: Đơn pending; mock và tài khoản sandbox riêng nếu có; webhook đúng/sai tiền.
+- Cách thử: Kiểm amount/orderId redirect; thanh toán và đóng browser trước callback. Webhook hợp lệ phải đổi order/ghế/hold trong một transaction. Số tiền khác phải cần kiểm tra, không phát vé và báo kế toán; quan sát DB và lỗi giữa transaction.
+- Test tái sử dụng sau khi kiểm fixture: `payments.e2e-spec.ts; payments.service.spec.ts`.
+
+**S-18-AC01** — Giả sử đơn đang chờ và còn hạn, Khi bấm thanh toán, Thì được chuyển sang trang cổng sandbox với đúng số tiền và mã đơn
+
+**S-18-AC02** — Giả sử thanh toán thành công ở cổng, Khi hệ thống nhận kết quả, Thì đơn chuyển sang đã trả, ghế chuyển sang đã bán, giữ chỗ được xoá — cả ba trong một giao dịch
+
+**S-18-AC03** — Giả sử người dùng tắt trình duyệt sau khi trả tiền ở cổng, Khi webhook tới, Thì đơn vẫn chuyển sang đã trả không cần người dùng quay lại
+
+**S-18-AC04** — Giả sử cổng trả về số tiền khác tổng đơn, Khi hệ thống nhận kết quả, Thì không ghi nhận, đánh dấu đơn cần kiểm tra và báo cho kế toán
+
+**S-18-NFR** — không lưu số thẻ; chỉ lưu mã giao dịch từ cổng; cổng nằm sau một interface riêng
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-19 — Cổng thanh toán giả lập để chạy khi chưa có sandbox
+
+- Nguồn: `Backlog!A21:O21`; **Ready / Should**, Sprint 3; dependency: S-18 .
+- Bề mặt: `/mock-gateway/pay; /mock-gateway/submit`.
+- Code ứng viên: `apps/api/src/payments/gateways/mock.gateway.ts; apps/web/src/features/mock-gateway/`.
+- Dữ liệu: Profile mock riêng và profile APP_ENV production biệt lập.
+- Cách thử: Chọn success/failure trên gateway; kiểm webhook có chữ ký qua cùng luồng nghiệp vụ. Thay cấu hình provider không sửa nghiệp vụ; production bật mock phải fail startup, route mock không được dùng trong bản production.
+- Test tái sử dụng sau khi kiểm fixture: `mock-gateway.e2e-spec.ts; payments-config.validator.spec.ts`.
+
+**S-19-AC01** — Giả sử biến môi trường chọn cổng giả lập, Khi bấm thanh toán, Thì tới một trang nội bộ có hai nút thanh toán thành công và thất bại
+
+**S-19-AC02** — Giả sử bấm thành công trên trang giả lập, Khi quay về, Thì một webhook giả có chữ ký hợp lệ được gửi vào hệ thống và đơn chuyển sang đã trả như cổng thật
+
+**S-19-AC03** — Giả sử môi trường là production, Khi khởi động với cổng giả lập, Thì ứng dụng từ chối khởi động
+
+**S-19-NFR** — cổng giả lập nằm sau cùng interface ở T-40, không có nhánh `if` trong mã nghiệp vụ
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-20 — Webhook thanh toán gửi lại nhiều lần chỉ ghi nhận một
+
+- Nguồn: `Backlog!A22:O22`; **Ready / Must**, Sprint 3; dependency: S-18 .
+- Bề mặt: `POST /payments/webhook`.
+- Code ứng viên: `apps/api/src/payments/payments.service.ts; apps/api/prisma/migrations/`.
+- Dữ liệu: Một payload ký hợp lệ; transactionId cố định; pending và expired.
+- Cách thử: Gửi 5 lần tuần tự rồi các bản đồng thời trên order khác; đếm payment/event, order transition, ticket và outbox trước/sau. Webhook trùng trả 200 theo T-46; expired không thành paid, có dấu cần kiểm tra/hoàn; không 500.
+- Test tái sử dụng sau khi kiểm fixture: `payments-idempotency.e2e-spec.ts`.
+
+**S-20-AC01** — Giả sử cổng gửi lại cùng một webhook 5 lần, Khi xử lý xong, Thì chỉ có một bản ghi thanh toán, đơn đổi trạng thái một lần và vé chỉ sinh một bộ
+
+**S-20-AC02** — Giả sử hai bản sao của cùng webhook tới đồng thời, Khi xử lý song song, Thì đúng một bản được xử lý, bản kia bị bỏ qua — không có lỗi 500
+
+**S-20-AC03** — Giả sử webhook tới cho đơn đã bị huỷ vì hết hạn, Khi xử lý, Thì không đổi đơn thành đã trả mà đánh dấu cần kiểm tra để hoàn tiền
+
+**S-20-AC04** — Giả sử webhook tới trước khi người dùng quay lại trang kết quả, Khi người dùng quay lại, Thì thấy đơn đã trả
+
+**S-20-NFR** — khoá theo mã giao dịch để chống xử lý song song; xử lý một webhook nhiều lần cho kết quả giống xử lý một lần
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-21 — Webhook có chữ ký sai bị từ chối
+
+- Nguồn: `Backlog!A23:O23`; **Ready / Must**, Sprint 3; dependency: S-20 .
+- Bề mặt: `POST /payments/webhook`.
+- Code ứng viên: `apps/api/src/payments/webhook-security.filter.ts; apps/api/src/payments/gateways/`.
+- Dữ liệu: Payload đúng, sửa 1 byte, thiếu chữ ký, JSON hỏng và chữ ký sai, order không có.
+- Cách thử: Gửi raw body bảo toàn byte; sai chữ ký trả 401 trước parse/nghiệp vụ và không thay DB. Hợp lệ nhưng order không tồn tại trả 404. Kiểm structured log có nguồn và mã lỗi, không payload thanh toán; review so sánh constant-time.
+- Test tái sử dụng sau khi kiểm fixture: `payments-signature-verification.e2e-spec.ts; momo-signature.spec.ts`.
+
+**S-21-AC01** — Giả sử webhook có chữ ký không khớp khoá của cổng, Khi nhận, Thì trả 401, không đọc nội dung, không đổi đơn, và ghi log kèm địa chỉ nguồn
+
+**S-21-AC02** — Giả sử webhook đúng chữ ký nhưng mã đơn không tồn tại, Khi nhận, Thì trả 404 và ghi log
+
+**S-21-NFR** — kiểm chữ ký trước khi phân tích nội dung; khoá ký đọc từ biến môi trường
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-22 — Trang kết quả thanh toán chờ xác nhận từ máy chủ, không tự kết luận
+
+- Nguồn: `Backlog!A24:O24`; **Ready / Must**, Sprint 3; dependency: S-20 .
+- Bề mặt: `/payment/result/:orderId; GET /orders/:id/status`.
+- Code ứng viên: `apps/web/src/features/payment-result/; apps/api/src/orders/orders.controller.ts`.
+- Dữ liệu: Webhook trễ 5 giây/>60 giây; query return bị giả; response status bị trì hoãn.
+- Cách thử: Về trang trước webhook, xem đang xác nhận; đếm polling mỗi 2 giây, PAID chỉ theo API. Chờ 60 giây không kết luận thất bại; rời trang phải dừng polling. Đo status API dưới 100 ms và no-store.
+- Test tái sử dụng sau khi kiểm fixture: `payment-result.spec.ts; orders.e2e-spec.ts`.
+
+**S-22-AC01** — Giả sử tôi quay về từ cổng trước khi webhook tới, Khi trang kết quả mở, Thì thấy "đang xác nhận thanh toán" và trang tự hỏi lại máy chủ mỗi 2 giây
+
+**S-22-AC02** — Giả sử webhook tới sau đó, Khi trang hỏi lại, Thì chuyển sang "đã thanh toán" kèm liên kết tới vé
+
+**S-22-AC03** — Giả sử sau 60 giây vẫn chưa có xác nhận, Khi hết thời gian chờ, Thì hiện hướng dẫn kiểm tra lại trong lịch sử đơn thay vì kết luận thất bại
+
+**S-22-AC04** — Giả sử tham số trên đường dẫn quay về bị sửa thành "thành công", Khi trang mở, Thì vẫn hiện trạng thái thật từ máy chủ
+
+**S-22-NFR** — trang kết quả không dùng tham số trên đường dẫn quay về để quyết định trạng thái
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-23 — Đơn hàng quá hạn thanh toán thì nhả ghế
+
+- Nguồn: `Backlog!A25:O25`; **Ready / Must**, Sprint 3; dependency: S-16 .
+- Bề mặt: `Worker order-expiry`.
+- Code ứng viên: `apps/api/src/orders/order-expiry.scheduler.ts; apps/api/src/orders/order-expiration.ts`.
+- Dữ liệu: Order pending quá hạn, paid và pending sát ranh; webhook đúng ký.
+- Cách thử: Chạy job lặp, chỉ pending quá hạn nhả ghế nguyên tử. Cho job và webhook tranh cùng order tại barrier, lặp nhiều lần; cuối cùng PAID+SOLD hoặc EXPIRED+nhả ghế+cần hoàn, không trạng thái lửng.
+- Test tái sử dụng sau khi kiểm fixture: `order-expiry.spec.ts; payments-idempotency.e2e-spec.ts`.
+
+**S-23-AC01** — Giả sử đơn ở trạng thái chờ quá thời hạn thanh toán, Khi job chạy, Thì đơn chuyển sang hết hạn và ghế trở lại trống trong cùng một giao dịch
+
+**S-23-AC02** — Giả sử đơn đã thanh toán, Khi job chạy nhiều lần, Thì đơn và ghế không bị đụng tới
+
+**S-23-AC03** — Giả sử webhook thành công tới đúng lúc job đang huỷ đơn đó, Khi cả hai xong, Thì chỉ một bên thắng: hoặc đơn đã trả và ghế đã bán, hoặc đơn hết hạn và được đánh dấu cần hoàn tiền — không có trạng thái lửng
+
+**S-23-NFR** — huỷ đơn và nhả ghế nằm trong một giao dịch; job chạy lặp lại được
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-24 — Thanh toán thất bại thì đơn vẫn chờ và ghế còn giữ tới hết hạn
+
+- Nguồn: `Backlog!A26:O26`; **Ready / Should**, Sprint 3; dependency: S-18 .
+- Bề mặt: `/orders/:id; POST /orders/:id/pay`.
+- Code ứng viên: `apps/api/src/payments/; apps/web/src/features/order-review/`.
+- Dữ liệu: Order pending còn hạn; gateway mock fail rồi success, biến thể đã quá hạn.
+- Cách thử: Chọn thất bại: order/hold/TTL không đổi, có log lần thử. Thanh toán lại dùng cùng orderId; double click không tạo hai attempt đang xử lý. Quá hạn thì cả UI/API chặn retry.
+- Test tái sử dụng sau khi kiểm fixture: `mock-gateway.e2e-spec.ts; payments.e2e-spec.ts`.
+
+**S-24-AC01** — Giả sử cổng trả về thất bại, Khi hệ thống nhận kết quả, Thì đơn vẫn ở trạng thái chờ, ghế vẫn được giữ tới hết thời hạn thanh toán, và trang đơn hiện nút thanh toán lại
+
+**S-24-AC02** — Giả sử tôi bấm thanh toán lại, Khi tới cổng, Thì cùng mã đơn được dùng, không tạo đơn mới
+
+**S-24-AC03** — Giả sử thời hạn đã hết, Khi bấm thanh toán lại, Thì bị từ chối và S-23 xử lý đơn như thường
+
+**S-24-NFR** — số lần thử lại ghi vào nhật ký đơn
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-28 — Quản trị tạo tài khoản nhân viên và gán vai trò
+
+- Nguồn: `Backlog!A27:O27`; **Next / Must**, Sprint 4; dependency: S-02 .
+- Bề mặt: `/admin/users; /admin/users/:id/role; /status`.
+- Code ứng viên: `apps/api/src/users/admin-users.controller.ts; apps/web/src/app/admin/users/`.
+- Dữ liệu: ADMIN, STAFF, ACCOUNTANT; session STAFF còn hoạt động; tài khoản phụ để khóa.
+- Cách thử: Tạo nhân viên từng vai trò, kiểm STAFF chỉ thấy việc soát vé. Đổi role rồi gọi request kế tiếp bằng session cũ; disable thu hồi session và chặn login kèm liên hệ quản trị. BUYER thử API admin; kiểm audit actor.
+- Test tái sử dụng sau khi kiểm fixture: `users.service.spec.ts; auth-roles.e2e-spec.ts`.
+
+**S-28-AC01** — Giả sử tôi tạo tài khoản với vai trò soát vé, Khi nhân viên đăng nhập, Thì chỉ thấy màn hình quét vé
+
+**S-28-AC02** — Giả sử tôi đổi vai trò một tài khoản đang đăng nhập, Khi họ gọi API tiếp theo, Thì quyền mới có hiệu lực ngay, không cần đăng xuất
+
+**S-28-AC03** — Giả sử tôi vô hiệu hoá một tài khoản, Khi họ đăng nhập, Thì bị từ chối kèm thông báo liên hệ quản trị
+
+**S-28-NFR** — mọi thay đổi vai trò ghi nhật ký kèm người thao tác. Ước lượng thô 2 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-27 — Vé gửi qua email kèm mã QR
+
+- Nguồn: `Backlog!A28:O28`; **Next / Should**, Sprint 4; dependency: S-25, S-03 .
+- Bề mặt: `POST /orders/:id/tickets/resend; SMTP/outbox`.
+- Code ứng viên: `apps/api/src/tickets/ticket-delivery.service.ts; apps/api/src/mail/`.
+- Dữ liệu: SMTP catcher local thành công/lỗi; worker off/on; order 3 vé.
+- Cách thử: Bật worker trong fixture, trả tiền và đo từ PAID đến catcher nhận đủ 3 PNG dưới 60 giây. Làm SMTP lỗi và kiểm backoff/FAILED theo số lần được chốt. Gửi lại phải cùng QR; worker off phải báo chưa gửi, không coi QUEUED là SENT.
+- Test tái sử dụng sau khi kiểm fixture: `ticket-delivery.service.spec.ts; docs/SPRINT45_TICKET_DELIVERY.md`.
+
+**S-27-AC01** — Giả sử đơn chuyển sang đã trả, Khi hệ thống xử lý xong, Thì một email có đủ vé kèm ảnh QR được gửi tới địa chỉ tài khoản trong vòng 1 phút
+
+**S-27-AC02** — Giả sử gửi email thất bại, Khi thử lại, Thì tối đa 3 lần cách nhau tăng dần, rồi ghi nhận lỗi để quản trị xử lý tay
+
+**S-27-AC03** — Giả sử người mua bấm "gửi lại vé", Khi xử lý, Thì gửi lại đúng vé đã có, không sinh vé mới
+
+**S-27-NFR** — email không chứa thông tin thanh toán; dùng lớp gửi email ở T-08. Ước lượng thô 2 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-32 — Xem lịch sử đơn hàng của tôi
+
+- Nguồn: `Backlog!A29:O29`; **Next / Should**, Sprint 4; dependency: S-16 .
+- Bề mặt: `/orders; GET /orders/me`.
+- Code ứng viên: `apps/api/src/orders/order-history.service.ts; apps/web/src/features/orders/order-history.tsx`.
+- Dữ liệu: A có hơn 20 order đủ trạng thái; B có order riêng.
+- Cách thử: Duyệt phân trang mới nhất trước, kiểm status/event/số ghế/tổng; expired/cancelled vẫn xuất hiện. Không trùng/sót; B đọc chi tiết/status/tickets của A phải 403; lịch sử không chứa order B.
+- Test tái sử dụng sau khi kiểm fixture: `orders.e2e-spec.ts; docs/ORDER_HISTORY.md`.
+
+**S-32-AC01** — Giả sử tôi có nhiều đơn, Khi mở lịch sử, Thì thấy danh sách mới nhất trước với trạng thái, sự kiện, số ghế và tổng tiền, phân trang
+
+**S-32-AC02** — Giả sử tôi gọi API với mã đơn của người khác, Khi xử lý, Thì bị từ chối 403
+
+**S-32-AC03** — Giả sử đơn đã hết hạn hoặc đã huỷ, Khi xem, Thì vẫn thấy trong lịch sử với trạng thái tương ứng
+
+**S-32-NFR** — phân trang, không tải toàn bộ lịch sử một lần. Ước lượng thô 2 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-25 — Nhận vé điện tử có mã QR sau khi thanh toán
+
+- Nguồn: `Backlog!A30:O30`; **Next / Must**, Sprint 4; dependency: S-20 .
+- Bề mặt: `GET /orders/:id/tickets; /orders/:id`.
+- Code ứng viên: `apps/api/src/orders/ticket-qr.service.ts; apps/api/src/tickets/`.
+- Dữ liệu: Order pending và paid 3 ghế; B không sở hữu.
+- Cách thử: Trước trả tiền không có vé; sau webhook có đúng 3 vé, QR khác nhau, đủ event/suất/hạng/ghế. Replay không sinh thêm vé; so identity giữa projection orders và tickets, không chỉ đếm một bảng.
+- Test tái sử dụng sau khi kiểm fixture: `tickets.e2e-spec.ts; ticket-qr.spec.ts`.
+
+**S-25-AC01** — Giả sử đơn vừa chuyển sang đã trả, Khi tôi mở trang đơn, Thì mỗi ghế có một vé riêng với mã QR, tên sự kiện, suất, hạng và số ghế
+
+**S-25-AC02** — Giả sử đơn có 3 ghế, Khi xem vé, Thì ba mã QR khác nhau và mã của vé này không suy ra được mã vé khác
+
+**S-25-AC03** — Giả sử đơn chưa trả, Khi mở trang vé bằng đường dẫn, Thì không có vé nào
+
+**S-25-NFR** — mã vé sinh ngẫu nhiên đủ dài, không dùng số thứ tự tăng dần. Ước lượng thô 3 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-26 — Mã QR trên vé có chữ ký, không tạo giả được ngoài hệ thống
+
+- Nguồn: `Backlog!A31:O31`; **Next / Must**, Sprint 4; dependency: S-25 .
+- Bề mặt: `QR trên vé; public keys; máy quét`.
+- Code ứng viên: `apps/api/src/tickets/ticket-signing.service.ts; apps/api/src/scanner/scanner-crypto.service.ts`.
+- Dữ liệu: K1/K2 key ring chỉ dùng thử; QR gốc, sửa, thiếu chữ ký, kid lạ.
+- Cách thử: Ký bằng K1, xoay K2 nhưng giữ K1 public rồi restart; vé cũ vẫn xác minh được online/offline. Sửa một ký tự và bỏ chữ ký phải bị từ chối; kiểm browser bundle/API/cache chỉ chứa public keys.
+- Test tái sử dụng sau khi kiểm fixture: `ticket-signing-keys.spec.ts; scanner-crypto.service.spec.ts`.
+
+**S-26-AC01** — Giả sử nội dung QR gồm mã vé, mã suất và chữ ký, Khi máy quét kiểm chữ ký bằng khoá công khai, Thì vé thật qua và mã sửa một ký tự bị từ chối
+
+**S-26-AC02** — Giả sử khoá ký bị đổi, Khi quét vé đã phát trước đó, Thì vé cũ vẫn hợp lệ nhờ phiên bản khoá ghi trong QR
+
+**S-26-AC03** — Giả sử một người tự tạo QR với mã vé hợp lệ nhưng không có chữ ký, Khi quét, Thì bị từ chối
+
+**S-26-NFR** — khoá riêng chỉ nằm trên máy chủ; máy quét chỉ giữ khoá công khai. Ước lượng thô 3 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-29 — Nhân viên soát vé chọn suất diễn và cửa trước khi quét
+
+- Nguồn: `Backlog!A32:O32`; **Next / Should**, Sprint 4; dependency: S-28 .
+- Bề mặt: `/check-in; GET /check-in/today`.
+- Code ứng viên: `apps/api/src/check-in/; apps/web/src/features/check-in/`.
+- Dữ liệu: STAFF có/không có assignment; suất hôm nay/ngày mai, cửa A/B.
+- Cách thử: Thiếu suất hoặc cửa thì camera chưa được bật. Chọn cửa A, refresh/đóng mở vẫn nhớ; đổi B thì admission sau ghi B. Không có suất hôm nay hiện lời giải thích. Thu hồi assignment khi session còn sống phải chặn request tiếp theo.
+- Test tái sử dụng sau khi kiểm fixture: `check-in-s29.spec.ts; check-in.spec.ts`.
+
+**S-29-AC01** — Giả sử tôi đăng nhập trên điện thoại, Khi mở màn hình quét, Thì phải chọn suất diễn đang diễn ra hôm nay và tên cửa trước khi máy ảnh bật
+
+**S-29-AC02** — Giả sử tôi đổi sang cửa khác, Khi chọn lại, Thì các lần quét sau ghi cửa mới
+
+**S-29-AC03** — Giả sử không có suất nào hôm nay, Khi mở màn hình, Thì thấy thông báo thay vì danh sách rỗng
+
+**S-29-NFR** — lựa chọn được nhớ trên thiết bị tới khi đổi. Ước lượng thô 2 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-30 — Soát vé bằng cách quét QR tại cửa
+
+- Nguồn: `Backlog!A33:O33`; **Next / Must**, Sprint 4; dependency: S-26, S-29 .
+- Bề mặt: `POST /showtimes/:id/check-in; camera web`.
+- Code ứng viên: `apps/api/src/orders/ticket-check-in.service.ts; apps/web/src/features/ticket-scanner/`.
+- Dữ liệu: Vé hợp lệ, QR lạ, mạng response >3 giây; điện thoại camera thật.
+- Cách thử: Quét bằng camera và API; hợp lệ hiện xanh đủ ghế/hạng, DB có giờ/cửa. QR lạ hiện đỏ; trễ hơn 3 giây phải hiện đang chờ. Đo quét tới hiển thị dưới 500 ms riêng với API duration, kiểm ánh nắng trên thiết bị thật.
+- Test tái sử dụng sau khi kiểm fixture: `ticket-check-in.e2e-spec.ts; check-in-request.spec.ts`.
+
+**S-30-AC01** — Giả sử quét vé hợp lệ của đúng suất, Khi máy chủ xác nhận, Thì màn hình xanh hiện hạng ghế và số ghế, vé được đánh dấu đã vào kèm cửa và thời điểm
+
+**S-30-AC02** — Giả sử quét mã không phải vé của hệ thống, Khi xử lý, Thì màn hình đỏ báo mã không hợp lệ
+
+**S-30-AC03** — Giả sử mạng chậm, Khi quá 3 giây chưa có trả lời, Thì màn hình báo đang chờ thay vì đứng im
+
+**S-30-NFR** — phản hồi sau khi quét dưới 500ms để không tạo hàng chờ; màn hình đọc được dưới nắng. Ước lượng thô 3 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-31 — Vé đã soát không dùng lại được lần hai
+
+- Nguồn: `Backlog!A34:O34`; **Next / Must**, Sprint 4; dependency: S-30 .
+- Bề mặt: `POST /showtimes/:id/check-in và /check-in/exception`.
+- Code ứng viên: `apps/api/src/orders/ticket-check-in.service.ts; apps/api/prisma/migrations/`.
+- Dữ liệu: 2 STAFF/2 cửa; một vé; canOverride bật/tắt.
+- Cách thử: Hai máy quét cùng vé đồng thời: đúng 1 NORMAL, lần sau báo cửa/giờ đầu. RequestId replay không tăng admission. Ngoại lệ cần quyền cửa và lý do; thêm EXCEPTION giữ lịch sử cũ kèm tên nhân viên.
+- Test tái sử dụng sau khi kiểm fixture: `ticket-check-in.e2e-spec.ts; apps/api/scripts/verify-s31-storage.mjs`.
+
+**S-31-AC01** — Giả sử vé đã vào lúc 19:02 ở cửa A, Khi quét lại ở cửa B, Thì bị từ chối kèm thời điểm và cửa đã vào lần trước
+
+**S-31-AC02** — Giả sử hai máy quét cùng một vé trong cùng khoảnh khắc, Khi cả hai tới máy chủ, Thì chỉ một máy báo hợp lệ — cùng nguyên tắc chống trùng như giữ chỗ ở S-13
+
+**S-31-AC03** — Giả sử nhân viên xác nhận khách bị từ chối là chủ vé thật, Khi bấm "cho vào có ghi chú", Thì vé được ghi thêm một lần vào kèm lý do và tên nhân viên
+
+**S-31-NFR** — đánh dấu đã vào chống được hai lần quét đồng thời bằng ràng buộc ở cơ sở dữ liệu. Ước lượng thô 3 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-33 — Tải trước danh sách vé của suất diễn xuống máy quét
+
+- Nguồn: `Backlog!A35:O35`; **Next / Must**, Sprint 5; dependency: S-30 .
+- Bề mặt: `/scanner/snapshot; GET /scanner/showtimes/:id/tickets`.
+- Code ứng viên: `apps/api/src/scanner/scanner-snapshot.service.ts; apps/web/src/features/scanner/scanner-db.ts`.
+- Dữ liệu: 5.000 vé; snapshot mới/cũ 30 phút; đổi trạng thái sau tải; 4G thật và mô phỏng.
+- Cách thử: Tải full, kiểm count/checksum và cache không tên/email. Qua 30 phút phải delta; cursor người/suất khác không lộ dữ liệu. Đo dưới 10 giây, ghi rõ mô hình 4G và phân biệt phép đo trên 4G thật.
+- Test tái sử dụng sau khi kiểm fixture: `scanner.service.spec.ts; scanner.spec.ts`.
+
+**S-33-AC01** — Giả sử tôi đã chọn suất ở S-29 và đang có mạng, Khi bấm "tải danh sách", Thì toàn bộ mã vé hợp lệ và trạng thái đã vào của suất được lưu trên thiết bị kèm thời điểm tải
+
+**S-33-AC02** — Giả sử danh sách đã tải quá 30 phút, Khi còn mạng, Thì máy tự tải lại phần thay đổi
+
+**S-33-AC03** — Giả sử suất có 5000 vé, Khi tải, Thì xong dưới 10 giây trên mạng 4G
+
+**S-33-NFR** — dữ liệu trên thiết bị chỉ có mã vé và trạng thái, không có tên hay email khách. Ước lượng thô 3 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-34 — Soát vé ngoại tuyến bằng danh sách đã tải
+
+- Nguồn: `Backlog!A36:O36`; **Next / Must**, Sprint 5; dependency: S-33, S-26 .
+- Bề mặt: `/scanner; IndexedDB; offline shell`.
+- Code ứng viên: `apps/web/src/features/scanner/offline-scanner.ts; apps/web/src/features/ticket-scanner/offline-queue.ts`.
+- Dữ liệu: Thiết bị đã tải/chưa tải snapshot và public key; 2 context; IndexedDB từ chối ghi.
+- Cách thử: Ngắt mạng thật trong context, quét vé: verify signature và membership, ghi bền rồi mới xanh. Quét lần hai đỏ; đóng/mở browser còn queue. Không snapshot/key phải chặn. Full reload khi offline và lỗi lưu IndexedDB không được báo vào thành công.
+- Test tái sử dụng sau khi kiểm fixture: `offline-scanner.spec.ts; offline-sync.spec.ts`.
+
+**S-34-AC01** — Giả sử máy mất mạng và đã có danh sách ở S-33, Khi quét vé hợp lệ, Thì máy kiểm chữ ký QR bằng khoá công khai, tra mã trong danh sách, báo xanh và ghi lần quét vào hàng đợi cục bộ
+
+**S-34-AC02** — Giả sử vé đã được đánh dấu đã vào trong danh sách tải về, Khi quét ngoại tuyến, Thì báo đỏ như khi có mạng
+
+**S-34-AC03** — Giả sử cùng máy quét một vé hai lần khi mất mạng, Khi quét lần hai, Thì bị từ chối nhờ hàng đợi cục bộ
+
+**S-34-AC04** — Giả sử máy chưa tải danh sách, Khi mất mạng, Thì màn hình báo không soát được và hướng dẫn tải khi có mạng
+
+**S-34-NFR** — hàng đợi cục bộ sống qua việc đóng và mở lại ứng dụng. Ước lượng thô 5 SP — tier Next, cần chẻ khi lên Ready
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-35 — Đồng bộ các lần quét ngoại tuyến lên máy chủ khi có mạng lại
+
+- Nguồn: `Backlog!A37:O37`; **Next / Must**, Sprint 5; dependency: S-34 .
+- Bề mặt: `POST /scanner/sync-scans`.
+- Code ứng viên: `apps/api/src/scanner/offline-admissions.service.ts; apps/web/src/features/ticket-scanner/sync-manager.ts`.
+- Dữ liệu: 40 scan duy nhất; timeout sau server commit; response một phần, 401/403/409/5xx.
+- Cách thử: Sync lô 40, ngắt giữa chừng rồi nối lại; mỗi scanId được nhận một lần. Chỉ xoá queue khi server xác nhận bền từng mục; lỗi HTTP không làm mất scan. Đổi account không trộn queue người cũ; conflict được lưu chứ không ghi đè.
+- Test tái sử dụng sau khi kiểm fixture: `offline-sync.spec.ts; scanner.service.spec.ts`.
+
+**S-35-AC01** — Giả sử máy có 40 lần quét trong hàng đợi, Khi có mạng lại, Thì tự đẩy lên theo lô và hàng đợi về 0
+
+**S-35-AC02** — Giả sử đẩy lên bị ngắt giữa chừng, Khi có mạng lại lần nữa, Thì gửi tiếp phần còn lại và máy chủ không ghi trùng lần đã nhận — mỗi lần quét có mã duy nhất sinh trên thiết bị
+
+**S-35-AC03** — Giả sử máy chủ nhận lần quét cho vé đã vào trước đó ở cửa khác, Khi xử lý, Thì ghi nhận là xung đột để S-36 xử lý, không ghi đè
+
+**S-35-NFR** — xử lý một lần quét nhiều lần cho kết quả giống xử lý một lần. Ước lượng thô 3 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-36 — Xung đột soát vé ở hai cửa được phát hiện khi đồng bộ
+
+- Nguồn: `Backlog!A38:O38`; **Next / Should**, Sprint 5; dependency: S-35 .
+- Bề mặt: `/scanner/reports/:showtimeId; /scanner/showtimes/:id/conflicts`.
+- Code ứng viên: `apps/api/src/scanner/; apps/web/src/features/scanner/conflict-report.tsx`.
+- Dữ liệu: Hai máy offline quét cùng vé lúc T1<T2; upload theo thứ tự đảo; giờ thiết bị lệch.
+- Cách thử: Cho scan muộn đồng bộ trước, scan sớm sau; kiểm kết quả theo giờ thiết bị như AC gốc, giữ cả cửa/thời điểm và offset. Nếu hợp đồng đã duyệt dùng luật khác, báo hai kết quả, không âm thầm đổi tiêu chí.
+- Test tái sử dụng sau khi kiểm fixture: `scanner-attendance.spec.ts; offline-sync.spec.ts`.
+
+**S-36-AC01** — Giả sử vé được quét ở cửa A và cửa B trong lúc cả hai mất mạng, Khi hai máy đồng bộ, Thì lần quét sớm hơn theo giờ thiết bị được tính là lần vào, lần kia thành xung đột
+
+**S-36-AC02** — Giả sử có xung đột, Khi ban tổ chức mở báo cáo suất, Thì thấy danh sách vé, hai cửa, hai thời điểm
+
+**S-36-NFR** — giờ thiết bị lệch được ghi lại lúc đồng bộ để đọc báo cáo đúng. Ước lượng thô 3 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-37 — Máy quét hiện rõ trạng thái mạng và số lần quét chưa đồng bộ
+
+- Nguồn: `Backlog!A39:O39`; **Next / Should**, Sprint 5; dependency: S-34 .
+- Bề mặt: `/scanner; dải mạng và số chưa sync`.
+- Code ứng viên: `apps/web/src/features/ticket-scanner/network-status.ts; offline-banner.tsx`.
+- Dữ liệu: navigator online nhưng API không tới được; queue 0/40; sync lỗi/thành công.
+- Cách thử: Chặn API trong khi browser báo online: banner phải dựa vào lần gọi server thực. Kiểm counter tăng khi ghi queue và giảm sau ack, không biến mất chỉ vì navigator.onLine=true; hiển thị lại đúng sau refresh.
+- Test tái sử dụng sau khi kiểm fixture: `offline-banner.spec.ts; offline-sync.spec.ts`.
+
+**S-37-AC01** — Giả sử mất mạng, Khi màn hình quét đang mở, Thì có dải cảnh báo ngoại tuyến và bộ đếm lần quét chưa đồng bộ
+
+**S-37-AC02** — Giả sử có mạng lại và đẩy xong, Khi bộ đếm về 0, Thì dải cảnh báo biến mất
+
+**S-37-NFR** — trạng thái mạng đo bằng lần gọi máy chủ gần nhất, không chỉ dựa vào cờ của trình duyệt. Ước lượng thô 2 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-38 — Xem vé của tôi trong tài khoản và tải lại mã QR
+
+- Nguồn: `Backlog!A40:O40`; **Next / Should**, Sprint 5; dependency: S-25 .
+- Bề mặt: `/account/tickets; GET /tickets/me`.
+- Code ứng viên: `apps/web/src/features/tickets/my-tickets.tsx; apps/api/src/tickets/`.
+- Dữ liệu: Vé tương lai/quá khứ/huỷ/chuyển nhượng; QR có thể tải.
+- Cách thử: Kiểm thứ tự sắp diễn trước, đã qua sau; tải ảnh QR và quét lại từ điện thoại. Vé huỷ phải mờ không QR; người B không lấy ảnh/QR vé A qua URL trực tiếp hoặc cache browser.
+- Test tái sử dụng sau khi kiểm fixture: `tickets.e2e-spec.ts; ticket-qr-image.tsx`.
+
+**S-38-AC01** — Giả sử tôi có vé cho suất sắp tới, Khi mở mục "vé của tôi", Thì thấy vé sắp diễn lên trước, vé đã qua xếp sau
+
+**S-38-AC02** — Giả sử tôi mở một vé, Khi trang hiện, Thì QR đủ lớn để quét từ màn hình điện thoại và có nút tải ảnh
+
+**S-38-NFR** — vé đã huỷ hiện mờ và không có QR. Ước lượng thô 2 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-39 — Quét vé sai suất diễn, vé đã huỷ hay mã lạ thì báo rõ lý do
+
+- Nguồn: `Backlog!A41:O41`; **Next / Should**, Sprint 5; dependency: S-30 .
+- Bề mặt: `/check-in; /scanner`.
+- Code ứng viên: `apps/api/src/orders/ticket-check-in.service.ts; apps/web/src/features/ticket-scanner/admission-response.ts`.
+- Dữ liệu: Vé sai suất, huỷ có ngày, QR lạ/sai chữ ký.
+- Cách thử: Quét từng mẫu online và offline; kiểm message suất X/giờ Y, ngày huỷ và mã ngoài hệ thống, màu/biểu tượng. Mỗi từ chối có reason code riêng trong log, không lộ PII ngoài quyền.
+- Test tái sử dụng sau khi kiểm fixture: `admission-response.spec.ts; ticket-check-in.e2e-spec.ts`.
+
+**S-39-AC01** — Giả sử quét vé của suất khác, Khi từ chối, Thì hiện "vé của suất X lúc Y" để khách biết mình nhầm giờ
+
+**S-39-AC02** — Giả sử quét vé đã huỷ và hoàn tiền, Khi từ chối, Thì hiện "vé đã huỷ ngày Z"
+
+**S-39-AC03** — Giả sử quét mã lạ, Khi từ chối, Thì hiện "không phải vé của hệ thống"
+
+**S-39-NFR** — mỗi lý do từ chối là một mã riêng trong log để đếm được. Ước lượng thô 2 SP — tier Next
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-43 — Giám sát và cảnh báo khi hệ thống quá tải
+
+- Nguồn: `Backlog!A42:O42`; **Later / Should**, Sprint 6; dependency: S-01 .
+- Bề mặt: `Metrics/dashboards và cảnh báo local`.
+- Code ứng viên: `apps/api/src/monitoring/; monitoring/`.
+- Dữ liệu: Sinh request, lỗi 4xx/5xx, tranh ghế và bad webhook; receiver thử riêng.
+- Cách thử: Đối chiếu counter/p95 với request thật; vượt ngưỡng rule thử phải có alert nhận được và resolve. Metrics bảo vệ token/loopback, không label PII/high-cardinality; dashboard có dữ liệu và coverage khi producer chưa bật.
+- Test tái sử dụng sau khi kiểm fixture: `metrics.spec.ts; monitoring/rule-tests.json; verify-s43.mjs`.
+
+**S-43-AC01** — Có bảng theo dõi số yêu cầu, tỉ lệ lỗi, thời gian phản hồi p95, số tranh chấp ghế và số webhook bị từ chối; vượt ngưỡng thì gửi cảnh báo. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP
+
+**S-43-NFR** — chưa refine — cần chốt kênh nhận cảnh báo và công cụ thu thập số liệu
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-44 — Sơ đồ ghế tự cập nhật trạng thái mà không cần tải lại trang
+
+- Nguồn: `Backlog!A43:O43`; **Later / Could**, Sprint 6; dependency: S-09 .
+- Bề mặt: `GET /showtimes/:id/seats/stream`.
+- Code ứng viên: `apps/api/src/showtimes/seat-events.service.ts; apps/web/src/features/seat-selection/`.
+- Dữ liệu: 2 browser và 2.000 kết nối SSE; FREE→HELD→SOLD/nhả; reconnect.
+- Cách thử: Giữ/nhả/bán/huỷ từ context B, A tự cập nhật không refresh trong 2 giây. Mở đủ 2.000 viewer, đo mỗi viewer nhận/áp dụng event, ghi p95/max và số vượt; reconnect không mất/trùng state, không leak khi route đổi.
+- Test tái sử dụng sau khi kiểm fixture: `seat-events.service.spec.ts; verify-sse-load.mjs`.
+
+**S-44-AC01** — Ghế đổi trạng thái thì mọi người đang mở sơ đồ suất đó thấy thay đổi trong vòng 2 giây mà không tải lại. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP
+
+**S-44-NFR** — chưa refine — cần chốt đẩy từ máy chủ hay hỏi lại định kỳ, và mức tải chấp nhận được với 2000 người cùng xem
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-40 — Hàng đợi phòng chờ khi lượng truy cập vượt ngưỡng
+
+- Nguồn: `Backlog!A44:O44`; **Later / Should**, Sprint 6; dependency: S-13 .
+- Bề mặt: `Phòng chờ trước giữ ghế/đặt đơn`.
+- Code ứng viên: `apps/api/src/booking-access/; apps/web/src/features/lifecycle/waiting-room-notice.tsx`.
+- Dữ liệu: Capacity thử=1; A đang active, B/C chờ theo thứ tự; TTL theo cấu hình.
+- Cách thử: Cho A vào rồi B/C xếp hàng; vị trí FIFO đúng. A hết lượt/thoát thì B được vào có hạn, C còn chờ; gọi thẳng hold/order không bypass admission. Quota/ngưỡng là giá trị cần quyết định được duyệt.
+- Test tái sử dụng sau khi kiểm fixture: `booking-access.guard.spec.ts; verify-sprint6-8.mjs`.
+
+**S-40-AC01** — Vượt ngưỡng người đang chọn ghế thì người mới vào phòng chờ theo thứ tự đến, thấy vị trí của mình, tới lượt thì được vào trang chọn ghế với một lượt có thời hạn; hết lượt không thao tác thì mất chỗ. Chưa refine chi tiết — tier Later, ước lượng thô 8 SP, cần chẻ ít nhất ba story khi lên Next
+
+**S-40-NFR** — chưa refine — cần chốt ngưỡng, thời gian giữ lượt, và hàng đợi đặt ở Redis hay ở tầng trước ứng dụng
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-41 — Giới hạn tần suất yêu cầu theo tài khoản và theo IP
+
+- Nguồn: `Backlog!A45:O45`; **Later / Should**, Sprint 6; dependency: S-02 .
+- Bề mặt: `Hold/order API rate limiting`.
+- Code ứng viên: `apps/api/src/booking-access/booking-access.service.ts`.
+- Dữ liệu: N tài khoản/2 IP; một tài khoản/2 IP; quota thử được ghi rõ.
+- Cách thử: Gửi tới ngưỡng-1/ngưỡng/ngưỡng+1 cho hold và order; kiểm từ chối tạm thời và Retry-After. Kiểm account và IP độc lập, NAT dùng chung và header IP giả; hết cửa sổ được phục hồi.
+- Test tái sử dụng sau khi kiểm fixture: `booking-access.guard.spec.ts; verify-sprint6-8.mjs`.
+
+**S-41-AC01** — Vượt ngưỡng số yêu cầu mỗi phút trên API giữ ghế và tạo đơn thì bị từ chối tạm thời kèm thời gian chờ; ngưỡng tính riêng theo tài khoản và theo IP. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP
+
+**S-41-NFR** — chưa refine — cần chốt ngưỡng, tránh chặn nhầm người dùng chung mạng ký túc xá hay công ty
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-42 — Giới hạn số vé mỗi tài khoản được mua trong một suất
+
+- Nguồn: `Backlog!A46:O46`; **Later / Should**, Sprint 6; dependency: S-16 .
+- Bề mặt: `PATCH /showtimes/:id/ticket-limit`.
+- Code ứng viên: `apps/api/src/showtimes/; apps/api/src/holds/; apps/web/src/features/showtime-management/ticket-limit-control.tsx`.
+- Dữ liệu: Giới hạn thử 4; account có 2 paid+2 hold; hai request song song.
+- Cách thử: Giữ thêm ghế thứ 5 phải bị chặn kể cả race hai request. Nhả/hết hạn/huỷ ảnh hưởng quota đúng; pending được tính theo hợp đồng chốt, không cộng trùng hold của order. B khác tài khoản vẫn mua được.
+- Test tái sử dụng sau khi kiểm fixture: `verify-sprint6-8.mjs; docs/S42_RUNBOOK.md`.
+
+**S-42-AC01** — Ban tổ chức đặt giới hạn theo suất; tổng ghế đang giữ cộng đã mua của một tài khoản vượt giới hạn thì không giữ thêm được. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP
+
+**S-42-NFR** — chưa refine — cần chốt giới hạn tính theo tài khoản hay theo số điện thoại đã xác minh
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-45 — Khách huỷ vé trước hạn và được hoàn tiền theo chính sách
+
+- Nguồn: `Backlog!A47:O47`; **Later / Should**, Sprint 7; dependency: S-25 .
+- Bề mặt: `GET /orders/:id/cancellation; POST /orders/:id/cancel`.
+- Code ứng viên: `apps/api/src/lifecycle/cancellations.service.ts; apps/web/src/features/lifecycle/order-cancellation.tsx`.
+- Dữ liệu: Paid chưa check-in; đúng trước/đúng/sau cutoff 24h; policy mock 100% là contract ứng viên.
+- Cách thử: Preview rồi cancel; kiểm số tiền hoàn/vé/order/audit và quyền chủ. Kiểm biên cutoff, đã check-in, replay và 2 cancel đồng thời. Tách kiểm theo AC gốc với chính sách còn mở và theo hợp đồng local đã có bằng chứng phê duyệt.
+- Test tái sử dụng sau khi kiểm fixture: `lifecycle.spec.ts; verify-sprint6-8.mjs`.
+
+**S-45-AC01** — Huỷ trước mốc quy định thì vé chuyển sang đã huỷ, lệnh hoàn theo tỉ lệ chính sách được gửi tới cổng và khách thấy số tiền sẽ nhận; huỷ sau mốc thì bị từ chối kèm lý do. Chưa refine chi tiết — tier Later, ước lượng thô 5 SP
+
+**S-45-NFR** — chưa refine — cần chốt mốc thời gian, tỉ lệ hoàn, và cổng sandbox có hỗ trợ hoàn tiền không
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-46 — Ghế của vé đã huỷ quay lại kho bán
+
+- Nguồn: `Backlog!A48:O48`; **Later / Should**, Sprint 7; dependency: S-45 .
+- Bề mặt: `Map sau huỷ/hoàn và API holds`.
+- Code ứng viên: `apps/api/src/lifecycle/cancellations.service.ts; apps/api/src/showtimes/`.
+- Dữ liệu: Vé huỷ hợp lệ; buyer B; retry refund thất bại.
+- Cách thử: Sau điểm chuyển trạng thái đã chốt, B thấy ghế trống và giữ/mua lại được; QR cũ không vào cửa được. Cho cancel và B giữ race; không có hai chủ ghế còn hiệu lực, retry hoàn không thu hồi ghế đã bán lại.
+- Test tái sử dụng sau khi kiểm fixture: `lifecycle.spec.ts; verify-sprint6-8.mjs`.
+
+**S-46-AC01** — Vé huỷ xong thì ghế trở lại trạng thái trống trên sơ đồ và giữ được như ghế thường. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP
+
+**S-46-NFR** — chưa refine — cần chốt mở bán lại tự động hay chờ ban tổ chức duyệt
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-47 — Ban tổ chức huỷ suất diễn và hoàn tiền hàng loạt
+
+- Nguồn: `Backlog!A49:O49`; **Later / Should**, Sprint 7; dependency: S-45 .
+- Bề mặt: `POST /showtimes/:id/cancel; /cancellation`.
+- Code ứng viên: `apps/api/src/lifecycle/lifecycle.module.ts; cancellations.service.ts`.
+- Dữ liệu: Suất nhiều paid/pending orders; một lỗi giữa batch; SMTP catcher.
+- Cách thử: Huỷ suất, kiểm đóng bán ngay, vé vô hiệu, mỗi paid order một refund 100%, pending xử lý theo contract. Restart giữa batch, retry không nhân hoàn và không bỏ đơn; email tới catcher và lỗi từng phần được nhìn thấy.
+- Test tái sử dụng sau khi kiểm fixture: `lifecycle.spec.ts; verify-sprint6-8.mjs`.
+
+**S-47-AC01** — Huỷ suất thì suất đóng bán, mọi vé chuyển sang đã huỷ, một lệnh hoàn 100% được tạo cho từng đơn và chạy nền theo lô, khách nhận email thông báo. Chưa refine chi tiết — tier Later, ước lượng thô 5 SP
+
+**S-47-NFR** — chưa refine — cần chốt cách xử lý khi một lệnh hoàn trong lô thất bại và giới hạn tốc độ gọi cổng
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-48 — Lệnh hoàn tiền thất bại được thử lại và báo cho kế toán
+
+- Nguồn: `Backlog!A50:O50`; **Later / Should**, Sprint 7; dependency: S-45 .
+- Bề mặt: `/operations/refunds; POST /operations/refunds/:id/resolve-mock`.
+- Code ứng viên: `apps/api/src/lifecycle/mock-refund.gateway.ts; cancellations.service.ts`.
+- Dữ liệu: Gateway fail lần 1/2/3; timeout sau nhận lệnh; ACCOUNTANT/BUYER.
+- Cách thử: Kiểm đúng số lần thử/backoff/FAILED và báo kế toán, phân biệt UNKNOWN không tự trả tiền lần hai. Chỉ kế toán/admin xử lý; retry trùng không sinh refund mới, log giữ provider reason đã che dữ liệu.
+- Test tái sử dụng sau khi kiểm fixture: `lifecycle.spec.ts; verify-sprint6-8.mjs`.
+
+**S-48-AC01** — Lệnh hoàn thất bại được thử lại tối đa 3 lần cách nhau tăng dần; vẫn thất bại thì vào danh sách cần xử lý tay của kế toán kèm lý do từ cổng. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP
+
+**S-48-NFR** — chưa refine — cần chốt kênh báo và thời hạn xử lý tay
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-49 — Nhật ký thao tác trên đơn hàng và vé
+
+- Nguồn: `Backlog!A51:O51`; **Later / Must**, Sprint 7; dependency: S-16 .
+- Bề mặt: `GET /orders/:id/audit`.
+- Code ứng viên: `apps/api/src/lifecycle/reports.service.ts; domain_audit/order_logs`.
+- Dữ liệu: Một hành trình hold→order→paid→ticket→check-in→cancel hợp lệ, cả người và job.
+- Cách thử: Ở mỗi chuyển trạng thái đối chiếu audit có actor, giờ, trước/sau; lịch sử đọc theo order và không mất do retry. Buyer chỉ xem order mình; kiểm retention quyết định còn mở, không coi một bảng có audit là đủ mọi chuyển.
+- Test tái sử dụng sau khi kiểm fixture: `lifecycle.spec.ts; verify-sprint6-8.mjs`.
+
+**S-49-AC01** — Mọi thay đổi trạng thái đơn, vé, giữ chỗ do người hay do job đều có bản ghi kèm tác nhân, thời điểm, trạng thái trước và sau; xem được theo đơn. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP
+
+**S-49-NFR** — chưa refine — cần chốt thời gian lưu nhật ký và bảng riêng hay dùng chung với `payment_events`
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-55 — Sao lưu cơ sở dữ liệu hằng ngày và diễn tập khôi phục
+
+- Nguồn: `Backlog!A52:O52`; **Later / Must**, Sprint 8; dependency: S-01 .
+- Bề mặt: `Job backup và restore drill`.
+- Code ứng viên: `apps/api/scripts/sprint-backup.mjs; deploy/install-daily-backup.ps1`.
+- Dữ liệu: DB thử có dữ liệu nhận diện; 16 backup giả; kho ngoài host và key thử được bảo vệ.
+- Cách thử: Kiểm lịch nightly, upload off-host và retention đúng 14 bản; một backup lỗi không xoá bản tốt. Restore sang DB mới, mở app/đơn/vé/QR kiểm integrity. Giữ key giải mã qua restart; local drill không chứng minh off-host hoặc lịch chạy mỗi đêm.
+- Test tái sử dụng sau khi kiểm fixture: `sprint-backup.spec.mjs; verify-backup-drill.mjs`.
+
+**S-55-AC01** — Job sao lưu chạy mỗi đêm, bản sao lưu đẩy ra ngoài máy chủ ứng dụng, giữ 14 bản gần nhất; đã khôi phục thử lên môi trường tạm và ứng dụng chạy được với dữ liệu đó; quy trình khôi phục ghi trong README. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP
+
+**S-55-NFR** — chưa refine — cần chốt nơi lưu bản sao lưu và mã hoá
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-53 — Khách yêu cầu xoá dữ liệu cá nhân của mình
+
+- Nguồn: `Backlog!A53:O53`; **Later / Must**, Sprint 8; dependency: S-49 .
+- Bề mặt: `/account/privacy; /privacy/erasure; /privacy/erasure/:id/approve`.
+- Code ứng viên: `apps/api/src/lifecycle/privacy.service.ts; apps/web/src/app/account/privacy/`.
+- Dữ liệu: Tài khoản giả có orders/payments/tickets/outbox; ADMIN và người không có quyền.
+- Cách thử: Yêu cầu xoá chưa tự xoá trước duyệt. Admin duyệt, tìm toàn bộ bản sao tên/email/điện thoại, session/token/cache/outbox và quyền đăng nhập; tổng giao dịch/doanh thu giữ nguyên. Chốt phạm vi giữ/xoá với người quyết sản phẩm, không tự kết luận tuân thủ pháp luật.
+- Test tái sử dụng sau khi kiểm fixture: `lifecycle.spec.ts; verify-sprint6-8.mjs`.
+
+**S-53-AC01** — Sau khi yêu cầu được duyệt, họ tên, email, số điện thoại bị thay bằng giá trị ẩn danh trong mọi bảng, tài khoản không đăng nhập được nữa, nhưng đơn hàng, giao dịch và số liệu doanh thu vẫn nguyên để phục vụ kế toán. Chưa refine chi tiết — tier Later, ước lượng thô 5 SP
+
+**S-53-NFR** — chưa refine — cần người có thẩm quyền xác nhận phạm vi dữ liệu phải xoá và dữ liệu phải giữ theo luật kế toán. **Skill không đưa tư vấn pháp lý**
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-54 — Người dùng đồng ý điều khoản và chính sách riêng tư, thu hồi được
+
+- Nguồn: `Backlog!A54:O54`; **Later / Must**, Sprint 8; dependency: S-03 .
+- Bề mặt: `/register; /privacy; /account/privacy; /privacy/consent`.
+- Code ứng viên: `apps/api/src/lifecycle/privacy.service.ts; apps/api/src/users/registration.service.ts`.
+- Dữ liệu: Checkbox chưa chọn/đã chọn, policy V1→V2 trong profile thử; có/không marketing consent.
+- Cách thử: UI/API đăng ký thiếu đồng ý phải bị chặn; lưu version/time. Tăng version rồi login, phải xác nhận lại, không bypass bằng direct API. Thu hồi marketing consent phải dừng marketing; email nghiệp vụ được kiểm theo quyết định riêng đã chốt.
+- Test tái sử dụng sau khi kiểm fixture: `registration-admission.e2e-spec.ts; lifecycle.spec.ts`.
+
+**S-54-AC01** — Khi đăng ký phải tích đồng ý, hệ thống lưu phiên bản và thời điểm; đổi phiên bản chính sách thì lần đăng nhập sau phải đồng ý lại; người dùng thu hồi được và khi đó không nhận email tiếp thị nữa. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP
+
+**S-54-NFR** — chưa refine — nội dung điều khoản do người có thẩm quyền cung cấp, không phải dev soạn
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-50 — Xem doanh thu và tồn vé theo suất diễn
+
+- Nguồn: `Backlog!A55:O55`; **Later / Should**, Sprint 8; dependency: S-20 .
+- Bề mặt: `GET /showtimes/:id/manage/sales; /financial-report`.
+- Code ứng viên: `apps/api/src/lifecycle/reports.service.ts; apps/web/src/features/showtime-management/showtime-sales-report.tsx`.
+- Dữ liệu: Giá 3 hạng; free/hold/pending/paid/refunded; oracle độc lập.
+- Cách thử: Đối chiếu sold/held/free và doanh thu từng hạng với tập ID/order item, không cộng trùng join; đổi một trạng thái rồi đo cập nhật ≤60 giây. Organizer khác không xem được; nêu rõ doanh thu gộp/ròng theo quyết định.
+- Test tái sử dụng sau khi kiểm fixture: `lifecycle.spec.ts; verify-sprint6-8.mjs`.
+
+**S-50-AC01** — Bảng theo suất diễn có số vé đã bán, số ghế đang giữ, số ghế còn, doanh thu theo hạng, cập nhật không trễ quá 1 phút. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP
+
+**S-50-NFR** — chưa refine — cần chốt tính thời gian thực hay tổng hợp theo lô
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-51 — Đối soát giao dịch hệ thống với sao kê cổng thanh toán
+
+- Nguồn: `Backlog!A56:O56`; **Later / Should**, Sprint 8; dependency: S-20 .
+- Bề mặt: `POST/GET /operations/reconciliation`.
+- Code ứng viên: `apps/api/src/lifecycle/reports.service.ts; /operations UI`.
+- Dữ liệu: CSV fixture có MATCH, SYSTEM_ONLY, GATEWAY_ONLY, AMOUNT_MISMATCH, duplicate.
+- Cách thử: Nạp sao kê đúng và sai định dạng; kiểm từng nhóm bằng oracle giao dịch độc lập. Reimport cùng file không nhân run/kết quả theo contract; BUYER/STAFF bị cấm; không biến parser CSV demo thành bằng chứng đối soát provider thật.
+- Test tái sử dụng sau khi kiểm fixture: `lifecycle.spec.ts; verify-sprint6-8.mjs`.
+
+**S-51-AC01** — Nạp tệp sao kê của cổng theo kỳ, hệ thống ghép theo mã giao dịch với `payment_events` và chỉ ra ba nhóm: khớp, có ở hệ thống mà không có ở cổng, có ở cổng mà không có ở hệ thống; lệch số tiền cũng thành một dòng. Chưa refine chi tiết — tier Later, ước lượng thô 5 SP
+
+**S-51-NFR** — chưa refine — cần chốt định dạng sao kê của cổng đã chọn
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-52 — Ban tổ chức xem số khách đã vào cửa theo thời gian thực
+
+- Nguồn: `Backlog!A57:O57`; **Later / Should**, Sprint 8; dependency: S-31 .
+- Bề mặt: `/scanner/reports/:id; /showtimes/:id/attendance-report`.
+- Code ứng viên: `apps/api/src/lifecycle/reports.service.ts; apps/api/src/scanner/`.
+- Dữ liệu: Admission online/offline/conflict/exception tại 2 cửa, nhiều mốc phút.
+- Cách thử: Kiểm số khách vào/chưa vào/tốc độ theo phút và cửa trước/sau sync. Không đếm retry/conflict/exception thành thêm khách duy nhất trừ quy tắc đã chốt; đối chiếu từng bucket và quyền chủ.
+- Test tái sử dụng sau khi kiểm fixture: `scanner-attendance.spec.ts; lifecycle.spec.ts`.
+
+**S-52-AC01** — Màn hình theo suất hiện số đã vào, số chưa vào, tốc độ vào theo phút và theo từng cửa, kể cả số liệu từ máy đang ngoại tuyến sau khi đồng bộ. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP
+
+**S-52-NFR** — chưa refine — cần chốt tần suất cập nhật
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-58 — Nhân bản suất diễn kèm sơ đồ và bảng giá
+
+- Nguồn: `Backlog!A58:O58`; **Later / Could**, Sprint chưa xếp; dependency: S-15 .
+- Bề mặt: `POST /showtimes/:id/clone`.
+- Code ứng viên: `apps/api/src/showtimes/showtimes.service.ts; apps/web/src/features/showtime-management/clone-showtime-form.tsx`.
+- Dữ liệu: Suất nguồn có sơ đồ, giá và ghế đã bán/giữ.
+- Cách thử: Nhân bản giờ tương lai, so layout/category/prices nhưng ID khác và tất cả ghế mới trống, trạng thái DRAFT. Không mang hold/order/admission từ nguồn; sửa clone không đổi nguồn; kiểm chủ sở hữu.
+- Test tái sử dụng sau khi kiểm fixture: `showtimes.service.spec.ts; sprint2.e2e-spec.ts`.
+
+**S-58-AC01** — Chọn "nhân bản" thì suất mới ở trạng thái nháp có cùng sơ đồ và giá, chỉ khác thời gian; ghế của suất mới đều trống. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP. Phần đệm, chưa xếp sprint
+
+**S-58-NFR** — chưa refine
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-59 — Danh sách chờ khi suất diễn hết vé
+
+- Nguồn: `Backlog!A59:O59`; **Later / Could**, Sprint chưa xếp; dependency: S-08 .
+- Bề mặt: `Danh sách chờ khi hết vé; khác phòng chờ S-40`.
+- Code ứng viên: `Chưa tìm thấy module waitlist trong inventory hiện tại`.
+- Dữ liệu: Suất hết ghế, A/B đăng ký chờ theo thứ tự; SMTP catcher; quy tắc giữ riêng cần chốt.
+- Cách thử: Tìm UI/API/schema; nếu chưa có ghi MISSING, không dùng S-40 thay thế. Khi ghế được nhả do huỷ/hết hạn, email lần lượt đúng FIFO và không spam retry; chốt ghế có được dành riêng hay không.
+- Test tái sử dụng sau khi kiểm fixture: `Chưa xác định suite chuyên biệt`.
+
+**S-59-AC01** — Suất hết ghế thì hiện nút đăng ký chờ; khi có ghế về kho do huỷ hay hết hạn, người chờ nhận email theo thứ tự đăng ký. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP. Phần đệm, chưa xếp sprint
+
+**S-59-NFR** — chưa refine — cần chốt có giữ ghế riêng cho người được báo trong một khoảng ngắn không
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-61 — Nhắc người mua trước giờ diễn qua email
+
+- Nguồn: `Backlog!A60:O60`; **Later / Could**, Sprint chưa xếp; dependency: S-27 .
+- Bề mặt: `Scheduler reminder và email đổi lịch`.
+- Code ứng viên: `apps/api/src/tickets/ticket-reminder.scheduler.ts; apps/api/src/core-completion/`.
+- Dữ liệu: Suất T+24h, T+24h±1s, đã huỷ/quá khứ; SMTP catcher; worker off/on.
+- Cách thử: Kiểm lịch nhắc quanh 24h, đủ QR/địa điểm, retry không nhân job. Đổi giờ gửi cập nhật đúng lịch mới và QR cũ còn hiệu lực; nhiều scheduler không gửi trùng job. Kiểm entrypoint/provider thực nối vào ứng dụng và quyết định thư nghiệp vụ sau thu hồi consent.
+- Test tái sử dụng sau khi kiểm fixture: `ticket-reminder.scheduler.spec.ts; core.spec.ts; verify-core-completion.mjs`.
+
+**S-61-AC01** — Email nhắc gửi 24 giờ trước suất kèm vé và chỉ dẫn địa điểm; đổi giờ diễn thì gửi email cập nhật. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP. Phần đệm, chưa xếp sprint
+
+**S-61-NFR** — chưa refine — người đã thu hồi đồng ý ở S-54 vẫn nhận email nghiệp vụ này vì nó không phải tiếp thị; cần xác nhận
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-56 — Mã giảm giá theo sự kiện
+
+- Nguồn: `Backlog!A61:O61`; **Later / Could**, Sprint chưa xếp; dependency: S-17 .
+- Bề mặt: `Mã giảm giá tại checkout; route cần tìm lại khi chạy`.
+- Code ứng viên: `Chưa tìm thấy module coupon/discount trong inventory hiện tại`.
+- Dữ liệu: Mã phần trăm/cố định, hết hạn/hết lượt, 2 người tranh lượt cuối; quy tắc cộng dồn cần chốt.
+- Cách thử: Tìm UI/API/schema trước; không có thì MISSING với nguồn tìm kiếm. Khi có: kiểm số tiền giảm không âm tổng, giới hạn và race lượt cuối, retry order không trừ lượt hai lần; chỉ nghiệm thu sau khi chốt cộng dồn.
+- Test tái sử dụng sau khi kiểm fixture: `Chưa xác định suite chuyên biệt`.
+
+**S-56-AC01** — Ban tổ chức tạo mã có tỉ lệ hoặc số tiền giảm, số lượt và hạn dùng; người mua nhập mã ở trang đơn, tổng tiền giảm đúng và số lượt trừ đúng kể cả khi nhiều người dùng cùng lúc. Chưa refine chi tiết — tier Later, ước lượng thô 5 SP. Phần đệm, chưa xếp sprint
+
+**S-56-NFR** — chưa refine — cần chốt có cộng dồn nhiều mã không
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-57 — Chuyển nhượng vé cho người khác
+
+- Nguồn: `Backlog!A62:O62`; **Later / Could**, Sprint chưa xếp; dependency: S-25 .
+- Bề mặt: `POST /orders/:id/tickets/:ticketId/transfer`.
+- Code ứng viên: `apps/api/src/tickets/tickets.service.ts; tickets.controller.ts`.
+- Dữ liệu: Chủ vé, email người nhận mới/có sẵn, vé huỷ/đã soát; key ring thử.
+- Cách thử: Chuyển vé, kiểm người cũ không còn quyền và QR cũ vô hiệu, người nhận có QR mới và audit. Quét lại ở snapshot cũ/offline rồi sync để kiểm chính sách thu hồi; không tự chốt tính năng tắt theo sự kiện.
+- Test tái sử dụng sau khi kiểm fixture: `tickets.service.spec.ts; tickets.e2e-spec.ts`.
+
+**S-57-AC01** — Chủ vé nhập email người nhận, vé cũ bị vô hiệu và vé mới với mã QR mới được phát cho người nhận, nhật ký ghi lại. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP. Phần đệm, chưa xếp sprint
+
+**S-57-NFR** — chưa refine — cần chốt ban tổ chức có được tắt chuyển nhượng theo sự kiện không
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-60 — Xuất sơ đồ ghế đã bán dạng PDF
+
+- Nguồn: `Backlog!A63:O63`; **Later / Could**, Sprint chưa xếp; dependency: S-09 .
+- Bề mặt: `Xuất sơ đồ ghế PDF`.
+- Code ứng viên: `Chưa tìm thấy tuyến xuất PDF sơ đồ trong inventory hiện tại`.
+- Dữ liệu: Map có 3 trạng thái và chú giải; snapshot lúc xuất.
+- Cách thử: Nếu có chức năng, xuất PDF và mở/render: đúng một trang, đủ ghế/chú giải/trạng thái theo snapshot; không bị cắt. So số ghế và quyền organizer; không có route/UI thì MISSING.
+- Test tái sử dụng sau khi kiểm fixture: `Chưa xác định suite chuyên biệt`.
+
+**S-60-AC01** — Xuất tệp PDF một trang có sơ đồ tô màu theo trạng thái và chú giải, đúng với dữ liệu tại thời điểm xuất. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP. Phần đệm, chưa xếp sprint
+
+**S-60-NFR** — chưa refine
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-62 — Xuất danh sách khách vào cửa theo suất diễn
+
+- Nguồn: `Backlog!A64:O64`; **Later / Could**, Sprint chưa xếp; dependency: S-31 .
+- Bề mặt: `Xuất CSV khách đã vào cửa`.
+- Code ứng viên: `Chưa tìm thấy tuyến export attendance CSV trong inventory hiện tại`.
+- Dữ liệu: Admissions 2 cửa, thời gian khác, conflict; quyết định trường PII cần chốt.
+- Cách thử: Nếu có, tải và parse CSV: ticket/seat/entry-time/gate/conflict đúng snapshot; quoting Unicode và dữ liệu bắt đầu =,+,-,@ an toàn khi mở bảng tính. Người khác không xuất được; chốt mức PII trước nghiệm thu.
+- Test tái sử dụng sau khi kiểm fixture: `Chưa xác định suite chuyên biệt`.
+
+**S-62-AC01** — Xuất tệp CSV có mã vé, ghế, giờ vào, cửa vào, cờ xung đột nếu có. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP. Phần đệm, chưa xếp sprint
+
+**S-62-NFR** — chưa refine — cần chốt tệp có chứa thông tin cá nhân tới mức nào
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+
+### S-63 — Báo cáo tỉ lệ bỏ giỏ và thời gian giữ chỗ thực tế
+
+- Nguồn: `Backlog!A65:O65`; **Later / Could**, Sprint chưa xếp; dependency: S-12 .
+- Bề mặt: `Báo cáo bỏ giỏ/giữ chỗ`.
+- Code ứng viên: `Chưa tìm thấy báo cáo abandonment trong inventory hiện tại`.
+- Dữ liệu: 10 hold sessions: thành đơn, hết hạn và đang giữ; oracle thời gian trung bình/p90.
+- Cách thử: Tìm route/UI; nếu có đối chiếu số lượt giữ/thành đơn/hết hạn bằng session ID, không đếm số ghế thay lượt. Chốt mẫu số và cách tính p90; test cửa sổ thời gian, một lượt nhiều ghế và retry.
+- Test tái sử dụng sau khi kiểm fixture: `Chưa xác định suite chuyên biệt`.
+
+**S-63-AC01** — Báo cáo theo suất: số lượt giữ, số thành đơn, số hết hạn, thời gian trung bình và p90 từ giữ tới trả. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP. Phần đệm, chưa xếp sprint
+
+**S-63-NFR** — chưa refine
+
+Kết quả ban đầu: `NOT_RUN`. Chỉ chuyển PASS khi đủ các mệnh đề và bằng chứng; ghi riêng UI/API/DB/NFR, local/staging/device.
+

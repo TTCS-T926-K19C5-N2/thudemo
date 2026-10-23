@@ -1,0 +1,18 @@
+## 3. Snapshot mã nguồn và các rủi ro phải xác minh trước
+
+Tại lúc đọc: nhánh `feature/sprint-4-8-complete`, HEAD `ce777bd13e472c089eef4a3c1ed4455e501ae3ba`. Working tree có thay đổi tracked và nhiều tệp untracked có sẵn. Không commit, reset, stash hoặc ghi đè các thay đổi này chỉ để kiểm thử. Không dùng HEAD đơn lẻ để nhận diện bản chạy; lưu fingerprint cả file chưa commit.
+
+Các nhận xét sau là **quan sát tĩnh tại thời điểm lập kế hoạch**, chưa phải lỗi đã được tái hiện runtime:
+
+| Mã | Quan sát | Phép kiểm bắt buộc |
+|---|---|---|
+| OBS-01 | Có `core-completion/core.module.ts`, nhưng chưa thấy `CoreCompletionModule` trong import graph của AppModule và các module được tìm kiếm | Fresh build; gọi các route core bằng đúng method/quyền. Đặc biệt không dùng file `dist` cũ để chứng minh source mới hoạt động. |
+| OBS-02 | Handover nêu `PATCH /events/:id/publication`; controller events hiện đọc chưa khai báo route này | Kiểm endpoint và nút Công bố/Ẩn. HTTP 404 ở đây là dấu hiệu thiếu tích hợp, không phải PASS “ẩn sự kiện”. |
+| OBS-03 | Có `PublicationControl`, `RescheduleForm`, `MailFailures`, nhưng tìm kiếm hiện chưa thấy chúng được dùng ngoài tệp định nghĩa/test | Đi bằng UI từ editor/workspace/operations; component test đạt không thay kiểm nút thực có trên trang. |
+| OBS-04 | Handover core và test matrix cũ có số ca/source khác nhau | Mỗi báo cáo mới lưu source fingerprint, test command, exit code, số chạy/bỏ qua và môi trường; không cộng lại số test cũ. |
+| OBS-05 | Có hai nhóm tuyến/triển khai giữ ghế, vé và scanner | Inventory phải phân biệt route đã mount, legacy/alias, public/private và tuyến UI thực gọi; kiểm hành vi nhất quán giữa proxy và API trực tiếp, không mặc định mọi file controller đều được mount. |
+| OBS-06 | Chưa tìm thấy module chuyên biệt cho S-56/59/60/62/63 trong inventory ban đầu | Tìm lại code, UI, API, schema, feature flags khi chạy; thiếu thì `MISSING`, không thay waitlist S-59 bằng phòng chờ S-40 hoặc báo cáo HTML bằng CSV/PDF export. |
+| OBS-07 | Handover ghi chưa nghiệm thu trực quan browser desktop/mobile do origin gate | Mở lại theo quyền hợp lệ; nếu còn bị chặn, ghi `BLOCKED` đúng các case UI. Không lấy HTTP smoke hay component test thay browser evidence. |
+
+Kiến trúc quan sát: pnpm workspace, web Next.js/React, API NestJS, Prisma/PostgreSQL, Redis, SMTP/outbox và scheduler. Các câu trong README dùng `thudemo/` có dấu vết lịch sử; xác nhận lại đường dẫn/cổng thực.
+

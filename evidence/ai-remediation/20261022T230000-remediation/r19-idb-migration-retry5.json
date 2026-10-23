@@ -1,0 +1,8 @@
+{
+  "runId": "20261022T230000-remediation",
+  "type": "Chromium IndexedDB upgrade against current application bundle",
+  "beforeVersion": 3,
+  "expectedVersion": 4,
+  "assertions": {},
+  "failure": "page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3410/scanner?showtimeId=d981583e-deda-42d1-8857-3120efff30b4\", waiting until \"networkidle\"\u001b[22m\n"
+}

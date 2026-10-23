@@ -36,6 +36,9 @@ type OrderView = {
   status: OrderStatus;
   paymentExpiresAt: Date | null;
   totalAmount: number;
+  subtotalAmount: number;
+  discountAmount: number;
+  couponCodeSnapshot: string | null;
   items: {
     seatId: string;
     categoryName: string | null;
@@ -73,6 +76,9 @@ export type OrderDetailResponse = {
   status: OrderStatus;
   rawStatus: OrderStatus;
   totalAmount: number;
+  subtotalAmount: number;
+  discountAmount: number;
+  couponCode: string | null;
   expiresAt: string;
   paymentExpiresAt: string;
   serverTime: string;
@@ -124,6 +130,9 @@ const orderProjection = {
   status: true,
   paymentExpiresAt: true,
   totalAmount: true,
+    subtotalAmount: true,
+    discountAmount: true,
+    couponCodeSnapshot: true,
   items: {
     orderBy: { seatId: 'asc' as const },
     select: {
@@ -279,6 +288,8 @@ export class OrdersService {
               paymentExpiresAt: clock.paymentExpiresAt,
               expiresAt: clock.paymentExpiresAt,
               totalAmount,
+              subtotalAmount: totalAmount,
+              discountAmount: 0,
               items: {
                 create: seats.map((seat) => ({
                   seatId: seat.seatId,
@@ -450,6 +461,8 @@ export class OrdersService {
           holdToken: holdSession.token,
           status: OrderStatus.PENDING,
           totalAmount,
+          subtotalAmount: totalAmount,
+          discountAmount: 0,
           paymentExpiresAt: holdSession.expiresAt,
           expiresAt: holdSession.expiresAt,
           items: {
@@ -500,6 +513,9 @@ export class OrdersService {
         status: order.status,
         rawStatus: order.status,
         totalAmount: order.totalAmount,
+        subtotalAmount: order.subtotalAmount,
+        discountAmount: order.discountAmount,
+        couponCode: order.couponCodeSnapshot,
         expiresAt: expiresIso,
         paymentExpiresAt: expiresIso,
         serverTime: serverTimeIso,
@@ -567,14 +583,17 @@ export class OrdersService {
 
     // Prices are the snapshots captured server-side when the order was created
     // (S-16); a later category price change must not alter a pending order.
-    let recalculatedTotal = 0;
+    let recalculatedSubtotal = 0;
     for (const item of order.items) {
-      recalculatedTotal += item.unitPrice;
+      recalculatedSubtotal += item.unitPrice;
     }
 
-    if (recalculatedTotal !== order.totalAmount) {
+    if (
+      recalculatedSubtotal !== order.subtotalAmount ||
+      order.totalAmount !== order.subtotalAmount - order.discountAmount
+    ) {
       this.logger.warn(
-        `Order ${order.id} total amount mismatch: recorded=${order.totalAmount}, recalculated=${recalculatedTotal}`,
+        `Order ${order.id} price snapshot mismatch; recorded totals do not equal item subtotal minus discount.`,
       );
     }
 
@@ -652,7 +671,10 @@ export class OrdersService {
       id: order.id,
       status: resolvedStatus,
       rawStatus: order.status,
-      totalAmount: recalculatedTotal,
+      totalAmount: order.totalAmount,
+      subtotalAmount: order.subtotalAmount,
+      discountAmount: order.discountAmount,
+      couponCode: order.couponCodeSnapshot,
       expiresAt: expiresIso,
       paymentExpiresAt: expiresIso,
       serverTime: serverTimeIso,
@@ -676,7 +698,7 @@ export class OrdersService {
         id: order.id,
         status: resolvedStatus,
         paymentExpiresAt: expiresIso,
-        totalAmount: recalculatedTotal,
+        totalAmount: order.totalAmount,
         items,
       },
       created: false,
@@ -751,6 +773,9 @@ export class OrdersService {
       order: {
         ...order,
         totalAmount: Number(order.totalAmount),
+        subtotalAmount: Number(order.subtotalAmount),
+        discountAmount: Number(order.discountAmount),
+        couponCode: order.couponCodeSnapshot,
         paymentExpiresAt: (order.paymentExpiresAt ?? serverTime).toISOString(),
         items: order.items.map((i) => ({
           ...i,
@@ -823,6 +848,15 @@ export class OrdersService {
         )
         ${releaseCondition}
       `);
+      if (releasedSeatsCount > 0) {
+        const waiting = await tx.waitlistEntry.count({
+          where: { showtimeId: order.showtimeId, status: 'ACTIVE' },
+        });
+        if (waiting > 0)
+          await tx.waitlistAvailabilitySignal.create({
+            data: { showtimeId: order.showtimeId, releasedCount: releasedSeatsCount },
+          });
+      }
 
       this.logger.log(
         JSON.stringify({

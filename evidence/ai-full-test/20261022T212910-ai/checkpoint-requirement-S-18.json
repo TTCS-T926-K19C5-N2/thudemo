@@ -1,0 +1,200 @@
+[
+  {
+    "id": "S-18-AC01",
+    "requirement_id": "S-18",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Thanh toán đơn hàng qua cổng sandbox",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L20"
+    },
+    "original_requirement": "Giả sử đơn đang chờ và còn hạn, Khi bấm thanh toán, Thì được chuyển sang trang cổng sandbox với đúng số tiền và mã đơn",
+    "fixture": "Đơn pending; mock và tài khoản sandbox riêng nếu có; webhook đúng/sai tiền.",
+    "surfaces": "POST /orders/:id/pay; POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/; apps/api/src/payments/gateways/momo.gateway.ts",
+    "test_candidates": "payments.e2e-spec.ts; payments.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: đơn đang chờ và còn hạn.",
+      "Thực hiện trên POST /orders/:id/pay; POST /payments/webhook: bấm thanh toán.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Kiểm amount/orderId redirect; thanh toán và đóng browser trước callback. Webhook hợp lệ phải đổi order/ghế/hold trong một transaction. Số tiền khác phải cần kiểm tra, không phát vé và báo kế toán; quan sát DB và lỗi giữa transaction.",
+    "expected": [
+      "được chuyển sang trang cổng sandbox với đúng số tiền và mã đơn"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-18-AC02",
+    "requirement_id": "S-18",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Thanh toán đơn hàng qua cổng sandbox",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L20"
+    },
+    "original_requirement": "Giả sử thanh toán thành công ở cổng, Khi hệ thống nhận kết quả, Thì đơn chuyển sang đã trả, ghế chuyển sang đã bán, giữ chỗ được xoá — cả ba trong một giao dịch",
+    "fixture": "Đơn pending; mock và tài khoản sandbox riêng nếu có; webhook đúng/sai tiền.",
+    "surfaces": "POST /orders/:id/pay; POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/; apps/api/src/payments/gateways/momo.gateway.ts",
+    "test_candidates": "payments.e2e-spec.ts; payments.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: thanh toán thành công ở cổng.",
+      "Thực hiện trên POST /orders/:id/pay; POST /payments/webhook: hệ thống nhận kết quả.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Kiểm amount/orderId redirect; thanh toán và đóng browser trước callback. Webhook hợp lệ phải đổi order/ghế/hold trong một transaction. Số tiền khác phải cần kiểm tra, không phát vé và báo kế toán; quan sát DB và lỗi giữa transaction.",
+    "expected": [
+      "đơn chuyển sang đã trả, ghế chuyển sang đã bán, giữ chỗ được xoá — cả ba trong một giao dịch"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-18-AC03",
+    "requirement_id": "S-18",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Thanh toán đơn hàng qua cổng sandbox",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L20"
+    },
+    "original_requirement": "Giả sử người dùng tắt trình duyệt sau khi trả tiền ở cổng, Khi webhook tới, Thì đơn vẫn chuyển sang đã trả không cần người dùng quay lại",
+    "fixture": "Đơn pending; mock và tài khoản sandbox riêng nếu có; webhook đúng/sai tiền.",
+    "surfaces": "POST /orders/:id/pay; POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/; apps/api/src/payments/gateways/momo.gateway.ts",
+    "test_candidates": "payments.e2e-spec.ts; payments.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: người dùng tắt trình duyệt sau khi trả tiền ở cổng.",
+      "Thực hiện trên POST /orders/:id/pay; POST /payments/webhook: webhook tới.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Kiểm amount/orderId redirect; thanh toán và đóng browser trước callback. Webhook hợp lệ phải đổi order/ghế/hold trong một transaction. Số tiền khác phải cần kiểm tra, không phát vé và báo kế toán; quan sát DB và lỗi giữa transaction.",
+    "expected": [
+      "đơn vẫn chuyển sang đã trả không cần người dùng quay lại"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-18-AC04",
+    "requirement_id": "S-18",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Thanh toán đơn hàng qua cổng sandbox",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L20"
+    },
+    "original_requirement": "Giả sử cổng trả về số tiền khác tổng đơn, Khi hệ thống nhận kết quả, Thì không ghi nhận, đánh dấu đơn cần kiểm tra và báo cho kế toán",
+    "fixture": "Đơn pending; mock và tài khoản sandbox riêng nếu có; webhook đúng/sai tiền.",
+    "surfaces": "POST /orders/:id/pay; POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/; apps/api/src/payments/gateways/momo.gateway.ts",
+    "test_candidates": "payments.e2e-spec.ts; payments.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: cổng trả về số tiền khác tổng đơn.",
+      "Thực hiện trên POST /orders/:id/pay; POST /payments/webhook: hệ thống nhận kết quả.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Kiểm amount/orderId redirect; thanh toán và đóng browser trước callback. Webhook hợp lệ phải đổi order/ghế/hold trong một transaction. Số tiền khác phải cần kiểm tra, không phát vé và báo kế toán; quan sát DB và lỗi giữa transaction.",
+    "expected": [
+      "không ghi nhận, đánh dấu đơn cần kiểm tra và báo cho kế toán"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-18-NFR",
+    "requirement_id": "S-18",
+    "kind": "NFR",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Thanh toán đơn hàng qua cổng sandbox — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N20"
+    },
+    "original_requirement": "không lưu số thẻ; chỉ lưu mã giao dịch từ cổng; cổng nằm sau một interface riêng",
+    "fixture": "Đơn pending; mock và tài khoản sandbox riêng nếu có; webhook đúng/sai tiền.",
+    "surfaces": "POST /orders/:id/pay; POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/; apps/api/src/payments/gateways/momo.gateway.ts",
+    "test_candidates": "payments.e2e-spec.ts; payments.service.spec.ts",
+    "steps": [
+      "Kiểm amount/orderId redirect; thanh toán và đóng browser trước callback. Webhook hợp lệ phải đổi order/ghế/hold trong một transaction. Số tiền khác phải cần kiểm tra, không phát vé và báo kế toán; quan sát DB và lỗi giữa transaction.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "không lưu số thẻ; chỉ lưu mã giao dịch từ cổng; cổng nằm sau một interface riêng"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-46-AC",
+    "requirement_id": "T-46",
+    "parent_requirement": "S-20",
+    "kind": "TASK_AC",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Xử lý webhook: bỏ qua mã đã có, khoá theo mã giao dịch khi xử lý song song",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G47"
+    },
+    "original_requirement": "Gửi lại 5 lần chỉ một lần chạy T-42; hai bản sao đồng thời không gây 500; webhook cho đơn đã hết hạn đánh dấu đơn cần kiểm tra",
+    "fixture": "Một payload ký hợp lệ; transactionId cố định; pending và expired.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/payments.service.ts; apps/api/prisma/migrations/",
+    "test_candidates": "payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Gửi 5 lần tuần tự rồi các bản đồng thời trên order khác; đếm payment/event, order transition, ticket và outbox trước/sau. Webhook trùng trả 200 theo T-46; expired không thành paid, có dấu cần kiểm tra/hoàn; không 500.",
+      "Kiểm riêng tiêu chí task T-46: Gửi lại 5 lần chỉ một lần chạy T-42; hai bản sao đồng thời không gây 500; webhook cho đơn đã hết hạn đánh dấu đơn cần kiểm tra",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Gửi lại 5 lần chỉ một lần chạy T-42; hai bản sao đồng thời không gây 500; webhook cho đơn đã hết hạn đánh dấu đơn cần kiểm tra"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-46-NFR",
+    "requirement_id": "T-46",
+    "parent_requirement": "S-20",
+    "kind": "TASK_NFR",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Xử lý webhook: bỏ qua mã đã có, khoá theo mã giao dịch khi xử lý song song",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I47"
+    },
+    "original_requirement": "trả 200 cho webhook trùng để cổng ngừng gửi lại",
+    "fixture": "Một payload ký hợp lệ; transactionId cố định; pending và expired.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/payments.service.ts; apps/api/prisma/migrations/",
+    "test_candidates": "payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Gửi 5 lần tuần tự rồi các bản đồng thời trên order khác; đếm payment/event, order transition, ticket và outbox trước/sau. Webhook trùng trả 200 theo T-46; expired không thành paid, có dấu cần kiểm tra/hoàn; không 500.",
+      "Kiểm riêng tiêu chí task T-46: trả 200 cho webhook trùng để cổng ngừng gửi lại",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "trả 200 cho webhook trùng để cổng ngừng gửi lại"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-49-AC01",
+    "requirement_id": "S-49",
+    "kind": "AC",
+    "group": "Báo cáo và dữ liệu",
+    "tier": "Later",
+    "priority": "Must",
+    "sprint": "7",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Nhật ký thao tác trên đơn hàng và vé",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L51"
+    },
+    "original_requirement": "Mọi thay đổi trạng thái đơn, vé, giữ chỗ do người hay do job đều có bản ghi kèm tác nhân, thời điểm, trạng thái trước và sau; xem được theo đơn. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP",
+    "fixture": "Một hành trình hold→order→paid→ticket→check-in→cancel hợp lệ, cả người và job.",
+    "surfaces": "GET /orders/:id/audit",
+    "code_candidates": "apps/api/src/lifecycle/reports.service.ts; domain_audit/order_logs",
+    "test_candidates": "lifecycle.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Chuẩn bị fixture: Một hành trình hold→order→paid→ticket→check-in→cancel hợp lệ, cả người và job.",
+      "Ở mỗi chuyển trạng thái đối chiếu audit có actor, giờ, trước/sau; lịch sử đọc theo order và không mất do retry. Buyer chỉ xem order mình; kiểm retention quyết định còn mở, không coi một bảng có audit là đủ mọi chuyển.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Ở mỗi chuyển trạng thái đối chiếu audit có actor, giờ, trước/sau; lịch sử đọc theo order và không mất do retry. Buyer chỉ xem order mình; kiểm retention quyết định còn mở, không coi một bảng có audit là đủ mọi chuyển.",
+    "expected": [
+      "Mọi thay đổi trạng thái đơn, vé, giữ chỗ do người hay do job đều có bản ghi kèm tác nhân, thời điểm, trạng thái trước và sau; xem được theo đơn. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-49-NFR",
+    "requirement_id": "S-49",
+    "kind": "NFR",
+    "group": "Báo cáo và dữ liệu",
+    "tier": "Later",
+    "priority": "Must",
+    "sprint": "7",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Nhật ký thao tác trên đơn hàng và vé — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N51"
+    },
+    "original_requirement": "chưa refine — cần chốt thời gian lưu nhật ký và bảng riêng hay dùng chung với `payment_events`",
+    "fixture": "Một hành trình hold→order→paid→ticket→check-in→cancel hợp lệ, cả người và job.",
+    "surfaces": "GET /orders/:id/audit",
+    "code_candidates": "apps/api/src/lifecycle/reports.service.ts; domain_audit/order_logs",
+    "test_candidates": "lifecycle.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Ở mỗi chuyển trạng thái đối chiếu audit có actor, giờ, trước/sau; lịch sử đọc theo order và không mất do retry. Buyer chỉ xem order mình; kiểm retention quyết định còn mở, không coi một bảng có audit là đủ mọi chuyển.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt thời gian lưu nhật ký và bảng riêng hay dùng chung với `payment_events`"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

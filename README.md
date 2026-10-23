@@ -1,4 +1,7 @@
 # Chạy dự án bán vé sự kiện trên máy cá nhân
+## Bản demo local hiện hành — 2026-10-23
+
+Bản demo local hiện được bàn giao ở trạng thái **DEMO_PARTIAL**; xem [DEMO_HANDOFF.md](DEMO_HANDOFF.md) để biết profile, dataset, tài khoản giả, các luồng đã kiểm và giới hạn hiện tại. Xem thêm [DEMO_WALKTHROUGH.md](DEMO_WALKTHROUGH.md), [DEMO_ACCOUNTS.md](DEMO_ACCOUNTS.md) và [ma trận vai trò/chức năng](demo-role-feature-matrix.json). Các tuyên bố staging/nghiệm thu bên dưới là ghi chép lịch sử của snapshot trước, không phải kết quả nghiệm thu cho working tree này.
 
 Quản trị nhân viên S28: xem [ACCOUNT_ADMIN](docs/ACCOUNT_ADMIN.md) cho màn `/admin/users`, quyền ADMIN, đổi vai trò tức thời và thu hồi session khi khóa.
 
@@ -8,7 +11,7 @@ Bản được nghiệm thu: **61749f82**, staging **https://10.228.54.197:3470*
 
 ## Demo từ clone mới
 
-Prerequisites đã kiểm: Windows PowerShell 5.1+, Git, Node 24.21.0, pnpm 10.15.1, Docker Desktop Linux engine; C trống 12 GiB, ổ checkout 5 GiB, RAM khả dụng 2 GiB cho install/build đầu. Từ root clone riêng:
+Prerequisites: Windows PowerShell 5.1+, Git, Node 24.21.0, pnpm 10.15.1 và Docker Desktop Linux engine; ổ Windows còn 1 GiB, ổ checkout còn 5 GiB và RAM khả dụng 2 GiB. Launcher giữ pnpm store và file tạm trong profile demo trên ổ checkout. Từ root clone riêng:
 
 ```powershell
 powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1
@@ -183,3 +186,4 @@ K01 local two-process đã so durability/invariant và đề xuất PostgreSQL a
 PostgreSQL authoritative tạm thời cho local; Redis/Valkey chỉ cache/counter. [Gói review hiện tại](docs/SPRINT2_PO_REVIEW.md), [AC/lệnh/bằng chứng](docs/SEAT_HOLD_LOCAL_EVIDENCE.md). API/web3001/3000; imageprofilemới3201/3200. Chạy migration theo runner trướcAPI; mở cửa sổ thứba `./scripts/run-sprint2-local.ps1 -Mode Worker -Database stitch_fidelity` để quét mỗi phút. Thêm ghế/retry/reload không gia hạn10phút; query vẫn trống ngay khi quá hạn dù worker tắt. Chỉ tài khoản/dữ liệu giả, passwordlocal không trongchat/source.
 
 Lượt cuối T31 đúng100winner/100conflict×10 nhưng NFRp95FAIL750,96ms. ChưaCI/staging/Render/continuousworkerPASS; khôngSprint100%. Không dùngreset/dbpush để rollback, không xóa.env/volumes/WIP. RenderFree scheduler chỉ khiAPIthức,cache/loginlock có thểmất khi restart.
+

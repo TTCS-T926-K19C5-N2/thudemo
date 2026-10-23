@@ -15,6 +15,6 @@ async function bootstrap() {
   app.useBodyParser('json', { limit: '5mb' });
 
   app.enableShutdownHooks();
-  await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
+  await app.listen(process.env.PORT ?? 3001, process.env.API_HOST ?? '0.0.0.0');
 }
 await bootstrap();

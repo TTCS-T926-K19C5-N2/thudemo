@@ -21,11 +21,15 @@ import { ScannerModule } from './scanner/scanner.module.js';
 import { BookingAccessModule } from './booking-access/booking-access.module.js';
 import { LifecycleModule } from './lifecycle/lifecycle.module.js';
 import { LocalDashboardModule } from './monitoring/local-dashboard.js';
+import { CoreCompletionModule } from './core-completion/core.module.js';
+import { CouponsModule } from './coupons/coupons.module.js';
+import { WaitlistModule } from './waitlist/waitlist.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      ignoreEnvFile: process.env.CONFIG_IGNORE_ENV_FILE === 'true',
       envFilePath: [
         resolve(process.cwd(), '.env'),
         resolve(process.cwd(), '../../.env'),
@@ -48,6 +52,9 @@ import { LocalDashboardModule } from './monitoring/local-dashboard.js';
     BookingAccessModule,
     LifecycleModule,
     LocalDashboardModule,
+    CoreCompletionModule,
+    CouponsModule,
+    WaitlistModule,
   ],
   controllers: [AppController],
   providers: [

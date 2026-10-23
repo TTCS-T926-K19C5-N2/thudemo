@@ -1,0 +1,64 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Isolated Codegym app on loopback backed by run-bound PostgreSQL; no camera/provider/real network.",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "camera": false,
+  "checks": [
+    "assigned showtime rendered",
+    "full snapshot reports exactly one paid ticket",
+    "snapshot contains no fixture email or staff name",
+    "IndexedDB durably stores download time, verification key, valid ticket identity and check-in state",
+    "offline scan is durably queued in IndexedDB before the UI reports success",
+    "offline scan UI has no horizontal overflow at desktop",
+    "same durable queue record and stable request ID survive browser process relaunch",
+    "offline queue survives browser context close/reopen at 390px without horizontal overflow",
+    "browser has no uncaught page errors",
+    "captured scanner API requests have no server error"
+  ],
+  "screenshots": [
+    "r19-snapshot-desktop.png",
+    "r19-offline-queued-desktop.png",
+    "r19-offline-reopened-mobile.png"
+  ],
+  "api": [
+    {
+      "method": "GET",
+      "path": "/scanner/snapshot",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/showtimes",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/showtimes/46777d33-2f9a-4bd9-a0bd-adce3132e2d1/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/showtimes/46777d33-2f9a-4bd9-a0bd-adce3132e2d1/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/scanner/snapshot",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/scanner/snapshot",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/qr-keys",
+      "status": 200
+    }
+  ],
+  "pageErrors": []
+}

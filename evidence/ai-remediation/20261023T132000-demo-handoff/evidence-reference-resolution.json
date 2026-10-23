@@ -1,0 +1,335 @@
+{
+  "generatedAt": "2026-10-23T06:40:56.018Z",
+  "resolution": "Evidence references use paths relative to this run and resolve either to this run, the preserved 20261022T230000-remediation run, or current source files.",
+  "droppedUnresolvedReferences": [
+    {
+      "case": "INT-09",
+      "status": "PASS",
+      "reference": "int09-show-cancel-browser-attempt1-failure.json"
+    },
+    {
+      "case": "INT-09",
+      "status": "PASS",
+      "reference": "INT-09.02"
+    },
+    {
+      "case": "INT-09",
+      "status": "PASS",
+      "reference": "INT-09.03"
+    },
+    {
+      "case": "INT-09",
+      "status": "PASS",
+      "reference": "INT-09.04"
+    },
+    {
+      "case": "S-29-AC01",
+      "status": "PASS",
+      "reference": "../../../scanner-local-verification.json"
+    },
+    {
+      "case": "S-29-AC01",
+      "status": "PASS",
+      "reference": "../../../scanner-invalid-code-mobile-full.png"
+    },
+    {
+      "case": "S-29-AC01",
+      "status": "PASS",
+      "reference": "../../../scanner-invalid-code-desktop.png"
+    },
+    {
+      "case": "S-29-AC01",
+      "status": "PASS",
+      "reference": "../../../demo-scanner-showtime.json"
+    },
+    {
+      "case": "S-34-NFR",
+      "status": "PASS",
+      "reference": "r19-offline-reopened-before-fix.png"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "a"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "t"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "e"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "n"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "d"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "c"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "-"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "s"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "v"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "b"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "r"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "o"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "w"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "."
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "j"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "f"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "l"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "i"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "p"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "u"
+    },
+    {
+      "case": "S-62-AC01",
+      "status": "PASS",
+      "reference": "g"
+    },
+    {
+      "case": "INT-09.01",
+      "status": "PASS",
+      "reference": "int09-show-cancel-browser-attempt1-failure.json"
+    },
+    {
+      "case": "INT-16.01",
+      "status": "PASS",
+      "reference": "../../../int16-transfer-postfix-browser.json"
+    },
+    {
+      "case": "INT-16.01",
+      "status": "PASS",
+      "reference": "../../../int16-transfer-postgres-oracle.json"
+    },
+    {
+      "case": "INT-16.01",
+      "status": "PASS",
+      "reference": "../../../int16-owner-after-transfer-desktop.png"
+    },
+    {
+      "case": "INT-16.01",
+      "status": "PASS",
+      "reference": "../../../int16-recipient-ticket-desktop.png"
+    },
+    {
+      "case": "INT-16.01",
+      "status": "PASS",
+      "reference": "../../../int16-recipient-ticket-mobile.png"
+    },
+    {
+      "case": "INT-16.01",
+      "status": "PASS",
+      "reference": "../../../int16-transfer-verify.log"
+    },
+    {
+      "progress": "R09",
+      "reference": "b"
+    },
+    {
+      "progress": "R09",
+      "reference": "r"
+    },
+    {
+      "progress": "R09",
+      "reference": "o"
+    },
+    {
+      "progress": "R09",
+      "reference": "w"
+    },
+    {
+      "progress": "R09",
+      "reference": "s"
+    },
+    {
+      "progress": "R09",
+      "reference": "e"
+    },
+    {
+      "progress": "R09",
+      "reference": "-"
+    },
+    {
+      "progress": "R09",
+      "reference": "u"
+    },
+    {
+      "progress": "R09",
+      "reference": "i"
+    },
+    {
+      "progress": "R09",
+      "reference": "m"
+    },
+    {
+      "progress": "R09",
+      "reference": "k"
+    },
+    {
+      "progress": "R09",
+      "reference": "."
+    },
+    {
+      "progress": "R09",
+      "reference": "j"
+    },
+    {
+      "progress": "R09",
+      "reference": "n"
+    },
+    {
+      "progress": "R09",
+      "reference": "a"
+    },
+    {
+      "progress": "R09",
+      "reference": "t"
+    },
+    {
+      "progress": "R09",
+      "reference": "d"
+    },
+    {
+      "progress": "R09",
+      "reference": "c"
+    },
+    {
+      "progress": "R09",
+      "reference": "v"
+    },
+    {
+      "progress": "R09",
+      "reference": "2"
+    },
+    {
+      "progress": "R09",
+      "reference": "l"
+    },
+    {
+      "progress": "R09",
+      "reference": "g"
+    },
+    {
+      "progress": "R18",
+      "reference": "s45-cancellation-fixture-cleanup.json"
+    },
+    {
+      "progress": "R23",
+      "reference": "../../../run-manifest.json"
+    },
+    {
+      "progress": "R23",
+      "reference": "../../../demo-ui-assets-manifest.json"
+    },
+    {
+      "progress": "R23",
+      "reference": "../../../demo-catalog-source-audit.json"
+    },
+    {
+      "progress": "R23",
+      "reference": "../../../scanner-local-verification.json"
+    },
+    {
+      "progress": "R23",
+      "reference": "../../../demo-role-ui-verification.json"
+    },
+    {
+      "progress": "R23",
+      "reference": "../../../int16-transfer-postfix-browser.json"
+    },
+    {
+      "progress": "R23",
+      "reference": "../../../accountant-operations-mobile.png"
+    },
+    {
+      "progress": "R24",
+      "reference": "../../../prepared-fileset-current.json"
+    },
+    {
+      "progress": "R24",
+      "reference": "../../../demo-catalog-source-audit.json"
+    },
+    {
+      "progress": "R24",
+      "reference": "../../../demo-ui-assets-manifest.json"
+    },
+    {
+      "progress": "R24",
+      "reference": "../../../demo-scanner-showtime.json"
+    },
+    {
+      "progress": "R24",
+      "reference": "../../../scanner-local-verification.json"
+    },
+    {
+      "progress": "R24",
+      "reference": "../../../run-manifest.json"
+    }
+  ]
+}

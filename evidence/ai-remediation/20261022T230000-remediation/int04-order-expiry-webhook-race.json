@@ -1,0 +1,513 @@
+{
+  "runId": "20261022T230000-remediation",
+  "workload": {
+    "rounds": 50,
+    "perRound": "one expired order; webhook and expiry released at barrier"
+  },
+  "outcomeCounts": {
+    "NEEDS_REVIEW/LATE": 50
+  },
+  "allExpected": true,
+  "rounds": [
+    {
+      "iteration": 1,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 2,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 3,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 4,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 5,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 6,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 7,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 8,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 9,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 10,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 11,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 12,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 13,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 14,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 15,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 16,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 17,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 18,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 19,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 20,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 21,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 22,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 23,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 24,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 25,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 26,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 27,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 28,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 29,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 30,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 31,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 32,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 33,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 34,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 35,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 36,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 37,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 38,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 39,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 40,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 41,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 42,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 43,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 44,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 45,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 46,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 47,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 48,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 49,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    },
+    {
+      "iteration": 50,
+      "webhookHttp": 200,
+      "webhookStatus": "LATE",
+      "expiryStatus": "expired",
+      "orderStatus": "NEEDS_REVIEW",
+      "paymentStatus": "LATE",
+      "seatSold": false,
+      "activeHolds": 0
+    }
+  ]
+}

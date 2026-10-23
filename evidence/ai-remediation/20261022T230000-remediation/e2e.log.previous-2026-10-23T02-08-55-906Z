@@ -1,0 +1,40 @@
+
+ RUN  v4.1.11 D:/Merge_2/Codegym/apps/api
+
+ ❯ test/waitlist.e2e-spec.ts (2 tests | 2 skipped) 805ms
+
+ Test Files  1 failed (1)
+      Tests  2 skipped (2)
+   Start at  09:08:23
+   Duration  3.30s (transform 924ms, setup 49ms, import 2.07s, tests 805ms, environment 0ms)
+
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/waitlist.e2e-spec.ts > S-59 waitlist FIFO and SMTP catcher on isolated PostgreSQL
+PrismaClientKnownRequestError: 
+Invalid `tx.waitlistEntry.findFirst()` invocation in
+D:/Merge_2/Codegym/apps/api/src/waitlist/waitlist.service.ts:65:47
+
+  62 if ((availability?.available ?? 0) > 0)
+  63   throw new ConflictException({ code: 'SEATS_AVAILABLE', message: 'Vẫn còn ghế mở bán; hãy chọn ghế trực tiếp.' });
+  64 
+→ 65 const existing = await tx.waitlistEntry.findFirst(
+The column `waitlist_entries.eventId` does not exist in the current database.
+ ❯ vn.handleRequestError ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:238:12
+ ❯ vn.handleAndLogRequestError ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:184:11
+ ❯ vn.request ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:153:11
+ ❯ a ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:1014:23
+ ❯ src/waitlist/waitlist.service.ts:65:24
+     63|         throw new ConflictException({ code: 'SEATS_AVAILABLE', message…
+     64|
+     65|       const existing = await tx.waitlistEntry.findFirst({
+       |                        ^
+     66|         where: {
+     67|           showtimeId,
+ ❯ Proxy._transactionWithCallback ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:861:17
+ ❯ test/waitlist.e2e-spec.ts:44:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

@@ -1,0 +1,38 @@
+{
+  "runId": "20261022T230000-remediation",
+  "fixture": {
+    "showtimeId": "4a65095b-5ded-4f8b-a1c1-0e1ab528ae0d",
+    "paidOrderCount": 22,
+    "pendingOrderId": "44e8de10-29d0-4705-ad3c-f86dd2729376"
+  },
+  "showtimeStatus": "CLOSED",
+  "cancellationJobStatus": "COMPLETED",
+  "paidOrdersRemaining": 0,
+  "cancelledOrders": 23,
+  "pendingOrderStatus": "CANCELLED",
+  "ticketsCancelled": 22,
+  "refunds": {
+    "count": 22,
+    "successful": 22,
+    "uniqueOrderCount": 22,
+    "amountsVnd": [
+      1000
+    ],
+    "attemptsCount": 23,
+    "oneRefundRetried": {
+      "refundId": "4003dc41-c000-4968-b551-af034a18e9ba",
+      "attempts": 2,
+      "finalStatus": "SUCCEEDED"
+    }
+  },
+  "operationMailOutbox": {
+    "count": 22,
+    "statusCounts": {
+      "QUEUED": 0,
+      "SENT": 22
+    }
+  },
+  "seatsSoldAfterCancel": 0,
+  "workerInvocations": "separate node processes per batch/retry call; database state persisted between processes",
+  "mailDelivery": "isolated Nest lifecycle worker delivered all run fixture messages to Mailpit catcher; verified by Message-ID; no real email sent"
+}

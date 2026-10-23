@@ -1,0 +1,23 @@
+{
+  "checkpoint": "R74",
+  "checkedAt": "2026-10-23T14:42:06.191Z",
+  "freeRamGiB": 0.61,
+  "status": "STALE_PENDING_RESTART",
+  "statusCommand": "refused READY: Source changed since this demo build; use Restart",
+  "restartAttempted": false,
+  "dbWrite": false,
+  "resetTokenCreated": false,
+  "mailpitEmailCreated": false,
+  "openReadyMust": 90,
+  "openByGroup": {
+    "Đối chiếu tổng thể": 12,
+    "Hạ tầng": 7,
+    "Tài khoản": 8,
+    "Sự kiện": 6,
+    "Sơ đồ và giá": 18,
+    "Khám phá": 2,
+    "Giữ ghế": 13,
+    "Đơn hàng": 5,
+    "Thanh toán": 19
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "runTag": "R48 QA fixture 20261023101000",
+  "profile": "s1demo-384da3d43b41",
+  "eventId": "37afb928-3ba8-4129-ac9f-c9cd7c0e310c",
+  "ownerId": "c05c2359-8049-465f-baa8-cfff22daeead",
+  "status": "DRAFT",
+  "showtimes": [
+    {
+      "id": "70b7734e-871e-42e4-8a99-3dc447077828",
+      "startTime": "2030-01-01T12:00:00.000Z",
+      "status": "DRAFT"
+    },
+    {
+      "id": "b6b3f9d4-b5ec-4636-9233-38c7473c75bd",
+      "startTime": "2030-01-01T12:00:00.000Z",
+      "status": "DRAFT"
+    }
+  ],
+  "orders": 0,
+  "tickets": 0,
+  "seats": 0,
+  "baselineCounts": {
+    "events": 40,
+    "showtimes": 44,
+    "orders": 5,
+    "tickets": 5,
+    "seats": 5904
+  },
+  "countsWithFixture": {
+    "events": 41,
+    "showtimes": 46,
+    "orders": 5,
+    "tickets": 5,
+    "seats": 5904
+  },
+  "readOnly": true
+}

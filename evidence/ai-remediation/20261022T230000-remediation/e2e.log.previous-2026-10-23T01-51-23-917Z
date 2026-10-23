@@ -1,0 +1,25 @@
+
+ RUN  v4.1.11 D:/Merge_2/Codegym/apps/api
+
+
+ Test Files  20 passed (20)
+      Tests  112 passed (112)
+   Start at  00:54:14
+   Duration  74.23s (transform 894ms, setup 287ms, import 15.45s, tests 55.56s, environment 1ms)
+
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+(node:41744) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:5080) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:20516) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[Nest] 30600  - 10/23/2026, 12:55:07 AM   ERROR [AccountantNotifier] {"event":"payment_late_received","alert":"ACCOUNTANT_ALERT","message":"Khách hàng thanh toán sau khi đơn hàng đã hết hạn!","orderId":"65afd99e-0bee-49be-8900-b30d45257be3","amount":250000,"transactionId":"momo_trans_late_1792691707487","gatewayRef":"65afd99e-0bee-49be-8900-b30d45257be3_1792691707480","reason":"Thanh toán sau khi đơn hết hạn, cần hoàn tiền","notifiedEmail":null,"timestamp":"2026-10-22T17:55:07.552Z"}
+[Nest] 30600  - 10/23/2026, 12:55:07 AM   ERROR [AccountantNotifier] {"event":"payment_late_received","alert":"ACCOUNTANT_ALERT","message":"Khách hàng thanh toán sau khi đơn hàng đã hết hạn!","orderId":"996e7c43-9ab9-46ee-b6bd-4236bf66db6d","amount":250000,"transactionId":"momo_expiry_race_0_1792691707585","gatewayRef":"996e7c43-9ab9-46ee-b6bd-4236bf66db6d_1792691707582","reason":"Thanh toán sau khi đơn hết hạn, cần hoàn tiền","notifiedEmail":null,"timestamp":"2026-10-22T17:55:07.605Z"}
+[Nest] 30600  - 10/23/2026, 12:55:07 AM   ERROR [AccountantNotifier] {"event":"payment_late_received","alert":"ACCOUNTANT_ALERT","message":"Khách hàng thanh toán sau khi đơn hàng đã hết hạn!","orderId":"81abc4a2-decb-4bd6-9319-86c16062adbb","amount":250000,"transactionId":"momo_expiry_race_1_1792691707630","gatewayRef":"81abc4a2-decb-4bd6-9319-86c16062adbb_1792691707627","reason":"Thanh toán sau khi đơn hết hạn, cần hoàn tiền","notifiedEmail":null,"timestamp":"2026-10-22T17:55:07.648Z"}
+[Nest] 30600  - 10/23/2026, 12:55:07 AM   ERROR [AccountantNotifier] {"event":"payment_late_received","alert":"ACCOUNTANT_ALERT","message":"Khách hàng thanh toán sau khi đơn hàng đã hết hạn!","orderId":"668ad886-26f7-457c-b64e-edb74ec35cc1","amount":250000,"transactionId":"momo_expiry_race_2_1792691707666","gatewayRef":"668ad886-26f7-457c-b64e-edb74ec35cc1_1792691707664","reason":"Thanh toán sau khi đơn hết hạn, cần hoàn tiền","notifiedEmail":null,"timestamp":"2026-10-22T17:55:07.685Z"}
+[Nest] 30600  - 10/23/2026, 12:55:07 AM   ERROR [AccountantNotifier] {"event":"payment_late_received","alert":"ACCOUNTANT_ALERT","message":"Khách hàng thanh toán sau khi đơn hàng đã hết hạn!","orderId":"da9cf50d-988a-4440-b921-c07eeaa4b421","amount":250000,"transactionId":"momo_expiry_race_3_1792691707703","gatewayRef":"da9cf50d-988a-4440-b921-c07eeaa4b421_1792691707701","reason":"Thanh toán sau khi đơn hết hạn, cần hoàn tiền","notifiedEmail":null,"timestamp":"2026-10-22T17:55:07.721Z"}
+[Nest] 30600  - 10/23/2026, 12:55:07 AM   ERROR [AccountantNotifier] {"event":"payment_late_received","alert":"ACCOUNTANT_ALERT","message":"Khách hàng thanh toán sau khi đơn hàng đã hết hạn!","orderId":"437bac05-1033-453a-9a81-437ce87288b4","amount":250000,"transactionId":"momo_expiry_race_4_1792691707745","gatewayRef":"437bac05-1033-453a-9a81-437ce87288b4_1792691707741","reason":"Thanh toán sau khi đơn hết hạn, cần hoàn tiền","notifiedEmail":null,"timestamp":"2026-10-22T17:55:07.775Z"}
+(node:30600) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[Nest] 35004  - 10/23/2026, 12:55:17 AM   ERROR [AccountantNotifier] {"event":"payment_amount_mismatch","alert":"ACCOUNTANT_ALERT","message":"Số tiền thanh toán nhận được khác với tổng tiền đơn hàng trong hệ thống!","orderId":"5e514386-7437-4819-8f13-20525ae24551","expectedAmount":300000,"receivedAmount":150000,"transactionId":"tx_mismatch_123","gatewayRef":"5e514386-7437-4819-8f13-20525ae24551_mismatch_test","reason":"Số tiền thanh toán nhận từ cổng không khớp với tổng tiền đơn hàng","notifiedEmail":null,"timestamp":"2026-10-22T17:55:17.988Z"}

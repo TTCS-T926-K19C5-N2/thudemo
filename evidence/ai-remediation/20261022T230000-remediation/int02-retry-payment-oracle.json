@@ -1,0 +1,56 @@
+{
+  "runId": "20261022T230000-remediation",
+  "fixture": {
+    "eventId": "d258317d-22e9-4168-85e8-994e64ac19e7",
+    "showtimeId": "e97c9292-80e5-4790-bdf4-6d62ff1174e3",
+    "orderId": "a46c2bae-6f95-455c-b55a-6bc1905af2ae",
+    "seatId": "45a24ed5-74c4-4333-9722-bc3730c1b5ef"
+  },
+  "stages": {
+    "failedAttempt": {
+      "gatewayRef": "a46c2bae-6f95-455c-b55a-6bc1905af2ae_1792729126780_5c87c8dc",
+      "paymentStatus": "FAILED",
+      "orderStatusAfterFailure": "PENDING",
+      "seatHeldAfterFailure": true
+    },
+    "successfulRetry": {
+      "gatewayRef": "a46c2bae-6f95-455c-b55a-6bc1905af2ae_1792729126816_c7f86e68",
+      "attemptNo": 2,
+      "finalOrderStatus": "PAID"
+    },
+    "repeatedSuccessWebhookCount": 2
+  },
+  "oracle": {
+    "orderCount": 1,
+    "payments": [
+      {
+        "attemptNo": 1,
+        "status": "FAILED",
+        "amount": 200000
+      },
+      {
+        "attemptNo": 2,
+        "status": "SUCCEEDED",
+        "amount": 200000
+      }
+    ],
+    "soldSeat": true,
+    "remainingHolds": 0,
+    "tickets": [
+      {
+        "id": "7567e592-c141-4108-8c6e-968f7539e440",
+        "seatId": "45a24ed5-74c4-4333-9722-bc3730c1b5ef",
+        "status": "VALID"
+      }
+    ],
+    "mailJobs": [
+      {
+        "dedupeKey": "paid:a46c2bae-6f95-455c-b55a-6bc1905af2ae",
+        "status": "QUEUED",
+        "attempts": 0
+      }
+    ],
+    "paidResultApiStatus": 200,
+    "buyerTicketCount": 1
+  }
+}

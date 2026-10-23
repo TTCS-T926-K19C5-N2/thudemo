@@ -3,8 +3,6 @@ import {
   ArrowLeft,
   Ticket,
   Search,
-  MapPin,
-  ChevronDown,
   Armchair,
   Menu,
   LifeBuoy,
@@ -17,6 +15,7 @@ import {
   Admin,
 } from "@/components/ui/material-icon";
 import { SessionActions } from "./session-actions";
+import { PublicSessionControls } from "./public-session-controls";
 import { Input } from "@/components/ui/input";
 interface MobileShowHeaderProps {
   readonly href: string;
@@ -26,6 +25,7 @@ interface MobileShowHeaderProps {
 }
 interface PublicLayoutProps {
   readonly children: React.ReactNode;
+  readonly searchQuery?: string;
   readonly compact?: boolean;
   readonly auth?: boolean;
   readonly context?: React.ReactNode;
@@ -59,10 +59,11 @@ export function MobileShowHeader({
 }
 export function PublicLayout({
   children,
+  searchQuery = "",
   compact = false,
   auth = false,
   context,
-  signedIn = false,
+  signedIn,
 }: PublicLayoutProps) {
   return (
     <div
@@ -98,15 +99,16 @@ export function PublicLayout({
                   {context}
                 </div>
               ) : (
-                <div className="header-search">
+                <form action="/" method="get" className="header-search">
                   <Search />
                   <Input
                     aria-label="Tìm sự kiện"
+                    name="q"
+                    defaultValue={searchQuery}
                     placeholder="Tìm sự kiện, nghệ sĩ, địa điểm..."
-                    disabled
-                    title="Tìm kiếm chưa khả dụng"
                   />
-                </div>
+                  <button type="submit" aria-label="Tìm sự kiện">Tìm</button>
+                </form>
               )}
               <nav className="public-links">
                 <Link href="/" aria-current="page">
@@ -117,17 +119,9 @@ export function PublicLayout({
                 </button>
                 <Link href="/account/tickets">Vé của tôi</Link>
               </nav>
-              <button
-                className="location-control"
-                disabled
-                title="Lọc địa điểm chưa khả dụng"
-              >
-                <MapPin /> <span>TP. Hồ Chí Minh</span>
-                <ChevronDown />
-              </button>
-              {signedIn ? (
+              {signedIn === true ? (
                 <SessionActions />
-              ) : (
+              ) : signedIn === false ? (
                 <Link
                   href="/login"
                   className="header-login-link"
@@ -135,6 +129,8 @@ export function PublicLayout({
                 >
                   Đăng nhập
                 </Link>
+              ) : (
+                <PublicSessionControls />
               )}
             </>
           )}

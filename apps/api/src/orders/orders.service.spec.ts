@@ -307,7 +307,7 @@ describe('OrdersService & isOrderExpired', () => {
         expect(result.remainingSeconds).toBe(0);
       });
 
-      it('recalculates total amount from stored item price snapshots and logs warning if mismatch', async () => {
+      it('uses the immutable order money snapshot and logs when stored items disagree', async () => {
         const future = new Date(Date.now() + 60000);
         mockPrisma.order.findUnique.mockResolvedValue({
           id: mockOrderId,
@@ -344,8 +344,8 @@ describe('OrdersService & isOrderExpired', () => {
         });
 
         const result = await service.getOrderById(mockOrderId, mockUserId);
-        // Server recalculated total wins
-        expect(result.totalAmount).toBe(500000);
+        // Order snapshot is authoritative for the amount already shown/charged.
+        expect(result.totalAmount).toBe(400000);
       });
     });
   });

@@ -1,0 +1,29 @@
+{
+  "capturedAt": "2026-10-23T08:20:11.402Z",
+  "profile": "s1demo-384da3d43b41",
+  "readOnly": true,
+  "fixtureName": "AI-R37-S04-20261023T1517Z",
+  "assertions": {
+    "draftOwnedEvent": true,
+    "showtimeLinkedAndPersisted": true,
+    "localTimeToUtcCorrect": true,
+    "noOrdersOrTicketsYet": true
+  },
+  "actual": {
+    "event": {
+      "id": "b9eecb6f-1de2-4f1d-8dc1-8391937a894c",
+      "name": "AI-R37-S04-20261023T1517Z",
+      "status": "DRAFT",
+      "hasOwner": true
+    },
+    "showtime": {
+      "id": "8955005d-d389-4885-9a3b-b7892acf82a2",
+      "linkedToEvent": true,
+      "status": "DRAFT",
+      "startTimeUtc": "2026-10-24T08:00:00.000Z"
+    },
+    "orders": 0,
+    "seats": 0
+  },
+  "status": "PASS"
+}

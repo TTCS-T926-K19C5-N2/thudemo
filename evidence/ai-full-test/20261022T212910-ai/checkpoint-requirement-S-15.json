@@ -1,0 +1,200 @@
+[
+  {
+    "id": "S-15-AC01",
+    "requirement_id": "S-15",
+    "kind": "AC",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Đặt giá vé cho từng hạng ghế của suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L17"
+    },
+    "original_requirement": "Giả sử suất diễn đã có sơ đồ với ba hạng ghế, Khi tôi nhập giá cho từng hạng và lưu, Thì trang chọn ghế hiện đúng giá khi trỏ vào ghế",
+    "fixture": "3 hạng VIP/STD/ECO; giá 200000/100000/50000; đơn pending giá cũ.",
+    "surfaces": "PATCH /showtimes/:id/prices",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/seat-pricing/",
+    "test_candidates": "s15-s16-acceptance.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: suất diễn đã có sơ đồ với ba hạng ghế.",
+      "Thực hiện trên PATCH /showtimes/:id/prices: tôi nhập giá cho từng hạng và lưu.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Nhập/lưu giá, hover/click ghế. Thử âm, chữ, số thập phân và thiếu giá; kiểm phía server. Đổi giá sau khi có order: order cũ không đổi, order tạo sau dùng giá mới. Kiểm schema integer VND, hiển thị 200.000.",
+    "expected": [
+      "trang chọn ghế hiện đúng giá khi trỏ vào ghế"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-15-AC02",
+    "requirement_id": "S-15",
+    "kind": "AC",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Đặt giá vé cho từng hạng ghế của suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L17"
+    },
+    "original_requirement": "Giả sử một hạng ghế chưa có giá, Khi bấm mở bán, Thì bị chặn kèm tên hạng còn thiếu giá",
+    "fixture": "3 hạng VIP/STD/ECO; giá 200000/100000/50000; đơn pending giá cũ.",
+    "surfaces": "PATCH /showtimes/:id/prices",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/seat-pricing/",
+    "test_candidates": "s15-s16-acceptance.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: một hạng ghế chưa có giá.",
+      "Thực hiện trên PATCH /showtimes/:id/prices: bấm mở bán.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Nhập/lưu giá, hover/click ghế. Thử âm, chữ, số thập phân và thiếu giá; kiểm phía server. Đổi giá sau khi có order: order cũ không đổi, order tạo sau dùng giá mới. Kiểm schema integer VND, hiển thị 200.000.",
+    "expected": [
+      "bị chặn kèm tên hạng còn thiếu giá"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-15-AC03",
+    "requirement_id": "S-15",
+    "kind": "AC",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Đặt giá vé cho từng hạng ghế của suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L17"
+    },
+    "original_requirement": "Giả sử suất đã có đơn hàng đang chờ, Khi đổi giá, Thì đơn đang chờ giữ nguyên giá cũ, chỉ đơn tạo sau mới dùng giá mới",
+    "fixture": "3 hạng VIP/STD/ECO; giá 200000/100000/50000; đơn pending giá cũ.",
+    "surfaces": "PATCH /showtimes/:id/prices",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/seat-pricing/",
+    "test_candidates": "s15-s16-acceptance.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: suất đã có đơn hàng đang chờ.",
+      "Thực hiện trên PATCH /showtimes/:id/prices: đổi giá.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Nhập/lưu giá, hover/click ghế. Thử âm, chữ, số thập phân và thiếu giá; kiểm phía server. Đổi giá sau khi có order: order cũ không đổi, order tạo sau dùng giá mới. Kiểm schema integer VND, hiển thị 200.000.",
+    "expected": [
+      "đơn đang chờ giữ nguyên giá cũ, chỉ đơn tạo sau mới dùng giá mới"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-15-AC04",
+    "requirement_id": "S-15",
+    "kind": "AC",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Đặt giá vé cho từng hạng ghế của suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L17"
+    },
+    "original_requirement": "Giả sử nhập giá âm hoặc không phải số, Khi lưu, Thì bị chặn ngay tại ô",
+    "fixture": "3 hạng VIP/STD/ECO; giá 200000/100000/50000; đơn pending giá cũ.",
+    "surfaces": "PATCH /showtimes/:id/prices",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/seat-pricing/",
+    "test_candidates": "s15-s16-acceptance.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: nhập giá âm hoặc không phải số.",
+      "Thực hiện trên PATCH /showtimes/:id/prices: lưu.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Nhập/lưu giá, hover/click ghế. Thử âm, chữ, số thập phân và thiếu giá; kiểm phía server. Đổi giá sau khi có order: order cũ không đổi, order tạo sau dùng giá mới. Kiểm schema integer VND, hiển thị 200.000.",
+    "expected": [
+      "bị chặn ngay tại ô"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-15-NFR",
+    "requirement_id": "S-15",
+    "kind": "NFR",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Đặt giá vé cho từng hạng ghế của suất diễn — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N17"
+    },
+    "original_requirement": "giá lưu bằng số nguyên đơn vị đồng, không dùng số thực",
+    "fixture": "3 hạng VIP/STD/ECO; giá 200000/100000/50000; đơn pending giá cũ.",
+    "surfaces": "PATCH /showtimes/:id/prices",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/seat-pricing/",
+    "test_candidates": "s15-s16-acceptance.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Nhập/lưu giá, hover/click ghế. Thử âm, chữ, số thập phân và thiếu giá; kiểm phía server. Đổi giá sau khi có order: order cũ không đổi, order tạo sau dùng giá mới. Kiểm schema integer VND, hiển thị 200.000.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "giá lưu bằng số nguyên đơn vị đồng, không dùng số thực"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

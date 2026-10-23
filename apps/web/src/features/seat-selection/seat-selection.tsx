@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { WaitingRoomNotice } from "@/features/lifecycle/waiting-room-notice";
+import { WaitlistSignup } from "@/features/waitlist/waitlist-signup";
 import {
   Clock3,
   CircleAlert,
@@ -53,7 +54,7 @@ export function SeatSelection({ id }: { id: string }) {
   const authority = useRef<HoldState["hold"]>(null),
     busy = useRef(false),
     alive = useRef(true);
-  const demoMode = useRef(false);
+  const [demoMode, setDemoMode] = useState(false);
   const apply = useCallback((state: HoldState) => {
     if (!alive.current) return;
     if (authority.current && !state.hold) {
@@ -77,7 +78,7 @@ export function SeatSelection({ id }: { id: string }) {
   const refresh = useCallback(async () => {
     if (busy.current) return;
     const map = await api(`/showtimes/${id}/seats`, decodeSeats);
-    if (demoMode.current) {
+    if (demoMode) {
       if (alive.current && !busy.current) setSeats(map);
       return;
     }
@@ -94,7 +95,7 @@ export function SeatSelection({ id }: { id: string }) {
       }),
     );
     return state;
-  }, [apply, id]);
+  }, [apply, demoMode, id]);
   useEffect(() => {
     alive.current = true;
     const controller = new AbortController();
@@ -104,7 +105,7 @@ export function SeatSelection({ id }: { id: string }) {
         signal: controller.signal,
       });
       if (controller.signal.aborted) return;
-      demoMode.current = detail.isDemo;
+      setDemoMode(detail.isDemo);
       if (detail.isDemo) {
         const map = await api(`/showtimes/${id}/seats`, decodeSeats, {
           signal: controller.signal,
@@ -269,6 +270,7 @@ export function SeatSelection({ id }: { id: string }) {
     setPending(true);
     setError("");
     setConflict([]);
+    let preserveClosedError = false;
     try {
       const state = await api(`/showtimes/${id}/holds`, decodeHoldState, {
         method: "POST",
@@ -297,6 +299,10 @@ export function SeatSelection({ id }: { id: string }) {
       ) {
         // S-42: keep the server message (limit + owned count), stay on the map.
         setError(e.message);
+      } else if (e instanceof ApiError && e.code === "SHOWTIME_CLOSED") {
+        preserveClosedError = true;
+        setDraft([]);
+        setError(e.message);
       } else
         setError(
           e instanceof Error ? e.message : "Không giữ được ghế. Hãy thử lại.",
@@ -315,11 +321,12 @@ export function SeatSelection({ id }: { id: string }) {
             setDraft([]);
           }
         })
-        .catch(() =>
-          setError(
-            "Chưa xác nhận được trạng thái trên máy chủ. Tải lại trước khi giữ tiếp.",
-          ),
-        );
+        .catch(() => {
+          if (!preserveClosedError)
+            setError(
+              "Chưa xác nhận được trạng thái trên máy chủ. Tải lại trước khi giữ tiếp.",
+            );
+        });
     }
   }
   async function retry() {
@@ -328,6 +335,31 @@ export function SeatSelection({ id }: { id: string }) {
     await refresh().catch(() =>
       setError("Không tải được sơ đồ. Kiểm tra kết nối rồi thử lại."),
     );
+  }
+  async function releaseSeat(seat: Seat) {
+    if (busy.current || !hold || expired || remaining === 0) return;
+    busy.current = true;
+    setPending(true);
+    setError("");
+    try {
+      const state = await api(
+        `/showtimes/${id}/holds/${seat.id}`,
+        decodeHoldState,
+        { method: "DELETE" },
+      );
+      // An empty hold is an intentional release, not an expired hold.
+      if (!state.hold) authority.current = null;
+      apply(state);
+      setSeats(await api(`/showtimes/${id}/seats`, decodeSeats));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Không thể bỏ ghế. Hãy thử lại.");
+      await api(`/showtimes/${id}/holds`, decodeHoldState).then(apply).catch(() =>
+        setError("Chưa xác nhận được lượt giữ trên máy chủ. Hãy tải lại sơ đồ."),
+      );
+    } finally {
+      busy.current = false;
+      setPending(false);
+    }
   }
   async function placeOrder() {
     if (busy.current || !hold || expired || remaining === 0 || draft.length)
@@ -564,6 +596,16 @@ export function SeatSelection({ id }: { id: string }) {
                     </small>
                   </span>
                   <b>{formatVnd(s.price)}</b>
+                  {!conflict.length && ownedIds.includes(s.id) && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={pending || expired || remaining === 0}
+                      onClick={() => void releaseSeat(s)}
+                    >
+                      Bỏ ghế
+                    </Button>
+                  )}
                 </div>
               ))
             ) : (
@@ -631,6 +673,12 @@ export function SeatSelection({ id }: { id: string }) {
                 </p>
               </>
             )}
+            {!demoMode &&
+              seats.length > 0 &&
+              !hold &&
+              seats.every((seat) => seat.status !== "AVAILABLE") && (
+                <WaitlistSignup showtimeId={id} />
+              )}
           </aside>
         )}
       </div>

@@ -15,6 +15,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   Req,
 } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
@@ -171,6 +172,17 @@ class LifecycleController {
   ) {
     return this.reports.attendance(id, req.user);
   }
+  @Get('showtimes/:id/attendance-conflicts.csv')
+  @Header('Cache-Control', 'private, no-store')
+  @Header('Content-Type', 'text/csv; charset=utf-8')
+  @Header('Content-Disposition', 'attachment; filename="attendance.csv"')
+  @Roles('ADMIN', 'ORGANIZER')
+  attendanceConflictsCsv(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.reports.attendanceConflictsCsv(id, req.user);
+  }
   @Get('showtimes/:id/financial-report')
   @Header('Cache-Control', 'private, no-store')
   @Roles('ADMIN', 'ORGANIZER')
@@ -179,6 +191,17 @@ class LifecycleController {
     @Req() req: AuthenticatedRequest,
   ) {
     return this.reports.financial(id, req.user);
+  }
+  @Get('showtimes/:id/hold-conversion-report')
+  @Header('Cache-Control', 'private, no-store')
+  @Roles('ADMIN', 'ORGANIZER')
+  holdConversion(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query('from') from: unknown,
+    @Query('to') to: unknown,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.reports.holdConversion(id, req.user, from, to);
   }
   @Post('operations/reconciliation')
   @HttpCode(200)

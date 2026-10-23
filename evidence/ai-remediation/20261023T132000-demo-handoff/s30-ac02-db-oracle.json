@@ -1,0 +1,12 @@
+{
+  "capturedAt": "2026-10-23T08:11:22.241Z",
+  "profile": "s1demo-384da3d43b41",
+  "readOnly": true,
+  "afterRejectedUnknownTicket": {
+    "database": "sprint1_demo_384da3d43b41",
+    "admissionCount": 0,
+    "checkedInItemCount": 0,
+    "validTicketCount": 2
+  },
+  "expected": "No admission or checked-in item is created by a rejected unknown code."
+}

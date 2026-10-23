@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-10-23T06:41:43.943Z",
+  "database": "isolated local demo DB; main machine DB is stopped",
+  "afterRestart": true,
+  "counts": {
+    "events": 40,
+    "showtimes": 42,
+    "tickets": 1,
+    "paidOrders": 1
+  },
+  "scannerRehearsal": {
+    "status": "ON_SALE",
+    "seatCount": 120,
+    "staffAssignment": 1,
+    "gatePermissions": 1
+  },
+  "expectation": "catalog and paid demo ticket retained across profile restart; this is local DB durability, not off-host backup/restore"
+}
