@@ -14,8 +14,26 @@
   - **ACCOUNTANT:** `accountant@s1demo-384da3d43b41.demo.invalid`
   *(Mật khẩu bảo mật sinh tự động theo từng profile được lưu tại `.sprint1-demo/config.json`).*
 
-## 2. Cách khởi động, dừng và kiểm tra dịch vụ
+## 2. Cách khởi động từ clone mới và quản lý dịch vụ
 
+### Khởi động từ máy mới (Chỉ cần Docker Desktop + Node/pnpm):
+1. **Khởi động 1 lệnh:** 
+   ```bash
+   node scripts/sprint1-onboarding.mjs Start
+   ```
+   *(Hoặc PowerShell: `powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1`)*
+   - Tự động dựng 3 container Docker: PostgreSQL, Redis và Mailpit (Hòm thư ảo).
+   - Tự động tạo file cấu hình `.env` và sinh tài khoản đầy đủ các vai trò (ADMIN, ORGANIZER, BUYER, STAFF, ACCOUNTANT).
+   - Tự động nạp 40 sự kiện, 44 suất diễn, 5.904 ghế ngồi và build khởi chạy Web (cổng 3000), API (cổng 3001).
+   - Thông tin mật khẩu đăng nhập được ghi vào `.sprint1-demo/config.json`.
+
+2. **(Tùy chọn) Khôi phục ngay toàn bộ vé và đơn hàng mẫu đã hoàn thiện:**
+   Nếu bạn muốn có sẵn luôn 5 đơn hàng PAID, các vé đã chuyển nhượng và vé đã check-in từ bản demo đã hoàn thiện:
+   ```bash
+   node scripts/restore-demo-snapshot.mjs
+   ```
+
+### Quản lý dịch vụ đang chạy:
 - **Kiểm tra trạng thái:** `node scripts/sprint1-onboarding.mjs Status`
 - **Khởi động lại (giữ nguyên dữ liệu):** `node scripts/sprint1-onboarding.mjs Restart --skip-build`
 - **Dừng dịch vụ (bảo toàn DB/Volume):** `node scripts/sprint1-onboarding.mjs Stop`
