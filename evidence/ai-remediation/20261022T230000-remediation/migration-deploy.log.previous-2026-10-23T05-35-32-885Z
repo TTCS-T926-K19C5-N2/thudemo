@@ -1,0 +1,10 @@
+Datasource "db": PostgreSQL database "codegym_remediation", schema "public" at "127.0.0.1:62636"
+
+42 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+◇ injected env (31) from ..\..\.env
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.

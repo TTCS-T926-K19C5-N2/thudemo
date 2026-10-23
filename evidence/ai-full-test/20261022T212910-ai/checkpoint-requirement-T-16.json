@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-16-AC",
+    "requirement_id": "T-16",
+    "parent_requirement": "S-07",
+    "kind": "TASK_AC",
+    "group": "Sự kiện",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Nút mở bán và đóng bán trên màn hình suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G17"
+    },
+    "original_requirement": "Bấm mở bán khi đủ điều kiện thì nhãn đổi ngay; khi chưa có sơ đồ thì nút mờ và hiện lý do",
+    "fixture": "Suất nháp thiếu map/giá; suất đủ điều kiện; hold và order đang chờ.",
+    "surfaces": "PATCH /showtimes/:id/status",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/showtime-management/sale-status-control.tsx",
+    "test_candidates": "showtimes.service.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Thử mọi cặp trạng thái DRAFT/ON_SALE/CLOSED. Đóng bán ngăn giữ mới, giữ/đơn cũ vẫn tiếp tục đúng hạn; mở lại và đối chiếu audit actor. Phân biệt đóng bán và huỷ suất.",
+      "Kiểm riêng tiêu chí task T-16: Bấm mở bán khi đủ điều kiện thì nhãn đổi ngay; khi chưa có sơ đồ thì nút mờ và hiện lý do",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Bấm mở bán khi đủ điều kiện thì nhãn đổi ngay; khi chưa có sơ đồ thì nút mờ và hiện lý do"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-16-NFR",
+    "requirement_id": "T-16",
+    "parent_requirement": "S-07",
+    "kind": "TASK_NFR",
+    "group": "Sự kiện",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Nút mở bán và đóng bán trên màn hình suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I17"
+    },
+    "original_requirement": "thao tác đổi trạng thái yêu cầu vai trò ban tổ chức sở hữu sự kiện",
+    "fixture": "Suất nháp thiếu map/giá; suất đủ điều kiện; hold và order đang chờ.",
+    "surfaces": "PATCH /showtimes/:id/status",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/showtime-management/sale-status-control.tsx",
+    "test_candidates": "showtimes.service.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Thử mọi cặp trạng thái DRAFT/ON_SALE/CLOSED. Đóng bán ngăn giữ mới, giữ/đơn cũ vẫn tiếp tục đúng hạn; mở lại và đối chiếu audit actor. Phân biệt đóng bán và huỷ suất.",
+      "Kiểm riêng tiêu chí task T-16: thao tác đổi trạng thái yêu cầu vai trò ban tổ chức sở hữu sự kiện",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "thao tác đổi trạng thái yêu cầu vai trò ban tổ chức sở hữu sự kiện"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

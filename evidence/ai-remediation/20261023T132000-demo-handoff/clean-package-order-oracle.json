@@ -1,0 +1,62 @@
+{
+  "capturedAt": "2026-10-23T07:52:49.998Z",
+  "mode": "read-only transaction",
+  "result": {
+    "profile": "s1demo-4e0cf076290e",
+    "database": "sprint1_demo_4e0cf076290e",
+    "ports": {
+      "web": 3001,
+      "api": 3003
+    },
+    "counts": {
+      "events": 40,
+      "showtimes": 42,
+      "orders": 1,
+      "paidOrders": 1,
+      "tickets": 1
+    },
+    "order": {
+      "id": "4f814b1b-dfff-41f6-bfa3-9b0d9cfd9a5c",
+      "status": "PAID",
+      "totalAmount": 580000,
+      "subtotalAmount": 580000,
+      "discountAmount": 0,
+      "showtimeId": "535729ef-05bd-4ed5-9a12-1f9317b860cc",
+      "itemCount": 1,
+      "items": [
+        {
+          "unitPrice": 580000,
+          "categoryName": "VIP",
+          "seatLabel": "A-1",
+          "isSold": true,
+          "holdPresent": false
+        }
+      ]
+    },
+    "payments": [
+      {
+        "gateway": "mock",
+        "status": "SUCCEEDED",
+        "amount": 580000,
+        "attemptNo": 1
+      }
+    ],
+    "tickets": [
+      {
+        "status": "VALID",
+        "price": 580000,
+        "seatLabel": "A-1"
+      }
+    ],
+    "assertions": {
+      "paid": true,
+      "exactAmount": true,
+      "singleSeat": true,
+      "seatSold": true,
+      "holdReleased": true,
+      "oneSuccessfulPayment": true,
+      "oneValidTicket": true,
+      "catalogIntact": true
+    }
+  }
+}

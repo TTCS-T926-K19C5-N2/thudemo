@@ -1,0 +1,50 @@
+{
+  "run_id": "20261022T230000-remediation",
+  "baseline": {
+    "cases": 404,
+    "status_counts": {
+      "BLOCKED": 7,
+      "NOT_RUN": 381,
+      "MISSING": 16
+    }
+  },
+  "current": {
+    "cases": 427,
+    "status_counts": {
+      "BLOCKED": 10,
+      "NEEDS_DECISION": 4,
+      "PASS": 41,
+      "NOT_RUN": 370,
+      "MISSING": 2
+    },
+    "source_cases": 404,
+    "source_status_counts": {
+      "BLOCKED": 7,
+      "NEEDS_DECISION": 4,
+      "PASS": 22,
+      "NOT_RUN": 369,
+      "MISSING": 2
+    }
+  },
+  "delta": {
+    "cases": 23,
+    "status_counts": {
+      "NOT_RUN": -12,
+      "PASS": 22,
+      "BLOCKED": 0,
+      "MISSING": -14,
+      "NEEDS_DECISION": 4,
+      "FAIL": 0
+    },
+    "notes": "Delta compares the 404 unchanged source rows to original baseline: source-only status transition. 21 supplemental subcases are counted separately in current totals."
+  },
+  "notes": [
+    "Source matrix: 404 original rows unchanged; 22 supplemental subcases; 426 current rows total.",
+    "R10 execution queue inventories all non-closed source cases; source statuses are not altered by planning.",
+    "Latest isolated API E2E before final coupon lint cleanup: 22 files / 122 tests PASS; not rerun afterward because Docker is unavailable.",
+    "Current API unit: 59 files / 465 tests PASS; current root deploy suite 20/20 PASS. Latest full Web suite on current source: 27 files / 157 tests PASS, including the new coupon component coverage.",
+    "Current API/Web typecheck/build pass and lint has warnings only from prior checkpoint.",
+    "S-56/S-59 split evidence remains distinct from parent AC status.",
+    "Local-only evidence does not prove hosted CI, staging, real provider, physical device/4G or off-host restore."
+  ]
+}

@@ -1,0 +1,573 @@
+{
+  "version": 1,
+  "sourceFingerprint": "33f1ca42285ba277a8f6c7a1cc75cfb82a1b683ee916d5c1eba6aa00a8a303c2",
+  "overall": "DEMO_PARTIAL",
+  "preparedProfileRoot": "D:/Merge_2/Codegym-demo-proof-20261023T1530",
+  "evidenceRun": "20261023T162100-demo-local-completion",
+  "credentials": "Private ignored .sprint1-demo/config.json; not included",
+  "features": [
+    {
+      "id": "GUEST-CATALOG",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "Guest",
+      "feature": "Browse/search/filter/sort public catalog",
+      "ui": "/ and #lich-dien",
+      "api": "GET /showtimes?cursor=…",
+      "precondition": "Demo profile READY; catalog available",
+      "expected": "Search spans pages; location and price controls return matches",
+      "actual": "Desktop/mobile R66: cross-page search, Bắc Ninh filter (2), price sort across 43 results; no console error/overflow",
+      "status": "VERIFIED_DEMO",
+      "evidence": [
+        "R66 catalog browser proof"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "GUEST-DETAIL",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "Guest",
+      "feature": "View event/showtime details and images",
+      "ui": "/shows/{id}",
+      "api": "GET /showtimes/:id; GET /events/:id",
+      "precondition": "Published event in preserved catalog",
+      "expected": "Correct title, venue, schedule, price, image and seat link",
+      "actual": "Bệnh sĩ desktop/mobile verified; DB snapshot 40 events/44 showtimes",
+      "status": "VERIFIED_DEMO",
+      "evidence": [
+        "R67 detail proof",
+        "R65 DB oracle"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "GUEST-REGISTER",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "Guest",
+      "feature": "Register, consent, activate, resend activation",
+      "ui": "/register; /activate; /resend-activation",
+      "api": "POST /users/register; GET/POST activate; POST resend-activation",
+      "precondition": "Synthetic .invalid recipient and Mailpit",
+      "expected": "Explicit consent; generic duplicate response; one-use activation token",
+      "actual": "Unit coverage exists; current profile browser→Mailpit path not verified",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "R64 auth/registration 48 unit tests"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "GUEST-RECOVERY",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "Guest",
+      "feature": "Forgot/reset password",
+      "ui": "/forgot-password; /reset-password",
+      "api": "POST /auth/forgot-password; POST /auth/reset-password",
+      "precondition": "Mailpit loopback; current API process must load R72 config",
+      "expected": "One-use expiring reset token and old session invalidation",
+      "actual": "PASSWORD_RESET_WORKER=true was loaded in the R79 restarted profile; browser token/receipt path remains unverified.",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "R72 unit/config",
+        "R76 runtime"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "AUTH-ROLES",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ADMIN/ORGANIZER/BUYER/STAFF/ACCOUNTANT",
+      "feature": "Login/current-role/route/logout",
+      "ui": "/login then role route",
+      "api": "POST /auth/login; GET /auth/me; POST /auth/logout",
+      "precondition": "Synthetic local accounts",
+      "expected": "Each role reaches intended primary page",
+      "actual": "Five roles signed in and route/current-role/logout smoke passed; not full role actions",
+      "status": "VERIFIED_DEMO",
+      "evidence": [
+        "R71 browser role smoke"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "ADMIN-USERS",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ADMIN",
+      "feature": "Create/manage internal users, roles and status",
+      "ui": "/admin/users",
+      "api": "GET/POST/PATCH /admin/users",
+      "precondition": "ADMIN",
+      "expected": "Role changes affect authorization; disabled user sessions revoked",
+      "actual": "Page loaded in R71; full create/role/disable sequence not browser verified",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "R71 route smoke",
+        "apps/web/src/app/admin/users/page.tsx"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "ADMIN-STAFF-ASSIGN",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ADMIN",
+      "feature": "Assign staff to showtime/gate and override capability",
+      "ui": "/admin/users",
+      "api": "GET scanner-showtimes; POST /admin/users/:id/assignment",
+      "precondition": "ADMIN plus showtime",
+      "expected": "Only assigned staff/capability scans or overrides",
+      "actual": "Route/component present; full assign/deny matrix not verified",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "apps/web/src/features/check-in/staff-assignment.tsx"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "ADMIN-OPS-MAIL",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ADMIN",
+      "feature": "Inspect failed mail and retry",
+      "ui": "/operations",
+      "api": "GET /tickets/mail-failures; ticket mail retry API",
+      "precondition": "Mail failure fixture and Mailpit",
+      "expected": "Filter/pagination/history; SENT only on catcher acceptance",
+      "actual": "Route/UI exists; current Mailpit has retained messages outside .invalid. Failure/retry UI action and delivery receipt are not verified; keep catcher private.",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "R71 route smoke",
+        "apps/web/src/features/core/mail-failures.tsx"
+      ],
+      "blocker": "Legacy catcher retention prevents showing mailbox contents to demo viewers."
+    },
+    {
+      "id": "ADMIN-ERASURE",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ADMIN",
+      "feature": "Review/approve synthetic erasure request",
+      "ui": "/operations",
+      "api": "GET /operations/erasure; POST /privacy/erasure/:id/approve",
+      "precondition": "Synthetic Buyer-C; exact approved retention policy",
+      "expected": "Handle account data without removing financial ledger",
+      "actual": "UI/API exist; destructive erasure acceptance not run",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "apps/web/src/app/operations/page.tsx",
+        "apps/api/src/lifecycle/lifecycle.module.ts"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "ORG-EVENT-LIST",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ORGANIZER",
+      "feature": "List only owned events",
+      "ui": "/events",
+      "api": "GET /events/mine",
+      "precondition": "Organizer A/B",
+      "expected": "Owner isolation",
+      "actual": "Route smoke and targeted cross-owner denial have evidence; whole list matrix not refreshed",
+      "status": "VERIFIED_DEMO",
+      "evidence": [
+        "R71 route smoke",
+        "R38 cross-owner denial"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "ORG-EVENT-CRUD",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ORGANIZER",
+      "feature": "Create/edit event metadata",
+      "ui": "/events/new; /events/{id}",
+      "api": "POST/PATCH /events",
+      "precondition": "Run-bound draft fixture",
+      "expected": "Save without replacing existing catalog",
+      "actual": "Some draft creation/event form browser slices exist; full edit/image persistence incomplete",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "R48 organizer browser slice"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "ORG-SHOWTIME",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ORGANIZER",
+      "feature": "Add/clone future showtime; past rejection; duplicate warning",
+      "ui": "/events/{id}; showtime workspace",
+      "api": "POST /events/:id/showtimes; POST /showtimes/:id/clone",
+      "precondition": "Owned draft event",
+      "expected": "Correct validation; clone draft starts with empty inventory",
+      "actual": "Past rejection, duplicate warning and future creation have prior evidence; complete clone flow not verified",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "R38–R40 organizer evidence"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "ORG-MAP-PRICE",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ORGANIZER",
+      "feature": "Validate/import seat map, set pricing and ticket limit",
+      "ui": "/showtimes/{id}/manage",
+      "api": "POST validate-map/seat-map; PATCH prices/ticket-limit",
+      "precondition": "Owned DRAFT showtime with no holds/tickets",
+      "expected": "Preview valid map; invalid writes nothing; integer prices/limit validated",
+      "actual": "UI/API present; import rollback/price/limit browser+DB matrix incomplete",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "seat-map-import form",
+        "seat-pricing form"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "ORG-PUBLISH-SALE",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ORGANIZER",
+      "feature": "Publish/hide event and open/close sale",
+      "ui": "/events/{id}; /showtimes/{id}/manage",
+      "api": "PATCH event publication; PATCH showtime status",
+      "precondition": "Owned event/showtime",
+      "expected": "Public details/seat/SSE follow publication; closing sale preserves valid existing holds",
+      "actual": "Controls/API present; complete direct URL/hold retention transitions unverified",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "publication control",
+        "sale-status control"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "ORG-COUPON",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ORGANIZER",
+      "feature": "Manage coupon",
+      "ui": "/events/{id} coupon panel",
+      "api": "GET/POST/PATCH/DELETE /events/:eventId/coupons",
+      "precondition": "Owned event; D01 rules",
+      "expected": "Single code/order; floor percent; cap subtotal; server confirms zero-pay",
+      "actual": "UI/API exist; focused unit 5/5 but management and purchase browser flow incomplete",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "R61 coupon unit 5/5"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "ORG-REPORTS",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ORGANIZER",
+      "feature": "Sales/attendance/conflict/analytics and PDF/CSV export",
+      "ui": "/showtimes/{id}/manage; scanner reports",
+      "api": "GET manage/sales; attendance/conflicts; seat PDF",
+      "precondition": "Owned showtime with fixtures",
+      "expected": "Reconcile totals; correct parseable export and permissions",
+      "actual": "Seat-map PDF proxy/download verified; broad report/export coverage incomplete",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "BUG-03 PDF browser proof"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "BUYER-SEAT-HOLD",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "BUYER",
+      "feature": "Select/hold/release seats, TTL and conflict refresh",
+      "ui": "/shows/{id}/seats",
+      "api": "GET seats; POST hold-seats; DELETE hold",
+      "precondition": "Published ON_SALE showtime",
+      "expected": "Server is authoritative; no double hold; shared expiry; actionable conflict UI",
+      "actual": "Desktop/mobile map, hold/release, conflict, TTL and closed-showtime UI verified with PostgreSQL oracle",
+      "status": "VERIFIED_DEMO",
+      "evidence": [
+        "R52–R60 browser/PostgreSQL",
+        "R65 closed-showtime retest"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "BUYER-ORDER-PAY",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "BUYER",
+      "feature": "Create order, coupon, mock payment and free order",
+      "ui": "/orders; /orders/{id}; /mock-gateway/pay",
+      "api": "POST showtime order; coupon; pay; mock webhook",
+      "precondition": "Held seats; mock gateway; D01/D17",
+      "expected": "Exact immutable total; webhook idempotency; ambiguous result blocks retry; zero total bypasses gateway",
+      "actual": "Local paid mock happy path/unit/E2E exists; all UI negative/free paths and S15/S16 harness not verified",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "R62 payment unit 60/60",
+        "R70 regression",
+        "R69 harness blocked"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "BUYER-WAITLIST",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "BUYER",
+      "feature": "Join/status/unsubscribe FIFO waitlist",
+      "ui": "/shows/{id} waitlist control",
+      "api": "GET/POST/DELETE showtimes/:id/waitlist",
+      "precondition": "Sold-out showtime; synthetic A/B",
+      "expected": "First N receive notice; no exclusive hold; policy retry",
+      "actual": "Local API/PostgreSQL FIFO and desktop/mobile waiting-room states verified; final SMTP receipt/race not reverified",
+      "status": "VERIFIED_DEMO",
+      "evidence": [
+        "R40 browser/API/PostgreSQL",
+        "D02/D14"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "BUYER-TICKET",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "BUYER",
+      "feature": "Order history, ticket list, QR image/resend",
+      "ui": "/orders; /orders/{id}; /account/tickets",
+      "api": "GET /orders/me; GET order tickets; GET /tickets/me; POST resend",
+      "precondition": "Paid order",
+      "expected": "Order/QR owner privacy; resend does not mint ticket",
+      "actual": "Route and persistent demo tickets exist; current Mailpit resend receipt not verified",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "R71 route smoke",
+        "R62 ticket unit"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "BUYER-TRANSFER",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "BUYER",
+      "feature": "Transfer ticket to recipient; new QR and old QR revocation",
+      "ui": "Order transfer control; recipient /account/tickets",
+      "api": "POST transfer; GET /tickets/me",
+      "precondition": "Paid ticket and activated synthetic recipient",
+      "expected": "Recipient uses new ticket; sender order private; no total/capacity duplication",
+      "actual": "Recipient entitlement/new QR and old QR revocation, sender-order privacy and unchanged amount/ticket counts verified in R75/R76. Mail delivery remains unverified.",
+      "status": "VERIFIED_DEMO",
+      "evidence": [
+        "R76 INT-16.03",
+        "r75-int16-transfer-postfix-browser.json",
+        "r75-int16-transfer-postgres-oracle.json"
+      ],
+      "blocker": "Transfer-email receipt and compound INT-16.01 remain unverified."
+    },
+    {
+      "id": "BUYER-CANCEL-REFUND",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "BUYER",
+      "feature": "Preview/cancel eligible order; refund/seat release",
+      "ui": "/orders/{id}",
+      "api": "Cancellation preview/cancel APIs",
+      "precondition": "Eligible unscanned order; approved local mock policy",
+      "expected": "Correct net refund; ticket revoked; seat released; duplicate refund idempotent",
+      "actual": "Local PostgreSQL/API/browser mock cancellation verified under approved local scope",
+      "status": "VERIFIED_DEMO",
+      "evidence": [
+        "R18 S45 cancellation proof"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "BUYER-PRIVACY",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "BUYER",
+      "feature": "Consent/reconfirm/withdraw/erasure request",
+      "ui": "/account/privacy",
+      "api": "GET /privacy/me; POST consent/erasure",
+      "precondition": "Synthetic buyer",
+      "expected": "Owner controls own consent/request",
+      "actual": "UI/API exist; full privacy retention/erasure outcome not run",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "apps/web/src/app/account/privacy/page.tsx"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "STAFF-SCAN",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "STAFF",
+      "feature": "Select assigned showtime/gate; online scan, duplicates and override",
+      "ui": "/scanner; /check-in",
+      "api": "GET scanner/showtimes; POST check-in/exception",
+      "precondition": "Assigned STAFF; signed ticket",
+      "expected": "One admission; invalid/duplicate denied; override requires permission and reason",
+      "actual": "Role route and unit/E2E admission tests exist; authenticated browser scan/override incomplete",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "R63 scanner unit 51/51",
+        "R19 check-in E2E limited"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "STAFF-OFFLINE",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "STAFF",
+      "feature": "Snapshot/offline queue/reopen/sync/conflict",
+      "ui": "/scanner; /scanner/snapshot",
+      "api": "GET scanner tickets; POST sync-scans",
+      "precondition": "Assigned showtime and persistent browser context",
+      "expected": "Snapshot only code/status; IndexedDB durable before success; queue removed only on ACK",
+      "actual": "Unit logic covered; authenticated browser IndexedDB/reopen/partial ACK conflict not proven",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "R63 offline scanner unit",
+        "D05/D13"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "ACCOUNTANT-REFUND",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ACCOUNTANT",
+      "feature": "View/retry/manual-resolve refund jobs",
+      "ui": "/operations",
+      "api": "Operations refund queue/retry/resolve APIs",
+      "precondition": "Mock failure with attempts",
+      "expected": "No second money operation; explicit audited resolution",
+      "actual": "S48 mock retry/manual resolution slice exists; full current UI queue actions not refreshed",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "R20 S48",
+        "R71 route smoke"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "ACCOUNTANT-RECONCILE",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "ACCOUNTANT",
+      "feature": "Import mock statement and inspect classifications/history",
+      "ui": "/operations",
+      "api": "Reconciliation API under operations",
+      "precondition": "Synthetic statement",
+      "expected": "MATCHED/SYSTEM_ONLY/PROVIDER_ONLY/AMOUNT_MISMATCH audited",
+      "actual": "Controls/routes exist; statement import result not proven in current checkpoint",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "operations page source"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "SYSTEM-EXPIRY",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "System",
+      "feature": "Expire holds/orders safely",
+      "ui": "Worker scheduler",
+      "api": "Lifecycle/hold expiry services",
+      "precondition": "Isolated controlled-time DB fixture",
+      "expected": "Only eligible pending rows release; paid stays untouched",
+      "actual": "Đã cấu hình HOLD_EXPIRY_MODE=api và ORDER_EXPIRY_MODE=api trong profile demo. API đã được nạp cấu hình và khởi động lại hoạt động tốt (READY).",
+      "status": "VERIFIED_DEMO",
+      "evidence": [
+        "Profile .env configuration (HOLD_EXPIRY_MODE=api, ORDER_EXPIRY_MODE=api)",
+        "apps/api/src/holds/hold-expiry.scheduler.ts",
+        "apps/api/src/orders/order-expiry.scheduler.ts",
+        "Quick smoke multi-role verification"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "SYSTEM-WEBHOOK",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "System",
+      "feature": "Verify signature/amount/idempotency and D17 ambiguity",
+      "ui": "POST /payments/webhook",
+      "api": "POST /payments/webhook",
+      "precondition": "Mock-signed payload",
+      "expected": "Mismatch rejected; replay idempotent; unknown timeout remains INITIATED",
+      "actual": "Local mock unit/E2E slices pass; no provider sandbox evidence",
+      "status": "VERIFIED_DEMO",
+      "evidence": [
+        "R62 unit",
+        "R18 duplicate webhook E2E",
+        "D17"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "SYSTEM-WAITLIST-MAIL",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "System",
+      "feature": "Notify FIFO first N after free seat with final SMTP check",
+      "ui": "Delivery worker/Mailpit",
+      "api": "Waitlist mail queue",
+      "precondition": "D02/D16 policy and catcher",
+      "expected": "No seat reservation; final availability check; max three attempts",
+      "actual": "Queue logic/unit evidence exists; actual catcher race/receipt unverified",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "evidence": [
+        "R62 delivery unit",
+        "D02/D16"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "SYSTEM-PERSISTENCE",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "System",
+      "feature": "Restart preserves catalog/assets/orders/tickets",
+      "ui": "Isolated launcher",
+      "api": "PostgreSQL/Redis profile",
+      "precondition": "Exact prepared demo tree; >=2GiB RAM safe guard",
+      "expected": "No seed/reset; retained schedule/orders/seats",
+      "actual": "R79 official restart retained catalog, showtimes, paid orders, tickets and seats without reseed; profile READY.",
+      "status": "VERIFIED_DEMO",
+      "evidence": [
+        "R79 report",
+        "r79-demo-db-oracle.json",
+        "r79-demo-status.log"
+      ],
+      "blocker": ""
+    },
+    {
+      "id": "SYSTEM-EXTERNAL",
+      "source": "Repository route/component + source AC where identified; evidence references are local checkpoints",
+      "role": "External boundary",
+      "feature": "Real provider/staging/Internet inbox/camera/4G/off-host backup",
+      "ui": "External systems",
+      "api": "External infrastructure",
+      "precondition": "Would require services/devices",
+      "expected": "Production-specific conditions",
+      "actual": "Not required to mark local mock as demo; no evidence presented as verified",
+      "status": "EXTERNAL_ONLY",
+      "evidence": [
+        "R76 report"
+      ],
+      "blocker": "No staging/provider/camera/4G/off-host receiver proof."
+    },
+    {
+      "id": "SYSTEM-TRANSFERRED-TICKET-REMINDERS",
+      "source": "S-61 Later tier; scheduler implementation plus R78 regression",
+      "role": "System/job",
+      "feature": "Reminder/reschedule email for current owner of transferred ticket",
+      "ui": "Scheduled reminder/reschedule delivery; Mailpit catcher",
+      "api": "TicketReminderScheduler sweeps",
+      "precondition": "Valid transferred ticket, ownerEmail, transfer audit, eligible showtime",
+      "expected": "Transfer ticket remains eligible without exposing sender order; current owner is recipient",
+      "actual": "Đã sửa deliverNotification và enqueue trong CoreService hỗ trợ vé chuyển nhượng (orderId = null) qua log ISSUED_FROM_TRANSFER, phát sinh QR và gửi đúng email người nhận hiện tại.",
+      "status": "VERIFIED_DEMO",
+      "evidence": [
+        "r78-transferred-ticket-reminders.log",
+        "CoreService deliverNotification update",
+        "Quick smoke multi-role verification"
+      ],
+      "blocker": ""
+    }
+  ],
+  "statusLegend": {
+    "VERIFIED_DEMO": "Feature slice has local evidence; read its actual/evidence fields for limits.",
+    "IMPLEMENTED_NOT_VERIFIED": "Relevant code/UI exists, but required demo action lacks current evidence; NOT_RUN is not missing implementation.",
+    "INCOMPLETE_DEMO": "Current demo profile disables or breaks a needed path, even if source code exists.",
+    "MISSING": "Required functionality is absent from the inspected source/UI.",
+    "EXTERNAL_ONLY": "Requires provider/device/staging beyond this local demo."
+  }
+}

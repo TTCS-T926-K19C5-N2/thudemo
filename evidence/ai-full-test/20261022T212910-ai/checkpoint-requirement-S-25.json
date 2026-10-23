@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-25-AC01",
+    "requirement_id": "S-25",
+    "kind": "AC",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Nhận vé điện tử có mã QR sau khi thanh toán",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L30"
+    },
+    "original_requirement": "Giả sử đơn vừa chuyển sang đã trả, Khi tôi mở trang đơn, Thì mỗi ghế có một vé riêng với mã QR, tên sự kiện, suất, hạng và số ghế",
+    "fixture": "Order pending và paid 3 ghế; B không sở hữu.",
+    "surfaces": "GET /orders/:id/tickets; /orders/:id",
+    "code_candidates": "apps/api/src/orders/ticket-qr.service.ts; apps/api/src/tickets/",
+    "test_candidates": "tickets.e2e-spec.ts; ticket-qr.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: đơn vừa chuyển sang đã trả.",
+      "Thực hiện trên GET /orders/:id/tickets; /orders/:id: tôi mở trang đơn.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Trước trả tiền không có vé; sau webhook có đúng 3 vé, QR khác nhau, đủ event/suất/hạng/ghế. Replay không sinh thêm vé; so identity giữa projection orders và tickets, không chỉ đếm một bảng.",
+    "expected": [
+      "mỗi ghế có một vé riêng với mã QR, tên sự kiện, suất, hạng và số ghế"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-25-AC02",
+    "requirement_id": "S-25",
+    "kind": "AC",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Nhận vé điện tử có mã QR sau khi thanh toán",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L30"
+    },
+    "original_requirement": "Giả sử đơn có 3 ghế, Khi xem vé, Thì ba mã QR khác nhau và mã của vé này không suy ra được mã vé khác",
+    "fixture": "Order pending và paid 3 ghế; B không sở hữu.",
+    "surfaces": "GET /orders/:id/tickets; /orders/:id",
+    "code_candidates": "apps/api/src/orders/ticket-qr.service.ts; apps/api/src/tickets/",
+    "test_candidates": "tickets.e2e-spec.ts; ticket-qr.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: đơn có 3 ghế.",
+      "Thực hiện trên GET /orders/:id/tickets; /orders/:id: xem vé.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Trước trả tiền không có vé; sau webhook có đúng 3 vé, QR khác nhau, đủ event/suất/hạng/ghế. Replay không sinh thêm vé; so identity giữa projection orders và tickets, không chỉ đếm một bảng.",
+    "expected": [
+      "ba mã QR khác nhau và mã của vé này không suy ra được mã vé khác"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-25-AC03",
+    "requirement_id": "S-25",
+    "kind": "AC",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Nhận vé điện tử có mã QR sau khi thanh toán",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L30"
+    },
+    "original_requirement": "Giả sử đơn chưa trả, Khi mở trang vé bằng đường dẫn, Thì không có vé nào",
+    "fixture": "Order pending và paid 3 ghế; B không sở hữu.",
+    "surfaces": "GET /orders/:id/tickets; /orders/:id",
+    "code_candidates": "apps/api/src/orders/ticket-qr.service.ts; apps/api/src/tickets/",
+    "test_candidates": "tickets.e2e-spec.ts; ticket-qr.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: đơn chưa trả.",
+      "Thực hiện trên GET /orders/:id/tickets; /orders/:id: mở trang vé bằng đường dẫn.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Trước trả tiền không có vé; sau webhook có đúng 3 vé, QR khác nhau, đủ event/suất/hạng/ghế. Replay không sinh thêm vé; so identity giữa projection orders và tickets, không chỉ đếm một bảng.",
+    "expected": [
+      "không có vé nào"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-25-NFR",
+    "requirement_id": "S-25",
+    "kind": "NFR",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Nhận vé điện tử có mã QR sau khi thanh toán — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N30"
+    },
+    "original_requirement": "mã vé sinh ngẫu nhiên đủ dài, không dùng số thứ tự tăng dần. Ước lượng thô 3 SP — tier Next",
+    "fixture": "Order pending và paid 3 ghế; B không sở hữu.",
+    "surfaces": "GET /orders/:id/tickets; /orders/:id",
+    "code_candidates": "apps/api/src/orders/ticket-qr.service.ts; apps/api/src/tickets/",
+    "test_candidates": "tickets.e2e-spec.ts; ticket-qr.spec.ts",
+    "steps": [
+      "Trước trả tiền không có vé; sau webhook có đúng 3 vé, QR khác nhau, đủ event/suất/hạng/ghế. Replay không sinh thêm vé; so identity giữa projection orders và tickets, không chỉ đếm một bảng.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "mã vé sinh ngẫu nhiên đủ dài, không dùng số thứ tự tăng dần. Ước lượng thô 3 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

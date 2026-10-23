@@ -1,0 +1,17 @@
+{
+  "run_id": "20261022T230000-remediation",
+  "cases": 404,
+  "source_unchanged": true,
+  "pass_case_ids": [
+    "S-20-AC02",
+    "S-20-AC03",
+    "S-20-AC04",
+    "S-31-AC02",
+    "S-31-NFR"
+  ],
+  "evidence_files_present": [
+    true,
+    true,
+    true
+  ]
+}

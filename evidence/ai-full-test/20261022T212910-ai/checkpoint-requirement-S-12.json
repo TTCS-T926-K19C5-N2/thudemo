@@ -1,0 +1,200 @@
+[
+  {
+    "id": "S-12-AC01",
+    "requirement_id": "S-12",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Ghế được nhả tự động khi hết hạn giữ chỗ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L12"
+    },
+    "original_requirement": "Giả sử một giữ chỗ đã quá hạn, Khi job nền chạy, Thì giữ chỗ bị huỷ và ghế trở lại trạng thái trống",
+    "fixture": "Hold hết hạn, còn hạn và đã chuyển sang order; worker off/on.",
+    "surfaces": "Worker hết hạn và GET ghế",
+    "code_candidates": "apps/api/src/holds/hold-expiry.scheduler.ts; apps/api/src/hold-expiry-worker.ts",
+    "test_candidates": "hold-expiry.scheduler.spec.ts; seat-expiry-job.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: một giữ chỗ đã quá hạn.",
+      "Thực hiện trên Worker hết hạn và GET ghế: job nền chạy.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Khi worker tắt, hold quá hạn vẫn được truy vấn như trống. Chạy job hai lần, restart job sau backlog; chỉ dọn hết hạn, không dọn bảo lưu đơn đang chờ. Dùng fake clock/DB fixture, không chỉnh giờ hệ điều hành.",
+    "expected": [
+      "giữ chỗ bị huỷ và ghế trở lại trạng thái trống"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-12-AC02",
+    "requirement_id": "S-12",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Ghế được nhả tự động khi hết hạn giữ chỗ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L12"
+    },
+    "original_requirement": "Giả sử giữ chỗ vừa hết hạn nhưng job chưa chạy tới, Khi người khác truy vấn ghế trống, Thì ghế đó vẫn được tính là trống — truy vấn lọc theo thời điểm hết hạn chứ không chờ job",
+    "fixture": "Hold hết hạn, còn hạn và đã chuyển sang order; worker off/on.",
+    "surfaces": "Worker hết hạn và GET ghế",
+    "code_candidates": "apps/api/src/holds/hold-expiry.scheduler.ts; apps/api/src/hold-expiry-worker.ts",
+    "test_candidates": "hold-expiry.scheduler.spec.ts; seat-expiry-job.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: giữ chỗ vừa hết hạn nhưng job chưa chạy tới.",
+      "Thực hiện trên Worker hết hạn và GET ghế: người khác truy vấn ghế trống.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Khi worker tắt, hold quá hạn vẫn được truy vấn như trống. Chạy job hai lần, restart job sau backlog; chỉ dọn hết hạn, không dọn bảo lưu đơn đang chờ. Dùng fake clock/DB fixture, không chỉnh giờ hệ điều hành.",
+    "expected": [
+      "ghế đó vẫn được tính là trống — truy vấn lọc theo thời điểm hết hạn chứ không chờ job"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-12-AC03",
+    "requirement_id": "S-12",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Ghế được nhả tự động khi hết hạn giữ chỗ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L12"
+    },
+    "original_requirement": "Giả sử tiến trình nền vừa khởi động lại sau sự cố, Khi chạy lần đầu, Thì dọn hết mọi giữ chỗ quá hạn tồn đọng",
+    "fixture": "Hold hết hạn, còn hạn và đã chuyển sang order; worker off/on.",
+    "surfaces": "Worker hết hạn và GET ghế",
+    "code_candidates": "apps/api/src/holds/hold-expiry.scheduler.ts; apps/api/src/hold-expiry-worker.ts",
+    "test_candidates": "hold-expiry.scheduler.spec.ts; seat-expiry-job.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tiến trình nền vừa khởi động lại sau sự cố.",
+      "Thực hiện trên Worker hết hạn và GET ghế: chạy lần đầu.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Khi worker tắt, hold quá hạn vẫn được truy vấn như trống. Chạy job hai lần, restart job sau backlog; chỉ dọn hết hạn, không dọn bảo lưu đơn đang chờ. Dùng fake clock/DB fixture, không chỉnh giờ hệ điều hành.",
+    "expected": [
+      "dọn hết mọi giữ chỗ quá hạn tồn đọng"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-12-AC04",
+    "requirement_id": "S-12",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Ghế được nhả tự động khi hết hạn giữ chỗ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L12"
+    },
+    "original_requirement": "Giả sử một giữ chỗ đã chuyển thành đơn hàng đang chờ thanh toán, Khi job dọn chạy, Thì không đụng tới ghế đó",
+    "fixture": "Hold hết hạn, còn hạn và đã chuyển sang order; worker off/on.",
+    "surfaces": "Worker hết hạn và GET ghế",
+    "code_candidates": "apps/api/src/holds/hold-expiry.scheduler.ts; apps/api/src/hold-expiry-worker.ts",
+    "test_candidates": "hold-expiry.scheduler.spec.ts; seat-expiry-job.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: một giữ chỗ đã chuyển thành đơn hàng đang chờ thanh toán.",
+      "Thực hiện trên Worker hết hạn và GET ghế: job dọn chạy.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Khi worker tắt, hold quá hạn vẫn được truy vấn như trống. Chạy job hai lần, restart job sau backlog; chỉ dọn hết hạn, không dọn bảo lưu đơn đang chờ. Dùng fake clock/DB fixture, không chỉnh giờ hệ điều hành.",
+    "expected": [
+      "không đụng tới ghế đó"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-12-NFR",
+    "requirement_id": "S-12",
+    "kind": "NFR",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Ghế được nhả tự động khi hết hạn giữ chỗ — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N12"
+    },
+    "original_requirement": "job dọn chạy được nhiều lần trên cùng dữ liệu mà kết quả không đổi",
+    "fixture": "Hold hết hạn, còn hạn và đã chuyển sang order; worker off/on.",
+    "surfaces": "Worker hết hạn và GET ghế",
+    "code_candidates": "apps/api/src/holds/hold-expiry.scheduler.ts; apps/api/src/hold-expiry-worker.ts",
+    "test_candidates": "hold-expiry.scheduler.spec.ts; seat-expiry-job.service.spec.ts",
+    "steps": [
+      "Khi worker tắt, hold quá hạn vẫn được truy vấn như trống. Chạy job hai lần, restart job sau backlog; chỉ dọn hết hạn, không dọn bảo lưu đơn đang chờ. Dùng fake clock/DB fixture, không chỉnh giờ hệ điều hành.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "job dọn chạy được nhiều lần trên cùng dữ liệu mà kết quả không đổi"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

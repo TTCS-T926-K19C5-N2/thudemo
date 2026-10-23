@@ -90,16 +90,21 @@ export async function proxyApi(
       if (value) headers.set(name, value);
     }
     const body = await boundedBody(request);
+    const eventStream = request.headers
+      .get("accept")
+      ?.includes("text/event-stream");
     const upstream = await fetch(url, {
       method: request.method,
       headers,
       body: body?.buffer,
-      signal: AbortSignal.any([request.signal, AbortSignal.timeout(15000)]),
+      signal: eventStream
+        ? request.signal
+        : AbortSignal.any([request.signal, AbortSignal.timeout(15000)]),
       redirect: "manual",
       cache: "no-store",
     });
     const responseHeaders = new Headers({ "Cache-Control": "no-store" });
-    for (const name of ["content-type", "retry-after"]) {
+    for (const name of ["content-type", "content-disposition", "retry-after"]) {
       const value = upstream.headers.get(name);
       if (value) responseHeaders.set(name, value);
     }

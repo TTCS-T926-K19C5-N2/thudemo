@@ -1,0 +1,12 @@
+{
+  "runId": "20261022T230000-remediation",
+  "fixture": {
+    "eventId": "9990f54a-4569-4604-8766-62b7d10d205c",
+    "showtimeId": "7c02a35a-22ec-4b39-a2ab-21afbd8abf2b",
+    "orderId": "88fc6897-11a3-4a6a-b23f-2c575a907e4a",
+    "orderItemId": "145a1c5a-24ec-4e6c-8927-66d07bc155a6",
+    "initialTicketId": "533dfa00-427e-487d-994b-6527bbf2ec09"
+  },
+  "amountVnd": 125000,
+  "syntheticBuyerAndRecipient": true
+}

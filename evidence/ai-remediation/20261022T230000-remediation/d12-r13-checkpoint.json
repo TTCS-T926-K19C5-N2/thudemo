@@ -1,0 +1,51 @@
+{
+  "runId": "20261022T230000-remediation",
+  "recordedLocal": "2026-10-23T03:48:41.717Z",
+  "slice": "D12 allocation and R13 cancellation/refund waitlist release",
+  "decisions": {
+    "D12": {
+      "status": "APPROVED_USER",
+      "choice": "Proportional ticket allocation; floor each share; distribute remainder one VND at a time in ascending ticket-code order."
+    }
+  },
+  "checks": {
+    "D12": {
+      "unit": "6/6",
+      "fullApiE2E": "22 files / 127 tests",
+      "targetedPostFinalChange": "reports unit 6/6; lifecycle cancellation E2E 7/7; typecheck/build/lint exit 0"
+    },
+    "R13": {
+      "refundRelease": "PASS; 2 cancelled paid tickets => releasedCount=2, exactly 2 FIFO notices, zero holds",
+      "evidence": "r13-cancel-waitlist-e2e.log",
+      "desktopMobile": "PASS; screenshots saved; DB oracle and cleanup PASS",
+      "supplemental": {
+        "showCancel": "PASS",
+        "unsubscribe": "PASS",
+        "accountErasure": "PASS",
+        "soldBeforeDeliveryValidation": "PASS",
+        "purchaseAfterCheckBeforeSMTPAcceptance": "NEEDS_DECISION"
+      }
+    },
+    "R22": {
+      "root": "PASS; API 60/471, Web 27/157, deploy 20/20",
+      "fullApiE2E": "22 files / 132 tests PASS",
+      "rootTypecheckBuildLint": "PASS",
+      "qrTimeout": "two failed attempts retained; focused and optimized root rerun PASS"
+    }
+  },
+  "limitations": [
+    "full isolated/local only",
+    "no partial-refund endpoint or item selection exists",
+    "provider sandbox not tested",
+    "Exact purchase-after-check/before-SMTP-accept ordering remains NEEDS_DECISION."
+  ],
+  "overall": "R00-R23 remediation remains IN_PROGRESS; this checkpoint does not represent full acceptance.",
+  "overallCoverage": {
+    "PASS": 55,
+    "FAIL": 0,
+    "BLOCKED": 6,
+    "MISSING": 1,
+    "NEEDS_DECISION": 5,
+    "NOT_RUN": 365
+  }
+}

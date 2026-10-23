@@ -1,0 +1,43 @@
+{
+  "capturedAt": "2026-10-23T08:26:57.268Z",
+  "profile": "s1demo-384da3d43b41",
+  "caseId": "S-04-AC05",
+  "fixture": {
+    "id": "9a1a4c17-06c0-43a6-9a32-3532e7d85a37",
+    "name": "AI-R38-S04-OWNER-20261023T1525Z",
+    "ownerRole": "organizer-b",
+    "status": "DRAFT",
+    "showtimes": 0,
+    "orders": 0,
+    "orderItems": 0,
+    "coupons": 0
+  },
+  "actor": "organizer-a",
+  "ui": {
+    "route": "/events/9a1a4c17-06c0-43a6-9a32-3532e7d85a37",
+    "observed": "Bạn không có quyền sửa sự kiện này",
+    "screenshot": "s04-ac05-organizer-a-denied-desktop.png"
+  },
+  "api": {
+    "operation": "GET /api/events/:id/manage issued by EventEditor on route load",
+    "status": "403 inferred from the exact UI branch: EventEditor sets forbidden only for response.status===403; no direct raw HTTP capture was available in this browser surface",
+    "authorizationGuard": "EventsService.findOwned compares event.organizerId to authenticated organizerId and throws ForbiddenException on mismatch"
+  },
+  "db": {
+    "oracle": "read-only PostgreSQL via Prisma, isolated demo DB",
+    "capturedAfterDeniedPageLoad": true,
+    "eventStatus": "DRAFT",
+    "ownerRole": "organizer-b",
+    "showtimes": 0,
+    "orderItems": 0,
+    "orders": 0,
+    "coupons": 0,
+    "fixtureTitleAndDescriptionPreservedFromCreateFlow": true
+  },
+  "cleanup": {
+    "evidence": "s04-ac05-r38-cleanup.json",
+    "exactFixtureRemoved": true,
+    "guardedByRunBoundNameOwnerDraftStatusAndZeroChildren": true
+  },
+  "result": "PASS for UI denial and database immutability; API HTTP status inferred, not independently captured"
+}

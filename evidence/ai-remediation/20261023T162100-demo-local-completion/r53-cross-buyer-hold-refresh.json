@@ -1,0 +1,76 @@
+{
+  "runId": "R53-1792755391661",
+  "profile": "s1demo-384da3d43b41",
+  "showtimeId": "914556a8-ba19-4766-9e20-00a3d93df432",
+  "seat": "A-3",
+  "twoDistinctBuyers": true,
+  "twoDistinctBrowserContexts": true,
+  "bothInitiallySawAvailable": true,
+  "firstBuyerHoldConfirmed": true,
+  "secondBuyerSawHeldAfterReload": true,
+  "firstBuyerReleasedHold": true,
+  "businessCountsBefore": {
+    "orders": 5,
+    "tickets": 5,
+    "activeShowtimeHolds": 0,
+    "holdSessions": 4
+  },
+  "businessCountsAfterCleanup": {
+    "orders": 5,
+    "tickets": 5,
+    "activeShowtimeHolds": 0,
+    "holdSessions": 4
+  },
+  "countsRestored": true,
+  "pageErrors": [],
+  "relevantHttp": [
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds/43b1ed36-e35f-483b-b2a4-7ec4ba86ce79",
+      "status": 200
+    }
+  ],
+  "evidence": [
+    "r53-fixture.json",
+    "r53-buyer-a-hold-confirmed.png",
+    "r53-buyer-b-sees-held-after-reload.png",
+    "r53-buyer-a-after-release.png",
+    "r53-cleanup-verification.json"
+  ],
+  "exactFixtureCleanup": "UI release removed the active seat hold; this script removed only the R53-created HoldSession after proving it had no held seats or linked orders."
+}

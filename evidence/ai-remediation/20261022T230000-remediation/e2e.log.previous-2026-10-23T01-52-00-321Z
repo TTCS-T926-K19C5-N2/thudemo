@@ -1,0 +1,67 @@
+
+ RUN  v4.1.11 D:/Merge_2/Codegym/apps/api
+
+ ❯ test/coupons.e2e-spec.ts (2 tests | 1 failed) 1830ms
+     × serializes concurrent reservations at a one-use coupon cap on PostgreSQL 40ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  08:51:18
+   Duration  5.27s (transform 1.23s, setup 56ms, import 2.75s, tests 1.83s, environment 0ms)
+
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/coupons.e2e-spec.ts > S-56 coupons against isolated PostgreSQL
+PrismaClientKnownRequestError: 
+Invalid `db.order.deleteMany()` invocation in
+D:/Merge_2/Codegym/apps/api/test/coupons.e2e-spec.ts:111:24
+
+  108 await db.couponRedemption.deleteMany({ where: { orderId: { in: orderIds } } });
+  109 await db.ticket.deleteMany({ where: { orderId: { in: orderIds } } });
+  110 await db.orderItem.deleteMany({ where: { orderId: { in: orderIds } } });
+→ 111 await db.order.deleteMany(
+Foreign key constraint violated on the constraint: `order_items_orderId_fkey`
+ ❯ vn.handleRequestError ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:238:12
+ ❯ vn.handleAndLogRequestError ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:184:11
+ ❯ vn.request ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:153:11
+ ❯ a ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:1014:23
+ ❯ test/coupons.e2e-spec.ts:111:9
+    109|         await db.ticket.deleteMany({ where: { orderId: { in: orderIds …
+    110|         await db.orderItem.deleteMany({ where: { orderId: { in: orderI…
+    111|         await db.order.deleteMany({ where: { id: { in: orderIds } } });
+       |         ^
+    112|       }
+    113|       if (eventId) await db.coupon.deleteMany({ where: { eventId } });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/coupons.e2e-spec.ts > S-56 coupons against isolated PostgreSQL > serializes concurrent reservations at a one-use coupon cap on PostgreSQL
+PrismaClientKnownRequestError: 
+Invalid `db.order.create()` invocation in
+D:/Merge_2/Codegym/apps/api/test/coupons.e2e-spec.ts:23:34
+
+  20 const seatIds: string[] = [];
+  21 
+  22 async function createOrder(buyerId: string, seatId: string, amount = 101) {
+→ 23   const order = await db.order.create(
+Unique constraint failed on the constraint: `orders_one_pending_per_buyer_showtime_key`
+ ❯ vn.handleRequestError ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:238:12
+ ❯ vn.handleAndLogRequestError ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:184:11
+ ❯ vn.request ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:153:11
+ ❯ a ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:1014:23
+ ❯ createOrder test/coupons.e2e-spec.ts:23:19
+     21|
+     22|   async function createOrder(buyerId: string, seatId: string, amount =…
+     23|     const order = await db.order.create({
+       |                   ^
+     24|       data: {
+     25|         userId: buyerId,
+ ❯ test/coupons.e2e-spec.ts:164:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+

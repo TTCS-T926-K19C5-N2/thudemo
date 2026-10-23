@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-52-AC",
+    "requirement_id": "T-52",
+    "parent_requirement": "S-23",
+    "kind": "TASK_AC",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Job huỷ đơn quá hạn và nhả ghế trong một giao dịch",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G53"
+    },
+    "original_requirement": "Đơn quá hạn được huỷ và ghế trống; chạy hai lần không lỗi; log ghi số đơn đã huỷ",
+    "fixture": "Order pending quá hạn, paid và pending sát ranh; webhook đúng ký.",
+    "surfaces": "Worker order-expiry",
+    "code_candidates": "apps/api/src/orders/order-expiry.scheduler.ts; apps/api/src/orders/order-expiration.ts",
+    "test_candidates": "order-expiry.spec.ts; payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Chạy job lặp, chỉ pending quá hạn nhả ghế nguyên tử. Cho job và webhook tranh cùng order tại barrier, lặp nhiều lần; cuối cùng PAID+SOLD hoặc EXPIRED+nhả ghế+cần hoàn, không trạng thái lửng.",
+      "Kiểm riêng tiêu chí task T-52: Đơn quá hạn được huỷ và ghế trống; chạy hai lần không lỗi; log ghi số đơn đã huỷ",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Đơn quá hạn được huỷ và ghế trống; chạy hai lần không lỗi; log ghi số đơn đã huỷ"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-52-NFR",
+    "requirement_id": "T-52",
+    "parent_requirement": "S-23",
+    "kind": "TASK_NFR",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Job huỷ đơn quá hạn và nhả ghế trong một giao dịch",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I53"
+    },
+    "original_requirement": "khoá dòng đơn khi xử lý để không đua với webhook",
+    "fixture": "Order pending quá hạn, paid và pending sát ranh; webhook đúng ký.",
+    "surfaces": "Worker order-expiry",
+    "code_candidates": "apps/api/src/orders/order-expiry.scheduler.ts; apps/api/src/orders/order-expiration.ts",
+    "test_candidates": "order-expiry.spec.ts; payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Chạy job lặp, chỉ pending quá hạn nhả ghế nguyên tử. Cho job và webhook tranh cùng order tại barrier, lặp nhiều lần; cuối cùng PAID+SOLD hoặc EXPIRED+nhả ghế+cần hoàn, không trạng thái lửng.",
+      "Kiểm riêng tiêu chí task T-52: khoá dòng đơn khi xử lý để không đua với webhook",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "khoá dòng đơn khi xử lý để không đua với webhook"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

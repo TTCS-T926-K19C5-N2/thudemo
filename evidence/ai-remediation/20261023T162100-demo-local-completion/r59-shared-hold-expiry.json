@@ -1,0 +1,77 @@
+{
+  "run": "R59",
+  "profile": "s1demo-384da3d43b41",
+  "showtimeId": "914556a8-ba19-4766-9e20-00a3d93df432",
+  "testAccount": "lock-test synthetic Buyer",
+  "selectedSeats": [
+    "A-3",
+    "A-4",
+    "A-5"
+  ],
+  "selectionSpacingMs": 1100,
+  "holdConfirmed": true,
+  "bodyOnHoldResult": "BẢN DEMO · s1demo-384da3d43b41 · Sự kiện, lịch và giá dùng để trình diễn; đặt vé và thanh toán chỉ chạy trong môi trường local, không thu tiền thật.\nconfirmation_number\nVé Sự Kiện\nsearch\nTìm\nSự kiện\nNhà hát\nVé của tôi\nĐơn hàng\naccount_circle\nTài khoản\nĐăng xuất\n← Chi tiết suất diễn\nKỊCH NÓI\nBệnh sĩ\ncalendar_month\nThứ Hai, 07/12/2026 · 19:30\nlocation_on\nNhà hát Kịch Việt Nam — Số 1 Tràng Tiền, Hà Nội\nThông tin sự kiện\n↗\nSơ đồ khán phòng\n\n114 / 120 ghế còn trống\n\nzoom_out\n100%\nzoom_in\ncenter_focus_strong\nVIP\n580.000 ₫\n31 trống\nSTANDARD\n380.000 ₫\n47 trống\nECONOMY\n250.000 ₫\n36 trống\nCòn trống\ncheck\nĐang chọn\ncheck\nBạn đang giữ\nlock\nĐang được giữ\nclose\nĐã bán\nTHÔNG TIN GHẾ\nVị trí ghế\nHàng A · Ghế 5\nHạng vé\nVIP\nĐơn giá\n580.000 ₫\nTrạng thái\nBạn đang giữ\ntimer\nTHỜI GIAN GIỮ VÉ\n10:00\n\n10 phút tính từ ghế đầu tiên được máy chủ xác nhận. Thêm ghế không gia hạn.\n\ncheck\nMáy chủ đã xác nhận\nGhế đã giữ (3)\nA-3\nVIP · Đã giữ\n580.000 ₫\nBỏ ghế\nA-4\nVIP · Đã giữ\n580.000 ₫\nBỏ ghế\nA-5\nVIP · Đã giữ\n580.000 ₫\nBỏ ghế\n\nTổng tạm tính\n\n1.740.000 ₫\nGiữ thêm ghếĐặt vé\n\nSau khi tạo đơn, ghế được giữ thêm 10 phút để thanh toán.\n\nconfirmation_number\nVé Sự Kiện\n\n© 2026 Vé Sự Kiện\n\nĐiều khoản dịch vụ\nChính sách hoàn vé\nQuy định sơ đồ ghế\nHỗ trợ",
+  "commonHoldExpiry": true,
+  "expiries": [
+    "2026-10-23T12:20:00.914Z",
+    "2026-10-23T12:20:00.914Z",
+    "2026-10-23T12:20:00.914Z"
+  ],
+  "commonVisibleTimer": true,
+  "released": true,
+  "before": {
+    "orders": 5,
+    "tickets": 5,
+    "holds": 0,
+    "sessions": 4
+  },
+  "after": {
+    "orders": 5,
+    "tickets": 5,
+    "holds": 0,
+    "sessions": 4
+  },
+  "countsRestored": true,
+  "http": [
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds/43b1ed36-e35f-483b-b2a4-7ec4ba86ce79",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds/8766cc67-97c9-4a54-8bbf-ee61a58d57f8",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds/737be1d3-3d17-4670-90ce-2262b87987b5",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "evidence": [
+    "r59-three-seats-selected.png",
+    "r59-three-seat-hold-confirmed.png"
+  ]
+}

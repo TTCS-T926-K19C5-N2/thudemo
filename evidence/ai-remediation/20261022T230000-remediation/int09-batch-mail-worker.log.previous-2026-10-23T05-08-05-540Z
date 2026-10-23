@@ -1,0 +1,10 @@
+file:///D:/Merge_2/Codegym/apps/api/scripts/ai-remediation-int09-batch.mjs:151
+  if (captured.length !== 22) throw new Error(`Mailpit captured ${captured.length}/22 unique run-bound Message-ID values.`);
+                                    ^
+
+Error: Mailpit captured 0/22 unique run-bound Message-ID values.
+    at lifecycleMailWorker (file:///D:/Merge_2/Codegym/apps/api/scripts/ai-remediation-int09-batch.mjs:151:37)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///D:/Merge_2/Codegym/apps/api/scripts/ai-remediation-int09-batch.mjs:192:34
+
+Node.js v24.21.0

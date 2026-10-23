@@ -29,7 +29,7 @@ the request for another order is rejected. The order's short abuse budget is
 three resend jobs per minute; replay does not consume another job.
 
 `/account/tickets` lists only the signed-in buyer's PAID tickets, upcoming first
-and past last with server pagination. The same512px PNG renderer supports the
+and past last with server pagination. The same 512-pixel PNG renderer supports the
 order view and a native download link; cancelled cards are dim and expose no QR.
 Session changes clear the old view. Login has a narrowly allowed local return
 destination for this page.

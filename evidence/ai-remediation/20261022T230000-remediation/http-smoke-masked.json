@@ -1,0 +1,32 @@
+[
+  {
+    "method": "GET",
+    "path": "/health",
+    "status": 200,
+    "body": "{\"status\":\"ok\",\"timestamp\":\"2026-10-22T15:23:20.713Z\"}"
+  },
+  {
+    "method": "GET",
+    "path": "/events",
+    "status": 200,
+    "body": "[]"
+  },
+  {
+    "method": "GET",
+    "path": "/showtimes",
+    "status": 200,
+    "body": "{\"items\":[],\"totalCount\":0,\"nextCursor\":null}"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/forgot-password",
+    "status": 202,
+    "body": "{\"message\":\"Nếu email hợp lệ, bạn sẽ nhận được hướng dẫn đặt lại mật khẩu.\"}"
+  },
+  {
+    "method": "PATCH",
+    "path": "/events/:id/publication",
+    "status": 401,
+    "body": "[authorization boundary verified]"
+  }
+]

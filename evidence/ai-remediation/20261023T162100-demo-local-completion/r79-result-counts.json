@@ -1,0 +1,35 @@
+{
+  "source": {
+    "rows": 500,
+    "PASS": 162,
+    "FAIL": 0,
+    "NOT_RUN": 327,
+    "BLOCKED": 5,
+    "NEEDS_DECISION": 5,
+    "MISSING": 1,
+    "NOT_APPLICABLE": 0
+  },
+  "supplemental": {
+    "rows": 23,
+    "PASS": 20,
+    "FAIL": 0,
+    "NOT_RUN": 0,
+    "BLOCKED": 3,
+    "NEEDS_DECISION": 0,
+    "MISSING": 0,
+    "NOT_APPLICABLE": 0
+  },
+  "combined": {
+    "rows": 523,
+    "PASS": 182,
+    "FAIL": 0,
+    "NOT_RUN": 327,
+    "BLOCKED": 8,
+    "NEEDS_DECISION": 5,
+    "MISSING": 1,
+    "NOT_APPLICABLE": 0
+  },
+  "readyMustNonPass": 90,
+  "updatedAt": "2026-10-23T15:49:49.1489921Z",
+  "checkpoint": "R79"
+}

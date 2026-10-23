@@ -1,0 +1,61 @@
+[
+  {
+    "id": "E-05-AC",
+    "requirement_id": "E-05",
+    "kind": "EPIC",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Ready",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Thanh toán và đơn hàng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "G7"
+    },
+    "original_requirement": "Thanh toán thành công thì ghế chuyển sang đã bán và có vé; quá hạn thì ghế trở lại kho bán; gửi lại webhook 5 lần chỉ có một bản ghi thanh toán",
+    "steps": [
+      "Đối chiếu tập story con và các hành trình đầu-cuối trong kế hoạch.",
+      "Kiểm từng mệnh đề ở cấp tích hợp; mọi story đơn lẻ PASS chưa tự chứng minh epic PASS."
+    ],
+    "expected": [
+      "Thanh toán thành công thì ghế chuyển sang đã bán và có vé; quá hạn thì ghế trở lại kho bán; gửi lại webhook 5 lần chỉ có một bản ghi thanh toán"
+    ],
+    "evidence_required": [
+      "Liên kết các case con và E2E đã chạy"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "E-05-NFR",
+    "requirement_id": "E-05",
+    "kind": "EPIC_NFR",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Ready",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Thanh toán và đơn hàng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "I7"
+    },
+    "original_requirement": "không lưu thông tin thẻ; mọi thao tác tiền bạc đều ghi nhật ký không sửa được",
+    "steps": [
+      "Kiểm NFR ở phạm vi epic, đối chiếu các story con và số đo tích hợp; không chỉ suy từ unit test."
+    ],
+    "expected": [
+      "không lưu thông tin thẻ; mọi thao tác tiền bạc đều ghi nhật ký không sửa được"
+    ],
+    "evidence_required": [
+      "Bằng chứng kỹ thuật hoặc số đo tương ứng"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

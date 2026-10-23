@@ -1,0 +1,51 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Isolated run-bound PostgreSQL/API/web; synthetic .invalid buyer and recipient; no SMTP worker enabled.",
+  "http": [
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/{fixture-order}/tickets/{fixture-ticket}/transfer",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    }
+  ],
+  "screenshots": [],
+  "pageErrors": [],
+  "assertions": [],
+  "failure": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Vé đã chuyển nhượng tới [RECIPIENT_EMAIL_REDACTED].', { exact: true }) to be visible\u001b[22m\n"
+}
+

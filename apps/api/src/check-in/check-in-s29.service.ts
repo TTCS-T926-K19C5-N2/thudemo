@@ -22,8 +22,8 @@ export class CheckInServiceS29 {
       where: {
         checkInGates: { some: { permissions: { some: { userId } } } },
         startTime: {
-          gte: startOfDay,
-          lt: endOfDay,
+          gte: new Date(startOfDay.getTime() - 48 * 60 * 60 * 1000),
+          lt: new Date(endOfDay.getTime() + 48 * 60 * 60 * 1000),
         },
         status: {
           in: [ShowtimeStatus.ON_SALE, ShowtimeStatus.CLOSED],

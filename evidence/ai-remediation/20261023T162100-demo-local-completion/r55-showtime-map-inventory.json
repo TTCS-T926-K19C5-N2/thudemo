@@ -1,0 +1,459 @@
+{
+  "profile": "s1demo-384da3d43b41",
+  "totalShowtimes": 44,
+  "totalSeats": 5904,
+  "zeroSeatShowtimes": [
+    {
+      "id": "f66556a1-e3f7-4f9e-a4bd-8e4298e2e772",
+      "event": "Bệnh sĩ",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-10-23T16:00:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": false,
+      "seatMapIdPresent": false,
+      "seatCount": 0
+    }
+  ],
+  "showtimes": [
+    {
+      "id": "d5a0ee7d-a709-4f65-ad25-ee6a56a70356",
+      "event": "Nghêu, Sò, Ốc, Hến",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-10-22T07:42:29.576Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "6ce1aa53-fc92-42de-ae37-46a7b09ad408",
+      "event": "Bệnh sĩ",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-10-23T08:00:00.000Z",
+      "showtimeStatus": "ON_SALE",
+      "isDemo": false,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "e0c0e1a0-ced3-4bd1-8a6d-eaea3e712916",
+      "event": "Bệnh sĩ",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-10-23T14:00:00.000Z",
+      "showtimeStatus": "ON_SALE",
+      "isDemo": false,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "f66556a1-e3f7-4f9e-a4bd-8e4298e2e772",
+      "event": "Bệnh sĩ",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-10-23T16:00:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": false,
+      "seatMapIdPresent": false,
+      "seatCount": 0
+    },
+    {
+      "id": "c64afe9a-0f24-4a7c-be8a-4c59f3ee3bf9",
+      "event": "Bệnh sĩ",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-11-07T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "7856087e-cb3e-438f-a042-11ff5c788fda",
+      "event": "Người tốt nhà số 5",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-11-10T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "1e0a5934-4a97-44eb-8013-7a19853ec257",
+      "event": "Kiều",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-11-16T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "63488e26-645e-4afc-bd5f-504a9dab0802",
+      "event": "Đêm trắng",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-11-19T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "34fdb0ff-34fa-4f6c-a27b-e8c5dfa137bd",
+      "event": "Hamlet",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-11-22T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "bcf0b0e1-59f3-4405-9f75-480e088f3326",
+      "event": "Hòa Nhạc Giao Hưởng VNSO Subscription Concert Số 180",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-11-25T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 168
+    },
+    {
+      "id": "0c79e61a-1363-4ca3-a021-ec3904874f85",
+      "event": "Hồn Trương Ba, da hàng thịt",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-11-25T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "4a428a41-cac2-43bf-afe3-40a5dd5fc303",
+      "event": "Hòa Nhạc Giao Hưởng VNSO Subscription Concert Số 184",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-11-27T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 168
+    },
+    {
+      "id": "2d5ea59d-299e-4a72-b65f-5158ffeb4f2d",
+      "event": "Người trong cõi nhớ",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-11-28T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "15c3cb78-2f72-4864-85a6-4514b48c206b",
+      "event": "Hòa Nhạc Giao Hưởng VNSO Subscription Concert Số 186",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-11-29T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 168
+    },
+    {
+      "id": "82b03d7e-39bd-4d13-a743-2a6f5da77bac",
+      "event": "Hòa Nhạc Giao Hưởng VNSO Subscription Concert Số 188",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-01T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 168
+    },
+    {
+      "id": "5939ab9f-07ef-4a23-9bc6-c28cb61a3482",
+      "event": "Thiên mệnh",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-01T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "3b57f88e-4bac-4cc4-8c38-c5850416bbff",
+      "event": "Hòa Nhạc Giao Hưởng VNSO Subscription Concert Số 189",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-03T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 168
+    },
+    {
+      "id": "c261d0f7-b0c4-4bf1-a567-2ff1eb4f2330",
+      "event": "Ký ức dòng Thương",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-04T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "803aa517-2de4-4c3f-8154-4f40a1fd9c2d",
+      "event": "Mozart vượt thời gian – 125 năm Metropole",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-05T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 60
+    },
+    {
+      "id": "fd4f9f65-85c5-41bb-9084-a5f802be962c",
+      "event": "Hòa nhạc Toyota 2026",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-07T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 192
+    },
+    {
+      "id": "38fbea39-6207-4566-8eb1-7e3578197362",
+      "event": "Tiếng vĩ cầm trong căn nhà cổ: Giai điệu mùa hạ",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-07T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 60
+    },
+    {
+      "id": "914556a8-ba19-4766-9e20-00a3d93df432",
+      "event": "Bệnh sĩ",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-07T12:30:00.000Z",
+      "showtimeStatus": "ON_SALE",
+      "isDemo": false,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "f3ea933c-515f-4ff7-8f90-f4fc7a57158f",
+      "event": "IN GRATITUDE – Tri Ân",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-10T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 192
+    },
+    {
+      "id": "ac3bcaef-8758-49a3-a897-9aaeb990d29d",
+      "event": "Tiếng vọng truyền thống: Từ Bohemia đến Tây Ban Nha",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-11T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 168
+    },
+    {
+      "id": "00e9066a-2d36-4286-937a-d85a51fcf67b",
+      "event": "Hà Nội Concert – Hòa nhạc mùa hè 2025",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-15T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 192
+    },
+    {
+      "id": "d2d25ff8-7afe-445e-9f9d-9c97c41350a1",
+      "event": "Thế sự",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-17T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "391317b0-a4a1-4164-8b7c-6a0a6a7816c7",
+      "event": "Điều còn lại",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-19T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "d83fd87f-b21c-4e74-8e72-be57564eb023",
+      "event": "Ngược chiều bình an",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-21T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "477c9696-ffb9-43a1-a81e-e9284f577506",
+      "event": "Bóng rối (Shadow of the Puppets)",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-23T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "16481068-bb06-4d67-b132-5564af6a1036",
+      "event": "Nhân thế",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-25T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "7cc62566-2a5f-4129-b355-6b22e35f88fa",
+      "event": "Quan thanh tra (The Inspector General)",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-27T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "1611fd65-456e-4055-a405-34847f9e5e02",
+      "event": "Nguồn sáng trong đời",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-29T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "f6e6039e-0487-4056-8a1b-39f851c28cc9",
+      "event": "Lâu đài cát",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2026-12-31T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "57ed228e-53b1-484f-a4b7-b46f91d6f027",
+      "event": "Lão hà tiện",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2027-01-02T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "8ff3b973-f481-47e1-83ed-93234f3339b3",
+      "event": "Sống mãi tuổi 17",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2027-01-04T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "9772ea85-ec03-467f-a9d8-f18eea203e5a",
+      "event": "Hoa cúc xanh trên đầm lầy",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2027-01-06T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "2bb0bff2-2280-4568-84f7-b8e90a7d83fa",
+      "event": "Ai là thủ phạm?",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2027-01-08T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 120
+    },
+    {
+      "id": "42bc1509-e0a0-4d73-ad7d-2fe69730c035",
+      "event": "Hòa Nhạc Giao Hưởng VNSO Subscription Concert Số 181",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2027-01-10T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 168
+    },
+    {
+      "id": "689051fd-27f1-49c8-bb5e-ae1958c3bb94",
+      "event": "Hòa Nhạc Giao Hưởng VNSO Subscription Concert Số 182",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2027-01-12T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 168
+    },
+    {
+      "id": "bc895234-ab1f-40ca-8366-4149258a6007",
+      "event": "Hòa Nhạc Giao Hưởng VNSO Subscription Concert Số 183",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2027-01-14T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 168
+    },
+    {
+      "id": "6b0bdd41-d9df-42b3-ab36-b24c5acd9645",
+      "event": "Hòa Nhạc Giao Hưởng VNSO Subscription Concert Số 185",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2027-01-16T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 168
+    },
+    {
+      "id": "f9ce16a3-bef3-489f-9840-256f3de11974",
+      "event": "Hòa Nhạc Giao Hưởng VNSO Subscription Concert Số 187",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2027-01-18T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 168
+    },
+    {
+      "id": "c96cca12-680a-4fef-a159-96f725f35601",
+      "event": "Đêm nhạc Vivaldi, Mozart & Saint-Saëns – HBSO",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2027-01-20T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 192
+    },
+    {
+      "id": "6dc21c63-3da6-40aa-9ffa-a13c10035840",
+      "event": "Đêm khai mạc Festival Quốc tế Âm nhạc mới 2025",
+      "eventStatus": "PUBLISHED",
+      "startTime": "2027-01-22T12:30:00.000Z",
+      "showtimeStatus": "DRAFT",
+      "isDemo": true,
+      "seatMapIdPresent": true,
+      "seatCount": 168
+    }
+  ]
+}

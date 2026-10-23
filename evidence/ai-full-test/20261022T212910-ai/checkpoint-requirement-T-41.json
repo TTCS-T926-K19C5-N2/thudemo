@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-41-AC",
+    "requirement_id": "T-41",
+    "parent_requirement": "S-18",
+    "kind": "TASK_AC",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Tạo yêu cầu thanh toán và chuyển hướng sang cổng sandbox",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G42"
+    },
+    "original_requirement": "Bấm thanh toán thì tới trang cổng với đúng số tiền; đơn hết hạn thì 409",
+    "fixture": "Đơn pending; mock và tài khoản sandbox riêng nếu có; webhook đúng/sai tiền.",
+    "surfaces": "POST /orders/:id/pay; POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/; apps/api/src/payments/gateways/momo.gateway.ts",
+    "test_candidates": "payments.e2e-spec.ts; payments.service.spec.ts",
+    "steps": [
+      "Kiểm amount/orderId redirect; thanh toán và đóng browser trước callback. Webhook hợp lệ phải đổi order/ghế/hold trong một transaction. Số tiền khác phải cần kiểm tra, không phát vé và báo kế toán; quan sát DB và lỗi giữa transaction.",
+      "Kiểm riêng tiêu chí task T-41: Bấm thanh toán thì tới trang cổng với đúng số tiền; đơn hết hạn thì 409",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Bấm thanh toán thì tới trang cổng với đúng số tiền; đơn hết hạn thì 409"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-41-NFR",
+    "requirement_id": "T-41",
+    "parent_requirement": "S-18",
+    "kind": "TASK_NFR",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Tạo yêu cầu thanh toán và chuyển hướng sang cổng sandbox",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I42"
+    },
+    "original_requirement": "mỗi lần bấm thanh toán lại dùng cùng mã đơn để cổng không tạo hai giao dịch",
+    "fixture": "Đơn pending; mock và tài khoản sandbox riêng nếu có; webhook đúng/sai tiền.",
+    "surfaces": "POST /orders/:id/pay; POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/; apps/api/src/payments/gateways/momo.gateway.ts",
+    "test_candidates": "payments.e2e-spec.ts; payments.service.spec.ts",
+    "steps": [
+      "Kiểm amount/orderId redirect; thanh toán và đóng browser trước callback. Webhook hợp lệ phải đổi order/ghế/hold trong một transaction. Số tiền khác phải cần kiểm tra, không phát vé và báo kế toán; quan sát DB và lỗi giữa transaction.",
+      "Kiểm riêng tiêu chí task T-41: mỗi lần bấm thanh toán lại dùng cùng mã đơn để cổng không tạo hai giao dịch",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "mỗi lần bấm thanh toán lại dùng cùng mã đơn để cổng không tạo hai giao dịch"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

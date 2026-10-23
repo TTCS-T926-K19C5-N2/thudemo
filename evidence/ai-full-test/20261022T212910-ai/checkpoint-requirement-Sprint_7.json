@@ -1,0 +1,30 @@
+{
+  "id": "SPRINT-7-GOAL",
+  "requirement_id": "Sprint 7",
+  "kind": "SPRINT_GOAL",
+  "group": "Mục tiêu tích hợp",
+  "tier": "GOVERNANCE",
+  "priority": "Theo scope Sprint",
+  "readiness": "SPECIFIED",
+  "title": "Vé huỷ được, tiền hoàn đúng và không lệnh hoàn nào rơi vào im lặng, ghế quay lại kho bán",
+  "source": {
+    "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+    "sheet": "Sprints",
+    "range": "D8"
+  },
+  "original_requirement": "Vé huỷ được, tiền hoàn đúng và không lệnh hoàn nào rơi vào im lặng, ghế quay lại kho bán",
+  "steps": [
+    "Xác định các story có Sprint tương ứng trong baseline.",
+    "Đi trọn hành trình tích hợp cho Sprint Goal; đối chiếu dependency và bằng chứng môi trường, không chỉ cộng số story PASS."
+  ],
+  "expected": [
+    "Vé huỷ được, tiền hoàn đúng và không lệnh hoàn nào rơi vào im lặng, ghế quay lại kho bán"
+  ],
+  "evidence_required": [
+    "Liên kết case story và hành trình tích hợp đã chạy"
+  ],
+  "status": "NOT_RUN",
+  "actual": null,
+  "evidence_files": [],
+  "approved_override": null
+}

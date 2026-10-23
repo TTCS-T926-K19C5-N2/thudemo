@@ -1,0 +1,240 @@
+[
+  {
+    "id": "S-06-AC01",
+    "requirement_id": "S-06",
+    "kind": "AC",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Tệp sơ đồ sai bị từ chối toàn bộ và chỉ rõ chỗ sai",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L8"
+    },
+    "original_requirement": "Giả sử tệp thiếu trường bắt buộc ở một ghế, Khi tải lên, Thì từ chối toàn bộ tệp và chỉ rõ ghế nào thiếu trường nào",
+    "fixture": "JSON malformed, thiếu field, trùng hàng/số, nhiều lỗi, tệp sát/vượt 5 MB.",
+    "surfaces": "POST /showtimes/validate-map; màn import/xem trước",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/web/src/features/seat-map-import/",
+    "test_candidates": "seat-map.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tệp thiếu trường bắt buộc ở một ghế.",
+      "Thực hiện trên POST /showtimes/validate-map; màn import/xem trước: tải lên.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Upload từng tệp; kiểm danh sách vị trí lỗi và nút xác nhận. Preview tệp đúng rồi huỷ, so count/checksum DB không đổi. Kiểm lỗi cú pháp có vị trí, API không 500; giới hạn dung lượng phải kiểm cả client lẫn server.",
+    "expected": [
+      "từ chối toàn bộ tệp và chỉ rõ ghế nào thiếu trường nào"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-06-AC02",
+    "requirement_id": "S-06",
+    "kind": "AC",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Tệp sơ đồ sai bị từ chối toàn bộ và chỉ rõ chỗ sai",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L8"
+    },
+    "original_requirement": "Giả sử tệp có hai ghế trùng hàng và số, Khi tải lên, Thì từ chối và chỉ ra cặp trùng",
+    "fixture": "JSON malformed, thiếu field, trùng hàng/số, nhiều lỗi, tệp sát/vượt 5 MB.",
+    "surfaces": "POST /showtimes/validate-map; màn import/xem trước",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/web/src/features/seat-map-import/",
+    "test_candidates": "seat-map.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tệp có hai ghế trùng hàng và số.",
+      "Thực hiện trên POST /showtimes/validate-map; màn import/xem trước: tải lên.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Upload từng tệp; kiểm danh sách vị trí lỗi và nút xác nhận. Preview tệp đúng rồi huỷ, so count/checksum DB không đổi. Kiểm lỗi cú pháp có vị trí, API không 500; giới hạn dung lượng phải kiểm cả client lẫn server.",
+    "expected": [
+      "từ chối và chỉ ra cặp trùng"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-06-AC03",
+    "requirement_id": "S-06",
+    "kind": "AC",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Tệp sơ đồ sai bị từ chối toàn bộ và chỉ rõ chỗ sai",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L8"
+    },
+    "original_requirement": "Giả sử tệp có nhiều lỗi, Khi tải lên, Thì thấy đủ danh sách lỗi trong một lần, không phải sửa từng lỗi rồi thử lại",
+    "fixture": "JSON malformed, thiếu field, trùng hàng/số, nhiều lỗi, tệp sát/vượt 5 MB.",
+    "surfaces": "POST /showtimes/validate-map; màn import/xem trước",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/web/src/features/seat-map-import/",
+    "test_candidates": "seat-map.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tệp có nhiều lỗi.",
+      "Thực hiện trên POST /showtimes/validate-map; màn import/xem trước: tải lên.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Upload từng tệp; kiểm danh sách vị trí lỗi và nút xác nhận. Preview tệp đúng rồi huỷ, so count/checksum DB không đổi. Kiểm lỗi cú pháp có vị trí, API không 500; giới hạn dung lượng phải kiểm cả client lẫn server.",
+    "expected": [
+      "thấy đủ danh sách lỗi trong một lần, không phải sửa từng lỗi rồi thử lại"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-06-AC04",
+    "requirement_id": "S-06",
+    "kind": "AC",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Tệp sơ đồ sai bị từ chối toàn bộ và chỉ rõ chỗ sai",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L8"
+    },
+    "original_requirement": "Giả sử tệp không phải JSON hợp lệ, Khi tải lên, Thì báo lỗi định dạng kèm vị trí ký tự, không hiện lỗi 500",
+    "fixture": "JSON malformed, thiếu field, trùng hàng/số, nhiều lỗi, tệp sát/vượt 5 MB.",
+    "surfaces": "POST /showtimes/validate-map; màn import/xem trước",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/web/src/features/seat-map-import/",
+    "test_candidates": "seat-map.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tệp không phải JSON hợp lệ.",
+      "Thực hiện trên POST /showtimes/validate-map; màn import/xem trước: tải lên.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Upload từng tệp; kiểm danh sách vị trí lỗi và nút xác nhận. Preview tệp đúng rồi huỷ, so count/checksum DB không đổi. Kiểm lỗi cú pháp có vị trí, API không 500; giới hạn dung lượng phải kiểm cả client lẫn server.",
+    "expected": [
+      "báo lỗi định dạng kèm vị trí ký tự, không hiện lỗi 500"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-06-AC05",
+    "requirement_id": "S-06",
+    "kind": "AC",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Tệp sơ đồ sai bị từ chối toàn bộ và chỉ rõ chỗ sai",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L8"
+    },
+    "original_requirement": "Giả sử tệp hợp lệ, Khi xem trước, Thì thấy lưới ghế đúng số hàng, số ghế, màu theo hạng trước khi bấm xác nhận nạp",
+    "fixture": "JSON malformed, thiếu field, trùng hàng/số, nhiều lỗi, tệp sát/vượt 5 MB.",
+    "surfaces": "POST /showtimes/validate-map; màn import/xem trước",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/web/src/features/seat-map-import/",
+    "test_candidates": "seat-map.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tệp hợp lệ.",
+      "Thực hiện trên POST /showtimes/validate-map; màn import/xem trước: xem trước.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Upload từng tệp; kiểm danh sách vị trí lỗi và nút xác nhận. Preview tệp đúng rồi huỷ, so count/checksum DB không đổi. Kiểm lỗi cú pháp có vị trí, API không 500; giới hạn dung lượng phải kiểm cả client lẫn server.",
+    "expected": [
+      "thấy lưới ghế đúng số hàng, số ghế, màu theo hạng trước khi bấm xác nhận nạp"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-06-NFR",
+    "requirement_id": "S-06",
+    "kind": "NFR",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Tệp sơ đồ sai bị từ chối toàn bộ và chỉ rõ chỗ sai — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N8"
+    },
+    "original_requirement": "kiểm tra chạy trước giao dịch ghi, không ghi rồi mới phát hiện sai; giới hạn kích thước tệp 5 MB",
+    "fixture": "JSON malformed, thiếu field, trùng hàng/số, nhiều lỗi, tệp sát/vượt 5 MB.",
+    "surfaces": "POST /showtimes/validate-map; màn import/xem trước",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/web/src/features/seat-map-import/",
+    "test_candidates": "seat-map.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Upload từng tệp; kiểm danh sách vị trí lỗi và nút xác nhận. Preview tệp đúng rồi huỷ, so count/checksum DB không đổi. Kiểm lỗi cú pháp có vị trí, API không 500; giới hạn dung lượng phải kiểm cả client lẫn server.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "kiểm tra chạy trước giao dịch ghi, không ghi rồi mới phát hiện sai; giới hạn kích thước tệp 5 MB"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

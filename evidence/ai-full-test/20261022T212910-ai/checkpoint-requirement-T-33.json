@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-33-AC",
+    "requirement_id": "T-33",
+    "parent_requirement": "S-14",
+    "kind": "TASK_AC",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Trang chọn ghế khôi phục ghế đang giữ và đồng hồ khi mở lại",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G34"
+    },
+    "original_requirement": "Tải lại trang giữa chừng thì ghế và đồng hồ đúng như trước khi tải lại",
+    "fixture": "A giữ 2 ghế, đã trôi 4 phút; context browser thứ hai đăng nhập cùng tài khoản.",
+    "surfaces": "GET /showtimes/:id/holds; trang chọn ghế",
+    "code_candidates": "apps/api/src/holds/; apps/web/src/features/seat-selection/",
+    "test_candidates": "useSeatHoldTimer.test.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Refresh rồi đóng/mở lại browser và đăng nhập thiết bị thứ hai; danh sách và hạn lấy từ server, không bắt đầu lại 10 phút. Làm hết hạn ở fixture rồi mở lại, không phục hồi ghế cũ; B không đọc được hold A.",
+      "Kiểm riêng tiêu chí task T-33: Tải lại trang giữa chừng thì ghế và đồng hồ đúng như trước khi tải lại",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Tải lại trang giữa chừng thì ghế và đồng hồ đúng như trước khi tải lại"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-33-NFR",
+    "requirement_id": "T-33",
+    "parent_requirement": "S-14",
+    "kind": "TASK_NFR",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Trang chọn ghế khôi phục ghế đang giữ và đồng hồ khi mở lại",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I34"
+    },
+    "original_requirement": "không lưu danh sách ghế đã chọn ở bộ nhớ trình duyệt",
+    "fixture": "A giữ 2 ghế, đã trôi 4 phút; context browser thứ hai đăng nhập cùng tài khoản.",
+    "surfaces": "GET /showtimes/:id/holds; trang chọn ghế",
+    "code_candidates": "apps/api/src/holds/; apps/web/src/features/seat-selection/",
+    "test_candidates": "useSeatHoldTimer.test.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Refresh rồi đóng/mở lại browser và đăng nhập thiết bị thứ hai; danh sách và hạn lấy từ server, không bắt đầu lại 10 phút. Làm hết hạn ở fixture rồi mở lại, không phục hồi ghế cũ; B không đọc được hold A.",
+      "Kiểm riêng tiêu chí task T-33: không lưu danh sách ghế đã chọn ở bộ nhớ trình duyệt",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "không lưu danh sách ghế đã chọn ở bộ nhớ trình duyệt"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

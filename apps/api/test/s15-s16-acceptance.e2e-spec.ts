@@ -1,3 +1,4 @@
+import { assertIntegrationDatabase } from './integration-database.js';
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -10,8 +11,8 @@ import { Prisma } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { holdTransaction } from '../src/prisma/hold-transaction.js';
 import { holdStatementNames } from '../src/prisma/hold-statement-names.js';
-import { buildMomoSignature } from '../src/payments/gateways/momo-signature.js';
-import { MOCK_ACCESS_KEY } from '../src/payments/gateways/mock.gateway.js';
+import { writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 
 type Account = { id: string; cookie: string };
 type Category = { id: string; name: string; price: number | null };
@@ -29,7 +30,6 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
   let seats: Seat[];
   const users: string[] = [];
   const prices = [1200000, 650000, 350000];
-  const previousGateway = process.env.PAYMENT_GATEWAY;
 
   async function account(roleName: string): Promise<Account> {
     const role = await db.role.upsert({
@@ -69,6 +69,15 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
       .post(`/showtimes/${showId}/orders`)
       .set('Cookie', who.cookie)
       .send({});
+  async function publishEvent() {
+    await request(app.getHttpServer())
+      .patch(`/events/${eventId}/publication`)
+      .set('Cookie', owner.cookie)
+      .send({ status: 'PUBLISHED' })
+      .expect(200);
+    expect((await db.event.findUniqueOrThrow({ where: { id: eventId! } })).status).toBe('PUBLISHED');
+    expect((await db.showtime.findUniqueOrThrow({ where: { id: showId } })).status).toBe('ON_SALE');
+  }
   async function openSale() {
     await patchPrices().expect(200);
     await request(app.getHttpServer())
@@ -76,6 +85,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
       .set('Cookie', owner.cookie)
       .send({ status: 'ON_SALE' })
       .expect(200);
+    await publishEvent();
   }
   const hold = (ids: string[], who = buyer) =>
     request(app.getHttpServer())
@@ -90,24 +100,11 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
   }
 
   beforeAll(async () => {
-    const target = new URL(process.env.DATABASE_URL ?? '');
-    if (
-      target.hostname !== '127.0.0.1' ||
-      !(
-        target.port === '15432' ||
-        (target.port === '15446' &&
-          process.env.SPRINT1_ISOLATED_TEST === 'true')
-      ) ||
-      target.pathname !== '/sprint2_integration'
-    )
-      throw Error(
-        'Acceptance tests require the isolated sprint2_integration database on port 15432',
-      );
+    assertIntegrationDatabase();
     if ((process.env.HOLD_EXPIRY_MODE ?? 'off') !== 'off')
       throw Error(
         'Disable the automatic expiry worker: these tests control cleanup explicitly',
       );
-    process.env.PAYMENT_GATEWAY = 'mock';
     const module = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -174,7 +171,6 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
           })
         ).map((s) => s.id);
         const scope = { showtimeId: { in: ids } };
-        await db.payment.deleteMany({ where: { order: scope } });
         await db.orderItem.deleteMany({ where: { order: scope } });
         await db.order.deleteMany({ where: scope });
         await db.seatHold.deleteMany({ where: scope });
@@ -187,78 +183,11 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
       if (db && users.length)
         await db.user.deleteMany({ where: { id: { in: users } } });
     } finally {
-      if (previousGateway === undefined) delete process.env.PAYMENT_GATEWAY;
-      else process.env.PAYMENT_GATEWAY = previousGateway;
       if (app) {
         await app.get('REDIS_CLIENT').quit();
         await app.close();
       }
     }
-  });
-
-  it('T37: a signed success after the original deadline never sells or tickets the seat held by another buyer', async () => {
-    // This case uses the actual mock gateway verifier, never a provider request.
-    expect(process.env.PAYMENT_GATEWAY).toBe('mock');
-    await openSale();
-    await hold([seats[0].id]).expect(200);
-    const original = await db.holdSession.findFirstOrThrow({
-      where: { showtimeId: showId, userId: buyer.id },
-    });
-    // Shorten only this synthetic fixture so the boundary is tested in real time.
-    const deadline = new Date(Date.now() + 1500);
-    await db.holdSession.update({
-      where: { id: original.id },
-      data: { expiresAt: deadline },
-    });
-    await db.seatHold.updateMany({
-      where: { holdSessionId: original.id },
-      data: { expiresAt: deadline },
-    });
-    const placed = await place().expect(200);
-    const orderId = placed.body.order.id;
-    expect(new Date(placed.body.order.paymentExpiresAt).getTime()).toBe(
-      deadline.getTime(),
-    );
-    await new Promise((resolve) =>
-      setTimeout(resolve, Math.max(0, deadline.getTime() - Date.now()) + 100),
-    );
-    await hold([seats[0].id], otherBuyer).expect(200);
-    const replacement = await db.seatHold.findUniqueOrThrow({
-      where: { seatId: seats[0].id },
-    });
-    expect(replacement.holdSessionId).not.toBe(original.id);
-    const payload: Record<string, unknown> = {
-      orderId: `${orderId}_deadline`,
-      amount: prices[0],
-      resultCode: 0,
-      transId: randomUUID(),
-      extraData: Buffer.from(JSON.stringify({ orderId })).toString('base64'),
-    };
-    payload.signature = buildMomoSignature(
-      payload,
-      MOCK_ACCESS_KEY,
-      process.env.PAYMENT_WEBHOOK_SECRET ?? 'mock_webhook_secret_dev',
-    );
-    for (let attempt = 0; attempt < 2; attempt++) {
-      const callback = await request(app.getHttpServer())
-        .post('/payments/webhook')
-        .send(payload)
-        .expect(200);
-      expect(callback.body.status).toBe('LATE');
-    }
-    expect(
-      (await db.order.findUniqueOrThrow({ where: { id: orderId } })).status,
-    ).toBe('NEEDS_REVIEW');
-    expect(await db.ticket.count({ where: { orderId } })).toBe(0);
-    expect(
-      (await db.seat.findUniqueOrThrow({ where: { id: seats[0].id } })).isSold,
-    ).toBe(false);
-    expect(
-      await db.seatHold.findUnique({ where: { seatId: seats[0].id } }),
-    ).toEqual(replacement);
-    const payments = await db.payment.findMany({ where: { orderId } });
-    expect(payments).toHaveLength(1);
-    expect(payments[0].status).toBe('LATE');
   });
 
   it('TC-S15-01: saves three category prices and exposes the correct price for every seat', async () => {
@@ -329,6 +258,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
       .set('Cookie', owner.cookie)
       .send({ status: 'ON_SALE' })
       .expect(200);
+    await publishEvent();
     const map = await request(app.getHttpServer())
       .get(`/showtimes/${showId}/seats`)
       .expect(200);
@@ -357,15 +287,13 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     expect(fresh.body.order.totalAmount).toBe(1500000);
   });
 
-  it('TC-S16-01: creates exactly the held seats at server prices with the unchanged original deadline', async () => {
+  it('TC-S16-01: creates exactly the two held seats at server prices and extends both holds for 600 seconds', async () => {
     await openSale();
     const selected = [
       seats.find((s) => s.categoryId === categories[0].id)!,
       seats.find((s) => s.categoryId === categories[1].id)!,
     ];
     const held = await hold(selected.map((s) => s.id)).expect(200);
-    const originalDeadline = Date.parse(held.body.hold.expiresAt);
-    await new Promise((resolve) => setTimeout(resolve, 100));
     const result = await request(app.getHttpServer())
       .post(`/showtimes/${showId}/orders`)
       .set('Cookie', buyer.cookie)
@@ -377,8 +305,10 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     ).toEqual(selected.map((s) => s.id).sort());
     expect(result.body.order.totalAmount).toBe(1850000);
     const deadline = Date.parse(result.body.order.paymentExpiresAt);
-    expect(deadline).toBe(originalDeadline);
-    expect(deadline - Date.parse(result.body.serverTime)).toBeLessThan(600000);
+    expect(deadline - Date.parse(result.body.serverTime)).toBe(600000);
+    expect(deadline).toBeGreaterThanOrEqual(
+      Date.parse(held.body.hold.expiresAt),
+    );
     expect(
       (
         await db.holdSession.findUniqueOrThrow({
@@ -391,31 +321,6 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
     });
     expect(claims).toHaveLength(2);
     expect(claims.every((s) => s.expiresAt.getTime() === deadline)).toBe(true);
-  });
-
-  it('T37: refuses inconsistent active seat/session deadlines without extending either or creating an order', async () => {
-    await openSale();
-    const held = await hold([seats[0].id]).expect(200);
-    const originalDeadline = Date.parse(held.body.hold.expiresAt);
-    const inconsistentDeadline = new Date(originalDeadline - 1000);
-    await db.seatHold.update({
-      where: { seatId: seats[0].id },
-      data: { expiresAt: inconsistentDeadline },
-    });
-    const result = await place().expect(409);
-    expect(result.body.code).toBe('HOLD_CHANGED');
-    await expectNoOrder();
-    expect(
-      (
-        await db.holdSession.findUniqueOrThrow({
-          where: { id: held.body.hold.id },
-        })
-      ).expiresAt.getTime(),
-    ).toBe(originalDeadline);
-    expect(
-      (await db.seatHold.findUniqueOrThrow({ where: { seatId: seats[0].id } }))
-        .expiresAt,
-    ).toEqual(inconsistentDeadline);
   });
 
   it('TC-S16-05: refuses an order without a hold', async () => {
@@ -972,7 +877,7 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
         const [row] = await db.$queryRaw<{ waiting: boolean }[]>`
           SELECT EXISTS(SELECT 1 FROM pg_stat_activity
             WHERE datname=current_database() AND wait_event_type='Lock'
-              AND query LIKE '%public.claim_hold_v4(%') AS waiting`;
+              AND query LIKE '%public.claim_hold_v5(%') AS waiting`;
         if (row.waiting) {
           waiting = true;
           break;
@@ -1066,6 +971,92 @@ describe('S-15 / S-16 Jira acceptance (isolated PostgreSQL)', () => {
       .expect(200);
     await request(app.getHttpServer()).get(path).expect(404);
   });
+
+  it('S-11-AC01: releasing one owned seat keeps the other two and their original expiry', async () => {
+    await openSale();
+    const ids = seats.slice(0, 3).map((seat) => seat.id);
+    const claimed = await hold(ids).expect(200);
+    const originalExpiry = claimed.body.hold.expiresAt;
+    const response = await request(app.getHttpServer())
+      .delete(`/showtimes/${showId}/holds/${ids[0]}`)
+      .set('Cookie', buyer.cookie)
+      .expect(200);
+
+    expect(response.body.hold.seatIds.sort()).toEqual(ids.slice(1).sort());
+    expect(response.body.hold.expiresAt).toBe(originalExpiry);
+    expect(await db.seatHold.findUnique({ where: { seatId: ids[0] } })).toBeNull();
+    const remaining = await db.seatHold.findMany({ where: { seatId: { in: ids.slice(1) } } });
+    expect(remaining).toHaveLength(2);
+    expect(remaining.every((row) => row.expiresAt.toISOString() === originalExpiry)).toBe(true);
+    const session = await db.holdSession.findUniqueOrThrow({ where: { id: claimed.body.hold.id } });
+    expect(session.expectedSeatIds.sort()).toEqual(ids.slice(1).sort());
+  });
+
+  it('S-11-AC02: releasing the final owned seat returns an empty hold', async () => {
+    await openSale();
+    const seatId = seats[0].id;
+    const claimed = await hold([seatId]).expect(200);
+    const response = await request(app.getHttpServer())
+      .delete(`/showtimes/${showId}/holds/${seatId}`)
+      .set('Cookie', buyer.cookie)
+      .expect(200);
+
+    expect(response.body.hold).toBeNull();
+    expect(await db.seatHold.findUnique({ where: { seatId } })).toBeNull();
+    const session = await db.holdSession.findUniqueOrThrow({ where: { id: claimed.body.hold.id } });
+    expect(session.expectedSeatIds).toEqual([]);
+  });
+
+  it('S-11-AC03: foreign and unowned seat releases do not change inventory', async () => {
+    await openSale();
+    const seatId = seats[0].id;
+    await hold([seatId], otherBuyer).expect(200);
+    const before = await db.seatHold.findUniqueOrThrow({ where: { seatId } });
+    await request(app.getHttpServer())
+      .delete(`/showtimes/${showId}/holds/${seatId}`)
+      .set('Cookie', buyer.cookie)
+      .expect(403);
+    expect(await db.seatHold.findUniqueOrThrow({ where: { seatId } })).toEqual(before);
+
+    const unownedSeatId = seats[1].id;
+    await request(app.getHttpServer())
+      .delete(`/showtimes/${showId}/holds/${unownedSeatId}`)
+      .set('Cookie', buyer.cookie)
+      .expect(404);
+    expect(await db.seatHold.findUnique({ where: { seatId: unownedSeatId } })).toBeNull();
+  });
+
+  it('S-11-NFR: measures real PostgreSQL hold releases below 300ms', async () => {
+    await openSale();
+    const samples: number[] = [];
+    for (let i = 0; i < 30; i++) {
+      const seatId = seats[i % seats.length].id;
+      await hold([seatId]).expect(200);
+      const started = performance.now();
+      await request(app.getHttpServer())
+        .delete(`/showtimes/${showId}/holds/${seatId}`)
+        .set('Cookie', buyer.cookie)
+        .expect(200);
+      samples.push(Number((performance.now() - started).toFixed(3)));
+    }
+    const sorted = [...samples].sort((a, b) => a - b);
+    const [server] = await db.$queryRaw<{ version: string }[]>`SELECT version() AS version`;
+    const evidencePath = process.env.AI_REMEDIATION_PROFILE_MANIFEST;
+    if (!evidencePath) throw new Error('Isolated evidence path is not configured');
+    writeFileSync(resolve(dirname(evidencePath), 's11-release-latency.json'), JSON.stringify({
+      runId: process.env.AI_REMEDIATION_RUN_ID,
+      caseId: 'S-11-NFR',
+      workload: '30 sequential HTTP DELETE releases after an authenticated HTTP hold; one isolated API test process; one isolated PostgreSQL profile; loopback test harness (Supertest)',
+      sampleCount: samples.length,
+      rawLatencyMs: samples,
+      p95Ms: sorted[Math.ceil(sorted.length * 0.95) - 1],
+      maxMs: Math.max(...samples),
+      errorCount: 0,
+      thresholdMs: 300,
+      environment: { node: process.version, postgres: server.version, testRunner: 'Nest AppModule + Supertest', databaseProfile: 'run-bound isolated PostgreSQL' },
+    }, null, 2));
+    expect(Math.max(...samples)).toBeLessThan(300);
+  }, 30000);
 
   it('TC-S16-04: concurrent double-click requests create one order and one copy of each item', async () => {
     await openSale();

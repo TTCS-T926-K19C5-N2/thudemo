@@ -110,9 +110,22 @@ export class TicketsService {
       throw new NotFoundException('Không tìm thấy đơn hàng.');
     }
 
-    const ticket = await this.db.ticket.findUnique({
+    let ticket = await this.db.ticket.findUnique({
       where: { id: ticketId },
     });
+    if (!ticket) {
+      const orderItem = await this.db.orderItem.findUnique({
+        where: { id: ticketId },
+      });
+      if (orderItem) {
+        ticket = await this.db.ticket.findFirst({
+          where: {
+            orderId,
+            seatId: orderItem.seatId,
+          },
+        });
+      }
+    }
     if (!ticket || ticket.orderId !== orderId) {
       throw new NotFoundException('Không tìm thấy vé.');
     }
@@ -128,7 +141,7 @@ export class TicketsService {
       // only one matches status: VALID and gets count === 1.
       const updated = await tx.ticket.updateMany({
         where: {
-          id: ticketId,
+          id: ticket.id,
           status: TicketStatus.VALID,
         },
         data: {
@@ -177,6 +190,17 @@ export class TicketsService {
           action: 'ISSUED_FROM_TRANSFER',
           actorId: userId,
           detail: { fromTicketId: ticket.id, fromOwner: user?.email },
+        },
+      });
+      // Queue recipient delivery in the same transaction as revoking the old
+      // ticket and issuing its replacement. The normal order mail worker can
+      // then send the exact replacement ticket with its own QR.
+      await tx.ticketMailDelivery.create({
+        data: {
+          orderId,
+          recipientEmail: normalizedEmail,
+          ticketId: newTicket.id,
+          dedupeKey: `transfer:${newTicket.id}`,
         },
       });
     });

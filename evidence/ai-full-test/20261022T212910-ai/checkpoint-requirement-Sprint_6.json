@@ -1,0 +1,30 @@
+{
+  "id": "SPRINT-6-GOAL",
+  "requirement_id": "Sprint 6",
+  "kind": "SPRINT_GOAL",
+  "group": "Mục tiêu tích hợp",
+  "tier": "GOVERNANCE",
+  "priority": "Theo scope Sprint",
+  "readiness": "SPECIFIED",
+  "title": "Hệ thống đứng vững và công bằng khi mở bán đông người",
+  "source": {
+    "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+    "sheet": "Sprints",
+    "range": "D7"
+  },
+  "original_requirement": "Hệ thống đứng vững và công bằng khi mở bán đông người",
+  "steps": [
+    "Xác định các story có Sprint tương ứng trong baseline.",
+    "Đi trọn hành trình tích hợp cho Sprint Goal; đối chiếu dependency và bằng chứng môi trường, không chỉ cộng số story PASS."
+  ],
+  "expected": [
+    "Hệ thống đứng vững và công bằng khi mở bán đông người"
+  ],
+  "evidence_required": [
+    "Liên kết case story và hành trình tích hợp đã chạy"
+  ],
+  "status": "NOT_RUN",
+  "actual": null,
+  "evidence_files": [],
+  "approved_override": null
+}

@@ -1,0 +1,40 @@
+
+ RUN  v4.1.11 D:/Merge_2/Codegym/apps/api
+
+ ❯ test/waitlist.e2e-spec.ts (9 tests | 9 skipped) 411ms
+
+ Test Files  1 failed (1)
+      Tests  9 skipped (9)
+   Start at  10:43:04
+   Duration  2.19s (transform 728ms, setup 44ms, import 1.51s, tests 411ms, environment 0ms)
+
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/waitlist.e2e-spec.ts > S-59 waitlist FIFO and SMTP catcher on isolated PostgreSQL
+PrismaClientKnownRequestError: 
+Invalid `tx.user.deleteMany()` invocation in
+D:/Merge_2/Codegym/apps/api/test/waitlist.e2e-spec.ts:80:23
+
+  77 await tx.erasureRequest.deleteMany({ where: { userId: { in: staleUserIds } } });
+  78 await tx.consentEvent.deleteMany({ where: { userId: { in: staleUserIds } } });
+  79 await tx.registrationConsent.deleteMany({ where: { userId: { in: staleUserIds } } });
+→ 80 await tx.user.deleteMany(
+Foreign key constraint violated on the constraint: `erasure_requests_approvedBy_fkey`
+ ❯ vn.handleRequestError ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:238:12
+ ❯ vn.handleAndLogRequestError ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:184:11
+ ❯ vn.request ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/RequestHandler.ts:153:11
+ ❯ a ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:1014:23
+ ❯ test/waitlist.e2e-spec.ts:80:9
+     78|         await tx.consentEvent.deleteMany({ where: { userId: { in: stal…
+     79|         await tx.registrationConsent.deleteMany({ where: { userId: { i…
+     80|         await tx.user.deleteMany({ where: { OR: [{ id: old.organizerId…
+       |         ^
+     81|       });
+     82|     }
+ ❯ Proxy._transactionWithCallback ../../node_modules/.pnpm/@prisma+client@7.10.0_prism_4f8c96a9a0877c77ff4fda073b8e7c7e/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:861:17
+ ❯ test/waitlist.e2e-spec.ts:58:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

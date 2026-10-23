@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-47-AC01",
+    "requirement_id": "S-47",
+    "kind": "AC",
+    "group": "Huỷ và hoàn",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "7",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Ban tổ chức huỷ suất diễn và hoàn tiền hàng loạt",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L49"
+    },
+    "original_requirement": "Huỷ suất thì suất đóng bán, mọi vé chuyển sang đã huỷ, một lệnh hoàn 100% được tạo cho từng đơn và chạy nền theo lô, khách nhận email thông báo. Chưa refine chi tiết — tier Later, ước lượng thô 5 SP",
+    "fixture": "Suất nhiều paid/pending orders; một lỗi giữa batch; SMTP catcher.",
+    "surfaces": "POST /showtimes/:id/cancel; /cancellation",
+    "code_candidates": "apps/api/src/lifecycle/lifecycle.module.ts; cancellations.service.ts",
+    "test_candidates": "lifecycle.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Chuẩn bị fixture: Suất nhiều paid/pending orders; một lỗi giữa batch; SMTP catcher.",
+      "Huỷ suất, kiểm đóng bán ngay, vé vô hiệu, mỗi paid order một refund 100%, pending xử lý theo contract. Restart giữa batch, retry không nhân hoàn và không bỏ đơn; email tới catcher và lỗi từng phần được nhìn thấy.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Huỷ suất, kiểm đóng bán ngay, vé vô hiệu, mỗi paid order một refund 100%, pending xử lý theo contract. Restart giữa batch, retry không nhân hoàn và không bỏ đơn; email tới catcher và lỗi từng phần được nhìn thấy.",
+    "expected": [
+      "Huỷ suất thì suất đóng bán, mọi vé chuyển sang đã huỷ, một lệnh hoàn 100% được tạo cho từng đơn và chạy nền theo lô, khách nhận email thông báo. Chưa refine chi tiết — tier Later, ước lượng thô 5 SP"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-47-NFR",
+    "requirement_id": "S-47",
+    "kind": "NFR",
+    "group": "Huỷ và hoàn",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "7",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Ban tổ chức huỷ suất diễn và hoàn tiền hàng loạt — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N49"
+    },
+    "original_requirement": "chưa refine — cần chốt cách xử lý khi một lệnh hoàn trong lô thất bại và giới hạn tốc độ gọi cổng",
+    "fixture": "Suất nhiều paid/pending orders; một lỗi giữa batch; SMTP catcher.",
+    "surfaces": "POST /showtimes/:id/cancel; /cancellation",
+    "code_candidates": "apps/api/src/lifecycle/lifecycle.module.ts; cancellations.service.ts",
+    "test_candidates": "lifecycle.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Huỷ suất, kiểm đóng bán ngay, vé vô hiệu, mỗi paid order một refund 100%, pending xử lý theo contract. Restart giữa batch, retry không nhân hoàn và không bỏ đơn; email tới catcher và lỗi từng phần được nhìn thấy.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt cách xử lý khi một lệnh hoàn trong lô thất bại và giới hạn tốc độ gọi cổng"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

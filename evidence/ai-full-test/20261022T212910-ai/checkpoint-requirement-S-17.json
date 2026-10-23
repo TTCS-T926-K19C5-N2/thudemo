@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-17-AC01",
+    "requirement_id": "S-17",
+    "kind": "AC",
+    "group": "Đơn hàng",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Xem lại chi tiết đơn trước khi thanh toán",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L19"
+    },
+    "original_requirement": "Giả sử đơn vừa được tạo, Khi mở trang đơn, Thì thấy tên sự kiện, suất, từng ghế kèm hạng và đơn giá, tổng tiền và thời gian còn lại để thanh toán",
+    "fixture": "Order A pending/expired; B đăng nhập; hai hạng giá khác nhau.",
+    "surfaces": "/orders/:id; GET /orders/:id",
+    "code_candidates": "apps/web/src/features/order-review/; apps/api/src/orders/",
+    "test_candidates": "orders.e2e-spec.ts; order-review.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: đơn vừa được tạo.",
+      "Thực hiện trên /orders/:id; GET /orders/:id: mở trang đơn.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "UI hiển thị từng dòng, tổng và thời gian; so SUM(unitPrice) với server. Gửi giá/tổng sửa bằng API; B đọc ID của A phải 403. Hết hạn thì nút trả tiền ẩn và API cũng từ chối.",
+    "expected": [
+      "thấy tên sự kiện, suất, từng ghế kèm hạng và đơn giá, tổng tiền và thời gian còn lại để thanh toán"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-17-AC02",
+    "requirement_id": "S-17",
+    "kind": "AC",
+    "group": "Đơn hàng",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Xem lại chi tiết đơn trước khi thanh toán",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L19"
+    },
+    "original_requirement": "Giả sử tôi sửa tổng tiền trong yêu cầu gửi lên, Khi máy chủ xử lý, Thì tổng vẫn được tính lại từ giá hạng ghế, số sửa bị bỏ qua",
+    "fixture": "Order A pending/expired; B đăng nhập; hai hạng giá khác nhau.",
+    "surfaces": "/orders/:id; GET /orders/:id",
+    "code_candidates": "apps/web/src/features/order-review/; apps/api/src/orders/",
+    "test_candidates": "orders.e2e-spec.ts; order-review.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi sửa tổng tiền trong yêu cầu gửi lên.",
+      "Thực hiện trên /orders/:id; GET /orders/:id: máy chủ xử lý.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "UI hiển thị từng dòng, tổng và thời gian; so SUM(unitPrice) với server. Gửi giá/tổng sửa bằng API; B đọc ID của A phải 403. Hết hạn thì nút trả tiền ẩn và API cũng từ chối.",
+    "expected": [
+      "tổng vẫn được tính lại từ giá hạng ghế, số sửa bị bỏ qua"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-17-AC03",
+    "requirement_id": "S-17",
+    "kind": "AC",
+    "group": "Đơn hàng",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Xem lại chi tiết đơn trước khi thanh toán",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L19"
+    },
+    "original_requirement": "Giả sử thời hạn thanh toán đã hết, Khi mở trang đơn, Thì thấy đơn đã hết hạn và nút thanh toán bị ẩn",
+    "fixture": "Order A pending/expired; B đăng nhập; hai hạng giá khác nhau.",
+    "surfaces": "/orders/:id; GET /orders/:id",
+    "code_candidates": "apps/web/src/features/order-review/; apps/api/src/orders/",
+    "test_candidates": "orders.e2e-spec.ts; order-review.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: thời hạn thanh toán đã hết.",
+      "Thực hiện trên /orders/:id; GET /orders/:id: mở trang đơn.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "UI hiển thị từng dòng, tổng và thời gian; so SUM(unitPrice) với server. Gửi giá/tổng sửa bằng API; B đọc ID của A phải 403. Hết hạn thì nút trả tiền ẩn và API cũng từ chối.",
+    "expected": [
+      "thấy đơn đã hết hạn và nút thanh toán bị ẩn"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-17-NFR",
+    "requirement_id": "S-17",
+    "kind": "NFR",
+    "group": "Đơn hàng",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Xem lại chi tiết đơn trước khi thanh toán — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N19"
+    },
+    "original_requirement": "trang đơn chỉ chủ đơn xem được",
+    "fixture": "Order A pending/expired; B đăng nhập; hai hạng giá khác nhau.",
+    "surfaces": "/orders/:id; GET /orders/:id",
+    "code_candidates": "apps/web/src/features/order-review/; apps/api/src/orders/",
+    "test_candidates": "orders.e2e-spec.ts; order-review.spec.ts",
+    "steps": [
+      "UI hiển thị từng dòng, tổng và thời gian; so SUM(unitPrice) với server. Gửi giá/tổng sửa bằng API; B đọc ID của A phải 403. Hết hạn thì nút trả tiền ẩn và API cũng từ chối.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "trang đơn chỉ chủ đơn xem được"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

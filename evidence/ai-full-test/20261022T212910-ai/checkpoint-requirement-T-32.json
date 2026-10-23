@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-32-AC",
+    "requirement_id": "T-32",
+    "parent_requirement": "S-14",
+    "kind": "TASK_AC",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "API trả về giữ chỗ còn hiệu lực của người dùng trong một suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G33"
+    },
+    "original_requirement": "Trả về đúng ghế đang giữ và thời hạn; giữ chỗ đã hết hạn không xuất hiện",
+    "fixture": "A giữ 2 ghế, đã trôi 4 phút; context browser thứ hai đăng nhập cùng tài khoản.",
+    "surfaces": "GET /showtimes/:id/holds; trang chọn ghế",
+    "code_candidates": "apps/api/src/holds/; apps/web/src/features/seat-selection/",
+    "test_candidates": "useSeatHoldTimer.test.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Refresh rồi đóng/mở lại browser và đăng nhập thiết bị thứ hai; danh sách và hạn lấy từ server, không bắt đầu lại 10 phút. Làm hết hạn ở fixture rồi mở lại, không phục hồi ghế cũ; B không đọc được hold A.",
+      "Kiểm riêng tiêu chí task T-32: Trả về đúng ghế đang giữ và thời hạn; giữ chỗ đã hết hạn không xuất hiện",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Trả về đúng ghế đang giữ và thời hạn; giữ chỗ đã hết hạn không xuất hiện"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-32-NFR",
+    "requirement_id": "T-32",
+    "parent_requirement": "S-14",
+    "kind": "TASK_NFR",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "API trả về giữ chỗ còn hiệu lực của người dùng trong một suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I33"
+    },
+    "original_requirement": "chỉ trả về giữ chỗ của chính người gọi",
+    "fixture": "A giữ 2 ghế, đã trôi 4 phút; context browser thứ hai đăng nhập cùng tài khoản.",
+    "surfaces": "GET /showtimes/:id/holds; trang chọn ghế",
+    "code_candidates": "apps/api/src/holds/; apps/web/src/features/seat-selection/",
+    "test_candidates": "useSeatHoldTimer.test.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Refresh rồi đóng/mở lại browser và đăng nhập thiết bị thứ hai; danh sách và hạn lấy từ server, không bắt đầu lại 10 phút. Làm hết hạn ở fixture rồi mở lại, không phục hồi ghế cũ; B không đọc được hold A.",
+      "Kiểm riêng tiêu chí task T-32: chỉ trả về giữ chỗ của chính người gọi",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "chỉ trả về giữ chỗ của chính người gọi"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

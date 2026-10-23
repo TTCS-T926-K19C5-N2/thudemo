@@ -1,0 +1,147 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Isolated run-bound PostgreSQL/API/web; synthetic .invalid buyer and recipient; no SMTP worker enabled.",
+  "http": [
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/{fixture-order}/tickets/{fixture-ticket}/transfer",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/tickets/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/tickets/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/tickets/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/tickets/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 404
+    }
+  ],
+  "screenshots": [
+    "int16-owner-after-transfer-desktop.png",
+    "int16-recipient-ticket-desktop.png",
+    "int16-recipient-ticket-mobile.png"
+  ],
+  "pageErrors": [],
+  "assertions": [
+    {
+      "viewport": "1440x1000",
+      "transferHttp": 201,
+      "oldTicketStatus": "CANCELLED",
+      "oldQrPayloadRemoved": true,
+      "oldQrSha256Prefix": "e4bfb7707055"
+    },
+    {
+      "viewport": "1440x1000",
+      "recipientTicketsHttp": 200,
+      "recipientTicketTotal": 1,
+      "recipientTicketRows": 1,
+      "transferredTicketVisible": true,
+      "ticketStatus": "VALID",
+      "qrPayloadPresent": true,
+      "recipientOrderAccessStatus": 404
+    },
+    {
+      "viewport": "390x844",
+      "recipientTicketsHttp": 200,
+      "recipientTicketTotal": 1,
+      "recipientTicketRows": 1,
+      "transferredTicketVisible": true,
+      "ticketStatus": "VALID",
+      "qrPayloadPresent": true,
+      "recipientOrderAccessStatus": 404
+    }
+  ],
+  "actual": "PASS for local browser and isolated API: prior ticket QR is revoked; the replacement ticket is visible to the recipient with its own QR on desktop and mobile; order ownership remains private. Mail outbox and ticket state require the independent Postgres oracle."
+}

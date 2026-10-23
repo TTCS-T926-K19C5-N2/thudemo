@@ -2,13 +2,19 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   Param,
   Patch,
   Post,
   Query,
   Req,
+  Res,
   ParseUUIDPipe,
+  Sse,
+  type MessageEvent,
 } from '@nestjs/common';
+import type { Observable } from 'rxjs';
+import type { Response } from 'express';
 import { Public, Roles } from '../auth/decorators/roles.decorator.js';
 import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js';
 import { ShowtimesService } from './showtimes.service.js';
@@ -56,14 +62,54 @@ export class ShowtimesController {
   ) {
     return this.service.status(id, req.user.id, body);
   }
+  @Roles('ORGANIZER')
+  @Post(':id/clone')
+  clone(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+    @Body() body: unknown,
+  ) {
+    return this.service.clone(id, req.user.id, body);
+  }
   @Public() @Get(':id/seats') seats(@Param('id', ParseUUIDPipe) id: string) {
     return this.service.publicSeats(id);
+  }
+  @Public()
+  @Sse(':id/seats/stream')
+  seatsStream(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<Observable<MessageEvent>> {
+    return this.service.seatStream(id);
   }
   @Roles('ORGANIZER') @Get(':id/manage/seats') ownedSeats(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() req: AuthenticatedRequest,
   ) {
     return this.service.ownedSeats(id, req.user.id);
+  }
+  @Roles('ORGANIZER') @Get(':id/manage/seats.pdf') async seatMapPdf(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+    @Res() response: Response,
+  ) {
+    const { pdf, filename } = await this.service.ownedSeatMapPdf(id, req.user.id);
+    return response
+      .set({
+        'Cache-Control': 'private, no-store',
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Length': String(pdf.length),
+      })
+      .send(pdf);
+  }
+  @Roles('ORGANIZER')
+  @Get(':id/manage/sales')
+  @Header('Cache-Control', 'no-store')
+  sales(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.service.sales(id, req.user.id);
   }
   @Public() @Get(':id') detail(@Param('id', ParseUUIDPipe) id: string) {
     return this.service.detail(id);

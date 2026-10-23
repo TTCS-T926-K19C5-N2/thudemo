@@ -82,6 +82,7 @@ it('isolates anonymous no-op mail admission by attested caller before consuming 
       .expect(403);
     expect(await redis.get('auth:registration-delivery:hour')).toBe('31');
   } finally {
+    await db.consentEvent.deleteMany({where:{user:{email}}});
     await db.user.deleteMany({ where: { email } });
     await app.close();
     await redis.quit();

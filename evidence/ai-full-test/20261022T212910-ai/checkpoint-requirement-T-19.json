@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-19-AC",
+    "requirement_id": "T-19",
+    "parent_requirement": "S-09",
+    "kind": "TASK_AC",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Truy vấn trạng thái ghế theo suất diễn trong một lần gọi",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G20"
+    },
+    "original_requirement": "Trả về đúng ba trạng thái; chạy dưới 200ms với 2000 ghế",
+    "fixture": "Suất 2.000 ghế, có FREE/HELD/SOLD; desktop và điện thoại.",
+    "surfaces": "/shows/:id/seats; GET /showtimes/:id/seats",
+    "code_candidates": "apps/api/src/showtimes/seat-status.sql.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-availability.query.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Mở map, so toàn bộ trạng thái với DB; người B giữ rồi A refresh. Thử suất chưa có map; zoom/pan/chọn chính xác trên điện thoại; ghế bán không chọn được. Đo truy vấn dưới 200 ms và render đầy đủ dưới 2 giây; theo dõi query count để phát hiện N+1.",
+      "Kiểm riêng tiêu chí task T-19: Trả về đúng ba trạng thái; chạy dưới 200ms với 2000 ghế",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Trả về đúng ba trạng thái; chạy dưới 200ms với 2000 ghế"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-19-NFR",
+    "requirement_id": "T-19",
+    "parent_requirement": "S-09",
+    "kind": "TASK_NFR",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Truy vấn trạng thái ghế theo suất diễn trong một lần gọi",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I20"
+    },
+    "original_requirement": "không dùng vòng lặp gọi truy vấn con cho từng ghế",
+    "fixture": "Suất 2.000 ghế, có FREE/HELD/SOLD; desktop và điện thoại.",
+    "surfaces": "/shows/:id/seats; GET /showtimes/:id/seats",
+    "code_candidates": "apps/api/src/showtimes/seat-status.sql.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-availability.query.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Mở map, so toàn bộ trạng thái với DB; người B giữ rồi A refresh. Thử suất chưa có map; zoom/pan/chọn chính xác trên điện thoại; ghế bán không chọn được. Đo truy vấn dưới 200 ms và render đầy đủ dưới 2 giây; theo dõi query count để phát hiện N+1.",
+      "Kiểm riêng tiêu chí task T-19: không dùng vòng lặp gọi truy vấn con cho từng ghế",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "không dùng vòng lặp gọi truy vấn con cho từng ghế"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

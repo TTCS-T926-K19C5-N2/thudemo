@@ -1,0 +1,58 @@
+import { chromium } from 'playwright';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+const runId = process.env.AI_REMEDIATION_RUN_ID;
+if (!/^\d{8}T\d{6}-remediation$/.test(runId ?? '')) throw new Error('Missing run id');
+const root = resolve(import.meta.dirname, '../../..');
+const evidence = resolve(root, 'evidence/ai-remediation', runId);
+const fixture = JSON.parse(readFileSync(resolve(root, '.cache/ai-remediation', runId, 'browser-fixture.json'), 'utf8'));
+if (fixture.runId !== runId) throw new Error('Fixture run-id mismatch');
+const browser = await chromium.launch({ headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  let pdfResponse;
+  page.on('response', async (response) => {
+    if (response.url().includes('/manage/seats.pdf')) pdfResponse = { status: response.status(), headers: await response.allHeaders() };
+  });
+  await page.goto('http://127.0.0.1:3410/login', { waitUntil: 'domcontentloaded' });
+  await page.locator('input[type=email]').fill(fixture.ownerEmail);
+  await page.locator('input[type=password]').fill(fixture.ownerPassword);
+  await page.getByRole('button', { name: 'Đăng nhập' }).click();
+  await page.waitForURL('**/account', { timeout: 10000 }).catch(() => {});
+  await page.goto(`http://127.0.0.1:3410/showtimes/${fixture.showtimeId}/manage`, { waitUntil: 'domcontentloaded' });
+  const button = page.getByRole('button', { name: 'Xuất sơ đồ ghế PDF' });
+  await button.waitFor({ timeout: 10000 });
+  await page.screenshot({ path: resolve(evidence, 'seat-pdf-ui-before.png'), fullPage: true });
+  const pdfUrl = `**/api/showtimes/${fixture.showtimeId}/manage/seats.pdf`;
+  await page.route(pdfUrl, (route) => route.fulfill({ status: 503, contentType: 'application/json', body: '{"message":"temporary test failure"}' }));
+  await button.click();
+  await page.getByRole('alert').filter({ hasText: 'Không thể xuất sơ đồ ghế.' }).waitFor({ timeout: 5000 });
+  await page.unroute(pdfUrl);
+  await page.route(pdfUrl, async (route) => { await new Promise((resolve) => setTimeout(resolve, 700)); await route.continue(); });
+  const downloadPromise = page.waitForEvent('download');
+  await button.click();
+  await page.getByRole('status').filter({ hasText: 'Đang tạo tệp một trang' }).waitFor({ timeout: 3000 });
+  const [download] = await Promise.all([downloadPromise]);
+  await page.unroute(pdfUrl);
+  const path = resolve(evidence, 'seat-map-2002.pdf');
+  await download.saveAs(path);
+  await page.screenshot({ path: resolve(evidence, 'seat-pdf-ui-after.png'), fullPage: true });
+  const pdf = readFileSync(path).toString('latin1');
+  const pageCount = (pdf.match(/\/Type \/Page\b/g) ?? []).length;
+  const pageBox = pdf.match(/\/MediaBox\s*\[\s*0\s+0\s+([\d.]+)\s+([\d.]+)\s*\]/);
+  const ownerVerified = pdfResponse?.status === 200 && pdfResponse.headers['content-type']?.includes('application/pdf') && pdfResponse.headers['cache-control']?.includes('no-store') && pdfResponse.headers['content-disposition']?.includes('.pdf');
+  if (!ownerVerified) console.log(JSON.stringify({ status: pdfResponse?.status, headers: pdfResponse?.headers }));
+  if (!ownerVerified || pageCount !== 1 || !pdf.includes('/FontFile2') || !pageBox) throw new Error(`PDF response verification failed: status=${pdfResponse?.status}, pages=${pageCount}`);
+  await page.context().clearCookies();
+  await page.goto('http://127.0.0.1:3410/login', { waitUntil: 'domcontentloaded' });
+  await page.locator('input[type=email]').fill(fixture.adminEmail);
+  await page.locator('input[type=password]').fill(fixture.adminPassword);
+  await page.getByRole('button', { name: 'Đăng nhập' }).click();
+  await page.waitForURL('**/account', { timeout: 10000 }).catch(() => {});
+  const forbiddenStatus = await page.evaluate(async (id) => (await fetch(`/api/showtimes/${id}/manage/seats.pdf`)).status, fixture.showtimeId);
+  if (forbiddenStatus !== 403) throw new Error(`Expected non-organizer denial, got ${forbiddenStatus}`);
+  const result = { runId, ownerDownload: true, nonOwnerDenied: forbiddenStatus === 403, uiErrorState: true, uiLoadingState: true, contentType: 'application/pdf', cacheControl: pdfResponse.headers['cache-control'], pageCount, embeddedFont: true, pdfBytes: readFileSync(path).length, fixtureSeatCount: 2002, mediaBoxPoints: pageBox.slice(1).map(Number) };
+  writeFileSync(resolve(evidence, 'seat-pdf-browser.json'), JSON.stringify(result, null, 2));
+  console.log(JSON.stringify(result));
+} finally { await browser.close(); }

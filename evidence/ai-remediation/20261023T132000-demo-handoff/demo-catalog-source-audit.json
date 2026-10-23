@@ -1,0 +1,42 @@
+{
+  "source": "machine PostgreSQL read-only export; no user/order/ticket records",
+  "sha256": "5c0a13fa20d7cab30273e0e42371ee8f46aa8831b682acf825b2f49678ab43be",
+  "eventCount": 40,
+  "showtimeCount": 40,
+  "categoryCount": 120,
+  "seatCount": 5544,
+  "assetPaths": [
+    "/images/events/tham-khao/benh_si.jpg",
+    "/images/events/tham-khao/nguoi_tot_nha_so_5.jpg",
+    "/images/events/tham-khao/Ngheu_so_oc_hen.jpg",
+    "/images/events/tham-khao/kieu.jpg",
+    "/images/events/tham-khao/dem_trang.jpg",
+    "/images/events/tham-khao/hamlet.jpg",
+    "/images/events/tham-khao/hon_truong_ba_da_hang_thịt.jpg",
+    "/images/events/tham-khao/nguoi_trong_coi_nho.jpg",
+    "/images/events/tham-khao/thien_menh.png",
+    "/images/events/tham-khao/ky_uc_dong_thuong.jpg",
+    "/images/events/tham-khao/subscriptionVNSOban_giao_huong_VNSO_subscription_concert.jpg",
+    "/images/events/autumn-symphony.jpg",
+    "/images/events/tham-khao/hoa_nhac_toyota.jpg",
+    "/images/events/tham-khao/in_gratitude.jpg",
+    "/images/events/tham-khao/tieng_vong_truyen_thong.jpg",
+    "/images/events/tham-khao/tieng_vi_cam_trong_can_nha_co.jpg",
+    "/images/events/tham-khao/hoa_nhac_toyota.png",
+    "/images/events/trinh-poetry.jpg",
+    "/images/events/trinh-poetry-mobile.jpg",
+    "/images/events/tham-khao/nguoc_chieu_binh_an.jpg",
+    "/images/events/tham-khao/nhan_the.webp",
+    "/images/events/tham-khao/quan_thanh_tra.jpg",
+    "/images/events/autumn-symphony-mobile.jpg",
+    "/images/events/autumn-symphony-banner.jpg"
+  ],
+  "missingAssets": [],
+  "sourceMachineAggregateCounts": {
+    "userCount": 10,
+    "orderCount": 7,
+    "ticketCount": 6,
+    "eventCount": 40
+  },
+  "privateTablesExported": false
+}

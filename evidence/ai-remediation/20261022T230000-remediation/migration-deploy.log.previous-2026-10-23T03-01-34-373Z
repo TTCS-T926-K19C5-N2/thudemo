@@ -1,0 +1,8 @@
+Datasource "db": PostgreSQL database "codegym_remediation", schema "public" at "127.0.0.1:63924"
+
+◇ injected env (31) from ..\..\.env
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Error: Schema engine error:
+

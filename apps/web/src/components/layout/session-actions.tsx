@@ -30,6 +30,9 @@ export function SessionActions({ accountLink = true }: SessionActionsProps) {
   }
   return (
     <div className="session-actions">
+      <Link href="/orders" className="session-orders-link">
+        Đơn hàng
+      </Link>
       {accountLink && (
         <Link href="/account">
           <UserRound />

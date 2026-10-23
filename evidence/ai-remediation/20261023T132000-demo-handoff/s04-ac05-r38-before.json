@@ -1,0 +1,27 @@
+{
+  "capturedAt": "2026-10-23T08:25:46.662Z",
+  "profile": "s1demo-384da3d43b41",
+  "readOnly": true,
+  "fixture": {
+    "id": "9a1a4c17-06c0-43a6-9a32-3532e7d85a37",
+    "name": "AI-R38-S04-OWNER-20261023T1525Z",
+    "ownerRole": "organizer-b",
+    "status": "DRAFT",
+    "description": "Fixture run-bound R38 dùng riêng để kiểm soát quyền sở hữu sự kiện.",
+    "location": "Địa điểm kiểm thử local",
+    "showtimeCount": 0,
+    "orderItemCount": 0,
+    "orderCount": 0,
+    "couponCount": 0
+  },
+  "ui": {
+    "actor": "organizer-a",
+    "route": "http://localhost:3000/events/9a1a4c17-06c0-43a6-9a32-3532e7d85a37",
+    "visible": "Bạn không có quyền sửa sự kiện này"
+  },
+  "api": {
+    "status": "not captured; browser read-only evaluate does not permit fetch"
+  },
+  "cleanupEvidence": "s04-ac05-r38-cleanup.json",
+  "fixtureRemoved": true
+}\n

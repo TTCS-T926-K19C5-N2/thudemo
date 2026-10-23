@@ -1,0 +1,1 @@
+Verified INT-09 22-order batching, one mock refund failure/retry, 22 cancelled tickets, and no missing/duplicate refunds.

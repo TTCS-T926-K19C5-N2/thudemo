@@ -1,3 +1,4 @@
+import { assertIntegrationDatabase } from './integration-database.js';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -57,17 +58,7 @@ describe('Sprint 2 isolated database integration', () => {
     return { id: user.id, cookie: `${SESSION_COOKIE}=${token}` };
   }
   beforeAll(async () => {
-    const target = new URL(process.env.DATABASE_URL ?? '');
-    if (
-      target.hostname !== '127.0.0.1' ||
-      !(
-        target.port === '15432' ||
-        (target.port === '15446' &&
-          process.env.SPRINT1_ISOLATED_TEST === 'true')
-      ) ||
-      target.pathname !== '/sprint2_integration'
-    )
-      throw new Error('Run only on the isolated sprint2_integration database');
+    assertIntegrationDatabase();
     const module = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -86,6 +77,7 @@ describe('Sprint 2 isolated database integration', () => {
     const e = await db.event.create({
       data: {
         name: 'Concert integration fixture',
+        status: 'PUBLISHED',
         posterPath: '/images/events/autumn-symphony.jpg',
         categoryLabel: 'Thính phòng',
         description: 'Dữ liệu giả',
@@ -96,7 +88,7 @@ describe('Sprint 2 isolated database integration', () => {
     eventId = e.id;
     showId = (
       await db.showtime.create({
-        data: { eventId, startTime: new Date('2026-10-16T12:00:00Z') },
+        data: { eventId, startTime: new Date('2099-01-01T12:00:00Z') },
       })
     ).id;
   });
@@ -391,7 +383,7 @@ describe('Sprint 2 isolated database integration', () => {
     const created = await db.showtime.createManyAndReturn({
       data: Array.from({ length: 199 }, () => ({
         eventId,
-        startTime: new Date('2026-10-16T12:00:00Z'),
+        startTime: new Date('2099-01-01T12:00:00Z'),
         status: 'ON_SALE' as const,
       })),
     });
@@ -541,7 +533,7 @@ describe('Sprint 2 isolated database integration', () => {
       .expect(400);
   });
 
-  it('creates one pending order from live holds, snapshots prices, preserves the original deadline and rejects expired seats', async () => {
+  it('creates one pending order from live holds, snapshots prices, extends ten minutes and rejects expired seats', async () => {
     const available = await db.seat.findMany({
       where: { showtimeId: showId },
       orderBy: [{ categoryId: 'asc' }, { row: 'asc' }, { seatNumber: 'asc' }],
@@ -558,7 +550,6 @@ describe('Sprint 2 isolated database integration', () => {
       .send({ seatIds: firstSeats.map((seat) => seat.id) })
       .expect(200);
     const holdExpiresAt = Date.parse(held.body.hold.expiresAt);
-    await new Promise((resolve) => setTimeout(resolve, 100));
 
     const [placedA, placedB] = await Promise.all([
       request(app.getHttpServer())
@@ -584,19 +575,17 @@ describe('Sprint 2 isolated database integration', () => {
     );
     const paymentExpiresAt = Date.parse(placedA.body.order.paymentExpiresAt);
     // Promise.all preserves input order, not which concurrent request won the lock.
-    // DEC10/T37: neither the creator nor the reuser may extend the first hold.
+    // Only the creator gets a new 600-second deadline; the reuser must not extend it.
     const created = placedA.body.created ? placedA : placedB;
     const reused = placedA.body.created ? placedB : placedA;
-    expect(paymentExpiresAt).toBe(holdExpiresAt);
-    expect(paymentExpiresAt - Date.parse(created.body.serverTime)).toBeLessThan(
-      600000,
-    );
+    expect(paymentExpiresAt - Date.parse(created.body.serverTime)).toBe(600000);
     expect(reused.body.order.paymentExpiresAt).toBe(
       created.body.order.paymentExpiresAt,
     );
     const remaining = paymentExpiresAt - Date.parse(reused.body.serverTime);
     expect(remaining).toBeGreaterThan(0);
     expect(remaining).toBeLessThanOrEqual(600000);
+    expect(paymentExpiresAt).toBeGreaterThanOrEqual(holdExpiresAt);
     expect(
       await db.order.count({
         where: { userId: buyer, showtimeId: showId },
@@ -607,23 +596,13 @@ describe('Sprint 2 isolated database integration', () => {
       .set('Cookie', buyerCookie)
       .expect(200);
     expect(currentOrder.body.order.status).toBe('PENDING_PAYMENT');
-    const unchangedClaims = await db.seatHold.findMany({
+    const extended = await db.seatHold.findMany({
       where: { seatId: { in: firstSeats.map((seat) => seat.id) } },
       select: { expiresAt: true },
     });
     expect(
-      unchangedClaims.every(
-        (seat) => seat.expiresAt.getTime() === holdExpiresAt,
-      ),
+      extended.every((seat) => seat.expiresAt.getTime() === paymentExpiresAt),
     ).toBe(true);
-    expect(unchangedClaims).toHaveLength(firstSeats.length);
-    expect(
-      (
-        await db.holdSession.findUniqueOrThrow({
-          where: { id: held.body.hold.id },
-        })
-      ).expiresAt.getTime(),
-    ).toBe(holdExpiresAt);
 
     const newPrice = (firstCategory.price ?? 0) + 12345;
     await request(app.getHttpServer())

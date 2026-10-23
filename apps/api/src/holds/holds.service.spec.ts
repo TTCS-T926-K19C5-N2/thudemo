@@ -172,6 +172,52 @@ describe('hold driver error translation', () => {
   );
 });
 
+describe('owned hold seat release', () => {
+  const showtimeId = '00000000-0000-4000-8000-000000000001';
+  const userId = '00000000-0000-4000-8000-000000000002';
+  const seatId = '00000000-0000-4000-8000-000000000003';
+  const sessionId = '00000000-0000-4000-8000-000000000004';
+  const hash = 'fixture-session-hash';
+
+  function releaseService(foreign = false) {
+    const statements: string[] = [];
+    const db = {
+      holdTransaction: vi.fn(async (callback) => callback({
+        $queryRaw: vi.fn(async (query: { text: string }) => {
+          statements.push(query.text);
+          if (query.text.includes('SELECT id, token FROM hold_sessions'))
+            return [{ id: sessionId, token: '00000000-0000-4000-8000-000000000005' }];
+          if (query.text.includes('SELECT h."holdSessionId"'))
+            return [{ holdSessionId: foreign ? 'other' : sessionId, userId, sessionHash: hash }];
+          if (query.text.includes('SELECT id FROM orders')) return [];
+          if (query.text.includes('DELETE FROM seat_holds')) return [{ seatId }];
+          if (query.text.includes('SELECT clock_timestamp()'))
+            return [{ serverTime: new Date(), id: sessionId, expiresAt: new Date(Date.now() + 300000), seatIds: [] }];
+          return [];
+        }),
+      })),
+    };
+    const invalidate = vi.fn();
+    return { db, statements, invalidate, holds: new HoldsService(db as unknown as PrismaService, { invalidate } as never) };
+  }
+
+  it('deletes only the owned seat and updates expected ids in the same transaction', async () => {
+    const { db, statements, invalidate, holds } = releaseService();
+    const state = await holds.releaseSeat(showtimeId, userId, hash, seatId);
+    expect(state.hold).toBeNull();
+    expect(db.holdTransaction).toHaveBeenCalledOnce();
+    expect(statements.some((sql) => sql.includes('DELETE FROM seat_holds'))).toBe(true);
+    expect(statements.some((sql) => sql.includes('array_remove("expectedSeatIds"'))).toBe(true);
+    expect(invalidate).toHaveBeenCalledWith(showtimeId);
+  });
+
+  it('rejects a foreign hold without deleting it', async () => {
+    const { statements, holds } = releaseService(true);
+    await expect(holds.releaseSeat(showtimeId, userId, hash, seatId)).rejects.toMatchObject({ status: 403 });
+    expect(statements.some((sql) => sql.includes('DELETE FROM seat_holds'))).toBe(false);
+  });
+});
+
 describe('S-42 per-account ticket limit', () => {
   const showtimeId = '00000000-0000-4000-8000-000000000001';
   const userId = '00000000-0000-4000-8000-000000000002';
@@ -234,8 +280,18 @@ describe('S-42 per-account ticket limit', () => {
     expect(statusOf(() => parseTicketLimit([1]))).toBe(400);
   });
 
-  it('blocks a claim that would exceed the limit without touching the routine', async () => {
+  it('maps the transactional database quota outcome to TICKET_LIMIT', async () => {
     const { db, holds } = fixture(2, '1', 1n);
+    db.commitHoldRoutine.mockResolvedValueOnce([
+      {
+        failure: 'H0007',
+        rejectedSeatIds: [seatA],
+        serverTime: new Date(),
+        id: null,
+        expiresAt: null,
+        seatIds: [],
+      },
+    ] as never);
     await expect(
       holds.claim(showtimeId, userId, 'fixture-session-hash', {
         seatIds: [seatA],
@@ -244,11 +300,9 @@ describe('S-42 per-account ticket limit', () => {
       status: 403,
       response: expect.objectContaining({
         code: 'TICKET_LIMIT',
-        limit: 2,
-        owned: 2,
       }),
     });
-    expect(db.commitHoldRoutine).not.toHaveBeenCalled();
+    expect(db.commitHoldRoutine).toHaveBeenCalledOnce();
   });
 
   it('allows a claim that exactly reaches the limit', async () => {
@@ -339,7 +393,7 @@ describe('S-42 per-account ticket limit', () => {
       );
       expect(results).toHaveLength(10);
       expect(limitQueryCount(db)).toBe(1);
-      expect(db.seatReadQuery).toHaveBeenCalledTimes(limit === null ? 1 : 11);
+      expect(db.seatReadQuery).toHaveBeenCalledTimes(1);
       for (const client of clients)
         expect(client.release).not.toHaveBeenCalled();
       for (const [index, args] of db.commitHoldRoutine.mock.calls.entries())

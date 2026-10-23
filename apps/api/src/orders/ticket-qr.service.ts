@@ -25,24 +25,83 @@ export class TicketQrService {
     private readonly db: PrismaService,
     private readonly crypto: ScannerCryptoService,
   ) {}
+
+  async forTransferredTicket(ticketId: string, recipientEmail: string) {
+    const [ticket] = await this.db.$queryRaw<{
+      id: string;
+      code: string;
+      showtimeId: string;
+      seatId: string;
+      status: string;
+      ownerEmail: string | null;
+      seatLabel: string;
+      ticketType: string;
+      eventName: string;
+      showtimeStart: Date;
+    }[]>(Prisma.sql`
+      SELECT t.id::text,t.code,t."showtimeId"::text,t."seatId"::text AS "seatId",t.status,t."ownerEmail",t."seatLabel",t."ticketType",
+        e.name AS "eventName",st."startTime" AS "showtimeStart"
+      FROM tickets t JOIN showtimes st ON st.id=t."showtimeId" JOIN events e ON e.id=st."eventId"
+      WHERE t.id=${ticketId}::uuid AND lower(t."ownerEmail")=lower(${recipientEmail})
+        AND t."seatId" IS NOT NULL
+        AND EXISTS (SELECT 1 FROM ticket_logs l WHERE l."ticketId"=t.id AND l.action='ISSUED_FROM_TRANSFER')`);
+    if (!ticket) return null;
+    return {
+      ticketId: ticket.id,
+      id: ticket.id,
+      code: ticket.code,
+      showtimeId: ticket.showtimeId,
+      seatId: ticket.seatId,
+      eventName: ticket.eventName,
+      showtimeStart: ticket.showtimeStart.toISOString(),
+      category: ticket.ticketType,
+      ticketType: ticket.ticketType,
+      seatLabel: ticket.seatLabel,
+      status: ticket.status === 'CHECKED_IN' ? ('CHECKED_IN' as const)
+        : ticket.status === 'CANCELLED' ? ('CANCELLED' as const) : ('VALID' as const),
+      transferredToEmail: null,
+      ownerEmail: ticket.ownerEmail,
+      transferred: true,
+      qrPayload: ticket.status === 'VALID' ? this.crypto.issueQr(ticket.code, ticket.showtimeId) : null,
+    };
+  }
+
   async forBuyer(
     userId: string,
     page: { page: number; pageSize: number; skip: number },
   ) {
+    const account = await this.db.user.findUnique({
+      where: { id: userId },
+      select: { email: true },
+    });
+    const email = account?.email ?? '';
     const [count] = await this.db.$queryRaw<{ total: number }[]>(Prisma.sql`
-      SELECT count(*)::int AS total FROM order_items oi JOIN orders o ON o.id=oi."orderId"
-      JOIN tickets t ON t."orderId"=o.id AND t."seatId"=oi."seatId"
-      WHERE o."userId"=${userId}::uuid AND o.status='PAID'::"OrderStatus"`);
+      SELECT count(*)::int AS total FROM (
+        SELECT oi.id FROM order_items oi JOIN orders o ON o.id=oi."orderId"
+          JOIN tickets t ON t."orderId"=o.id AND t."seatId"=oi."seatId"
+          WHERE o."userId"=${userId}::uuid AND o.status IN ('PAID','CANCELLED')
+        UNION ALL
+        SELECT t.id FROM tickets t JOIN ticket_logs l ON l."ticketId"=t.id AND l.action='ISSUED_FROM_TRANSFER'
+          WHERE lower(t."ownerEmail")=lower(${email})
+      ) buyer_tickets`);
     const ids = await this.db.$queryRaw<
-      { ticketId: string; orderId: string }[]
+      { ticketId: string; orderId: string; kind: string }[]
     >(Prisma.sql`
-      SELECT oi.id AS "ticketId",o.id AS "orderId" FROM order_items oi
-      JOIN orders o ON o.id=oi."orderId" JOIN showtimes st ON st.id=o."showtimeId"
-      JOIN tickets t ON t."orderId"=o.id AND t."seatId"=oi."seatId"
-      WHERE o."userId"=${userId}::uuid AND o.status='PAID'::"OrderStatus"
-      ORDER BY CASE WHEN st."startTime">=CURRENT_TIMESTAMP THEN 0 ELSE 1 END,
-        CASE WHEN st."startTime">=CURRENT_TIMESTAMP THEN st."startTime" END ASC,
-        CASE WHEN st."startTime"<CURRENT_TIMESTAMP THEN st."startTime" END DESC,oi.id
+      SELECT q."ticketId",q."orderId",q.kind FROM (
+        SELECT COALESCE(t.id, oi.id) AS "ticketId",o.id AS "orderId",st."startTime",'ORDER'::text AS kind
+          FROM order_items oi JOIN orders o ON o.id=oi."orderId" JOIN showtimes st ON st.id=o."showtimeId"
+          JOIN tickets t ON t."orderId"=o.id AND t."seatId"=oi."seatId"
+          WHERE o."userId"=${userId}::uuid AND o.status IN ('PAID','CANCELLED')
+        UNION ALL
+        SELECT t.id AS "ticketId",source."orderId",st."startTime",'TRANSFER'::text AS kind
+          FROM tickets t JOIN ticket_logs l ON l."ticketId"=t.id AND l.action='ISSUED_FROM_TRANSFER'
+          JOIN tickets source ON source.id=(l.detail->>'fromTicketId')::uuid
+          JOIN showtimes st ON st.id=t."showtimeId"
+          WHERE lower(t."ownerEmail")=lower(${email})
+      ) q
+      ORDER BY CASE WHEN q."startTime">=CURRENT_TIMESTAMP THEN 0 ELSE 1 END,
+        CASE WHEN q."startTime">=CURRENT_TIMESTAMP THEN q."startTime" END ASC,
+        CASE WHEN q."startTime"<CURRENT_TIMESTAMP THEN q."startTime" END DESC,q."ticketId"
       LIMIT ${page.pageSize} OFFSET ${page.skip}`);
     // Bound the ticket ID page first; project each distinct owning order once.
     // No second QR encoder, ownership rule or issuance path is introduced.
@@ -52,9 +111,23 @@ export class TicketQrService {
         orderId: string;
       }
     >();
-    for (const orderId of new Set(ids.map((item) => item.orderId))) {
+    // Transferred tickets point at the original buyer's order for display
+    // context, but the recipient must never load that order through forOwner.
+    for (const orderId of new Set(
+      ids.filter((item) => item.kind === 'ORDER').map((item) => item.orderId),
+    )) {
       for (const ticket of (await this.forOwner(orderId, userId)).tickets)
         projected.set(ticket.ticketId, { ...ticket, orderId });
+    }
+    const transfers = ids.filter((item) => item.kind === 'TRANSFER');
+    for (const item of transfers) {
+      const ticket = await this.forTransferredTicket(item.ticketId, email);
+      if (ticket) {
+        projected.set(item.ticketId, {
+          ...ticket,
+          orderId: item.orderId,
+        });
+      }
     }
     return {
       tickets: ids
@@ -73,7 +146,7 @@ export class TicketQrService {
       const [order] = await tx.$queryRaw<{ status: string }[]>(Prisma.sql`
         SELECT status FROM orders WHERE id=${orderId}::uuid AND "userId"=${userId}::uuid FOR SHARE`);
       if (!order) throw new NotFoundException('Không tìm thấy đơn hàng.');
-      if (order.status !== 'PAID')
+      if (!['PAID', 'CANCELLED'].includes(order.status))
         throw new ConflictException({
           code: 'TICKETS_NOT_READY',
           message: 'Vé chỉ sẵn sàng sau khi thanh toán được xác nhận.',
@@ -104,7 +177,7 @@ export class TicketQrService {
         });
       return {
         tickets: items.map((item) => ({
-          ticketId: item.id,
+          ticketId: item.ticketDbId ?? item.id,
           id: item.ticketDbId ?? item.id,
           code: item.code ?? item.id,
           showtimeId: item.showtimeId,

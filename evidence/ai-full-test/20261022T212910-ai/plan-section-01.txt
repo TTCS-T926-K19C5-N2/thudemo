@@ -1,0 +1,12 @@
+## 1. Mục tiêu và bộ tài liệu
+
+Mục tiêu là trả lời có bằng chứng: từng chức năng có tồn tại, có dùng được trọn luồng, có đáp ứng AC/NFR gốc, có bảo vệ đúng quyền và có giữ đúng dữ liệu khi lỗi/đồng thời hay không.
+
+Ba tệp dùng cùng nhau:
+
+1. `PLAN.md`: phạm vi, cách chuẩn bị, thứ tự chạy, tiêu chí nghiệm thu, phương pháp cho từng chức năng, ca tích hợp và checklist kỹ thuật.
+2. `test-cases.json`: ma trận từng AC/NFR với ID, ô nguồn, dữ liệu, bước thử, kết quả mong đợi và trường ghi kết quả. Tất cả ban đầu là `NOT_RUN`.
+3. `CHATBOT_PROMPT.md`: nội dung giao việc cho AI có quyền đọc mã, chạy ứng dụng, gọi API và thao tác trình duyệt.
+
+Không dừng ở một checklist chung như “test đăng nhập, test mua vé”. Mỗi kết quả phải truy ngược được tới yêu cầu và bằng chứng. Khi một tiêu chí có nhiều mệnh đề, chatbot tách thành case con, ví dụ `S-10-NFR.01`, `.02`, giữ liên kết với tiêu chí gốc.
+

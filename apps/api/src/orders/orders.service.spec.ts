@@ -23,16 +23,16 @@ describe('OrdersService & isOrderExpired', () => {
 
     it('returns true for EXPIRED order regardless of expiresAt', () => {
       const future = new Date(Date.now() + 60000);
-      expect(isOrderExpired({ status: OrderStatus.EXPIRED, expiresAt: future })).toBe(
-        true,
-      );
+      expect(
+        isOrderExpired({ status: OrderStatus.EXPIRED, expiresAt: future }),
+      ).toBe(true);
     });
 
     it('returns false for PAID order even after original expiresAt', () => {
       const past = new Date(Date.now() - 60000);
-      expect(isOrderExpired({ status: OrderStatus.PAID, expiresAt: past })).toBe(
-        false,
-      );
+      expect(
+        isOrderExpired({ status: OrderStatus.PAID, expiresAt: past }),
+      ).toBe(false);
     });
   });
 
@@ -50,6 +50,9 @@ describe('OrdersService & isOrderExpired', () => {
 
     beforeEach(() => {
       mockPrisma = {
+        $queryRaw: vi
+          .fn()
+          .mockResolvedValue([{ status: 'ON_SALE', isDemo: false }]),
         $transaction: vi.fn(async (cb) => cb(mockPrisma)),
         holdSession: {
           findFirst: vi.fn(),
@@ -304,7 +307,7 @@ describe('OrdersService & isOrderExpired', () => {
         expect(result.remainingSeconds).toBe(0);
       });
 
-      it('recalculates total amount from stored item price snapshots and logs warning if mismatch', async () => {
+      it('uses the immutable order money snapshot and logs when stored items disagree', async () => {
         const future = new Date(Date.now() + 60000);
         mockPrisma.order.findUnique.mockResolvedValue({
           id: mockOrderId,
@@ -341,8 +344,8 @@ describe('OrdersService & isOrderExpired', () => {
         });
 
         const result = await service.getOrderById(mockOrderId, mockUserId);
-        // Server recalculated total wins
-        expect(result.totalAmount).toBe(500000);
+        // Order snapshot is authoritative for the amount already shown/charged.
+        expect(result.totalAmount).toBe(400000);
       });
     });
   });

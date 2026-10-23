@@ -16,6 +16,8 @@ import type { ScanCommand } from './admission-contract.js';
 import { ADMISSION_OVERRIDE_POLICY as admissionOverridePolicy } from './admission-policy.js';
 import { ScannerCryptoService } from '../scanner/scanner-crypto.service.js';
 
+const ticketUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 type Permission = { gateName: string; staffName: string; canOverride: boolean };
 type Admission = {
   ticketId: string;
@@ -33,6 +35,10 @@ type Ticket = {
   categoryName: string;
   row: string;
   seatNumber: number;
+  admissionTicketId: string;
+  transferredTicketId: string | null;
+  transferredStatus: string | null;
+  transferredCheckedInAt: Date | null;
 };
 
 @Injectable()
@@ -144,11 +150,24 @@ export class TicketCheckInService {
         });
       }
       const ticketId = claims.ticketId;
-      const [ticket] = await tx.$queryRaw<Ticket[]>(Prisma.sql`
-        SELECT oi."checkedInAt", oi."orderId", oi."seatId", oi."categoryName", s.row, s."seatNumber"
+      let [ticket] = ticketUuid.test(ticketId) ? await tx.$queryRaw<Ticket[]>(Prisma.sql`
+        SELECT oi."checkedInAt", oi."orderId", oi."seatId", oi."categoryName", s.row, s."seatNumber",
+          oi.id::text AS "admissionTicketId",NULL::text AS "transferredTicketId",NULL::text AS "transferredStatus",NULL::timestamptz AS "transferredCheckedInAt"
         FROM order_items oi JOIN orders o ON o.id = oi."orderId" JOIN seats s ON s.id = oi."seatId"
         WHERE oi.id = ${ticketId}::uuid AND o."showtimeId" = ${showtimeId}::uuid
-          AND s."showtimeId" = ${showtimeId}::uuid AND o.status = 'PAID'::"OrderStatus" FOR UPDATE OF oi,o`);
+          AND s."showtimeId" = ${showtimeId}::uuid AND o.status = 'PAID'::"OrderStatus" FOR UPDATE OF oi,o`) : [];
+      if (!ticket) {
+        [ticket] = await tx.$queryRaw<Ticket[]>(Prisma.sql`
+        SELECT oi."checkedInAt",oi."orderId",oi."seatId",oi."categoryName",s.row,s."seatNumber",
+          oi.id::text,t.id::text,t.status,t."checkedInAt"
+        FROM tickets t JOIN ticket_logs l ON l."ticketId"=t.id AND l.action='ISSUED_FROM_TRANSFER'
+          JOIN tickets source ON source.id=(l.detail->>'fromTicketId')::uuid
+          JOIN order_items oi ON oi."orderId"=source."orderId" AND oi."seatId"=source."seatId"
+          JOIN orders o ON o.id=oi."orderId" JOIN seats s ON s.id=oi."seatId"
+        WHERE t.code=${ticketId} AND t."showtimeId"=${showtimeId}::uuid AND t.status IN ('VALID','CHECKED_IN')
+          AND o.status='PAID'::"OrderStatus" AND s."showtimeId"=${showtimeId}::uuid
+        LIMIT 1 FOR UPDATE OF t,oi,o`);
+      }
       if (!ticket)
         throw new NotFoundException({
           code: 'UNKNOWN_TICKET',
@@ -158,7 +177,10 @@ export class TicketCheckInService {
         { status: string; checkedInAt: Date | null; cancelledAt: Date | null }[]
       >(Prisma.sql`
         SELECT status, "checkedInAt", "cancelledAt" FROM tickets WHERE "orderId"=${ticket.orderId}::uuid AND "seatId"=${ticket.seatId}::uuid FOR UPDATE`);
-      const cancelled = legacy.find((t) => t.status === 'CANCELLED');
+      const admissionTicketId = ticket.admissionTicketId;
+      const cancelled = ticket.transferredTicketId
+        ? undefined
+        : legacy.find((t) => t.status === 'CANCELLED');
       if (cancelled)
         throw new NotFoundException({
           code: 'TICKET_CANCELLED',
@@ -166,13 +188,14 @@ export class TicketCheckInService {
           cancelledAt: cancelled.cancelledAt?.toISOString() ?? null,
         });
       ticket.checkedInAt ??=
+        ticket.transferredCheckedInAt ??
         legacy.find((t) => t.status === 'CHECKED_IN')?.checkedInAt ?? null;
       const kind = exception ? 'EXCEPTION' : 'NORMAL';
       const [replay] = await tx.$queryRaw<Admission[]>(Prisma.sql`
         SELECT * FROM ticket_admissions WHERE "staffId" = ${request.user.id}::uuid AND "requestId" = ${command.requestId}::uuid`);
       if (replay) {
         if (
-          replay.ticketId !== ticketId ||
+          replay.ticketId !== admissionTicketId ||
           replay.showtimeId !== showtimeId ||
           replay.gateId !== command.gateId ||
           replay.kind !== kind ||
@@ -186,7 +209,7 @@ export class TicketCheckInService {
         return this.result('ALREADY_RECORDED', ticketId, ticket, replay);
       }
       const [first] = await tx.$queryRaw<Admission[]>(Prisma.sql`
-        SELECT * FROM ticket_admissions WHERE "ticketId" = ${ticketId}::uuid AND kind = 'NORMAL'`);
+        SELECT * FROM ticket_admissions WHERE "ticketId" = ${admissionTicketId}::uuid AND kind = 'NORMAL'`);
       if (
         !exception &&
         (first ||
@@ -216,7 +239,7 @@ export class TicketCheckInService {
       }
       const [admission] = await tx.$queryRaw<Admission[]>(Prisma.sql`
         INSERT INTO ticket_admissions (id, "ticketId", "showtimeId", "gateId", "gateName", "staffId", "staffName", "requestId", kind, reason, "ownerConfirmed")
-        VALUES (${randomUUID()}::uuid, ${ticketId}::uuid, ${showtimeId}::uuid, ${command.gateId}::uuid,
+        VALUES (${randomUUID()}::uuid, ${admissionTicketId}::uuid, ${showtimeId}::uuid, ${command.gateId}::uuid,
           ${permission.gateName}, ${request.user.id}::uuid, ${permission.staffName}, ${command.requestId}::uuid,
           ${kind}, ${command.reason ?? null}, ${exception})
         ON CONFLICT DO NOTHING RETURNING *`);
@@ -231,7 +254,9 @@ export class TicketCheckInService {
           Prisma.sql`UPDATE order_items SET "checkedInAt" = ${admission.enteredAt} WHERE id = ${ticketId}::uuid`,
         );
         await tx.$executeRaw(
-          Prisma.sql`UPDATE tickets SET status='CHECKED_IN', "checkedInAt"=${admission.enteredAt}, "updatedAt"=clock_timestamp() WHERE "orderId"=${ticket.orderId}::uuid AND "seatId"=${ticket.seatId}::uuid`,
+          ticket.transferredTicketId
+            ? Prisma.sql`UPDATE tickets SET status='CHECKED_IN', "checkedInAt"=${admission.enteredAt}, "updatedAt"=clock_timestamp() WHERE id=${ticket.transferredTicketId}::uuid AND status='VALID'`
+            : Prisma.sql`UPDATE tickets SET status='CHECKED_IN', "checkedInAt"=${admission.enteredAt}, "updatedAt"=clock_timestamp() WHERE "orderId"=${ticket.orderId}::uuid AND "seatId"=${ticket.seatId}::uuid`,
         );
       }
       return this.result(

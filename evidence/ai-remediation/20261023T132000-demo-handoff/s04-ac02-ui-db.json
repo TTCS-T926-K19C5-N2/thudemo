@@ -1,0 +1,30 @@
+{
+  "capturedAt": "2026-10-23T08:21:08.2816884Z",
+  "profile": "s1demo-384da3d43b41",
+  "requirement": "S-04-AC02",
+  "fixture": {
+    "name": "AI-R37-S04-20261023T1517Z",
+    "eventId": "b9eecb6f-1de2-4f1d-8dc1-8391937a894c",
+    "showtimeId": "8955005d-d389-4885-9a3b-b7892acf82a2",
+    "runBound": true
+  },
+  "desktop": {
+    "actor": "Organizer",
+    "action": "Created a synthetic DRAFT event and added one future showtime through the event detail UI",
+    "visible": "Đã thêm suất diễn mới thành công. Lúc 15:00 Thứ Bảy, 24 tháng 10, 2026 — Nháp",
+    "screenshot": "s04-ac02-add-showtime-desktop.jpg"
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "documentWidth": 375,
+    "bodyWidth": 375,
+    "noHorizontalOverflow": true,
+    "screenshot": "s04-ac02-add-showtime-mobile.jpg"
+  },
+  "independentDatabaseOracle": "s04-ac02-db-oracle.json",
+  "cleanup": "s04-ac02-cleanup.json",
+  "status": "PASS"
+}

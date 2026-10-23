@@ -19,6 +19,38 @@ describe('TicketReminderScheduler', () => {
     scheduler = new TicketReminderScheduler(db, emailService);
   });
 
+  it('does not start a second legacy mail worker at application startup', async () => {
+    const sweep = vi.spyOn(scheduler, 'sweep');
+    scheduler.onModuleInit();
+    await Promise.resolve();
+    expect(sweep).not.toHaveBeenCalled();
+    await scheduler.onModuleDestroy();
+  });
+
+  it('sends past the old 100-ticket cap using bounded keyset pages', async () => {
+    db.showtime.findMany.mockResolvedValueOnce([{
+      id: 'showtime-1',
+      startTime: new Date(Date.now() + 60_000),
+      event: { name: 'Concert', location: 'Hall' },
+    }]);
+    const row = (id: number) => ({
+      id: `ticket-${String(id).padStart(3, '0')}`,
+      showtimeId: 'showtime-1',
+      seatLabel: `A-${id}`,
+      code: `TK-${id}`,
+      status: TicketStatus.VALID,
+      order: { user: { email: `buyer${id}@example.invalid` } },
+    });
+    db.ticket.findMany
+      .mockResolvedValueOnce(Array.from({ length: 100 }, (_, i) => row(i + 1)))
+      .mockResolvedValueOnce([row(101)])
+      .mockResolvedValueOnce([]);
+    const send = vi.spyOn(emailService, 'sendReminder').mockResolvedValue(undefined);
+    await scheduler.sweepReminders();
+    expect(send).toHaveBeenCalledTimes(101);
+    expect(db.ticket.findMany).toHaveBeenCalledTimes(3);
+  });
+
   describe('sweepReminders (24h before showtime)', () => {
     it('selects future showtimes within 24 hours and dispatches reminders to email service', async () => {
       const showtimeStart = new Date(Date.now() + 20 * 60 * 60 * 1000);
@@ -74,6 +106,50 @@ describe('TicketReminderScheduler', () => {
           remindedStartTime: showtimeStart,
         },
       });
+    });
+
+    it('sends a reminder to the current owner of a transferred ticket', async () => {
+      const showtimeStart = new Date(Date.now() + 12 * 60 * 60 * 1000);
+      db.showtime.findMany.mockResolvedValueOnce([
+        {
+          id: 'showtime-transfer',
+          startTime: showtimeStart,
+          event: { name: 'Transferred show', location: 'Hall T' },
+        },
+      ]);
+      db.ticket.findMany.mockResolvedValueOnce([
+        {
+          id: 'ticket-transferred',
+          showtimeId: 'showtime-transfer',
+          seatLabel: 'B-2',
+          code: 'TK-TRANSFER-1',
+          status: TicketStatus.VALID,
+          ownerEmail: 'recipient@example.invalid',
+          order: null,
+        },
+      ]);
+
+      await scheduler.sweepReminders();
+
+      expect(db.ticket.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            OR: expect.arrayContaining([
+              {
+                orderId: null,
+                logs: { some: { action: 'ISSUED_FROM_TRANSFER' } },
+              },
+            ]),
+          }),
+        }),
+      );
+      expect(emailService.sendReminder).toHaveBeenCalledWith(
+        expect.objectContaining({
+          toEmail: 'recipient@example.invalid',
+          ticketCode: 'TK-TRANSFER-1',
+          type: 'REMINDER',
+        }),
+      );
     });
 
     it('does NOT mark remindedStartTime if email provider dispatch fails, enabling retry on subsequent sweeps', async () => {
@@ -156,6 +232,52 @@ describe('TicketReminderScheduler', () => {
           remindedStartTime: newStartTime,
         },
       });
+    });
+
+    it('sends reschedule notices to the current owner of a transferred ticket', async () => {
+      const oldStartTime = new Date('2026-11-01T19:00:00Z');
+      const newStartTime = new Date('2026-11-01T20:30:00Z');
+      db.ticket.findMany.mockResolvedValueOnce([
+        {
+          id: 'ticket-transferred-rescheduled',
+          showtimeId: 'showtime-transfer',
+          seatLabel: 'B-2',
+          code: 'TK-TRANSFER-RESCHEDULED',
+          status: TicketStatus.VALID,
+          ownerEmail: 'recipient@example.invalid',
+          remindedStartTime: oldStartTime,
+          order: null,
+          showtime: {
+            id: 'showtime-transfer',
+            startTime: newStartTime,
+            event: { name: 'Transferred show', location: 'Hall T' },
+          },
+        },
+      ]);
+
+      await scheduler.sweepRescheduled();
+
+      expect(db.ticket.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            OR: expect.arrayContaining([
+              {
+                orderId: null,
+                logs: { some: { action: 'ISSUED_FROM_TRANSFER' } },
+              },
+            ]),
+          }),
+        }),
+      );
+      expect(emailService.sendReminder).toHaveBeenCalledWith(
+        expect.objectContaining({
+          toEmail: 'recipient@example.invalid',
+          ticketCode: 'TK-TRANSFER-RESCHEDULED',
+          previousStart: oldStartTime,
+          showtimeStart: newStartTime,
+          type: 'RESCHEDULED',
+        }),
+      );
     });
 
     it('does NOT re-send if showtime start time matches remindedStartTime (idempotent)', async () => {

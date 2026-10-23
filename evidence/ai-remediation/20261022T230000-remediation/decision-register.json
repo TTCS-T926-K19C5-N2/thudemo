@@ -1,0 +1,191 @@
+[
+  {
+    "id": "D01",
+    "topic": "Coupon pricing/quota",
+    "status": "APPROVED_USER",
+    "approval_source": "User reply in current remediation conversation (2026-10-23 Asia/Saigon).",
+    "choice": "One coupon per order; percentage discount rounds down; fixed discount clamps payable at zero; zero-payable order is confirmed without gateway payment.",
+    "affected": [
+      "R12"
+    ],
+    "notes": "D01 now approved; implement integer VND snapshots and atomic coupon use under this rule."
+  },
+  {
+    "id": "D02",
+    "topic": "Waitlist notification và seat reservation",
+    "status": "APPROVED_USER",
+    "approval_source": "User reply in current remediation conversation (2026-10-23 Asia/Saigon).",
+    "choice": "FIFO notification only; released seats return to general sale; no reservation/seat hold for waitlist subscribers.",
+    "affected": [
+      "R13"
+    ],
+    "notes": "D02 now approved; implement durable outbox notification without seat reservation."
+  },
+  {
+    "id": "D03",
+    "topic": "Attendance CSV semantics và PII",
+    "status": "APPROVED",
+    "approval_source": "User-provided remediation prompt: minimal fields allowed; omit PII",
+    "choice": "Minimal AC fields only: ticket code, seat, check-in time, gate, conflict flag",
+    "affected": [
+      "R15"
+    ],
+    "notes": "CSV verified with no PII. Broader privacy/retention policy remains open."
+  },
+  {
+    "id": "D04",
+    "topic": "Cohort và thời gian S-63",
+    "status": "APPROVED_USER",
+    "approval_source": "User reply in current remediation conversation (2026-10-23 Asia/Saigon).",
+    "choice": "Cohort A: sessions started in [from,to), outcomes counted up to to; report both hold-to-order and hold-to-paid durations.",
+    "affected": [
+      "R16",
+      "R17"
+    ],
+    "notes": "D04 now approved; empty duration samples return null and data coverage begins at first reliably captured fact."
+  },
+  {
+    "id": "D05",
+    "topic": "Luật conflict offline",
+    "status": "APPROVED_BASELINE",
+    "approval_source": "Backlog S-36; D:\\Merge_2\\Bán vé sự kiện có sơ đồ ghế.xlsx - Backlog.csv",
+    "choice": "Earlier device timestamp wins; preserve device/server offset for review",
+    "affected": [
+      "R19"
+    ],
+    "notes": "No alternate conflict policy approval found in searched records."
+  },
+  {
+    "id": "D06",
+    "topic": "Refund/cancel policy",
+    "status": "NEEDS_VERIFICATION_OR_DECISION",
+    "approval_source": null,
+    "choice": null,
+    "affected": [
+      "R18",
+      "R20",
+      "R12"
+    ],
+    "notes": "S-45 has a separate explicit local/sandbox policy in docs/S45_ANTIGRAVITY_IMPLEMENTATION_PROMPT_EN.md; applies to that task only. Other refund/cancel policy questions remain open."
+  },
+  {
+    "id": "D07",
+    "topic": "Số lần retry và reminder thời điểm",
+    "status": "NEEDS_VERIFICATION_OR_DECISION",
+    "approval_source": null,
+    "choice": null,
+    "affected": [
+      "R06",
+      "R07"
+    ],
+    "notes": "S-27 tối đa3lần có cách hiểu; S-61 gửi24h trước suất."
+  },
+  {
+    "id": "D08",
+    "topic": "Quota/rate-limit/admission",
+    "status": "NEEDS_VERIFICATION_OR_DECISION",
+    "approval_source": null,
+    "choice": null,
+    "affected": [
+      "R18",
+      "R20"
+    ],
+    "notes": "S-40/41/42 ngưỡng và NAT/pending chưa refine."
+  },
+  {
+    "id": "D09",
+    "topic": "Privacy/retention/backup/provider",
+    "status": "NEEDS_VERIFICATION_OR_DECISION",
+    "approval_source": null,
+    "choice": null,
+    "affected": [
+      "R20",
+      "R21"
+    ],
+    "notes": "S-53/54/55 cần nguồn chính sách, phạm vi và đích ngoài host/key; sandbox/provider/staging cần tài nguyên."
+  },
+  {
+    "id": "D10",
+    "topic": "DoD review/DEC-18",
+    "status": "APPROVED",
+    "approval_source": "docs/REVIEW_POLICY.md; evidence/sprint1/20261017-review-policy/decision-18.md",
+    "choice": "DEC-18 policy approved; current GitHub enforcement/readback remains unverified.",
+    "affected": [
+      "R21",
+      "R23"
+    ],
+    "notes": "No GitHub enforcement/readback in this local task."
+  },
+  {
+    "id": "D12",
+    "topic": "Coupon discount allocation to categories/refund reports",
+    "status": "APPROVED_USER",
+    "approval_source": "User reply in current remediation conversation (2026-10-23 Asia/Saigon).",
+    "choice": "Allocate the coupon discount in proportion to each ticket/item price. Floor each proportional VND share, then distribute remaining VND one by one in ascending ticket-code order.",
+    "affected": [
+      "R12",
+      "R18"
+    ],
+    "notes": "User approved proportional per-ticket allocation on 2026-10-23 and subsequently approved remainder allocation by ascending ticket code. Implemented and verified on local isolated profile for full-order category financial reconciliation. The app currently only has whole-order refund/cancellation; no partial-refund API/item selection exists, so partial-refund operation remains unproven and is not inferred."
+  },
+  {
+    "id": "D13",
+    "topic": "Offline scanner ticket snapshot fields",
+    "status": "APPROVED_USER",
+    "approval_source": "User reply in current remediation conversation (2026-10-23 Asia/Saigon).",
+    "choice": "Store only ticket code and status. showtimeId remains solely the structural partition/key scope required to isolate ticket records by showtime.",
+    "affected": [
+      "S-33-NFR"
+    ],
+    "notes": "This resolves only the per-ticket snapshot shape; broader D09 privacy, retention and backup policies remain open."
+  },
+  {
+    "id": "D14",
+    "topic": "S-59 số người nhận thông báo khi có N ghế",
+    "status": "APPROVED_USER",
+    "approval_source": "User reply in current remediation conversation (2026-10-23 Asia/Saigon).",
+    "choice": "Chỉ N người đầu FIFO được thông báo cho N ghế mở lại; ghế vẫn bán chung, không giữ riêng.",
+    "affected": [
+      "R13"
+    ],
+    "notes": "Dùng releasedCount làm giới hạn người nhận, còn kiểm tra số ghế thực sự khả dụng trước khi gửi."
+  },
+  {
+    "id": "D15",
+    "topic": "S-59 retry khi SMTP tạm lỗi",
+    "status": "APPROVED_USER",
+    "approval_source": "User reply in current remediation conversation (2026-10-23 Asia/Saigon).",
+    "choice": "Theo mail core hiện tại, tối đa 3 lần thử; áp backoff 5 giây rồi 15 giây như worker mail core.",
+    "affected": [
+      "R13"
+    ],
+    "notes": "E2E cô lập kiểm tra tổng attempts=3 và notice chuyển FAILED, entry trở lại ACTIVE."
+  },
+  {
+    "id": "D16",
+    "topic": "Waitlist final seat revalidation before SMTP",
+    "status": "APPROVED_USER",
+    "approval_source": "User reply in current remediation conversation (2026-10-23 Asia/Saigon).",
+    "choice": "Recheck seat availability immediately before invoking SMTP; if no seats remain, cancel/suppress the email.",
+    "affected": [
+      "R13",
+      "S-59",
+      "R13-PLAN-06.05"
+    ],
+    "notes": "Applied in WaitlistService with a final isolated-PostgreSQL read before MailService.send; test forces a purchase after initial validation and before that check. SMTP delivery itself remains non-transactional."
+  },
+  {
+    "id": "D17",
+    "topic": "Payment gateway ambiguous initiation failure and safe retry/reconciliation",
+    "status": "APPROVED_USER",
+    "approval_source": "User reply in current conversation",
+    "choice": "C — explicit rejection permits retry; ambiguous timeout/transport failure blocks retry and requires reconciliation.",
+    "affected": [
+      "R18",
+      "INT-14",
+      "S-20",
+      "S-23"
+    ],
+    "notes": "Implemented and verified locally: definitive rejection marks FAILED; ambiguous result retains INITIATED and blocks another attempt. Real provider/staging behavior remains unverified."
+  }
+]

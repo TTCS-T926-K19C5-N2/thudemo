@@ -1,0 +1,22 @@
+{
+  "runId": "20261023T132000-demo-handoff",
+  "source": "current prepared demo file tree on isolated durable local profile",
+  "fixture": "one synthetic run-bound registration; @demo.invalid address; no real person data",
+  "browser": {
+    "desktop": { "viewport": "1280x720", "genericSuccessNoticeVisible": true, "passwordClearedAfterSubmit": true, "documentWidthEqualsViewport": true, "pageErrors": 0 },
+    "mobile": { "viewport": "390x844", "documentWidth": 375, "genericSuccessNoticeVisible": true, "horizontalOverflow": false, "pageErrors": 0 },
+    "invalidPassword": { "passwordLength": 7, "browserValidationVisible": true, "registrationRequestSent": false, "observation": "Mật khẩu phải từ 8 đến 1024 ký tự." },
+    "consent": "User explicitly approved this local test action; exact notice version submitted; no real account created",
+    "screenshotFilesPersisted": false,
+    "screenshotsObservedInBrowserTool": ["desktop success state", "mobile success state", "mobile invalid-password state"]
+  },
+  "databaseAndMailpit": "See registration-mailpit-oracle.json; independent PostgreSQL/Mailpit check verified pending BUYER, persisted consent, 24-hour hashed activation token, SENT outbox, one catcher message, and activation-link token hash match without logging token or recipient.",
+  "cleanup": "See registration-fixture-cleanup.json; only the exact synthetic fixture and matching catcher message were removed; demo catalog/order/ticket counts were checked after cleanup.",
+  "apiValidation": {
+    "testFile": "apps/api/test/registration.e2e-spec.ts",
+    "testTitle": "publishes the approved notice and refuses invalid or missing consent without writes",
+    "evidenceLog": "../20261022T230000-remediation/e2e.log",
+    "result": "registration E2E file passed 9/9; real isolated PostgreSQL/Redis, mail service overridden in the E2E harness; the test submits a 7-character password directly and asserts HTTP 400 password error and zero user writes. It does not prove SMTP; SMTP proof is separate in registration-mailpit-oracle.json."
+  },
+  "limits": ["This verifies local app/browser and Mailpit only; no Internet email or Inbox delivery.", "Screenshots were observed through the browser tool but not saved as PNG files in the evidence folder."]
+}

@@ -1,0 +1,12 @@
+{
+  "runId": "20261022T230000-remediation",
+  "fixtureEventId": "5a24862f-de31-499b-9981-2d129a2a36d2",
+  "fixtureShowtimeId": "2c75a5a7-300d-4daa-a40c-fd6ab0c16563",
+  "removed": true,
+  "remaining": {
+    "events": 0,
+    "showtimes": 0,
+    "users": 0,
+    "holds": 0
+  }
+}

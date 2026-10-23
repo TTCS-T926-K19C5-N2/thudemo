@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-24-AC",
+    "requirement_id": "T-24",
+    "parent_requirement": "S-10",
+    "kind": "TASK_AC",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Đồng hồ đếm ngược trên giao diện chọn ghế",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G25"
+    },
+    "original_requirement": "Đồng hồ khớp với máy chủ kể cả khi chỉnh sai giờ máy người dùng; về 0 thì sơ đồ tự cập nhật và ghế mất trạng thái đang giữ",
+    "fixture": "BUYER A/B; 3 ghế trống; cấu hình hold mặc định 10 phút, client lệch ±5 phút.",
+    "surfaces": "POST /showtimes/:id/holds; màn chọn ghế",
+    "code_candidates": "apps/api/src/holds/; apps/web/src/features/seat-selection/server-countdown.ts",
+    "test_candidates": "seat-hold-api.e2e-spec.ts; server-countdown.spec.ts",
+    "steps": [
+      "A chọn ghế theo các thời điểm khác nhau, so expiresAt dùng chung từ lần đầu. B tranh ghế; đóng suất rồi giữ mới. Dùng context browser mô phỏng lệch đồng hồ; đổi cấu hình ở profile thử để chứng minh không hard-code TTL.",
+      "Kiểm riêng tiêu chí task T-24: Đồng hồ khớp với máy chủ kể cả khi chỉnh sai giờ máy người dùng; về 0 thì sơ đồ tự cập nhật và ghế mất trạng thái đang giữ",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Đồng hồ khớp với máy chủ kể cả khi chỉnh sai giờ máy người dùng; về 0 thì sơ đồ tự cập nhật và ghế mất trạng thái đang giữ"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-24-NFR",
+    "requirement_id": "T-24",
+    "parent_requirement": "S-10",
+    "kind": "TASK_NFR",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Đồng hồ đếm ngược trên giao diện chọn ghế",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I25"
+    },
+    "original_requirement": "không tin đồng hồ máy khách — lệch giờ máy người dùng không được làm sai kết quả",
+    "fixture": "BUYER A/B; 3 ghế trống; cấu hình hold mặc định 10 phút, client lệch ±5 phút.",
+    "surfaces": "POST /showtimes/:id/holds; màn chọn ghế",
+    "code_candidates": "apps/api/src/holds/; apps/web/src/features/seat-selection/server-countdown.ts",
+    "test_candidates": "seat-hold-api.e2e-spec.ts; server-countdown.spec.ts",
+    "steps": [
+      "A chọn ghế theo các thời điểm khác nhau, so expiresAt dùng chung từ lần đầu. B tranh ghế; đóng suất rồi giữ mới. Dùng context browser mô phỏng lệch đồng hồ; đổi cấu hình ở profile thử để chứng minh không hard-code TTL.",
+      "Kiểm riêng tiêu chí task T-24: không tin đồng hồ máy khách — lệch giờ máy người dùng không được làm sai kết quả",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "không tin đồng hồ máy khách — lệch giờ máy người dùng không được làm sai kết quả"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

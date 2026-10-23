@@ -1,0 +1,33 @@
+## 15. Inventory trang cần duyệt trực tiếp
+
+Inventory dưới đây lấy từ `apps/web/src/app/**/page.tsx`, chỉ là tuyến source. Kiểm runtime route thực và cả tuyến API proxy; dynamic params phải dùng ID fixture hợp lệ. Mỗi trang có kiểm vai trò, loading/empty/error/success, console và hành động chính theo INT-15.
+
+- `/account` — `apps/web/src/app/account/page.tsx`
+- `/account/privacy` — `apps/web/src/app/account/privacy/page.tsx`
+- `/account/tickets` — `apps/web/src/app/account/tickets/page.tsx`
+- `/activate` — `apps/web/src/app/activate/page.tsx`
+- `/admin/users` — `apps/web/src/app/admin/users/page.tsx`
+- `/check-in` — `apps/web/src/app/check-in/page.tsx`
+- `/events/[id]` — `apps/web/src/app/events/[id]/page.tsx`
+- `/events/new` — `apps/web/src/app/events/new/page.tsx`
+- `/events` — `apps/web/src/app/events/page.tsx`
+- `/forgot-password` — `apps/web/src/app/forgot-password/page.tsx`
+- `/login` — `apps/web/src/app/login/page.tsx`
+- `/mock-gateway/pay` — `apps/web/src/app/mock-gateway/pay/page.tsx`
+- `/operations` — `apps/web/src/app/operations/page.tsx`
+- `/orders/[id]` — `apps/web/src/app/orders/[id]/page.tsx`
+- `/orders` — `apps/web/src/app/orders/page.tsx`
+- `/` — `apps/web/src/app/page.tsx`
+- `/payment/result/[orderId]` — `apps/web/src/app/payment/result/[orderId]/page.tsx`
+- `/payment/result` — `apps/web/src/app/payment/result/page.tsx`
+- `/privacy` — `apps/web/src/app/privacy/page.tsx`
+- `/register` — `apps/web/src/app/register/page.tsx`
+- `/resend-activation` — `apps/web/src/app/resend-activation/page.tsx`
+- `/reset-password` — `apps/web/src/app/reset-password/page.tsx`
+- `/scanner` — `apps/web/src/app/scanner/page.tsx`
+- `/scanner/reports/[showtimeId]` — `apps/web/src/app/scanner/reports/[showtimeId]/page.tsx`
+- `/scanner/snapshot` — `apps/web/src/app/scanner/snapshot/page.tsx`
+- `/shows/[id]` — `apps/web/src/app/shows/[id]/page.tsx`
+- `/shows/[id]/seats` — `apps/web/src/app/shows/[id]/seats/page.tsx`
+- `/showtimes/[id]/[mode]` — `apps/web/src/app/showtimes/[id]/[mode]/page.tsx`
+

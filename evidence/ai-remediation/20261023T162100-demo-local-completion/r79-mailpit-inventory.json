@@ -1,0 +1,16 @@
+{
+  "runId": "20261023T162100-demo-local-completion",
+  "checkpoint": "R79",
+  "method": "read-only local Mailpit API metadata counts",
+  "messageCount": 8,
+  "recipientCount": 8,
+  "reservedDemoDomainRecipients": 5,
+  "recipientsOutsideInvalidDomains": 3,
+  "transferSubjectCountInDemoMessages": 0,
+  "reminderSubjectCountInDemoMessages": 0,
+  "passwordResetSubjectCountInDemoMessages": 0,
+  "messageBodiesRead": false,
+  "addressesLogged": false,
+  "messagesDeleted": false,
+  "internetDelivery": false
+}

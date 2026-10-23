@@ -59,6 +59,26 @@ try {
         password: organizerHash,
         role: 'ORGANIZER',
       },
+      {
+        email: 'design-organizer@example.invalid',
+        password: organizerHash,
+        role: 'ORGANIZER',
+      },
+      {
+        email: 'design-buyer@example.invalid',
+        password: organizerHash,
+        role: 'BUYER',
+      },
+      {
+        email: 'staff@demo.invalid',
+        password: organizerHash,
+        role: 'STAFF',
+      },
+      {
+        email: 'accountant@demo.invalid',
+        password: organizerHash,
+        role: 'ACCOUNTANT',
+      },
     ]) {
       const user = await tx.user.upsert({
         where: { email: account.email },

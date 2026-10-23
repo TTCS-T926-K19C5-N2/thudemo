@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-14-AC01",
+    "requirement_id": "S-14",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Giữ chỗ còn nguyên khi người mua tải lại trang hoặc mở lại trình duyệt",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L14"
+    },
+    "original_requirement": "Giả sử tôi đang giữ 2 ghế còn 6 phút, Khi tải lại trang, Thì thấy đúng 2 ghế đó ở trạng thái đang giữ và đồng hồ còn 6 phút",
+    "fixture": "A giữ 2 ghế, đã trôi 4 phút; context browser thứ hai đăng nhập cùng tài khoản.",
+    "surfaces": "GET /showtimes/:id/holds; trang chọn ghế",
+    "code_candidates": "apps/api/src/holds/; apps/web/src/features/seat-selection/",
+    "test_candidates": "useSeatHoldTimer.test.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi đang giữ 2 ghế còn 6 phút.",
+      "Thực hiện trên GET /showtimes/:id/holds; trang chọn ghế: tải lại trang.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Refresh rồi đóng/mở lại browser và đăng nhập thiết bị thứ hai; danh sách và hạn lấy từ server, không bắt đầu lại 10 phút. Làm hết hạn ở fixture rồi mở lại, không phục hồi ghế cũ; B không đọc được hold A.",
+    "expected": [
+      "thấy đúng 2 ghế đó ở trạng thái đang giữ và đồng hồ còn 6 phút"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-14-AC02",
+    "requirement_id": "S-14",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Giữ chỗ còn nguyên khi người mua tải lại trang hoặc mở lại trình duyệt",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L14"
+    },
+    "original_requirement": "Giả sử tôi đóng trình duyệt rồi mở lại trong thời hạn trên máy khác, Khi đăng nhập và vào lại suất đó, Thì vẫn thấy ghế đang giữ",
+    "fixture": "A giữ 2 ghế, đã trôi 4 phút; context browser thứ hai đăng nhập cùng tài khoản.",
+    "surfaces": "GET /showtimes/:id/holds; trang chọn ghế",
+    "code_candidates": "apps/api/src/holds/; apps/web/src/features/seat-selection/",
+    "test_candidates": "useSeatHoldTimer.test.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi đóng trình duyệt rồi mở lại trong thời hạn trên máy khác.",
+      "Thực hiện trên GET /showtimes/:id/holds; trang chọn ghế: đăng nhập và vào lại suất đó.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Refresh rồi đóng/mở lại browser và đăng nhập thiết bị thứ hai; danh sách và hạn lấy từ server, không bắt đầu lại 10 phút. Làm hết hạn ở fixture rồi mở lại, không phục hồi ghế cũ; B không đọc được hold A.",
+    "expected": [
+      "vẫn thấy ghế đang giữ"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-14-AC03",
+    "requirement_id": "S-14",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Giữ chỗ còn nguyên khi người mua tải lại trang hoặc mở lại trình duyệt",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L14"
+    },
+    "original_requirement": "Giả sử giữ chỗ đã hết hạn trong lúc tôi vắng, Khi mở lại trang, Thì ghế hiện trống và không có đồng hồ",
+    "fixture": "A giữ 2 ghế, đã trôi 4 phút; context browser thứ hai đăng nhập cùng tài khoản.",
+    "surfaces": "GET /showtimes/:id/holds; trang chọn ghế",
+    "code_candidates": "apps/api/src/holds/; apps/web/src/features/seat-selection/",
+    "test_candidates": "useSeatHoldTimer.test.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: giữ chỗ đã hết hạn trong lúc tôi vắng.",
+      "Thực hiện trên GET /showtimes/:id/holds; trang chọn ghế: mở lại trang.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Refresh rồi đóng/mở lại browser và đăng nhập thiết bị thứ hai; danh sách và hạn lấy từ server, không bắt đầu lại 10 phút. Làm hết hạn ở fixture rồi mở lại, không phục hồi ghế cũ; B không đọc được hold A.",
+    "expected": [
+      "ghế hiện trống và không có đồng hồ"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-14-NFR",
+    "requirement_id": "S-14",
+    "kind": "NFR",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Giữ chỗ còn nguyên khi người mua tải lại trang hoặc mở lại trình duyệt — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N14"
+    },
+    "original_requirement": "trạng thái giữ chỗ lấy từ máy chủ, không lưu ở bộ nhớ trình duyệt",
+    "fixture": "A giữ 2 ghế, đã trôi 4 phút; context browser thứ hai đăng nhập cùng tài khoản.",
+    "surfaces": "GET /showtimes/:id/holds; trang chọn ghế",
+    "code_candidates": "apps/api/src/holds/; apps/web/src/features/seat-selection/",
+    "test_candidates": "useSeatHoldTimer.test.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Refresh rồi đóng/mở lại browser và đăng nhập thiết bị thứ hai; danh sách và hạn lấy từ server, không bắt đầu lại 10 phút. Làm hết hạn ở fixture rồi mở lại, không phục hồi ghế cũ; B không đọc được hold A.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "trạng thái giữ chỗ lấy từ máy chủ, không lưu ở bộ nhớ trình duyệt"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

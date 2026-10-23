@@ -1,0 +1,33 @@
+{
+  "case": "S-04-AC01.01",
+  "profile": "s1demo-384da3d43b41",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "fixture": {
+    "runId": "20261023T132000-demo-handoff-R34-mobile",
+    "id": "76e74a6d-62c4-44c7-b6ab-7973f029764e",
+    "title": "AI-TEST-R34M-20261023T1517"
+  },
+  "ui": {
+    "route": "/events/new",
+    "submitted": true,
+    "resultRoute": "/events/76e74a6d-62c4-44c7-b6ab-7973f029764e",
+    "resultStatus": "Nháp",
+    "title": "AI-TEST-R34M-20261023T1517",
+    "location": "QA Local · Dữ liệu mobile"
+  },
+  "layoutMetrics": {
+    "bodyWidth": 375,
+    "documentWidth": 375,
+    "horizontalOverflow": false,
+    "innerWidth": 390
+  },
+  "databaseOracle": "organizer-create-draft-mobile-db-oracle.json",
+  "screenshots": [
+    "organizer-create-form-mobile.png",
+    "organizer-create-draft-mobile.png"
+  ],
+  "cleanup": "Exact fixture deleted after verifying owner, DRAFT state, no children; restored 40 events/42 showtimes and preserved 2 orders/2 tickets."
+}

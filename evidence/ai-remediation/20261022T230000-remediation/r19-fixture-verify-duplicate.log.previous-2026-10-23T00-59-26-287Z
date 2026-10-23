@@ -1,0 +1,10 @@
+file:///D:/Merge_2/Codegym/apps/api/scripts/ai-remediation-r19-fixture.mjs:264
+  if (!verified) throw new Error('Browser duplicate result does not match the one-admission PostgreSQL oracle.');
+                       ^
+
+Error: Browser duplicate result does not match the one-admission PostgreSQL oracle.
+    at verifyDuplicateCheckIn (file:///D:/Merge_2/Codegym/apps/api/scripts/ai-remediation-r19-fixture.mjs:264:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///D:/Merge_2/Codegym/apps/api/scripts/ai-remediation-r19-fixture.mjs:273:52
+
+Node.js v24.21.0

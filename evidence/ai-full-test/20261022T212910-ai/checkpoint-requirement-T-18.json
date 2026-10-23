@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-18-AC",
+    "requirement_id": "T-18",
+    "parent_requirement": "S-08",
+    "kind": "TASK_AC",
+    "group": "Khám phá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Trang danh sách sự kiện và trang chi tiết suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G19"
+    },
+    "original_requirement": "Vào từ trang chủ tới trang chọn ghế không quá 2 lần bấm; suất không mở bán hiện thông báo thay vì lỗi",
+    "fixture": "Ẩn danh; 21+ sự kiện và bộ 200 suất; draft/closed/on-sale; cache nóng/lạnh.",
+    "surfaces": "/; /shows/:id; GET /showtimes",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/event-catalog/",
+    "test_candidates": "sprint2.e2e-spec.ts; apps/web/src/lib/contracts/",
+    "steps": [
+      "Đi từ trang chủ tới chọn ghế tối đa hai lần bấm. Lật hết các trang, đối chiếu tập ID không trùng/sót và thứ tự ngày. Gọi URL draft/closed trực tiếp; kiểm khoảng giá và thông tin. Đo p95 và TTL cache 30 giây, quan sát cache invalidation khi đổi trạng thái.",
+      "Kiểm riêng tiêu chí task T-18: Vào từ trang chủ tới trang chọn ghế không quá 2 lần bấm; suất không mở bán hiện thông báo thay vì lỗi",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Vào từ trang chủ tới trang chọn ghế không quá 2 lần bấm; suất không mở bán hiện thông báo thay vì lỗi"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-18-NFR",
+    "requirement_id": "T-18",
+    "parent_requirement": "S-08",
+    "kind": "TASK_NFR",
+    "group": "Khám phá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Trang danh sách sự kiện và trang chi tiết suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I19"
+    },
+    "original_requirement": "trang chi tiết có thẻ mô tả để chia sẻ được đường dẫn trên mạng xã hội",
+    "fixture": "Ẩn danh; 21+ sự kiện và bộ 200 suất; draft/closed/on-sale; cache nóng/lạnh.",
+    "surfaces": "/; /shows/:id; GET /showtimes",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/event-catalog/",
+    "test_candidates": "sprint2.e2e-spec.ts; apps/web/src/lib/contracts/",
+    "steps": [
+      "Đi từ trang chủ tới chọn ghế tối đa hai lần bấm. Lật hết các trang, đối chiếu tập ID không trùng/sót và thứ tự ngày. Gọi URL draft/closed trực tiếp; kiểm khoảng giá và thông tin. Đo p95 và TTL cache 30 giây, quan sát cache invalidation khi đổi trạng thái.",
+      "Kiểm riêng tiêu chí task T-18: trang chi tiết có thẻ mô tả để chia sẻ được đường dẫn trên mạng xã hội",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "trang chi tiết có thẻ mô tả để chia sẻ được đường dẫn trên mạng xã hội"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

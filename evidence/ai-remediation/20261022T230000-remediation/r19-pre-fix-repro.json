@@ -1,0 +1,27 @@
+{
+  "id": "BUG-R19-01",
+  "captured_before_fix": true,
+  "capture_source": "Browser harness assertion and console output during 2026-10-23 run; no screenshot is retained for this pre-fix attempt.",
+  "environment": "Run-bound isolated Codegym app/PostgreSQL and synthetic Chromium fixture",
+  "checks_before_failure": [
+    "assigned showtime rendered",
+    "full snapshot reports exactly one paid ticket",
+    "snapshot contains no fixture email or staff name",
+    "IndexedDB stores download metadata and ticket record",
+    "offline scan is durably queued before UI success",
+    "same durable queue record and requestId survive persistent browser relaunch"
+  ],
+  "offline_reopen_state": {
+    "inputDisabled": null,
+    "showtimeId": null,
+    "selectedGate": null,
+    "persistedShowtimeSelected": false,
+    "persistedStaffIdentity": true,
+    "persistedShowtimeGrant": true,
+    "queueCount": 1,
+    "alerts": [
+      "Không thể kết nối. Kiểm tra kết nối rồi thử lại."
+    ]
+  },
+  "failure": "scanner input absent after offline browser relaunch; checkin_showtime_s29 was not persisted when the showtime came from initialShowtimeId"
+}

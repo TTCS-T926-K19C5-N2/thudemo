@@ -1,0 +1,21 @@
+{
+  "runId": "R53-1792755391661",
+  "profile": "s1demo-384da3d43b41",
+  "showtimeId": "914556a8-ba19-4766-9e20-00a3d93df432",
+  "seat": "A-3",
+  "seatId": "43b1ed36-e35f-483b-b2a4-7ec4ba86ce79",
+  "ownerId": "a139e679-d3fd-4bc8-bf93-f50e54ef1f80",
+  "holdSessionId": "d92cbcd9-2049-44b7-91a1-dfb780738cc1",
+  "before": {
+    "orders": 5,
+    "tickets": 5,
+    "activeShowtimeHolds": 0,
+    "holdSessions": 4
+  },
+  "during": {
+    "orders": 5,
+    "tickets": 5,
+    "activeShowtimeHolds": 1,
+    "holdSessions": 5
+  }
+}

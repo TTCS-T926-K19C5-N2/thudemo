@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-13-AC",
+    "requirement_id": "T-13",
+    "parent_requirement": "S-06",
+    "kind": "TASK_AC",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Bộ kiểm tra cấu trúc tệp trả về đủ danh sách lỗi kèm vị trí",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G14"
+    },
+    "original_requirement": "Tệp hỏng nhiều chỗ trả về đủ danh sách lỗi; tệp đúng trả về danh sách rỗng; có unit test cho từng loại lỗi",
+    "fixture": "JSON malformed, thiếu field, trùng hàng/số, nhiều lỗi, tệp sát/vượt 5 MB.",
+    "surfaces": "POST /showtimes/validate-map; màn import/xem trước",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/web/src/features/seat-map-import/",
+    "test_candidates": "seat-map.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Upload từng tệp; kiểm danh sách vị trí lỗi và nút xác nhận. Preview tệp đúng rồi huỷ, so count/checksum DB không đổi. Kiểm lỗi cú pháp có vị trí, API không 500; giới hạn dung lượng phải kiểm cả client lẫn server.",
+      "Kiểm riêng tiêu chí task T-13: Tệp hỏng nhiều chỗ trả về đủ danh sách lỗi; tệp đúng trả về danh sách rỗng; có unit test cho từng loại lỗi",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Tệp hỏng nhiều chỗ trả về đủ danh sách lỗi; tệp đúng trả về danh sách rỗng; có unit test cho từng loại lỗi"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-13-NFR",
+    "requirement_id": "T-13",
+    "parent_requirement": "S-06",
+    "kind": "TASK_NFR",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Bộ kiểm tra cấu trúc tệp trả về đủ danh sách lỗi kèm vị trí",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I14"
+    },
+    "original_requirement": "hàm thuần, không đụng cơ sở dữ liệu, để unit test chạy nhanh",
+    "fixture": "JSON malformed, thiếu field, trùng hàng/số, nhiều lỗi, tệp sát/vượt 5 MB.",
+    "surfaces": "POST /showtimes/validate-map; màn import/xem trước",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/web/src/features/seat-map-import/",
+    "test_candidates": "seat-map.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Upload từng tệp; kiểm danh sách vị trí lỗi và nút xác nhận. Preview tệp đúng rồi huỷ, so count/checksum DB không đổi. Kiểm lỗi cú pháp có vị trí, API không 500; giới hạn dung lượng phải kiểm cả client lẫn server.",
+      "Kiểm riêng tiêu chí task T-13: hàm thuần, không đụng cơ sở dữ liệu, để unit test chạy nhanh",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "hàm thuần, không đụng cơ sở dữ liệu, để unit test chạy nhanh"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

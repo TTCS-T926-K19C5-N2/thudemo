@@ -1,0 +1,34 @@
+[
+  {
+    "path": "/health",
+    "status": 200,
+    "contentType": [
+      "application/json; charset=utf-8"
+    ],
+    "cacheControl": null
+  },
+  {
+    "path": "/events",
+    "status": 200,
+    "contentType": [
+      "application/json; charset=utf-8"
+    ],
+    "cacheControl": null
+  },
+  {
+    "path": "/showtimes",
+    "status": 200,
+    "contentType": [
+      "application/json; charset=utf-8"
+    ],
+    "cacheControl": null
+  },
+  {
+    "path": "/showtimes/00000000-0000-4000-8000-000000000000/attendance-conflicts.csv",
+    "status": 401,
+    "contentType": [
+      "application/json; charset=utf-8"
+    ],
+    "cacheControl": null
+  }
+]

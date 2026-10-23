@@ -23,6 +23,11 @@ describe('S-23 Order Expiry & Seat Release', () => {
       seatHold: {
         deleteMany: vi.fn(),
       },
+      // Order expiry now atomically creates a waitlist availability signal
+      // when a released seat has active subscribers.
+      waitlistEntry: {
+        count: vi.fn().mockResolvedValue(0),
+      },
     };
     ordersService = new OrdersService(mockPrisma);
   });

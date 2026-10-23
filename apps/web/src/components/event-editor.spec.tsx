@@ -117,17 +117,21 @@ describe("Expired session draft recovery", () => {
   });
   it("recovers the unsaved showtime with the correct owner after an expired session", async () => {
     const id = "12345678-1234-1234-1234-123456789abc";
-    vi.stubGlobal(
-      "fetch",
-      vi
-        .fn()
-        .mockResolvedValueOnce(
+    const fetcher = vi.fn((input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.endsWith("/manage"))
+        return Promise.resolve(
           new Response(
             JSON.stringify({ id, ...draft, status: "DRAFT", showtimes: [] }),
           ),
-        )
-        .mockResolvedValueOnce(new Response("{}", { status: 401 })),
-    );
+        );
+      if (url.endsWith("/coupons"))
+        return Promise.resolve(new Response(JSON.stringify({ coupons: [] })));
+      if (url.endsWith("/showtimes"))
+        return Promise.resolve(new Response("{}", { status: 401 }));
+      return Promise.resolve(new Response("{}", { status: 404 }));
+    });
+    vi.stubGlobal("fetch", fetcher);
     render(<EventEditor eventId={id} />);
     await ready();
     fireEvent.change(screen.getByLabelText(/Thời gian bắt đầu/), {
@@ -174,5 +178,86 @@ describe("Expired session draft recovery", () => {
       (screen.getByLabelText(/Thời gian bắt đầu/) as HTMLInputElement).value,
     ).toBe("2099-01-01T00:30");
     expect(sessionStorage.getItem(`event-draft:${id}`)).toBeNull();
+  });
+});
+
+describe("Showtime quick preset validation recovery", () => {
+  it("clears the past-time validation after selecting a valid preset", async () => {
+    const id = "12345678-1234-1234-1234-123456789abc";
+    const fetcher = vi.fn((input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.endsWith("/manage"))
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({ id, ...draft, status: "DRAFT", showtimes: [] }),
+          ),
+        );
+      if (url.endsWith("/coupons"))
+        return Promise.resolve(new Response(JSON.stringify({ coupons: [] })));
+      if (url.endsWith("/showtimes"))
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              id: "22345678-1234-1234-1234-123456789abc",
+              startTime: "2099-01-01T00:30:00.000Z",
+              warning: null,
+            }),
+          ),
+        );
+      return Promise.resolve(new Response("{}", { status: 404 }));
+    });
+    vi.stubGlobal("fetch", fetcher);
+    render(<EventEditor eventId={id} />);
+    await ready();
+
+    const validation = "Vui lòng chọn thời gian bắt đầu trong tương lai.";
+    fireEvent.click(screen.getByRole("button", { name: "Thêm suất diễn" }));
+    expect(screen.getByText(validation)).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "+24 giờ" }));
+    expect(screen.queryByText(validation)).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Thêm suất diễn" }));
+    await screen.findByText("Đã thêm suất diễn mới thành công.");
+    expect(fetcher).toHaveBeenCalledWith(
+      `/api/events/${id}/showtimes`,
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+});
+
+describe("Existing imported event descriptions", () => {
+  it("keeps an existing long catalog description editable without truncation", async () => {
+    const id = "12345678-1234-1234-1234-123456789abc";
+    const description = "Mô tả sự kiện nguồn ".repeat(250);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((input: RequestInfo | URL) =>
+        String(input).endsWith("/manage")
+          ? Promise.resolve(
+              new Response(
+                JSON.stringify({
+                  id,
+                  name: "Bệnh sĩ",
+                  description,
+                  location: "Nhà hát Kịch Việt Nam",
+                  status: "PUBLISHED",
+                  showtimes: [],
+                }),
+              ),
+            )
+          : Promise.resolve(new Response(JSON.stringify({ coupons: [] }))),
+      ),
+    );
+
+    render(<EventEditor eventId={id} />);
+    await screen.findByLabelText("Tên sự kiện *");
+
+    const textarea = screen.getByLabelText(
+      "Mô tả chi tiết *",
+    ) as HTMLTextAreaElement;
+    expect(textarea.value).toBe(description);
+    expect(textarea.maxLength).toBe(description.length);
+    expect(screen.getByText(`${description.length}/${description.length}`)).toBeTruthy();
   });
 });

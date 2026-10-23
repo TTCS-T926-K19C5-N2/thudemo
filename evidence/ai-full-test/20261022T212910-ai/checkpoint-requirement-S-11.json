@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-11-AC01",
+    "requirement_id": "S-11",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Bỏ chọn ghế đang giữ để trả lại ngay cho người khác",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L11"
+    },
+    "original_requirement": "Giả sử tôi đang giữ 3 ghế, Khi tôi bỏ chọn một ghế, Thì ghế đó trở lại trạng thái trống ngay lập tức cho người khác chọn và hai ghế còn lại giữ nguyên thời hạn",
+    "fixture": "A giữ 3 ghế; B có session riêng.",
+    "surfaces": "DELETE /showtimes/:id/hold-seats hoặc route được UI sử dụng",
+    "code_candidates": "apps/api/src/modules/seats/seat-hold.controller.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-hold.controller.spec.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi đang giữ 3 ghế.",
+      "Thực hiện trên DELETE /showtimes/:id/hold-seats hoặc route được UI sử dụng: tôi bỏ chọn một ghế.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "A bỏ một ghế, B giữ ngay ghế vừa nhả; hai ghế còn nguyên hạn. B xoá hold của A phải 403; xoá ghế không giữ theo hợp đồng T-25 trả 404. Bỏ ghế cuối làm đồng hồ biến mất; đếm một request thao tác.",
+    "expected": [
+      "ghế đó trở lại trạng thái trống ngay lập tức cho người khác chọn và hai ghế còn lại giữ nguyên thời hạn"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-11-AC02",
+    "requirement_id": "S-11",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Bỏ chọn ghế đang giữ để trả lại ngay cho người khác",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L11"
+    },
+    "original_requirement": "Giả sử tôi bỏ chọn ghế cuối cùng, Khi không còn ghế nào, Thì đồng hồ đếm ngược biến mất",
+    "fixture": "A giữ 3 ghế; B có session riêng.",
+    "surfaces": "DELETE /showtimes/:id/hold-seats hoặc route được UI sử dụng",
+    "code_candidates": "apps/api/src/modules/seats/seat-hold.controller.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-hold.controller.spec.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi bỏ chọn ghế cuối cùng.",
+      "Thực hiện trên DELETE /showtimes/:id/hold-seats hoặc route được UI sử dụng: không còn ghế nào.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "A bỏ một ghế, B giữ ngay ghế vừa nhả; hai ghế còn nguyên hạn. B xoá hold của A phải 403; xoá ghế không giữ theo hợp đồng T-25 trả 404. Bỏ ghế cuối làm đồng hồ biến mất; đếm một request thao tác.",
+    "expected": [
+      "đồng hồ đếm ngược biến mất"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-11-AC03",
+    "requirement_id": "S-11",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Bỏ chọn ghế đang giữ để trả lại ngay cho người khác",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L11"
+    },
+    "original_requirement": "Giả sử tôi gọi API bỏ chọn với ghế của người khác đang giữ, Khi xử lý, Thì bị từ chối 403 và ghế người kia không đổi",
+    "fixture": "A giữ 3 ghế; B có session riêng.",
+    "surfaces": "DELETE /showtimes/:id/hold-seats hoặc route được UI sử dụng",
+    "code_candidates": "apps/api/src/modules/seats/seat-hold.controller.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-hold.controller.spec.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi gọi API bỏ chọn với ghế của người khác đang giữ.",
+      "Thực hiện trên DELETE /showtimes/:id/hold-seats hoặc route được UI sử dụng: xử lý.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "A bỏ một ghế, B giữ ngay ghế vừa nhả; hai ghế còn nguyên hạn. B xoá hold của A phải 403; xoá ghế không giữ theo hợp đồng T-25 trả 404. Bỏ ghế cuối làm đồng hồ biến mất; đếm một request thao tác.",
+    "expected": [
+      "bị từ chối 403 và ghế người kia không đổi"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-11-NFR",
+    "requirement_id": "S-11",
+    "kind": "NFR",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Bỏ chọn ghế đang giữ để trả lại ngay cho người khác — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N11"
+    },
+    "original_requirement": "bỏ chọn phản hồi dưới 300ms; chỉ chủ giữ chỗ mới huỷ được",
+    "fixture": "A giữ 3 ghế; B có session riêng.",
+    "surfaces": "DELETE /showtimes/:id/hold-seats hoặc route được UI sử dụng",
+    "code_candidates": "apps/api/src/modules/seats/seat-hold.controller.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-hold.controller.spec.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "A bỏ một ghế, B giữ ngay ghế vừa nhả; hai ghế còn nguyên hạn. B xoá hold của A phải 403; xoá ghế không giữ theo hợp đồng T-25 trả 404. Bỏ ghế cuối làm đồng hồ biến mất; đếm một request thao tác.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "bỏ chọn phản hồi dưới 300ms; chỉ chủ giữ chỗ mới huỷ được"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

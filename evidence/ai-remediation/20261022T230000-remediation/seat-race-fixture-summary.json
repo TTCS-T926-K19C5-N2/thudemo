@@ -1,0 +1,9 @@
+{
+  "runId": "20261022T230000-remediation",
+  "eventId": "f797f633-596f-4cfb-bb3a-40587ee6b725",
+  "rounds": 10,
+  "seatsPerRound": 100,
+  "requestsPerRound": 200,
+  "buyerCount": 200,
+  "syntheticOnly": true
+}

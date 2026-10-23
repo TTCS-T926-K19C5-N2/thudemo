@@ -24,11 +24,13 @@ describe('MockPaymentGateway', () => {
       const orderId = '11111111-1111-4111-8111-111111111111';
       const result = await gateway.createPayment({
         orderId,
+        gatewayRef: `${orderId}_1792770000000_ab12cd34`,
         amount: 300000,
         returnUrl: `http://localhost:3000/payment/result?orderId=${orderId}`,
       });
 
       expect(result.gatewayRef).toContain(orderId);
+      expect(result.gatewayRef).toBe(`${orderId}_1792770000000_ab12cd34`);
       expect(result.redirectUrl).toContain('http://localhost:3000/mock-gateway/pay');
       expect(result.redirectUrl).toContain(`orderId=${orderId}`);
       expect(result.redirectUrl).toContain('amount=300000');

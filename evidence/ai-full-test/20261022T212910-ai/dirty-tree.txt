@@ -1,0 +1,16 @@
+ M .gitignore
+?? apps/api/prisma/migrations/202610220004_core_completion/
+?? apps/api/scripts/setup_ticket_scanner_account.mjs
+?? apps/api/scripts/start-core-browser-fixture.mjs
+?? apps/api/scripts/verify-core-completion.mjs
+?? apps/api/src/core-completion/
+?? apps/api/src/events/publication.spec.ts
+?? apps/api/src/showtimes/seat-events.module.ts
+?? apps/web/src/app/forgot-password/
+?? apps/web/src/app/reset-password/
+?? apps/web/src/features/core/
+?? docs/CORE_COMPLETION_HANDOVER_20261022.md
+?? docs/S45_ANTIGRAVITY_IMPLEMENTATION_PROMPT_EN.md
+?? docs/testing/AI_FULL_PROJECT_TEST_PLAN_20261022/
+?? evidence/ai-full-test/
+

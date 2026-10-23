@@ -23,11 +23,7 @@ export interface OfflineScanOutcome {
   message: string;
   ticket?: {
     code: string;
-    seatLabel: string;
-    ticketType: string;
-    checkedInAt: string;
   };
-  previousCheckedInAt?: string | null;
 }
 
 export interface ProcessOfflineScanParams {
@@ -96,14 +92,6 @@ export async function processOfflineScan(
   params: ProcessOfflineScanParams,
 ): Promise<OfflineScanOutcome> {
   const { showtimeId, qrPayload, gateId, gateName, staffId, deviceId } = params;
-  if (!gateId || !/^[0-9a-f-]{36}$/i.test(gateId) || !staffId || !deviceId) {
-    return {
-      success: false,
-      code: "NO_LIST_OFFLINE",
-      message:
-        "Chưa lưu phân công suất/cửa và thiết bị. Tải cấu hình khi có mạng trước khi soát ngoại tuyến.",
-    };
-  }
 
   // 1. Check if showtime list has been downloaded (AC #4)
   const meta = await getShowtimeMeta(showtimeId);
@@ -185,18 +173,20 @@ export async function processOfflineScan(
   }
 
   // 6. Check if already checked in in downloaded list (AC #2)
-  if (ticket.status === "checked_in" && !ticket.localCheckedIn) {
+  const alreadyScannedOnDevice = await hasOfflineScanForTicket(
+    showtimeId,
+    qr.ticketId,
+  );
+  if (ticket.status === "checked_in" && !alreadyScannedOnDevice) {
     return {
       success: false,
       code: "ALREADY_CHECKED_IN",
       message: "Vé đã sử dụng.",
-      previousCheckedInAt: ticket.checkedInAt,
     };
   }
 
   // 7. Check if already checked in on this device (AC #3)
   const isDuplicateOnDevice =
-    Boolean(ticket.localCheckedIn) ||
     (await hasOfflineScanForTicket(showtimeId, qr.ticketId));
 
   if (isDuplicateOnDevice) {
@@ -208,6 +198,9 @@ export async function processOfflineScan(
   }
 
   // 8. Valid -> Atomically mark checked in and record in scan_queue (AC #1)
+  if (!gateId || !staffId || !deviceId) {
+    return { success: false, code: 'NO_LIST_OFFLINE', message: 'Chọn cửa, đăng nhập đúng nhân viên và chuẩn bị thiết bị trước khi quét offline.' };
+  }
   const scannedAt = new Date().toISOString();
   const scanRecord: OfflineScanRecord = {
     scanId: crypto.randomUUID(),
@@ -217,12 +210,10 @@ export async function processOfflineScan(
     gateId,
     gateName: gateName ?? "Cửa soát vé",
     scannedAt,
-    deviceId: deviceId ?? "scanner-device-local",
-    staffId: staffId ?? "staff-local",
+    deviceId,
+    staffId,
     offline: true,
     syncStatus: "pending",
-    seatLabel: ticket.seatLabel,
-    ticketType: ticket.ticketType,
   };
 
   await saveOfflineScanAtomic(scanRecord);
@@ -233,9 +224,6 @@ export async function processOfflineScan(
     message: "Vé hợp lệ. Check-in thành công (ngoại tuyến).",
     ticket: {
       code: ticket.code,
-      seatLabel: ticket.seatLabel,
-      ticketType: ticket.ticketType,
-      checkedInAt: scannedAt,
     },
   };
 }

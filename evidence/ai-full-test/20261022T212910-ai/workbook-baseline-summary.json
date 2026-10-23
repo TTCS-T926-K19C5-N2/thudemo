@@ -1,0 +1,1743 @@
+{
+  "Backlog": {
+    "rows": 64,
+    "headers": [
+      "ID",
+      "Type",
+      "Parent",
+      "Title",
+      "Tier",
+      "Priority",
+      "SP",
+      "Sprint",
+      "Status",
+      "Thuộc epic",
+      "Story",
+      "AC",
+      "Deps",
+      "NFR",
+      "Owner"
+    ],
+    "entries": [
+      {
+        "id": "S-01",
+        "type": "Story",
+        "title": "Khung ứng dụng chạy được trên staging",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 2,
+        "source_cells": "Backlog!A2:O2"
+      },
+      {
+        "id": "S-02",
+        "type": "Story",
+        "title": "Đăng nhập và phân quyền theo vai trò",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 3,
+        "source_cells": "Backlog!A3:O3"
+      },
+      {
+        "id": "S-03",
+        "type": "Story",
+        "title": "Người mua tự đăng ký tài khoản bằng email",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 4,
+        "source_cells": "Backlog!A4:O4"
+      },
+      {
+        "id": "S-04",
+        "type": "Story",
+        "title": "Tạo sự kiện và suất diễn",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 5,
+        "source_cells": "Backlog!A5:O5"
+      },
+      {
+        "id": "K-01",
+        "type": "Spike",
+        "title": "Chọn cơ chế giữ chỗ có thời hạn",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 6,
+        "source_cells": "Backlog!A6:O6"
+      },
+      {
+        "id": "S-05",
+        "type": "Story",
+        "title": "Nạp sơ đồ ghế từ tệp JSON đúng định dạng",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 7,
+        "source_cells": "Backlog!A7:O7"
+      },
+      {
+        "id": "S-06",
+        "type": "Story",
+        "title": "Tệp sơ đồ sai bị từ chối toàn bộ và chỉ rõ chỗ sai",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 8,
+        "source_cells": "Backlog!A8:O8"
+      },
+      {
+        "id": "S-09",
+        "type": "Story",
+        "title": "Xem sơ đồ ghế còn trống của một suất diễn",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 9,
+        "source_cells": "Backlog!A9:O9"
+      },
+      {
+        "id": "S-10",
+        "type": "Story",
+        "title": "Chọn ghế và hệ thống giữ chỗ trong 10 phút",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 10,
+        "source_cells": "Backlog!A10:O10"
+      },
+      {
+        "id": "S-11",
+        "type": "Story",
+        "title": "Bỏ chọn ghế đang giữ để trả lại ngay cho người khác",
+        "tier": "Ready",
+        "priority": "Should",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 11,
+        "source_cells": "Backlog!A11:O11"
+      },
+      {
+        "id": "S-12",
+        "type": "Story",
+        "title": "Ghế được nhả tự động khi hết hạn giữ chỗ",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 12,
+        "source_cells": "Backlog!A12:O12"
+      },
+      {
+        "id": "S-13",
+        "type": "Story",
+        "title": "Ghế đã có người giữ thì không ai khác chọn được, kể cả khi bấm cùng lúc",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 13,
+        "source_cells": "Backlog!A13:O13"
+      },
+      {
+        "id": "S-14",
+        "type": "Story",
+        "title": "Giữ chỗ còn nguyên khi người mua tải lại trang hoặc mở lại trình duyệt",
+        "tier": "Ready",
+        "priority": "Should",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 14,
+        "source_cells": "Backlog!A14:O14"
+      },
+      {
+        "id": "S-07",
+        "type": "Story",
+        "title": "Ban tổ chức mở bán và đóng bán một suất diễn",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 15,
+        "source_cells": "Backlog!A15:O15"
+      },
+      {
+        "id": "S-08",
+        "type": "Story",
+        "title": "Người mua xem danh sách sự kiện đang mở bán và chi tiết suất diễn",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 16,
+        "source_cells": "Backlog!A16:O16"
+      },
+      {
+        "id": "S-15",
+        "type": "Story",
+        "title": "Đặt giá vé cho từng hạng ghế của suất diễn",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 17,
+        "source_cells": "Backlog!A17:O17"
+      },
+      {
+        "id": "S-16",
+        "type": "Story",
+        "title": "Tạo đơn hàng từ các ghế đang giữ",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 18,
+        "source_cells": "Backlog!A18:O18"
+      },
+      {
+        "id": "S-17",
+        "type": "Story",
+        "title": "Xem lại chi tiết đơn trước khi thanh toán",
+        "tier": "Ready",
+        "priority": "Should",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 19,
+        "source_cells": "Backlog!A19:O19"
+      },
+      {
+        "id": "S-18",
+        "type": "Story",
+        "title": "Thanh toán đơn hàng qua cổng sandbox",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 20,
+        "source_cells": "Backlog!A20:O20"
+      },
+      {
+        "id": "S-19",
+        "type": "Story",
+        "title": "Cổng thanh toán giả lập để chạy khi chưa có sandbox",
+        "tier": "Ready",
+        "priority": "Should",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 21,
+        "source_cells": "Backlog!A21:O21"
+      },
+      {
+        "id": "S-20",
+        "type": "Story",
+        "title": "Webhook thanh toán gửi lại nhiều lần chỉ ghi nhận một",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 22,
+        "source_cells": "Backlog!A22:O22"
+      },
+      {
+        "id": "S-21",
+        "type": "Story",
+        "title": "Webhook có chữ ký sai bị từ chối",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 23,
+        "source_cells": "Backlog!A23:O23"
+      },
+      {
+        "id": "S-22",
+        "type": "Story",
+        "title": "Trang kết quả thanh toán chờ xác nhận từ máy chủ, không tự kết luận",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 24,
+        "source_cells": "Backlog!A24:O24"
+      },
+      {
+        "id": "S-23",
+        "type": "Story",
+        "title": "Đơn hàng quá hạn thanh toán thì nhả ghế",
+        "tier": "Ready",
+        "priority": "Must",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 25,
+        "source_cells": "Backlog!A25:O25"
+      },
+      {
+        "id": "S-24",
+        "type": "Story",
+        "title": "Thanh toán thất bại thì đơn vẫn chờ và ghế còn giữ tới hết hạn",
+        "tier": "Ready",
+        "priority": "Should",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 26,
+        "source_cells": "Backlog!A26:O26"
+      },
+      {
+        "id": "S-28",
+        "type": "Story",
+        "title": "Quản trị tạo tài khoản nhân viên và gán vai trò",
+        "tier": "Next",
+        "priority": "Must",
+        "sprint": "4",
+        "status": "Todo",
+        "source_row": 27,
+        "source_cells": "Backlog!A27:O27"
+      },
+      {
+        "id": "S-27",
+        "type": "Story",
+        "title": "Vé gửi qua email kèm mã QR",
+        "tier": "Next",
+        "priority": "Should",
+        "sprint": "4",
+        "status": "Todo",
+        "source_row": 28,
+        "source_cells": "Backlog!A28:O28"
+      },
+      {
+        "id": "S-32",
+        "type": "Story",
+        "title": "Xem lịch sử đơn hàng của tôi",
+        "tier": "Next",
+        "priority": "Should",
+        "sprint": "4",
+        "status": "Todo",
+        "source_row": 29,
+        "source_cells": "Backlog!A29:O29"
+      },
+      {
+        "id": "S-25",
+        "type": "Story",
+        "title": "Nhận vé điện tử có mã QR sau khi thanh toán",
+        "tier": "Next",
+        "priority": "Must",
+        "sprint": "4",
+        "status": "Todo",
+        "source_row": 30,
+        "source_cells": "Backlog!A30:O30"
+      },
+      {
+        "id": "S-26",
+        "type": "Story",
+        "title": "Mã QR trên vé có chữ ký, không tạo giả được ngoài hệ thống",
+        "tier": "Next",
+        "priority": "Must",
+        "sprint": "4",
+        "status": "Todo",
+        "source_row": 31,
+        "source_cells": "Backlog!A31:O31"
+      },
+      {
+        "id": "S-29",
+        "type": "Story",
+        "title": "Nhân viên soát vé chọn suất diễn và cửa trước khi quét",
+        "tier": "Next",
+        "priority": "Should",
+        "sprint": "4",
+        "status": "Todo",
+        "source_row": 32,
+        "source_cells": "Backlog!A32:O32"
+      },
+      {
+        "id": "S-30",
+        "type": "Story",
+        "title": "Soát vé bằng cách quét QR tại cửa",
+        "tier": "Next",
+        "priority": "Must",
+        "sprint": "4",
+        "status": "Todo",
+        "source_row": 33,
+        "source_cells": "Backlog!A33:O33"
+      },
+      {
+        "id": "S-31",
+        "type": "Story",
+        "title": "Vé đã soát không dùng lại được lần hai",
+        "tier": "Next",
+        "priority": "Must",
+        "sprint": "4",
+        "status": "Todo",
+        "source_row": 34,
+        "source_cells": "Backlog!A34:O34"
+      },
+      {
+        "id": "S-33",
+        "type": "Story",
+        "title": "Tải trước danh sách vé của suất diễn xuống máy quét",
+        "tier": "Next",
+        "priority": "Must",
+        "sprint": "5",
+        "status": "Todo",
+        "source_row": 35,
+        "source_cells": "Backlog!A35:O35"
+      },
+      {
+        "id": "S-34",
+        "type": "Story",
+        "title": "Soát vé ngoại tuyến bằng danh sách đã tải",
+        "tier": "Next",
+        "priority": "Must",
+        "sprint": "5",
+        "status": "Todo",
+        "source_row": 36,
+        "source_cells": "Backlog!A36:O36"
+      },
+      {
+        "id": "S-35",
+        "type": "Story",
+        "title": "Đồng bộ các lần quét ngoại tuyến lên máy chủ khi có mạng lại",
+        "tier": "Next",
+        "priority": "Must",
+        "sprint": "5",
+        "status": "Todo",
+        "source_row": 37,
+        "source_cells": "Backlog!A37:O37"
+      },
+      {
+        "id": "S-36",
+        "type": "Story",
+        "title": "Xung đột soát vé ở hai cửa được phát hiện khi đồng bộ",
+        "tier": "Next",
+        "priority": "Should",
+        "sprint": "5",
+        "status": "Todo",
+        "source_row": 38,
+        "source_cells": "Backlog!A38:O38"
+      },
+      {
+        "id": "S-37",
+        "type": "Story",
+        "title": "Máy quét hiện rõ trạng thái mạng và số lần quét chưa đồng bộ",
+        "tier": "Next",
+        "priority": "Should",
+        "sprint": "5",
+        "status": "Todo",
+        "source_row": 39,
+        "source_cells": "Backlog!A39:O39"
+      },
+      {
+        "id": "S-38",
+        "type": "Story",
+        "title": "Xem vé của tôi trong tài khoản và tải lại mã QR",
+        "tier": "Next",
+        "priority": "Should",
+        "sprint": "5",
+        "status": "Todo",
+        "source_row": 40,
+        "source_cells": "Backlog!A40:O40"
+      },
+      {
+        "id": "S-39",
+        "type": "Story",
+        "title": "Quét vé sai suất diễn, vé đã huỷ hay mã lạ thì báo rõ lý do",
+        "tier": "Next",
+        "priority": "Should",
+        "sprint": "5",
+        "status": "Todo",
+        "source_row": 41,
+        "source_cells": "Backlog!A41:O41"
+      },
+      {
+        "id": "S-43",
+        "type": "Story",
+        "title": "Giám sát và cảnh báo khi hệ thống quá tải",
+        "tier": "Later",
+        "priority": "Should",
+        "sprint": "6",
+        "status": "Todo",
+        "source_row": 42,
+        "source_cells": "Backlog!A42:O42"
+      },
+      {
+        "id": "S-44",
+        "type": "Story",
+        "title": "Sơ đồ ghế tự cập nhật trạng thái mà không cần tải lại trang",
+        "tier": "Later",
+        "priority": "Could",
+        "sprint": "6",
+        "status": "Todo",
+        "source_row": 43,
+        "source_cells": "Backlog!A43:O43"
+      },
+      {
+        "id": "S-40",
+        "type": "Story",
+        "title": "Hàng đợi phòng chờ khi lượng truy cập vượt ngưỡng",
+        "tier": "Later",
+        "priority": "Should",
+        "sprint": "6",
+        "status": "Todo",
+        "source_row": 44,
+        "source_cells": "Backlog!A44:O44"
+      },
+      {
+        "id": "S-41",
+        "type": "Story",
+        "title": "Giới hạn tần suất yêu cầu theo tài khoản và theo IP",
+        "tier": "Later",
+        "priority": "Should",
+        "sprint": "6",
+        "status": "Todo",
+        "source_row": 45,
+        "source_cells": "Backlog!A45:O45"
+      },
+      {
+        "id": "S-42",
+        "type": "Story",
+        "title": "Giới hạn số vé mỗi tài khoản được mua trong một suất",
+        "tier": "Later",
+        "priority": "Should",
+        "sprint": "6",
+        "status": "Todo",
+        "source_row": 46,
+        "source_cells": "Backlog!A46:O46"
+      },
+      {
+        "id": "S-45",
+        "type": "Story",
+        "title": "Khách huỷ vé trước hạn và được hoàn tiền theo chính sách",
+        "tier": "Later",
+        "priority": "Should",
+        "sprint": "7",
+        "status": "Todo",
+        "source_row": 47,
+        "source_cells": "Backlog!A47:O47"
+      },
+      {
+        "id": "S-46",
+        "type": "Story",
+        "title": "Ghế của vé đã huỷ quay lại kho bán",
+        "tier": "Later",
+        "priority": "Should",
+        "sprint": "7",
+        "status": "Todo",
+        "source_row": 48,
+        "source_cells": "Backlog!A48:O48"
+      },
+      {
+        "id": "S-47",
+        "type": "Story",
+        "title": "Ban tổ chức huỷ suất diễn và hoàn tiền hàng loạt",
+        "tier": "Later",
+        "priority": "Should",
+        "sprint": "7",
+        "status": "Todo",
+        "source_row": 49,
+        "source_cells": "Backlog!A49:O49"
+      },
+      {
+        "id": "S-48",
+        "type": "Story",
+        "title": "Lệnh hoàn tiền thất bại được thử lại và báo cho kế toán",
+        "tier": "Later",
+        "priority": "Should",
+        "sprint": "7",
+        "status": "Todo",
+        "source_row": 50,
+        "source_cells": "Backlog!A50:O50"
+      },
+      {
+        "id": "S-49",
+        "type": "Story",
+        "title": "Nhật ký thao tác trên đơn hàng và vé",
+        "tier": "Later",
+        "priority": "Must",
+        "sprint": "7",
+        "status": "Todo",
+        "source_row": 51,
+        "source_cells": "Backlog!A51:O51"
+      },
+      {
+        "id": "S-55",
+        "type": "Story",
+        "title": "Sao lưu cơ sở dữ liệu hằng ngày và diễn tập khôi phục",
+        "tier": "Later",
+        "priority": "Must",
+        "sprint": "8",
+        "status": "Todo",
+        "source_row": 52,
+        "source_cells": "Backlog!A52:O52"
+      },
+      {
+        "id": "S-53",
+        "type": "Story",
+        "title": "Khách yêu cầu xoá dữ liệu cá nhân của mình",
+        "tier": "Later",
+        "priority": "Must",
+        "sprint": "8",
+        "status": "Todo",
+        "source_row": 53,
+        "source_cells": "Backlog!A53:O53"
+      },
+      {
+        "id": "S-54",
+        "type": "Story",
+        "title": "Người dùng đồng ý điều khoản và chính sách riêng tư, thu hồi được",
+        "tier": "Later",
+        "priority": "Must",
+        "sprint": "8",
+        "status": "Todo",
+        "source_row": 54,
+        "source_cells": "Backlog!A54:O54"
+      },
+      {
+        "id": "S-50",
+        "type": "Story",
+        "title": "Xem doanh thu và tồn vé theo suất diễn",
+        "tier": "Later",
+        "priority": "Should",
+        "sprint": "8",
+        "status": "Todo",
+        "source_row": 55,
+        "source_cells": "Backlog!A55:O55"
+      },
+      {
+        "id": "S-51",
+        "type": "Story",
+        "title": "Đối soát giao dịch hệ thống với sao kê cổng thanh toán",
+        "tier": "Later",
+        "priority": "Should",
+        "sprint": "8",
+        "status": "Todo",
+        "source_row": 56,
+        "source_cells": "Backlog!A56:O56"
+      },
+      {
+        "id": "S-52",
+        "type": "Story",
+        "title": "Ban tổ chức xem số khách đã vào cửa theo thời gian thực",
+        "tier": "Later",
+        "priority": "Should",
+        "sprint": "8",
+        "status": "Todo",
+        "source_row": 57,
+        "source_cells": "Backlog!A57:O57"
+      },
+      {
+        "id": "S-58",
+        "type": "Story",
+        "title": "Nhân bản suất diễn kèm sơ đồ và bảng giá",
+        "tier": "Later",
+        "priority": "Could",
+        "sprint": null,
+        "status": "Todo",
+        "source_row": 58,
+        "source_cells": "Backlog!A58:O58"
+      },
+      {
+        "id": "S-59",
+        "type": "Story",
+        "title": "Danh sách chờ khi suất diễn hết vé",
+        "tier": "Later",
+        "priority": "Could",
+        "sprint": null,
+        "status": "Todo",
+        "source_row": 59,
+        "source_cells": "Backlog!A59:O59"
+      },
+      {
+        "id": "S-61",
+        "type": "Story",
+        "title": "Nhắc người mua trước giờ diễn qua email",
+        "tier": "Later",
+        "priority": "Could",
+        "sprint": null,
+        "status": "Todo",
+        "source_row": 60,
+        "source_cells": "Backlog!A60:O60"
+      },
+      {
+        "id": "S-56",
+        "type": "Story",
+        "title": "Mã giảm giá theo sự kiện",
+        "tier": "Later",
+        "priority": "Could",
+        "sprint": null,
+        "status": "Todo",
+        "source_row": 61,
+        "source_cells": "Backlog!A61:O61"
+      },
+      {
+        "id": "S-57",
+        "type": "Story",
+        "title": "Chuyển nhượng vé cho người khác",
+        "tier": "Later",
+        "priority": "Could",
+        "sprint": null,
+        "status": "Todo",
+        "source_row": 62,
+        "source_cells": "Backlog!A62:O62"
+      },
+      {
+        "id": "S-60",
+        "type": "Story",
+        "title": "Xuất sơ đồ ghế đã bán dạng PDF",
+        "tier": "Later",
+        "priority": "Could",
+        "sprint": null,
+        "status": "Todo",
+        "source_row": 63,
+        "source_cells": "Backlog!A63:O63"
+      },
+      {
+        "id": "S-62",
+        "type": "Story",
+        "title": "Xuất danh sách khách vào cửa theo suất diễn",
+        "tier": "Later",
+        "priority": "Could",
+        "sprint": null,
+        "status": "Todo",
+        "source_row": 64,
+        "source_cells": "Backlog!A64:O64"
+      },
+      {
+        "id": "S-63",
+        "type": "Story",
+        "title": "Báo cáo tỉ lệ bỏ giỏ và thời gian giữ chỗ thực tế",
+        "tier": "Later",
+        "priority": "Could",
+        "sprint": null,
+        "status": "Todo",
+        "source_row": 65,
+        "source_cells": "Backlog!A65:O65"
+      }
+    ],
+    "tier_counts": {
+      "Later": 24,
+      "Next": 15,
+      "Ready": 25
+    },
+    "priority_counts": {
+      "Could": 9,
+      "Must": 32,
+      "Should": 23
+    },
+    "status_counts": {
+      "Todo": 64
+    }
+  },
+  "Tasks": {
+    "rows": 55,
+    "headers": [
+      "ID",
+      "Parent",
+      "Title",
+      "Sprint",
+      "Status",
+      "Story",
+      "AC",
+      "Deps",
+      "NFR",
+      "Owner"
+    ],
+    "entries": [
+      {
+        "id": "T-01",
+        "parent": "S-01",
+        "title": "Dựng khung dự án và kết nối cơ sở dữ liệu",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 2,
+        "source_cells": "Tasks!A2:J2"
+      },
+      {
+        "id": "T-02",
+        "parent": "S-01",
+        "title": "Pipeline CI chạy build, lint, test",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 3,
+        "source_cells": "Tasks!A3:J3"
+      },
+      {
+        "id": "T-03",
+        "parent": "S-01",
+        "title": "Triển khai tự động lên staging bằng Docker",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 4,
+        "source_cells": "Tasks!A4:J4"
+      },
+      {
+        "id": "T-04",
+        "parent": "S-02",
+        "title": "Bảng `users` và `roles` kèm migration",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 5,
+        "source_cells": "Tasks!A5:J5"
+      },
+      {
+        "id": "T-05",
+        "parent": "S-02",
+        "title": "Đăng nhập bằng email và mật khẩu",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 6,
+        "source_cells": "Tasks!A6:J6"
+      },
+      {
+        "id": "T-06",
+        "parent": "S-02",
+        "title": "Chặn truy cập theo vai trò ở tầng middleware",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 7,
+        "source_cells": "Tasks!A7:J7"
+      },
+      {
+        "id": "T-07",
+        "parent": "S-03",
+        "title": "API và form đăng ký kèm kiểm tra dữ liệu",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 8,
+        "source_cells": "Tasks!A8:J8"
+      },
+      {
+        "id": "T-08",
+        "parent": "S-03",
+        "title": "Gửi email xác nhận và kích hoạt tài khoản",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 9,
+        "source_cells": "Tasks!A9:J9"
+      },
+      {
+        "id": "T-09",
+        "parent": "S-04",
+        "title": "Bảng `events` và `showtimes` kèm migration",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 10,
+        "source_cells": "Tasks!A10:J10"
+      },
+      {
+        "id": "T-10",
+        "parent": "S-04",
+        "title": "Màn hình tạo và sửa sự kiện",
+        "sprint": "1",
+        "status": "Todo",
+        "source_row": 11,
+        "source_cells": "Tasks!A11:J11"
+      },
+      {
+        "id": "T-11",
+        "parent": "S-05",
+        "title": "Bảng `seats` và `seat_categories` kèm migration",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 12,
+        "source_cells": "Tasks!A12:J12"
+      },
+      {
+        "id": "T-12",
+        "parent": "S-05",
+        "title": "Nạp tệp JSON thành ghế và hạng ghế trong một giao dịch",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 13,
+        "source_cells": "Tasks!A13:J13"
+      },
+      {
+        "id": "T-13",
+        "parent": "S-06",
+        "title": "Bộ kiểm tra cấu trúc tệp trả về đủ danh sách lỗi kèm vị trí",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 14,
+        "source_cells": "Tasks!A14:J14"
+      },
+      {
+        "id": "T-14",
+        "parent": "S-06",
+        "title": "Màn hình tải lên hiện lỗi và xem trước lưới ghế",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 15,
+        "source_cells": "Tasks!A15:J15"
+      },
+      {
+        "id": "T-15",
+        "parent": "S-07",
+        "title": "Cột trạng thái suất diễn kèm migration và luật chuyển trạng thái",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 16,
+        "source_cells": "Tasks!A16:J16"
+      },
+      {
+        "id": "T-16",
+        "parent": "S-07",
+        "title": "Nút mở bán và đóng bán trên màn hình suất diễn",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 17,
+        "source_cells": "Tasks!A17:J17"
+      },
+      {
+        "id": "T-17",
+        "parent": "S-08",
+        "title": "Truy vấn suất diễn đang mở bán có phân trang",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 18,
+        "source_cells": "Tasks!A18:J18"
+      },
+      {
+        "id": "T-18",
+        "parent": "S-08",
+        "title": "Trang danh sách sự kiện và trang chi tiết suất diễn",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 19,
+        "source_cells": "Tasks!A19:J19"
+      },
+      {
+        "id": "T-19",
+        "parent": "S-09",
+        "title": "Truy vấn trạng thái ghế theo suất diễn trong một lần gọi",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 20,
+        "source_cells": "Tasks!A20:J20"
+      },
+      {
+        "id": "T-20",
+        "parent": "S-09",
+        "title": "Vẽ sơ đồ ghế trên trình duyệt kèm màu và ký hiệu trạng thái",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 21,
+        "source_cells": "Tasks!A21:J21"
+      },
+      {
+        "id": "T-21",
+        "parent": "S-09",
+        "title": "Tệp mẫu 2000 ghế và phép đo thời gian hiển thị",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 22,
+        "source_cells": "Tasks!A22:J22"
+      },
+      {
+        "id": "T-22",
+        "parent": "S-10",
+        "title": "Bảng `seat_holds` có thời điểm hết hạn kèm migration",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 23,
+        "source_cells": "Tasks!A23:J23"
+      },
+      {
+        "id": "T-23",
+        "parent": "S-10",
+        "title": "API giữ ghế trả về thời điểm hết hạn",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 24,
+        "source_cells": "Tasks!A24:J24"
+      },
+      {
+        "id": "T-24",
+        "parent": "S-10",
+        "title": "Đồng hồ đếm ngược trên giao diện chọn ghế",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 25,
+        "source_cells": "Tasks!A25:J25"
+      },
+      {
+        "id": "T-25",
+        "parent": "S-11",
+        "title": "API huỷ giữ chỗ của chính mình",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 26,
+        "source_cells": "Tasks!A26:J26"
+      },
+      {
+        "id": "T-26",
+        "parent": "S-11",
+        "title": "Nút bỏ chọn trên sơ đồ và cập nhật trạng thái tại chỗ",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 27,
+        "source_cells": "Tasks!A27:J27"
+      },
+      {
+        "id": "T-27",
+        "parent": "S-12",
+        "title": "Job nền quét và nhả ghế quá hạn, chạy lặp lại được",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 28,
+        "source_cells": "Tasks!A28:J28"
+      },
+      {
+        "id": "T-28",
+        "parent": "S-12",
+        "title": "Truy vấn ghế trống loại trừ giữ chỗ đã hết hạn dù job chưa chạy",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 29,
+        "source_cells": "Tasks!A29:J29"
+      },
+      {
+        "id": "T-29",
+        "parent": "S-13",
+        "title": "Ràng buộc ở tầng cơ sở dữ liệu chặn hai giữ chỗ cùng ghế còn hiệu lực",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 30,
+        "source_cells": "Tasks!A30:J30"
+      },
+      {
+        "id": "T-30",
+        "parent": "S-13",
+        "title": "Đổi lỗi vi phạm ràng buộc thành phản hồi 409 kèm danh sách ghế bị từ chối",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 31,
+        "source_cells": "Tasks!A31:J31"
+      },
+      {
+        "id": "T-31",
+        "parent": "S-13",
+        "title": "Kịch bản kiểm thử bắn 200 yêu cầu đồng thời vào 100 ghế",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 32,
+        "source_cells": "Tasks!A32:J32"
+      },
+      {
+        "id": "T-32",
+        "parent": "S-14",
+        "title": "API trả về giữ chỗ còn hiệu lực của người dùng trong một suất diễn",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 33,
+        "source_cells": "Tasks!A33:J33"
+      },
+      {
+        "id": "T-33",
+        "parent": "S-14",
+        "title": "Trang chọn ghế khôi phục ghế đang giữ và đồng hồ khi mở lại",
+        "sprint": "2",
+        "status": "Todo",
+        "source_row": 34,
+        "source_cells": "Tasks!A34:J34"
+      },
+      {
+        "id": "T-34",
+        "parent": "S-15",
+        "title": "Cột giá trên `seat_categories` kèm migration",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 35,
+        "source_cells": "Tasks!A35:J35"
+      },
+      {
+        "id": "T-35",
+        "parent": "S-15",
+        "title": "Màn hình đặt giá và hiện giá trên sơ đồ ghế",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 36,
+        "source_cells": "Tasks!A36:J36"
+      },
+      {
+        "id": "T-36",
+        "parent": "S-16",
+        "title": "Bảng `orders` và `order_items` kèm migration",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 37,
+        "source_cells": "Tasks!A37:J37"
+      },
+      {
+        "id": "T-37",
+        "parent": "S-16",
+        "title": "API tạo đơn từ giữ chỗ và gia hạn giữ chỗ theo thời hạn thanh toán",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 38,
+        "source_cells": "Tasks!A38:J38"
+      },
+      {
+        "id": "T-38",
+        "parent": "S-17",
+        "title": "Tính tổng tiền ở máy chủ từ giá hạng ghế, không tin số từ trình duyệt",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 39,
+        "source_cells": "Tasks!A39:J39"
+      },
+      {
+        "id": "T-39",
+        "parent": "S-17",
+        "title": "Trang tóm tắt đơn: ghế, hạng, đơn giá, tổng tiền, thời gian còn lại",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 40,
+        "source_cells": "Tasks!A40:J40"
+      },
+      {
+        "id": "T-40",
+        "parent": "S-18",
+        "title": "Bọc cổng thanh toán sau một interface để đổi nhà cung cấp được",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 41,
+        "source_cells": "Tasks!A41:J41"
+      },
+      {
+        "id": "T-41",
+        "parent": "S-18",
+        "title": "Tạo yêu cầu thanh toán và chuyển hướng sang cổng sandbox",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 42,
+        "source_cells": "Tasks!A42:J42"
+      },
+      {
+        "id": "T-42",
+        "parent": "S-18",
+        "title": "Nhận kết quả trả về, đổi trạng thái đơn và ghế trong một giao dịch",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 43,
+        "source_cells": "Tasks!A43:J43"
+      },
+      {
+        "id": "T-43",
+        "parent": "S-19",
+        "title": "Trang giả lập cổng có nút thanh toán thành công và thất bại",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 44,
+        "source_cells": "Tasks!A44:J44"
+      },
+      {
+        "id": "T-44",
+        "parent": "S-19",
+        "title": "Chọn cổng thật hay giả lập bằng biến môi trường",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 45,
+        "source_cells": "Tasks!A45:J45"
+      },
+      {
+        "id": "T-45",
+        "parent": "S-20",
+        "title": "Bảng `payment_events` lưu mã giao dịch với ràng buộc unique",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 46,
+        "source_cells": "Tasks!A46:J46"
+      },
+      {
+        "id": "T-46",
+        "parent": "S-20",
+        "title": "Xử lý webhook: bỏ qua mã đã có, khoá theo mã giao dịch khi xử lý song song",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 47,
+        "source_cells": "Tasks!A47:J47"
+      },
+      {
+        "id": "T-47",
+        "parent": "S-20",
+        "title": "Kịch bản gửi lại cùng một webhook 5 lần và đếm số vé sinh ra",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 48,
+        "source_cells": "Tasks!A48:J48"
+      },
+      {
+        "id": "T-48",
+        "parent": "S-21",
+        "title": "Kiểm chữ ký webhook trước khi đọc nội dung",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 49,
+        "source_cells": "Tasks!A49:J49"
+      },
+      {
+        "id": "T-49",
+        "parent": "S-21",
+        "title": "Ghi log lần từ chối kèm địa chỉ nguồn",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 50,
+        "source_cells": "Tasks!A50:J50"
+      },
+      {
+        "id": "T-50",
+        "parent": "S-22",
+        "title": "API trạng thái đơn để trình duyệt hỏi lại định kỳ",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 51,
+        "source_cells": "Tasks!A51:J51"
+      },
+      {
+        "id": "T-51",
+        "parent": "S-22",
+        "title": "Trang kết quả hiện \"đang xác nhận\" cho tới khi có kết quả thật",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 52,
+        "source_cells": "Tasks!A52:J52"
+      },
+      {
+        "id": "T-52",
+        "parent": "S-23",
+        "title": "Job huỷ đơn quá hạn và nhả ghế trong một giao dịch",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 53,
+        "source_cells": "Tasks!A53:J53"
+      },
+      {
+        "id": "T-53",
+        "parent": "S-23",
+        "title": "Test chứng minh đơn đã thanh toán không bị job đụng tới",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 54,
+        "source_cells": "Tasks!A54:J54"
+      },
+      {
+        "id": "T-54",
+        "parent": "S-24",
+        "title": "Nhận kết quả thất bại từ cổng và giữ nguyên trạng thái chờ",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 55,
+        "source_cells": "Tasks!A55:J55"
+      },
+      {
+        "id": "T-55",
+        "parent": "S-24",
+        "title": "Nút thanh toán lại trên trang đơn hàng",
+        "sprint": "3",
+        "status": "Todo",
+        "source_row": 56,
+        "source_cells": "Tasks!A56:J56"
+      }
+    ]
+  },
+  "Epics": {
+    "rows": 11,
+    "headers": [
+      "ID",
+      "Title",
+      "Tier",
+      "Priority",
+      "Status",
+      "Story",
+      "AC",
+      "Deps",
+      "NFR",
+      "Owner"
+    ],
+    "entries": [
+      {
+        "id": "E-01",
+        "title": "Hạ tầng, CI/CD và môi trường",
+        "tier": "Ready",
+        "priority": "Must",
+        "status": "Todo",
+        "source_row": 2,
+        "source_cells": "Epics!A2:J2"
+      },
+      {
+        "id": "E-02",
+        "title": "Tài khoản và phân quyền",
+        "tier": "Ready",
+        "priority": "Must",
+        "status": "Todo",
+        "source_row": 3,
+        "source_cells": "Epics!A3:J3"
+      },
+      {
+        "id": "E-03",
+        "title": "Sự kiện, suất diễn và sơ đồ ghế",
+        "tier": "Ready",
+        "priority": "Must",
+        "status": "Todo",
+        "source_row": 4,
+        "source_cells": "Epics!A4:J4"
+      },
+      {
+        "id": "E-04",
+        "title": "Chọn ghế và giữ chỗ có thời hạn",
+        "tier": "Ready",
+        "priority": "Must",
+        "status": "Todo",
+        "source_row": 5,
+        "source_cells": "Epics!A5:J5"
+      },
+      {
+        "id": "E-11",
+        "title": "Trang công khai, mở bán và thông báo",
+        "tier": "Ready",
+        "priority": "Must",
+        "status": "Todo",
+        "source_row": 6,
+        "source_cells": "Epics!A6:J6"
+      },
+      {
+        "id": "E-05",
+        "title": "Thanh toán và đơn hàng",
+        "tier": "Ready",
+        "priority": "Must",
+        "status": "Todo",
+        "source_row": 7,
+        "source_cells": "Epics!A7:J7"
+      },
+      {
+        "id": "E-06",
+        "title": "Vé điện tử và soát vé",
+        "tier": "Next",
+        "priority": "Must",
+        "status": "Todo",
+        "source_row": 8,
+        "source_cells": "Epics!A8:J8"
+      },
+      {
+        "id": "E-07",
+        "title": "Phòng chờ và chống bot khi mở bán",
+        "tier": "Later",
+        "priority": "Should",
+        "status": "Todo",
+        "source_row": 9,
+        "source_cells": "Epics!A9:J9"
+      },
+      {
+        "id": "E-08",
+        "title": "Huỷ vé và hoàn tiền",
+        "tier": "Later",
+        "priority": "Should",
+        "status": "Todo",
+        "source_row": 10,
+        "source_cells": "Epics!A10:J10"
+      },
+      {
+        "id": "E-10",
+        "title": "Vận hành và bảo vệ dữ liệu cá nhân",
+        "tier": "Later",
+        "priority": "Must",
+        "status": "Todo",
+        "source_row": 11,
+        "source_cells": "Epics!A11:J11"
+      },
+      {
+        "id": "E-09",
+        "title": "Báo cáo và đối soát cho ban tổ chức",
+        "tier": "Later",
+        "priority": "Should",
+        "status": "Todo",
+        "source_row": 12,
+        "source_cells": "Epics!A12:J12"
+      }
+    ]
+  },
+  "Sprints": {
+    "rows": 8,
+    "headers": [
+      "Sprint",
+      "Từ ngày",
+      "Đến ngày",
+      "Sprint Goal",
+      "Capacity (SP)",
+      "Đã xếp (SP)"
+    ],
+    "entries": [
+      {
+        "row": 2,
+        "source_cells": "Sprints!A2:F2",
+        "Sprint": "1",
+        "Từ ngày": null,
+        "Đến ngày": null,
+        "Sprint Goal": "Ban tổ chức tạo được sự kiện và người mua tự đăng ký được trên môi trường staging chạy thật",
+        "Capacity (SP)": "12",
+        "Đã xếp (SP)": "12"
+      },
+      {
+        "row": 3,
+        "source_cells": "Sprints!A3:F3",
+        "Sprint": "2",
+        "Từ ngày": null,
+        "Đến ngày": null,
+        "Sprint Goal": "Người mua tìm được suất đang bán, chọn được ghế và ghế đó chắc chắn là của họ, kể cả khi nhiều người bấm cùng lúc",
+        "Capacity (SP)": "20",
+        "Đã xếp (SP)": "20"
+      },
+      {
+        "row": 4,
+        "source_cells": "Sprints!A4:F4",
+        "Sprint": "3",
+        "Từ ngày": null,
+        "Đến ngày": null,
+        "Sprint Goal": "Người mua thanh toán xong thì ghế chuyển thành đã bán, bỏ dở thì ghế trở lại kho, và một lần trả tiền chỉ được ghi nhận một lần",
+        "Capacity (SP)": "20",
+        "Đã xếp (SP)": "20"
+      },
+      {
+        "row": 5,
+        "source_cells": "Sprints!A5:F5",
+        "Sprint": "4",
+        "Từ ngày": null,
+        "Đến ngày": null,
+        "Sprint Goal": "Người mua nhận vé QR không làm giả được và nhân viên soát được vé tại cửa, mỗi vé một lần",
+        "Capacity (SP)": "20",
+        "Đã xếp (SP)": "20"
+      },
+      {
+        "row": 6,
+        "source_cells": "Sprints!A6:F6",
+        "Sprint": "5",
+        "Từ ngày": null,
+        "Đến ngày": null,
+        "Sprint Goal": "Soát vé chạy được khi mất mạng và đồng bộ lại không sai, không sót",
+        "Capacity (SP)": "20",
+        "Đã xếp (SP)": "20"
+      },
+      {
+        "row": 7,
+        "source_cells": "Sprints!A7:F7",
+        "Sprint": "6",
+        "Từ ngày": null,
+        "Đến ngày": null,
+        "Sprint Goal": "Hệ thống đứng vững và công bằng khi mở bán đông người",
+        "Capacity (SP)": "20",
+        "Đã xếp (SP)": "20"
+      },
+      {
+        "row": 8,
+        "source_cells": "Sprints!A8:F8",
+        "Sprint": "7",
+        "Từ ngày": null,
+        "Đến ngày": null,
+        "Sprint Goal": "Vé huỷ được, tiền hoàn đúng và không lệnh hoàn nào rơi vào im lặng, ghế quay lại kho bán",
+        "Capacity (SP)": "20",
+        "Đã xếp (SP)": "19"
+      },
+      {
+        "row": 9,
+        "source_cells": "Sprints!A9:F9",
+        "Sprint": "8",
+        "Từ ngày": null,
+        "Đến ngày": null,
+        "Sprint Goal": "Ban tổ chức đối soát được doanh thu khớp với cổng thanh toán và hệ thống sẵn sàng cho dữ liệu thật",
+        "Capacity (SP)": "20",
+        "Đã xếp (SP)": "20"
+      }
+    ]
+  },
+  "Rủi ro": {
+    "rows": 9,
+    "headers": [
+      "ID",
+      "Rủi ro",
+      "Ảnh hưởng",
+      "Khả năng",
+      "Giảm thiểu",
+      "Chủ"
+    ],
+    "entries": [
+      {
+        "row": 2,
+        "source_cells": "Rủi ro!A2:F2",
+        "ID": "R-01",
+        "Rủi ro": "Team chọn sai cơ chế giữ chỗ rồi phải làm lại giữa Sprint 2",
+        "Ảnh hưởng": "Cao",
+        "Khả năng": "Trung bình",
+        "Giảm thiểu": "K-01 là spike bắt buộc ở Sprint 1, có đo bằng số trước khi quyết",
+        "Chủ": "cả team"
+      },
+      {
+        "row": 3,
+        "source_cells": "Rủi ro!A3:F3",
+        "ID": "R-02",
+        "Rủi ro": "**Chưa có tài khoản sandbox thanh toán**, đăng ký mất vài ngày nên Sprint 3 tắc",
+        "Ảnh hưởng": "Cao",
+        "Khả năng": "Cao",
+        "Giảm thiểu": "Nộp hồ sơ đăng ký ngay ngày đầu Sprint 1. S-19 là cổng giả lập đứng sau cùng interface — Sprint 3 chạy đầu-cuối được dù sandbox chưa về; có sandbox thì đổi một biến môi trường",
+        "Chủ": "người phụ trách dự án"
+      },
+      {
+        "row": 4,
+        "source_cells": "Rủi ro!A4:F4",
+        "ID": "R-03",
+        "Rủi ro": "Nhóm mới ra trường chưa từng gặp race condition, sửa sai hướng bằng cách thêm `if` kiểm tra",
+        "Ảnh hưởng": "Cao",
+        "Khả năng": "Cao",
+        "Giảm thiểu": "T-31 viết kịch bản kiểm thử đồng thời **trước** khi coi S-13 là xong; ràng buộc phải nằm ở tầng cơ sở dữ liệu, ghi rõ trong NFR của S-13; cùng nguyên tắc lặp lại ở S-20 và S-31",
+        "Chủ": "cả team"
+      },
+      {
+        "row": 5,
+        "source_cells": "Rủi ro!A5:F5",
+        "ID": "R-04",
+        "Rủi ro": "5 người mới chưa quen phối hợp, thời gian chờ review và merge nuốt mất capacity",
+        "Ảnh hưởng": "Trung bình",
+        "Khả năng": "Cao",
+        "Giảm thiểu": "Focus factor đã hạ xuống 0,5; story 1–3 SP để mỗi người có việc riêng trong ngày; chia theo epic để giảm đụng file; Daily Scrum nêu rõ ai đang chờ ai",
+        "Chủ": "Scrum Master"
+      },
+      {
+        "row": 6,
+        "source_cells": "Rủi ro!A6:F6",
+        "ID": "R-05",
+        "Rủi ro": "Sơ đồ ghế 2000 chỗ làm trình duyệt giật, phải làm lại phần vẽ",
+        "Ảnh hưởng": "Trung bình",
+        "Khả năng": "Trung bình",
+        "Giảm thiểu": "T-20 vẽ bằng một phần tử canvas/SVG thay vì 2000 nút; T-21 có tệp mẫu và con số đo ngay từ Sprint 2",
+        "Chủ": "cả team"
+      },
+      {
+        "row": 7,
+        "source_cells": "Rủi ro!A7:F7",
+        "ID": "R-06",
+        "Rủi ro": "Không có DevOps nên staging hỏng giữa sprint không ai sửa nhanh được",
+        "Ảnh hưởng": "Trung bình",
+        "Khả năng": "Trung bình",
+        "Giảm thiểu": "E-01 xong ngay Sprint 1; triển khai thất bại thì giữ nguyên bản cũ (NFR của T-03); S-55 sao lưu trước khi có dữ liệu thật",
+        "Chủ": "cả team"
+      },
+      {
+        "row": 8,
+        "source_cells": "Rủi ro!A8:F8",
+        "ID": "R-07",
+        "Rủi ro": "Yêu cầu xoá dữ liệu cá nhân đụng nghĩa vụ lưu sổ kế toán, hai bên mâu thuẫn",
+        "Ảnh hưởng": "Trung bình",
+        "Khả năng": "Thấp",
+        "Giảm thiểu": "S-53 ghi rõ cần người có thẩm quyền xác nhận phạm vi; thiết kế từ đầu tách thông tin định danh khỏi bản ghi giao dịch. **Skill không đưa tư vấn pháp lý**",
+        "Chủ": "người quyết sản phẩm"
+      },
+      {
+        "row": 9,
+        "source_cells": "Rủi ro!A9:F9",
+        "ID": "R-08",
+        "Rủi ro": "Soát vé ngoại tuyến (S-34, 5 SP thô) là story to nhất, team dễ sa vào làm ứng dụng di động riêng",
+        "Ảnh hưởng": "Cao",
+        "Khả năng": "Trung bình",
+        "Giảm thiểu": "Chốt ngay từ Refinement Sprint 4: làm trang web chạy trên trình duyệt điện thoại, lưu cục bộ bằng bộ nhớ trình duyệt; chẻ S-34 thành ít nhất hai story trước khi kéo vào",
+        "Chủ": "cả team"
+      },
+      {
+        "row": 10,
+        "source_cells": "Rủi ro!A10:F10",
+        "ID": "R-09",
+        "Rủi ro": "Sprint 6–8 ước lượng thô, tổng có thể lệch ±30% khi refine",
+        "Ảnh hưởng": "Trung bình",
+        "Khả năng": "Cao",
+        "Giảm thiểu": "Phần đệm 21 SP toàn `Could` để bù hụt hoặc nhận việc đẩy ra; xem lại tổng ở Refinement trước Sprint 5 và cắt `Could` trước, `Should` sau",
+        "Chủ": "Product Owner"
+      }
+    ]
+  },
+  "DoD-DoR": {
+    "rows": 14,
+    "headers": [
+      "Loại",
+      "Được phép chặn",
+      "Mục"
+    ],
+    "entries": [
+      {
+        "row": 2,
+        "source_cells": "DoD-DoR!A2:C2",
+        "Loại": "DoD",
+        "Được phép chặn": "—",
+        "Mục": "Code review đã duyệt bởi ít nhất một thành viên khác"
+      },
+      {
+        "row": 3,
+        "source_cells": "DoD-DoR!A3:C3",
+        "Loại": "DoD",
+        "Được phép chặn": "—",
+        "Mục": "Unit test cho nhánh logic mới; độ phủ trên phần thay đổi không giảm"
+      },
+      {
+        "row": 4,
+        "source_cells": "DoD-DoR!A4:C4",
+        "Loại": "DoD",
+        "Được phép chặn": "—",
+        "Mục": "CI xanh: build, lint, typecheck, test"
+      },
+      {
+        "row": 5,
+        "source_cells": "DoD-DoR!A5:C5",
+        "Loại": "DoD",
+        "Được phép chặn": "—",
+        "Mục": "Không có secret trong mã nguồn; quét phụ thuộc sạch"
+      },
+      {
+        "row": 6,
+        "source_cells": "DoD-DoR!A6:C6",
+        "Loại": "DoD",
+        "Được phép chặn": "—",
+        "Mục": "AC pass trên môi trường staging, không chỉ trên máy cá nhân"
+      },
+      {
+        "row": 7,
+        "source_cells": "DoD-DoR!A7:C7",
+        "Loại": "DoD",
+        "Được phép chặn": "—",
+        "Mục": "Story chạm tiền hoặc chạm ghế: có test đồng thời chứng minh không bán trùng và không ghi nhận hai lần"
+      },
+      {
+        "row": 8,
+        "source_cells": "DoD-DoR!A8:C8",
+        "Loại": "DoD",
+        "Được phép chặn": "—",
+        "Mục": "Job nền và webhook: chạy lại nhiều lần cho cùng kết quả"
+      },
+      {
+        "row": 9,
+        "source_cells": "DoD-DoR!A9:C9",
+        "Loại": "DoD",
+        "Được phép chặn": "—",
+        "Mục": "Không log dữ liệu định danh cá nhân và không log thông tin thanh toán"
+      },
+      {
+        "row": 10,
+        "source_cells": "DoD-DoR!A10:C10",
+        "Loại": "DoD",
+        "Được phép chặn": "—",
+        "Mục": "README hoặc tài liệu cập nhật nếu đổi hành vi công khai hoặc thêm biến môi trường"
+      },
+      {
+        "row": 11,
+        "source_cells": "DoD-DoR!A11:C11",
+        "Loại": "DoR",
+        "Được phép chặn": "Có",
+        "Mục": "Đủ nhỏ để Done trong 1 sprint"
+      },
+      {
+        "row": 12,
+        "source_cells": "DoD-DoR!A12:C12",
+        "Loại": "DoR",
+        "Được phép chặn": "Có",
+        "Mục": "Dependency ngoài đã có cam kết (ví dụ: tài khoản sandbox thanh toán đã có, hoặc đã chấp nhận dùng S-19)"
+      },
+      {
+        "row": 13,
+        "source_cells": "DoD-DoR!A13:C13",
+        "Loại": "DoR",
+        "Được phép chặn": "Không",
+        "Mục": "Có AC viết dạng Giả sử / Khi / Thì (hướng dẫn)"
+      },
+      {
+        "row": 14,
+        "source_cells": "DoD-DoR!A14:C14",
+        "Loại": "DoR",
+        "Được phép chặn": "Không",
+        "Mục": "Đã ước lượng lại story point khi lên tier Ready, không dùng số thô (hướng dẫn)"
+      },
+      {
+        "row": 15,
+        "source_cells": "DoD-DoR!A15:C15",
+        "Loại": "DoR",
+        "Được phép chặn": "Không",
+        "Mục": "Team hiểu story nói gì mà không cần hỏi lại người viết (hướng dẫn)"
+      }
+    ]
+  },
+  "Project Goal": {
+    "source_row": "Thông tin!A1:B14",
+    "entries": [
+      {
+        "row": 2,
+        "field": "Tên dự án",
+        "value": "Bán vé sự kiện có sơ đồ ghế"
+      },
+      {
+        "row": 3,
+        "field": "Ngày lập",
+        "value": "2026-09-08 (sinh lại 2026-09-15)"
+      },
+      {
+        "row": 4,
+        "field": "Số developer",
+        "value": "5"
+      },
+      {
+        "row": 5,
+        "field": "Độ dài sprint",
+        "value": "1 tuần"
+      },
+      {
+        "row": 6,
+        "field": "Ngày làm việc / sprint",
+        "value": "5"
+      },
+      {
+        "row": 7,
+        "field": "Focus factor",
+        "value": "0.5"
+      },
+      {
+        "row": 8,
+        "field": "Đơn vị ước lượng",
+        "value": "story point (Fibonacci)"
+      },
+      {
+        "row": 9,
+        "field": "Product Goal",
+        "value": "Ban tổ chức mở bán vé cho sự kiện có sơ đồ ghế mà không bao giờ bán trùng ghế hay bán vượt sức chứa, và soát được vé tại cửa kể cả khi mất mạng"
+      },
+      {
+        "row": 10,
+        "field": "Kinh nghiệm team",
+        "value": "thực tập / mới ra trường"
+      },
+      {
+        "row": 11,
+        "field": "Quen Scrum",
+        "value": "mới áp dụng"
+      },
+      {
+        "row": 12,
+        "field": "Loại dự án",
+        "value": "mới tinh (greenfield)"
+      },
+      {
+        "row": 13,
+        "field": "Ràng buộc tuân thủ",
+        "value": "có — thanh toán trực tuyến (chỉ dùng sandbox, không xử lý thẻ thật) và dữ liệu cá nhân người mua vé (Nghị định 13/2023/NĐ-CP)"
+      },
+      {
+        "row": 14,
+        "field": "Vai trò sẵn có",
+        "value": "không có QA, không có DevOps, không có người thiết kế — cả 5 thành viên đều lập trình"
+      }
+    ]
+  }
+}

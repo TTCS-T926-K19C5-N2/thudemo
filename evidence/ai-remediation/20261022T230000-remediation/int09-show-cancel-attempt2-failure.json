@@ -1,0 +1,26 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Isolated local API/PostgreSQL/Mailpit, two authenticated Chromium viewports; lifecycle worker explicitly off; synthetic fixture only.",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "http": [
+    {
+      "method": "POST",
+      "path": "/api/showtimes/{fixture}/cancel",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/showtimes/{fixture}/holds",
+      "status": 409,
+      "code": "SHOWTIME_CLOSED"
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "int09-show-cancel-queued-desktop.png"
+  ],
+  "failure": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Trạng thái: QUEUED', { exact: true }) to be visible\u001b[22m\n"
+}

@@ -12,6 +12,10 @@ import {
   calculateHmacSha256,
   verifyTimingSafeSignature,
 } from './momo-signature.js';
+import {
+  PaymentGatewayOutcomeUnknownError,
+  PaymentGatewayRejectedError,
+} from './payment-gateway.errors.js';
 
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -48,8 +52,7 @@ export class MomoGateway implements PaymentGateway {
 
   async createPayment(params: CreatePaymentParams): Promise<CreatePaymentResult> {
     // Generate unique gatewayRef per attempt mapping back to orderId
-    const nonce = Math.random().toString(36).substring(2, 8);
-    const gatewayRef = `${params.orderId}_${Date.now()}_${nonce}`;
+    const gatewayRef = params.gatewayRef;
     const requestId = gatewayRef;
     const orderInfo = `Thanh toán đơn hàng ${params.orderId}`;
     const requestType = 'captureWallet';
@@ -100,7 +103,13 @@ export class MomoGateway implements PaymentGateway {
         signal: AbortSignal.timeout(10000),
       });
 
-      if (response.ok) {
+      if (!response.ok) {
+        if (response.status >= 400 && response.status < 500)
+          throw new PaymentGatewayRejectedError(`HTTP_${response.status}`);
+        throw new PaymentGatewayOutcomeUnknownError(`HTTP_${response.status}`);
+      }
+
+      {
         const data = (await response.json()) as {
           payUrl?: string;
           shortLink?: string;
@@ -122,28 +131,16 @@ export class MomoGateway implements PaymentGateway {
           };
         }
         if (data.resultCode !== undefined && data.resultCode !== 0) {
-          this.logger.warn(
-            `MoMo payment API returned resultCode=${data.resultCode}: ${data.message}`,
-          );
+          throw new PaymentGatewayRejectedError(`MOMO_${data.resultCode}`);
         }
       }
     } catch (err) {
-      this.logger.warn(
-        `Failed to call MoMo endpoint (${this.endpoint}/v2/gateway/api/create): ${
-          err instanceof Error ? err.message : String(err)
-        }. Falling back to sandbox payment URL.`,
-      );
+      if (err instanceof PaymentGatewayRejectedError || err instanceof PaymentGatewayOutcomeUnknownError)
+        throw err;
+      this.logger.warn('MoMo payment initialization outcome is unknown.');
+      throw new PaymentGatewayOutcomeUnknownError('TRANSPORT_OR_RESPONSE_ERROR');
     }
-
-    // Fallback sandbox payment URL when external network is not available
-    const fallbackUrl = `${this.endpoint}/gw_payment/transactionProcessor?partnerCode=${this.partnerCode}&orderId=${gatewayRef}&amount=${params.amount}&returnUrl=${encodeURIComponent(
-      params.returnUrl,
-    )}`;
-
-    return {
-      redirectUrl: fallbackUrl,
-      gatewayRef,
-    };
+    throw new PaymentGatewayOutcomeUnknownError('PROVIDER_RESPONSE_WITHOUT_PAYMENT_URL');
   }
 
   private extractPayload(rawBody: unknown): Record<string, unknown> | null {

@@ -1,0 +1,13 @@
+{
+  "profile": "s1demo-384da3d43b41",
+  "events": 40,
+  "showtimes": 44,
+  "orders": 5,
+  "tickets": 5,
+  "r65FixtureShowtime": {
+    "id": "914556a8-ba19-4766-9e20-00a3d93df432",
+    "status": "ON_SALE",
+    "isDemo": false
+  },
+  "readOnly": true
+}

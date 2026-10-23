@@ -1,0 +1,16 @@
+## 6. Quy tắc cho AI và phạm vi tự động hoá
+
+AI đọc mã, chuẩn bị fixture thử, chạy test/ứng dụng ở môi trường tách biệt, thao tác UI, gọi API, đối chiếu DB và viết báo cáo. Đợt nghiệm thu mặc định **không sửa mã sản phẩm, không đổi AC để làm test xanh**. Nếu được yêu cầu sửa sau đó, tách bản trước/sau, regression và retest theo fingerprint mới.
+
+Một case có UI phải được thao tác trực tiếp trên trình duyệt; test bằng API bổ sung kiểm dữ liệu/quyền. Các case chỉ schema/constraint/job có thể không cần UI. Không khai đã dùng browser/camera/4G/SMTP Internet nếu chưa dùng đúng bề mặt đó.
+
+Không gửi thư thật, thông báo tới người khác, merge/push/deploy, bật worker ở hệ thống chính, mua dịch vụ hoặc thay chính sách. Kiểm bằng catcher/mock/profile thử là cách mặc định. Nếu phải chờ dữ liệu/quyền/thiết bị, báo mục cụ thể và tiếp tục phần độc lập, không lặp yêu cầu xác nhận cho việc đã được giao.
+
+Các kiểm tra xuyên suốt gắn vào INT-13/15 và nhóm S-02, không được bỏ qua chỉ vì không có story riêng:
+
+- Logout ở UI/API phải kết thúc session phía server; Back/refresh hoặc tab khác không xem lại dữ liệu riêng qua cache. Login returnTo không đưa ra website ngoài hoặc đưa STAFF vào màn quản lý không được cấp quyền.
+- Cookie phiên có HttpOnly và thuộc tính Secure/SameSite phù hợp môi trường HTTPS; test hết hạn phía server và thu hồi nhiều session. Đối chiếu hợp đồng session, không tự đổi sang JWT.
+- Với API thay đổi dữ liệu, thử origin lạ, yêu cầu thiếu chứng thực nguồn/CSRF theo cơ chế app và header IP giả; từ chối không đổi DB. Không áp CSRF browser cho webhook provider theo cách làm hỏng hợp đồng chữ ký riêng.
+- UUID sai, body null/array/thừa field, enum lạ, chuỗi dài, ký tự Unicode/HTML trong form và JSON map: thông báo rõ, không 500, không thực thi HTML/script khi hiển thị và không lộ stack/SQL. Chạy payload an toàn trong profile thử, không quét hệ thống khác.
+- Kiểm header cache cho tài khoản/đơn/vé, phân trang filter sai, direct URL không qua menu, double-click và refresh giữa request. Kiểm `/payment/result` cùng biến thể có orderId, `/scanner`, `/check-in` và các alias/legacy còn mount để không bỏ sót bề mặt thực dùng.
+

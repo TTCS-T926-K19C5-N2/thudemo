@@ -1,0 +1,37 @@
+{
+  "verifiedAtLocal": "2026-10-23T15:08+07:00",
+  "profile": "s1demo-384da3d43b41",
+  "role": "synthetic ORGANIZER",
+  "route": "/events/19448201-2e19-423c-89af-8992ae005ba6",
+  "ui": "desktop accessibility tree + screenshot",
+  "list": {
+    "events": 40,
+    "showtimes": 42,
+    "drafts": 0,
+    "published": 40
+  },
+  "detail": {
+    "event": "Bệnh sĩ",
+    "status": "PUBLISHED",
+    "showtimes": [
+      {
+        "start": "2026-10-23T15:00+07:00",
+        "status": "ON_SALE"
+      },
+      {
+        "start": "2026-11-07T19:30+07:00",
+        "status": "DRAFT"
+      },
+      {
+        "start": "2026-12-07T19:30+07:00",
+        "status": "ON_SALE"
+      }
+    ],
+    "couponPanelVisible": true
+  },
+  "mutation": "none; existing catalog record read only",
+  "screenshots": [
+    "organizer-event-detail-desktop.png"
+  ],
+  "matrix": "No AC status promoted by this route smoke; CRUD/publication/owner negative cases remain NOT_RUN"
+}

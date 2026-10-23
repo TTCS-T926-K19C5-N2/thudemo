@@ -35,7 +35,6 @@ ENV PORT=3001
 WORKDIR /app
 RUN apt-get update && apt-get install --yes --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 COPY --chown=node:node --from=api-build /out/api /app
-COPY --chown=node:node deploy/demo/demo.mjs /app/demo.mjs
 EXPOSE 3001
 USER node
 CMD ["node", "dist/main.js"]
@@ -46,7 +45,6 @@ ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 WORKDIR /app
 COPY --chown=node:node --from=web-build /out/web /app
-COPY --chown=node:node deploy/demo/demo.mjs /app/demo.mjs
 ENV WEB_HOST=0.0.0.0
 EXPOSE 3000
 USER node
@@ -55,7 +53,6 @@ CMD ["node", "server.mjs"]
 # Operator-only migration image. Never receives database secrets at build time.
 FROM api-build AS migration
 WORKDIR /app/apps/api
-COPY deploy/demo/demo.mjs /app/apps/api/demo.mjs
 CMD ["/app/apps/api/node_modules/.bin/prisma", "migrate", "deploy"]
 
 # Render does not expose Docker --target in Blueprint. Final target shares the

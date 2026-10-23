@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-51-AC01",
+    "requirement_id": "S-51",
+    "kind": "AC",
+    "group": "Báo cáo và dữ liệu",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "8",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Đối soát giao dịch hệ thống với sao kê cổng thanh toán",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L56"
+    },
+    "original_requirement": "Nạp tệp sao kê của cổng theo kỳ, hệ thống ghép theo mã giao dịch với `payment_events` và chỉ ra ba nhóm: khớp, có ở hệ thống mà không có ở cổng, có ở cổng mà không có ở hệ thống; lệch số tiền cũng thành một dòng. Chưa refine chi tiết — tier Later, ước lượng thô 5 SP",
+    "fixture": "CSV fixture có MATCH, SYSTEM_ONLY, GATEWAY_ONLY, AMOUNT_MISMATCH, duplicate.",
+    "surfaces": "POST/GET /operations/reconciliation",
+    "code_candidates": "apps/api/src/lifecycle/reports.service.ts; /operations UI",
+    "test_candidates": "lifecycle.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Chuẩn bị fixture: CSV fixture có MATCH, SYSTEM_ONLY, GATEWAY_ONLY, AMOUNT_MISMATCH, duplicate.",
+      "Nạp sao kê đúng và sai định dạng; kiểm từng nhóm bằng oracle giao dịch độc lập. Reimport cùng file không nhân run/kết quả theo contract; BUYER/STAFF bị cấm; không biến parser CSV demo thành bằng chứng đối soát provider thật.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Nạp sao kê đúng và sai định dạng; kiểm từng nhóm bằng oracle giao dịch độc lập. Reimport cùng file không nhân run/kết quả theo contract; BUYER/STAFF bị cấm; không biến parser CSV demo thành bằng chứng đối soát provider thật.",
+    "expected": [
+      "Nạp tệp sao kê của cổng theo kỳ, hệ thống ghép theo mã giao dịch với `payment_events` và chỉ ra ba nhóm: khớp, có ở hệ thống mà không có ở cổng, có ở cổng mà không có ở hệ thống; lệch số tiền cũng thành một dòng. Chưa refine chi tiết — tier Later, ước lượng thô 5 SP"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-51-NFR",
+    "requirement_id": "S-51",
+    "kind": "NFR",
+    "group": "Báo cáo và dữ liệu",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "8",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Đối soát giao dịch hệ thống với sao kê cổng thanh toán — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N56"
+    },
+    "original_requirement": "chưa refine — cần chốt định dạng sao kê của cổng đã chọn",
+    "fixture": "CSV fixture có MATCH, SYSTEM_ONLY, GATEWAY_ONLY, AMOUNT_MISMATCH, duplicate.",
+    "surfaces": "POST/GET /operations/reconciliation",
+    "code_candidates": "apps/api/src/lifecycle/reports.service.ts; /operations UI",
+    "test_candidates": "lifecycle.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Nạp sao kê đúng và sai định dạng; kiểm từng nhóm bằng oracle giao dịch độc lập. Reimport cùng file không nhân run/kết quả theo contract; BUYER/STAFF bị cấm; không biến parser CSV demo thành bằng chứng đối soát provider thật.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt định dạng sao kê của cổng đã chọn"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

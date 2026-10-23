@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-19-AC01",
+    "requirement_id": "S-19",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Cổng thanh toán giả lập để chạy khi chưa có sandbox",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L21"
+    },
+    "original_requirement": "Giả sử biến môi trường chọn cổng giả lập, Khi bấm thanh toán, Thì tới một trang nội bộ có hai nút thanh toán thành công và thất bại",
+    "fixture": "Profile mock riêng và profile APP_ENV production biệt lập.",
+    "surfaces": "/mock-gateway/pay; /mock-gateway/submit",
+    "code_candidates": "apps/api/src/payments/gateways/mock.gateway.ts; apps/web/src/features/mock-gateway/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments-config.validator.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: biến môi trường chọn cổng giả lập.",
+      "Thực hiện trên /mock-gateway/pay; /mock-gateway/submit: bấm thanh toán.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Chọn success/failure trên gateway; kiểm webhook có chữ ký qua cùng luồng nghiệp vụ. Thay cấu hình provider không sửa nghiệp vụ; production bật mock phải fail startup, route mock không được dùng trong bản production.",
+    "expected": [
+      "tới một trang nội bộ có hai nút thanh toán thành công và thất bại"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-19-AC02",
+    "requirement_id": "S-19",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Cổng thanh toán giả lập để chạy khi chưa có sandbox",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L21"
+    },
+    "original_requirement": "Giả sử bấm thành công trên trang giả lập, Khi quay về, Thì một webhook giả có chữ ký hợp lệ được gửi vào hệ thống và đơn chuyển sang đã trả như cổng thật",
+    "fixture": "Profile mock riêng và profile APP_ENV production biệt lập.",
+    "surfaces": "/mock-gateway/pay; /mock-gateway/submit",
+    "code_candidates": "apps/api/src/payments/gateways/mock.gateway.ts; apps/web/src/features/mock-gateway/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments-config.validator.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: bấm thành công trên trang giả lập.",
+      "Thực hiện trên /mock-gateway/pay; /mock-gateway/submit: quay về.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Chọn success/failure trên gateway; kiểm webhook có chữ ký qua cùng luồng nghiệp vụ. Thay cấu hình provider không sửa nghiệp vụ; production bật mock phải fail startup, route mock không được dùng trong bản production.",
+    "expected": [
+      "một webhook giả có chữ ký hợp lệ được gửi vào hệ thống và đơn chuyển sang đã trả như cổng thật"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-19-AC03",
+    "requirement_id": "S-19",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Cổng thanh toán giả lập để chạy khi chưa có sandbox",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L21"
+    },
+    "original_requirement": "Giả sử môi trường là production, Khi khởi động với cổng giả lập, Thì ứng dụng từ chối khởi động",
+    "fixture": "Profile mock riêng và profile APP_ENV production biệt lập.",
+    "surfaces": "/mock-gateway/pay; /mock-gateway/submit",
+    "code_candidates": "apps/api/src/payments/gateways/mock.gateway.ts; apps/web/src/features/mock-gateway/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments-config.validator.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: môi trường là production.",
+      "Thực hiện trên /mock-gateway/pay; /mock-gateway/submit: khởi động với cổng giả lập.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Chọn success/failure trên gateway; kiểm webhook có chữ ký qua cùng luồng nghiệp vụ. Thay cấu hình provider không sửa nghiệp vụ; production bật mock phải fail startup, route mock không được dùng trong bản production.",
+    "expected": [
+      "ứng dụng từ chối khởi động"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-19-NFR",
+    "requirement_id": "S-19",
+    "kind": "NFR",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Should",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Cổng thanh toán giả lập để chạy khi chưa có sandbox — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N21"
+    },
+    "original_requirement": "cổng giả lập nằm sau cùng interface ở T-40, không có nhánh `if` trong mã nghiệp vụ",
+    "fixture": "Profile mock riêng và profile APP_ENV production biệt lập.",
+    "surfaces": "/mock-gateway/pay; /mock-gateway/submit",
+    "code_candidates": "apps/api/src/payments/gateways/mock.gateway.ts; apps/web/src/features/mock-gateway/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments-config.validator.spec.ts",
+    "steps": [
+      "Chọn success/failure trên gateway; kiểm webhook có chữ ký qua cùng luồng nghiệp vụ. Thay cấu hình provider không sửa nghiệp vụ; production bật mock phải fail startup, route mock không được dùng trong bản production.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "cổng giả lập nằm sau cùng interface ở T-40, không có nhánh `if` trong mã nghiệp vụ"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

@@ -1,0 +1,36 @@
+{
+  "run_id": "20261022T230000-remediation",
+  "checkpoint": "R09 narrow core browser slices",
+  "recorded_at": "2026-10-23T04:29:30.206Z",
+  "changed_cases": [
+    "INT-12.UI-01",
+    "INT-12.UI-02",
+    "INT-12.UI-03",
+    "INT-12.UI-04",
+    "INT-12.UI-05",
+    "S-62-AC01"
+  ],
+  "counts": {
+    "NOT_RUN": 359,
+    "PASS": 79,
+    "BLOCKED": 4,
+    "NEEDS_DECISION": 4,
+    "MISSING": 1
+  },
+  "limitations": [
+    "INT-12 parent remains NOT_RUN; user purchase/payment and full reset/mail-lifecycle integrations are not covered by this browser smoke.",
+    "SMTP worker remained disabled; queued is not sent.",
+    "No production provider, staging, camera or 4G evidence."
+  ],
+  "evidence_files": [
+    "browser-ui-smoke.json",
+    "browser-ui-smoke-rerun-2.log",
+    "browser-ui-smoke-rerun-2.exitcode",
+    "publication-ui-success.png",
+    "reschedule-ui-success.png",
+    "attendance-csv-browser.json",
+    "attendance-csv-report-ui.png",
+    "admin-mail-failures-empty.png",
+    "browser-fixture-cleanup.json"
+  ]
+}

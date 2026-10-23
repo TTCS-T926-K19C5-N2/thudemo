@@ -1,0 +1,30 @@
+{
+  "id": "PRODUCT-GOAL",
+  "requirement_id": "Product Goal",
+  "kind": "PRODUCT_GOAL",
+  "group": "Mục tiêu tích hợp",
+  "tier": "GOVERNANCE",
+  "priority": "Must",
+  "readiness": "SPECIFIED",
+  "title": "Không bán trùng/vượt sức chứa và soát được ngoại tuyến",
+  "source": {
+    "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+    "sheet": "Thông tin",
+    "range": "B9"
+  },
+  "original_requirement": "Ban tổ chức mở bán vé cho sự kiện có sơ đồ ghế mà không bao giờ bán trùng ghế hay bán vượt sức chứa, và soát được vé tại cửa kể cả khi mất mạng",
+  "steps": [
+    "Chạy INT-01/03/04/05/06/07/08.",
+    "Đối chiếu invariant ghế, tiền, vé, admission và độ bền queue ở DB/browser; phân biệt online với offline đa cửa."
+  ],
+  "expected": [
+    "Không bán trùng/vượt sức chứa; soát ngoại tuyến bền trên một thiết bị và xử lý xung đột nhiều cửa theo quy tắc đã chốt."
+  ],
+  "evidence_required": [
+    "Bằng chứng tổng hợp từ case tích hợp và oracle độc lập"
+  ],
+  "status": "NOT_RUN",
+  "actual": null,
+  "evidence_files": [],
+  "approved_override": null
+}

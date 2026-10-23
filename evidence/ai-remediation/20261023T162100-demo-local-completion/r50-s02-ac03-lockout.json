@@ -1,0 +1,24 @@
+{
+  "profile": "s1demo-384da3d43b41",
+  "syntheticAccount": "dedicated lock-test role account",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "firstFiveHttpStatuses": [
+    401,
+    401,
+    401,
+    401,
+    401
+  ],
+  "lockSetAfterFive": true,
+  "sixthAttemptHttpStatus": 429,
+  "retryAfterSeconds": 899,
+  "uiShows15MinuteMessage": true,
+  "pageErrors": [],
+  "testFailure": null,
+  "redisBaselineRestored": true,
+  "noDatabaseWrites": true,
+  "noProviderCalls": true
+}

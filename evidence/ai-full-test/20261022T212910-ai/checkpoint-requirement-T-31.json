@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-31-AC",
+    "requirement_id": "T-31",
+    "parent_requirement": "S-13",
+    "kind": "TASK_AC",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Kịch bản kiểm thử bắn 200 yêu cầu đồng thời vào 100 ghế",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G32"
+    },
+    "original_requirement": "Chạy kịch bản trên staging cho ra đúng 100 thành công; chạy lại 10 lần vẫn ra 100; CI đỏ nếu ra số khác",
+    "fixture": "100 ghế; 200 request, đúng 2 người/request cạnh tranh mỗi ghế, quota đủ cao.",
+    "surfaces": "API hold và ràng buộc PostgreSQL",
+    "code_candidates": "apps/api/src/prisma/hold-transaction.ts; apps/api/prisma/migrations/",
+    "test_candidates": "apps/api/test/k01-benchmark.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Đồng bộ barrier cho 200 request tranh 100 ghế, đúng 100 thành công và 100 conflict, lặp 10 vòng với dữ liệu mới. Thử 5 ghế có ghế thứ 3 bận phải rollback cả 5; thử hold cũ hết hạn và chèn SQL cạnh tranh để chứng minh DB bảo vệ.",
+      "Kiểm riêng tiêu chí task T-31: Chạy kịch bản trên staging cho ra đúng 100 thành công; chạy lại 10 lần vẫn ra 100; CI đỏ nếu ra số khác",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Chạy kịch bản trên staging cho ra đúng 100 thành công; chạy lại 10 lần vẫn ra 100; CI đỏ nếu ra số khác"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-31-NFR",
+    "requirement_id": "T-31",
+    "parent_requirement": "S-13",
+    "kind": "TASK_NFR",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Kịch bản kiểm thử bắn 200 yêu cầu đồng thời vào 100 ghế",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I32"
+    },
+    "original_requirement": "kịch bản chạy được trong CI để lần sau sửa mã còn biết có phá vỡ bảo đảm không",
+    "fixture": "100 ghế; 200 request, đúng 2 người/request cạnh tranh mỗi ghế, quota đủ cao.",
+    "surfaces": "API hold và ràng buộc PostgreSQL",
+    "code_candidates": "apps/api/src/prisma/hold-transaction.ts; apps/api/prisma/migrations/",
+    "test_candidates": "apps/api/test/k01-benchmark.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Đồng bộ barrier cho 200 request tranh 100 ghế, đúng 100 thành công và 100 conflict, lặp 10 vòng với dữ liệu mới. Thử 5 ghế có ghế thứ 3 bận phải rollback cả 5; thử hold cũ hết hạn và chèn SQL cạnh tranh để chứng minh DB bảo vệ.",
+      "Kiểm riêng tiêu chí task T-31: kịch bản chạy được trong CI để lần sau sửa mã còn biết có phá vỡ bảo đảm không",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "kịch bản chạy được trong CI để lần sau sửa mã còn biết có phá vỡ bảo đảm không"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

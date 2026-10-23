@@ -1,0 +1,28 @@
+{
+  "runId": "20261023T132000-demo-handoff",
+  "source": "isolated prepared demo runtime, public GET /showtimes cursor traversal",
+  "httpStatus": 200,
+  "totalCount": 42,
+  "pages": 4,
+  "pageSizes": [
+    12,
+    12,
+    12,
+    6
+  ],
+  "returnedItems": 42,
+  "uniqueShowtimeIds": 42,
+  "sortedAscending": true,
+  "onSaleRealCount": 2,
+  "referenceDemoCount": 40,
+  "latencyMs": [
+    62.25,
+    18.26,
+    21.43,
+    11.47
+  ],
+  "limits": [
+    "No write performed.",
+    "Local demo API only; not production NFR evidence."
+  ]
+}

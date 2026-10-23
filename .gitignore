@@ -90,6 +90,7 @@ evidence/s43/runtime/
 
 # Next.js build output
 .next
+.next*
 out
 
 # Nuxt.js build / generate output
@@ -144,7 +145,3 @@ apps/api/prisma/*.db-journal
 .keys/
 keys/
 
-
-# Private portable demo profiles and exported credentials
-.env.demo*
-.demo-private/

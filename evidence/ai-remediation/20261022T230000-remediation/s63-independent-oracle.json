@@ -1,0 +1,45 @@
+{
+  "runId": "20261022T230000-remediation",
+  "evidenceSource": "isolated PostgreSQL raw rows, independently aggregated in harness",
+  "sampleCount": 10,
+  "oracle": {
+    "startedSessions": 10,
+    "orderCreatedSessions": 5,
+    "paidSessions": 3,
+    "holdToOrder": {
+      "meanSeconds": 180,
+      "p90Seconds": 276
+    },
+    "holdToPaid": {
+      "meanSeconds": 892822.3099999999,
+      "p90Seconds": 2084273.4266000001
+    },
+    "distinctSeatMultiplicity": 2
+  },
+  "api": {
+    "showtimeId": "4ad9e650-9c65-4177-9958-55b279bcab9d",
+    "cohort": "A",
+    "from": "2026-09-22T17:00:00.000Z",
+    "to": "2026-10-23T17:00:00.000Z",
+    "cutoff": "2026-10-23T17:00:00.000Z",
+    "timezone": "UTC",
+    "durationUnit": "seconds",
+    "startedSessions": 10,
+    "orderCreatedSessions": 5,
+    "paidSessions": 3,
+    "expiredSessions": 5,
+    "cancelledSessions": 0,
+    "pendingAtCutoff": 1,
+    "holdToOrder": {
+      "meanSeconds": 180,
+      "p90Seconds": 276
+    },
+    "holdToPaid": {
+      "meanSeconds": 892822.3104996667,
+      "p90Seconds": 2084273.4273038
+    },
+    "dataAvailableFrom": "2026-09-22T17:00:00.000Z",
+    "generatedAt": "2026-10-22T17:46:09.959Z"
+  },
+  "matched": true
+}

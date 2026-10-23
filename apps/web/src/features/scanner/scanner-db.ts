@@ -26,10 +26,6 @@ export interface LocalTicket {
   showtimeId: string;
   code: string;
   status: "valid" | "checked_in" | "cancelled";
-  checkedInAt: string | null;
-  seatLabel: string;
-  ticketType: string;
-  localCheckedIn?: boolean;
 }
 
 export interface OfflineScanRecord {
@@ -43,8 +39,6 @@ export interface OfflineScanRecord {
   staffId: string;
   offline: true;
   syncStatus: "pending" | "synced" | "failed" | "conflict";
-  seatLabel?: string;
-  ticketType?: string;
   qrPayload?: string;
 }
 
@@ -62,7 +56,7 @@ export interface PendingScanRecord {
 }
 
 const DB_NAME = "thudemo_scanner_db";
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -78,6 +72,7 @@ export function openScannerDb(): Promise<IDBDatabase> {
 
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
+      const transaction = request.transaction!;
 
       if (!db.objectStoreNames.contains("showtime_meta")) {
         db.createObjectStore("showtime_meta", { keyPath: "showtimeId" });
@@ -89,6 +84,24 @@ export function openScannerDb(): Promise<IDBDatabase> {
         });
         ticketStore.createIndex("showtimeId", "showtimeId", { unique: false });
         ticketStore.createIndex("code", "code", { unique: false });
+      }
+
+      // Keep only the offline ticket code and status. Showtime is the
+      // required partition/key scope; legacy descriptive fields are removed.
+      if (event.oldVersion < 4 && db.objectStoreNames.contains("tickets")) {
+        const ticketStore = transaction.objectStore("tickets");
+        const cursorRequest = ticketStore.openCursor();
+        cursorRequest.onsuccess = () => {
+          const cursor = cursorRequest.result;
+          if (!cursor) return;
+          const old = cursor.value as LocalTicket;
+          cursor.update({
+            showtimeId: old.showtimeId,
+            code: old.code,
+            status: old.status,
+          } satisfies LocalTicket);
+          cursor.continue();
+        };
       }
 
       if (!db.objectStoreNames.contains("scan_queue")) {
@@ -120,7 +133,6 @@ export function openScannerDb(): Promise<IDBDatabase> {
           keyPath: "id",
         });
         unified.createIndex("showtimeId", "showtimeId", { unique: false });
-        const transaction = request.transaction!;
         // Retain both legacy stores as recovery evidence. Upgrade copies every
         // record, including unresolvable old scans, in the same IDB transaction.
         for (const source of ["pending_scans", "scan_queue"]) {
@@ -237,7 +249,8 @@ export async function saveTicketsAtomic(
         // 2. Insert all new tickets
         for (const t of tickets) {
           ticketStore.put({
-            ...t,
+            code: t.code,
+            status: t.status,
             showtimeId: meta.showtimeId,
           });
         }
@@ -297,32 +310,20 @@ export async function mergeTicketsIncremental(
           let finalTicket: LocalTicket;
 
           if (existing) {
-            // Retain actual device admissions, while accepting authoritative
-            // cancellation and the final server timestamp/ranking.
-            const isLocalCheckedIn = Boolean(existing.localCheckedIn);
-            const willBeCheckedIn =
-              isLocalCheckedIn || incoming.status === "checked_in";
-
             finalTicket = {
-              ...existing,
-              seatLabel: incoming.seatLabel,
-              ticketType: incoming.ticketType,
+              showtimeId,
+              code: incoming.code,
               status:
                 incoming.status === "cancelled"
                   ? "cancelled"
-                  : willBeCheckedIn
+                  : existing.status === "checked_in" || incoming.status === "checked_in"
                     ? "checked_in"
                     : incoming.status,
-              checkedInAt: willBeCheckedIn
-                ? (incoming.checkedInAt ??
-                  existing.checkedInAt ??
-                  new Date().toISOString())
-                : incoming.checkedInAt,
-              localCheckedIn: isLocalCheckedIn,
             };
           } else {
             finalTicket = {
-              ...incoming,
+              code: incoming.code,
+              status: incoming.status,
               showtimeId,
             };
           }
@@ -391,7 +392,7 @@ export async function saveOfflineScanAtomic(
     const req = tickets.get([scan.showtimeId, scan.ticketCode]);
     req.onsuccess = () => {
       const ticket = req.result as LocalTicket | undefined;
-      if (!ticket || ticket.status !== "valid" || ticket.localCheckedIn) {
+      if (!ticket || ticket.status !== "valid") {
         tx.abort();
         return;
       }
@@ -415,10 +416,9 @@ export async function saveOfflineScanAtomic(
         mode: "offline_admission",
       } satisfies DurableScan);
       tickets.put({
-        ...ticket,
+        showtimeId: ticket.showtimeId,
+        code: ticket.code,
         status: "checked_in",
-        localCheckedIn: true,
-        checkedInAt: scan.scannedAt,
       });
     };
     tx.oncomplete = () => resolve();
@@ -478,10 +478,11 @@ export async function markTicketAsLocalCheckedIn(
     req.onsuccess = () => {
       const ticket = req.result as LocalTicket | undefined;
       if (ticket) {
-        ticket.localCheckedIn = true;
-        ticket.status = "checked_in";
-        ticket.checkedInAt = ticket.checkedInAt ?? new Date().toISOString();
-        const putReq = store.put(ticket);
+        const putReq = store.put({
+          showtimeId: ticket.showtimeId,
+          code: ticket.code,
+          status: "checked_in",
+        } satisfies LocalTicket);
         putReq.onsuccess = () => resolve();
         putReq.onerror = () => reject(putReq.error);
       } else {

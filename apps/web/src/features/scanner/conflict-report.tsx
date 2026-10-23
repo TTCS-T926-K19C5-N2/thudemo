@@ -132,9 +132,14 @@ export function ConflictReport({ showtimeId }: { showtimeId: string }) {
         </Link>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-2xl font-bold">Xung đột giữa các cửa</h1>
-          <Button variant="outline" onClick={refresh}>
-            Làm mới báo cáo
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <a className="inline-flex min-h-10 items-center rounded-md border px-4 py-2 text-sm font-medium" href={`/api/showtimes/${showtimeId}/attendance-conflicts.csv`}>
+              Tải CSV lượt vào cửa
+            </a>
+            <Button variant="outline" onClick={refresh}>
+              Làm mới báo cáo
+            </Button>
+          </div>
         </div>
         <p>
           Lượt ngoại tuyến có giờ thiết bị sớm hơn được tính là lần vào. Hai

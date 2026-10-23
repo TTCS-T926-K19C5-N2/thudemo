@@ -100,9 +100,21 @@ export default function AccountPage() {
                 : "Khám phá sự kiện đang mở bán, chọn và giữ ghế."}
             </p>
             <div className="operations-actions">
+              <Button variant="outline" asChild><Link href="/account/privacy">Quyền riêng tư</Link></Button>
+              {user.roles.some(role => ["ADMIN", "ACCOUNTANT", "ORGANIZER"].includes(role)) && <Button variant="outline" asChild><Link href="/operations">Vận hành và báo cáo</Link></Button>}
               {user.roles.includes("BUYER") && (
+                <>
+                  <Button variant="outline" asChild>
+                    <Link href="/account/tickets">Vé của tôi</Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <Link href="/orders">Đơn hàng của tôi</Link>
+                  </Button>
+                </>
+              )}
+              {user.roles.includes("STAFF") && (
                 <Button variant="outline" asChild>
-                  <Link href="/orders">Đơn hàng của tôi</Link>
+                  <Link href="/scanner">Soát vé</Link>
                 </Button>
               )}
               {user.roles.includes("ADMIN") && (

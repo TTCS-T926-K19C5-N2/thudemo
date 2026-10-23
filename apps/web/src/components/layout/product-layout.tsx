@@ -3,8 +3,6 @@ import {
   ArrowLeft,
   Ticket,
   Search,
-  MapPin,
-  ChevronDown,
   Armchair,
   Menu,
   LifeBuoy,
@@ -17,6 +15,7 @@ import {
   Admin,
 } from "@/components/ui/material-icon";
 import { SessionActions } from "./session-actions";
+import { PublicSessionControls } from "./public-session-controls";
 import { Input } from "@/components/ui/input";
 interface MobileShowHeaderProps {
   readonly href: string;
@@ -26,7 +25,9 @@ interface MobileShowHeaderProps {
 }
 interface PublicLayoutProps {
   readonly children: React.ReactNode;
+  readonly searchQuery?: string;
   readonly compact?: boolean;
+  readonly auth?: boolean;
   readonly context?: React.ReactNode;
   readonly signedIn?: boolean;
 }
@@ -58,12 +59,16 @@ export function MobileShowHeader({
 }
 export function PublicLayout({
   children,
+  searchQuery = "",
   compact = false,
+  auth = false,
   context,
-  signedIn = false,
+  signedIn,
 }: PublicLayoutProps) {
   return (
-    <div className={`product public-layout ${compact ? "public-compact" : ""}`}>
+    <div
+      className={`product public-layout ${compact ? "public-compact" : ""} ${auth ? "public-auth" : ""}`}
+    >
       {compact && (
         <header className="mobile-login-header">
           <Link href="/" aria-label="Về danh sách sự kiện">
@@ -73,78 +78,86 @@ export function PublicLayout({
           <span />
         </header>
       )}
-      <header className="public-header">
+      <header className={`public-header ${auth ? "auth-public-header" : ""}`}>
         <div className="public-header-inner">
           <Link href="/" className="product-brand">
             <Ticket />
             Vé Sự Kiện
           </Link>
-          {context ? (
-            <div className="header-event-context">
-              <Theater />
-              {context}
+          {auth ? (
+            <div className="auth-header-actions">
+              <span>Đã có tài khoản?</span>
+              <Link href="/login" className="header-login-link">
+                Đăng nhập
+              </Link>
             </div>
           ) : (
-            <div className="header-search">
-              <Search />
-              <Input
-                aria-label="Tìm sự kiện"
-                placeholder="Tìm sự kiện, nghệ sĩ, địa điểm..."
-                disabled
-                title="Tìm kiếm chưa khả dụng"
-              />
-            </div>
-          )}
-          <nav className="public-links">
-            <Link href="/" aria-current="page">
-              Sự kiện
-            </Link>
-            <button disabled title="Chưa khả dụng">
-              Nhà hát
-            </button>
-            <Link href="/account/tickets">Vé của tôi</Link>
-          </nav>
-          <button
-            className="location-control"
-            disabled
-            title="Lọc địa điểm chưa khả dụng"
-          >
-            <MapPin /> <span>TP. Hồ Chí Minh</span>
-            <ChevronDown />
-          </button>
-          {signedIn ? (
-            <SessionActions />
-          ) : (
-            <Link
-              href="/login"
-              className="header-login-link"
-              aria-current={compact ? "page" : undefined}
-            >
-              Đăng nhập
-            </Link>
+            <>
+              {context ? (
+                <div className="header-event-context">
+                  <Theater />
+                  {context}
+                </div>
+              ) : (
+                <form action="/" method="get" className="header-search">
+                  <Search />
+                  <Input
+                    aria-label="Tìm sự kiện"
+                    name="q"
+                    defaultValue={searchQuery}
+                    placeholder="Tìm sự kiện, nghệ sĩ, địa điểm..."
+                  />
+                  <button type="submit" aria-label="Tìm sự kiện">Tìm</button>
+                </form>
+              )}
+              <nav className="public-links">
+                <Link href="/" aria-current="page">
+                  Sự kiện
+                </Link>
+                <button disabled title="Chưa khả dụng">
+                  Nhà hát
+                </button>
+                <Link href="/account/tickets">Vé của tôi</Link>
+              </nav>
+              {signedIn === true ? (
+                <SessionActions />
+              ) : signedIn === false ? (
+                <Link
+                  href="/login"
+                  className="header-login-link"
+                  aria-current={compact ? "page" : undefined}
+                >
+                  Đăng nhập
+                </Link>
+              ) : (
+                <PublicSessionControls />
+              )}
+            </>
           )}
         </div>
       </header>
       <main className="public-main">{children}</main>
       <ProductFooter />
-      <nav className="mobile-public-nav" aria-label="Điều hướng">
-        <Link href="/">
-          <Home filled />
-          Sự kiện
-        </Link>
-        <button disabled title="Chọn một suất diễn để xem sơ đồ ghế">
-          <Armchair />
-          Sơ đồ vé
-        </button>
-        <Link href="/account/tickets">
-          <Ticket />
-          Vé của tôi
-        </Link>
-        <Link href="/events">
-          <Admin />
-          Quản trị
-        </Link>
-      </nav>
+      {!auth && (
+        <nav className="mobile-public-nav" aria-label="Điều hướng">
+          <Link href="/">
+            <Home filled />
+            Sự kiện
+          </Link>
+          <button disabled title="Chọn một suất diễn để xem sơ đồ ghế">
+            <Armchair />
+            Sơ đồ vé
+          </button>
+          <Link href="/account/tickets">
+            <Ticket />
+            Vé của tôi
+          </Link>
+          <Link href="/events">
+            <Admin />
+            Quản trị
+          </Link>
+        </nav>
+      )}
     </div>
   );
 }

@@ -1,0 +1,61 @@
+[
+  {
+    "id": "E-01-AC",
+    "requirement_id": "E-01",
+    "kind": "EPIC",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Ready",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Hạ tầng, CI/CD và môi trường",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "G2"
+    },
+    "original_requirement": "Mọi thành viên chạy được dự án trên máy mình bằng một lệnh; mỗi lần merge vào nhánh chính thì staging tự cập nhật; mất máy chủ thì khôi phục được từ bản sao lưu",
+    "steps": [
+      "Đối chiếu tập story con và các hành trình đầu-cuối trong kế hoạch.",
+      "Kiểm từng mệnh đề ở cấp tích hợp; mọi story đơn lẻ PASS chưa tự chứng minh epic PASS."
+    ],
+    "expected": [
+      "Mọi thành viên chạy được dự án trên máy mình bằng một lệnh; mỗi lần merge vào nhánh chính thì staging tự cập nhật; mất máy chủ thì khôi phục được từ bản sao lưu"
+    ],
+    "evidence_required": [
+      "Liên kết các case con và E2E đã chạy"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "E-01-NFR",
+    "requirement_id": "E-01",
+    "kind": "EPIC_NFR",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Ready",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Hạ tầng, CI/CD và môi trường",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "I2"
+    },
+    "original_requirement": "biến môi trường chứa bí mật không nằm trong mã nguồn",
+    "steps": [
+      "Kiểm NFR ở phạm vi epic, đối chiếu các story con và số đo tích hợp; không chỉ suy từ unit test."
+    ],
+    "expected": [
+      "biến môi trường chứa bí mật không nằm trong mã nguồn"
+    ],
+    "evidence_required": [
+      "Bằng chứng kỹ thuật hoặc số đo tương ứng"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

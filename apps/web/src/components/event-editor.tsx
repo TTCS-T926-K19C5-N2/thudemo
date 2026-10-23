@@ -12,6 +12,8 @@ import { OrganizerLayout } from "@/components/layout/product-layout";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { loadCurrentUser, readApiError } from "@/lib/api";
+import { PublicationControl } from "@/features/core/publication-control";
+import { EventCouponsManager } from "@/features/coupons/event-coupons-manager";
 import {
   vietnamInputToUtc,
   vietnamInputFromUtc,
@@ -56,6 +58,7 @@ export function EventEditor({ eventId }: EventEditorProps) {
   const showtimeSubmitting = useRef(false);
   const ownerId = useRef("");
   const draftKey = `event-draft:${eventId ?? "new"}`;
+  const descriptionLimit = Math.max(2000, details?.description.length ?? 0);
 
   function recoverSession() {
     try {
@@ -277,6 +280,7 @@ export function EventEditor({ eventId }: EventEditorProps) {
     d.setTime(d.getTime() + hoursAhead * 60 * 60 * 1000);
     d.setUTCMinutes(0, 0, 0);
     setStartTime(vietnamInputFromUtc(d));
+    setFieldErrors((current) => ({ ...current, startTime: "" }));
   }
 
   return (
@@ -300,6 +304,15 @@ export function EventEditor({ eventId }: EventEditorProps) {
             </Badge>
           )}
         </div>
+        {details && (
+          <PublicationControl
+            id={details.id}
+            initialStatus={details.status}
+            onStatusChanged={(status) =>
+              setDetails((current) => (current ? { ...current, status } : current))
+            }
+          />
+        )}
         {loading && (
           <div role="status" aria-label="Đang tải sự kiện">
             <Skeleton className="h-64 w-full" />
@@ -392,7 +405,7 @@ export function EventEditor({ eventId }: EventEditorProps) {
                 <Textarea
                   id="event-description"
                   rows={6}
-                  maxLength={2000}
+                  maxLength={descriptionLimit}
                   value={draft.description}
                   onChange={(e) => update("description", e.target.value)}
                   disabled={saving}
@@ -406,7 +419,7 @@ export function EventEditor({ eventId }: EventEditorProps) {
                     {fieldErrors.description}
                   </p>
                 )}
-                <small>{draft.description.length}/2000</small>
+                <small>{draft.description.length}/{descriptionLimit}</small>
               </div>
               <div className="operations-actions">
                 <Button type="submit" disabled={saving}>
@@ -505,15 +518,25 @@ export function EventEditor({ eventId }: EventEditorProps) {
                                 : "Nháp"}
                           </p>
                         </div>
-                        <Link href={`/showtimes/${st.id}/manage`}>
-                          Quản lý suất →
-                        </Link>
+                        <div className="flex items-center gap-3">
+                          <Link href={`/showtimes/${st.id}/manage`}>
+                            Quản lý suất →
+                          </Link>
+                          <a
+                            href={`/api/showtimes/${st.id}/attendance-conflicts.csv`}
+                            download={`attendance-${st.id}.csv`}
+                            className="text-sm text-primary underline hover:text-primary/80 font-medium"
+                          >
+                            Xuất CSV điểm danh
+                          </a>
+                        </div>
                       </li>
                     ))}
                   </ul>
                 )}
               </section>
             )}
+            {eventId && details && <EventCouponsManager eventId={details.id} />}
           </div>
         )}
       </div>

@@ -1,0 +1,70 @@
+{
+  "runId": "20261022T230000-remediation",
+  "fixture": {
+    "showtimeId": "bc3eb9ff-485c-435a-9b8e-e1667be47b15",
+    "gateId": "3cd9f906-a5b5-4ad5-9904-3986d4dbed2f"
+  },
+  "lostResponseReplay": {
+    "requestId": "bbc3f5bd-0613-471e-87c6-390b6c004985",
+    "ticketCode": "2d9d60b5-e4ba-4cc2-9814-26820d7e2cba",
+    "browserPendingAfterDrop": true,
+    "finalBrowserStatus": "synced"
+  },
+  "injectedHttpFailuresRetained": [
+    {
+      "status": 401,
+      "pendingCount": 1,
+      "retryCount": 1
+    },
+    {
+      "status": 403,
+      "pendingCount": 1,
+      "retryCount": 2
+    },
+    {
+      "status": 409,
+      "pendingCount": 1,
+      "retryCount": 3
+    },
+    {
+      "status": 500,
+      "pendingCount": 1,
+      "retryCount": 4
+    },
+    {
+      "status": 503,
+      "pendingCount": 1,
+      "retryCount": 5
+    }
+  ],
+  "alternateAccountDidNotSendForeignQueue": true,
+  "durableScans": [
+    {
+      "scanId": "bbc3f5bd-0613-471e-87c6-390b6c004985",
+      "ticketCode": "2d9d60b5-e4ba-4cc2-9814-26820d7e2cba",
+      "showtimeId": "bc3eb9ff-485c-435a-9b8e-e1667be47b15",
+      "staffId": "00aea660-81bf-4c74-9ab3-15fc8eb52262",
+      "status": "ACCEPTED"
+    },
+    {
+      "scanId": "20fbcda9-0e8e-4655-a9aa-6416645a4aa4",
+      "ticketCode": "01024a11-45bf-4d28-b6fa-d86f6aebeecc",
+      "showtimeId": "bc3eb9ff-485c-435a-9b8e-e1667be47b15",
+      "staffId": "00aea660-81bf-4c74-9ab3-15fc8eb52262",
+      "status": "ACCEPTED"
+    }
+  ],
+  "normalAdmissions": [
+    {
+      "ticketId": "2d9d60b5-e4ba-4cc2-9814-26820d7e2cba",
+      "requestId": "bbc3f5bd-0613-471e-87c6-390b6c004985",
+      "gateId": "3cd9f906-a5b5-4ad5-9904-3986d4dbed2f"
+    },
+    {
+      "ticketId": "01024a11-45bf-4d28-b6fa-d86f6aebeecc",
+      "requestId": "20fbcda9-0e8e-4655-a9aa-6416645a4aa4",
+      "gateId": "3cd9f906-a5b5-4ad5-9904-3986d4dbed2f"
+    }
+  ],
+  "checkedInItems": 2
+}

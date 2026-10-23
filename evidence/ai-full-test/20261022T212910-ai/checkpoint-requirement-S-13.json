@@ -1,0 +1,240 @@
+[
+  {
+    "id": "S-13-AC01",
+    "requirement_id": "S-13",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Ghế đã có người giữ thì không ai khác chọn được, kể cả khi bấm cùng lúc",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L13"
+    },
+    "original_requirement": "Giả sử 200 yêu cầu giữ chỗ được bắn đồng thời vào 100 ghế, Khi tất cả xử lý xong, Thì đúng 100 giữ chỗ thành công và 100 yêu cầu nhận lỗi trùng",
+    "fixture": "100 ghế; 200 request, đúng 2 người/request cạnh tranh mỗi ghế, quota đủ cao.",
+    "surfaces": "API hold và ràng buộc PostgreSQL",
+    "code_candidates": "apps/api/src/prisma/hold-transaction.ts; apps/api/prisma/migrations/",
+    "test_candidates": "apps/api/test/k01-benchmark.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: 200 yêu cầu giữ chỗ được bắn đồng thời vào 100 ghế.",
+      "Thực hiện trên API hold và ràng buộc PostgreSQL: tất cả xử lý xong.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đồng bộ barrier cho 200 request tranh 100 ghế, đúng 100 thành công và 100 conflict, lặp 10 vòng với dữ liệu mới. Thử 5 ghế có ghế thứ 3 bận phải rollback cả 5; thử hold cũ hết hạn và chèn SQL cạnh tranh để chứng minh DB bảo vệ.",
+    "expected": [
+      "đúng 100 giữ chỗ thành công và 100 yêu cầu nhận lỗi trùng"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-13-AC02",
+    "requirement_id": "S-13",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Ghế đã có người giữ thì không ai khác chọn được, kể cả khi bấm cùng lúc",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L13"
+    },
+    "original_requirement": "Giả sử hai người bấm chọn cùng một ghế trong cùng một khoảnh khắc, Khi cả hai yêu cầu tới máy chủ, Thì đúng một người giữ được và người kia thấy thông báo \"ghế vừa có người chọn\"",
+    "fixture": "100 ghế; 200 request, đúng 2 người/request cạnh tranh mỗi ghế, quota đủ cao.",
+    "surfaces": "API hold và ràng buộc PostgreSQL",
+    "code_candidates": "apps/api/src/prisma/hold-transaction.ts; apps/api/prisma/migrations/",
+    "test_candidates": "apps/api/test/k01-benchmark.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: hai người bấm chọn cùng một ghế trong cùng một khoảnh khắc.",
+      "Thực hiện trên API hold và ràng buộc PostgreSQL: cả hai yêu cầu tới máy chủ.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đồng bộ barrier cho 200 request tranh 100 ghế, đúng 100 thành công và 100 conflict, lặp 10 vòng với dữ liệu mới. Thử 5 ghế có ghế thứ 3 bận phải rollback cả 5; thử hold cũ hết hạn và chèn SQL cạnh tranh để chứng minh DB bảo vệ.",
+    "expected": [
+      "đúng một người giữ được và người kia thấy thông báo \"ghế vừa có người chọn\""
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-13-AC03",
+    "requirement_id": "S-13",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Ghế đã có người giữ thì không ai khác chọn được, kể cả khi bấm cùng lúc",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L13"
+    },
+    "original_requirement": "Giả sử yêu cầu giữ 5 ghế mà ghế thứ 3 đã có người giữ, Khi xử lý, Thì không ghế nào bị giữ và trả về danh sách ghế bị từ chối",
+    "fixture": "100 ghế; 200 request, đúng 2 người/request cạnh tranh mỗi ghế, quota đủ cao.",
+    "surfaces": "API hold và ràng buộc PostgreSQL",
+    "code_candidates": "apps/api/src/prisma/hold-transaction.ts; apps/api/prisma/migrations/",
+    "test_candidates": "apps/api/test/k01-benchmark.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: yêu cầu giữ 5 ghế mà ghế thứ 3 đã có người giữ.",
+      "Thực hiện trên API hold và ràng buộc PostgreSQL: xử lý.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đồng bộ barrier cho 200 request tranh 100 ghế, đúng 100 thành công và 100 conflict, lặp 10 vòng với dữ liệu mới. Thử 5 ghế có ghế thứ 3 bận phải rollback cả 5; thử hold cũ hết hạn và chèn SQL cạnh tranh để chứng minh DB bảo vệ.",
+    "expected": [
+      "không ghế nào bị giữ và trả về danh sách ghế bị từ chối"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-13-AC04",
+    "requirement_id": "S-13",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Ghế đã có người giữ thì không ai khác chọn được, kể cả khi bấm cùng lúc",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L13"
+    },
+    "original_requirement": "Giả sử giữ chỗ bị từ chối, Khi giao diện nhận lỗi, Thì sơ đồ tự làm mới để hiện trạng thái đúng",
+    "fixture": "100 ghế; 200 request, đúng 2 người/request cạnh tranh mỗi ghế, quota đủ cao.",
+    "surfaces": "API hold và ràng buộc PostgreSQL",
+    "code_candidates": "apps/api/src/prisma/hold-transaction.ts; apps/api/prisma/migrations/",
+    "test_candidates": "apps/api/test/k01-benchmark.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: giữ chỗ bị từ chối.",
+      "Thực hiện trên API hold và ràng buộc PostgreSQL: giao diện nhận lỗi.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đồng bộ barrier cho 200 request tranh 100 ghế, đúng 100 thành công và 100 conflict, lặp 10 vòng với dữ liệu mới. Thử 5 ghế có ghế thứ 3 bận phải rollback cả 5; thử hold cũ hết hạn và chèn SQL cạnh tranh để chứng minh DB bảo vệ.",
+    "expected": [
+      "sơ đồ tự làm mới để hiện trạng thái đúng"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-13-AC05",
+    "requirement_id": "S-13",
+    "kind": "AC",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Ghế đã có người giữ thì không ai khác chọn được, kể cả khi bấm cùng lúc",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L13"
+    },
+    "original_requirement": "Giả sử một giữ chỗ cũ trên ghế đó đã hết hạn, Khi người mới giữ, Thì thành công — ràng buộc chỉ tính giữ chỗ còn hiệu lực",
+    "fixture": "100 ghế; 200 request, đúng 2 người/request cạnh tranh mỗi ghế, quota đủ cao.",
+    "surfaces": "API hold và ràng buộc PostgreSQL",
+    "code_candidates": "apps/api/src/prisma/hold-transaction.ts; apps/api/prisma/migrations/",
+    "test_candidates": "apps/api/test/k01-benchmark.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: một giữ chỗ cũ trên ghế đó đã hết hạn.",
+      "Thực hiện trên API hold và ràng buộc PostgreSQL: người mới giữ.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đồng bộ barrier cho 200 request tranh 100 ghế, đúng 100 thành công và 100 conflict, lặp 10 vòng với dữ liệu mới. Thử 5 ghế có ghế thứ 3 bận phải rollback cả 5; thử hold cũ hết hạn và chèn SQL cạnh tranh để chứng minh DB bảo vệ.",
+    "expected": [
+      "thành công — ràng buộc chỉ tính giữ chỗ còn hiệu lực"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-13-NFR",
+    "requirement_id": "S-13",
+    "kind": "NFR",
+    "group": "Giữ ghế",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Ghế đã có người giữ thì không ai khác chọn được, kể cả khi bấm cùng lúc — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N13"
+    },
+    "original_requirement": "bảo đảm chống trùng nằm ở tầng cơ sở dữ liệu, không dựa vào kiểm tra ở tầng ứng dụng — kiểm tra rồi ghi là sai vì có khoảng trống giữa hai bước",
+    "fixture": "100 ghế; 200 request, đúng 2 người/request cạnh tranh mỗi ghế, quota đủ cao.",
+    "surfaces": "API hold và ràng buộc PostgreSQL",
+    "code_candidates": "apps/api/src/prisma/hold-transaction.ts; apps/api/prisma/migrations/",
+    "test_candidates": "apps/api/test/k01-benchmark.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Đồng bộ barrier cho 200 request tranh 100 ghế, đúng 100 thành công và 100 conflict, lặp 10 vòng với dữ liệu mới. Thử 5 ghế có ghế thứ 3 bận phải rollback cả 5; thử hold cũ hết hạn và chèn SQL cạnh tranh để chứng minh DB bảo vệ.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "bảo đảm chống trùng nằm ở tầng cơ sở dữ liệu, không dựa vào kiểm tra ở tầng ứng dụng — kiểm tra rồi ghi là sai vì có khoảng trống giữa hai bước"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

@@ -1,0 +1,54 @@
+{
+  "runId": "20261022T230000-remediation",
+  "browserStages": [
+    {
+      "viewport": "mobile",
+      "roleSyncPosts": 0,
+      "directRolePostStatus": 403,
+      "directDisabledPostStatus": 401,
+      "pendingWhileUnauthorized": true,
+      "finalSyncStatus": 200
+    },
+    {
+      "viewport": "desktop",
+      "roleSyncPosts": 0,
+      "directRolePostStatus": 403,
+      "directDisabledPostStatus": 401,
+      "pendingWhileUnauthorized": true,
+      "finalSyncStatus": 200
+    }
+  ],
+  "durableScans": [
+    {
+      "scanId": "b6f9e0de-b23d-456f-8f5c-d9472ef0b39d",
+      "ticketCode": "fe3d521c-e7fb-4b11-88f9-666b53005ea7",
+      "staffId": "f03bf043-93c7-452e-81ce-4f1fcc97b489",
+      "showtimeId": "ca0d25b2-a47d-4a1d-ae50-ad754104986b",
+      "status": "ACCEPTED"
+    },
+    {
+      "scanId": "f771a747-6ab4-4b07-8574-7666ff048c25",
+      "ticketCode": "95d70954-d3a6-4350-a718-bd3cb3ffadbc",
+      "staffId": "f03bf043-93c7-452e-81ce-4f1fcc97b489",
+      "showtimeId": "ca0d25b2-a47d-4a1d-ae50-ad754104986b",
+      "status": "ACCEPTED"
+    }
+  ],
+  "normalAdmissions": [
+    {
+      "ticketId": "fe3d521c-e7fb-4b11-88f9-666b53005ea7",
+      "requestId": "b6f9e0de-b23d-456f-8f5c-d9472ef0b39d",
+      "gateId": "ec8dcae6-3ee6-4777-afab-51d6caa8149c"
+    },
+    {
+      "ticketId": "95d70954-d3a6-4350-a718-bd3cb3ffadbc",
+      "requestId": "f771a747-6ab4-4b07-8574-7666ff048c25",
+      "gateId": "ec8dcae6-3ee6-4777-afab-51d6caa8149c"
+    }
+  ],
+  "finalAccount": {
+    "active": true,
+    "staffRolePresent": true
+  },
+  "duplicates": 0
+}

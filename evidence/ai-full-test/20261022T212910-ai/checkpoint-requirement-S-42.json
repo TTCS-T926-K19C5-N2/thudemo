@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-42-AC01",
+    "requirement_id": "S-42",
+    "kind": "AC",
+    "group": "Vận hành",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "6",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Giới hạn số vé mỗi tài khoản được mua trong một suất",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L46"
+    },
+    "original_requirement": "Ban tổ chức đặt giới hạn theo suất; tổng ghế đang giữ cộng đã mua của một tài khoản vượt giới hạn thì không giữ thêm được. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP",
+    "fixture": "Giới hạn thử 4; account có 2 paid+2 hold; hai request song song.",
+    "surfaces": "PATCH /showtimes/:id/ticket-limit",
+    "code_candidates": "apps/api/src/showtimes/; apps/api/src/holds/; apps/web/src/features/showtime-management/ticket-limit-control.tsx",
+    "test_candidates": "verify-sprint6-8.mjs; docs/S42_RUNBOOK.md",
+    "steps": [
+      "Chuẩn bị fixture: Giới hạn thử 4; account có 2 paid+2 hold; hai request song song.",
+      "Giữ thêm ghế thứ 5 phải bị chặn kể cả race hai request. Nhả/hết hạn/huỷ ảnh hưởng quota đúng; pending được tính theo hợp đồng chốt, không cộng trùng hold của order. B khác tài khoản vẫn mua được.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Giữ thêm ghế thứ 5 phải bị chặn kể cả race hai request. Nhả/hết hạn/huỷ ảnh hưởng quota đúng; pending được tính theo hợp đồng chốt, không cộng trùng hold của order. B khác tài khoản vẫn mua được.",
+    "expected": [
+      "Ban tổ chức đặt giới hạn theo suất; tổng ghế đang giữ cộng đã mua của một tài khoản vượt giới hạn thì không giữ thêm được. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-42-NFR",
+    "requirement_id": "S-42",
+    "kind": "NFR",
+    "group": "Vận hành",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "6",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Giới hạn số vé mỗi tài khoản được mua trong một suất — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N46"
+    },
+    "original_requirement": "chưa refine — cần chốt giới hạn tính theo tài khoản hay theo số điện thoại đã xác minh",
+    "fixture": "Giới hạn thử 4; account có 2 paid+2 hold; hai request song song.",
+    "surfaces": "PATCH /showtimes/:id/ticket-limit",
+    "code_candidates": "apps/api/src/showtimes/; apps/api/src/holds/; apps/web/src/features/showtime-management/ticket-limit-control.tsx",
+    "test_candidates": "verify-sprint6-8.mjs; docs/S42_RUNBOOK.md",
+    "steps": [
+      "Giữ thêm ghế thứ 5 phải bị chặn kể cả race hai request. Nhả/hết hạn/huỷ ảnh hưởng quota đúng; pending được tính theo hợp đồng chốt, không cộng trùng hold của order. B khác tài khoản vẫn mua được.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt giới hạn tính theo tài khoản hay theo số điện thoại đã xác minh"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

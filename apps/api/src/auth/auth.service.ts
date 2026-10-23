@@ -83,7 +83,7 @@ export class AuthService {
       user?.password ?? (await this.dummyHash),
       passwordInput,
     );
-    if (!user || !isMatch || !user.isEmailVerified || !user.isActive) {
+    if (!user || !isMatch) {
       try {
         if (peerIp) await this.redis.recordLoginIpFailure(peerIp);
         const failures = await this.redis.incrementLoginFailures(email);
@@ -105,6 +105,23 @@ export class AuthService {
       throw new ServiceUnavailableException(
         'Đăng nhập tạm thời không khả dụng. Thử lại sau.',
       );
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException({
+        code: 'ACCOUNT_DISABLED',
+        message: 'Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.',
+      });
+    }
+
+    // Reveal activation guidance only after the password is verified. This
+    // keeps unknown accounts and incorrect passwords indistinguishable.
+    if (!user.isEmailVerified) {
+      throw new UnauthorizedException({
+        code: 'EMAIL_NOT_VERIFIED',
+        message:
+          'Tài khoản chưa được kích hoạt. Hãy kiểm tra email hoặc gửi lại liên kết kích hoạt.',
+      });
     }
 
     const token = randomBytes(32).toString('base64url');

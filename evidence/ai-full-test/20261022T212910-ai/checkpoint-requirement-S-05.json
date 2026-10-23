@@ -1,0 +1,200 @@
+[
+  {
+    "id": "S-05-AC01",
+    "requirement_id": "S-05",
+    "kind": "AC",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Nạp sơ đồ ghế từ tệp JSON đúng định dạng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L7"
+    },
+    "original_requirement": "Giả sử tệp JSON đúng định dạng, Khi tải lên cho một suất diễn, Thì toàn bộ ghế được tạo kèm hàng, số ghế và hạng, và các hạng ghế chưa có được tạo theo tên trong tệp",
+    "fixture": "JSON 6 ghế và 2.000 ghế; suất chưa bán/đang giữ/đã bán.",
+    "surfaces": "POST /showtimes/:id/seat-map",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/api/src/showtimes/showtimes.service.ts",
+    "test_candidates": "sprint2.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tệp JSON đúng định dạng.",
+      "Thực hiện trên POST /showtimes/:id/seat-map: tải lên cho một suất diễn.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Nạp qua UI/API; đếm ghế/hạng sau import. Thay map khi chưa có giao dịch; thử thay khi có giữ hoặc vé. Trong DB thử, chèn lỗi ở ghế 1.500 và cuối tệp; xác minh rollback toàn bộ và map cũ còn nguyên.",
+    "expected": [
+      "toàn bộ ghế được tạo kèm hàng, số ghế và hạng, và các hạng ghế chưa có được tạo theo tên trong tệp"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-05-AC02",
+    "requirement_id": "S-05",
+    "kind": "AC",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Nạp sơ đồ ghế từ tệp JSON đúng định dạng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L7"
+    },
+    "original_requirement": "Giả sử suất diễn đã có sơ đồ nhưng chưa bán vé nào, Khi tải sơ đồ mới, Thì sơ đồ cũ được thay toàn bộ",
+    "fixture": "JSON 6 ghế và 2.000 ghế; suất chưa bán/đang giữ/đã bán.",
+    "surfaces": "POST /showtimes/:id/seat-map",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/api/src/showtimes/showtimes.service.ts",
+    "test_candidates": "sprint2.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: suất diễn đã có sơ đồ nhưng chưa bán vé nào.",
+      "Thực hiện trên POST /showtimes/:id/seat-map: tải sơ đồ mới.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Nạp qua UI/API; đếm ghế/hạng sau import. Thay map khi chưa có giao dịch; thử thay khi có giữ hoặc vé. Trong DB thử, chèn lỗi ở ghế 1.500 và cuối tệp; xác minh rollback toàn bộ và map cũ còn nguyên.",
+    "expected": [
+      "sơ đồ cũ được thay toàn bộ"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-05-AC03",
+    "requirement_id": "S-05",
+    "kind": "AC",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Nạp sơ đồ ghế từ tệp JSON đúng định dạng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L7"
+    },
+    "original_requirement": "Giả sử suất diễn đã bán vé hoặc đang có người giữ ghế, Khi tải sơ đồ mới đè lên, Thì bị chặn kèm lý do",
+    "fixture": "JSON 6 ghế và 2.000 ghế; suất chưa bán/đang giữ/đã bán.",
+    "surfaces": "POST /showtimes/:id/seat-map",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/api/src/showtimes/showtimes.service.ts",
+    "test_candidates": "sprint2.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: suất diễn đã bán vé hoặc đang có người giữ ghế.",
+      "Thực hiện trên POST /showtimes/:id/seat-map: tải sơ đồ mới đè lên.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Nạp qua UI/API; đếm ghế/hạng sau import. Thay map khi chưa có giao dịch; thử thay khi có giữ hoặc vé. Trong DB thử, chèn lỗi ở ghế 1.500 và cuối tệp; xác minh rollback toàn bộ và map cũ còn nguyên.",
+    "expected": [
+      "bị chặn kèm lý do"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-05-AC04",
+    "requirement_id": "S-05",
+    "kind": "AC",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Nạp sơ đồ ghế từ tệp JSON đúng định dạng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L7"
+    },
+    "original_requirement": "Giả sử việc ghi gặp lỗi ở ghế thứ 1500, Khi giao dịch kết thúc, Thì không có ghế nào được lưu — không nạp một nửa",
+    "fixture": "JSON 6 ghế và 2.000 ghế; suất chưa bán/đang giữ/đã bán.",
+    "surfaces": "POST /showtimes/:id/seat-map",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/api/src/showtimes/showtimes.service.ts",
+    "test_candidates": "sprint2.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: việc ghi gặp lỗi ở ghế thứ 1500.",
+      "Thực hiện trên POST /showtimes/:id/seat-map: giao dịch kết thúc.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Nạp qua UI/API; đếm ghế/hạng sau import. Thay map khi chưa có giao dịch; thử thay khi có giữ hoặc vé. Trong DB thử, chèn lỗi ở ghế 1.500 và cuối tệp; xác minh rollback toàn bộ và map cũ còn nguyên.",
+    "expected": [
+      "không có ghế nào được lưu — không nạp một nửa"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-05-NFR",
+    "requirement_id": "S-05",
+    "kind": "NFR",
+    "group": "Sơ đồ và giá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Nạp sơ đồ ghế từ tệp JSON đúng định dạng — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N7"
+    },
+    "original_requirement": "tệp 2000 ghế nạp xong dưới 5 giây; toàn bộ việc nạp nằm trong một giao dịch",
+    "fixture": "JSON 6 ghế và 2.000 ghế; suất chưa bán/đang giữ/đã bán.",
+    "surfaces": "POST /showtimes/:id/seat-map",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/api/src/showtimes/showtimes.service.ts",
+    "test_candidates": "sprint2.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Nạp qua UI/API; đếm ghế/hạng sau import. Thay map khi chưa có giao dịch; thử thay khi có giữ hoặc vé. Trong DB thử, chèn lỗi ở ghế 1.500 và cuối tệp; xác minh rollback toàn bộ và map cũ còn nguyên.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "tệp 2000 ghế nạp xong dưới 5 giây; toàn bộ việc nạp nằm trong một giao dịch"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

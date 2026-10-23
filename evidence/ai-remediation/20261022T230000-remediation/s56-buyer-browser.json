@@ -1,0 +1,198 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Authenticated Chromium, current local build, isolated PostgreSQL profile; synthetic buyer/order/coupon only.",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "api": [
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/7bc067d1-d7c6-46b1-9410-908cd67c15f0",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/7bc067d1-d7c6-46b1-9410-908cd67c15f0/audit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/7bc067d1-d7c6-46b1-9410-908cd67c15f0/coupon",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/7bc067d1-d7c6-46b1-9410-908cd67c15f0/coupon",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/7bc067d1-d7c6-46b1-9410-908cd67c15f0",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/7bc067d1-d7c6-46b1-9410-908cd67c15f0/audit",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/orders/7bc067d1-d7c6-46b1-9410-908cd67c15f0/coupon",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/7bc067d1-d7c6-46b1-9410-908cd67c15f0",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/7bc067d1-d7c6-46b1-9410-908cd67c15f0/audit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/7bc067d1-d7c6-46b1-9410-908cd67c15f0/coupon",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/7bc067d1-d7c6-46b1-9410-908cd67c15f0/coupon",
+      "status": 400
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/e9e481f8-f988-4104-b29c-1e614555d6bf/coupons",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/events/e9e481f8-f988-4104-b29c-1e614555d6bf/coupons/9e68e63d-77dc-461b-b92c-34fe7c69956a",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/events/e9e481f8-f988-4104-b29c-1e614555d6bf/coupons/9e68e63d-77dc-461b-b92c-34fe7c69956a",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/e9e481f8-f988-4104-b29c-1e614555d6bf/coupons",
+      "status": 403
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/events/e9e481f8-f988-4104-b29c-1e614555d6bf/coupons/9e68e63d-77dc-461b-b92c-34fe7c69956a",
+      "status": 400
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/events/e9e481f8-f988-4104-b29c-1e614555d6bf/coupons/9e68e63d-77dc-461b-b92c-34fe7c69956a",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/e9e481f8-f988-4104-b29c-1e614555d6bf/coupons",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/e9e481f8-f988-4104-b29c-1e614555d6bf/manage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/e9e481f8-f988-4104-b29c-1e614555d6bf/coupons",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/events/e9e481f8-f988-4104-b29c-1e614555d6bf/coupons",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/e9e481f8-f988-4104-b29c-1e614555d6bf/coupons",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/events/e9e481f8-f988-4104-b29c-1e614555d6bf/coupons/e8b2b680-2eb8-4151-9a1a-7e6ef5889c86",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/events/e9e481f8-f988-4104-b29c-1e614555d6bf/coupons",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "checks": [
+    "authenticated buyer order review loaded and showed baseline subtotal 101",
+    "invalid coupon surfaced API validation error in browser",
+    "buyer applied coupon through browser/API; refreshed floor discount 10 and payable 91 rendered",
+    "buyer removed coupon; refreshed payable restored to original 101",
+    "not-yet-started and expired coupons were rejected by the API and surfaced in buyer UI",
+    "API apply/remove both returned 200; no page errors or API 5xx",
+    "owner management HTTP list/update/deactivate and expiry validation passed; different organizer and BUYER were denied",
+    "organizer desktop/mobile UI created coupon and deactivated it; list refreshed with correct status"
+  ],
+  "screenshots": [
+    "s56-buyer-coupon-applied-desktop.png",
+    "s56-buyer-coupon-removed-mobile.png",
+    "s56-organizer-coupon-created-desktop.png",
+    "s56-organizer-coupon-deactivated-mobile.png"
+  ],
+  "orderReads": [
+    {
+      "status": "PENDING_PAYMENT",
+      "subtotalAmount": 101,
+      "discountAmount": 0,
+      "totalAmount": 101,
+      "couponCode": null
+    },
+    {
+      "status": "PENDING_PAYMENT",
+      "subtotalAmount": 101,
+      "discountAmount": 10,
+      "totalAmount": 91,
+      "couponCode": "S56FLOOR10"
+    },
+    {
+      "status": "PENDING_PAYMENT",
+      "subtotalAmount": 101,
+      "discountAmount": 0,
+      "totalAmount": 101,
+      "couponCode": null
+    }
+  ],
+  "appliedViewText": "← Đơn hàng của tôi\narrow_back\nChọn ghế\nXem lại chi tiết đơn hàng\n\nMã đơn hàng: 7bc067d1-d7c6-46b1-9410-908cd67c15f0\n\nChờ thanh toán\ntimer\nThời gian còn lại để hoàn tất thanh toán\nGhế sẽ được giữ cho đến khi hết thời gian đếm ngược.\n29:55\nconfirmation_number\nThông tin sự kiện & Suất diễn\nTÊN SỰ KIỆN\nS56 fixture 20261022T230000-remediation\nTHỜI GIAN SUẤT DIỄN\ncalendar_month\nThứ Bảy, 24/10/2026 · 10:27\nĐỊA ĐIỂM TỔ CHỨC\nlocation_on\nLoopback test only\nchair\nDanh sách ghế đã chọn (1)\nĐơn giá niêm yết từ ban tổ chức\nSTT\tVị trí ghế\tHạng ghế\tĐơn giá\n1\tQA-1(Hàng QA, Số 1)\tS56 QA\t101 ₫\nMã giảm giá\n\nMỗi đơn áp dụng tối đa một mã.\n\nĐã áp dụng mã giảm giá.\n\nĐang áp dụng S56FLOOR10.\n\nBỏ mã\n\nTạm tính: 101 ₫\n\nGiảm giá: 10 ₫\n\nTổng cộng: 1 vé\nTỔNG TIỀN THANH TOÁN\n91 ₫\nNhật ký đơn hàng và vé\nrefresh\nThay đổi ghế\nThanh toán ngay",
+  "mobileNoOverflowApplied": true,
+  "mobileNoOverflowRemoved": true,
+  "expiryBoundaryRejections": [
+    "S56FUTURE",
+    "S56EXPIRED"
+  ],
+  "ownerManagement": {
+    "ownerList": 200,
+    "ownerUpdate": 200,
+    "differentOwnerUpdate": 403,
+    "buyerRoleCreate": 403,
+    "invalidExpiry": 400,
+    "deactivate": 200,
+    "inactiveVisible": true
+  },
+  "organizerDesktopNoOverflow": true,
+  "organizerMobileNoOverflow": true
+}

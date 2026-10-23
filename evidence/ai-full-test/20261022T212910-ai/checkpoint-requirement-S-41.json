@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-41-AC01",
+    "requirement_id": "S-41",
+    "kind": "AC",
+    "group": "Vận hành",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "6",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Giới hạn tần suất yêu cầu theo tài khoản và theo IP",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L45"
+    },
+    "original_requirement": "Vượt ngưỡng số yêu cầu mỗi phút trên API giữ ghế và tạo đơn thì bị từ chối tạm thời kèm thời gian chờ; ngưỡng tính riêng theo tài khoản và theo IP. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP",
+    "fixture": "N tài khoản/2 IP; một tài khoản/2 IP; quota thử được ghi rõ.",
+    "surfaces": "Hold/order API rate limiting",
+    "code_candidates": "apps/api/src/booking-access/booking-access.service.ts",
+    "test_candidates": "booking-access.guard.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Chuẩn bị fixture: N tài khoản/2 IP; một tài khoản/2 IP; quota thử được ghi rõ.",
+      "Gửi tới ngưỡng-1/ngưỡng/ngưỡng+1 cho hold và order; kiểm từ chối tạm thời và Retry-After. Kiểm account và IP độc lập, NAT dùng chung và header IP giả; hết cửa sổ được phục hồi.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Gửi tới ngưỡng-1/ngưỡng/ngưỡng+1 cho hold và order; kiểm từ chối tạm thời và Retry-After. Kiểm account và IP độc lập, NAT dùng chung và header IP giả; hết cửa sổ được phục hồi.",
+    "expected": [
+      "Vượt ngưỡng số yêu cầu mỗi phút trên API giữ ghế và tạo đơn thì bị từ chối tạm thời kèm thời gian chờ; ngưỡng tính riêng theo tài khoản và theo IP. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-41-NFR",
+    "requirement_id": "S-41",
+    "kind": "NFR",
+    "group": "Vận hành",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "6",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Giới hạn tần suất yêu cầu theo tài khoản và theo IP — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N45"
+    },
+    "original_requirement": "chưa refine — cần chốt ngưỡng, tránh chặn nhầm người dùng chung mạng ký túc xá hay công ty",
+    "fixture": "N tài khoản/2 IP; một tài khoản/2 IP; quota thử được ghi rõ.",
+    "surfaces": "Hold/order API rate limiting",
+    "code_candidates": "apps/api/src/booking-access/booking-access.service.ts",
+    "test_candidates": "booking-access.guard.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Gửi tới ngưỡng-1/ngưỡng/ngưỡng+1 cho hold và order; kiểm từ chối tạm thời và Retry-After. Kiểm account và IP độc lập, NAT dùng chung và header IP giả; hết cửa sổ được phục hồi.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt ngưỡng, tránh chặn nhầm người dùng chung mạng ký túc xá hay công ty"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

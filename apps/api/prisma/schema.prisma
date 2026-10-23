@@ -2,33 +2,163 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model DomainAudit {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  entityType  String
+  entityId    String   @db.Uuid
+  orderId     String?  @db.Uuid
+  actorId     String?  @db.Uuid
+  actorType   String
+  action      String
+  beforeState Json?
+  afterState  Json?
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([orderId, createdAt], map: "domain_audit_order_time")
+  @@index([entityId, createdAt], map: "domain_audit_entity_time")
+  @@map("domain_audit")
+}
+
+model Refund {
+  id            String          @id @default(uuid()) @db.Uuid
+  orderId       String          @unique @db.Uuid
+  order         Order           @relation(fields: [orderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  amount        Int
+  status        String          @default("QUEUED")
+  reason        String
+  actorId       String          @db.Uuid
+  actor         User            @relation("RefundActor", fields: [actorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  attemptLogs   RefundAttempt[]
+  attempts      Int             @default(0)
+  nextAttemptAt DateTime        @default(now()) @db.Timestamptz(3)
+  leaseUntil    DateTime?       @db.Timestamptz(3)
+  leaseToken    String?         @db.Uuid
+  providerRef   String?         @unique
+  failureCode   String?
+  completedAt   DateTime?       @db.Timestamptz(3)
+  createdAt     DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime        @default(now()) @db.Timestamptz(3)
+
+  @@index([status, nextAttemptAt])
+  @@map("refunds")
+}
+
+model RefundAttempt {
+  id        String   @id @default(uuid()) @db.Uuid
+  refundId  String   @db.Uuid
+  refund    Refund   @relation(fields: [refundId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  attempt   Int
+  status    String
+  reason    String?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@unique([refundId, attempt])
+  @@map("refund_attempts")
+}
+
+model ShowtimeCancellation {
+  showtimeId  String   @id @db.Uuid
+  showtime    Showtime @relation(fields: [showtimeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  actorId     String   @db.Uuid
+  actor       User     @relation("ShowCancellationActor", fields: [actorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reason      String
+  status      String   @default("QUEUED")
+  failureCode String?
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  @@map("showtime_cancellations")
+}
+
+model OperationMail {
+  id            String    @id @default(uuid()) @db.Uuid
+  orderId       String    @unique @db.Uuid
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  status        String    @default("QUEUED")
+  attempts      Int       @default(0)
+  nextAttemptAt DateTime  @default(now()) @db.Timestamptz(3)
+  leaseUntil    DateTime? @db.Timestamptz(3)
+  leaseToken    String?   @db.Uuid
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  sentAt        DateTime? @db.Timestamptz(3)
+
+  @@map("operation_mail")
+}
+
+model ReconciliationRun {
+  id          String   @id @default(uuid()) @db.Uuid
+  fileHash    String   @unique
+  actorId     String   @db.Uuid
+  actor       User     @relation(fields: [actorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  periodStart DateTime @db.Timestamptz(3)
+  periodEnd   DateTime @db.Timestamptz(3)
+  result      Json
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  @@map("reconciliation_runs")
+}
+
+model ConsentEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  eventNo   Int      @unique @default(autoincrement())
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  purpose   String
+  version   String
+  status    String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([userId, createdAt])
+  @@map("consent_events")
+}
+
+model ErasureRequest {
+  userId      String    @id @db.Uuid
+  user        User      @relation("ErasureSubject", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  status      String    @default("REQUESTED")
+  approvedBy  String?   @db.Uuid
+  approver    User?     @relation("ErasureApprover", fields: [approvedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  completedAt DateTime? @db.Timestamptz(3)
+
+  @@map("erasure_requests")
+}
+
 datasource db {
   provider = "postgresql"
 }
 
 model User {
-  id                  String               @id @default(uuid()) @db.Uuid
-  email               String               @unique
-  password            String
-  fullName            String?
-  isEmailVerified     Boolean              @default(false)
-  activationToken     String?
-  activationExpires   DateTime?            @db.Timestamptz(3)
-  isActive            Boolean              @default(true)
-  createdAt           DateTime             @default(now()) @db.Timestamptz(3)
-  updatedAt           DateTime             @updatedAt @db.Timestamptz(3)
-  userRoles           UserRole[]
-  sessions            Session[]
-  events              Event[]              @relation("OrganizerEvents")
-  holdSessions        HoldSession[]
-  orders              Order[]
-  showtimeStaff       ShowtimeStaff[]
-  checkInPermissions  CheckInPermission[]
-  admissions          TicketAdmission[]
-  offlineScanLogs     OfflineScanLog[]
+  id                     String                  @id @default(uuid()) @db.Uuid
+  email                  String                  @unique
+  password               String
+  fullName               String?
+  isEmailVerified        Boolean                 @default(false)
+  activationToken        String?
+  activationExpires      DateTime?               @db.Timestamptz(3)
+  isActive               Boolean                 @default(true)
+  createdAt              DateTime                @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime                @updatedAt @db.Timestamptz(3)
+  userRoles              UserRole[]
+  sessions               Session[]
+  events                 Event[]                 @relation("OrganizerEvents")
+  holdSessions           HoldSession[]
+  orders                 Order[]
+  couponRedemptions      CouponRedemption[]
+  showtimeStaff          ShowtimeStaff[]
+  checkInPermissions     CheckInPermission[]
+  admissions             TicketAdmission[]
+  offlineScanLogs        OfflineScanLog[]
   scannerSnapshotCursors ScannerSnapshotCursor[]
-  registrationConsent RegistrationConsent?
-  activationTokens    ActivationToken[]
+  registrationConsent    RegistrationConsent?
+  activationTokens       ActivationToken[]
+  refundActions          Refund[]                @relation("RefundActor")
+  showCancellations      ShowtimeCancellation[]  @relation("ShowCancellationActor")
+  reconciliations        ReconciliationRun[]
+  consentEvents          ConsentEvent[]
+  erasureRequest         ErasureRequest?         @relation("ErasureSubject")
+  erasureApprovals       ErasureRequest[]        @relation("ErasureApprover")
+  waitlistEntries        WaitlistEntry[]
 
   @@map("users")
 }
@@ -133,6 +263,7 @@ model Event {
   organizer        User       @relation("OrganizerEvents", fields: [organizerId], references: [id], onDelete: Restrict)
   showtimes        Showtime[]
   orders           Order[]
+  coupons          Coupon[]
   createdAt        DateTime   @default(now()) @db.Timestamptz(3)
   updatedAt        DateTime   @updatedAt @db.Timestamptz(3)
 
@@ -141,27 +272,31 @@ model Event {
 }
 
 model Showtime {
-  id                String            @id @default(uuid()) @db.Uuid
-  eventId           String            @db.Uuid
-  event             Event             @relation(fields: [eventId], references: [id], onDelete: Restrict)
-  startTime         DateTime          @db.Timestamptz(3)
-  seatMapId         String? // Nullable for now as per S-04
-  status            ShowtimeStatus    @default(DRAFT)
-  structureLocked   Boolean           @default(false)
+  id                          String                       @id @default(uuid()) @db.Uuid
+  eventId                     String                       @db.Uuid
+  event                       Event                        @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  startTime                   DateTime                     @db.Timestamptz(3)
+  seatMapId                   String? // Nullable for now as per S-04
+  status                      ShowtimeStatus               @default(DRAFT)
+  isDemo                      Boolean                      @default(false)
+  structureLocked             Boolean                      @default(false)
   // S-42: null = không giới hạn (BTC đặt tay); mặc định 4 vé/tài khoản/suất.
-  maxTicketsPerUser Int?              @default(4)
-  seats             Seat[]
-  categories        SeatCategory[]
-  holdSessions      HoldSession[]
-  orders            Order[]
-  tickets           Ticket[]
-  staffAssignments  ShowtimeStaff[]
-  createdAt         DateTime          @default(now()) @db.Timestamptz(3)
-  updatedAt         DateTime          @updatedAt @db.Timestamptz(3)
-  checkInGates      CheckInGate[]
-  admissions        TicketAdmission[]
-  offlineScanLogs   OfflineScanLog[]
-  scannerSnapshotCursors ScannerSnapshotCursor[]
+  maxTicketsPerUser           Int?                         @default(4)
+  seats                       Seat[]
+  categories                  SeatCategory[]
+  holdSessions                HoldSession[]
+  orders                      Order[]
+  tickets                     Ticket[]
+  staffAssignments            ShowtimeStaff[]
+  createdAt                   DateTime                     @default(now()) @db.Timestamptz(3)
+  updatedAt                   DateTime                     @updatedAt @db.Timestamptz(3)
+  checkInGates                CheckInGate[]
+  admissions                  TicketAdmission[]
+  offlineScanLogs             OfflineScanLog[]
+  scannerSnapshotCursors      ScannerSnapshotCursor[]
+  cancellationJob             ShowtimeCancellation?
+  waitlistAvailabilitySignals WaitlistAvailabilitySignal[]
+  waitlistEntries             WaitlistEntry[]
 
   @@index([eventId])
   @@map("showtimes")
@@ -251,27 +386,37 @@ enum OrderStatus {
 }
 
 model Order {
-  id               String       @id @default(uuid()) @db.Uuid
-  userId           String       @db.Uuid
-  user             User         @relation(fields: [userId], references: [id], onDelete: Restrict)
-  eventId          String?      @db.Uuid
-  event            Event?       @relation(fields: [eventId], references: [id], onDelete: Restrict)
-  showtimeId       String       @db.Uuid
-  showtime         Showtime     @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
-  holdSessionId    String?      @db.Uuid
-  holdToken        String?      @db.Uuid
-  holdSession      HoldSession? @relation(fields: [holdSessionId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
-  status           OrderStatus  @default(PENDING_PAYMENT)
-  paymentExpiresAt DateTime     @db.Timestamptz(3)
-  expiresAt        DateTime?    @db.Timestamptz(3)
-  totalAmount      Int
-  items            OrderItem[]
-  payments         Payment[]
-  logs             OrderLog[]
-  tickets          Ticket[]
-  ticketMail       TicketMailDelivery[]
-  createdAt        DateTime     @default(now()) @db.Timestamptz(3)
-  updatedAt        DateTime     @updatedAt @db.Timestamptz(3)
+  id                  String               @id @default(uuid()) @db.Uuid
+  userId              String               @db.Uuid
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Restrict)
+  eventId             String?              @db.Uuid
+  event               Event?               @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  showtimeId          String               @db.Uuid
+  showtime            Showtime             @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  holdSessionId       String?              @db.Uuid
+  holdToken           String?              @db.Uuid
+  holdSession         HoldSession?         @relation(fields: [holdSessionId, showtimeId], references: [id, showtimeId], onDelete: Restrict)
+  status              OrderStatus          @default(PENDING_PAYMENT)
+  paymentExpiresAt    DateTime             @db.Timestamptz(3)
+  expiresAt           DateTime?            @db.Timestamptz(3)
+  totalAmount         Int
+  subtotalAmount      Int                  @default(0)
+  discountAmount      Int                  @default(0)
+  couponCodeSnapshot  String?
+  couponTypeSnapshot  String?
+  couponValueSnapshot Int?
+  couponId            String?              @db.Uuid
+  coupon              Coupon?              @relation(fields: [couponId], references: [id], onDelete: Restrict)
+  couponRedemption    CouponRedemption?
+  items               OrderItem[]
+  payments            Payment[]
+  logs                OrderLog[]
+  tickets             Ticket[]
+  ticketMail          TicketMailDelivery[]
+  refund              Refund?
+  cancellationMail    OperationMail?
+  createdAt           DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime             @updatedAt @db.Timestamptz(3)
 
   @@unique([holdSessionId, holdToken])
   @@index([userId])
@@ -280,6 +425,131 @@ model Order {
   @@index([status, paymentExpiresAt])
   @@index([expiresAt])
   @@map("orders")
+}
+
+enum CouponType {
+  PERCENT
+  FIXED
+}
+
+enum CouponRedemptionStatus {
+  RESERVED
+  REDEEMED
+  RELEASED
+}
+
+model Coupon {
+  id          String             @id @default(uuid()) @db.Uuid
+  eventId     String             @db.Uuid
+  event       Event              @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  code        String             @db.VarChar(32)
+  type        CouponType
+  value       Int
+  maxUses     Int
+  startsAt    DateTime           @db.Timestamptz(3)
+  expiresAt   DateTime           @db.Timestamptz(3)
+  isActive    Boolean            @default(true)
+  orders      Order[]
+  redemptions CouponRedemption[]
+  createdAt   DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime           @updatedAt @db.Timestamptz(3)
+
+  @@unique([eventId, code])
+  @@index([eventId, isActive, startsAt, expiresAt])
+  @@map("coupons")
+}
+
+model CouponRedemption {
+  id             String                 @id @default(uuid()) @db.Uuid
+  couponId       String                 @db.Uuid
+  coupon         Coupon                 @relation(fields: [couponId], references: [id], onDelete: Restrict)
+  orderId        String                 @unique @db.Uuid
+  order          Order                  @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  userId         String                 @db.Uuid
+  user           User                   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  status         CouponRedemptionStatus @default(RESERVED)
+  discountAmount Int
+  codeSnapshot   String
+  reservedAt     DateTime               @default(now()) @db.Timestamptz(3)
+  redeemedAt     DateTime?              @db.Timestamptz(3)
+  releasedAt     DateTime?              @db.Timestamptz(3)
+
+  @@index([couponId, status])
+  @@index([userId, reservedAt])
+  @@map("coupon_redemptions")
+}
+
+enum WaitlistEntryStatus {
+  ACTIVE
+  NOTICE_QUEUED
+  NOTIFIED
+  CANCELLED
+}
+
+enum WaitlistSignalStatus {
+  PENDING
+  PROCESSED
+  CANCELLED
+}
+
+enum WaitlistNoticeStatus {
+  QUEUED
+  SENDING
+  SENT
+  FAILED
+  CANCELLED
+}
+
+model WaitlistEntry {
+  id            String                 @id @default(uuid()) @db.Uuid
+  showtimeId    String                 @db.Uuid
+  showtime      Showtime               @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  userId        String                 @db.Uuid
+  user          User                   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  status        WaitlistEntryStatus    @default(ACTIVE)
+  createdAt     DateTime               @default(now()) @db.Timestamptz(3)
+  notifiedAt    DateTime?              @db.Timestamptz(3)
+  cancelledAt   DateTime?              @db.Timestamptz(3)
+  notifications WaitlistNotification[]
+
+  @@index([showtimeId, status, createdAt, id])
+  @@index([userId, status])
+  @@map("waitlist_entries")
+}
+
+model WaitlistAvailabilitySignal {
+  id            String                 @id @default(uuid()) @db.Uuid
+  showtimeId    String                 @db.Uuid
+  showtime      Showtime               @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  releasedCount Int
+  status        WaitlistSignalStatus   @default(PENDING)
+  createdAt     DateTime               @default(now()) @db.Timestamptz(3)
+  processedAt   DateTime?              @db.Timestamptz(3)
+  notifications WaitlistNotification[]
+
+  @@index([status, createdAt, id])
+  @@map("waitlist_availability_signals")
+}
+
+model WaitlistNotification {
+  id            String                     @id @default(uuid()) @db.Uuid
+  entryId       String                     @db.Uuid
+  entry         WaitlistEntry              @relation(fields: [entryId], references: [id], onDelete: Restrict)
+  signalId      String                     @db.Uuid
+  signal        WaitlistAvailabilitySignal @relation(fields: [signalId], references: [id], onDelete: Restrict)
+  status        WaitlistNoticeStatus       @default(QUEUED)
+  attempts      Int                        @default(0)
+  nextAttemptAt DateTime                   @default(now()) @db.Timestamptz(3)
+  leaseToken    String?                    @db.Uuid
+  leaseUntil    DateTime?                  @db.Timestamptz(3)
+  sentAt        DateTime?                  @db.Timestamptz(3)
+  failureCode   String?
+  createdAt     DateTime                   @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime                   @updatedAt @db.Timestamptz(3)
+
+  @@unique([entryId, signalId])
+  @@index([status, nextAttemptAt, createdAt, id])
+  @@map("waitlist_notifications")
 }
 
 model OrderItem {
@@ -303,6 +573,10 @@ model TicketMailDelivery {
   id            String    @id @default(uuid()) @db.Uuid
   orderId       String    @db.Uuid
   order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  // Transfer deliveries are scoped to one ticket and one recipient. Normal
+  // paid-order deliveries leave these nullable and retain the existing path.
+  recipientEmail String?
+  ticketId       String?   @db.Uuid
   dedupeKey     String    @unique
   status        String    @default("QUEUED")
   attempts      Int       @default(0)
@@ -484,24 +758,24 @@ model TicketAdmission {
 }
 
 model OfflineScanLog {
-  id         String   @id @default(uuid()) @db.Uuid
-  scanId     String   @unique @db.Uuid
-  ticketCode String
-  showtimeId String   @db.Uuid
-  showtime   Showtime @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
-  gateId     String?  @db.Uuid
-  staffId    String   @db.Uuid
-  staff      User     @relation(fields: [staffId], references: [id], onDelete: Restrict)
-  deviceId   String
-  scannedAt  DateTime @db.Timestamptz(3)
-  status     String // 'ACCEPTED' | 'CONFLICT' | 'DUPLICATE' | 'INVALID'
-  message    String?
-  payloadHash String?
-  receipt Json?
-  mode String?
-  deviceSentAt DateTime? @db.Timestamptz(3)
+  id            String    @id @default(uuid()) @db.Uuid
+  scanId        String    @unique @db.Uuid
+  ticketCode    String
+  showtimeId    String    @db.Uuid
+  showtime      Showtime  @relation(fields: [showtimeId], references: [id], onDelete: Restrict)
+  gateId        String?   @db.Uuid
+  staffId       String    @db.Uuid
+  staff         User      @relation(fields: [staffId], references: [id], onDelete: Restrict)
+  deviceId      String
+  scannedAt     DateTime  @db.Timestamptz(3)
+  status        String // 'ACCEPTED' | 'CONFLICT' | 'DUPLICATE' | 'INVALID'
+  message       String?
+  payloadHash   String?
+  receipt       Json?
+  mode          String?
+  deviceSentAt  DateTime? @db.Timestamptz(3)
   clockOffsetMs Float?
-  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
 
   @@index([showtimeId, ticketCode])
   @@index([staffId])
@@ -510,15 +784,15 @@ model OfflineScanLog {
 
 // Expiring, owner-bound snapshot fingerprints. No customer PII or private keys.
 model ScannerSnapshotCursor {
-  id String @id @db.Uuid
-  showtimeId String @db.Uuid
-  showtime Showtime @relation(fields: [showtimeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  staffId String @db.Uuid
-  staff User @relation(fields: [staffId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  version String
-  tickets Json
-  createdAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
-  expiresAt DateTime @default(dbgenerated("(clock_timestamp() + '04:00:00'::interval)")) @db.Timestamptz(3)
+  id         String   @id @db.Uuid
+  showtimeId String   @db.Uuid
+  showtime   Showtime @relation(fields: [showtimeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  staffId    String   @db.Uuid
+  staff      User     @relation(fields: [staffId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  version    String
+  tickets    Json
+  createdAt  DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(3)
+  expiresAt  DateTime @default(dbgenerated("(clock_timestamp() + '04:00:00'::interval)")) @db.Timestamptz(3)
 
   @@index([expiresAt], map: "scanner_snapshot_cursor_expiry")
   @@map("scanner_snapshot_cursors")

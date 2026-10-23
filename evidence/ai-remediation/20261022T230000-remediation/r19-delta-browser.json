@@ -1,0 +1,59 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Authenticated Chromium against isolated local API/PostgreSQL; no 4G/provider.",
+  "checks": [
+    "full snapshot downloaded",
+    "server-side check-in changed one ticket",
+    "31-minute stale cache auto-fetched one delta cursor on reconnect",
+    "IndexedDB merged changed checked-in status and advanced cursor without changing ticket count"
+  ],
+  "api": [
+    {
+      "method": "GET",
+      "path": "/api/scanner/showtimes/ceecec8c-35f2-4f6c-892d-eef7b5c276eb/tickets",
+      "hasCursor": false,
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/showtimes/ceecec8c-35f2-4f6c-892d-eef7b5c276eb/tickets",
+      "hasCursor": true,
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "screenshots": [
+    "r19-delta-desktop.png",
+    "r19-delta-mobile.png"
+  ],
+  "fullSnapshot": {
+    "status": 200,
+    "mode": "full",
+    "totalTickets": 40,
+    "cursor": "3b2a68b3-0d22-43f6-9ec4-043051310bf7"
+  },
+  "cachedTicketCode": "8152f71b-6117-4a1f-ab2a-39e74c7e71fa",
+  "serverChangeStatus": 200,
+  "staleAgeMinutes": 31.000016666666667,
+  "delta": {
+    "status": 200,
+    "mode": "delta",
+    "changedCount": 1,
+    "changedTickets": [
+      {
+        "code": "8152f71b-6117-4a1f-ab2a-39e74c7e71fa",
+        "status": "checked_in",
+        "checkedInAt": "2026-10-23T01:18:53.161Z"
+      }
+    ],
+    "cursor": "bf6714f1-42ea-4b37-87b2-fd9c10a572f0"
+  },
+  "localAfterDelta": {
+    "ticketStatus": "checked_in",
+    "checkedInAt": "2026-10-23T01:18:53.161Z",
+    "ticketCount": 40,
+    "cursorChanged": true,
+    "lastSyncAdvanced": true
+  },
+  "mobileNoOverflow": true
+}

@@ -1,0 +1,43 @@
+{
+  "verifiedAtLocal": "2026-10-23T15:00+07:00",
+  "profile": "s1demo-384da3d43b41",
+  "surface": "browser UI, desktop viewport, accessibility tree",
+  "route": "http://localhost:3000/",
+  "initial": {
+    "loadedShowtimes": 42,
+    "loadedPages": 4,
+    "searchEnabled": true,
+    "categoryFiltersEnabled": true
+  },
+  "search": {
+    "query": "Bệnh sĩ",
+    "visibleResultCount": 3,
+    "resultTitles": [
+      "Bệnh sĩ",
+      "Bệnh sĩ",
+      "Bệnh sĩ"
+    ]
+  },
+  "category": {
+    "selected": "Kịch Nói",
+    "searchCleared": true,
+    "visibleResultCount": 4,
+    "allVisibleCardsMatchCategory": true
+  },
+  "restored": {
+    "search": "",
+    "category": "Tất cả",
+    "visibleResultCount": 42
+  },
+  "sourceRelation": "Main demo uses prepared-file-tree; its source/package files were compared against the 1049-file prepared set at R31. This UI slice is not mapped to a new test-case status and does not change matrix counts.",
+  "screenshots": "No new screenshot persisted for this brief interaction; existing desktop/mobile catalog screenshots remain in this run folder.",
+  "notes": "Filter/search interactions did not write DB data.",
+  "emptyState": {
+    "query": "khong-co-su-kien-nao-xyz",
+    "visibleResultCount": 0,
+    "heading": "Chưa có suất phù hợp",
+    "helper": "Thử đổi từ khóa hoặc thể loại để xem các chương trình khác.",
+    "clearFilterButtonVisible": true,
+    "clearButtonRestoredResultCount": 42
+  }
+}

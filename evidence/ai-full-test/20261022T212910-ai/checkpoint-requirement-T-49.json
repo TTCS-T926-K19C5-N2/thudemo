@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-49-AC",
+    "requirement_id": "T-49",
+    "parent_requirement": "S-21",
+    "kind": "TASK_AC",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Ghi log lần từ chối kèm địa chỉ nguồn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G50"
+    },
+    "original_requirement": "Gửi webhook giả thì thấy dòng log tương ứng; log không chứa nội dung thanh toán",
+    "fixture": "Payload đúng, sửa 1 byte, thiếu chữ ký, JSON hỏng và chữ ký sai, order không có.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/webhook-security.filter.ts; apps/api/src/payments/gateways/",
+    "test_candidates": "payments-signature-verification.e2e-spec.ts; momo-signature.spec.ts",
+    "steps": [
+      "Gửi raw body bảo toàn byte; sai chữ ký trả 401 trước parse/nghiệp vụ và không thay DB. Hợp lệ nhưng order không tồn tại trả 404. Kiểm structured log có nguồn và mã lỗi, không payload thanh toán; review so sánh constant-time.",
+      "Kiểm riêng tiêu chí task T-49: Gửi webhook giả thì thấy dòng log tương ứng; log không chứa nội dung thanh toán",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Gửi webhook giả thì thấy dòng log tương ứng; log không chứa nội dung thanh toán"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-49-NFR",
+    "requirement_id": "T-49",
+    "parent_requirement": "S-21",
+    "kind": "TASK_NFR",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Ghi log lần từ chối kèm địa chỉ nguồn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I50"
+    },
+    "original_requirement": "log có cấu trúc để lọc được theo mã lỗi",
+    "fixture": "Payload đúng, sửa 1 byte, thiếu chữ ký, JSON hỏng và chữ ký sai, order không có.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/webhook-security.filter.ts; apps/api/src/payments/gateways/",
+    "test_candidates": "payments-signature-verification.e2e-spec.ts; momo-signature.spec.ts",
+    "steps": [
+      "Gửi raw body bảo toàn byte; sai chữ ký trả 401 trước parse/nghiệp vụ và không thay DB. Hợp lệ nhưng order không tồn tại trả 404. Kiểm structured log có nguồn và mã lỗi, không payload thanh toán; review so sánh constant-time.",
+      "Kiểm riêng tiêu chí task T-49: log có cấu trúc để lọc được theo mã lỗi",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "log có cấu trúc để lọc được theo mã lỗi"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

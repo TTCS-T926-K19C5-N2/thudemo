@@ -46,6 +46,20 @@ export class ScannerController {
     );
   }
 
+  @Get('showtimes/:showtimeId/attendance')
+  @Header('Cache-Control', 'private, no-store')
+  @Roles('STAFF', 'ADMIN', 'ORGANIZER')
+  async getAttendance(
+    @Param('showtimeId', ParseUUIDPipe) showtimeId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.scannerService.getAttendance(
+      showtimeId,
+      req.user.id,
+      req.user.roles,
+    );
+  }
+
   @Get('showtimes/:showtimeId/tickets')
   @Header('Cache-Control', 'private, no-store')
   @Roles('STAFF', 'ADMIN', 'ORGANIZER')

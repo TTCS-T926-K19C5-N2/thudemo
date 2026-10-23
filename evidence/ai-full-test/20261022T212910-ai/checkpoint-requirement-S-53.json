@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-53-AC01",
+    "requirement_id": "S-53",
+    "kind": "AC",
+    "group": "Riêng tư",
+    "tier": "Later",
+    "priority": "Must",
+    "sprint": "8",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Khách yêu cầu xoá dữ liệu cá nhân của mình",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L53"
+    },
+    "original_requirement": "Sau khi yêu cầu được duyệt, họ tên, email, số điện thoại bị thay bằng giá trị ẩn danh trong mọi bảng, tài khoản không đăng nhập được nữa, nhưng đơn hàng, giao dịch và số liệu doanh thu vẫn nguyên để phục vụ kế toán. Chưa refine chi tiết — tier Later, ước lượng thô 5 SP",
+    "fixture": "Tài khoản giả có orders/payments/tickets/outbox; ADMIN và người không có quyền.",
+    "surfaces": "/account/privacy; /privacy/erasure; /privacy/erasure/:id/approve",
+    "code_candidates": "apps/api/src/lifecycle/privacy.service.ts; apps/web/src/app/account/privacy/",
+    "test_candidates": "lifecycle.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Chuẩn bị fixture: Tài khoản giả có orders/payments/tickets/outbox; ADMIN và người không có quyền.",
+      "Yêu cầu xoá chưa tự xoá trước duyệt. Admin duyệt, tìm toàn bộ bản sao tên/email/điện thoại, session/token/cache/outbox và quyền đăng nhập; tổng giao dịch/doanh thu giữ nguyên. Chốt phạm vi giữ/xoá với người quyết sản phẩm, không tự kết luận tuân thủ pháp luật.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Yêu cầu xoá chưa tự xoá trước duyệt. Admin duyệt, tìm toàn bộ bản sao tên/email/điện thoại, session/token/cache/outbox và quyền đăng nhập; tổng giao dịch/doanh thu giữ nguyên. Chốt phạm vi giữ/xoá với người quyết sản phẩm, không tự kết luận tuân thủ pháp luật.",
+    "expected": [
+      "Sau khi yêu cầu được duyệt, họ tên, email, số điện thoại bị thay bằng giá trị ẩn danh trong mọi bảng, tài khoản không đăng nhập được nữa, nhưng đơn hàng, giao dịch và số liệu doanh thu vẫn nguyên để phục vụ kế toán. Chưa refine chi tiết — tier Later, ước lượng thô 5 SP"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-53-NFR",
+    "requirement_id": "S-53",
+    "kind": "NFR",
+    "group": "Riêng tư",
+    "tier": "Later",
+    "priority": "Must",
+    "sprint": "8",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Khách yêu cầu xoá dữ liệu cá nhân của mình — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N53"
+    },
+    "original_requirement": "chưa refine — cần người có thẩm quyền xác nhận phạm vi dữ liệu phải xoá và dữ liệu phải giữ theo luật kế toán. **Skill không đưa tư vấn pháp lý**",
+    "fixture": "Tài khoản giả có orders/payments/tickets/outbox; ADMIN và người không có quyền.",
+    "surfaces": "/account/privacy; /privacy/erasure; /privacy/erasure/:id/approve",
+    "code_candidates": "apps/api/src/lifecycle/privacy.service.ts; apps/web/src/app/account/privacy/",
+    "test_candidates": "lifecycle.spec.ts; verify-sprint6-8.mjs",
+    "steps": [
+      "Yêu cầu xoá chưa tự xoá trước duyệt. Admin duyệt, tìm toàn bộ bản sao tên/email/điện thoại, session/token/cache/outbox và quyền đăng nhập; tổng giao dịch/doanh thu giữ nguyên. Chốt phạm vi giữ/xoá với người quyết sản phẩm, không tự kết luận tuân thủ pháp luật.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần người có thẩm quyền xác nhận phạm vi dữ liệu phải xoá và dữ liệu phải giữ theo luật kế toán. **Skill không đưa tư vấn pháp lý**"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

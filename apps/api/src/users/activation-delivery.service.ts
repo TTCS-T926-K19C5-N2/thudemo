@@ -32,7 +32,11 @@ export function encryptActivation(token: string, key: Buffer): string {
   );
 }
 
-function decryptActivation(value: string, hash: string, key: Buffer): string {
+export function decryptActivation(
+  value: string,
+  hash: string,
+  key: Buffer,
+): string {
   const data = Buffer.from(value, 'base64url');
   const cipher = createDecipheriv('aes-256-gcm', key, data.subarray(0, 12));
   cipher.setAuthTag(data.subarray(12, 28));

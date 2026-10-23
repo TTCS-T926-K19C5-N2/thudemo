@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-36-AC",
+    "requirement_id": "T-36",
+    "parent_requirement": "S-16",
+    "kind": "TASK_AC",
+    "group": "Đơn hàng",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Bảng `orders` và `order_items` kèm migration",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G37"
+    },
+    "original_requirement": "Migration tiến và lùi được; mỗi ghế chỉ được nằm trong một đơn chưa huỷ của cùng suất diễn — có ràng buộc",
+    "fixture": "A giữ 2 ghế còn hạn; biến thể một hold hết hạn, ghế do B giữ.",
+    "surfaces": "POST /showtimes/:id/orders; POST /orders",
+    "code_candidates": "apps/api/src/orders/orders.service.ts; apps/api/src/orders/orders.controller.ts",
+    "test_candidates": "orders.e2e-spec.ts; s15-s16-acceptance.e2e-spec.ts",
+    "steps": [
+      "Tạo order từ hold server; gửi thêm seatIds/total giả phải không thay tập ghế hợp lệ. Gửi hai request đồng thời và retry: một order, đúng items/giá, gia hạn giữ cùng transaction; lỗi giữa chừng không để order hoặc gia hạn một nửa.",
+      "Kiểm riêng tiêu chí task T-36: Migration tiến và lùi được; mỗi ghế chỉ được nằm trong một đơn chưa huỷ của cùng suất diễn — có ràng buộc",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Migration tiến và lùi được; mỗi ghế chỉ được nằm trong một đơn chưa huỷ của cùng suất diễn — có ràng buộc"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-36-NFR",
+    "requirement_id": "T-36",
+    "parent_requirement": "S-16",
+    "kind": "TASK_NFR",
+    "group": "Đơn hàng",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Bảng `orders` và `order_items` kèm migration",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I37"
+    },
+    "original_requirement": "giá trên dòng đơn là bản sao tại thời điểm đặt, không tham chiếu giá hiện tại",
+    "fixture": "A giữ 2 ghế còn hạn; biến thể một hold hết hạn, ghế do B giữ.",
+    "surfaces": "POST /showtimes/:id/orders; POST /orders",
+    "code_candidates": "apps/api/src/orders/orders.service.ts; apps/api/src/orders/orders.controller.ts",
+    "test_candidates": "orders.e2e-spec.ts; s15-s16-acceptance.e2e-spec.ts",
+    "steps": [
+      "Tạo order từ hold server; gửi thêm seatIds/total giả phải không thay tập ghế hợp lệ. Gửi hai request đồng thời và retry: một order, đúng items/giá, gia hạn giữ cùng transaction; lỗi giữa chừng không để order hoặc gia hạn một nửa.",
+      "Kiểm riêng tiêu chí task T-36: giá trên dòng đơn là bản sao tại thời điểm đặt, không tham chiếu giá hiện tại",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "giá trên dòng đơn là bản sao tại thời điểm đặt, không tham chiếu giá hiện tại"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

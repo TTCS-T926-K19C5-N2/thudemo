@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-31-AC01",
+    "requirement_id": "S-31",
+    "kind": "AC",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Vé đã soát không dùng lại được lần hai",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L34"
+    },
+    "original_requirement": "Giả sử vé đã vào lúc 19:02 ở cửa A, Khi quét lại ở cửa B, Thì bị từ chối kèm thời điểm và cửa đã vào lần trước",
+    "fixture": "2 STAFF/2 cửa; một vé; canOverride bật/tắt.",
+    "surfaces": "POST /showtimes/:id/check-in và /check-in/exception",
+    "code_candidates": "apps/api/src/orders/ticket-check-in.service.ts; apps/api/prisma/migrations/",
+    "test_candidates": "ticket-check-in.e2e-spec.ts; apps/api/scripts/verify-s31-storage.mjs",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: vé đã vào lúc 19:02 ở cửa A.",
+      "Thực hiện trên POST /showtimes/:id/check-in và /check-in/exception: quét lại ở cửa B.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Hai máy quét cùng vé đồng thời: đúng 1 NORMAL, lần sau báo cửa/giờ đầu. RequestId replay không tăng admission. Ngoại lệ cần quyền cửa và lý do; thêm EXCEPTION giữ lịch sử cũ kèm tên nhân viên.",
+    "expected": [
+      "bị từ chối kèm thời điểm và cửa đã vào lần trước"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-31-AC02",
+    "requirement_id": "S-31",
+    "kind": "AC",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Vé đã soát không dùng lại được lần hai",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L34"
+    },
+    "original_requirement": "Giả sử hai máy quét cùng một vé trong cùng khoảnh khắc, Khi cả hai tới máy chủ, Thì chỉ một máy báo hợp lệ — cùng nguyên tắc chống trùng như giữ chỗ ở S-13",
+    "fixture": "2 STAFF/2 cửa; một vé; canOverride bật/tắt.",
+    "surfaces": "POST /showtimes/:id/check-in và /check-in/exception",
+    "code_candidates": "apps/api/src/orders/ticket-check-in.service.ts; apps/api/prisma/migrations/",
+    "test_candidates": "ticket-check-in.e2e-spec.ts; apps/api/scripts/verify-s31-storage.mjs",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: hai máy quét cùng một vé trong cùng khoảnh khắc.",
+      "Thực hiện trên POST /showtimes/:id/check-in và /check-in/exception: cả hai tới máy chủ.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Hai máy quét cùng vé đồng thời: đúng 1 NORMAL, lần sau báo cửa/giờ đầu. RequestId replay không tăng admission. Ngoại lệ cần quyền cửa và lý do; thêm EXCEPTION giữ lịch sử cũ kèm tên nhân viên.",
+    "expected": [
+      "chỉ một máy báo hợp lệ — cùng nguyên tắc chống trùng như giữ chỗ ở S-13"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-31-AC03",
+    "requirement_id": "S-31",
+    "kind": "AC",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Vé đã soát không dùng lại được lần hai",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L34"
+    },
+    "original_requirement": "Giả sử nhân viên xác nhận khách bị từ chối là chủ vé thật, Khi bấm \"cho vào có ghi chú\", Thì vé được ghi thêm một lần vào kèm lý do và tên nhân viên",
+    "fixture": "2 STAFF/2 cửa; một vé; canOverride bật/tắt.",
+    "surfaces": "POST /showtimes/:id/check-in và /check-in/exception",
+    "code_candidates": "apps/api/src/orders/ticket-check-in.service.ts; apps/api/prisma/migrations/",
+    "test_candidates": "ticket-check-in.e2e-spec.ts; apps/api/scripts/verify-s31-storage.mjs",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: nhân viên xác nhận khách bị từ chối là chủ vé thật.",
+      "Thực hiện trên POST /showtimes/:id/check-in và /check-in/exception: bấm \"cho vào có ghi chú\".",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Hai máy quét cùng vé đồng thời: đúng 1 NORMAL, lần sau báo cửa/giờ đầu. RequestId replay không tăng admission. Ngoại lệ cần quyền cửa và lý do; thêm EXCEPTION giữ lịch sử cũ kèm tên nhân viên.",
+    "expected": [
+      "vé được ghi thêm một lần vào kèm lý do và tên nhân viên"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-31-NFR",
+    "requirement_id": "S-31",
+    "kind": "NFR",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Vé đã soát không dùng lại được lần hai — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N34"
+    },
+    "original_requirement": "đánh dấu đã vào chống được hai lần quét đồng thời bằng ràng buộc ở cơ sở dữ liệu. Ước lượng thô 3 SP — tier Next",
+    "fixture": "2 STAFF/2 cửa; một vé; canOverride bật/tắt.",
+    "surfaces": "POST /showtimes/:id/check-in và /check-in/exception",
+    "code_candidates": "apps/api/src/orders/ticket-check-in.service.ts; apps/api/prisma/migrations/",
+    "test_candidates": "ticket-check-in.e2e-spec.ts; apps/api/scripts/verify-s31-storage.mjs",
+    "steps": [
+      "Hai máy quét cùng vé đồng thời: đúng 1 NORMAL, lần sau báo cửa/giờ đầu. RequestId replay không tăng admission. Ngoại lệ cần quyền cửa và lý do; thêm EXCEPTION giữ lịch sử cũ kèm tên nhân viên.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "đánh dấu đã vào chống được hai lần quét đồng thời bằng ràng buộc ở cơ sở dữ liệu. Ước lượng thô 3 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

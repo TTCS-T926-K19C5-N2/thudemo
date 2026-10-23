@@ -1,0 +1,32 @@
+{
+  "runId": "20261023T162100-demo-local-completion",
+  "checkpoint": "R79",
+  "kind": "browser accessibility/UI observation",
+  "viewport": "In-app browser viewport 543x764 CSS pixels at DPR 1.25; mobile layout",
+  "home": {
+    "url": "http://localhost:3000/",
+    "catalogCountLabel": "43 chương trình",
+    "firstLoadedPage": 12,
+    "searchFilterSortControlsPresent": true
+  },
+  "event": {
+    "url": "http://localhost:3000/shows/914556a8-ba19-4766-9e20-00a3d93df432",
+    "name": "Bệnh sĩ",
+    "showtimeCount": 4,
+    "futureShowtime": "2026-12-07 19:30 local",
+    "salePriceCategories": [
+      "VIP",
+      "STANDARD",
+      "ECONOMY"
+    ]
+  },
+  "seatRoute": {
+    "url": "http://localhost:3000/shows/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+    "unauthenticatedBehavior": "redirects to /login?returnTo=<same seat route>",
+    "seatHoldOrOrderCreated": false
+  },
+  "scope": "Public catalog/detail render and unauthenticated seat gate only; buyer purchase, mobile browser, images pixel comparison and payment not verified",
+  "secretsIncluded": false,
+  "credentialAutofill": "A login page in the browser context displayed previously saved autofill. No form submission occurred, no message was sent, and login screenshots were removed from evidence.",
+  "screenshot": "r79-public-catalog-browser.png (catalog only; no account data)"
+}

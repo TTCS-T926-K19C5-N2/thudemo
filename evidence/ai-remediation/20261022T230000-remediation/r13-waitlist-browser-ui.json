@@ -1,0 +1,25 @@
+{
+  "requirement": "S-59",
+  "case": "S-59-AC01.01",
+  "browser": "ChatGPT in-app browser on isolated localhost app",
+  "url": "http://127.0.0.1:3410/shows/<run-bound-showtime>/seats",
+  "viewport_pixels": "535x756 (narrow/mobile-sized viewport observed)",
+  "steps": [
+    "Opened the run-bound published, sold-out showtime",
+    "Logged in as the synthetic BUYER fixture",
+    "Observed the waitlist panel and clicked “Đăng ký nhận thông báo”"
+  ],
+  "observed": [
+    "UI showed FIFO/no-reservation copy",
+    "UI showed “Đã đăng ký” and “Đang chờ · vị trí 1”",
+    "UI showed unsubscribe control",
+    "No other subscriber email was exposed"
+  ],
+  "database_oracle": "waitlist-browser-db-oracle.json; entry is scoped to synthetic fixture, seatHoldCount=0 and unsoldSeatCount=0",
+  "screenshot": {
+    "status": "CAPTURED_IN_CUA_TOOL_OUTPUT_NOT_SAVED_AS_FILE",
+    "note": "Browser screenshot was visibly inspected in this turn; the CUA surface did not expose a filesystem export path."
+  },
+  "desktop_viewport": "BLOCKED: in-app browser viewport override unavailable",
+  "synthetic_fixture": true
+}

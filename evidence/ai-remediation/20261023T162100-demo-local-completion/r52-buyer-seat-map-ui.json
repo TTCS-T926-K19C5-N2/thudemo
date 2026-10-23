@@ -1,0 +1,78 @@
+{
+  "run": "R52",
+  "profile": "s1demo-384da3d43b41",
+  "sourceBuild": "R46",
+  "viewport": "1280x900",
+  "formValuesRetained": {
+    "email": true,
+    "password": true
+  },
+  "authResponses": [
+    {
+      "path": "/api/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/auth/login",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/privacy/me",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/logout",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 401
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 401
+    }
+  ],
+  "finalRoute": "/shows/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+  "loggedIn": true,
+  "loginErrorVisible": false,
+  "seatMapVisible": true,
+  "seatNamesVisible": false,
+  "pageErrors": [],
+  "businessCountsUnchanged": true,
+  "redisLockFailureKeysRestored": true,
+  "logoutAttempted": true,
+  "screenshot": "r52-buyer-seat-map-desktop.png"
+}

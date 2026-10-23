@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-28-AC",
+    "requirement_id": "T-28",
+    "parent_requirement": "S-12",
+    "kind": "TASK_AC",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Truy vấn ghế trống loại trừ giữ chỗ đã hết hạn dù job chưa chạy",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G29"
+    },
+    "original_requirement": "Giữ chỗ quá hạn nhưng chưa bị job dọn thì ghế vẫn hiện là trống; test dùng thời điểm giả để không phải chờ thật",
+    "fixture": "Hold hết hạn, còn hạn và đã chuyển sang order; worker off/on.",
+    "surfaces": "Worker hết hạn và GET ghế",
+    "code_candidates": "apps/api/src/holds/hold-expiry.scheduler.ts; apps/api/src/hold-expiry-worker.ts",
+    "test_candidates": "hold-expiry.scheduler.spec.ts; seat-expiry-job.service.spec.ts",
+    "steps": [
+      "Khi worker tắt, hold quá hạn vẫn được truy vấn như trống. Chạy job hai lần, restart job sau backlog; chỉ dọn hết hạn, không dọn bảo lưu đơn đang chờ. Dùng fake clock/DB fixture, không chỉnh giờ hệ điều hành.",
+      "Kiểm riêng tiêu chí task T-28: Giữ chỗ quá hạn nhưng chưa bị job dọn thì ghế vẫn hiện là trống; test dùng thời điểm giả để không phải chờ thật",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Giữ chỗ quá hạn nhưng chưa bị job dọn thì ghế vẫn hiện là trống; test dùng thời điểm giả để không phải chờ thật"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-28-NFR",
+    "requirement_id": "T-28",
+    "parent_requirement": "S-12",
+    "kind": "TASK_NFR",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Truy vấn ghế trống loại trừ giữ chỗ đã hết hạn dù job chưa chạy",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I29"
+    },
+    "original_requirement": "so sánh thời gian thực hiện ở máy chủ cơ sở dữ liệu, không ở tầng ứng dụng",
+    "fixture": "Hold hết hạn, còn hạn và đã chuyển sang order; worker off/on.",
+    "surfaces": "Worker hết hạn và GET ghế",
+    "code_candidates": "apps/api/src/holds/hold-expiry.scheduler.ts; apps/api/src/hold-expiry-worker.ts",
+    "test_candidates": "hold-expiry.scheduler.spec.ts; seat-expiry-job.service.spec.ts",
+    "steps": [
+      "Khi worker tắt, hold quá hạn vẫn được truy vấn như trống. Chạy job hai lần, restart job sau backlog; chỉ dọn hết hạn, không dọn bảo lưu đơn đang chờ. Dùng fake clock/DB fixture, không chỉnh giờ hệ điều hành.",
+      "Kiểm riêng tiêu chí task T-28: so sánh thời gian thực hiện ở máy chủ cơ sở dữ liệu, không ở tầng ứng dụng",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "so sánh thời gian thực hiện ở máy chủ cơ sở dữ liệu, không ở tầng ứng dụng"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

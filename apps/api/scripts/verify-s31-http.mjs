@@ -192,11 +192,6 @@ async function ticket(status = 'PAID') {
     },
     include: { items: true },
   });
-  if (status === 'PAID') await db.ticket.create({ data: {
-    orderId: order.id, showtimeId: fixture.showtimeId, seatId: seat.id,
-    code: randomUUID(), seatLabel: `A-${seatNumber}`, ticketType: 'Hạng thường',
-    status: 'VALID', price: 200000,
-  } });
   return order.items[0].id;
 }
 async function send(ticketId, actor, gateId, options = {}) {
@@ -254,14 +249,14 @@ try {
   const showtime = await db.showtime.create({
     data: {
       eventId: event.id,
-      startTime: new Date(),
+      startTime: new Date('2026-12-25T12:00:00Z'),
       status: 'ON_SALE',
     },
   });
   const otherShowtime = await db.showtime.create({
     data: {
       eventId: event.id,
-      startTime: new Date(),
+      startTime: new Date('2026-12-26T12:00:00Z'),
       status: 'ON_SALE',
     },
   });

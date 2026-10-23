@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-26-AC",
+    "requirement_id": "T-26",
+    "parent_requirement": "S-11",
+    "kind": "TASK_AC",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Nút bỏ chọn trên sơ đồ và cập nhật trạng thái tại chỗ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G27"
+    },
+    "original_requirement": "Bỏ chọn xong thì ghế đổi màu tại chỗ và tổng tiền tạm tính cập nhật",
+    "fixture": "A giữ 3 ghế; B có session riêng.",
+    "surfaces": "DELETE /showtimes/:id/hold-seats hoặc route được UI sử dụng",
+    "code_candidates": "apps/api/src/modules/seats/seat-hold.controller.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-hold.controller.spec.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "A bỏ một ghế, B giữ ngay ghế vừa nhả; hai ghế còn nguyên hạn. B xoá hold của A phải 403; xoá ghế không giữ theo hợp đồng T-25 trả 404. Bỏ ghế cuối làm đồng hồ biến mất; đếm một request thao tác.",
+      "Kiểm riêng tiêu chí task T-26: Bỏ chọn xong thì ghế đổi màu tại chỗ và tổng tiền tạm tính cập nhật",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Bỏ chọn xong thì ghế đổi màu tại chỗ và tổng tiền tạm tính cập nhật"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-26-NFR",
+    "requirement_id": "T-26",
+    "parent_requirement": "S-11",
+    "kind": "TASK_NFR",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Nút bỏ chọn trên sơ đồ và cập nhật trạng thái tại chỗ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I27"
+    },
+    "original_requirement": "thao tác chỉ gọi một yêu cầu mạng",
+    "fixture": "A giữ 3 ghế; B có session riêng.",
+    "surfaces": "DELETE /showtimes/:id/hold-seats hoặc route được UI sử dụng",
+    "code_candidates": "apps/api/src/modules/seats/seat-hold.controller.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-hold.controller.spec.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "A bỏ một ghế, B giữ ngay ghế vừa nhả; hai ghế còn nguyên hạn. B xoá hold của A phải 403; xoá ghế không giữ theo hợp đồng T-25 trả 404. Bỏ ghế cuối làm đồng hồ biến mất; đếm một request thao tác.",
+      "Kiểm riêng tiêu chí task T-26: thao tác chỉ gọi một yêu cầu mạng",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "thao tác chỉ gọi một yêu cầu mạng"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

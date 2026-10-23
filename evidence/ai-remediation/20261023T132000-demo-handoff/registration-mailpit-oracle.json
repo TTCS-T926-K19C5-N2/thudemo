@@ -1,0 +1,22 @@
+{
+  "runId": "20261023T132000-demo-handoff",
+  "profile": "prepared local demo with isolated PostgreSQL and Mailpit catcher",
+  "ui": "browser submitted synthetic registration and displayed the generic success notice",
+  "database": {
+    "userExists": true,
+    "pendingEmailVerification": true,
+    "buyerRoleOnly": true,
+    "consentPersisted": true,
+    "activationTokenHas24HourExpiry": true,
+    "mailOutboxStatus": "SENT",
+    "mailAttemptCount": 1,
+    "encryptedTokenClearedAfterSend": true
+  },
+  "mailpit": {
+    "catcherAcceptedExpectedMessageId": true,
+    "recipientMatchesSyntheticFixture": true,
+    "bodyContainsActivationLinkWhoseTokenHashMatchesDatabase": true,
+    "realEmailSent": false
+  },
+  "sensitiveValuesLogged": false
+}
