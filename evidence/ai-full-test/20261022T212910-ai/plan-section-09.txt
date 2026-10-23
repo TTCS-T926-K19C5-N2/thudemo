@@ -1,0 +1,21 @@
+## 9. Ma trận hiệu năng và độ tin cậy
+
+| Yêu cầu | Cách đo | Điều kiện đạt gốc |
+|---|---|---|
+| S-05/T-12 import | Tệp thật 2.000 ghế, từ nhận yêu cầu đến transaction commit; nhiều lượt fixture độc lập | Dưới 5 giây; không nạp một phần |
+| S-09/T-19 query | Query trạng thái 2.000 ghế, query trace/count | Dưới 200 ms và một truy vấn theo nhiệm vụ |
+| S-09/T-21 render | Browser từ mở trang tới đầy đủ 2.000 ghế tương tác được | Dưới 2 giây; kiểm cả desktop/mobile |
+| S-10 hold | Workload giữ ghế bình thường và contention tách riêng; latency raw mỗi request | p95 dưới 300 ms |
+| S-11 release | Đo request bỏ chọn và trạng thái đối tác nhận được | Response dưới 300 ms theo NFR gốc |
+| S-08/T-17 catalog | Dữ liệu 200 suất, nhiều trang, cache nóng/lạnh tách riêng | p95 dưới 500 ms; TTL cache 30 giây |
+| T-50 order-status | Endpoint đúng owner, no-store | Dưới 100 ms |
+| S-27 mail | PAID commit đến catcher nhận email đủ ảnh QR | Trong 60 giây; ghi rõ chỉ catcher hay Internet |
+| S-30 scan | Camera decode → server confirm → UI feedback, tách API timing | Dưới 500 ms; trên 3 giây có trạng thái chờ |
+| S-33 snapshot | 5.000 vé; 4G thật và profile mô phỏng ghi riêng | Dưới 10 giây; không PII |
+| S-44 realtime | 2.000 viewer kết nối, thay trạng thái và đo mỗi viewer nhận/áp dụng | Trong 2 giây theo AC; chỉ p95 đẹp chưa đủ nếu có viewer vượt 2 giây |
+| S-50 report | Mutation có timestamp → report phản ánh | Không trễ quá 1 phút |
+| T-02/T-03 | Receipt CI và deploy đúng revision; lỗi pipeline/image có thử riêng | CI dưới 5 phút; staging mới trong 10 phút; bản cũ sống khi triển khai lỗi |
+| S-55 backup | Scheduler, off-host receipt, retention, restore và key recovery | Mỗi đêm, ngoài máy chủ app, giữ 14 bản, app chạy được sau phục hồi |
+
+Phương pháp đo đề xuất cho endpoint p95: tối thiểu 200 mẫu sau warm-up, ghi cỡ tải/concurrency, tỷ lệ lỗi, p50/p95/max, cold/warm và cấu hình máy. Đây là thiết kế phép thử, không thêm SLA mới. p95 dùng phương pháp nearest-rank trên mẫu hợp lệ đã định nghĩa; không bỏ request chậm/lỗi khỏi số liệu. Load test chỉ chạy trên profile được cấp phép, không làm quá tải staging dùng chung.
+

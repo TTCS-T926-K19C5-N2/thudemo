@@ -1,0 +1,24 @@
+{
+  "runId": "20261022T230000-remediation",
+  "fixture": {
+    "showtimeId": "c2297225-058f-4124-b007-c9dfb715e4d3",
+    "ticketItemId": "a57bfffd-e07d-4d49-bcc7-fd5e10013d33"
+  },
+  "oracle": {
+    "normalCount": 1,
+    "exceptionCount": 1,
+    "firstAdmission": {
+      "gateName": "Cửa A",
+      "enteredAt": "2026-10-23T04:28:04.991Z"
+    },
+    "exception": {
+      "gateName": "Cửa B",
+      "staffName": "Nhân viên thử nghiệm",
+      "reason": "Đã kiểm tra chủ vé tại cửa B",
+      "ownerConfirmed": true
+    },
+    "normalReplay": "ALREADY_RECORDED",
+    "exceptionReplay": "ALREADY_RECORDED",
+    "admissionCountAfterReplay": 2
+  }
+}

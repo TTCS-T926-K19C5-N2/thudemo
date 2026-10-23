@@ -80,7 +80,7 @@ export function ScannerTicketsView({
           setStatus('not_downloaded');
         }
       } catch (err: unknown) {
-        console.error('Lỗi đọc dữ liệu máy quét cục bộ:', err);
+        console.warn('Lỗi đọc dữ liệu máy quét cục bộ:', err);
       }
     }
 

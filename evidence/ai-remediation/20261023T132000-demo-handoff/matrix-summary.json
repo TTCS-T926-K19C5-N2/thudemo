@@ -1,0 +1,213 @@
+{
+  "tier": {
+    "Ready": {
+      "total": 157,
+      "NOT_RUN": 110,
+      "PASS": 40,
+      "BLOCKED": 6,
+      "NEEDS_DECISION": 1
+    },
+    "Next": {
+      "total": 71,
+      "NOT_RUN": 42,
+      "PASS": 28,
+      "BLOCKED": 1
+    },
+    "Later": {
+      "total": 82,
+      "NOT_RUN": 40,
+      "PASS": 36,
+      "NEEDS_DECISION": 4,
+      "BLOCKED": 1,
+      "MISSING": 1
+    },
+    "IMPLEMENTED_OR_PROPOSED": {
+      "total": 51,
+      "NOT_RUN": 13,
+      "PASS": 38
+    },
+    "GOVERNANCE": {
+      "total": 23,
+      "NOT_RUN": 23
+    },
+    "TECHNICAL": {
+      "total": 110,
+      "NOT_RUN": 108,
+      "BLOCKED": 2
+    }
+  },
+  "priority": {
+    "Must": {
+      "total": 182,
+      "NOT_RUN": 128,
+      "PASS": 46,
+      "BLOCKED": 7,
+      "NEEDS_DECISION": 1
+    },
+    "Should": {
+      "total": 87,
+      "NOT_RUN": 57,
+      "PASS": 27,
+      "NEEDS_DECISION": 2,
+      "BLOCKED": 1
+    },
+    "P1": {
+      "total": 14,
+      "NOT_RUN": 8,
+      "PASS": 6
+    },
+    "Theo quy định gốc": {
+      "total": 14,
+      "NOT_RUN": 14
+    },
+    "P0": {
+      "total": 37,
+      "NOT_RUN": 5,
+      "PASS": 32
+    },
+    "Could": {
+      "total": 42,
+      "PASS": 31,
+      "NOT_RUN": 8,
+      "MISSING": 1,
+      "NEEDS_DECISION": 2
+    },
+    "Theo scope Sprint": {
+      "total": 8,
+      "NOT_RUN": 8
+    },
+    "Theo story cha": {
+      "total": 110,
+      "NOT_RUN": 108,
+      "BLOCKED": 2
+    }
+  },
+  "group": {
+    "Đối chiếu tổng thể": {
+      "total": 22,
+      "NOT_RUN": 22
+    },
+    "Hành trình và rủi ro bổ sung": {
+      "total": 41,
+      "NOT_RUN": 13,
+      "PASS": 28
+    },
+    "Điều kiện nghiệm thu": {
+      "total": 14,
+      "NOT_RUN": 14
+    },
+    "Hạ tầng": {
+      "total": 15,
+      "NOT_RUN": 15
+    },
+    "Mục tiêu tích hợp": {
+      "total": 9,
+      "NOT_RUN": 9
+    },
+    "Plan-derived supplementary": {
+      "total": 5,
+      "PASS": 5
+    },
+    "Tài khoản": {
+      "total": 26,
+      "NOT_RUN": 20,
+      "PASS": 6
+    },
+    "Sự kiện": {
+      "total": 29,
+      "PASS": 7,
+      "BLOCKED": 6,
+      "NOT_RUN": 16
+    },
+    "Sơ đồ và giá": {
+      "total": 42,
+      "NOT_RUN": 41,
+      "PASS": 1
+    },
+    "Khám phá": {
+      "total": 13,
+      "PASS": 7,
+      "NEEDS_DECISION": 1,
+      "NOT_RUN": 5
+    },
+    "Giữ ghế": {
+      "total": 49,
+      "PASS": 5,
+      "NOT_RUN": 42,
+      "BLOCKED": 2
+    },
+    "Đơn hàng": {
+      "total": 26,
+      "NOT_RUN": 21,
+      "PASS": 5
+    },
+    "Thanh toán": {
+      "total": 68,
+      "PASS": 11,
+      "NOT_RUN": 57
+    },
+    "Vé": {
+      "total": 23,
+      "PASS": 9,
+      "NOT_RUN": 14
+    },
+    "Quản trị": {
+      "total": 4,
+      "NOT_RUN": 4
+    },
+    "Soát vé": {
+      "total": 16,
+      "PASS": 6,
+      "NOT_RUN": 10
+    },
+    "Ngoại tuyến": {
+      "total": 21,
+      "PASS": 11,
+      "BLOCKED": 1,
+      "NOT_RUN": 9
+    },
+    "Vận hành": {
+      "total": 10,
+      "PASS": 3,
+      "NEEDS_DECISION": 1,
+      "NOT_RUN": 6
+    },
+    "Huỷ và hoàn": {
+      "total": 8,
+      "PASS": 2,
+      "BLOCKED": 1,
+      "NOT_RUN": 4,
+      "NEEDS_DECISION": 1
+    },
+    "Báo cáo và dữ liệu": {
+      "total": 8,
+      "NOT_RUN": 8
+    },
+    "Riêng tư": {
+      "total": 4,
+      "NOT_RUN": 4
+    },
+    "Mở rộng": {
+      "total": 29,
+      "PASS": 26,
+      "MISSING": 1,
+      "NEEDS_DECISION": 2
+    },
+    "Thông báo": {
+      "total": 2,
+      "NOT_RUN": 2
+    },
+    "Vé/cửa/offline — INT-05 split": {
+      "total": 3,
+      "PASS": 3
+    },
+    "Core flow browser slice — INT-12": {
+      "total": 5,
+      "PASS": 5
+    },
+    "Hành trình vé offline — INT-06 split": {
+      "total": 2,
+      "PASS": 2
+    }
+  }
+}

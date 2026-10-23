@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-43-AC01",
+    "requirement_id": "S-43",
+    "kind": "AC",
+    "group": "Vận hành",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "6",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Giám sát và cảnh báo khi hệ thống quá tải",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L42"
+    },
+    "original_requirement": "Có bảng theo dõi số yêu cầu, tỉ lệ lỗi, thời gian phản hồi p95, số tranh chấp ghế và số webhook bị từ chối; vượt ngưỡng thì gửi cảnh báo. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP",
+    "fixture": "Sinh request, lỗi 4xx/5xx, tranh ghế và bad webhook; receiver thử riêng.",
+    "surfaces": "Metrics/dashboards và cảnh báo local",
+    "code_candidates": "apps/api/src/monitoring/; monitoring/",
+    "test_candidates": "metrics.spec.ts; monitoring/rule-tests.json; verify-s43.mjs",
+    "steps": [
+      "Chuẩn bị fixture: Sinh request, lỗi 4xx/5xx, tranh ghế và bad webhook; receiver thử riêng.",
+      "Đối chiếu counter/p95 với request thật; vượt ngưỡng rule thử phải có alert nhận được và resolve. Metrics bảo vệ token/loopback, không label PII/high-cardinality; dashboard có dữ liệu và coverage khi producer chưa bật.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Đối chiếu counter/p95 với request thật; vượt ngưỡng rule thử phải có alert nhận được và resolve. Metrics bảo vệ token/loopback, không label PII/high-cardinality; dashboard có dữ liệu và coverage khi producer chưa bật.",
+    "expected": [
+      "Có bảng theo dõi số yêu cầu, tỉ lệ lỗi, thời gian phản hồi p95, số tranh chấp ghế và số webhook bị từ chối; vượt ngưỡng thì gửi cảnh báo. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-43-NFR",
+    "requirement_id": "S-43",
+    "kind": "NFR",
+    "group": "Vận hành",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "6",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Giám sát và cảnh báo khi hệ thống quá tải — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N42"
+    },
+    "original_requirement": "chưa refine — cần chốt kênh nhận cảnh báo và công cụ thu thập số liệu",
+    "fixture": "Sinh request, lỗi 4xx/5xx, tranh ghế và bad webhook; receiver thử riêng.",
+    "surfaces": "Metrics/dashboards và cảnh báo local",
+    "code_candidates": "apps/api/src/monitoring/; monitoring/",
+    "test_candidates": "metrics.spec.ts; monitoring/rule-tests.json; verify-s43.mjs",
+    "steps": [
+      "Đối chiếu counter/p95 với request thật; vượt ngưỡng rule thử phải có alert nhận được và resolve. Metrics bảo vệ token/loopback, không label PII/high-cardinality; dashboard có dữ liệu và coverage khi producer chưa bật.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt kênh nhận cảnh báo và công cụ thu thập số liệu"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

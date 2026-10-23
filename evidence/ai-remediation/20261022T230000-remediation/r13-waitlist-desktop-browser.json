@@ -1,0 +1,22 @@
+{
+  "runId": "20261022T230000-remediation",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "pageErrors": [],
+  "checks": [
+    "desktop sold-out showtime displayed FIFO/no-reservation copy and registered buyer at position 1",
+    "mobile waitlist view has no horizontal overflow",
+    "synthetic subscriber email is not exposed in the page"
+  ],
+  "screenshots": [
+    "r13-waitlist-desktop.png",
+    "r13-waitlist-mobile.png"
+  ],
+  "navigation": {
+    "url": "http://127.0.0.1:3410/shows/e7dc0396-c4d3-4b05-9ec2-0c6fdfefe8d1/seats",
+    "title": "",
+    "body": "Đặt vé thử trên localhost · Thanh toán giả lập, không thu tiền thật.\nconfirmation_number\nVé Sự Kiện\nsearch\nSự kiện\nNhà hát\nVé của tôi\nlocation_on\nTP. Hồ Chí Minh\nexpand_more\nĐăng nhập\nconfirmation_number\nVé Sự Kiện\n\n© 2026 Vé Sự Kiện\n\nĐiều khoản dịch vụ\nChính sách hoàn vé\nQuy định sơ đồ ghế\nHỗ trợ"
+  }
+}

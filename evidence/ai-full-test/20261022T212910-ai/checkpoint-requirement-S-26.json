@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-26-AC01",
+    "requirement_id": "S-26",
+    "kind": "AC",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Mã QR trên vé có chữ ký, không tạo giả được ngoài hệ thống",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L31"
+    },
+    "original_requirement": "Giả sử nội dung QR gồm mã vé, mã suất và chữ ký, Khi máy quét kiểm chữ ký bằng khoá công khai, Thì vé thật qua và mã sửa một ký tự bị từ chối",
+    "fixture": "K1/K2 key ring chỉ dùng thử; QR gốc, sửa, thiếu chữ ký, kid lạ.",
+    "surfaces": "QR trên vé; public keys; máy quét",
+    "code_candidates": "apps/api/src/tickets/ticket-signing.service.ts; apps/api/src/scanner/scanner-crypto.service.ts",
+    "test_candidates": "ticket-signing-keys.spec.ts; scanner-crypto.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: nội dung QR gồm mã vé, mã suất và chữ ký.",
+      "Thực hiện trên QR trên vé; public keys; máy quét: máy quét kiểm chữ ký bằng khoá công khai.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Ký bằng K1, xoay K2 nhưng giữ K1 public rồi restart; vé cũ vẫn xác minh được online/offline. Sửa một ký tự và bỏ chữ ký phải bị từ chối; kiểm browser bundle/API/cache chỉ chứa public keys.",
+    "expected": [
+      "vé thật qua và mã sửa một ký tự bị từ chối"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-26-AC02",
+    "requirement_id": "S-26",
+    "kind": "AC",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Mã QR trên vé có chữ ký, không tạo giả được ngoài hệ thống",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L31"
+    },
+    "original_requirement": "Giả sử khoá ký bị đổi, Khi quét vé đã phát trước đó, Thì vé cũ vẫn hợp lệ nhờ phiên bản khoá ghi trong QR",
+    "fixture": "K1/K2 key ring chỉ dùng thử; QR gốc, sửa, thiếu chữ ký, kid lạ.",
+    "surfaces": "QR trên vé; public keys; máy quét",
+    "code_candidates": "apps/api/src/tickets/ticket-signing.service.ts; apps/api/src/scanner/scanner-crypto.service.ts",
+    "test_candidates": "ticket-signing-keys.spec.ts; scanner-crypto.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: khoá ký bị đổi.",
+      "Thực hiện trên QR trên vé; public keys; máy quét: quét vé đã phát trước đó.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Ký bằng K1, xoay K2 nhưng giữ K1 public rồi restart; vé cũ vẫn xác minh được online/offline. Sửa một ký tự và bỏ chữ ký phải bị từ chối; kiểm browser bundle/API/cache chỉ chứa public keys.",
+    "expected": [
+      "vé cũ vẫn hợp lệ nhờ phiên bản khoá ghi trong QR"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-26-AC03",
+    "requirement_id": "S-26",
+    "kind": "AC",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Mã QR trên vé có chữ ký, không tạo giả được ngoài hệ thống",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L31"
+    },
+    "original_requirement": "Giả sử một người tự tạo QR với mã vé hợp lệ nhưng không có chữ ký, Khi quét, Thì bị từ chối",
+    "fixture": "K1/K2 key ring chỉ dùng thử; QR gốc, sửa, thiếu chữ ký, kid lạ.",
+    "surfaces": "QR trên vé; public keys; máy quét",
+    "code_candidates": "apps/api/src/tickets/ticket-signing.service.ts; apps/api/src/scanner/scanner-crypto.service.ts",
+    "test_candidates": "ticket-signing-keys.spec.ts; scanner-crypto.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: một người tự tạo QR với mã vé hợp lệ nhưng không có chữ ký.",
+      "Thực hiện trên QR trên vé; public keys; máy quét: quét.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Ký bằng K1, xoay K2 nhưng giữ K1 public rồi restart; vé cũ vẫn xác minh được online/offline. Sửa một ký tự và bỏ chữ ký phải bị từ chối; kiểm browser bundle/API/cache chỉ chứa public keys.",
+    "expected": [
+      "bị từ chối"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-26-NFR",
+    "requirement_id": "S-26",
+    "kind": "NFR",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Mã QR trên vé có chữ ký, không tạo giả được ngoài hệ thống — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N31"
+    },
+    "original_requirement": "khoá riêng chỉ nằm trên máy chủ; máy quét chỉ giữ khoá công khai. Ước lượng thô 3 SP — tier Next",
+    "fixture": "K1/K2 key ring chỉ dùng thử; QR gốc, sửa, thiếu chữ ký, kid lạ.",
+    "surfaces": "QR trên vé; public keys; máy quét",
+    "code_candidates": "apps/api/src/tickets/ticket-signing.service.ts; apps/api/src/scanner/scanner-crypto.service.ts",
+    "test_candidates": "ticket-signing-keys.spec.ts; scanner-crypto.service.spec.ts",
+    "steps": [
+      "Ký bằng K1, xoay K2 nhưng giữ K1 public rồi restart; vé cũ vẫn xác minh được online/offline. Sửa một ký tự và bỏ chữ ký phải bị từ chối; kiểm browser bundle/API/cache chỉ chứa public keys.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "khoá riêng chỉ nằm trên máy chủ; máy quét chỉ giữ khoá công khai. Ước lượng thô 3 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

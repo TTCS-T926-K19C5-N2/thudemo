@@ -1,0 +1,21 @@
+{
+  "runId": "20261022T230000-remediation",
+  "fixture": {
+    "showtimeId": "5514f5ac-17b6-43f4-ba06-4ef9a46cd59c",
+    "paidOrderId": "a9a15134-b550-4ead-95f2-09e54e8e27f3",
+    "pendingOrderId": "03122ef4-86b1-435c-a0ee-40b8d2192f83",
+    "availableSeatId": "699d5ded-e030-41c8-b08d-f6255e274470"
+  },
+  "showtimeStatus": "CLOSED",
+  "cancellationJobStatus": "QUEUED",
+  "pendingOrderStatus": "CANCELLED",
+  "paidOrderBeforeWorker": "PAID",
+  "refundRowsBeforeWorker": 0,
+  "operationMailOutboxRows": 0,
+  "availableSeatStillUnsold": true,
+  "buyerHold": {
+    "status": 409,
+    "code": "SHOWTIME_CLOSED"
+  },
+  "worker": "explicitly off; this verifies immediate sale closure only, not batch completion/restart"
+}

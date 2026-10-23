@@ -1,0 +1,1 @@
+ALTER TABLE "showtimes" ADD COLUMN "isDemo" BOOLEAN NOT NULL DEFAULT false;

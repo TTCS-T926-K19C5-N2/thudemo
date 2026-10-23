@@ -1,0 +1,56 @@
+{
+  "run_id": "20261022T230000-remediation",
+  "checkpoint": "R19 / INT-06 cross-device offline conflict",
+  "recorded_at": "2026-10-23T04:35:56.275Z",
+  "changed_cases": [
+    "INT-06",
+    "INT-06.01",
+    "INT-06.02"
+  ],
+  "counts": {
+    "NOT_RUN": 358,
+    "PASS": 82,
+    "BLOCKED": 4,
+    "NEEDS_DECISION": 4,
+    "MISSING": 1
+  },
+  "decision": "D05 approved baseline: earlier original device scan timestamp wins; clock offsets retained for interpretation.",
+  "execution": {
+    "browser_contexts": 2,
+    "viewports": [
+      "1440x1000",
+      "390x844"
+    ],
+    "sync_order": "later timestamp first, earlier timestamp second",
+    "api_statuses": [
+      200,
+      200
+    ],
+    "postgres_rows": {
+      "accepted": 1,
+      "conflict": 1,
+      "normal_admissions": 1
+    },
+    "result": "PASS local isolated profile"
+  },
+  "limitations": [
+    "Chromium contexts emulate device/browser storage but are not physical scanners.",
+    "No 4G, camera, or staging claim."
+  ],
+  "evidence_files": [
+    "r19-int06-conflict-browser.json",
+    "int06-postgres-oracle.json",
+    "r19-int06-browser-attempt4.log",
+    "r19-int06-browser-attempt4.exitcode",
+    "r19-fixture-verify-int06.log",
+    "int06-offline-before-sync-desktop.png",
+    "int06-offline-before-sync-mobile.png",
+    "int06-conflict-report-desktop-device-A.png",
+    "int06-conflict-report-mobile-device-B.png",
+    "apps/web/scripts/ai-remediation-int06-browser.mjs",
+    "apps/api/scripts/ai-remediation-r19-fixture.mjs",
+    "apps/api/src/scanner/offline-admissions.service.ts",
+    "apps/web/src/features/scanner/conflict-report.tsx",
+    "decision-register.json"
+  ]
+}

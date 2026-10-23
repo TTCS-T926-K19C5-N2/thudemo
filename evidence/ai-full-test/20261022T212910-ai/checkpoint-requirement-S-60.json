@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-60-AC01",
+    "requirement_id": "S-60",
+    "kind": "AC",
+    "group": "Mở rộng",
+    "tier": "Later",
+    "priority": "Could",
+    "sprint": null,
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Xuất sơ đồ ghế đã bán dạng PDF",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L63"
+    },
+    "original_requirement": "Xuất tệp PDF một trang có sơ đồ tô màu theo trạng thái và chú giải, đúng với dữ liệu tại thời điểm xuất. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP. Phần đệm, chưa xếp sprint",
+    "fixture": "Map có 3 trạng thái và chú giải; snapshot lúc xuất.",
+    "surfaces": "Xuất sơ đồ ghế PDF",
+    "code_candidates": "Chưa tìm thấy tuyến xuất PDF sơ đồ trong inventory hiện tại",
+    "test_candidates": "Chưa xác định suite chuyên biệt",
+    "steps": [
+      "Chuẩn bị fixture: Map có 3 trạng thái và chú giải; snapshot lúc xuất.",
+      "Nếu có chức năng, xuất PDF và mở/render: đúng một trang, đủ ghế/chú giải/trạng thái theo snapshot; không bị cắt. So số ghế và quyền organizer; không có route/UI thì MISSING.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Nếu có chức năng, xuất PDF và mở/render: đúng một trang, đủ ghế/chú giải/trạng thái theo snapshot; không bị cắt. So số ghế và quyền organizer; không có route/UI thì MISSING.",
+    "expected": [
+      "Xuất tệp PDF một trang có sơ đồ tô màu theo trạng thái và chú giải, đúng với dữ liệu tại thời điểm xuất. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP. Phần đệm, chưa xếp sprint"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-60-NFR",
+    "requirement_id": "S-60",
+    "kind": "NFR",
+    "group": "Mở rộng",
+    "tier": "Later",
+    "priority": "Could",
+    "sprint": null,
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Xuất sơ đồ ghế đã bán dạng PDF — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N63"
+    },
+    "original_requirement": "chưa refine",
+    "fixture": "Map có 3 trạng thái và chú giải; snapshot lúc xuất.",
+    "surfaces": "Xuất sơ đồ ghế PDF",
+    "code_candidates": "Chưa tìm thấy tuyến xuất PDF sơ đồ trong inventory hiện tại",
+    "test_candidates": "Chưa xác định suite chuyên biệt",
+    "steps": [
+      "Nếu có chức năng, xuất PDF và mở/render: đúng một trang, đủ ghế/chú giải/trạng thái theo snapshot; không bị cắt. So số ghế và quyền organizer; không có route/UI thì MISSING.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

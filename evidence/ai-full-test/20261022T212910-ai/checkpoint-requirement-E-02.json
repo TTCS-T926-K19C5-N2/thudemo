@@ -1,0 +1,61 @@
+[
+  {
+    "id": "E-02-AC",
+    "requirement_id": "E-02",
+    "kind": "EPIC",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Ready",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Tài khoản và phân quyền",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "G3"
+    },
+    "original_requirement": "Mỗi vai trò chỉ vào được phần của mình; gọi thẳng API không thuộc quyền thì bị chặn ở máy chủ, không chỉ ẩn nút trên giao diện",
+    "steps": [
+      "Đối chiếu tập story con và các hành trình đầu-cuối trong kế hoạch.",
+      "Kiểm từng mệnh đề ở cấp tích hợp; mọi story đơn lẻ PASS chưa tự chứng minh epic PASS."
+    ],
+    "expected": [
+      "Mỗi vai trò chỉ vào được phần của mình; gọi thẳng API không thuộc quyền thì bị chặn ở máy chủ, không chỉ ẩn nút trên giao diện"
+    ],
+    "evidence_required": [
+      "Liên kết các case con và E2E đã chạy"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "E-02-NFR",
+    "requirement_id": "E-02",
+    "kind": "EPIC_NFR",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Ready",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Tài khoản và phân quyền",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "I3"
+    },
+    "original_requirement": "mật khẩu hash bằng argon2id; không log mật khẩu và không log token",
+    "steps": [
+      "Kiểm NFR ở phạm vi epic, đối chiếu các story con và số đo tích hợp; không chỉ suy từ unit test."
+    ],
+    "expected": [
+      "mật khẩu hash bằng argon2id; không log mật khẩu và không log token"
+    ],
+    "evidence_required": [
+      "Bằng chứng kỹ thuật hoặc số đo tương ứng"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

@@ -1,0 +1,67 @@
+{
+  "checkedAt": "2026-10-23T15:01:57.205Z",
+  "canonical": [
+    {
+      "file": "apps/api/src/tickets/tickets.service.ts",
+      "sha256": "6ab56928b246013ee45bf27b800161f33964b071fa89161d708c34065a217033"
+    },
+    {
+      "file": "apps/api/src/orders/ticket-qr.service.ts",
+      "sha256": "e3474aaa517636b81af463d9da54ebed3f15eae5b36f6292785307bffe856cfb"
+    },
+    {
+      "file": "apps/api/src/tickets/ticket-delivery.service.ts",
+      "sha256": "bd732a26afecf2d276b653c9493a833c3a8c7ee557ea508e959dada20e703893"
+    },
+    {
+      "file": "apps/api/src/orders/ticket-check-in.service.ts",
+      "sha256": "2d04c78caa301ec9ed6d3826ed85b73f59ef386fc22fdf7f555f9d07b3c8c789"
+    },
+    {
+      "file": "apps/api/src/scanner/scanner-snapshot.service.ts",
+      "sha256": "a59f17ce4c17cbbd91700f15a6fbe0e21ed0b648d13f6e2e5908a21cf251b031"
+    },
+    {
+      "file": "apps/web/src/features/tickets/my-tickets.tsx",
+      "sha256": "e35c6c72fc63ca49692aa276e43923723ef5a69df356c820148706460d98d9e6"
+    }
+  ],
+  "prepared": [
+    {
+      "file": "apps/api/src/tickets/tickets.service.ts",
+      "sha256": "6ab56928b246013ee45bf27b800161f33964b071fa89161d708c34065a217033"
+    },
+    {
+      "file": "apps/api/src/orders/ticket-qr.service.ts",
+      "sha256": "e3474aaa517636b81af463d9da54ebed3f15eae5b36f6292785307bffe856cfb"
+    },
+    {
+      "file": "apps/api/src/tickets/ticket-delivery.service.ts",
+      "sha256": "bd732a26afecf2d276b653c9493a833c3a8c7ee557ea508e959dada20e703893"
+    },
+    {
+      "file": "apps/api/src/orders/ticket-check-in.service.ts",
+      "sha256": "2d04c78caa301ec9ed6d3826ed85b73f59ef386fc22fdf7f555f9d07b3c8c789"
+    },
+    {
+      "file": "apps/api/src/scanner/scanner-snapshot.service.ts",
+      "sha256": "a59f17ce4c17cbbd91700f15a6fbe0e21ed0b648d13f6e2e5908a21cf251b031"
+    },
+    {
+      "file": "apps/web/src/features/tickets/my-tickets.tsx",
+      "sha256": "e35c6c72fc63ca49692aa276e43923723ef5a69df356c820148706460d98d9e6"
+    }
+  ],
+  "sameSourceForTheseFiles": true,
+  "proof": {
+    "files": [
+      "r75-int16-transfer-postfix-browser.json",
+      "r75-int16-transfer-postgres-oracle.json",
+      "r75-int16-owner-desktop.png",
+      "r75-int16-recipient-desktop.png",
+      "r75-int16-recipient-mobile.png"
+    ],
+    "run": "20261022T230000-remediation",
+    "sourceBuildHashNotRecorded": true
+  }
+}

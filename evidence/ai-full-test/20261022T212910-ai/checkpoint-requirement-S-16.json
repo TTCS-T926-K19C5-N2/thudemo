@@ -1,0 +1,200 @@
+[
+  {
+    "id": "S-16-AC01",
+    "requirement_id": "S-16",
+    "kind": "AC",
+    "group": "Đơn hàng",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Tạo đơn hàng từ các ghế đang giữ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L18"
+    },
+    "original_requirement": "Giả sử tôi đang giữ 2 ghế còn hiệu lực, Khi bấm \"đặt vé\", Thì một đơn ở trạng thái chờ thanh toán được tạo với đúng 2 ghế và tổng tiền theo giá hạng, và thời hạn giữ chỗ được gia hạn bằng thời hạn thanh toán",
+    "fixture": "A giữ 2 ghế còn hạn; biến thể một hold hết hạn, ghế do B giữ.",
+    "surfaces": "POST /showtimes/:id/orders; POST /orders",
+    "code_candidates": "apps/api/src/orders/orders.service.ts; apps/api/src/orders/orders.controller.ts",
+    "test_candidates": "orders.e2e-spec.ts; s15-s16-acceptance.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi đang giữ 2 ghế còn hiệu lực.",
+      "Thực hiện trên POST /showtimes/:id/orders; POST /orders: bấm \"đặt vé\".",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Tạo order từ hold server; gửi thêm seatIds/total giả phải không thay tập ghế hợp lệ. Gửi hai request đồng thời và retry: một order, đúng items/giá, gia hạn giữ cùng transaction; lỗi giữa chừng không để order hoặc gia hạn một nửa.",
+    "expected": [
+      "một đơn ở trạng thái chờ thanh toán được tạo với đúng 2 ghế và tổng tiền theo giá hạng, và thời hạn giữ chỗ được gia hạn bằng thời hạn thanh toán"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-16-AC02",
+    "requirement_id": "S-16",
+    "kind": "AC",
+    "group": "Đơn hàng",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Tạo đơn hàng từ các ghế đang giữ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L18"
+    },
+    "original_requirement": "Giả sử một trong các giữ chỗ đã hết hạn, Khi bấm \"đặt vé\", Thì không tạo đơn và báo ghế nào đã mất",
+    "fixture": "A giữ 2 ghế còn hạn; biến thể một hold hết hạn, ghế do B giữ.",
+    "surfaces": "POST /showtimes/:id/orders; POST /orders",
+    "code_candidates": "apps/api/src/orders/orders.service.ts; apps/api/src/orders/orders.controller.ts",
+    "test_candidates": "orders.e2e-spec.ts; s15-s16-acceptance.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: một trong các giữ chỗ đã hết hạn.",
+      "Thực hiện trên POST /showtimes/:id/orders; POST /orders: bấm \"đặt vé\".",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Tạo order từ hold server; gửi thêm seatIds/total giả phải không thay tập ghế hợp lệ. Gửi hai request đồng thời và retry: một order, đúng items/giá, gia hạn giữ cùng transaction; lỗi giữa chừng không để order hoặc gia hạn một nửa.",
+    "expected": [
+      "không tạo đơn và báo ghế nào đã mất"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-16-AC03",
+    "requirement_id": "S-16",
+    "kind": "AC",
+    "group": "Đơn hàng",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Tạo đơn hàng từ các ghế đang giữ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L18"
+    },
+    "original_requirement": "Giả sử tôi đã có một đơn đang chờ cho suất này, Khi bấm \"đặt vé\" lần nữa, Thì được đưa về đơn đang chờ đó thay vì tạo đơn thứ hai",
+    "fixture": "A giữ 2 ghế còn hạn; biến thể một hold hết hạn, ghế do B giữ.",
+    "surfaces": "POST /showtimes/:id/orders; POST /orders",
+    "code_candidates": "apps/api/src/orders/orders.service.ts; apps/api/src/orders/orders.controller.ts",
+    "test_candidates": "orders.e2e-spec.ts; s15-s16-acceptance.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi đã có một đơn đang chờ cho suất này.",
+      "Thực hiện trên POST /showtimes/:id/orders; POST /orders: bấm \"đặt vé\" lần nữa.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Tạo order từ hold server; gửi thêm seatIds/total giả phải không thay tập ghế hợp lệ. Gửi hai request đồng thời và retry: một order, đúng items/giá, gia hạn giữ cùng transaction; lỗi giữa chừng không để order hoặc gia hạn một nửa.",
+    "expected": [
+      "được đưa về đơn đang chờ đó thay vì tạo đơn thứ hai"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-16-AC04",
+    "requirement_id": "S-16",
+    "kind": "AC",
+    "group": "Đơn hàng",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Tạo đơn hàng từ các ghế đang giữ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L18"
+    },
+    "original_requirement": "Giả sử tôi bấm \"đặt vé\" hai lần liên tiếp, Khi xử lý, Thì chỉ có một đơn được tạo",
+    "fixture": "A giữ 2 ghế còn hạn; biến thể một hold hết hạn, ghế do B giữ.",
+    "surfaces": "POST /showtimes/:id/orders; POST /orders",
+    "code_candidates": "apps/api/src/orders/orders.service.ts; apps/api/src/orders/orders.controller.ts",
+    "test_candidates": "orders.e2e-spec.ts; s15-s16-acceptance.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi bấm \"đặt vé\" hai lần liên tiếp.",
+      "Thực hiện trên POST /showtimes/:id/orders; POST /orders: xử lý.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Tạo order từ hold server; gửi thêm seatIds/total giả phải không thay tập ghế hợp lệ. Gửi hai request đồng thời và retry: một order, đúng items/giá, gia hạn giữ cùng transaction; lỗi giữa chừng không để order hoặc gia hạn một nửa.",
+    "expected": [
+      "chỉ có một đơn được tạo"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-16-NFR",
+    "requirement_id": "S-16",
+    "kind": "NFR",
+    "group": "Đơn hàng",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Tạo đơn hàng từ các ghế đang giữ — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N18"
+    },
+    "original_requirement": "tạo đơn và gia hạn giữ chỗ là một giao dịch; thời hạn thanh toán là tham số cấu hình",
+    "fixture": "A giữ 2 ghế còn hạn; biến thể một hold hết hạn, ghế do B giữ.",
+    "surfaces": "POST /showtimes/:id/orders; POST /orders",
+    "code_candidates": "apps/api/src/orders/orders.service.ts; apps/api/src/orders/orders.controller.ts",
+    "test_candidates": "orders.e2e-spec.ts; s15-s16-acceptance.e2e-spec.ts",
+    "steps": [
+      "Tạo order từ hold server; gửi thêm seatIds/total giả phải không thay tập ghế hợp lệ. Gửi hai request đồng thời và retry: một order, đúng items/giá, gia hạn giữ cùng transaction; lỗi giữa chừng không để order hoặc gia hạn một nửa.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "tạo đơn và gia hạn giữ chỗ là một giao dịch; thời hạn thanh toán là tham số cấu hình"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

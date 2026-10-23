@@ -1,0 +1,26 @@
+{
+  "scanId": "23ade8df-f2b3-44c4-b2bd-4d5201bf38d1",
+  "range": {
+    "base": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d",
+    "head": "b50cd9ae5709de8486b3736c6fa075a64faa89e1"
+  },
+  "status": "complete",
+  "findingCount": 0,
+  "sourceFiles": 3,
+  "reportPath": "C:\\Users\\Admin\\.codex\\state\\plugins\\codex-security\\scans\\thudemo-sprint1-gitflow-20261015\\b50cd9ae5709de8486b3736c6fa075a64faa89e1_20261016T083734Z_30_hkeye\\report.md",
+  "usage": {
+    "cacheWriteInputTokens": 0,
+    "cachedInputTokens": 890240,
+    "coverage": "complete",
+    "inputTokens": 918016,
+    "outputTokens": 2783,
+    "reasoningOutputTokens": 423,
+    "source": "codex_rollout",
+    "threadCount": 1,
+    "totalTokens": 920799
+  },
+  "limitations": [
+    "Sequential parent scan; not independent human approval",
+    "No full-product or performance certification inferred"
+  ]
+}

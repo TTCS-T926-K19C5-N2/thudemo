@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-21-AC",
+    "requirement_id": "T-21",
+    "parent_requirement": "S-09",
+    "kind": "TASK_AC",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Tệp mẫu 2000 ghế và phép đo thời gian hiển thị",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G22"
+    },
+    "original_requirement": "Tệp mẫu nạp được bằng S-05; con số đo dưới 2 giây và có trong README",
+    "fixture": "Suất 2.000 ghế, có FREE/HELD/SOLD; desktop và điện thoại.",
+    "surfaces": "/shows/:id/seats; GET /showtimes/:id/seats",
+    "code_candidates": "apps/api/src/showtimes/seat-status.sql.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-availability.query.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Mở map, so toàn bộ trạng thái với DB; người B giữ rồi A refresh. Thử suất chưa có map; zoom/pan/chọn chính xác trên điện thoại; ghế bán không chọn được. Đo truy vấn dưới 200 ms và render đầy đủ dưới 2 giây; theo dõi query count để phát hiện N+1.",
+      "Kiểm riêng tiêu chí task T-21: Tệp mẫu nạp được bằng S-05; con số đo dưới 2 giây và có trong README",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Tệp mẫu nạp được bằng S-05; con số đo dưới 2 giây và có trong README"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-21-NFR",
+    "requirement_id": "T-21",
+    "parent_requirement": "S-09",
+    "kind": "TASK_NFR",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Tệp mẫu 2000 ghế và phép đo thời gian hiển thị",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I22"
+    },
+    "original_requirement": "script sinh tệp chạy lại được với số ghế tuỳ chọn",
+    "fixture": "Suất 2.000 ghế, có FREE/HELD/SOLD; desktop và điện thoại.",
+    "surfaces": "/shows/:id/seats; GET /showtimes/:id/seats",
+    "code_candidates": "apps/api/src/showtimes/seat-status.sql.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-availability.query.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Mở map, so toàn bộ trạng thái với DB; người B giữ rồi A refresh. Thử suất chưa có map; zoom/pan/chọn chính xác trên điện thoại; ghế bán không chọn được. Đo truy vấn dưới 200 ms và render đầy đủ dưới 2 giây; theo dõi query count để phát hiện N+1.",
+      "Kiểm riêng tiêu chí task T-21: script sinh tệp chạy lại được với số ghế tuỳ chọn",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "script sinh tệp chạy lại được với số ghế tuỳ chọn"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

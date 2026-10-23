@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-29-AC01",
+    "requirement_id": "S-29",
+    "kind": "AC",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Nhân viên soát vé chọn suất diễn và cửa trước khi quét",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L32"
+    },
+    "original_requirement": "Giả sử tôi đăng nhập trên điện thoại, Khi mở màn hình quét, Thì phải chọn suất diễn đang diễn ra hôm nay và tên cửa trước khi máy ảnh bật",
+    "fixture": "STAFF có/không có assignment; suất hôm nay/ngày mai, cửa A/B.",
+    "surfaces": "/check-in; GET /check-in/today",
+    "code_candidates": "apps/api/src/check-in/; apps/web/src/features/check-in/",
+    "test_candidates": "check-in-s29.spec.ts; check-in.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi đăng nhập trên điện thoại.",
+      "Thực hiện trên /check-in; GET /check-in/today: mở màn hình quét.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Thiếu suất hoặc cửa thì camera chưa được bật. Chọn cửa A, refresh/đóng mở vẫn nhớ; đổi B thì admission sau ghi B. Không có suất hôm nay hiện lời giải thích. Thu hồi assignment khi session còn sống phải chặn request tiếp theo.",
+    "expected": [
+      "phải chọn suất diễn đang diễn ra hôm nay và tên cửa trước khi máy ảnh bật"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-29-AC02",
+    "requirement_id": "S-29",
+    "kind": "AC",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Nhân viên soát vé chọn suất diễn và cửa trước khi quét",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L32"
+    },
+    "original_requirement": "Giả sử tôi đổi sang cửa khác, Khi chọn lại, Thì các lần quét sau ghi cửa mới",
+    "fixture": "STAFF có/không có assignment; suất hôm nay/ngày mai, cửa A/B.",
+    "surfaces": "/check-in; GET /check-in/today",
+    "code_candidates": "apps/api/src/check-in/; apps/web/src/features/check-in/",
+    "test_candidates": "check-in-s29.spec.ts; check-in.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi đổi sang cửa khác.",
+      "Thực hiện trên /check-in; GET /check-in/today: chọn lại.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Thiếu suất hoặc cửa thì camera chưa được bật. Chọn cửa A, refresh/đóng mở vẫn nhớ; đổi B thì admission sau ghi B. Không có suất hôm nay hiện lời giải thích. Thu hồi assignment khi session còn sống phải chặn request tiếp theo.",
+    "expected": [
+      "các lần quét sau ghi cửa mới"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-29-AC03",
+    "requirement_id": "S-29",
+    "kind": "AC",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Nhân viên soát vé chọn suất diễn và cửa trước khi quét",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L32"
+    },
+    "original_requirement": "Giả sử không có suất nào hôm nay, Khi mở màn hình, Thì thấy thông báo thay vì danh sách rỗng",
+    "fixture": "STAFF có/không có assignment; suất hôm nay/ngày mai, cửa A/B.",
+    "surfaces": "/check-in; GET /check-in/today",
+    "code_candidates": "apps/api/src/check-in/; apps/web/src/features/check-in/",
+    "test_candidates": "check-in-s29.spec.ts; check-in.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: không có suất nào hôm nay.",
+      "Thực hiện trên /check-in; GET /check-in/today: mở màn hình.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Thiếu suất hoặc cửa thì camera chưa được bật. Chọn cửa A, refresh/đóng mở vẫn nhớ; đổi B thì admission sau ghi B. Không có suất hôm nay hiện lời giải thích. Thu hồi assignment khi session còn sống phải chặn request tiếp theo.",
+    "expected": [
+      "thấy thông báo thay vì danh sách rỗng"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-29-NFR",
+    "requirement_id": "S-29",
+    "kind": "NFR",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Nhân viên soát vé chọn suất diễn và cửa trước khi quét — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N32"
+    },
+    "original_requirement": "lựa chọn được nhớ trên thiết bị tới khi đổi. Ước lượng thô 2 SP — tier Next",
+    "fixture": "STAFF có/không có assignment; suất hôm nay/ngày mai, cửa A/B.",
+    "surfaces": "/check-in; GET /check-in/today",
+    "code_candidates": "apps/api/src/check-in/; apps/web/src/features/check-in/",
+    "test_candidates": "check-in-s29.spec.ts; check-in.spec.ts",
+    "steps": [
+      "Thiếu suất hoặc cửa thì camera chưa được bật. Chọn cửa A, refresh/đóng mở vẫn nhớ; đổi B thì admission sau ghi B. Không có suất hôm nay hiện lời giải thích. Thu hồi assignment khi session còn sống phải chặn request tiếp theo.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "lựa chọn được nhớ trên thiết bị tới khi đổi. Ước lượng thô 2 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

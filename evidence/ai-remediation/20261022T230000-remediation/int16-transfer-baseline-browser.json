@@ -1,0 +1,141 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Isolated run-bound PostgreSQL/API/web; synthetic .invalid buyer and recipient; no SMTP worker enabled.",
+  "http": [
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/{fixture-order}/tickets/{fixture-ticket}/transfer",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/tickets/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/tickets/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/tickets/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/tickets/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 404
+    }
+  ],
+  "screenshots": [
+    "int16-owner-after-transfer-desktop.png",
+    "int16-recipient-empty-desktop.png",
+    "int16-recipient-empty-mobile.png"
+  ],
+  "pageErrors": [],
+  "assertions": [
+    {
+      "viewport": "1440x1000",
+      "transferHttp": 201,
+      "oldTicketStatus": "CANCELLED",
+      "oldQrPayloadRemoved": true,
+      "oldQrSha256Prefix": "3c50772525f2"
+    },
+    {
+      "viewport": "1440x1000",
+      "recipientTicketsHttp": 200,
+      "recipientTicketTotal": 0,
+      "recipientTicketRows": 0,
+      "recipientOrderAccessStatus": 404
+    },
+    {
+      "viewport": "390x844",
+      "recipientTicketsHttp": 200,
+      "recipientTicketTotal": 0,
+      "recipientTicketRows": 0,
+      "recipientOrderAccessStatus": 404
+    }
+  ],
+  "actual": "FAIL: transfer revokes the prior owner view but the intended recipient cannot retrieve the issued ticket through GET /tickets/me (HTTP 200, total=0); no transfer-specific ticket delivery is queued. See independent Postgres oracle."
+}

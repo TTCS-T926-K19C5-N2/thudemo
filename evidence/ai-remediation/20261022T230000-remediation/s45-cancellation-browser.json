@@ -1,0 +1,19 @@
+{
+  "runId": "20261022T230000-remediation",
+  "orderId": "55782721-65f8-4665-a8cc-8ed5ab30be79",
+  "desktop": {
+    "login": true,
+    "errorState": true,
+    "delayedLoadingState": true,
+    "refundAmountVisible": true,
+    "confirmationRequired": true,
+    "cancellationResultVisible": true
+  },
+  "mobile": {
+    "authenticatedSessionReused": true,
+    "resultVisible": true,
+    "viewportWidth": 390,
+    "documentWidth": 390
+  },
+  "errors": []
+}

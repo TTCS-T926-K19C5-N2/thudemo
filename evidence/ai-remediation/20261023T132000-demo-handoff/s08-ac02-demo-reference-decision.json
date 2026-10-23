@@ -1,0 +1,14 @@
+{
+  "runId": "20261023T132000-demo-handoff",
+  "profile": "prepared-file-tree isolated local demo database",
+  "sourceAC": "S-08-AC02",
+  "fixture": "Existing 40 read-only reference showtimes plus 2 sellable rehearsal showtimes; no writes performed.",
+  "database": { "draftDemoReferenceCount": 40, "onSaleNonDemoCount": 2 },
+  "uiActual": "A direct route for a reference showtime is rendered as Lịch và sơ đồ mô phỏng; the page shows a reference-only map link and states booking does not apply. Sellable showtimes keep a separate Chọn ghế action.",
+  "baselineExpected": "Draft or closed showtime detail must report not open for sale and must not expose a seat map.",
+  "demoScopeConstraint": "Preserve the original event catalog and reference schedule; distinguish unsellable reference data from separately created sellable rehearsal showtimes.",
+  "status": "NEEDS_DECISION",
+  "reason": "The live demo is read-only for the reference schedule but exposes a view-only map route. The source AC is stricter and no record authorizes this exact public reference-map exception.",
+  "evidence": ["event-catalog-browser-verification.json", "event-catalog-api-oracle.json", "catalog-status-counts.mjs"],
+  "safety": "No payment/hold/ticket action is available for the reference showtime; no data changed."
+}

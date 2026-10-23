@@ -1,0 +1,16 @@
+{
+  "runId": "20261023T162100-demo-local-completion",
+  "checkpoint": "R79",
+  "profile": "isolated local demo; values redacted",
+  "operation": "read-only PostgreSQL aggregate oracle after official Restart",
+  "events": 40,
+  "showtimes": 44,
+  "orders": 5,
+  "tickets": 5,
+  "seats": 5904,
+  "activeHolds": 0,
+  "orderStatuses": {
+    "PAID": 5
+  },
+  "result": "PASS"
+}

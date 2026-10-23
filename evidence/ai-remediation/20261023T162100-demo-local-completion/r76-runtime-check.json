@@ -1,0 +1,11 @@
+{
+  "checkpoint": "R76",
+  "checkedAt": "2026-10-23T15:07:41.320Z",
+  "freeRamGiB": 1.29,
+  "status": "STALE_PENDING_RESTART",
+  "statusCommand": "refused READY: Source changed since this demo build; use Restart",
+  "restartAttempted": false,
+  "dbWrite": false,
+  "resetTokenCreated": false,
+  "mailpitEmailCreated": false
+}

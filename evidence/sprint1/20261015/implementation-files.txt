@@ -1,0 +1,13 @@
+.github/workflows/ci.yml
+Dockerfile
+apps/api/src/auth/auth.controller.ts
+apps/api/src/auth/auth.module.ts
+apps/api/src/auth/auth.service.ts
+apps/api/src/auth/decorators/roles.decorator.ts
+apps/api/src/auth/guards/roles.guard.ts
+apps/api/src/auth/guards/session-auth.guard.spec.ts
+apps/api/src/auth/guards/session-auth.guard.ts
+apps/api/src/auth/roles.ts
+apps/api/src/events/events.controller.ts
+apps/api/src/events/events.module.ts
+apps/api/src/events/events.service.ts

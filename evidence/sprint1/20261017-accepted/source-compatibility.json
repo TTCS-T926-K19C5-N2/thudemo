@@ -1,0 +1,25 @@
+{
+  "time": "2026-10-17T01:44:59.700689+00:00",
+  "source": "eb53a0657b2f1120a057e688084a69f1f518f047",
+  "priorProductAndRuntimeAssertions": "038f8baff4c175e88c53b19a553105be15735dec",
+  "result": "PASS",
+  "method": "git diff --quiet exact trees; all apps/packages/shared/schema/lock/Dockerfile/demoentry/deployment/rollback modules identical038→eb53",
+  "compatibleEvidence": [
+    "../20261017-pr96/browser-038f8baff4c1/results.json",
+    "../20261017-pr96/source-compatibility.json",
+    "../20261017-integrated/rollback-90188e5.json",
+    "../20261016-s03-onboarding/fresh-exact-clone-bootstrap.json",
+    "../20261016-s03-onboarding/fresh-exact-clone-lifecycle.json",
+    "../20261016-s03-onboarding/smtp-product-staging.json"
+  ],
+  "newAssertions": [
+    "Actual auto-deploy<600s on integrated eb53; CI<300s",
+    "Exact runtimeOCIlabels on3containers; keys retained; no countdecrease, one concurrent neworder afterpromote retained",
+    "Real HTTPS API current source and current activatedBUYER session/logout/replay"
+  ],
+  "limitations": [
+    "Compatible proofs retain original SHA/environment; no new SMTP/inbox claim",
+    "Historical full browser assertions reused because identical product/image inputs; current smoke checks separate",
+    "One laptop session and approved fake-data staging only"
+  ]
+}

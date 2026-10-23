@@ -3,8 +3,10 @@ import { AppModule } from './app.module.js';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { metrics } from './monitoring/metrics.js';
 import { validatePaymentGatewayConfig } from './payments/payments-config.validator.js';
+import { validateTicketSigningConfig } from './tickets/ticket-signing-keys.js';
 async function bootstrap() {
   validatePaymentGatewayConfig();
+  validateTicketSigningConfig();
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bodyParser: false,
     rawBody: true,
@@ -13,6 +15,6 @@ async function bootstrap() {
   app.useBodyParser('json', { limit: '5mb' });
 
   app.enableShutdownHooks();
-  await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
+  await app.listen(process.env.PORT ?? 3001, process.env.API_HOST ?? '0.0.0.0');
 }
 await bootstrap();

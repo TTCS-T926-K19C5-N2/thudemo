@@ -1,0 +1,23 @@
+{
+  "run": "R60-pre-fix-summary-reconstruction",
+  "source": "Reconstructed from the R60 checkpoint summary after the original fixed-path JSON/PNG outputs were overwritten by the R65 rerun.",
+  "originalScreenshotAvailable": false,
+  "observed": {
+    "ui": "Buyer selected A-3 while ON_SALE; showtime changed to CLOSED before hold submission.",
+    "holdPostStatus": 409,
+    "holdPostCode": "SHOWTIME_CLOSED",
+    "followupSeatsGetStatus": 404,
+    "expectedClosedMessageVisible": false,
+    "genericReconciliationMessageVisible": true,
+    "createdHoldOrderTicket": false,
+    "exactShowtimeStatusRestored": true,
+    "databaseCountsBeforeAndAfter": {
+      "orders": 5,
+      "tickets": 5,
+      "holds": 0,
+      "sessions": 4
+    },
+    "pageErrors": []
+  },
+  "limitation": "This is a transparent textual reconstruction of recorded R60 observations, not the original raw browser output or screenshot. R65 is the authoritative post-fix browser evidence."
+}

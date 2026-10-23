@@ -1,0 +1,200 @@
+[
+  {
+    "id": "S-01-AC01",
+    "requirement_id": "S-01",
+    "kind": "AC",
+    "group": "Hạ tầng",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Khung ứng dụng chạy được trên staging",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L2"
+    },
+    "original_requirement": "Giả sử máy chủ staging đã sẵn sàng, Khi merge vào nhánh chính, Thì pipeline build, chạy test và triển khai tự động, và trang chủ trả về HTTP 200",
+    "fixture": "Clone/checkout kiểm thử riêng; profile DB/Redis riêng; môi trường staging được phép kiểm tra.",
+    "surfaces": "/",
+    "code_candidates": "scripts/sprint1-demo.ps1; deploy/; .github/workflows/ci.yml",
+    "test_candidates": "deploy/*.spec.mjs; apps/api/test/app.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: máy chủ staging đã sẵn sàng.",
+      "Thực hiện trên /: merge vào nhánh chính.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Khởi động bằng README; ghi URL và source thực chạy. Trên nhánh/CI thử riêng, gây lỗi lint/test và lỗi image, kiểm pipeline dừng và phiên bản cũ vẫn healthy. Đo CI dưới 5 phút và merge tới healthy dưới 10 phút theo T-02/T-03.",
+    "expected": [
+      "pipeline build, chạy test và triển khai tự động, và trang chủ trả về HTTP 200"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-01-AC02",
+    "requirement_id": "S-01",
+    "kind": "AC",
+    "group": "Hạ tầng",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Khung ứng dụng chạy được trên staging",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L2"
+    },
+    "original_requirement": "Giả sử một bài test thất bại, Khi pipeline chạy, Thì dừng lại và không triển khai",
+    "fixture": "Clone/checkout kiểm thử riêng; profile DB/Redis riêng; môi trường staging được phép kiểm tra.",
+    "surfaces": "/",
+    "code_candidates": "scripts/sprint1-demo.ps1; deploy/; .github/workflows/ci.yml",
+    "test_candidates": "deploy/*.spec.mjs; apps/api/test/app.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: một bài test thất bại.",
+      "Thực hiện trên /: pipeline chạy.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Khởi động bằng README; ghi URL và source thực chạy. Trên nhánh/CI thử riêng, gây lỗi lint/test và lỗi image, kiểm pipeline dừng và phiên bản cũ vẫn healthy. Đo CI dưới 5 phút và merge tới healthy dưới 10 phút theo T-02/T-03.",
+    "expected": [
+      "dừng lại và không triển khai"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-01-AC03",
+    "requirement_id": "S-01",
+    "kind": "AC",
+    "group": "Hạ tầng",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Khung ứng dụng chạy được trên staging",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L2"
+    },
+    "original_requirement": "Giả sử thành viên mới lấy mã nguồn về, Khi chạy lệnh khởi động đã ghi trong README, Thì ứng dụng, PostgreSQL và Redis chạy được trên máy cá nhân",
+    "fixture": "Clone/checkout kiểm thử riêng; profile DB/Redis riêng; môi trường staging được phép kiểm tra.",
+    "surfaces": "/",
+    "code_candidates": "scripts/sprint1-demo.ps1; deploy/; .github/workflows/ci.yml",
+    "test_candidates": "deploy/*.spec.mjs; apps/api/test/app.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: thành viên mới lấy mã nguồn về.",
+      "Thực hiện trên /: chạy lệnh khởi động đã ghi trong README.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Khởi động bằng README; ghi URL và source thực chạy. Trên nhánh/CI thử riêng, gây lỗi lint/test và lỗi image, kiểm pipeline dừng và phiên bản cũ vẫn healthy. Đo CI dưới 5 phút và merge tới healthy dưới 10 phút theo T-02/T-03.",
+    "expected": [
+      "ứng dụng, PostgreSQL và Redis chạy được trên máy cá nhân"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-01-AC04",
+    "requirement_id": "S-01",
+    "kind": "AC",
+    "group": "Hạ tầng",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Khung ứng dụng chạy được trên staging",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L2"
+    },
+    "original_requirement": "Giả sử lần triển khai mới thất bại giữa chừng, Khi kiểm tra staging, Thì phiên bản cũ vẫn đang chạy",
+    "fixture": "Clone/checkout kiểm thử riêng; profile DB/Redis riêng; môi trường staging được phép kiểm tra.",
+    "surfaces": "/",
+    "code_candidates": "scripts/sprint1-demo.ps1; deploy/; .github/workflows/ci.yml",
+    "test_candidates": "deploy/*.spec.mjs; apps/api/test/app.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: lần triển khai mới thất bại giữa chừng.",
+      "Thực hiện trên /: kiểm tra staging.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Khởi động bằng README; ghi URL và source thực chạy. Trên nhánh/CI thử riêng, gây lỗi lint/test và lỗi image, kiểm pipeline dừng và phiên bản cũ vẫn healthy. Đo CI dưới 5 phút và merge tới healthy dưới 10 phút theo T-02/T-03.",
+    "expected": [
+      "phiên bản cũ vẫn đang chạy"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-01-NFR",
+    "requirement_id": "S-01",
+    "kind": "NFR",
+    "group": "Hạ tầng",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Khung ứng dụng chạy được trên staging — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N2"
+    },
+    "original_requirement": "bí mật nạp từ biến môi trường; log không in chuỗi kết nối cơ sở dữ liệu",
+    "fixture": "Clone/checkout kiểm thử riêng; profile DB/Redis riêng; môi trường staging được phép kiểm tra.",
+    "surfaces": "/",
+    "code_candidates": "scripts/sprint1-demo.ps1; deploy/; .github/workflows/ci.yml",
+    "test_candidates": "deploy/*.spec.mjs; apps/api/test/app.e2e-spec.ts",
+    "steps": [
+      "Khởi động bằng README; ghi URL và source thực chạy. Trên nhánh/CI thử riêng, gây lỗi lint/test và lỗi image, kiểm pipeline dừng và phiên bản cũ vẫn healthy. Đo CI dưới 5 phút và merge tới healthy dưới 10 phút theo T-02/T-03.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "bí mật nạp từ biến môi trường; log không in chuỗi kết nối cơ sở dữ liệu"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

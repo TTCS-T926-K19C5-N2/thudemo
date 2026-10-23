@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-10-23T10:17:00+07:00",
+  "scope": "S-11 per-seat hold release",
+  "implementation": [
+    "DELETE /showtimes/:id/holds/:seatId uses BUYER session identity and same hold connection",
+    "Serializes with order creation on hold_sessions row lock; delete predicate repeats session/user/token ownership",
+    "Removes seat from expectedSeatIds without changing remaining expiry; creates waitlist signal transactionally",
+    "Buyer seat UI exposes Bỏ ghế for owned seats and applies server state"
+  ],
+  "validation": {
+    "apiTypecheck": "PASS (after final UI change)",
+    "webTypecheck": "PASS (after final UI change)",
+    "apiLint": "PASS with existing warnings",
+    "webLint": "PASS with existing warnings",
+    "apiBuild": "PASS",
+    "webBuild": "PASS after CSS fix",
+    "apiUnit": "467 passed / 59 files",
+    "webUnit": "PASS: 157/157 after CSS fix",
+    "holdServiceFocused": "40 passed / 1 file (after implementation)",
+    "postgresE2e": "PASS: 4 S-11 tests (3 acceptance + 30-sample NFR) on isolated PostgreSQL; e2e.log",
+    "browser": "PASS: buyer UI tested at 535x756 and 1280x800; final screenshots saved; first screenshot captured overflow defect, fixed and retested.",
+    "latency": "PASS: 30 samples, p95 15.746ms, max 16.971ms, 0 errors, target <300ms",
+    "databaseOracle": "PASS: after one release available=1, held=2, expected=2, same expiry=true; after final release available=3, held=0, expected=0",
+    "fixtureCleanup": "PASS: event=0, showtime=0, users=0, holds=0; profile-owned fixture only"
+  },
+  "limitations": "S-11 acceptance is verified at local isolated PostgreSQL/API and browser desktop/mobile. Staging provider, real devices and 4G remain outside this evidence.",
+  "changedSourceSha256": {
+    "apps/api/src/prisma/prisma.service.ts": "c4267951b37777c8ef89c2e69ab658b39d1eeb34e0a508afabe6a841d629b548",
+    "apps/api/scripts/ai-remediation-s11-fixture.mjs": "69daa5a1b9f4dfc47175caa6adaeef69551a673ac66ee1d13a873366000dc33a",
+    "apps/web/src/features/seat-selection/seat-selection.tsx": "98805d37429ea09e92eba26b911a163949550e79402befefa8b4ea0494136d04",
+    "apps/api/src/holds/holds.service.spec.ts": "0a26f392269d5fc8965ee8a5b51210488bd11306dbf1c1533abfb0add338c634",
+    "apps/api/test/s15-s16-acceptance.e2e-spec.ts": "5bb885f59f18647fd288a855baae4f73d47a467ba04d380d92cbe17df1f19fe3",
+    "apps/api/scripts/ai-remediation-profile.mjs": "5c66fc65b1d4327588fda6dd04644d4d860b266fbc116831014eef002a016cf8",
+    "apps/api/src/holds/holds.service.ts": "b79a1e5e949f03cfd5d874b4d6328395db7ea50643e2a2b30e5977ee4e6b7c71",
+    "apps/api/src/holds/holds.controller.ts": "f19f8dcd5c17d861cd360bbcd5b91ca959b6daddca7880f25114c874709d5f84",
+    "apps/web/src/app/theater-theme.css": "b9162c37c9eb8ec3694a69c453a2692f10efc55d23858d8c0e5b8be911b3267d"
+  },
+  "evidenceFiles": [
+    "s11-e2e.log",
+    "s11-release-latency.json",
+    "s11-browser-db-oracle.log",
+    "s11-mobile-release-fixed.jpg",
+    "s11-desktop-release-fixed.jpg",
+    "s11-mobile-release.jpg",
+    "s11-browser-fixture-cleanup.json",
+    "s11-browser-fixture-cleanup.log"
+  ]
+}

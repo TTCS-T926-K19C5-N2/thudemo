@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-14-AC",
+    "requirement_id": "T-14",
+    "parent_requirement": "S-06",
+    "kind": "TASK_AC",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Màn hình tải lên hiện lỗi và xem trước lưới ghế",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G15"
+    },
+    "original_requirement": "Tải tệp hỏng thì thấy danh sách lỗi và nút xác nhận bị vô hiệu hoá; tệp đúng thì thấy lưới ghế và nạp được",
+    "fixture": "JSON malformed, thiếu field, trùng hàng/số, nhiều lỗi, tệp sát/vượt 5 MB.",
+    "surfaces": "POST /showtimes/validate-map; màn import/xem trước",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/web/src/features/seat-map-import/",
+    "test_candidates": "seat-map.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Upload từng tệp; kiểm danh sách vị trí lỗi và nút xác nhận. Preview tệp đúng rồi huỷ, so count/checksum DB không đổi. Kiểm lỗi cú pháp có vị trí, API không 500; giới hạn dung lượng phải kiểm cả client lẫn server.",
+      "Kiểm riêng tiêu chí task T-14: Tải tệp hỏng thì thấy danh sách lỗi và nút xác nhận bị vô hiệu hoá; tệp đúng thì thấy lưới ghế và nạp được",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Tải tệp hỏng thì thấy danh sách lỗi và nút xác nhận bị vô hiệu hoá; tệp đúng thì thấy lưới ghế và nạp được"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-14-NFR",
+    "requirement_id": "T-14",
+    "parent_requirement": "S-06",
+    "kind": "TASK_NFR",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Màn hình tải lên hiện lỗi và xem trước lưới ghế",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I15"
+    },
+    "original_requirement": "xem trước không ghi gì vào cơ sở dữ liệu",
+    "fixture": "JSON malformed, thiếu field, trùng hàng/số, nhiều lỗi, tệp sát/vượt 5 MB.",
+    "surfaces": "POST /showtimes/validate-map; màn import/xem trước",
+    "code_candidates": "apps/api/src/showtimes/seat-map.ts; apps/web/src/features/seat-map-import/",
+    "test_candidates": "seat-map.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Upload từng tệp; kiểm danh sách vị trí lỗi và nút xác nhận. Preview tệp đúng rồi huỷ, so count/checksum DB không đổi. Kiểm lỗi cú pháp có vị trí, API không 500; giới hạn dung lượng phải kiểm cả client lẫn server.",
+      "Kiểm riêng tiêu chí task T-14: xem trước không ghi gì vào cơ sở dữ liệu",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "xem trước không ghi gì vào cơ sở dữ liệu"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-02-AC",
+    "requirement_id": "T-02",
+    "parent_requirement": "S-01",
+    "kind": "TASK_AC",
+    "group": "Hạ tầng",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Pipeline CI chạy build, lint, test",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G3"
+    },
+    "original_requirement": "Push một commit cố ý sai lint thì pipeline đỏ và chặn merge",
+    "fixture": "Clone/checkout kiểm thử riêng; profile DB/Redis riêng; môi trường staging được phép kiểm tra.",
+    "surfaces": "/",
+    "code_candidates": "scripts/sprint1-demo.ps1; deploy/; .github/workflows/ci.yml",
+    "test_candidates": "deploy/*.spec.mjs; apps/api/test/app.e2e-spec.ts",
+    "steps": [
+      "Khởi động bằng README; ghi URL và source thực chạy. Trên nhánh/CI thử riêng, gây lỗi lint/test và lỗi image, kiểm pipeline dừng và phiên bản cũ vẫn healthy. Đo CI dưới 5 phút và merge tới healthy dưới 10 phút theo T-02/T-03.",
+      "Kiểm riêng tiêu chí task T-02: Push một commit cố ý sai lint thì pipeline đỏ và chặn merge",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Push một commit cố ý sai lint thì pipeline đỏ và chặn merge"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-02-NFR",
+    "requirement_id": "T-02",
+    "parent_requirement": "S-01",
+    "kind": "TASK_NFR",
+    "group": "Hạ tầng",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Pipeline CI chạy build, lint, test",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I3"
+    },
+    "original_requirement": "pipeline chạy xong dưới 5 phút để không làm chậm nhịp sprint 1 tuần",
+    "fixture": "Clone/checkout kiểm thử riêng; profile DB/Redis riêng; môi trường staging được phép kiểm tra.",
+    "surfaces": "/",
+    "code_candidates": "scripts/sprint1-demo.ps1; deploy/; .github/workflows/ci.yml",
+    "test_candidates": "deploy/*.spec.mjs; apps/api/test/app.e2e-spec.ts",
+    "steps": [
+      "Khởi động bằng README; ghi URL và source thực chạy. Trên nhánh/CI thử riêng, gây lỗi lint/test và lỗi image, kiểm pipeline dừng và phiên bản cũ vẫn healthy. Đo CI dưới 5 phút và merge tới healthy dưới 10 phút theo T-02/T-03.",
+      "Kiểm riêng tiêu chí task T-02: pipeline chạy xong dưới 5 phút để không làm chậm nhịp sprint 1 tuần",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "pipeline chạy xong dưới 5 phút để không làm chậm nhịp sprint 1 tuần"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

@@ -1,0 +1,11 @@
+import {spawn} from 'node:child_process';
+import {resolve} from 'node:path';
+import {openSync} from 'node:fs';
+if(!/^\/codegym_core_\d+$/.test(new URL(process.env.DATABASE_URL).pathname))throw Error('Only isolated core fixture database allowed.');
+const cwd=resolve(import.meta.dirname,'..'),dir=resolve(cwd,'../../.cache/core-completion');
+const env={...process.env,CONFIG_IGNORE_ENV_FILE:'true',NOTIFICATION_MAIL_WORKER:'false',PASSWORD_RESET_WORKER:'false',TICKET_MAIL_WORKER:'false',REGISTRATION_DELIVERY_MODE:'off',LIFECYCLE_WORKER:'off',NEXT_DIST_DIR:'.next-core-fixture',WEB_PORT:'3400',PORT:'3401',API_INTERNAL_URL:'http://127.0.0.1:3401',WEB_ORIGIN:'http://localhost:3400'};
+const apiLog=openSync(resolve(dir,'browser-api.log'),'a'),webLog=openSync(resolve(dir,'browser-web.log'),'a');
+const api=spawn(process.execPath,['dist/main.js'],{cwd,env,stdio:['ignore',apiLog,apiLog],windowsHide:true});
+const web=spawn(process.execPath,['server.mjs','--dev'],{cwd:resolve(cwd,'../web'),env,stdio:['ignore',webLog,webLog],windowsHide:true});
+process.on('SIGINT',()=>{api.kill();web.kill();});process.on('SIGTERM',()=>{api.kill();web.kill();});
+console.log('Core fixture web3400/API3401. All mail workers disabled; original database unchanged.');

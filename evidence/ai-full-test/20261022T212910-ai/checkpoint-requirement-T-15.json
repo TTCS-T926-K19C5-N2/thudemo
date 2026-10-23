@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-15-AC",
+    "requirement_id": "T-15",
+    "parent_requirement": "S-07",
+    "kind": "TASK_AC",
+    "group": "Sự kiện",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Cột trạng thái suất diễn kèm migration và luật chuyển trạng thái",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G16"
+    },
+    "original_requirement": "Chuyển nháp sang đang bán khi chưa có ghế thì hàm từ chối; test phủ mọi cặp chuyển hợp lệ và không hợp lệ",
+    "fixture": "Suất nháp thiếu map/giá; suất đủ điều kiện; hold và order đang chờ.",
+    "surfaces": "PATCH /showtimes/:id/status",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/showtime-management/sale-status-control.tsx",
+    "test_candidates": "showtimes.service.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Thử mọi cặp trạng thái DRAFT/ON_SALE/CLOSED. Đóng bán ngăn giữ mới, giữ/đơn cũ vẫn tiếp tục đúng hạn; mở lại và đối chiếu audit actor. Phân biệt đóng bán và huỷ suất.",
+      "Kiểm riêng tiêu chí task T-15: Chuyển nháp sang đang bán khi chưa có ghế thì hàm từ chối; test phủ mọi cặp chuyển hợp lệ và không hợp lệ",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Chuyển nháp sang đang bán khi chưa có ghế thì hàm từ chối; test phủ mọi cặp chuyển hợp lệ và không hợp lệ"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-15-NFR",
+    "requirement_id": "T-15",
+    "parent_requirement": "S-07",
+    "kind": "TASK_NFR",
+    "group": "Sự kiện",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Cột trạng thái suất diễn kèm migration và luật chuyển trạng thái",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I16"
+    },
+    "original_requirement": "giá trị trạng thái là kiểu liệt kê ở cơ sở dữ liệu, không phải chuỗi tự do",
+    "fixture": "Suất nháp thiếu map/giá; suất đủ điều kiện; hold và order đang chờ.",
+    "surfaces": "PATCH /showtimes/:id/status",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/showtime-management/sale-status-control.tsx",
+    "test_candidates": "showtimes.service.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Thử mọi cặp trạng thái DRAFT/ON_SALE/CLOSED. Đóng bán ngăn giữ mới, giữ/đơn cũ vẫn tiếp tục đúng hạn; mở lại và đối chiếu audit actor. Phân biệt đóng bán và huỷ suất.",
+      "Kiểm riêng tiêu chí task T-15: giá trị trạng thái là kiểu liệt kê ở cơ sở dữ liệu, không phải chuỗi tự do",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "giá trị trạng thái là kiểu liệt kê ở cơ sở dữ liệu, không phải chuỗi tự do"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

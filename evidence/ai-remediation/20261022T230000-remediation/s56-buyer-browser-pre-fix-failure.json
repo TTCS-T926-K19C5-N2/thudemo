@@ -1,0 +1,30 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Authenticated Chromium, current local build, isolated PostgreSQL profile; synthetic buyer/order/coupon only.",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "api": [
+    {
+      "method": "GET",
+      "path": "/api/orders/cc6d90e6-6287-4541-8dac-5942cd96a6d8",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/cc6d90e6-6287-4541-8dac-5942cd96a6d8/audit",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "checks": [],
+  "screenshots": [],
+  "orderReads": [
+    {
+      "status": "PENDING_PAYMENT",
+      "totalAmount": 91
+    }
+  ],
+  "failure": "The input did not match the regular expression /Tạm tính:[\\s\\S]*101/. Input:\n\n'← Đơn hàng của tôi\\n' +\n  'arrow_back\\n' +\n  'Chọn ghế\\n' +\n  'Xem lại chi tiết đơn hàng\\n' +\n  '\\n' +\n  'Mã đơn hàng: cc6d90e6-6287-4541-8dac-5942cd96a6d8\\n' +\n  '\\n' +\n  'Chờ thanh toán\\n' +\n  'timer\\n' +\n  'Thời gian còn lại để hoàn tất thanh toán\\n' +\n  'Ghế sẽ được giữ cho đến khi hết thời gian đếm ngược.\\n' +\n  '28:47\\n' +\n  'confirmation_number\\n' +\n  'Thông tin sự kiện & Suất diễn\\n' +\n  'TÊN SỰ KIỆN\\n' +\n  'S56 fixture 20261022T230000-remediation\\n' +\n  'THỜI GIAN SUẤT DIỄN\\n' +\n  'calendar_month\\n' +\n  'Thứ Bảy, 24/10/2026 · 10:20\\n' +\n  'ĐỊA ĐIỂM TỔ CHỨC\\n' +\n  'location_on\\n' +\n  'Loopback test only\\n' +\n  'chair\\n' +\n  'Danh sách ghế đã chọn (1)\\n' +\n  'Đơn giá niêm yết từ ban tổ chức\\n' +\n  'STT\\tVị trí ghế\\tHạng ghế\\tĐơn giá\\n' +\n  '1\\tQA-1(Hàng QA, Số 1)\\tS56 QA\\t101 ₫\\n' +\n  'Mã giảm giá\\n' +\n  '\\n' +\n  'Mỗi đơn áp dụng tối đa một mã.\\n' +\n  '\\n' +\n  'Áp dụng mã\\n' +\n  '\\n' +\n  'Tạm tính: 91 ₫\\n' +\n  '\\n' +\n  'Giảm giá: 0 ₫\\n' +\n  '\\n' +\n  'Tổng cộng: 1 vé\\n' +\n  'TỔNG TIỀN THANH TOÁN\\n' +\n  '91 ₫\\n' +\n  'Nhật ký đơn hàng và vé\\n' +\n  'refresh\\n' +\n  'Thay đổi ghế\\n' +\n  'Thanh toán ngay'\n"
+}

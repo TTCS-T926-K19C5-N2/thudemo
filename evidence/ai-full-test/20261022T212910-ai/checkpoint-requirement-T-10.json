@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-10-AC",
+    "requirement_id": "T-10",
+    "parent_requirement": "S-04",
+    "kind": "TASK_AC",
+    "group": "Sự kiện",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Màn hình tạo và sửa sự kiện",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G11"
+    },
+    "original_requirement": "Tạo, sửa, xem danh sách sự kiện đều chạy; lỗi nhập liệu hiện ngay tại ô sai; mở sự kiện của người khác bằng đường dẫn thì bị 403",
+    "fixture": "Hai organizer khác chủ; sự kiện nháp; giờ quá khứ/tương lai/trùng, ISO timezone.",
+    "surfaces": "/events; /events/new; /events/:id; POST /events/:id/showtimes",
+    "code_candidates": "apps/api/src/events/; apps/web/src/components/event-editor.tsx",
+    "test_candidates": "events.e2e-spec.ts; events.service.spec.ts",
+    "steps": [
+      "Organizer A tạo/sửa sự kiện, thêm suất; B truy cập URL và API manage của A. Kiểm draft không công khai, quá khứ bị chặn, trùng giờ cảnh báo nhưng lưu được. So UTC trong DB và giờ Asia/Ho_Chi_Minh trên UI, kể cả gần nửa đêm.",
+      "Kiểm riêng tiêu chí task T-10: Tạo, sửa, xem danh sách sự kiện đều chạy; lỗi nhập liệu hiện ngay tại ô sai; mở sự kiện của người khác bằng đường dẫn thì bị 403",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Tạo, sửa, xem danh sách sự kiện đều chạy; lỗi nhập liệu hiện ngay tại ô sai; mở sự kiện của người khác bằng đường dẫn thì bị 403"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-10-NFR",
+    "requirement_id": "T-10",
+    "parent_requirement": "S-04",
+    "kind": "TASK_NFR",
+    "group": "Sự kiện",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Màn hình tạo và sửa sự kiện",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I11"
+    },
+    "original_requirement": "form gửi đi phải chặn bấm hai lần liên tiếp",
+    "fixture": "Hai organizer khác chủ; sự kiện nháp; giờ quá khứ/tương lai/trùng, ISO timezone.",
+    "surfaces": "/events; /events/new; /events/:id; POST /events/:id/showtimes",
+    "code_candidates": "apps/api/src/events/; apps/web/src/components/event-editor.tsx",
+    "test_candidates": "events.e2e-spec.ts; events.service.spec.ts",
+    "steps": [
+      "Organizer A tạo/sửa sự kiện, thêm suất; B truy cập URL và API manage của A. Kiểm draft không công khai, quá khứ bị chặn, trùng giờ cảnh báo nhưng lưu được. So UTC trong DB và giờ Asia/Ho_Chi_Minh trên UI, kể cả gần nửa đêm.",
+      "Kiểm riêng tiêu chí task T-10: form gửi đi phải chặn bấm hai lần liên tiếp",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "form gửi đi phải chặn bấm hai lần liên tiếp"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-23T09:59:50.087Z",
+  "profile": "s1demo-384da3d43b41",
+  "database": "sprint1_demo_384da3d43b41",
+  "events": 40,
+  "showtimes": 44,
+  "orders": 5,
+  "tickets": 5,
+  "readOnly": true,
+  "sourceBuild": "R46 catalog source"
+}

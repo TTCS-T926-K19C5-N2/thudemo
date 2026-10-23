@@ -1,0 +1,13 @@
+{
+  "time": "2026-10-16T14:47:27.034627+00:00",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "result": "PASS",
+  "apiUnit": 362,
+  "webUnit": 134,
+  "node": 18,
+  "integration": 98,
+  "scanner": 4,
+  "commands": "scripts/sprint1-tests.mjs actual frozen fixture target",
+  "gateResults": "gates.json",
+  "scope": "Required regression for changed registration/proxy/schema; later-story tests do not become Sprint1 acceptance"
+}

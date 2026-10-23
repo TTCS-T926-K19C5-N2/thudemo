@@ -1,0 +1,6 @@
+## 17. Thông tin kiểm tra bộ kế hoạch
+
+- Workbook SHA256: `7fa009f53a82d23786e95ce9bd0ecd5aed0c6968bdbb6358a36ee14a10dd9c18`.
+- Source fingerprint tham chiếu: `e5af4cafc2b0d8bdd9b07a67e2bc46f17d69ff8448e4055340019b5c638f677a`; danh sách hash file trong JSON.
+- Tổng **404 case** gồm AC/NFR backlog, task, epic, governance, sprint/product goal và hành trình bổ sung. Đây là số case thiết kế, không phải số test đã chạy hoặc số chức năng đã đạt.
+- Mỗi ô AC/NFR không trống của Backlog, Tasks và Epics đã có mapping. Các tiêu chí nhiều mệnh đề cần tách thêm case con khi thực thi.

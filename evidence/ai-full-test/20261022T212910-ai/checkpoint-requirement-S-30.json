@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-30-AC01",
+    "requirement_id": "S-30",
+    "kind": "AC",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Soát vé bằng cách quét QR tại cửa",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L33"
+    },
+    "original_requirement": "Giả sử quét vé hợp lệ của đúng suất, Khi máy chủ xác nhận, Thì màn hình xanh hiện hạng ghế và số ghế, vé được đánh dấu đã vào kèm cửa và thời điểm",
+    "fixture": "Vé hợp lệ, QR lạ, mạng response >3 giây; điện thoại camera thật.",
+    "surfaces": "POST /showtimes/:id/check-in; camera web",
+    "code_candidates": "apps/api/src/orders/ticket-check-in.service.ts; apps/web/src/features/ticket-scanner/",
+    "test_candidates": "ticket-check-in.e2e-spec.ts; check-in-request.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: quét vé hợp lệ của đúng suất.",
+      "Thực hiện trên POST /showtimes/:id/check-in; camera web: máy chủ xác nhận.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Quét bằng camera và API; hợp lệ hiện xanh đủ ghế/hạng, DB có giờ/cửa. QR lạ hiện đỏ; trễ hơn 3 giây phải hiện đang chờ. Đo quét tới hiển thị dưới 500 ms riêng với API duration, kiểm ánh nắng trên thiết bị thật.",
+    "expected": [
+      "màn hình xanh hiện hạng ghế và số ghế, vé được đánh dấu đã vào kèm cửa và thời điểm"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-30-AC02",
+    "requirement_id": "S-30",
+    "kind": "AC",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Soát vé bằng cách quét QR tại cửa",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L33"
+    },
+    "original_requirement": "Giả sử quét mã không phải vé của hệ thống, Khi xử lý, Thì màn hình đỏ báo mã không hợp lệ",
+    "fixture": "Vé hợp lệ, QR lạ, mạng response >3 giây; điện thoại camera thật.",
+    "surfaces": "POST /showtimes/:id/check-in; camera web",
+    "code_candidates": "apps/api/src/orders/ticket-check-in.service.ts; apps/web/src/features/ticket-scanner/",
+    "test_candidates": "ticket-check-in.e2e-spec.ts; check-in-request.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: quét mã không phải vé của hệ thống.",
+      "Thực hiện trên POST /showtimes/:id/check-in; camera web: xử lý.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Quét bằng camera và API; hợp lệ hiện xanh đủ ghế/hạng, DB có giờ/cửa. QR lạ hiện đỏ; trễ hơn 3 giây phải hiện đang chờ. Đo quét tới hiển thị dưới 500 ms riêng với API duration, kiểm ánh nắng trên thiết bị thật.",
+    "expected": [
+      "màn hình đỏ báo mã không hợp lệ"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-30-AC03",
+    "requirement_id": "S-30",
+    "kind": "AC",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Soát vé bằng cách quét QR tại cửa",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L33"
+    },
+    "original_requirement": "Giả sử mạng chậm, Khi quá 3 giây chưa có trả lời, Thì màn hình báo đang chờ thay vì đứng im",
+    "fixture": "Vé hợp lệ, QR lạ, mạng response >3 giây; điện thoại camera thật.",
+    "surfaces": "POST /showtimes/:id/check-in; camera web",
+    "code_candidates": "apps/api/src/orders/ticket-check-in.service.ts; apps/web/src/features/ticket-scanner/",
+    "test_candidates": "ticket-check-in.e2e-spec.ts; check-in-request.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: mạng chậm.",
+      "Thực hiện trên POST /showtimes/:id/check-in; camera web: quá 3 giây chưa có trả lời.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Quét bằng camera và API; hợp lệ hiện xanh đủ ghế/hạng, DB có giờ/cửa. QR lạ hiện đỏ; trễ hơn 3 giây phải hiện đang chờ. Đo quét tới hiển thị dưới 500 ms riêng với API duration, kiểm ánh nắng trên thiết bị thật.",
+    "expected": [
+      "màn hình báo đang chờ thay vì đứng im"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-30-NFR",
+    "requirement_id": "S-30",
+    "kind": "NFR",
+    "group": "Soát vé",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Soát vé bằng cách quét QR tại cửa — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N33"
+    },
+    "original_requirement": "phản hồi sau khi quét dưới 500ms để không tạo hàng chờ; màn hình đọc được dưới nắng. Ước lượng thô 3 SP — tier Next",
+    "fixture": "Vé hợp lệ, QR lạ, mạng response >3 giây; điện thoại camera thật.",
+    "surfaces": "POST /showtimes/:id/check-in; camera web",
+    "code_candidates": "apps/api/src/orders/ticket-check-in.service.ts; apps/web/src/features/ticket-scanner/",
+    "test_candidates": "ticket-check-in.e2e-spec.ts; check-in-request.spec.ts",
+    "steps": [
+      "Quét bằng camera và API; hợp lệ hiện xanh đủ ghế/hạng, DB có giờ/cửa. QR lạ hiện đỏ; trễ hơn 3 giây phải hiện đang chờ. Đo quét tới hiển thị dưới 500 ms riêng với API duration, kiểm ánh nắng trên thiết bị thật.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "phản hồi sau khi quét dưới 500ms để không tạo hàng chờ; màn hình đọc được dưới nắng. Ước lượng thô 3 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

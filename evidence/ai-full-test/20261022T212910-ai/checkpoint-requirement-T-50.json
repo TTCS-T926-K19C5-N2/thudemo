@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-50-AC",
+    "requirement_id": "T-50",
+    "parent_requirement": "S-22",
+    "kind": "TASK_AC",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "API trạng thái đơn để trình duyệt hỏi lại định kỳ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G51"
+    },
+    "original_requirement": "Trả về trạng thái hiện tại; đơn người khác thì 403; phản hồi dưới 100ms",
+    "fixture": "Webhook trễ 5 giây/>60 giây; query return bị giả; response status bị trì hoãn.",
+    "surfaces": "/payment/result/:orderId; GET /orders/:id/status",
+    "code_candidates": "apps/web/src/features/payment-result/; apps/api/src/orders/orders.controller.ts",
+    "test_candidates": "payment-result.spec.ts; orders.e2e-spec.ts",
+    "steps": [
+      "Về trang trước webhook, xem đang xác nhận; đếm polling mỗi 2 giây, PAID chỉ theo API. Chờ 60 giây không kết luận thất bại; rời trang phải dừng polling. Đo status API dưới 100 ms và no-store.",
+      "Kiểm riêng tiêu chí task T-50: Trả về trạng thái hiện tại; đơn người khác thì 403; phản hồi dưới 100ms",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Trả về trạng thái hiện tại; đơn người khác thì 403; phản hồi dưới 100ms"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-50-NFR",
+    "requirement_id": "T-50",
+    "parent_requirement": "S-22",
+    "kind": "TASK_NFR",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "API trạng thái đơn để trình duyệt hỏi lại định kỳ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I51"
+    },
+    "original_requirement": "không cache để trạng thái luôn mới",
+    "fixture": "Webhook trễ 5 giây/>60 giây; query return bị giả; response status bị trì hoãn.",
+    "surfaces": "/payment/result/:orderId; GET /orders/:id/status",
+    "code_candidates": "apps/web/src/features/payment-result/; apps/api/src/orders/orders.controller.ts",
+    "test_candidates": "payment-result.spec.ts; orders.e2e-spec.ts",
+    "steps": [
+      "Về trang trước webhook, xem đang xác nhận; đếm polling mỗi 2 giây, PAID chỉ theo API. Chờ 60 giây không kết luận thất bại; rời trang phải dừng polling. Đo status API dưới 100 ms và no-store.",
+      "Kiểm riêng tiêu chí task T-50: không cache để trạng thái luôn mới",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "không cache để trạng thái luôn mới"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

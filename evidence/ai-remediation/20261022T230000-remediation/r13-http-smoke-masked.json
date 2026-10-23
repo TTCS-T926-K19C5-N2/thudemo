@@ -1,0 +1,14 @@
+{
+  "web": {
+    "status": 200,
+    "url": "http://127.0.0.1:3410/"
+  },
+  "api": {
+    "status": 200,
+    "url": "http://127.0.0.1:3411/health"
+  },
+  "workersEnabled": false,
+  "secretsRedacted": true,
+  "timestamp": "2026-10-23T09:19:52.8821884+07:00",
+  "profile": "20261022T230000-remediation isolated loopback"
+}

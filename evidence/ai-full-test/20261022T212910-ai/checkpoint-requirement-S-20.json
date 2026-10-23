@@ -1,0 +1,200 @@
+[
+  {
+    "id": "S-20-AC01",
+    "requirement_id": "S-20",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Webhook thanh toán gửi lại nhiều lần chỉ ghi nhận một",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L22"
+    },
+    "original_requirement": "Giả sử cổng gửi lại cùng một webhook 5 lần, Khi xử lý xong, Thì chỉ có một bản ghi thanh toán, đơn đổi trạng thái một lần và vé chỉ sinh một bộ",
+    "fixture": "Một payload ký hợp lệ; transactionId cố định; pending và expired.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/payments.service.ts; apps/api/prisma/migrations/",
+    "test_candidates": "payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: cổng gửi lại cùng một webhook 5 lần.",
+      "Thực hiện trên POST /payments/webhook: xử lý xong.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Gửi 5 lần tuần tự rồi các bản đồng thời trên order khác; đếm payment/event, order transition, ticket và outbox trước/sau. Webhook trùng trả 200 theo T-46; expired không thành paid, có dấu cần kiểm tra/hoàn; không 500.",
+    "expected": [
+      "chỉ có một bản ghi thanh toán, đơn đổi trạng thái một lần và vé chỉ sinh một bộ"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-20-AC02",
+    "requirement_id": "S-20",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Webhook thanh toán gửi lại nhiều lần chỉ ghi nhận một",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L22"
+    },
+    "original_requirement": "Giả sử hai bản sao của cùng webhook tới đồng thời, Khi xử lý song song, Thì đúng một bản được xử lý, bản kia bị bỏ qua — không có lỗi 500",
+    "fixture": "Một payload ký hợp lệ; transactionId cố định; pending và expired.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/payments.service.ts; apps/api/prisma/migrations/",
+    "test_candidates": "payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: hai bản sao của cùng webhook tới đồng thời.",
+      "Thực hiện trên POST /payments/webhook: xử lý song song.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Gửi 5 lần tuần tự rồi các bản đồng thời trên order khác; đếm payment/event, order transition, ticket và outbox trước/sau. Webhook trùng trả 200 theo T-46; expired không thành paid, có dấu cần kiểm tra/hoàn; không 500.",
+    "expected": [
+      "đúng một bản được xử lý, bản kia bị bỏ qua — không có lỗi 500"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-20-AC03",
+    "requirement_id": "S-20",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Webhook thanh toán gửi lại nhiều lần chỉ ghi nhận một",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L22"
+    },
+    "original_requirement": "Giả sử webhook tới cho đơn đã bị huỷ vì hết hạn, Khi xử lý, Thì không đổi đơn thành đã trả mà đánh dấu cần kiểm tra để hoàn tiền",
+    "fixture": "Một payload ký hợp lệ; transactionId cố định; pending và expired.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/payments.service.ts; apps/api/prisma/migrations/",
+    "test_candidates": "payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: webhook tới cho đơn đã bị huỷ vì hết hạn.",
+      "Thực hiện trên POST /payments/webhook: xử lý.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Gửi 5 lần tuần tự rồi các bản đồng thời trên order khác; đếm payment/event, order transition, ticket và outbox trước/sau. Webhook trùng trả 200 theo T-46; expired không thành paid, có dấu cần kiểm tra/hoàn; không 500.",
+    "expected": [
+      "không đổi đơn thành đã trả mà đánh dấu cần kiểm tra để hoàn tiền"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-20-AC04",
+    "requirement_id": "S-20",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Webhook thanh toán gửi lại nhiều lần chỉ ghi nhận một",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L22"
+    },
+    "original_requirement": "Giả sử webhook tới trước khi người dùng quay lại trang kết quả, Khi người dùng quay lại, Thì thấy đơn đã trả",
+    "fixture": "Một payload ký hợp lệ; transactionId cố định; pending và expired.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/payments.service.ts; apps/api/prisma/migrations/",
+    "test_candidates": "payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: webhook tới trước khi người dùng quay lại trang kết quả.",
+      "Thực hiện trên POST /payments/webhook: người dùng quay lại.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Gửi 5 lần tuần tự rồi các bản đồng thời trên order khác; đếm payment/event, order transition, ticket và outbox trước/sau. Webhook trùng trả 200 theo T-46; expired không thành paid, có dấu cần kiểm tra/hoàn; không 500.",
+    "expected": [
+      "thấy đơn đã trả"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-20-NFR",
+    "requirement_id": "S-20",
+    "kind": "NFR",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Webhook thanh toán gửi lại nhiều lần chỉ ghi nhận một — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N22"
+    },
+    "original_requirement": "khoá theo mã giao dịch để chống xử lý song song; xử lý một webhook nhiều lần cho kết quả giống xử lý một lần",
+    "fixture": "Một payload ký hợp lệ; transactionId cố định; pending và expired.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/payments.service.ts; apps/api/prisma/migrations/",
+    "test_candidates": "payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Gửi 5 lần tuần tự rồi các bản đồng thời trên order khác; đếm payment/event, order transition, ticket và outbox trước/sau. Webhook trùng trả 200 theo T-46; expired không thành paid, có dấu cần kiểm tra/hoàn; không 500.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "khoá theo mã giao dịch để chống xử lý song song; xử lý một webhook nhiều lần cho kết quả giống xử lý một lần"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

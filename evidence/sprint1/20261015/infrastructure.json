@@ -1,0 +1,64 @@
+{
+  "results": [
+    {
+      "name": "postgres-outage-health503",
+      "status": "PASS"
+    },
+    {
+      "name": "postgres-recovery200",
+      "status": "PASS"
+    },
+    {
+      "name": "redis-outage-health503",
+      "status": "PASS"
+    },
+    {
+      "name": "redis-recovery200",
+      "status": "PASS"
+    },
+    {
+      "name": "prisma-nine-migrations-apply-compensate-reapply",
+      "status": "PASS",
+      "migrationNames": [
+        "202609290001_t01_probe_apply",
+        "202609290002_t01_probe_compensate",
+        "202609290003_t01_probe_reapply",
+        "202610010001_t04_users_roles",
+        "202610010002_t09_events_showtimes",
+        "202610150001_t09_compensate",
+        "202610150002_t04_compensate",
+        "202610150003_t04_reapply",
+        "202610150004_t09_reapply"
+      ]
+    },
+    {
+      "name": "docker-http200",
+      "status": "PASS",
+      "url": "http://127.0.0.1:3421/health"
+    },
+    {
+      "name": "docker-http200",
+      "status": "PASS",
+      "url": "http://127.0.0.1:3420/"
+    },
+    {
+      "name": "docker-http200",
+      "status": "PASS",
+      "url": "http://127.0.0.1:3420/api/health"
+    },
+    {
+      "name": "docker-nonroot-no-local-secret-files",
+      "status": "PASS"
+    },
+    {
+      "name": "local-failed-candidate-old-container200",
+      "status": "PASS",
+      "limitation": "Isolation simulation only; no staging or atomic traffic-switch proof"
+    },
+    {
+      "name": "docker-login-custom-entry-peer-attestation-secure-cookie",
+      "status": "PASS",
+      "limitation": "Cookie Secure verified; browser over local HTTP not used as HTTPS staging proof"
+    }
+  ]
+}

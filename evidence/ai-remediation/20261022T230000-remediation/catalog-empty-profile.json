@@ -1,0 +1,15 @@
+{
+  "run_id": "20261022T230000-remediation",
+  "observed_at_local": "2026-10-23T00:18:00+07:00",
+  "browser_url": "http://127.0.0.1:3410/",
+  "web_pid": 42468,
+  "web_pid_source": "evidence/ai-remediation/20261022T230000-remediation/web.pid",
+  "api_url": "http://127.0.0.1:3411",
+  "api_pid": 26480,
+  "api_pid_source": "evidence/ai-remediation/20261022T230000-remediation/api.pid",
+  "api_health": { "status": "ok" },
+  "catalog_request": { "method": "GET", "path": "/showtimes", "status": 200 },
+  "catalog_response": { "items": [], "totalCount": 0, "nextCursor": null },
+  "profile": { "database": "codegym_remediation", "postgres_port": 62968, "redis_port": 62966, "smtp_catcher": true },
+  "finding": "The local browser is connected to the run-owned isolated remediation API/profile. The public catalog in that profile currently has no showtimes. This explains the empty catalog in this test app; it is not evidence that the main database lost or deleted its event records. Main database was not queried or modified."
+}

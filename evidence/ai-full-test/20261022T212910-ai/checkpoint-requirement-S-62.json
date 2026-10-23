@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-62-AC01",
+    "requirement_id": "S-62",
+    "kind": "AC",
+    "group": "Mở rộng",
+    "tier": "Later",
+    "priority": "Could",
+    "sprint": null,
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Xuất danh sách khách vào cửa theo suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L64"
+    },
+    "original_requirement": "Xuất tệp CSV có mã vé, ghế, giờ vào, cửa vào, cờ xung đột nếu có. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP. Phần đệm, chưa xếp sprint",
+    "fixture": "Admissions 2 cửa, thời gian khác, conflict; quyết định trường PII cần chốt.",
+    "surfaces": "Xuất CSV khách đã vào cửa",
+    "code_candidates": "Chưa tìm thấy tuyến export attendance CSV trong inventory hiện tại",
+    "test_candidates": "Chưa xác định suite chuyên biệt",
+    "steps": [
+      "Chuẩn bị fixture: Admissions 2 cửa, thời gian khác, conflict; quyết định trường PII cần chốt.",
+      "Nếu có, tải và parse CSV: ticket/seat/entry-time/gate/conflict đúng snapshot; quoting Unicode và dữ liệu bắt đầu =,+,-,@ an toàn khi mở bảng tính. Người khác không xuất được; chốt mức PII trước nghiệm thu.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Nếu có, tải và parse CSV: ticket/seat/entry-time/gate/conflict đúng snapshot; quoting Unicode và dữ liệu bắt đầu =,+,-,@ an toàn khi mở bảng tính. Người khác không xuất được; chốt mức PII trước nghiệm thu.",
+    "expected": [
+      "Xuất tệp CSV có mã vé, ghế, giờ vào, cửa vào, cờ xung đột nếu có. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP. Phần đệm, chưa xếp sprint"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-62-NFR",
+    "requirement_id": "S-62",
+    "kind": "NFR",
+    "group": "Mở rộng",
+    "tier": "Later",
+    "priority": "Could",
+    "sprint": null,
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Xuất danh sách khách vào cửa theo suất diễn — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N64"
+    },
+    "original_requirement": "chưa refine — cần chốt tệp có chứa thông tin cá nhân tới mức nào",
+    "fixture": "Admissions 2 cửa, thời gian khác, conflict; quyết định trường PII cần chốt.",
+    "surfaces": "Xuất CSV khách đã vào cửa",
+    "code_candidates": "Chưa tìm thấy tuyến export attendance CSV trong inventory hiện tại",
+    "test_candidates": "Chưa xác định suite chuyên biệt",
+    "steps": [
+      "Nếu có, tải và parse CSV: ticket/seat/entry-time/gate/conflict đúng snapshot; quoting Unicode và dữ liệu bắt đầu =,+,-,@ an toàn khi mở bảng tính. Người khác không xuất được; chốt mức PII trước nghiệm thu.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt tệp có chứa thông tin cá nhân tới mức nào"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

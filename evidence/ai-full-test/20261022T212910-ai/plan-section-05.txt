@@ -1,0 +1,17 @@
+## 5. Thứ tự kiểm thử và điểm kiểm soát
+
+| Đợt | Việc phải làm | Điều kiện hoàn tất đợt |
+|---|---|---|
+| 0. Baseline | Hash workbook/source, lưu dirty tree, kiểm yêu cầu/decision; inventory mọi page/route/controller/job/test; xác nhận DB thử | Có danh mục scope và tệp manifest, không lộ secrets; tất cả case `NOT_RUN`. |
+| 1. Khả năng chạy | Lint/typecheck/unit/build; khởi động build mới, health/web/proxy; module core/publication | Không dùng build cũ; lỗi boot/module/build được báo trước, các test độc lập vẫn tiếp tục. |
+| 2. Nền nghiệp vụ | Auth/RBAC/registration; tạo event/suất, map, giá, mở đóng bán, catalog | UI+API+DB cho S-01–S-09, S-15 và quản trị; negative cases không đổi dữ liệu. |
+| 3. Tiền và ghế | Hold/release/reload/expiry; order; mock/webhook/result/expiry; race | Toàn bộ invariant tiền/ghế, idempotency, kiểm đồng thời thực trên PostgreSQL. |
+| 4. Vé và cửa | Vé/QR/key rotation/mail; staff assignment; scan/duplicate/override; history | Đi trọn INT-01/02/05, kiểm camera/QR thực và số đo nếu thiết bị có. |
+| 5. Ngoại tuyến | Snapshot/delta/PII; offline reload; queue/sync/conflict/network | Queue bền qua đóng mở; lỗi 401/403/timeout không mất dữ liệu; INT-06/07. |
+| 6. Vận hành mở rộng | Waiting room/quota/ticket limit/SSE/monitoring; huỷ/hoàn; báo cáo/đối soát/privacy/backup | Phân biệt Later đã có code, thiếu code và phần cần quyết định; INT-08–11/16/17. |
+| 7. Core bổ sung | Publication/reschedule/reset/admin-mail/reminder; kiểm kết nối UI/API mới | INT-12 và EXT-* chạy qua app thật, không chỉ gọi class trực tiếp. Có thể đưa lên đợt1 để phát hiện mất route sớm. |
+| 8. UI/NFR và staging | Mọi route, desktop/mobile, a11y cơ bản, latency/load, staging/thiết bị | Mỗi NFR có phép đo đúng workload; cái chưa thể kiểm ghi BLOCKED thay PASS. |
+| 9. Tổng hợp | Requirement coverage, bug list, retest, báo cáo và đề xuất nghiệm thu | Không còn case rỗng; không đánh dấu toàn bộ dự án đạt khi còn AC/NFR bắt buộc chưa chứng minh. |
+
+Ước lượng để sắp lịch, không phải cam kết runtime: chuẩn bị 0,5–1 ngày; nghiệp vụ/API 1–2 ngày; race/offline/NFR 1–2 ngày; UI/staging/thiết bị và báo cáo 1–2 ngày, cộng thời gian chờ quyết định/sandbox/thiết bị và sửa lỗi nếu được giao riêng. Thực hiện theo đợt để có kết quả sớm, không cắt case để khớp ước lượng.
+

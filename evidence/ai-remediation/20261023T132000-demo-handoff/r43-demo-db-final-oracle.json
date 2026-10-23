@@ -1,0 +1,18 @@
+{
+  "capturedAt": "2026-10-23T08:44:35.443Z",
+  "profile": "s1demo-384da3d43b41",
+  "readOnly": true,
+  "events": 40,
+  "showtimes": 42,
+  "paidOrders": 2,
+  "tickets": 2,
+  "publishedEvents": 40,
+  "futureOnSaleShowtimes": 1,
+  "assertedExpectedDurableDemoCounts": {
+    "events": 40,
+    "showtimes": 42,
+    "paidOrders": 2,
+    "tickets": 2
+  },
+  "matchesExpected": true
+}

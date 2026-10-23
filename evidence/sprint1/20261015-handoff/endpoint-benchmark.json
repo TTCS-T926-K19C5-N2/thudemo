@@ -1,0 +1,148 @@
+{
+  "source": "b52ba6afa07d29444e5e809892e5325f0966625c",
+  "runId": "f739ff71-f1cc-4f97-8f74-b1af22cb13dc",
+  "startedAt": "2026-10-15T16:38:19.532Z",
+  "origin": "https://10.88.164.155:3470",
+  "environment": {
+    "node": "v24.21.0",
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13500H",
+    "logicalCPUs": 16,
+    "memoryBytes": 16794726400,
+    "apiInstances": 1,
+    "generator": "same laptop as staging services",
+    "tls": "exact certificate CA and hostname verified"
+  },
+  "scenario": "200 authenticated buyers / 100 contested seats per round; 10 disjoint rounds, 2000 real HTTPS endpoint calls",
+  "auth": "Synthetic users have Argon2id hashes; DB-issued fixture sessions have SHA256 tokens and 900s expiry. Login latency excluded.",
+  "thresholdMs": 300,
+  "rounds": [
+    {
+      "round": 0,
+      "statuses": {
+        "200": 100,
+        "409": 100
+      },
+      "success": 100,
+      "conflict": 100,
+      "activeHolds": 100,
+      "p95Ms": 1662.2178
+    },
+    {
+      "round": 1,
+      "statuses": {
+        "200": 100,
+        "409": 100
+      },
+      "success": 100,
+      "conflict": 100,
+      "activeHolds": 100,
+      "p95Ms": 638.384
+    },
+    {
+      "round": 2,
+      "statuses": {
+        "200": 100,
+        "409": 100
+      },
+      "success": 100,
+      "conflict": 100,
+      "activeHolds": 100,
+      "p95Ms": 640.0085999999992
+    },
+    {
+      "round": 3,
+      "statuses": {
+        "200": 100,
+        "409": 100
+      },
+      "success": 100,
+      "conflict": 100,
+      "activeHolds": 100,
+      "p95Ms": 643.4979999999996
+    },
+    {
+      "round": 4,
+      "statuses": {
+        "200": 100,
+        "409": 100
+      },
+      "success": 100,
+      "conflict": 100,
+      "activeHolds": 100,
+      "p95Ms": 463.65639999999985
+    },
+    {
+      "round": 5,
+      "statuses": {
+        "200": 100,
+        "409": 100
+      },
+      "success": 100,
+      "conflict": 100,
+      "activeHolds": 100,
+      "p95Ms": 433.41879999999946
+    },
+    {
+      "round": 6,
+      "statuses": {
+        "200": 100,
+        "409": 100
+      },
+      "success": 100,
+      "conflict": 100,
+      "activeHolds": 100,
+      "p95Ms": 510.1292999999996
+    },
+    {
+      "round": 7,
+      "statuses": {
+        "200": 100,
+        "409": 100
+      },
+      "success": 100,
+      "conflict": 100,
+      "activeHolds": 100,
+      "p95Ms": 763.6890000000003
+    },
+    {
+      "round": 8,
+      "statuses": {
+        "200": 100,
+        "409": 100
+      },
+      "success": 100,
+      "conflict": 100,
+      "activeHolds": 100,
+      "p95Ms": 708.8783000000003
+    },
+    {
+      "round": 9,
+      "statuses": {
+        "200": 100,
+        "409": 100
+      },
+      "success": 100,
+      "conflict": 100,
+      "activeHolds": 100,
+      "p95Ms": 508.29529999999977
+    }
+  ],
+  "limitations": [
+    "One API instance and a co-located load generator; not a two-instance or independent-client acceptance environment.",
+    "No expiry worker/restart/durability claim from this measurement.",
+    "Does not replace PostgreSQL-versus-Redis datastore comparison or full Sprint 2 acceptance.",
+    "Additive fake fixtures remain; no reset, history deletion or modification of existing users/holds."
+  ],
+  "fixture": {
+    "eventId": "0c64d798-841d-4063-b27b-2702c800e63e",
+    "showtimeId": "4397a430-aa2d-4d08-ba63-e4eae2f04117",
+    "users": 200,
+    "seats": 1000,
+    "eventStatus": "DRAFT (kept out of buyer catalog)"
+  },
+  "allP95Ms": 1519.9834999999998,
+  "steadyP95Ms": 688.0834999999997,
+  "correctness": "PASS",
+  "nfrResult": "FAIL",
+  "completedAt": "2026-10-15T16:38:28.909Z"
+}

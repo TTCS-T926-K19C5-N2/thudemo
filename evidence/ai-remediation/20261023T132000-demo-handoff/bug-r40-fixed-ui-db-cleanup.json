@@ -1,0 +1,34 @@
+{
+  "capturedAt": "2026-10-23T08:39:11.683Z",
+  "profile": "s1demo-384da3d43b41",
+  "readOnlyOracle": {
+    "eventId": "ac102b10-fa03-4f7d-a1f9-41ccf5f7f2ed",
+    "name": "AI-R42-S04-PRESET-FIX-20261023T1600Z",
+    "status": "DRAFT",
+    "ownerRole": "organizer-b",
+    "showtimes": [
+      {
+        "id": "c0ef3509-8fc6-4261-9a9f-ad8fb58c44cf",
+        "startTime": "2026-10-24T08:00:00.000Z",
+        "status": "DRAFT",
+        "seats": 0
+      }
+    ],
+    "orders": 0,
+    "orderItems": 0,
+    "coupons": 0
+  },
+  "ui": {
+    "errorBeforePreset": true,
+    "errorAfterPreset": false,
+    "saveSucceeded": true,
+    "errorVisibleAfterSuccess": false
+  },
+  "cleanup": {
+    "deletedEvent": "ac102b10-fa03-4f7d-a1f9-41ccf5f7f2ed",
+    "deletedShowtimes": 1,
+    "orders": 0,
+    "orderItems": 0,
+    "coupons": 0
+  }
+}

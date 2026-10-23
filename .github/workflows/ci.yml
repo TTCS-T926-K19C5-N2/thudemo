@@ -77,9 +77,6 @@ jobs:
       REDIS_HOST: 127.0.0.1
       REDIS_PORT: "6379"
       VERIFICATION_EVIDENCE_DIR: ../../evidence/ci/integration
-      S32_ISOLATED_TEST: "true"
-      HOLD_EXPIRY_MODE: "off"
-      ORDER_EXPIRY_MODE: "off"
     services:
       postgres:
         image: postgres:15-alpine
@@ -127,6 +124,8 @@ jobs:
         run: pnpm --filter api exec prisma generate
       - name: Unit tests
         run: pnpm test
+      - name: Technical review validation guards
+        run: node --test scripts/technical-review.spec.mjs
       - name: Staging seed safety guards (no remote writes)
         run: node --test apps/api/scripts/render-staging-target.spec.mjs
       - name: API integration test
@@ -134,7 +133,6 @@ jobs:
 
   candidate-research:
     name: K-01 / candidate-research
-    needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
@@ -181,7 +179,6 @@ jobs:
 
   hold-concurrency:
     name: T-31 / hold-concurrency
-    needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
@@ -238,4 +235,47 @@ jobs:
         with:
           name: t31-product-holds
           path: evidence/holds/20261004
+          if-no-files-found: error
+
+  t31-postgres-transactional-race:
+    name: T-31 / PostgreSQL transaction race
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install frozen dependencies and generate Prisma client
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --filter api exec prisma generate
+      - name: Create a run-bound isolated profile
+        run: |
+          run_id="$(date -u +'%Y%m%dT%H%M%S')-remediation"
+          echo "AI_REMEDIATION_RUN_ID=$run_id" >> "$GITHUB_ENV"
+          AI_REMEDIATION_RUN_ID="$run_id" node apps/api/scripts/ai-remediation-profile.mjs start
+      - name: Apply production migrations to the disposable profile
+        run: node apps/api/scripts/ai-remediation-profile.mjs migrate
+      - name: Race 200 HTTP claims over 100 PostgreSQL seats, ten rounds
+        run: pnpm --filter api test:seat-race
+      - name: Clean up only the owned profile volume
+        if: always()
+        run: |
+          if [ -n "$AI_REMEDIATION_RUN_ID" ] && [ -f ".cache/ai-remediation/$AI_REMEDIATION_RUN_ID/profile.json" ]; then
+            node apps/api/scripts/ai-remediation-profile.mjs cleanup
+          fi
+      - name: Preserve raw race measurements
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: t31-postgres-transactional-race-${{ github.run_id }}
+          path: evidence/ai-remediation/${{ env.AI_REMEDIATION_RUN_ID }}
           if-no-files-found: error

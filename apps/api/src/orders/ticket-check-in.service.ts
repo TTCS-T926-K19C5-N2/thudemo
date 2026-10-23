@@ -3,6 +3,8 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Logger,
+  HttpException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -13,6 +15,8 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import type { ScanCommand } from './admission-contract.js';
 import { ADMISSION_OVERRIDE_POLICY as admissionOverridePolicy } from './admission-policy.js';
 import { ScannerCryptoService } from '../scanner/scanner-crypto.service.js';
+
+const ticketUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 type Permission = { gateName: string; staffName: string; canOverride: boolean };
 type Admission = {
@@ -31,10 +35,15 @@ type Ticket = {
   categoryName: string;
   row: string;
   seatNumber: number;
+  admissionTicketId: string;
+  transferredTicketId: string | null;
+  transferredStatus: string | null;
+  transferredCheckedInAt: Date | null;
 };
 
 @Injectable()
 export class TicketCheckInService {
+  private readonly logger = new Logger(TicketCheckInService.name);
   constructor(
     private readonly db: PrismaService,
     private readonly crypto: ScannerCryptoService,
@@ -55,6 +64,42 @@ export class TicketCheckInService {
     command: ScanCommand,
     request: AuthenticatedRequest,
     exception = false,
+  ) {
+    try {
+      return await this.recordAdmission(
+        showtimeId,
+        command,
+        request,
+        exception,
+      );
+    } catch (error) {
+      if (error instanceof HttpException) {
+        const response = error.getResponse();
+        const code =
+          typeof response === 'object' && response && 'code' in response
+            ? response.code
+            : undefined;
+        if (typeof code === 'string')
+          this.logger.warn(
+            JSON.stringify({
+              event: 'admission_rejected',
+              reasonCode: code,
+              showtimeId,
+              gateId: command.gateId,
+              staffId: request.user.id,
+              requestId: command.requestId,
+            }),
+          );
+      }
+      throw error;
+    }
+  }
+
+  private async recordAdmission(
+    showtimeId: string,
+    command: ScanCommand,
+    request: AuthenticatedRequest,
+    exception: boolean,
   ) {
     // Resolve only after COMMIT. Lock the ticket AND paid order; failures roll back ledger and checkedInAt together.
     return this.db.$transaction(async (tx) => {
@@ -86,39 +131,71 @@ export class TicketCheckInService {
       }
       // NORMAL and EXCEPTION both resolve identity only from the same signed QR verifier.
       const claims = this.crypto.verifyQr(command.qrPayload);
-      if (claims.showtimeId !== showtimeId.toLowerCase())
+      if (claims.showtimeId !== showtimeId.toLowerCase()) {
+        const actual = await tx.showtime.findUnique({
+          where: { id: claims.showtimeId },
+          select: { startTime: true, event: { select: { name: true } } },
+        });
         throw new BadRequestException({
           code: 'WRONG_SHOWTIME',
-          message: 'Vé không thuộc suất đang soát.',
+          message: actual
+            ? `Vé của suất ${actual.event.name} lúc ${actual.startTime.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}.`
+            : 'Vé không thuộc suất đang soát.',
+          showtime: actual
+            ? {
+                name: actual.event.name,
+                startTime: actual.startTime.toISOString(),
+              }
+            : null,
         });
+      }
       const ticketId = claims.ticketId;
-      const [ticket] = await tx.$queryRaw<Ticket[]>(Prisma.sql`
-        SELECT oi."checkedInAt", oi."orderId", oi."seatId", oi."categoryName", s.row, s."seatNumber"
+      let [ticket] = ticketUuid.test(ticketId) ? await tx.$queryRaw<Ticket[]>(Prisma.sql`
+        SELECT oi."checkedInAt", oi."orderId", oi."seatId", oi."categoryName", s.row, s."seatNumber",
+          oi.id::text AS "admissionTicketId",NULL::text AS "transferredTicketId",NULL::text AS "transferredStatus",NULL::timestamptz AS "transferredCheckedInAt"
         FROM order_items oi JOIN orders o ON o.id = oi."orderId" JOIN seats s ON s.id = oi."seatId"
         WHERE oi.id = ${ticketId}::uuid AND o."showtimeId" = ${showtimeId}::uuid
-          AND s."showtimeId" = ${showtimeId}::uuid AND o.status = 'PAID'::"OrderStatus" FOR UPDATE OF oi,o`);
+          AND s."showtimeId" = ${showtimeId}::uuid AND o.status = 'PAID'::"OrderStatus" FOR UPDATE OF oi,o`) : [];
+      if (!ticket) {
+        [ticket] = await tx.$queryRaw<Ticket[]>(Prisma.sql`
+        SELECT oi."checkedInAt",oi."orderId",oi."seatId",oi."categoryName",s.row,s."seatNumber",
+          oi.id::text,t.id::text,t.status,t."checkedInAt"
+        FROM tickets t JOIN ticket_logs l ON l."ticketId"=t.id AND l.action='ISSUED_FROM_TRANSFER'
+          JOIN tickets source ON source.id=(l.detail->>'fromTicketId')::uuid
+          JOIN order_items oi ON oi."orderId"=source."orderId" AND oi."seatId"=source."seatId"
+          JOIN orders o ON o.id=oi."orderId" JOIN seats s ON s.id=oi."seatId"
+        WHERE t.code=${ticketId} AND t."showtimeId"=${showtimeId}::uuid AND t.status IN ('VALID','CHECKED_IN')
+          AND o.status='PAID'::"OrderStatus" AND s."showtimeId"=${showtimeId}::uuid
+        LIMIT 1 FOR UPDATE OF t,oi,o`);
+      }
       if (!ticket)
         throw new NotFoundException({
-          code: 'INVALID_TICKET',
-          message: 'Vé không hợp lệ hoặc không thuộc suất diễn này.',
+          code: 'UNKNOWN_TICKET',
+          message: 'Không phải vé của hệ thống hoặc đơn chưa được thanh toán.',
         });
       const legacy = await tx.$queryRaw<
-        { status: string; checkedInAt: Date | null }[]
+        { status: string; checkedInAt: Date | null; cancelledAt: Date | null }[]
       >(Prisma.sql`
-        SELECT status, "checkedInAt" FROM tickets WHERE "orderId"=${ticket.orderId}::uuid AND "seatId"=${ticket.seatId}::uuid FOR UPDATE`);
-      if (legacy.some((t) => t.status === 'CANCELLED'))
+        SELECT status, "checkedInAt", "cancelledAt" FROM tickets WHERE "orderId"=${ticket.orderId}::uuid AND "seatId"=${ticket.seatId}::uuid FOR UPDATE`);
+      const admissionTicketId = ticket.admissionTicketId;
+      const cancelled = ticket.transferredTicketId
+        ? undefined
+        : legacy.find((t) => t.status === 'CANCELLED');
+      if (cancelled)
         throw new NotFoundException({
-          code: 'INVALID_TICKET',
-          message: 'Vé không đủ điều kiện vào.',
+          code: 'TICKET_CANCELLED',
+          message: `Vé đã huỷ${cancelled.cancelledAt ? ` ngày ${cancelled.cancelledAt.toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}` : ''}.`,
+          cancelledAt: cancelled.cancelledAt?.toISOString() ?? null,
         });
       ticket.checkedInAt ??=
+        ticket.transferredCheckedInAt ??
         legacy.find((t) => t.status === 'CHECKED_IN')?.checkedInAt ?? null;
       const kind = exception ? 'EXCEPTION' : 'NORMAL';
       const [replay] = await tx.$queryRaw<Admission[]>(Prisma.sql`
         SELECT * FROM ticket_admissions WHERE "staffId" = ${request.user.id}::uuid AND "requestId" = ${command.requestId}::uuid`);
       if (replay) {
         if (
-          replay.ticketId !== ticketId ||
+          replay.ticketId !== admissionTicketId ||
           replay.showtimeId !== showtimeId ||
           replay.gateId !== command.gateId ||
           replay.kind !== kind ||
@@ -132,7 +209,7 @@ export class TicketCheckInService {
         return this.result('ALREADY_RECORDED', ticketId, ticket, replay);
       }
       const [first] = await tx.$queryRaw<Admission[]>(Prisma.sql`
-        SELECT * FROM ticket_admissions WHERE "ticketId" = ${ticketId}::uuid AND kind = 'NORMAL'`);
+        SELECT * FROM ticket_admissions WHERE "ticketId" = ${admissionTicketId}::uuid AND kind = 'NORMAL'`);
       if (
         !exception &&
         (first ||
@@ -162,7 +239,7 @@ export class TicketCheckInService {
       }
       const [admission] = await tx.$queryRaw<Admission[]>(Prisma.sql`
         INSERT INTO ticket_admissions (id, "ticketId", "showtimeId", "gateId", "gateName", "staffId", "staffName", "requestId", kind, reason, "ownerConfirmed")
-        VALUES (${randomUUID()}::uuid, ${ticketId}::uuid, ${showtimeId}::uuid, ${command.gateId}::uuid,
+        VALUES (${randomUUID()}::uuid, ${admissionTicketId}::uuid, ${showtimeId}::uuid, ${command.gateId}::uuid,
           ${permission.gateName}, ${request.user.id}::uuid, ${permission.staffName}, ${command.requestId}::uuid,
           ${kind}, ${command.reason ?? null}, ${exception})
         ON CONFLICT DO NOTHING RETURNING *`);
@@ -177,7 +254,9 @@ export class TicketCheckInService {
           Prisma.sql`UPDATE order_items SET "checkedInAt" = ${admission.enteredAt} WHERE id = ${ticketId}::uuid`,
         );
         await tx.$executeRaw(
-          Prisma.sql`UPDATE tickets SET status='CHECKED_IN', "checkedInAt"=${admission.enteredAt}, "updatedAt"=clock_timestamp() WHERE "orderId"=${ticket.orderId}::uuid AND "seatId"=${ticket.seatId}::uuid`,
+          ticket.transferredTicketId
+            ? Prisma.sql`UPDATE tickets SET status='CHECKED_IN', "checkedInAt"=${admission.enteredAt}, "updatedAt"=clock_timestamp() WHERE id=${ticket.transferredTicketId}::uuid AND status='VALID'`
+            : Prisma.sql`UPDATE tickets SET status='CHECKED_IN', "checkedInAt"=${admission.enteredAt}, "updatedAt"=clock_timestamp() WHERE "orderId"=${ticket.orderId}::uuid AND "seatId"=${ticket.seatId}::uuid`,
         );
       }
       return this.result(

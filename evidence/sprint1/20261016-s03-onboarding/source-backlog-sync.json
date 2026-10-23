@@ -1,0 +1,144 @@
+{
+  "source": "D:\\Development\\03_Academic\\Bán vé sự kiện có sơ đồ ghế\\outputs\\01a0d25b-70b6-7cc2-92ac-d4de7dbfadaa\\Bán vé sự kiện có sơ đồ ghế (1) đã đồng bộ refinement.xlsx",
+  "sourceHash": "9feb1c7f1e2578060b0e2ffa646e09a37fe2c32c3d28274dc7c685bdcc3350ac",
+  "changes": [
+    {
+      "sheet": "Backlog",
+      "address": "H6",
+      "before": 3,
+      "after": 1
+    },
+    {
+      "sheet": "Backlog",
+      "address": "I6",
+      "before": "Todo",
+      "after": "In progress"
+    },
+    {
+      "sheet": "Tasks",
+      "address": "D8",
+      "before": 3,
+      "after": 1
+    },
+    {
+      "sheet": "Tasks",
+      "address": "E8",
+      "before": "Todo",
+      "after": "In progress"
+    },
+    {
+      "sheet": "Tasks",
+      "address": "D9",
+      "before": 3,
+      "after": 1
+    },
+    {
+      "sheet": "Tasks",
+      "address": "E9",
+      "before": "Todo",
+      "after": "In progress"
+    },
+    {
+      "sheet": "Sprints",
+      "address": "F2",
+      "before": 10,
+      "after": 18
+    },
+    {
+      "sheet": "Sprints",
+      "address": "F4",
+      "before": 26,
+      "after": 18
+    },
+    {
+      "sheet": "Sprints",
+      "address": "D2",
+      "before": "Khung ứng dụng chạy trên staging, đăng nhập/phân quyền, tạo sự kiện và suất diễn; K-01 kết luận cơ chế giữ ghế",
+      "after": "Khung ứng dụng chạy trên staging, đăng nhập/phân quyền, tạo sự kiện và suất diễn; K-01 kết luận cơ chế giữ ghế; người mua tự đăng ký bằng dữ liệu giả theo PRIVACY-NOTICE-R0-v1.0"
+    },
+    {
+      "sheet": "Sprints",
+      "address": "D4",
+      "before": "R0 nội bộ: người mua tạo đơn, thanh toán thử qua cổng giả lập có xác minh chữ ký, ghế chuyển thành đã bán, bỏ dở thì ghế trở lại kho và mỗi ghế đã thanh toán có đúng một bản ghi vé; người mua tự đăng ký bằng dữ liệu giả theo PRIVACY-NOTICE-R0-v1.0",
+      "after": "R0 nội bộ: người mua tạo đơn, thanh toán thử qua cổng giả lập có xác minh chữ ký, ghế chuyển thành đã bán, bỏ dở thì ghế trở lại kho và mỗi ghế đã thanh toán có đúng một bản ghi vé"
+    }
+  ],
+  "scope": "DEC15 authorizedS03 Sprint1 +current Inprogress. Only aggregate allocatedSP/goals follow movement; individualSP/capacity/AC/NFR/owner unchanged. DEC17decision external log, not fabricated past timebox.",
+  "time": "2026-10-16T15:21:23.002525+00:00",
+  "result": "PASS exact authorized content and preservation checks",
+  "afterSha256": "4770d7b31eb34d3b055396cca6c457199b4897bc5d404317dc7f584227c6b704",
+  "preservation": {
+    "sourceSha256": "9feb1c7f1e2578060b0e2ffa646e09a37fe2c32c3d28274dc7c685bdcc3350ac",
+    "candidateSha256": "4770d7b31eb34d3b055396cca6c457199b4897bc5d404317dc7f584227c6b704",
+    "valueChanges": [
+      {
+        "sheet": "Sprints",
+        "address": "F4",
+        "before": 26,
+        "after": 18
+      },
+      {
+        "sheet": "Sprints",
+        "address": "D2",
+        "before": "Khung ứng dụng chạy trên staging, đăng nhập/phân quyền, tạo sự kiện và suất diễn; K-01 kết luận cơ chế giữ ghế",
+        "after": "Khung ứng dụng chạy trên staging, đăng nhập/phân quyền, tạo sự kiện và suất diễn; K-01 kết luận cơ chế giữ ghế; người mua tự đăng ký bằng dữ liệu giả theo PRIVACY-NOTICE-R0-v1.0"
+      },
+      {
+        "sheet": "Sprints",
+        "address": "D4",
+        "before": "R0 nội bộ: người mua tạo đơn, thanh toán thử qua cổng giả lập có xác minh chữ ký, ghế chuyển thành đã bán, bỏ dở thì ghế trở lại kho và mỗi ghế đã thanh toán có đúng một bản ghi vé; người mua tự đăng ký bằng dữ liệu giả theo PRIVACY-NOTICE-R0-v1.0",
+        "after": "R0 nội bộ: người mua tạo đơn, thanh toán thử qua cổng giả lập có xác minh chữ ký, ghế chuyển thành đã bán, bỏ dở thì ghế trở lại kho và mỗi ghế đã thanh toán có đúng một bản ghi vé"
+      },
+      {
+        "sheet": "Sprints",
+        "address": "F2",
+        "before": 10,
+        "after": 18
+      },
+      {
+        "sheet": "Backlog",
+        "address": "I6",
+        "before": "Todo",
+        "after": "In progress"
+      },
+      {
+        "sheet": "Backlog",
+        "address": "H6",
+        "before": 3,
+        "after": 1
+      },
+      {
+        "sheet": "Tasks",
+        "address": "D8",
+        "before": 3,
+        "after": 1
+      },
+      {
+        "sheet": "Tasks",
+        "address": "E9",
+        "before": "Todo",
+        "after": "In progress"
+      },
+      {
+        "sheet": "Tasks",
+        "address": "D9",
+        "before": 3,
+        "after": 1
+      },
+      {
+        "sheet": "Tasks",
+        "address": "E8",
+        "before": "Todo",
+        "after": "In progress"
+      }
+    ],
+    "unexpectedValueChanges": [],
+    "styleDifferences": 0,
+    "featureDifferences": []
+  },
+  "individualStorySPChanged": false,
+  "capacityChanged": false,
+  "statusDone": false,
+  "allocation": "Sprint1 18/12 after DEC15, explicit overcapacity; Sprint3 18/26. No capacity threshold changed.",
+  "toolLimitation": "Artifact public API exported file/previews; host returned exit1 after printing process.exitCode undefined without an exception. Independently verified exported contents/styles/features before replacing source."
+}

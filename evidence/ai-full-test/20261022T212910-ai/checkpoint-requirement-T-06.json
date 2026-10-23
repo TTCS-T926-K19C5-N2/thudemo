@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-06-AC",
+    "requirement_id": "T-06",
+    "parent_requirement": "S-02",
+    "kind": "TASK_AC",
+    "group": "Tài khoản",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Chặn truy cập theo vai trò ở tầng middleware",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G7"
+    },
+    "original_requirement": "Gọi API không đúng vai trò bằng curl thì nhận 403, kể cả khi giao diện đã ẩn nút; route chưa khai báo quyền trả về 403",
+    "fixture": "BUYER A/B, ORGANIZER A/B, STAFF, ACCOUNTANT, ADMIN; session còn hạn/hết hạn.",
+    "surfaces": "/login; /auth/login; /auth/me",
+    "code_candidates": "apps/api/src/auth/; apps/web/src/components/login-form.tsx",
+    "test_candidates": "auth-roles.e2e-spec.ts; auth-input-regression.e2e-spec.ts; sprint1-ip.e2e-spec.ts",
+    "steps": [
+      "Mỗi vai trò đăng nhập và gọi trực tiếp API được phép/cấm. Sai mật khẩu 5 lần, thử lần 6; kiểm khoá 15 phút qua restart trên fixture. Đổi IP hoặc tài khoản để kiểm hai chiều quota; dùng route fixture chưa khai báo quyền để kiểm mặc định đóng.",
+      "Kiểm riêng tiêu chí task T-06: Gọi API không đúng vai trò bằng curl thì nhận 403, kể cả khi giao diện đã ẩn nút; route chưa khai báo quyền trả về 403",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Gọi API không đúng vai trò bằng curl thì nhận 403, kể cả khi giao diện đã ẩn nút; route chưa khai báo quyền trả về 403"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-06-NFR",
+    "requirement_id": "T-06",
+    "parent_requirement": "S-02",
+    "kind": "TASK_NFR",
+    "group": "Tài khoản",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Chặn truy cập theo vai trò ở tầng middleware",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I7"
+    },
+    "original_requirement": "mặc định là từ chối — route mới không khai báo quyền thì bị chặn, không phải được mở",
+    "fixture": "BUYER A/B, ORGANIZER A/B, STAFF, ACCOUNTANT, ADMIN; session còn hạn/hết hạn.",
+    "surfaces": "/login; /auth/login; /auth/me",
+    "code_candidates": "apps/api/src/auth/; apps/web/src/components/login-form.tsx",
+    "test_candidates": "auth-roles.e2e-spec.ts; auth-input-regression.e2e-spec.ts; sprint1-ip.e2e-spec.ts",
+    "steps": [
+      "Mỗi vai trò đăng nhập và gọi trực tiếp API được phép/cấm. Sai mật khẩu 5 lần, thử lần 6; kiểm khoá 15 phút qua restart trên fixture. Đổi IP hoặc tài khoản để kiểm hai chiều quota; dùng route fixture chưa khai báo quyền để kiểm mặc định đóng.",
+      "Kiểm riêng tiêu chí task T-06: mặc định là từ chối — route mới không khai báo quyền thì bị chặn, không phải được mở",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "mặc định là từ chối — route mới không khai báo quyền thì bị chặn, không phải được mở"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

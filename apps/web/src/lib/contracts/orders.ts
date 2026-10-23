@@ -51,6 +51,9 @@ export type OrderDetail = {
   status: OrderStatus;
   rawStatus: string;
   totalAmount: number;
+  subtotalAmount: number;
+  discountAmount: number;
+  couponCode: string | null;
   expiresAt: string;
   serverTime: string;
   remainingSeconds: number;
@@ -211,12 +214,24 @@ export function decodeOrderDetail(value: unknown): OrderDetail {
   });
 
   const expiresAt = (o.expiresAt ?? o.paymentExpiresAt) as string;
+  const subtotalAmount =
+    typeof o.subtotalAmount === "number"
+      ? money(o.subtotalAmount)
+      : money(o.totalAmount);
+  const discountAmount =
+    typeof o.discountAmount === "number" ? money(o.discountAmount) : 0;
+  const totalAmount = money(o.totalAmount);
+  if (subtotalAmount - discountAmount !== totalAmount)
+    return invalid("price snapshot");
 
   return {
     id: o.id,
     status: (o.status === "PENDING_PAYMENT" ? "PENDING" : o.status) as OrderStatus,
     rawStatus: typeof o.rawStatus === "string" ? o.rawStatus : (o.status as string),
-    totalAmount: o.totalAmount,
+    totalAmount,
+    subtotalAmount,
+    discountAmount,
+    couponCode: typeof o.couponCode === "string" ? o.couponCode : null,
     expiresAt,
     serverTime: o.serverTime,
     remainingSeconds: o.remainingSeconds,

@@ -1,0 +1,43 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Authenticated Chromium against isolated local API/PostgreSQL; no camera/provider.",
+  "viewports": [
+    {
+      "viewport": "1440x1000",
+      "ticketId": "065e0398-b0dd-4866-b52b-3dfe4a927189",
+      "checkInStatuses": [
+        200,
+        409,
+        200
+      ],
+      "showsPriorGate": true,
+      "showsPriorTime": true,
+      "statusText": "Vé đã sử dụng\n\nĐã vào lúc 07:59:48 23/10/2026 tại cửa R19 Gate A.",
+      "overrideValidationBlocked": true,
+      "exceptionReason": "Đã kiểm tra chủ vé trực tiếp tại cửa B.",
+      "exceptionStatus": 200
+    },
+    {
+      "viewport": "390x844",
+      "ticketId": "1e7f3812-aa68-4a52-b34a-f814e806889d",
+      "checkInStatuses": [
+        200,
+        409,
+        200
+      ],
+      "showsPriorGate": true,
+      "showsPriorTime": true,
+      "statusText": "Vé đã sử dụng\n\nĐã vào lúc 07:59:51 23/10/2026 tại cửa R19 Gate A.",
+      "overrideValidationBlocked": true,
+      "exceptionReason": "Đã kiểm tra chủ vé trực tiếp tại cửa B.",
+      "exceptionStatus": 200
+    }
+  ],
+  "pageErrors": [],
+  "screenshots": [
+    "r19-duplicate-at-second-gate-desktop.png",
+    "r19-override-success-desktop.png",
+    "r19-duplicate-at-second-gate-mobile.png",
+    "r19-override-success-mobile.png"
+  ]
+}

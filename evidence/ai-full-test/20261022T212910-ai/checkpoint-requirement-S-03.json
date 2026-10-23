@@ -1,0 +1,240 @@
+[
+  {
+    "id": "S-03-AC01",
+    "requirement_id": "S-03",
+    "kind": "AC",
+    "group": "Tài khoản",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Người mua tự đăng ký tài khoản bằng email",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L4"
+    },
+    "original_requirement": "Giả sử email chưa có trong hệ thống, Khi gửi form đăng ký hợp lệ, Thì tài khoản được tạo ở trạng thái chờ xác nhận và một email chứa liên kết kích hoạt được gửi đi",
+    "fixture": "Email mới/trùng, mật khẩu 7/8 ký tự, token mới/đã dùng/24 giờ, SMTP catcher.",
+    "surfaces": "/register; /activate; /resend-activation; /users/register",
+    "code_candidates": "apps/api/src/users/registration.service.ts; apps/api/src/users/activation-delivery.service.ts",
+    "test_candidates": "registration.e2e-spec.ts; registration-admission.e2e-spec.ts; registration.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: email chưa có trong hệ thống.",
+      "Thực hiện trên /register; /activate; /resend-activation; /users/register: gửi form đăng ký hợp lệ.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đăng ký ở UI và API; so phản hồi email có/không tồn tại; bắt email local, kích hoạt một lần rồi replay. Dùng fake time cho 24 giờ; gửi lại lần 5 và 6 trong một giờ; kiểm tài khoản chưa kích hoạt không đăng nhập được.",
+    "expected": [
+      "tài khoản được tạo ở trạng thái chờ xác nhận và một email chứa liên kết kích hoạt được gửi đi"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-03-AC02",
+    "requirement_id": "S-03",
+    "kind": "AC",
+    "group": "Tài khoản",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Người mua tự đăng ký tài khoản bằng email",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L4"
+    },
+    "original_requirement": "Giả sử email đã tồn tại, Khi gửi form, Thì thông báo chung \"nếu email hợp lệ, bạn sẽ nhận được hướng dẫn\" — không tiết lộ email đã có tài khoản",
+    "fixture": "Email mới/trùng, mật khẩu 7/8 ký tự, token mới/đã dùng/24 giờ, SMTP catcher.",
+    "surfaces": "/register; /activate; /resend-activation; /users/register",
+    "code_candidates": "apps/api/src/users/registration.service.ts; apps/api/src/users/activation-delivery.service.ts",
+    "test_candidates": "registration.e2e-spec.ts; registration-admission.e2e-spec.ts; registration.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: email đã tồn tại.",
+      "Thực hiện trên /register; /activate; /resend-activation; /users/register: gửi form.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đăng ký ở UI và API; so phản hồi email có/không tồn tại; bắt email local, kích hoạt một lần rồi replay. Dùng fake time cho 24 giờ; gửi lại lần 5 và 6 trong một giờ; kiểm tài khoản chưa kích hoạt không đăng nhập được.",
+    "expected": [
+      "thông báo chung \"nếu email hợp lệ, bạn sẽ nhận được hướng dẫn\" — không tiết lộ email đã có tài khoản"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-03-AC03",
+    "requirement_id": "S-03",
+    "kind": "AC",
+    "group": "Tài khoản",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Người mua tự đăng ký tài khoản bằng email",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L4"
+    },
+    "original_requirement": "Giả sử mật khẩu dưới 8 ký tự, Khi gửi form, Thì bị chặn ở cả trình duyệt lẫn máy chủ",
+    "fixture": "Email mới/trùng, mật khẩu 7/8 ký tự, token mới/đã dùng/24 giờ, SMTP catcher.",
+    "surfaces": "/register; /activate; /resend-activation; /users/register",
+    "code_candidates": "apps/api/src/users/registration.service.ts; apps/api/src/users/activation-delivery.service.ts",
+    "test_candidates": "registration.e2e-spec.ts; registration-admission.e2e-spec.ts; registration.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: mật khẩu dưới 8 ký tự.",
+      "Thực hiện trên /register; /activate; /resend-activation; /users/register: gửi form.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đăng ký ở UI và API; so phản hồi email có/không tồn tại; bắt email local, kích hoạt một lần rồi replay. Dùng fake time cho 24 giờ; gửi lại lần 5 và 6 trong một giờ; kiểm tài khoản chưa kích hoạt không đăng nhập được.",
+    "expected": [
+      "bị chặn ở cả trình duyệt lẫn máy chủ"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-03-AC04",
+    "requirement_id": "S-03",
+    "kind": "AC",
+    "group": "Tài khoản",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Người mua tự đăng ký tài khoản bằng email",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L4"
+    },
+    "original_requirement": "Giả sử liên kết kích hoạt đã quá 24 giờ, Khi bấm vào, Thì báo hết hạn và cho gửi lại liên kết mới",
+    "fixture": "Email mới/trùng, mật khẩu 7/8 ký tự, token mới/đã dùng/24 giờ, SMTP catcher.",
+    "surfaces": "/register; /activate; /resend-activation; /users/register",
+    "code_candidates": "apps/api/src/users/registration.service.ts; apps/api/src/users/activation-delivery.service.ts",
+    "test_candidates": "registration.e2e-spec.ts; registration-admission.e2e-spec.ts; registration.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: liên kết kích hoạt đã quá 24 giờ.",
+      "Thực hiện trên /register; /activate; /resend-activation; /users/register: bấm vào.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đăng ký ở UI và API; so phản hồi email có/không tồn tại; bắt email local, kích hoạt một lần rồi replay. Dùng fake time cho 24 giờ; gửi lại lần 5 và 6 trong một giờ; kiểm tài khoản chưa kích hoạt không đăng nhập được.",
+    "expected": [
+      "báo hết hạn và cho gửi lại liên kết mới"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-03-AC05",
+    "requirement_id": "S-03",
+    "kind": "AC",
+    "group": "Tài khoản",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Người mua tự đăng ký tài khoản bằng email",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L4"
+    },
+    "original_requirement": "Giả sử tài khoản chưa kích hoạt, Khi đăng nhập, Thì bị từ chối kèm hướng dẫn kích hoạt",
+    "fixture": "Email mới/trùng, mật khẩu 7/8 ký tự, token mới/đã dùng/24 giờ, SMTP catcher.",
+    "surfaces": "/register; /activate; /resend-activation; /users/register",
+    "code_candidates": "apps/api/src/users/registration.service.ts; apps/api/src/users/activation-delivery.service.ts",
+    "test_candidates": "registration.e2e-spec.ts; registration-admission.e2e-spec.ts; registration.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tài khoản chưa kích hoạt.",
+      "Thực hiện trên /register; /activate; /resend-activation; /users/register: đăng nhập.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đăng ký ở UI và API; so phản hồi email có/không tồn tại; bắt email local, kích hoạt một lần rồi replay. Dùng fake time cho 24 giờ; gửi lại lần 5 và 6 trong một giờ; kiểm tài khoản chưa kích hoạt không đăng nhập được.",
+    "expected": [
+      "bị từ chối kèm hướng dẫn kích hoạt"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-03-NFR",
+    "requirement_id": "S-03",
+    "kind": "NFR",
+    "group": "Tài khoản",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Người mua tự đăng ký tài khoản bằng email — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N4"
+    },
+    "original_requirement": "mã kích hoạt sinh ngẫu nhiên đủ dài và chỉ dùng được một lần; giới hạn 5 lần gửi lại mỗi giờ cho một email",
+    "fixture": "Email mới/trùng, mật khẩu 7/8 ký tự, token mới/đã dùng/24 giờ, SMTP catcher.",
+    "surfaces": "/register; /activate; /resend-activation; /users/register",
+    "code_candidates": "apps/api/src/users/registration.service.ts; apps/api/src/users/activation-delivery.service.ts",
+    "test_candidates": "registration.e2e-spec.ts; registration-admission.e2e-spec.ts; registration.service.spec.ts",
+    "steps": [
+      "Đăng ký ở UI và API; so phản hồi email có/không tồn tại; bắt email local, kích hoạt một lần rồi replay. Dùng fake time cho 24 giờ; gửi lại lần 5 và 6 trong một giờ; kiểm tài khoản chưa kích hoạt không đăng nhập được.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "mã kích hoạt sinh ngẫu nhiên đủ dài và chỉ dùng được một lần; giới hạn 5 lần gửi lại mỗi giờ cho một email"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

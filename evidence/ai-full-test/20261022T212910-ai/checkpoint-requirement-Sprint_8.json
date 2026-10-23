@@ -1,0 +1,30 @@
+{
+  "id": "SPRINT-8-GOAL",
+  "requirement_id": "Sprint 8",
+  "kind": "SPRINT_GOAL",
+  "group": "Mục tiêu tích hợp",
+  "tier": "GOVERNANCE",
+  "priority": "Theo scope Sprint",
+  "readiness": "SPECIFIED",
+  "title": "Ban tổ chức đối soát được doanh thu khớp với cổng thanh toán và hệ thống sẵn sàng cho dữ liệu thật",
+  "source": {
+    "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+    "sheet": "Sprints",
+    "range": "D9"
+  },
+  "original_requirement": "Ban tổ chức đối soát được doanh thu khớp với cổng thanh toán và hệ thống sẵn sàng cho dữ liệu thật",
+  "steps": [
+    "Xác định các story có Sprint tương ứng trong baseline.",
+    "Đi trọn hành trình tích hợp cho Sprint Goal; đối chiếu dependency và bằng chứng môi trường, không chỉ cộng số story PASS."
+  ],
+  "expected": [
+    "Ban tổ chức đối soát được doanh thu khớp với cổng thanh toán và hệ thống sẵn sàng cho dữ liệu thật"
+  ],
+  "evidence_required": [
+    "Liên kết case story và hành trình tích hợp đã chạy"
+  ],
+  "status": "NOT_RUN",
+  "actual": null,
+  "evidence_files": [],
+  "approved_override": null
+}

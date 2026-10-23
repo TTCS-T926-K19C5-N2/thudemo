@@ -1,0 +1,12 @@
+{
+  "runTag": "R48 QA fixture 20261023101000",
+  "profile": "s1demo-384da3d43b41",
+  "counts": {
+    "events": 40,
+    "showtimes": 44,
+    "orders": 5,
+    "tickets": 5,
+    "seats": 5904
+  },
+  "readOnly": true
+}

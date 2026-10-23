@@ -1,0 +1,16 @@
+{
+  "createdAt": "2026-10-23T08:21:08.522Z",
+  "sourceRoot": "D:/Merge_2/Codegym",
+  "destination": "D:/Merge_2/Codegym-clean-package-proof-20261023T1544",
+  "selectedFileCount": 1049,
+  "expectedFileCount": 1049,
+  "missing": [],
+  "changed": [],
+  "allHashesMatch": true,
+  "profile": {
+    "id": "s1demo-4e0cf076290e",
+    "stopped": true,
+    "databaseVolumePreserved": true
+  },
+  "note": "Prepared source docs refreshed through R37; Organizer showtime UI/DB evidence is local fixture evidence, no product source changed after final regression."
+}

@@ -1,0 +1,42 @@
+{
+  "runId": "20261022T230000-remediation",
+  "node": "v24.21.0",
+  "platform": "Windows_NT 10.0.26200 x64",
+  "logicalCpuCount": 16,
+  "cpuModel": "13th Gen Intel(R) Core(TM) i7-13620H",
+  "physicalMemoryGiB": 15.63,
+  "postgres": {
+    "version": "15.19",
+    "maxConnections": "100",
+    "sharedBuffers": "128MB",
+    "workMem": "4MB",
+    "synchronousCommit": "on",
+    "host": "loopback isolated container",
+    "containerImage": "postgres:15-alpine"
+  },
+  "redis": {
+    "version": "7.4.11",
+    "database": 0,
+    "host": "loopback isolated container",
+    "containerImage": "redis:7-alpine"
+  },
+  "api": {
+    "host": "127.0.0.1",
+    "port": 3411,
+    "workers": 1,
+    "bookingHoldAccountLimit": 10000,
+    "bookingHoldIpLimit": 100000,
+    "waitingRoomCapacity": 0,
+    "emailWorkers": false,
+    "paymentProvider": "not exercised"
+  },
+  "measurement": {
+    "requestsPerRound": 200,
+    "seats": 100,
+    "rounds": 10,
+    "latencyRawSampleCount": 2000,
+    "measurement": "client-observed HTTP latency from barrier release through response body parse",
+    "rateLimitNoise": "zero HTTP 429 in all ten measured rounds; quota 100000/IP per minute",
+    "waitingRoomNoise": "disabled by zero admission capacity in isolated test config"
+  }
+}

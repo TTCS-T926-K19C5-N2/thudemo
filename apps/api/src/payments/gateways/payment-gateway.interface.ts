@@ -1,5 +1,7 @@
 export interface CreatePaymentParams {
   orderId: string;
+  /** Persisted before the provider call so webhook recovery can match an ambiguous response. */
+  gatewayRef: string;
   amount: number;
   currency?: string;
   returnUrl: string;

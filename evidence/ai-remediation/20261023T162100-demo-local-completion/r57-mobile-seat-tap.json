@@ -1,0 +1,80 @@
+{
+  "run": "R57",
+  "profile": "s1demo-384da3d43b41",
+  "viewport": "390x844 touch",
+  "targetSeat": "A-3",
+  "zoomStart": "62%",
+  "zoomAfter": "82%",
+  "zoomChanged": true,
+  "targetPosition": {
+    "row": "A",
+    "seatNumber": 3,
+    "x": 117.66999999999999,
+    "y": 109.05999999999999,
+    "canvas": {
+      "x": 17,
+      "y": 440.5,
+      "width": 459.1875,
+      "height": 492
+    },
+    "zoomAfter": "82%",
+    "layout": {
+      "viewWidth": 356,
+      "maxSeat": 12,
+      "aisleCount": 1,
+      "contentW": 439,
+      "width": 560,
+      "left": 60.5,
+      "pitch": 35,
+      "rowTop": 120,
+      "x": 130.5
+    }
+  },
+  "inspectorAfterTap": "THÔNG TIN GHẾ\nVị trí ghế\nHàng A · Ghế 3\nHạng vé\nVIP\nĐơn giá\n580.000 ₫\nTrạng thái\nĐang chọn",
+  "clickedSeat": true,
+  "inspectorMatches": true,
+  "holdOwnedByFixtureBuyer": true,
+  "releaseConfirmed": true,
+  "baseline": {
+    "orders": 5,
+    "tickets": 5,
+    "sessions": 4,
+    "holds": 0
+  },
+  "after": {
+    "orders": 5,
+    "tickets": 5,
+    "sessions": 4,
+    "holds": 0
+  },
+  "baselineRestored": true,
+  "http": [
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds/43b1ed36-e35f-483b-b2a4-7ec4ba86ce79",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "screenshot": "r57-mobile-seat-selected.png"
+}

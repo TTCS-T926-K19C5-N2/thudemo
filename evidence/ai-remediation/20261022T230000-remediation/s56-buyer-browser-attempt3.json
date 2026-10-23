@@ -1,0 +1,47 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Authenticated Chromium, current local build, isolated PostgreSQL profile; synthetic buyer/order/coupon only.",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "api": [
+    {
+      "method": "GET",
+      "path": "/api/orders/cc6d90e6-6287-4541-8dac-5942cd96a6d8",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/cc6d90e6-6287-4541-8dac-5942cd96a6d8/audit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/cc6d90e6-6287-4541-8dac-5942cd96a6d8/coupon",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/cc6d90e6-6287-4541-8dac-5942cd96a6d8/coupon",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/cc6d90e6-6287-4541-8dac-5942cd96a6d8",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/cc6d90e6-6287-4541-8dac-5942cd96a6d8/audit",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "checks": [
+    "authenticated buyer order review loaded and showed baseline subtotal 101",
+    "invalid coupon surfaced API validation error in browser"
+  ],
+  "screenshots": [],
+  "failure": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Đang áp dụng S56FLOOR10.') to be visible\u001b[22m\n"
+}

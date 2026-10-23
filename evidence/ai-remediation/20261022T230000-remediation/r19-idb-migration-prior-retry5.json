@@ -1,0 +1,24 @@
+{
+  "runId": "20261022T230000-remediation",
+  "type": "Chromium IndexedDB upgrade against current application bundle",
+  "beforeVersion": 3,
+  "expectedVersion": 4,
+  "assertions": {
+    "version": false,
+    "ticketKeys": [
+      "checkedInAt",
+      "code",
+      "email",
+      "holderName",
+      "seatLabel",
+      "showtimeId",
+      "status",
+      "ticketType"
+    ],
+    "ticketSanitized": false,
+    "pendingQueuePreserved": true,
+    "showtimeMetadataPreserved": true
+  },
+  "screenshot": "r19-idb-migration.png",
+  "failure": "Expected values to be strictly equal:\n\nfalse !== true\n"
+}

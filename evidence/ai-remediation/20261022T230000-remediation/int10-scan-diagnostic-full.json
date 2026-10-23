@@ -1,0 +1,142 @@
+{
+  "snap": "arrow_back\nĐăng nhập\narrow_back\nĐổi suất diễn\nTrực tuyến\nSUẤT DIỄN ĐANG CHỌN\nR19 fixture 20261022T230000-remediation ee76771d-e8f2-4a60-9446-77a7faba8bb7\ncheck_circle\nĐã tải\ncalendar_month\nlúc 11:58 Thứ Sáu, 23 tháng 10, 2026\nlocation_on\nLocal test venue\nconfirmation_number\nDữ liệu vé trên máy quét (S-33)\n\nSố vé đã tải\n\n40vé\n\nThời điểm tải gần nhất\n\n12:00:24 23 thg 10, 2026\n\nTình trạng\n\nĐã tải mới nhất\n\nrefresh\nTải lại toàn bộ danh sách\nrefresh\nTải phần thay đổi\nKhoá công khai QR: ai-remediation\nMốc đồng bộ (cursor): da7237d7-e578-4eec-\nconfirmation_number\nVé Sự Kiện\n\n© 2026 Vé Sự Kiện",
+  "body0": "Đặt vé thử trên localhost · Thanh toán giả lập, không thu tiền thật.\nconfirmation_number\nVé Sự Kiện\naccount_circle\nTài khoản\nChuẩn bị danh sách vé\nTrực tuyến\nSoát vé bằng mã QR\n\nChọn đúng suất diễn trước khi quét. Mỗi vé chỉ được check-in một lần.\n\nĐang chuẩn bị giao diện để mở lại khi mất mạng…\n\nTrực tuyến\nLượt chờ đồng bộ:\n0\nSuất diễn hôm nay được phân công\nĐang tải suất diễn…\nTải cửa được phân công\nCửa hiện tại\nChọn suất và tải cửa trước\n\nSuất: ca0d25b2-a47d-4a1d-ae50-ad754104986b · Cửa: Chưa chọn\n\nChọn suất diễn và tải cửa được phân công để bắt đầu.\n\nBật camera\nHoặc tải ảnh mã QR lên\n\nẢnh được đọc ngay trên trình duyệt và kiểm tra giống như khi quét bằng camera.\n\nHoặc nhập mã vé\nKiểm tra vé\nconfirmation_number\nVé Sự Kiện\n\n© 2026 Vé Sự Kiện\n\nĐiều khoản dịch vụ\nChính sách hoàn vé\nQuy định sơ đồ ghế\nHỗ trợ\nexplore\nSự kiện\nchair\nSơ đồ vé\nconfirmation_number\nVé của tôi\nadmin_panel_settings\nQuản trị",
+  "buttons0": [
+    "Nhà hát",
+    "location_on TP. Hồ Chí Minhexpand_more",
+    "Thử kết nối lại",
+    "Điều khoản dịch vụ",
+    "Chính sách hoàn vé",
+    "Quy định sơ đồ ghế",
+    "Hỗ trợ",
+    "chairSơ đồ vé"
+  ],
+  "gates": [
+    {
+      "value": "ca0d25b2-a47d-4a1d-ae50-ad754104986b",
+      "options": [
+        {
+          "value": "",
+          "text": "Chọn suất diễn hôm nay"
+        },
+        {
+          "value": "ca0d25b2-a47d-4a1d-ae50-ad754104986b",
+          "text": "R19 fixture 20261022T230000-remediation ee76771d-e8f2-4a60-9446-77a7faba8bb7 — 11:58:14 23/10/2026"
+        }
+      ]
+    },
+    {
+      "value": "",
+      "options": [
+        {
+          "value": "",
+          "text": "Chọn suất và tải cửa trước"
+        }
+      ]
+    }
+  ],
+  "labels": [
+    {
+      "id": "",
+      "disabled": true,
+      "aria": "Tìm sự kiện",
+      "placeholder": "Tìm sự kiện, nghệ sĩ, địa điểm..."
+    },
+    {
+      "id": "ticket-qr-image",
+      "disabled": true,
+      "aria": null,
+      "placeholder": ""
+    },
+    {
+      "id": "ticket-code",
+      "disabled": true,
+      "aria": null,
+      "placeholder": ""
+    }
+  ],
+  "body1": "Đặt vé thử trên localhost · Thanh toán giả lập, không thu tiền thật.\nconfirmation_number\nVé Sự Kiện\naccount_circle\nTài khoản\nChuẩn bị danh sách vé\nTrực tuyến\nSoát vé bằng mã QR\n\nChọn đúng suất diễn trước khi quét. Mỗi vé chỉ được check-in một lần.\n\nGiao diện đã sẵn sàng mở lại khi mất mạng.\n\nTrực tuyến\nLượt chờ đồng bộ:\n0\nSuất diễn hôm nay được phân công\nChọn suất diễn hôm nay\nR19 fixture 20261022T230000-remediation ee76771d-e8f2-4a60-9446-77a7faba8bb7 — 11:58:14 23/10/2026\nTải cửa được phân công\nCửa hiện tại\nR19 Gate A\n\nSuất: ca0d25b2-a47d-4a1d-ae50-ad754104986b · Cửa: R19 Gate A\n\nSẵn sàng quét vé.\n\nBật camera\nHoặc tải ảnh mã QR lên\n\nẢnh được đọc ngay trên trình duyệt và kiểm tra giống như khi quét bằng camera.\n\nHoặc nhập mã vé\nKiểm tra vé\nconfirmation_number\nVé Sự Kiện\n\n© 2026 Vé Sự Kiện\n\nĐiều khoản dịch vụ\nChính sách hoàn vé\nQuy định sơ đồ ghế\nHỗ trợ\nexplore\nSự kiện\nchair\nSơ đồ vé\nconfirmation_number\nVé của tôi\nadmin_panel_settings\nQuản trị",
+  "labels1": [
+    {
+      "id": "",
+      "disabled": true,
+      "aria": "Tìm sự kiện",
+      "placeholder": "Tìm sự kiện, nghệ sĩ, địa điểm..."
+    },
+    {
+      "id": "ticket-qr-image",
+      "disabled": false,
+      "aria": null,
+      "placeholder": ""
+    },
+    {
+      "id": "ticket-code",
+      "disabled": false,
+      "aria": null,
+      "placeholder": ""
+    }
+  ],
+  "responses": [
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/showtimes",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/showtimes/{fixture}/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/check-in/today",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/{fixture}/check-in/gates",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/qr-keys",
+      "status": 200
+    }
+  ],
+  "errors": []
+}

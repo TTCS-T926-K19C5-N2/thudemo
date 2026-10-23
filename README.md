@@ -1,8 +1,57 @@
 # Chạy dự án bán vé sự kiện trên máy cá nhân
+## Bản demo local hiện hành — 2026-10-23
+
+Bản demo local hiện được bàn giao ở trạng thái **DEMO_PARTIAL**; xem [DEMO_HANDOFF.md](DEMO_HANDOFF.md) để biết profile, dataset, tài khoản giả, các luồng đã kiểm và giới hạn hiện tại. Xem thêm [DEMO_WALKTHROUGH.md](DEMO_WALKTHROUGH.md), [DEMO_ACCOUNTS.md](DEMO_ACCOUNTS.md) và [ma trận vai trò/chức năng](demo-role-feature-matrix.json). Các tuyên bố staging/nghiệm thu bên dưới là ghi chép lịch sử của snapshot trước, không phải kết quả nghiệm thu cho working tree này.
+
+Quản trị nhân viên S28: xem [ACCOUNT_ADMIN](docs/ACCOUNT_ADMIN.md) cho màn `/admin/users`, quyền ADMIN, đổi vai trò tức thời và thu hồi session khi khóa.
+
+Lịch sử đơn hàng S32: xem [ORDER_HISTORY](docs/ORDER_HISTORY.md) cho `/orders`, phân trang riêng theo chủ đơn và quyền xem detail/status.
+
+Bản được nghiệm thu: **61749f82**, staging **https://10.228.54.197:3470**. CI 221 giây, tự triển khai sau merge 365,240 giây; T01–T10/K01/DoD được đối chiếu đủ 95 mapping. [Báo cáo](docs/SPRINT1_REVIEW_REPORT.md), [ma trận](docs/SPRINT1_ACCEPTANCE_MATRIX.md), [runbook](docs/SPRINT1_DEMO_RUNBOOK.md), [receipt thực tế](https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/104#issuecomment-6229852854). Review đúng SHA theo DEC18 đã áp dụng; không phải review độc lập của người khác. K01 có sai lệch timebox/mentor lịch sử đã được PO chấp thuận.
+
+## Demo từ clone mới
+
+Prerequisites: Windows PowerShell 5.1+, Git, Node 24.21.0, pnpm 10.15.1 và Docker Desktop Linux engine; ổ Windows còn 1 GiB, ổ checkout còn 5 GiB và RAM khả dụng 2 GiB. Launcher giữ pnpm store và file tạm trong profile demo trên ổ checkout. Từ root clone riêng:
+
+```powershell
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1
+```
+
+Chờ READY rồi mở URL được in. Credentials nằm trong `.sprint1-demo/config.json` bị ignore; địa chỉ Mailpit được in để thử đăng ký/kích hoạt. Mailpit không chứng minh email Internet. Không copy `.env` hoặc private config từ máy khác. Dùng cùng lệnh với `-Action Status`, `-Action Stop`, `-Action Start`, `-Action Restart`; dữ liệu/secret của profile được giữ. Staging dùng riêng `.sprint1-staging/config.json`; khôi phục profile đã có theo runbook, không init/reset lại.
+
+Hồ sơ cuối công bố actual617 proof; sau merge chỉ kiểm CI/runtime tương thích, không retag kết quả test cũ. Các checkpoint dưới đây là lịch sử với source/môi trường riêng.
+
+### Checkpoint README trước — lịch sử
+
+
+> **Bản nghiệm thu17/10:** phần mềm `4033da4dde1484fc777806421006f9c17e831f8b`; staging **https://10.228.54.197:3470**, auto merge→healthy320,279s và integratedCI225s PASS. T01–T10/K01/DoD và actual task/backlog sync xem [báo cáo](docs/SPRINT1_REVIEW_REPORT.md)/[ma trận](docs/SPRINT1_ACCEPTANCE_MATRIX.md). Sau khi DEC-18 được chấp thuận và áp dụng, gate công bố là review kỹ thuật tự động đúng SHA + required review status/CI + merge develop và xác minh runtime/staging sau merge; chưa nhận SprintDone trước các gate đó. TLS/owned firewall PASS; không có second-device test mới. Credentials chỉ file local ignored; clone mới chạy một lệnh dưới đây.
+
+> **Checkpoint lịch sử — Sprint 1 review/demo 15/10/2026:** xem [runbook](docs/SPRINT1_DEMO_RUNBOOK.md), [ma trận nghiệm thu](docs/SPRINT1_ACCEPTANCE_MATRIX.md) và [báo cáo](docs/SPRINT1_REVIEW_REPORT.md). Profile này dùng worktree/database/container riêng, web 3440/API 3441; Git Flow feature → develop; staging laptop riêng https://10.88.164.155:3470 (cần certificate trust/firewall để team Wi-Fi truy cập; xem gate trong runbook). Khi chạy web, dùng entry `pnpm --filter web dev` hoặc `start` để xác thực IP đăng nhập qua proxy. Root `.env` cần `WEB_PORT` và `AUTH_PROXY_SECRET` ngẫu nhiên tối thiểu 32 ký tự, cùng giá trị server-only trên web/API. Không dùng `next start` trực tiếp. Các checkpoint cũ bên dưới chỉ phản ánh thời điểm được ghi.
 
 > **Hướng dẫn hiện hành cho giao diện, tài khoản và giữ ghế Sprint 2:** [LOCAL_USER_GUIDE](docs/LOCAL_USER_GUIDE.md). Có lệnh build/chạy/test từng bước, tài khoản người tổ chức/người mua, cách đọc mật khẩu giả riêng trên máy và xử lý lỗi. Profile review dùng PostgreSQL 15432/Redis 16379 với database `stitch_fidelity`; các mục T-01 và checkpoint cũ dưới đây được giữ làm lịch sử, dùng profile khác.
 
-Đây là hướng dẫn cho môi trường local theo T-01/TECH-01. Docker Compose chạy PostgreSQL và Redis; API NestJS và web Next.js chạy trực tiếp trên máy. Web dùng cổng **3000**, API dùng cổng **3001**. Các lệnh dưới đây dùng PowerShell và được chạy từ thư mục `thudemo/` chứa file README này.
+Đây là hướng dẫn cho môi trường local theo T-01/TECH-01. Candidate hiện dùng bản vá Next.js16.3.8 theo quyền sửa dependency bảo mật đã cấp; yêu cầu16.3.6 lịch sử được ghi riêng trong báo cáo đối chiếu. Docker Compose chạy PostgreSQL và Redis; API NestJS và web Next.js chạy trực tiếp trên máy. Web dùng cổng **3000**, API dùng cổng **3001**. Các lệnh dưới đây dùng PowerShell và được chạy từ thư mục `thudemo/` chứa file README này.
+
+## Demo Sprint 1 từ clone mới — một lệnh
+
+Entrypoint đã kiểm clone sạch02a thực tế; source ứng dụng/launcher/lock giữ nguyên trêneb53. Auto staging403 đạt320,279s; actual task/backlog sync đã kiểm; gate công bố cuối theo báo cáo. Firewall IP mới đã readback PASS. Prerequisites: Windows PowerShell5.1+, Git, Node24.21.0, Corepack/pnpm10.15.1, Docker Desktop dùng Linux engine/Compose; C trống ít nhất12GiB, ổ checkout5GiB, RAM khả dụng2GiB. Chạy từ clone riêng, không sao chép `.env`/private config từ máy khác.
+
+```powershell
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1
+```
+
+Lệnh chọn cổng trống, tạo profile/secret riêng theo đường dẫn checkout, chạy PostgreSQL15/Redis7/Mailpit, frozen install, Prisma generate/migrate, seed giả, build, start, health và login/logout smoke. Chỉ in `READY` sau khi smoke thành công. Địa chỉ thực tế được in ở cuối (ưu tiên web3000/API3001); không mặc định cổng nếu máy đã bận. Credentials nằm tại `.sprint1-demo/config.json`, bị Git ignore; không gửi file này lên PR/chat. Nếu clone đã có `.env` của môi trường khác, launcher từ chối ghi đè: dùng clone riêng.
+
+Mở `/register`, nhập tên/email giả và mật khẩu thử >=8ký tự, đọc thông báo và tự chọn consent. Xem thư ở địa chỉ **mail-catcher** được in, mở liên kết kích hoạt, đặt mật khẩu cuối cùng (có thể dùng lại mật khẩu vừa chọn) rồi đăng nhập. Mailpit là hộp nhận thử loopback, **không chứng minh thư Internet**. Hai organizer/admin/buyer/lock-test có sẵn trong credentials local; không dùng tài khoản chính cho thử khóa.
+
+```powershell
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Status
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Stop
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Start
+powershell.exe -NoProfile -File .\scripts\sprint1-demo.ps1 -Action Restart
+```
+
+Stop chỉ dừng process/container của profile này, giữ volume, lịch sử và secret. Start dùng lại build khi source fingerprint không đổi và luôn kiểm health/smoke; Restart build lại (trừ -SkipBuild hợp lệ). Source đổi thì dùng Restart để build lại; không `down -v`, reset DB hoặc dừng Node/Docker dùng chung. Khi lỗi, chưa có READY; đọc log private `.sprint1-demo/*.log` và lỗi ngắn trên terminal. Thiết lập cũ trong worktree15/10 vẫn dùng `-Legacy` và runbook checkpoint cũ. Demo localhost khác bootstrap HTTPS/LAN lần đầu và khác resume staging đã cấu hình; certificate/firewall vẫn cần thao tác OS được nêu trong runbook.
 
 ## 1. Chuẩn bị
 
@@ -26,7 +75,7 @@ if (-not (Test-Path .env)) { Copy-Item .env.example .env }
 
 Mở `thudemo/.env` và thay **mọi** giá trị dạng `<...>` bằng giá trị thử nghiệm do bạn tự đặt. Dùng cùng tên user, mật khẩu và tên database trong `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` và `DATABASE_URL`. URL của API phải trỏ `localhost:5432`; Redis trỏ `localhost:6379`. Nếu mật khẩu chứa ký tự đặc biệt, phần mật khẩu trong `DATABASE_URL` cần được mã hóa theo URL; dùng ký tự chữ/số cho mật khẩu local sẽ dễ cấu hình hơn.
 
-Giữ `PORT=3001` và `NEXT_PUBLIC_API_URL=http://localhost:3001` như file mẫu. `NEXT_PUBLIC_*` là biến công khai: không đặt mật khẩu, token hoặc chuỗi kết nối vào đó. `.env` đã được Git ignore; không commit hoặc gửi nội dung file này. Các biến JWT trong mẫu thuộc scaffold authentication hiện có, chưa phải bằng chứng tính năng đăng nhập đã hoàn thành.
+Giữ `PORT=3001` và `NEXT_PUBLIC_API_URL=http://localhost:3001` như file mẫu. `NEXT_PUBLIC_*` là biến công khai: không đặt mật khẩu, token hoặc chuỗi kết nối vào đó. `.env` đã được Git ignore; không commit hoặc gửi nội dung file này. Phiên đăng nhập hiện dùng server session theo TECH-02; cookie HttpOnly, Secure trên HTTPS. Không cấu hình JWT thay cho session. `WEB_PORT`, `WEB_ORIGIN` và `AUTH_PROXY_SECRET` phải khớp web/API; dùng entry web `pnpm --filter web dev` để có xác thực TCP peer.
 
 Nếu đã có volume PostgreSQL từ lần chạy trước, đổi `POSTGRES_USER`, `POSTGRES_PASSWORD` hoặc `POSTGRES_DB` trong `.env` không tự đổi tài khoản/database đã khởi tạo trong volume. Hãy dùng lại các giá trị tương ứng hoặc xử lý volume theo quy trình của nhóm; không xóa volume khi còn dữ liệu cần giữ.
 
@@ -39,7 +88,7 @@ pnpm --filter api exec prisma migrate deploy
 pnpm --filter api exec prisma generate
 ```
 
-`--wait` chỉ hoàn tất khi PostgreSQL và Redis đạt healthcheck. Lệnh migration dùng lịch sử Prisma trong repository; chạy lại sẽ báo không có migration chờ nếu database đã cập nhật. Các migration T-01 chỉ là mẫu apply → migration bù → tái áp dụng, chưa tạo các bảng nghiệp vụ User/Event/Showtime. Không dùng `prisma db push` hoặc reset database thay cho migration.
+`--wait` chỉ hoàn tất khi PostgreSQL và Redis đạt healthcheck. Lệnh migration dùng lịch sử Prisma trong repository; chạy lại sẽ báo không có migration chờ nếu database đã cập nhật. Checkout tích hợp hiện có 30 migration, gồm User/Role/Event/Showtime và các module sprint sau. Ba migration probe của T-01 là mẫu apply → migration bù → tái áp dụng; không có nghĩa schema hiện tại chỉ còn scaffold. Không dùng `prisma db push` hoặc reset database thay cho migration.
 
 ## 4. Chạy API và web
 
@@ -55,7 +104,7 @@ pnpm --filter api run start:dev
 pnpm --filter web run dev
 ```
 
-Mở [web](http://localhost:3000) và [API health](http://localhost:3001/health). Health trả HTTP `200` với `status: ok` khi API kết nối được cả PostgreSQL và Redis; nếu một dịch vụ lỗi, API trả `503`. Web hiện vẫn là scaffold của Sprint 1, chưa có luồng bán vé hoàn chỉnh.
+Mở [web](http://localhost:3000) và [API health](http://localhost:3001/health). Health trả HTTP `200` với `status: ok` khi API kết nối được cả PostgreSQL và Redis; nếu một dịch vụ lỗi, API trả `503`. Đăng nhập, phân quyền và quản lý sự kiện nháp/suất diễn thuộc phạm vi Sprint 1; các module sprint sau có trong checkout không tự được nghiệm thu ở Sprint 1.
 
 Để dừng API hoặc web, nhấn `Ctrl+C` trong từng cửa sổ. Có thể dừng hai dịch vụ dữ liệu bằng `docker compose stop postgres redis`; lệnh này giữ nguyên volume PostgreSQL.
 
@@ -137,3 +186,4 @@ K01 local two-process đã so durability/invariant và đề xuất PostgreSQL a
 PostgreSQL authoritative tạm thời cho local; Redis/Valkey chỉ cache/counter. [Gói review hiện tại](docs/SPRINT2_PO_REVIEW.md), [AC/lệnh/bằng chứng](docs/SEAT_HOLD_LOCAL_EVIDENCE.md). API/web3001/3000; imageprofilemới3201/3200. Chạy migration theo runner trướcAPI; mở cửa sổ thứba `./scripts/run-sprint2-local.ps1 -Mode Worker -Database stitch_fidelity` để quét mỗi phút. Thêm ghế/retry/reload không gia hạn10phút; query vẫn trống ngay khi quá hạn dù worker tắt. Chỉ tài khoản/dữ liệu giả, passwordlocal không trongchat/source.
 
 Lượt cuối T31 đúng100winner/100conflict×10 nhưng NFRp95FAIL750,96ms. ChưaCI/staging/Render/continuousworkerPASS; khôngSprint100%. Không dùngreset/dbpush để rollback, không xóa.env/volumes/WIP. RenderFree scheduler chỉ khiAPIthức,cache/loginlock có thểmất khi restart.
+

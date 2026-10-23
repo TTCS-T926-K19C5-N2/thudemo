@@ -1,0 +1,89 @@
+{
+  "at": "2026-10-17T04:33:37.266Z",
+  "finding": "D18-CACHE-01",
+  "severity": "P2",
+  "source": "03c6aa7796f17683281cc612fb955976cdf4daae",
+  "reviewedHead": "547017e856b9eb9d7cd978dd2b4ddd04211819ff",
+  "base": "4033da4dde1484fc777806421006f9c17e831f8b",
+  "result": "FAIL",
+  "gate": "T03/latest-publication merge-to-healthy<600seconds",
+  "mergedAt": "2026-10-17T04:21:13Z",
+  "promotedAt": "2026-10-17T04:31:46.743Z",
+  "mergeToHealthySeconds": 633.743,
+  "elapsedLowerBoundSeconds": 633.743,
+  "thresholdSeconds": 600,
+  "oldRetainedWhileCandidateNotHealthy": true,
+  "timeline": [
+    {
+      "time": "2026-10-17T04:25:06.067Z",
+      "event": "candidate-start",
+      "sha": "03c6aa7796f17683281cc612fb955976cdf4daae",
+      "resources": [
+        {
+          "name": "Windows system/Docker Desktop volume",
+          "freeBytes": 27031470080,
+          "minimumBytes": 12884901888
+        },
+        {
+          "name": "Staging source/backup volume",
+          "freeBytes": 112380112896,
+          "minimumBytes": 5368709120
+        }
+      ]
+    },
+    {
+      "time": "2026-10-17T04:25:51.913Z",
+      "event": "backup-verified",
+      "sha": "03c6aa7796f17683281cc612fb955976cdf4daae",
+      "bytes": 3904094
+    },
+    {
+      "time": "2026-10-17T04:31:46.743Z",
+      "event": "promoted",
+      "sha": "03c6aa7796f17683281cc612fb955976cdf4daae",
+      "oldSha": "4033da4dde1484fc777806421006f9c17e831f8b",
+      "elapsedSeconds": 400.677
+    }
+  ],
+  "actualApiBuildEvidence": [
+    "#1 DONE 0.1s",
+    "#2 DONE 2.2s",
+    "#4 DONE 1.7s",
+    "#5 DONE 0.0s",
+    "#6 DONE 0.0s",
+    "#7 DONE 0.5s",
+    "#11 [dependencies  5/13] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./",
+    "#11 DONE 0.1s",
+    "#12 DONE 0.1s",
+    "#13 DONE 0.1s",
+    "#14 DONE 0.1s",
+    "#15 DONE 0.1s",
+    "#16 [dependencies 10/13] RUN pnpm install --frozen-lockfile",
+    "#16 DONE 105.4s",
+    "#17 DONE 0.9s",
+    "#18 DONE 0.1s",
+    "#19 DONE 0.1s",
+    "#20 [api-build 1/1] RUN pnpm --filter api exec prisma generate && pnpm --filter api build     && pnpm --filter api deploy --legacy --prod /out/api     && cp -R apps/api/dist /out/api/dist     && (cd /out/api && /app/apps/api/node_modules/.bin/prisma generate --schema prisma/schema.prisma)",
+    "#20 DONE 68.2s",
+    "#22 DONE 4.5s",
+    "#23 DONE 15.9s"
+  ],
+  "ownedBuildIds": {
+    "api": "tsukef52j5flv6vx431lrq50x",
+    "web": "24mntma41pwlpjcr2kp38diqe"
+  },
+  "cause": "PR100 added18guard tests to rootpackage.json testscript; Dockerfile COPY package.json before pnpm install invalidated dependency+API+webbuild cache despite identical productionapps/schema/lock. API cold build>3minutes plus214secondCI and backup; source not healthy before600seconds.",
+  "fix": "Restore root package.json exact403dependency-cache input; run unchanged18guard tests in a dedicated step of same required CI testjob after pnpmtest. No skippedtests/assertion/timeout/check/workflowtrigger or application change.",
+  "verification": "Actual18tests/CIstep, graph/lock/runtime-input equivalence and actualnextmerge automatic staging timeline. Never re-label this03attempt asPASS or subtractbuild/sleep time.",
+  "environment": {
+    "sameLaptop": true,
+    "dockerVersion": "29.5.3",
+    "dockerCPUs": 16,
+    "dockerMemoryBytes": 8134926336,
+    "windowsAvailableRamGiBDuringBuild": 0.46
+  },
+  "limits": [
+    "This records timingfailure, not loss of data or failed application functionality",
+    "Current403demo remainshealthy until candidatepromotion; actual promotiontime appended when available"
+  ]
+}

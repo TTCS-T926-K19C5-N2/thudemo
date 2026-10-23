@@ -74,7 +74,7 @@ export class OrdersController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.service.getOrderById(id, req.user.id);
+    return this.history.current(id, req.user.id);
   }
 
   @Get(':id/status')
@@ -85,6 +85,6 @@ export class OrdersController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.service.getOrderStatus(id, req.user.id);
+    return this.history.status(id, req.user.id);
   }
 }

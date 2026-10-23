@@ -1,0 +1,16 @@
+## 11. Checklist rủi ro và quyết định nghiệp vụ
+
+| Nguồn | Điều phải đối chiếu |
+|---|---|
+| R-01/K-01 | Có kết quả hai candidate và quyết định; ngoại lệ timebox/mentor có bằng chứng, benchmark mới không bù lịch sử. |
+| R-02 | Phân biệt provider sandbox có tài khoản với gateway mock; thiếu sandbox ghi rõ blocker, không nhận mock là chứng minh tích hợp provider. |
+| R-03 | Test DB concurrency cho hold, payment và admission; kiểm 10 vòng T-31 và crash/race. |
+| R-04 | Hồ sơ review/CI chính xác, không giả human approval. Không tự quản lý Sprint/owner/SP trong đợt test. |
+| R-05 | Map 2.000 ghế render/zoom có phép đo thực; không chỉ endpoint trả nhanh. |
+| R-06 | CI/deploy lỗi giữ app cũ và backup/restore đã kiểm riêng; không phá môi trường dùng chung để thử. |
+| R-07 | Erasure có phạm vi do người có thẩm quyền quyết định, giữ giao dịch theo hợp đồng; đây không phải chứng nhận tuân thủ pháp luật. |
+| R-08 | Scanner web offline, IndexedDB và full reload; không tự đổi thành app mobile riêng. |
+| R-09 | Later/Next chưa refine không tự trở thành Ready hoặc tự đổi Story Point; báo thiếu quyết định và phạm vi release. |
+
+Các quyết định còn cần truy vết: queue capacity/TTL, rate limit và NAT, ticket limit/pending/cancelled, cutoff/refund/reopen seat, refund unknown/manual SLA, audit retention, doanh thu gộp/ròng, định dạng sao kê, attendance refresh, consent nghiệp vụ/marketing, erasure scope, off-host destination/encryption/key retention, coupon stacking, waitlist giữ riêng, transfer toggle và trường PII trong CSV.
+

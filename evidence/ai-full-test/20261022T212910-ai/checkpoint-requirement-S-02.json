@@ -1,0 +1,240 @@
+[
+  {
+    "id": "S-02-AC01",
+    "requirement_id": "S-02",
+    "kind": "AC",
+    "group": "Tài khoản",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Đăng nhập và phân quyền theo vai trò",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L3"
+    },
+    "original_requirement": "Giả sử tài khoản có vai trò ban tổ chức, Khi đăng nhập, Thì thấy mục quản lý sự kiện và không thấy mục đối soát kế toán",
+    "fixture": "BUYER A/B, ORGANIZER A/B, STAFF, ACCOUNTANT, ADMIN; session còn hạn/hết hạn.",
+    "surfaces": "/login; /auth/login; /auth/me",
+    "code_candidates": "apps/api/src/auth/; apps/web/src/components/login-form.tsx",
+    "test_candidates": "auth-roles.e2e-spec.ts; auth-input-regression.e2e-spec.ts; sprint1-ip.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tài khoản có vai trò ban tổ chức.",
+      "Thực hiện trên /login; /auth/login; /auth/me: đăng nhập.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Mỗi vai trò đăng nhập và gọi trực tiếp API được phép/cấm. Sai mật khẩu 5 lần, thử lần 6; kiểm khoá 15 phút qua restart trên fixture. Đổi IP hoặc tài khoản để kiểm hai chiều quota; dùng route fixture chưa khai báo quyền để kiểm mặc định đóng.",
+    "expected": [
+      "thấy mục quản lý sự kiện và không thấy mục đối soát kế toán"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-02-AC02",
+    "requirement_id": "S-02",
+    "kind": "AC",
+    "group": "Tài khoản",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Đăng nhập và phân quyền theo vai trò",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L3"
+    },
+    "original_requirement": "Giả sử tài khoản có vai trò người mua vé, Khi gọi thẳng API tạo sự kiện bằng công cụ dòng lệnh, Thì máy chủ trả về 403 và ghi nhật ký lần thử đó",
+    "fixture": "BUYER A/B, ORGANIZER A/B, STAFF, ACCOUNTANT, ADMIN; session còn hạn/hết hạn.",
+    "surfaces": "/login; /auth/login; /auth/me",
+    "code_candidates": "apps/api/src/auth/; apps/web/src/components/login-form.tsx",
+    "test_candidates": "auth-roles.e2e-spec.ts; auth-input-regression.e2e-spec.ts; sprint1-ip.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tài khoản có vai trò người mua vé.",
+      "Thực hiện trên /login; /auth/login; /auth/me: gọi thẳng API tạo sự kiện bằng công cụ dòng lệnh.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Mỗi vai trò đăng nhập và gọi trực tiếp API được phép/cấm. Sai mật khẩu 5 lần, thử lần 6; kiểm khoá 15 phút qua restart trên fixture. Đổi IP hoặc tài khoản để kiểm hai chiều quota; dùng route fixture chưa khai báo quyền để kiểm mặc định đóng.",
+    "expected": [
+      "máy chủ trả về 403 và ghi nhật ký lần thử đó"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-02-AC03",
+    "requirement_id": "S-02",
+    "kind": "AC",
+    "group": "Tài khoản",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Đăng nhập và phân quyền theo vai trò",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L3"
+    },
+    "original_requirement": "Giả sử nhập sai mật khẩu 5 lần liên tiếp, Khi thử lần thứ 6, Thì khoá đăng nhập 15 phút và thông báo thời gian còn lại",
+    "fixture": "BUYER A/B, ORGANIZER A/B, STAFF, ACCOUNTANT, ADMIN; session còn hạn/hết hạn.",
+    "surfaces": "/login; /auth/login; /auth/me",
+    "code_candidates": "apps/api/src/auth/; apps/web/src/components/login-form.tsx",
+    "test_candidates": "auth-roles.e2e-spec.ts; auth-input-regression.e2e-spec.ts; sprint1-ip.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: nhập sai mật khẩu 5 lần liên tiếp.",
+      "Thực hiện trên /login; /auth/login; /auth/me: thử lần thứ 6.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Mỗi vai trò đăng nhập và gọi trực tiếp API được phép/cấm. Sai mật khẩu 5 lần, thử lần 6; kiểm khoá 15 phút qua restart trên fixture. Đổi IP hoặc tài khoản để kiểm hai chiều quota; dùng route fixture chưa khai báo quyền để kiểm mặc định đóng.",
+    "expected": [
+      "khoá đăng nhập 15 phút và thông báo thời gian còn lại"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-02-AC04",
+    "requirement_id": "S-02",
+    "kind": "AC",
+    "group": "Tài khoản",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Đăng nhập và phân quyền theo vai trò",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L3"
+    },
+    "original_requirement": "Giả sử phiên đăng nhập đã hết hạn, Khi gọi API bất kỳ, Thì trả về 401 và chuyển về trang đăng nhập",
+    "fixture": "BUYER A/B, ORGANIZER A/B, STAFF, ACCOUNTANT, ADMIN; session còn hạn/hết hạn.",
+    "surfaces": "/login; /auth/login; /auth/me",
+    "code_candidates": "apps/api/src/auth/; apps/web/src/components/login-form.tsx",
+    "test_candidates": "auth-roles.e2e-spec.ts; auth-input-regression.e2e-spec.ts; sprint1-ip.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: phiên đăng nhập đã hết hạn.",
+      "Thực hiện trên /login; /auth/login; /auth/me: gọi API bất kỳ.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Mỗi vai trò đăng nhập và gọi trực tiếp API được phép/cấm. Sai mật khẩu 5 lần, thử lần 6; kiểm khoá 15 phút qua restart trên fixture. Đổi IP hoặc tài khoản để kiểm hai chiều quota; dùng route fixture chưa khai báo quyền để kiểm mặc định đóng.",
+    "expected": [
+      "trả về 401 và chuyển về trang đăng nhập"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-02-AC05",
+    "requirement_id": "S-02",
+    "kind": "AC",
+    "group": "Tài khoản",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Đăng nhập và phân quyền theo vai trò",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L3"
+    },
+    "original_requirement": "Giả sử một route mới chưa khai báo quyền, Khi có người gọi tới, Thì bị từ chối — mặc định là đóng, không phải mở",
+    "fixture": "BUYER A/B, ORGANIZER A/B, STAFF, ACCOUNTANT, ADMIN; session còn hạn/hết hạn.",
+    "surfaces": "/login; /auth/login; /auth/me",
+    "code_candidates": "apps/api/src/auth/; apps/web/src/components/login-form.tsx",
+    "test_candidates": "auth-roles.e2e-spec.ts; auth-input-regression.e2e-spec.ts; sprint1-ip.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: một route mới chưa khai báo quyền.",
+      "Thực hiện trên /login; /auth/login; /auth/me: có người gọi tới.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Mỗi vai trò đăng nhập và gọi trực tiếp API được phép/cấm. Sai mật khẩu 5 lần, thử lần 6; kiểm khoá 15 phút qua restart trên fixture. Đổi IP hoặc tài khoản để kiểm hai chiều quota; dùng route fixture chưa khai báo quyền để kiểm mặc định đóng.",
+    "expected": [
+      "bị từ chối — mặc định là đóng, không phải mở"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-02-NFR",
+    "requirement_id": "S-02",
+    "kind": "NFR",
+    "group": "Tài khoản",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "1",
+    "readiness": "SPECIFIED",
+    "title": "Đăng nhập và phân quyền theo vai trò — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N3"
+    },
+    "original_requirement": "mật khẩu hash bằng argon2id; chống dò mật khẩu theo cả IP và theo tài khoản",
+    "fixture": "BUYER A/B, ORGANIZER A/B, STAFF, ACCOUNTANT, ADMIN; session còn hạn/hết hạn.",
+    "surfaces": "/login; /auth/login; /auth/me",
+    "code_candidates": "apps/api/src/auth/; apps/web/src/components/login-form.tsx",
+    "test_candidates": "auth-roles.e2e-spec.ts; auth-input-regression.e2e-spec.ts; sprint1-ip.e2e-spec.ts",
+    "steps": [
+      "Mỗi vai trò đăng nhập và gọi trực tiếp API được phép/cấm. Sai mật khẩu 5 lần, thử lần 6; kiểm khoá 15 phút qua restart trên fixture. Đổi IP hoặc tài khoản để kiểm hai chiều quota; dùng route fixture chưa khai báo quyền để kiểm mặc định đóng.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "mật khẩu hash bằng argon2id; chống dò mật khẩu theo cả IP và theo tài khoản"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

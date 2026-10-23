@@ -1,0 +1,40 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Isolated run-bound PostgreSQL/API/web; synthetic .invalid buyer and recipient; no SMTP worker enabled.",
+  "http": [
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{fixture-order}/tickets",
+      "status": 200
+    }
+  ],
+  "screenshots": [],
+  "pageErrors": [],
+  "assertions": [],
+  "failure": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'undefined'\n- 'string'\n"
+}

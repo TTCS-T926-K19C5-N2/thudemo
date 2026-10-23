@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-03-AC",
+    "requirement_id": "T-03",
+    "parent_requirement": "S-01",
+    "kind": "TASK_AC",
+    "group": "Hạ tầng",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Triển khai tự động lên staging bằng Docker",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G4"
+    },
+    "original_requirement": "Merge vào nhánh chính thì staging chạy phiên bản mới trong vòng 10 phút, không cần thao tác tay; image lỗi thì container cũ vẫn chạy",
+    "fixture": "Clone/checkout kiểm thử riêng; profile DB/Redis riêng; môi trường staging được phép kiểm tra.",
+    "surfaces": "/",
+    "code_candidates": "scripts/sprint1-demo.ps1; deploy/; .github/workflows/ci.yml",
+    "test_candidates": "deploy/*.spec.mjs; apps/api/test/app.e2e-spec.ts",
+    "steps": [
+      "Khởi động bằng README; ghi URL và source thực chạy. Trên nhánh/CI thử riêng, gây lỗi lint/test và lỗi image, kiểm pipeline dừng và phiên bản cũ vẫn healthy. Đo CI dưới 5 phút và merge tới healthy dưới 10 phút theo T-02/T-03.",
+      "Kiểm riêng tiêu chí task T-03: Merge vào nhánh chính thì staging chạy phiên bản mới trong vòng 10 phút, không cần thao tác tay; image lỗi thì container cũ vẫn chạy",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Merge vào nhánh chính thì staging chạy phiên bản mới trong vòng 10 phút, không cần thao tác tay; image lỗi thì container cũ vẫn chạy"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-03-NFR",
+    "requirement_id": "T-03",
+    "parent_requirement": "S-01",
+    "kind": "TASK_NFR",
+    "group": "Hạ tầng",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Triển khai tự động lên staging bằng Docker",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I4"
+    },
+    "original_requirement": "triển khai thất bại thì giữ nguyên phiên bản cũ, không để staging chết",
+    "fixture": "Clone/checkout kiểm thử riêng; profile DB/Redis riêng; môi trường staging được phép kiểm tra.",
+    "surfaces": "/",
+    "code_candidates": "scripts/sprint1-demo.ps1; deploy/; .github/workflows/ci.yml",
+    "test_candidates": "deploy/*.spec.mjs; apps/api/test/app.e2e-spec.ts",
+    "steps": [
+      "Khởi động bằng README; ghi URL và source thực chạy. Trên nhánh/CI thử riêng, gây lỗi lint/test và lỗi image, kiểm pipeline dừng và phiên bản cũ vẫn healthy. Đo CI dưới 5 phút và merge tới healthy dưới 10 phút theo T-02/T-03.",
+      "Kiểm riêng tiêu chí task T-03: triển khai thất bại thì giữ nguyên phiên bản cũ, không để staging chết",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "triển khai thất bại thì giữ nguyên phiên bản cũ, không để staging chết"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

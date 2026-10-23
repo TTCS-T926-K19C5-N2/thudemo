@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-52-AC01",
+    "requirement_id": "S-52",
+    "kind": "AC",
+    "group": "Báo cáo và dữ liệu",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "8",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Ban tổ chức xem số khách đã vào cửa theo thời gian thực",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L57"
+    },
+    "original_requirement": "Màn hình theo suất hiện số đã vào, số chưa vào, tốc độ vào theo phút và theo từng cửa, kể cả số liệu từ máy đang ngoại tuyến sau khi đồng bộ. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP",
+    "fixture": "Admission online/offline/conflict/exception tại 2 cửa, nhiều mốc phút.",
+    "surfaces": "/scanner/reports/:id; /showtimes/:id/attendance-report",
+    "code_candidates": "apps/api/src/lifecycle/reports.service.ts; apps/api/src/scanner/",
+    "test_candidates": "scanner-attendance.spec.ts; lifecycle.spec.ts",
+    "steps": [
+      "Chuẩn bị fixture: Admission online/offline/conflict/exception tại 2 cửa, nhiều mốc phút.",
+      "Kiểm số khách vào/chưa vào/tốc độ theo phút và cửa trước/sau sync. Không đếm retry/conflict/exception thành thêm khách duy nhất trừ quy tắc đã chốt; đối chiếu từng bucket và quyền chủ.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Kiểm số khách vào/chưa vào/tốc độ theo phút và cửa trước/sau sync. Không đếm retry/conflict/exception thành thêm khách duy nhất trừ quy tắc đã chốt; đối chiếu từng bucket và quyền chủ.",
+    "expected": [
+      "Màn hình theo suất hiện số đã vào, số chưa vào, tốc độ vào theo phút và theo từng cửa, kể cả số liệu từ máy đang ngoại tuyến sau khi đồng bộ. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-52-NFR",
+    "requirement_id": "S-52",
+    "kind": "NFR",
+    "group": "Báo cáo và dữ liệu",
+    "tier": "Later",
+    "priority": "Should",
+    "sprint": "8",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Ban tổ chức xem số khách đã vào cửa theo thời gian thực — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N57"
+    },
+    "original_requirement": "chưa refine — cần chốt tần suất cập nhật",
+    "fixture": "Admission online/offline/conflict/exception tại 2 cửa, nhiều mốc phút.",
+    "surfaces": "/scanner/reports/:id; /showtimes/:id/attendance-report",
+    "code_candidates": "apps/api/src/lifecycle/reports.service.ts; apps/api/src/scanner/",
+    "test_candidates": "scanner-attendance.spec.ts; lifecycle.spec.ts",
+    "steps": [
+      "Kiểm số khách vào/chưa vào/tốc độ theo phút và cửa trước/sau sync. Không đếm retry/conflict/exception thành thêm khách duy nhất trừ quy tắc đã chốt; đối chiếu từng bucket và quyền chủ.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt tần suất cập nhật"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

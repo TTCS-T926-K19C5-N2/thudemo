@@ -1,0 +1,61 @@
+[
+  {
+    "id": "E-10-AC",
+    "requirement_id": "E-10",
+    "kind": "EPIC",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Later",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Vận hành và bảo vệ dữ liệu cá nhân",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "G11"
+    },
+    "original_requirement": "Truy được ai đã làm gì trên một đơn hàng; xoá được dữ liệu cá nhân theo yêu cầu mà không phá sổ sách kế toán; có bằng chứng đồng ý của từng người dùng",
+    "steps": [
+      "Đối chiếu tập story con và các hành trình đầu-cuối trong kế hoạch.",
+      "Kiểm từng mệnh đề ở cấp tích hợp; mọi story đơn lẻ PASS chưa tự chứng minh epic PASS."
+    ],
+    "expected": [
+      "Truy được ai đã làm gì trên một đơn hàng; xoá được dữ liệu cá nhân theo yêu cầu mà không phá sổ sách kế toán; có bằng chứng đồng ý của từng người dùng"
+    ],
+    "evidence_required": [
+      "Liên kết các case con và E2E đã chạy"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "E-10-NFR",
+    "requirement_id": "E-10",
+    "kind": "EPIC_NFR",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Later",
+    "priority": "Must",
+    "readiness": "SPECIFIED",
+    "title": "Vận hành và bảo vệ dữ liệu cá nhân",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "I11"
+    },
+    "original_requirement": "nhật ký chỉ ghi thêm, không sửa và không xoá được từ giao diện",
+    "steps": [
+      "Kiểm NFR ở phạm vi epic, đối chiếu các story con và số đo tích hợp; không chỉ suy từ unit test."
+    ],
+    "expected": [
+      "nhật ký chỉ ghi thêm, không sửa và không xoá được từ giao diện"
+    ],
+    "evidence_required": [
+      "Bằng chứng kỹ thuật hoặc số đo tương ứng"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

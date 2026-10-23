@@ -1,0 +1,47 @@
+{
+  "time": "2026-10-16T14:14:44.847319+00:00",
+  "baseline": "4fec49d90bad55189799a40aa9ada6505c17ba37",
+  "candidate": "security correction working tree after ef3e4c9",
+  "findings": [
+    {
+      "id": "S03-SEC-01",
+      "severity": "HIGH",
+      "file": "apps/api/src/users/registration.service.ts",
+      "reproduction": "Attacker preregisters fixture email; owner signup password ignored; owner activation retains attacker password. Dedicated real-PG/Redis test executed1PASS7skipped before correction.",
+      "expected": "Only credentials chosen by token/mailbox holder become valid",
+      "actualBefore": "Attacker login200, owner401",
+      "fix": "POSTactivation requires final password from mailbox token holder; validates token/expiry/active/one-use inside user lock then hashes and saves password with verified atomically. UI asks explicitly; GET never mutates without chosen password.",
+      "regression": "prevents pending-account pre-hijack: attacker401/owner200; concurrent activation200/400 retained",
+      "status": "FIXED_LOCAL_NOT_DEPLOYED"
+    },
+    {
+      "id": "S03-SEC-02",
+      "severity": "MEDIUM",
+      "file": "apps/api/src/users/registration.service.ts",
+      "reproduction": "Source-traced public register admits distinct addresses into durable SMTP outbox without shared admission bound; resend per-email budget alone cannot limit recipient rotation. No external volume attack performed.",
+      "expected": "Bound total accepted SMTP work without recipient allowlist",
+      "fix": "Redis atomic shared120/hour registration+resend budget before Argon2/DB; unavailable storage503; excess429 with remaining TTL. Existing per-email resend5/hour retained. No IP lock probe.",
+      "regression": "unit excess/global dependency failure before mutation; full API integration14PASS",
+      "status": "FIXED_LOCAL_NOT_DEPLOYED"
+    }
+  ],
+  "verification": {
+    "focusedIntegration": {
+      "tests": 14,
+      "status": "PASS",
+      "environment": "Real PG15/Redis, capture adapter"
+    },
+    "securityUnit": {
+      "tests": 17,
+      "status": "PASS"
+    },
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "remaining": [
+      "Final browser activation password form",
+      "Final full regression/coverage",
+      "Security scan finalization/supplement",
+      "Exact-head CI, real independent approval, develop merge, watcher auto-deploy, integrated acceptance"
+    ]
+  }
+}

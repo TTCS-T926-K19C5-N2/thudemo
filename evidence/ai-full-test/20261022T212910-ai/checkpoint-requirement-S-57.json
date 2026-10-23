@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-57-AC01",
+    "requirement_id": "S-57",
+    "kind": "AC",
+    "group": "Vé",
+    "tier": "Later",
+    "priority": "Could",
+    "sprint": null,
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Chuyển nhượng vé cho người khác",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L62"
+    },
+    "original_requirement": "Chủ vé nhập email người nhận, vé cũ bị vô hiệu và vé mới với mã QR mới được phát cho người nhận, nhật ký ghi lại. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP. Phần đệm, chưa xếp sprint",
+    "fixture": "Chủ vé, email người nhận mới/có sẵn, vé huỷ/đã soát; key ring thử.",
+    "surfaces": "POST /orders/:id/tickets/:ticketId/transfer",
+    "code_candidates": "apps/api/src/tickets/tickets.service.ts; tickets.controller.ts",
+    "test_candidates": "tickets.service.spec.ts; tickets.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị fixture: Chủ vé, email người nhận mới/có sẵn, vé huỷ/đã soát; key ring thử.",
+      "Chuyển vé, kiểm người cũ không còn quyền và QR cũ vô hiệu, người nhận có QR mới và audit. Quét lại ở snapshot cũ/offline rồi sync để kiểm chính sách thu hồi; không tự chốt tính năng tắt theo sự kiện.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Chuyển vé, kiểm người cũ không còn quyền và QR cũ vô hiệu, người nhận có QR mới và audit. Quét lại ở snapshot cũ/offline rồi sync để kiểm chính sách thu hồi; không tự chốt tính năng tắt theo sự kiện.",
+    "expected": [
+      "Chủ vé nhập email người nhận, vé cũ bị vô hiệu và vé mới với mã QR mới được phát cho người nhận, nhật ký ghi lại. Chưa refine chi tiết — tier Later, ước lượng thô 3 SP. Phần đệm, chưa xếp sprint"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-57-NFR",
+    "requirement_id": "S-57",
+    "kind": "NFR",
+    "group": "Vé",
+    "tier": "Later",
+    "priority": "Could",
+    "sprint": null,
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Chuyển nhượng vé cho người khác — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N62"
+    },
+    "original_requirement": "chưa refine — cần chốt ban tổ chức có được tắt chuyển nhượng theo sự kiện không",
+    "fixture": "Chủ vé, email người nhận mới/có sẵn, vé huỷ/đã soát; key ring thử.",
+    "surfaces": "POST /orders/:id/tickets/:ticketId/transfer",
+    "code_candidates": "apps/api/src/tickets/tickets.service.ts; tickets.controller.ts",
+    "test_candidates": "tickets.service.spec.ts; tickets.e2e-spec.ts",
+    "steps": [
+      "Chuyển vé, kiểm người cũ không còn quyền và QR cũ vô hiệu, người nhận có QR mới và audit. Quét lại ở snapshot cũ/offline rồi sync để kiểm chính sách thu hồi; không tự chốt tính năng tắt theo sự kiện.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — cần chốt ban tổ chức có được tắt chuyển nhượng theo sự kiện không"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

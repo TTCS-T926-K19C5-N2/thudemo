@@ -1,0 +1,746 @@
+{
+  "time": "2026-10-17T02:27:30.542Z",
+  "source": "4033da4dde1484fc777806421006f9c17e831f8b",
+  "acceptedProductBaseline": "eb53a0657b2f1120a057e688084a69f1f518f047",
+  "result": "PASS",
+  "pullRequest": {
+    "headRefOid": "e7db1fa0317ef6cc6e18864102fc17a5c20def8a",
+    "mergeCommit": {
+      "oid": "4033da4dde1484fc777806421006f9c17e831f8b"
+    },
+    "mergedAt": "2026-10-17T02:21:39Z",
+    "mergedBy": {
+      "id": "U_kgDODUlszA",
+      "is_bot": false,
+      "login": "sangnguyencoder",
+      "name": ""
+    },
+    "reviews": [
+      {
+        "id": "PRR_kwDOUttVO88AAAABSyKwwA",
+        "author": {
+          "login": "thuytrang158"
+        },
+        "authorAssociation": "MEMBER",
+        "body": "",
+        "submittedAt": "2026-10-17T02:18:06Z",
+        "includesCreatedEdit": false,
+        "reactionGroups": [],
+        "state": "APPROVED",
+        "commit": {
+          "oid": "e7db1fa0317ef6cc6e18864102fc17a5c20def8a"
+        }
+      }
+    ],
+    "state": "MERGED",
+    "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/99"
+  },
+  "ci": {
+    "conclusion": "success",
+    "createdAt": "2026-10-17T02:21:41Z",
+    "headSha": "4033da4dde1484fc777806421006f9c17e831f8b",
+    "jobs": [
+      {
+        "completedAt": "2026-10-17T02:22:25Z",
+        "conclusion": "success",
+        "databaseId": 117284289250,
+        "name": "T-02 / build-and-typecheck",
+        "startedAt": "2026-10-17T02:21:44Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-17T02:21:46Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-17T02:21:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:21:49Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v7",
+            "number": 2,
+            "startedAt": "2026-10-17T02:21:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:21:52Z",
+            "conclusion": "success",
+            "name": "Run pnpm/action-setup@v6",
+            "number": 3,
+            "startedAt": "2026-10-17T02:21:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:21:57Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v7",
+            "number": 4,
+            "startedAt": "2026-10-17T02:21:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:21:58Z",
+            "conclusion": "success",
+            "name": "Verify toolchain",
+            "number": 5,
+            "startedAt": "2026-10-17T02:21:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:01Z",
+            "conclusion": "success",
+            "name": "Install dependencies",
+            "number": 6,
+            "startedAt": "2026-10-17T02:21:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:02Z",
+            "conclusion": "success",
+            "name": "Generate Prisma client",
+            "number": 7,
+            "startedAt": "2026-10-17T02:22:01Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:03Z",
+            "conclusion": "success",
+            "name": "Generate Next.js route types",
+            "number": 8,
+            "startedAt": "2026-10-17T02:22:02Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:10Z",
+            "conclusion": "success",
+            "name": "Typecheck",
+            "number": 9,
+            "startedAt": "2026-10-17T02:22:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:22Z",
+            "conclusion": "success",
+            "name": "Build",
+            "number": 10,
+            "startedAt": "2026-10-17T02:22:10Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:22Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v7",
+            "number": 18,
+            "startedAt": "2026-10-17T02:22:22Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:23Z",
+            "conclusion": "success",
+            "name": "Post Run pnpm/action-setup@v6",
+            "number": 19,
+            "startedAt": "2026-10-17T02:22:22Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:23Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v7",
+            "number": 20,
+            "startedAt": "2026-10-17T02:22:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:23Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 21,
+            "startedAt": "2026-10-17T02:22:23Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38994612232/job/117284289250"
+      },
+      {
+        "completedAt": "2026-10-17T02:22:21Z",
+        "conclusion": "success",
+        "databaseId": 117284289391,
+        "name": "T-02 / lint",
+        "startedAt": "2026-10-17T02:21:45Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-17T02:21:47Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-17T02:21:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:21:51Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v7",
+            "number": 2,
+            "startedAt": "2026-10-17T02:21:47Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:21:55Z",
+            "conclusion": "success",
+            "name": "Run pnpm/action-setup@v6",
+            "number": 3,
+            "startedAt": "2026-10-17T02:21:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:05Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v7",
+            "number": 4,
+            "startedAt": "2026-10-17T02:21:55Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:05Z",
+            "conclusion": "success",
+            "name": "Verify toolchain",
+            "number": 5,
+            "startedAt": "2026-10-17T02:22:05Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:08Z",
+            "conclusion": "success",
+            "name": "Install dependencies",
+            "number": 6,
+            "startedAt": "2026-10-17T02:22:05Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:17Z",
+            "conclusion": "success",
+            "name": "Lint",
+            "number": 7,
+            "startedAt": "2026-10-17T02:22:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:18Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v7",
+            "number": 12,
+            "startedAt": "2026-10-17T02:22:17Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:18Z",
+            "conclusion": "success",
+            "name": "Post Run pnpm/action-setup@v6",
+            "number": 13,
+            "startedAt": "2026-10-17T02:22:18Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:18Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v7",
+            "number": 14,
+            "startedAt": "2026-10-17T02:22:18Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:18Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 15,
+            "startedAt": "2026-10-17T02:22:18Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38994612232/job/117284289391"
+      },
+      {
+        "completedAt": "2026-10-17T02:23:19Z",
+        "conclusion": "success",
+        "databaseId": 117284289400,
+        "name": "T-02 / test",
+        "startedAt": "2026-10-17T02:21:44Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-17T02:21:46Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-17T02:21:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:01Z",
+            "conclusion": "success",
+            "name": "Initialize containers",
+            "number": 2,
+            "startedAt": "2026-10-17T02:21:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:04Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v7",
+            "number": 3,
+            "startedAt": "2026-10-17T02:22:01Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:09Z",
+            "conclusion": "success",
+            "name": "Run pnpm/action-setup@v6",
+            "number": 4,
+            "startedAt": "2026-10-17T02:22:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:16Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v7",
+            "number": 5,
+            "startedAt": "2026-10-17T02:22:09Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:16Z",
+            "conclusion": "success",
+            "name": "Verify toolchain",
+            "number": 6,
+            "startedAt": "2026-10-17T02:22:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:19Z",
+            "conclusion": "success",
+            "name": "Install dependencies",
+            "number": 7,
+            "startedAt": "2026-10-17T02:22:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:21Z",
+            "conclusion": "success",
+            "name": "Apply test migrations",
+            "number": 8,
+            "startedAt": "2026-10-17T02:22:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:23Z",
+            "conclusion": "success",
+            "name": "Generate Prisma client",
+            "number": 9,
+            "startedAt": "2026-10-17T02:22:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:36Z",
+            "conclusion": "success",
+            "name": "Unit tests",
+            "number": 10,
+            "startedAt": "2026-10-17T02:22:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:22:37Z",
+            "conclusion": "success",
+            "name": "Staging seed safety guards (no remote writes)",
+            "number": 11,
+            "startedAt": "2026-10-17T02:22:36Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:15Z",
+            "conclusion": "success",
+            "name": "API integration test",
+            "number": 12,
+            "startedAt": "2026-10-17T02:22:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:16Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v7",
+            "number": 21,
+            "startedAt": "2026-10-17T02:23:15Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:16Z",
+            "conclusion": "success",
+            "name": "Post Run pnpm/action-setup@v6",
+            "number": 22,
+            "startedAt": "2026-10-17T02:23:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:16Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v7",
+            "number": 23,
+            "startedAt": "2026-10-17T02:23:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:16Z",
+            "conclusion": "success",
+            "name": "Stop containers",
+            "number": 24,
+            "startedAt": "2026-10-17T02:23:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:16Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 25,
+            "startedAt": "2026-10-17T02:23:16Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38994612232/job/117284289400"
+      },
+      {
+        "completedAt": "2026-10-17T02:25:26Z",
+        "conclusion": "success",
+        "databaseId": 117284626770,
+        "name": "T-31 / hold-concurrency",
+        "startedAt": "2026-10-17T02:23:21Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-17T02:23:23Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-17T02:23:22Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:37Z",
+            "conclusion": "success",
+            "name": "Initialize containers",
+            "number": 2,
+            "startedAt": "2026-10-17T02:23:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:40Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v7",
+            "number": 3,
+            "startedAt": "2026-10-17T02:23:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:43Z",
+            "conclusion": "success",
+            "name": "Run pnpm/action-setup@v6",
+            "number": 4,
+            "startedAt": "2026-10-17T02:23:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:48Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v7",
+            "number": 5,
+            "startedAt": "2026-10-17T02:23:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:52Z",
+            "conclusion": "success",
+            "name": "Install frozen dependencies",
+            "number": 6,
+            "startedAt": "2026-10-17T02:23:48Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:24:01Z",
+            "conclusion": "success",
+            "name": "Generate and migrate isolated test database",
+            "number": 7,
+            "startedAt": "2026-10-17T02:23:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:24:06Z",
+            "conclusion": "success",
+            "name": "Start restartable isolated cache",
+            "number": 8,
+            "startedAt": "2026-10-17T02:24:01Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:25:22Z",
+            "conclusion": "success",
+            "name": "Authenticated product HTTP 200 requests /100 seats x10, worker and NFR",
+            "number": 9,
+            "startedAt": "2026-10-17T02:24:06Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:25:23Z",
+            "conclusion": "success",
+            "name": "Preserve complete raw results and sanitized logs",
+            "number": 10,
+            "startedAt": "2026-10-17T02:25:22Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:25:23Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v7",
+            "number": 17,
+            "startedAt": "2026-10-17T02:25:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:25:24Z",
+            "conclusion": "success",
+            "name": "Post Run pnpm/action-setup@v6",
+            "number": 18,
+            "startedAt": "2026-10-17T02:25:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:25:24Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v7",
+            "number": 19,
+            "startedAt": "2026-10-17T02:25:24Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:25:24Z",
+            "conclusion": "success",
+            "name": "Stop containers",
+            "number": 20,
+            "startedAt": "2026-10-17T02:25:24Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:25:24Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 21,
+            "startedAt": "2026-10-17T02:25:24Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38994612232/job/117284626770"
+      },
+      {
+        "completedAt": "2026-10-17T02:23:58Z",
+        "conclusion": "success",
+        "databaseId": 117284626825,
+        "name": "K-01 / candidate-research",
+        "startedAt": "2026-10-17T02:23:21Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-17T02:23:24Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-17T02:23:22Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:27Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v7",
+            "number": 2,
+            "startedAt": "2026-10-17T02:23:24Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:31Z",
+            "conclusion": "success",
+            "name": "Run pnpm/action-setup@v6",
+            "number": 3,
+            "startedAt": "2026-10-17T02:23:27Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:38Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v7",
+            "number": 4,
+            "startedAt": "2026-10-17T02:23:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:41Z",
+            "conclusion": "success",
+            "name": "Install frozen dependencies",
+            "number": 5,
+            "startedAt": "2026-10-17T02:23:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:43Z",
+            "conclusion": "success",
+            "name": "Generate Prisma client",
+            "number": 6,
+            "startedAt": "2026-10-17T02:23:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:51Z",
+            "conclusion": "success",
+            "name": "Start isolated candidate stores (restartable, never shared DB)",
+            "number": 7,
+            "startedAt": "2026-10-17T02:23:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:55Z",
+            "conclusion": "success",
+            "name": "Two-process candidate invariants (not T-31 application concurrency)",
+            "number": 8,
+            "startedAt": "2026-10-17T02:23:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:56Z",
+            "conclusion": "success",
+            "name": "Preserve raw candidate results",
+            "number": 9,
+            "startedAt": "2026-10-17T02:23:55Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:56Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v7",
+            "number": 16,
+            "startedAt": "2026-10-17T02:23:56Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:57Z",
+            "conclusion": "success",
+            "name": "Post Run pnpm/action-setup@v6",
+            "number": 17,
+            "startedAt": "2026-10-17T02:23:56Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:57Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v7",
+            "number": 18,
+            "startedAt": "2026-10-17T02:23:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:23:57Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 19,
+            "startedAt": "2026-10-17T02:23:57Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38994612232/job/117284626825"
+      }
+    ],
+    "status": "completed",
+    "updatedAt": "2026-10-17T02:25:26Z",
+    "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38994612232"
+  },
+  "ciSeconds": 225,
+  "automatic": true,
+  "mergeToHealthySeconds": 320.279,
+  "thresholdSeconds": 600,
+  "timeline": [
+    {
+      "time": "2026-10-17T02:25:35.130Z",
+      "event": "candidate-start",
+      "sha": "4033da4dde1484fc777806421006f9c17e831f8b",
+      "resources": [
+        {
+          "name": "Windows system/Docker Desktop volume",
+          "freeBytes": 22033170432,
+          "minimumBytes": 12884901888
+        },
+        {
+          "name": "Staging source/backup volume",
+          "freeBytes": 112663932928,
+          "minimumBytes": 5368709120
+        }
+      ]
+    },
+    {
+      "time": "2026-10-17T02:26:28.986Z",
+      "event": "backup-verified",
+      "sha": "4033da4dde1484fc777806421006f9c17e831f8b",
+      "bytes": 3903959
+    },
+    {
+      "time": "2026-10-17T02:26:59.279Z",
+      "event": "promoted",
+      "sha": "4033da4dde1484fc777806421006f9c17e831f8b",
+      "oldSha": "eb53a0657b2f1120a057e688084a69f1f518f047",
+      "elapsedSeconds": 84.15
+    }
+  ],
+  "watcher": [
+    {
+      "time": "2026-10-17T02:21:57.203Z",
+      "status": "BLOCKED_CI_not_all_success",
+      "sha": "4033da4dde1484fc777806421006f9c17e831f8b"
+    },
+    {
+      "time": "2026-10-17T02:25:33.709Z",
+      "status": "deploy_after_CI",
+      "sha": "4033da4dde1484fc777806421006f9c17e831f8b"
+    },
+    {
+      "time": "2026-10-17T02:26:59.311Z",
+      "status": "deploy_complete",
+      "sha": "4033da4dde1484fc777806421006f9c17e831f8b"
+    }
+  ],
+  "containers": [
+    {
+      "name": "sprint1-stage-api-4033da4dde14-1792204011087",
+      "source": "4033da4dde1484fc777806421006f9c17e831f8b",
+      "running": true
+    },
+    {
+      "name": "sprint1-stage-api-replica-4033da4dde14-1792204011087",
+      "source": "4033da4dde1484fc777806421006f9c17e831f8b",
+      "running": true
+    },
+    {
+      "name": "sprint1-stage-web-4033da4dde14-1792204015928",
+      "source": "4033da4dde1484fc777806421006f9c17e831f8b",
+      "running": true
+    }
+  ],
+  "data": {
+    "before": [6608, 52, 71, 1, 0, 30],
+    "after": [6608, 52, 71, 1, 0, 30],
+    "noCountDecrease": true,
+    "keysRetained": true,
+    "limitation": "Aggregate counts do not prove row-by-row equality; operational data is retained, no reset or deletion"
+  },
+  "priorTimingEvidence": "../20261017-accepted/auto-deploy.json",
+  "limitations": [
+    "Documentation-only integration; product/schema/lock/launcher unchanged",
+    "No new SMTP mail or second-device test claimed",
+    "Original618.856s and1754.310s FAIL remain historical"
+  ]
+}

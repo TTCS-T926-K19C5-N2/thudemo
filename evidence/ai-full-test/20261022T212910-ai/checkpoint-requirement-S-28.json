@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-28-AC01",
+    "requirement_id": "S-28",
+    "kind": "AC",
+    "group": "Quản trị",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Quản trị tạo tài khoản nhân viên và gán vai trò",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L27"
+    },
+    "original_requirement": "Giả sử tôi tạo tài khoản với vai trò soát vé, Khi nhân viên đăng nhập, Thì chỉ thấy màn hình quét vé",
+    "fixture": "ADMIN, STAFF, ACCOUNTANT; session STAFF còn hoạt động; tài khoản phụ để khóa.",
+    "surfaces": "/admin/users; /admin/users/:id/role; /status",
+    "code_candidates": "apps/api/src/users/admin-users.controller.ts; apps/web/src/app/admin/users/",
+    "test_candidates": "users.service.spec.ts; auth-roles.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi tạo tài khoản với vai trò soát vé.",
+      "Thực hiện trên /admin/users; /admin/users/:id/role; /status: nhân viên đăng nhập.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Tạo nhân viên từng vai trò, kiểm STAFF chỉ thấy việc soát vé. Đổi role rồi gọi request kế tiếp bằng session cũ; disable thu hồi session và chặn login kèm liên hệ quản trị. BUYER thử API admin; kiểm audit actor.",
+    "expected": [
+      "chỉ thấy màn hình quét vé"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-28-AC02",
+    "requirement_id": "S-28",
+    "kind": "AC",
+    "group": "Quản trị",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Quản trị tạo tài khoản nhân viên và gán vai trò",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L27"
+    },
+    "original_requirement": "Giả sử tôi đổi vai trò một tài khoản đang đăng nhập, Khi họ gọi API tiếp theo, Thì quyền mới có hiệu lực ngay, không cần đăng xuất",
+    "fixture": "ADMIN, STAFF, ACCOUNTANT; session STAFF còn hoạt động; tài khoản phụ để khóa.",
+    "surfaces": "/admin/users; /admin/users/:id/role; /status",
+    "code_candidates": "apps/api/src/users/admin-users.controller.ts; apps/web/src/app/admin/users/",
+    "test_candidates": "users.service.spec.ts; auth-roles.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi đổi vai trò một tài khoản đang đăng nhập.",
+      "Thực hiện trên /admin/users; /admin/users/:id/role; /status: họ gọi API tiếp theo.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Tạo nhân viên từng vai trò, kiểm STAFF chỉ thấy việc soát vé. Đổi role rồi gọi request kế tiếp bằng session cũ; disable thu hồi session và chặn login kèm liên hệ quản trị. BUYER thử API admin; kiểm audit actor.",
+    "expected": [
+      "quyền mới có hiệu lực ngay, không cần đăng xuất"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-28-AC03",
+    "requirement_id": "S-28",
+    "kind": "AC",
+    "group": "Quản trị",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Quản trị tạo tài khoản nhân viên và gán vai trò",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L27"
+    },
+    "original_requirement": "Giả sử tôi vô hiệu hoá một tài khoản, Khi họ đăng nhập, Thì bị từ chối kèm thông báo liên hệ quản trị",
+    "fixture": "ADMIN, STAFF, ACCOUNTANT; session STAFF còn hoạt động; tài khoản phụ để khóa.",
+    "surfaces": "/admin/users; /admin/users/:id/role; /status",
+    "code_candidates": "apps/api/src/users/admin-users.controller.ts; apps/web/src/app/admin/users/",
+    "test_candidates": "users.service.spec.ts; auth-roles.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi vô hiệu hoá một tài khoản.",
+      "Thực hiện trên /admin/users; /admin/users/:id/role; /status: họ đăng nhập.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Tạo nhân viên từng vai trò, kiểm STAFF chỉ thấy việc soát vé. Đổi role rồi gọi request kế tiếp bằng session cũ; disable thu hồi session và chặn login kèm liên hệ quản trị. BUYER thử API admin; kiểm audit actor.",
+    "expected": [
+      "bị từ chối kèm thông báo liên hệ quản trị"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-28-NFR",
+    "requirement_id": "S-28",
+    "kind": "NFR",
+    "group": "Quản trị",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "4",
+    "readiness": "SPECIFIED",
+    "title": "Quản trị tạo tài khoản nhân viên và gán vai trò — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N27"
+    },
+    "original_requirement": "mọi thay đổi vai trò ghi nhật ký kèm người thao tác. Ước lượng thô 2 SP — tier Next",
+    "fixture": "ADMIN, STAFF, ACCOUNTANT; session STAFF còn hoạt động; tài khoản phụ để khóa.",
+    "surfaces": "/admin/users; /admin/users/:id/role; /status",
+    "code_candidates": "apps/api/src/users/admin-users.controller.ts; apps/web/src/app/admin/users/",
+    "test_candidates": "users.service.spec.ts; auth-roles.e2e-spec.ts",
+    "steps": [
+      "Tạo nhân viên từng vai trò, kiểm STAFF chỉ thấy việc soát vé. Đổi role rồi gọi request kế tiếp bằng session cũ; disable thu hồi session và chặn login kèm liên hệ quản trị. BUYER thử API admin; kiểm audit actor.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "mọi thay đổi vai trò ghi nhật ký kèm người thao tác. Ước lượng thô 2 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

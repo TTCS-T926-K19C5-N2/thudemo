@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Header, Param, Patch, Post, Req, ParseUUIDPipe } from '@nestjs/common';
 import { EventsService } from './events.service.js';
 import { Public, Roles } from '../auth/decorators/roles.decorator.js';
 import type { AuthenticatedRequest } from '../auth/guards/session-auth.guard.js';
@@ -29,6 +29,17 @@ export class EventsController {
   @Get(':id/manage')
   findOwned(@Req() request: AuthenticatedRequest, @Param('id') id: string) {
     return this.eventsService.findOwned(id, request.user.id);
+  }
+
+  @Roles('ORGANIZER')
+  @Patch(':id/publication')
+  @Header('Cache-Control', 'private, no-store')
+  publication(
+    @Req() request: AuthenticatedRequest,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: unknown,
+  ) {
+    return this.eventsService.publication(id, request.user.id, body);
   }
 
   @Roles('ORGANIZER')

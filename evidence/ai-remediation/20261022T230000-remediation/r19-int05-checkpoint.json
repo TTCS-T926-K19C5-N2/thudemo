@@ -1,0 +1,33 @@
+{
+  "run_id": "20261022T230000-remediation",
+  "checkpoint": "R19 / INT-05 admission replay and exception",
+  "recorded_at": "2026-10-23T04:28:48.983Z",
+  "changed_cases": [
+    "INT-05",
+    "INT-05.01",
+    "INT-05.02",
+    "INT-05.03"
+  ],
+  "counts": {
+    "NOT_RUN": 359,
+    "PASS": 74,
+    "BLOCKED": 4,
+    "NEEDS_DECISION": 4,
+    "MISSING": 1
+  },
+  "local_execution": "Isolated PostgreSQL API E2E: 1 file / 7 tests PASS; synthetic run-bound rows cleaned by suite teardown.",
+  "limitations": [
+    "Does not close INT-06/07 or full R19.",
+    "Does not prove physical camera or 4G behavior."
+  ],
+  "evidence_files": [
+    "r19-int05-e2e.log",
+    "r19-int05-e2e.exitcode",
+    "int05-admission-oracle.json",
+    "apps/api/test/ticket-check-in.e2e-spec.ts",
+    "r19-override-success-desktop.png",
+    "r19-override-success-mobile.png",
+    "r19-delta-browser.json",
+    "r19-duplicate-browser.json"
+  ]
+}

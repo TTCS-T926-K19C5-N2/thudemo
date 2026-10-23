@@ -1,0 +1,1237 @@
+{
+  "run_id": "20261022T230000-remediation",
+  "generated_at": "2026-10-23T02:45:40.295Z",
+  "source_fingerprint": "b18284cbfc77048452b191417225d0ccd50e526319856ad44a191a1abef93d6a",
+  "provenance": "Static AST/source inventory of API decorators and Next app/page routes. It does not prove module mount, HTTP status, permission behavior, or runtime use; those remain separate cases.",
+  "summary": {
+    "api_route_declarations": 113,
+    "web_pages_and_route_handlers": 29,
+    "next_api_handlers": 1,
+    "web_pages": 28
+  },
+  "api_routes": [
+    {
+      "base": "",
+      "method": "DELETE",
+      "path": ":showtimeId/hold-seats",
+      "handler": "releaseSeats",
+      "source": "apps/api/src/modules/seats/seat-hold.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "DELETE",
+      "path": ":showtimeId/holds/:holdId",
+      "handler": "releaseHold",
+      "source": "apps/api/src/modules/seats/seat-hold.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "events/:eventId/coupons",
+      "method": "DELETE",
+      "path": ":couponId",
+      "handler": "deactivate",
+      "source": "apps/api/src/coupons/coupons.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "orders/:orderId/coupon",
+      "method": "DELETE",
+      "path": "",
+      "handler": "remove",
+      "source": "apps/api/src/coupons/coupons.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "showtimes/:showtimeId/waitlist",
+      "method": "DELETE",
+      "path": "",
+      "handler": "unsubscribe",
+      "source": "apps/api/src/waitlist/waitlist.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "",
+      "handler": "getHello",
+      "source": "apps/api/src/app.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": ":showtimeId/countdown",
+      "handler": "getCountdown",
+      "source": "apps/api/src/modules/seats/seat-hold.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": ":showtimeId/expired-holds",
+      "handler": "getExpiredHoldsByShowtime",
+      "source": "apps/api/src/modules/seats/seat-hold.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": ":showtimeId/holds/:holdId",
+      "handler": "getHold",
+      "source": "apps/api/src/modules/seats/seat-hold.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": ":showtimeId/holds/:holdId/countdown",
+      "handler": "getHoldCountdown",
+      "source": "apps/api/src/modules/seats/seat-hold.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": ":showtimeId/seats",
+      "handler": "getSeatsAvailability",
+      "source": "apps/api/src/modules/seats/seat-hold.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": ":showtimeId/seats/:seatId/countdown",
+      "handler": "getSeatCountdown",
+      "source": "apps/api/src/modules/seats/seat-hold.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "expired-holds",
+      "handler": "getExpiredHolds",
+      "source": "apps/api/src/modules/seats/seat-hold.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "health",
+      "handler": "getHealth",
+      "source": "apps/api/src/app.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "operations/erasure",
+      "handler": "erasureList",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "operations/mail",
+      "handler": "mail",
+      "source": "apps/api/src/core-completion/core.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "operations/reconciliation",
+      "handler": "reconciliationHistory",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "operations/refunds",
+      "handler": "refunds",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "orders/:id/audit",
+      "handler": "timeline",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "orders/:id/cancellation",
+      "handler": "preview",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "privacy/me",
+      "handler": "state",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "showtimes/:id/attendance-conflicts.csv",
+      "handler": "attendanceConflictsCsv",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "showtimes/:id/attendance-report",
+      "handler": "attendance",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "showtimes/:id/cancellation",
+      "handler": "showStatus",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "showtimes/:id/financial-report",
+      "handler": "financial",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "GET",
+      "path": "showtimes/:id/hold-conversion-report",
+      "handler": "holdConversion",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "admin/users",
+      "method": "GET",
+      "path": "",
+      "handler": "list",
+      "source": "apps/api/src/users/admin-users.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "admin/users",
+      "method": "GET",
+      "path": "scanner-showtimes",
+      "handler": "scannerShowtimes",
+      "source": "apps/api/src/users/admin-users.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "auth",
+      "method": "GET",
+      "path": "me",
+      "handler": "me",
+      "source": "apps/api/src/auth/auth.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "auth",
+      "method": "GET",
+      "path": "organizer-only",
+      "handler": "getOrganizerData",
+      "source": "apps/api/src/auth/auth.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "check-in",
+      "method": "GET",
+      "path": "today",
+      "handler": "getTodayShowtimes",
+      "source": "apps/api/src/check-in/check-in-s29.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "events",
+      "method": "GET",
+      "path": "",
+      "handler": "findAll",
+      "source": "apps/api/src/events/events.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "events/:eventId/coupons",
+      "method": "GET",
+      "path": "",
+      "handler": "list",
+      "source": "apps/api/src/coupons/coupons.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "events",
+      "method": "GET",
+      "path": ":id",
+      "handler": "findOne",
+      "source": "apps/api/src/events/events.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "events",
+      "method": "GET",
+      "path": ":id/manage",
+      "handler": "findOwned",
+      "source": "apps/api/src/events/events.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "events",
+      "method": "GET",
+      "path": "mine",
+      "handler": "findMine",
+      "source": "apps/api/src/events/events.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "mock-gateway",
+      "method": "GET",
+      "path": "status",
+      "handler": "getStatus",
+      "source": "apps/api/src/payments/mock-gateway.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "operations/monitoring",
+      "method": "GET",
+      "path": "",
+      "handler": "read",
+      "source": "apps/api/src/monitoring/local-dashboard.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "orders",
+      "method": "GET",
+      "path": ":id",
+      "handler": "getOrder",
+      "source": "apps/api/src/orders/orders.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "orders",
+      "method": "GET",
+      "path": ":id/status",
+      "handler": "getOrderStatus",
+      "source": "apps/api/src/orders/orders.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "orders",
+      "method": "GET",
+      "path": ":id/tickets",
+      "handler": "tickets",
+      "source": "apps/api/src/orders/ticket-qr.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "orders",
+      "method": "GET",
+      "path": "me",
+      "handler": "list",
+      "source": "apps/api/src/orders/orders.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "scanner",
+      "method": "GET",
+      "path": "qr-keys",
+      "handler": "keys",
+      "source": "apps/api/src/scanner/scanner.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "scanner",
+      "method": "GET",
+      "path": "showtimes",
+      "handler": "getAssignedShowtimes",
+      "source": "apps/api/src/scanner/scanner.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "scanner",
+      "method": "GET",
+      "path": "showtimes/:showtimeId/attendance",
+      "handler": "getAttendance",
+      "source": "apps/api/src/scanner/scanner.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "scanner",
+      "method": "GET",
+      "path": "showtimes/:showtimeId/conflicts",
+      "handler": "conflicts",
+      "source": "apps/api/src/scanner/scanner.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "scanner",
+      "method": "GET",
+      "path": "showtimes/:showtimeId/tickets",
+      "handler": "getShowtimeTickets",
+      "source": "apps/api/src/scanner/scanner.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "showtimes",
+      "method": "GET",
+      "path": "",
+      "handler": "list",
+      "source": "apps/api/src/showtimes/showtimes.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "showtimes",
+      "method": "GET",
+      "path": ":id",
+      "handler": "detail",
+      "source": "apps/api/src/showtimes/showtimes.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "showtimes/:id/holds",
+      "method": "GET",
+      "path": "",
+      "handler": "current",
+      "source": "apps/api/src/holds/holds.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "showtimes",
+      "method": "GET",
+      "path": ":id/manage",
+      "handler": "manage",
+      "source": "apps/api/src/showtimes/showtimes.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "showtimes",
+      "method": "GET",
+      "path": ":id/manage/sales",
+      "handler": "sales",
+      "source": "apps/api/src/showtimes/showtimes.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "showtimes",
+      "method": "GET",
+      "path": ":id/manage/seats",
+      "handler": "ownedSeats",
+      "source": "apps/api/src/showtimes/showtimes.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "showtimes",
+      "method": "GET",
+      "path": ":id/manage/seats.pdf",
+      "handler": "seatMapPdf",
+      "source": "apps/api/src/showtimes/showtimes.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "showtimes",
+      "method": "GET",
+      "path": ":id/seats",
+      "handler": "seats",
+      "source": "apps/api/src/showtimes/showtimes.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "showtimes",
+      "method": "GET",
+      "path": ":showtimeId/check-in/gates",
+      "handler": "gates",
+      "source": "apps/api/src/orders/ticket-check-in.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "showtimes/:showtimeId/waitlist",
+      "method": "GET",
+      "path": "",
+      "handler": "current",
+      "source": "apps/api/src/waitlist/waitlist.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "tickets",
+      "method": "GET",
+      "path": "mail-failures",
+      "handler": "mailFailures",
+      "source": "apps/api/src/tickets/tickets.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "tickets",
+      "method": "GET",
+      "path": "me",
+      "handler": "myTickets",
+      "source": "apps/api/src/tickets/tickets.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "tickets",
+      "method": "GET",
+      "path": "public-keys",
+      "handler": "getPublicKeys",
+      "source": "apps/api/src/tickets/tickets.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "users",
+      "method": "GET",
+      "path": "activate",
+      "handler": "activate",
+      "source": "apps/api/src/users/users.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "users",
+      "method": "GET",
+      "path": "registration-notice",
+      "handler": "notice",
+      "source": "apps/api/src/users/users.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "admin/users",
+      "method": "PATCH",
+      "path": ":id/role",
+      "handler": "role",
+      "source": "apps/api/src/users/admin-users.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "admin/users",
+      "method": "PATCH",
+      "path": ":id/status",
+      "handler": "status",
+      "source": "apps/api/src/users/admin-users.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "events/:eventId/coupons",
+      "method": "PATCH",
+      "path": ":couponId",
+      "handler": "update",
+      "source": "apps/api/src/coupons/coupons.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "events",
+      "method": "PATCH",
+      "path": ":id",
+      "handler": "update",
+      "source": "apps/api/src/events/events.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "events",
+      "method": "PATCH",
+      "path": ":id/publication",
+      "handler": "publication",
+      "source": "apps/api/src/events/events.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "showtimes",
+      "method": "PATCH",
+      "path": ":id/prices",
+      "handler": "prices",
+      "source": "apps/api/src/showtimes/showtimes.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "showtimes",
+      "method": "PATCH",
+      "path": ":id/status",
+      "handler": "status",
+      "source": "apps/api/src/showtimes/showtimes.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "showtimes",
+      "method": "PATCH",
+      "path": ":id/ticket-limit",
+      "handler": "ticketLimit",
+      "source": "apps/api/src/showtimes/showtimes.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "users",
+      "method": "PATCH",
+      "path": ":id/disable",
+      "handler": "disableAccount",
+      "source": "apps/api/src/users/users.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": ":showtimeId/hold-seats",
+      "handler": "holdSeats",
+      "source": "apps/api/src/modules/seats/seat-hold.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": ":showtimeId/release-expired-holds",
+      "handler": "releaseExpiredHoldsByShowtime",
+      "source": "apps/api/src/modules/seats/seat-hold.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "auth/forgot-password",
+      "handler": "forgot",
+      "source": "apps/api/src/core-completion/core.module.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "auth/reset-password",
+      "handler": "reset",
+      "source": "apps/api/src/core-completion/core.module.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "operations/mail/retry",
+      "handler": "retry",
+      "source": "apps/api/src/core-completion/core.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "operations/reconciliation",
+      "handler": "reconcile",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "operations/refunds/:id/resolve-mock",
+      "handler": "resolve",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "orders/:id/cancel",
+      "handler": "cancelOrder",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "orders/:id/pay",
+      "handler": "initiatePayment",
+      "source": "apps/api/src/payments/payments.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "payments/webhook",
+      "handler": "handleWebhook",
+      "source": "apps/api/src/payments/payments.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "privacy/consent",
+      "handler": "consent",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "privacy/erasure",
+      "handler": "erasure",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "privacy/erasure/:id/approve",
+      "handler": "approve",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "showtimes/:id/cancel",
+      "handler": "cancelShow",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "showtimes/:id/cancellation/retry",
+      "handler": "retryShow",
+      "source": "apps/api/src/lifecycle/lifecycle.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "",
+      "method": "POST",
+      "path": "showtimes/:id/reschedule",
+      "handler": "reschedule",
+      "source": "apps/api/src/core-completion/core.module.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "admin/users",
+      "method": "POST",
+      "path": "",
+      "handler": "create",
+      "source": "apps/api/src/users/admin-users.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "admin/users",
+      "method": "POST",
+      "path": ":id/assignment",
+      "handler": "assignment",
+      "source": "apps/api/src/users/admin-users.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "auth",
+      "method": "POST",
+      "path": "login",
+      "handler": "login",
+      "source": "apps/api/src/auth/auth.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "auth",
+      "method": "POST",
+      "path": "logout",
+      "handler": "logout",
+      "source": "apps/api/src/auth/auth.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "events",
+      "method": "POST",
+      "path": "",
+      "handler": "create",
+      "source": "apps/api/src/events/events.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "events/:eventId/coupons",
+      "method": "POST",
+      "path": "",
+      "handler": "create",
+      "source": "apps/api/src/coupons/coupons.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "events",
+      "method": "POST",
+      "path": ":id/showtimes",
+      "handler": "addShowtime",
+      "source": "apps/api/src/events/events.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "mock-gateway",
+      "method": "POST",
+      "path": "submit",
+      "handler": "submitPayment",
+      "source": "apps/api/src/payments/mock-gateway.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "orders",
+      "method": "POST",
+      "path": "",
+      "handler": "create",
+      "source": "apps/api/src/orders/orders.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "orders/:id/tickets",
+      "method": "POST",
+      "path": ":ticketId/transfer",
+      "handler": "transfer",
+      "source": "apps/api/src/tickets/tickets.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "orders/:id/tickets",
+      "method": "POST",
+      "path": "resend",
+      "handler": "resend",
+      "source": "apps/api/src/tickets/tickets.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "orders/:orderId/coupon",
+      "method": "POST",
+      "path": "",
+      "handler": "apply",
+      "source": "apps/api/src/coupons/coupons.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "scanner",
+      "method": "POST",
+      "path": "sync-scans",
+      "handler": "syncOfflineScans",
+      "source": "apps/api/src/scanner/scanner.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "showtimes",
+      "method": "POST",
+      "path": ":id/clone",
+      "handler": "clone",
+      "source": "apps/api/src/showtimes/showtimes.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "showtimes/:id/holds",
+      "method": "POST",
+      "path": "",
+      "handler": "claim",
+      "source": "apps/api/src/holds/holds.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "showtimes/:id/orders",
+      "method": "POST",
+      "path": "",
+      "handler": "create",
+      "source": "apps/api/src/orders/orders.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "showtimes",
+      "method": "POST",
+      "path": ":id/seat-map",
+      "handler": "import",
+      "source": "apps/api/src/showtimes/showtimes.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "showtimes/:id/waiting-room",
+      "method": "POST",
+      "path": "",
+      "handler": "join",
+      "source": "apps/api/src/booking-access/booking-access.module.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "showtimes",
+      "method": "POST",
+      "path": ":showtimeId/check-in",
+      "handler": "checkIn",
+      "source": "apps/api/src/orders/ticket-check-in.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "showtimes",
+      "method": "POST",
+      "path": ":showtimeId/check-in/exception",
+      "handler": "exception",
+      "source": "apps/api/src/orders/ticket-check-in.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "showtimes/:showtimeId/waitlist",
+      "method": "POST",
+      "path": "",
+      "handler": "join",
+      "source": "apps/api/src/waitlist/waitlist.controller.ts",
+      "authDecorators": []
+    },
+    {
+      "base": "showtimes",
+      "method": "POST",
+      "path": "validate-map",
+      "handler": "validate",
+      "source": "apps/api/src/showtimes/showtimes.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    },
+    {
+      "base": "users",
+      "method": "POST",
+      "path": "activate",
+      "handler": "activateBody",
+      "source": "apps/api/src/users/users.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "users",
+      "method": "POST",
+      "path": "register",
+      "handler": "register",
+      "source": "apps/api/src/users/users.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "users",
+      "method": "POST",
+      "path": "resend-activation",
+      "handler": "resendActivation",
+      "source": "apps/api/src/users/users.controller.ts",
+      "authDecorators": [
+        "Public"
+      ]
+    },
+    {
+      "base": "users",
+      "method": "POST",
+      "path": "staff",
+      "handler": "createStaff",
+      "source": "apps/api/src/users/users.controller.ts",
+      "authDecorators": [
+        "Roles"
+      ]
+    }
+  ],
+  "web_routes": [
+    {
+      "route": "/",
+      "file": "apps/web/src/app/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/account",
+      "file": "apps/web/src/app/account/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/account/privacy",
+      "file": "apps/web/src/app/account/privacy/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/account/tickets",
+      "file": "apps/web/src/app/account/tickets/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/activate",
+      "file": "apps/web/src/app/activate/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/admin/users",
+      "file": "apps/web/src/app/admin/users/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/api/[...path]",
+      "file": "apps/web/src/app/api/[...path]/route.ts",
+      "kind": "NEXT_ROUTE_HANDLER"
+    },
+    {
+      "route": "/check-in",
+      "file": "apps/web/src/app/check-in/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/events",
+      "file": "apps/web/src/app/events/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/events/[id]",
+      "file": "apps/web/src/app/events/[id]/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/events/new",
+      "file": "apps/web/src/app/events/new/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/forgot-password",
+      "file": "apps/web/src/app/forgot-password/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/login",
+      "file": "apps/web/src/app/login/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/mock-gateway/pay",
+      "file": "apps/web/src/app/mock-gateway/pay/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/operations",
+      "file": "apps/web/src/app/operations/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/orders",
+      "file": "apps/web/src/app/orders/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/orders/[id]",
+      "file": "apps/web/src/app/orders/[id]/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/payment/result",
+      "file": "apps/web/src/app/payment/result/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/payment/result/[orderId]",
+      "file": "apps/web/src/app/payment/result/[orderId]/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/privacy",
+      "file": "apps/web/src/app/privacy/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/register",
+      "file": "apps/web/src/app/register/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/resend-activation",
+      "file": "apps/web/src/app/resend-activation/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/reset-password",
+      "file": "apps/web/src/app/reset-password/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/scanner",
+      "file": "apps/web/src/app/scanner/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/scanner/reports/[showtimeId]",
+      "file": "apps/web/src/app/scanner/reports/[showtimeId]/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/scanner/snapshot",
+      "file": "apps/web/src/app/scanner/snapshot/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/shows/[id]",
+      "file": "apps/web/src/app/shows/[id]/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/shows/[id]/seats",
+      "file": "apps/web/src/app/shows/[id]/seats/page.tsx",
+      "kind": "PAGE"
+    },
+    {
+      "route": "/showtimes/[id]/[mode]",
+      "file": "apps/web/src/app/showtimes/[id]/[mode]/page.tsx",
+      "kind": "PAGE"
+    }
+  ]
+}

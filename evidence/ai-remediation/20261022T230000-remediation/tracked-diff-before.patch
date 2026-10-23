@@ -1,0 +1,13 @@
+diff --git a/.gitignore b/.gitignore
+index fa25624..ae0903c 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -90,7 +90,7 @@ evidence/s43/runtime/
+ 
+ # Next.js build output
+ .next
+-.next-sprint-*
++.next*
+ out
+ 
+ # Nuxt.js build / generate output

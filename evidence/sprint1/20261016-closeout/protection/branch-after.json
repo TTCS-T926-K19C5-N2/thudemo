@@ -1,0 +1,41 @@
+{
+  "name": "develop",
+  "protected": true,
+  "commitSha": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
+  "protection": {
+    "enabled": true,
+    "required_status_checks": {
+      "enforcement_level": "everyone",
+      "contexts": [
+        "T-02 / build-and-typecheck",
+        "T-02 / lint",
+        "T-02 / test",
+        "K-01 / candidate-research",
+        "T-31 / hold-concurrency"
+      ],
+      "checks": [
+        {
+          "context": "T-02 / build-and-typecheck",
+          "app_id": 15368
+        },
+        {
+          "context": "T-02 / lint",
+          "app_id": 15368
+        },
+        {
+          "context": "T-02 / test",
+          "app_id": 15368
+        },
+        {
+          "context": "K-01 / candidate-research",
+          "app_id": 15368
+        },
+        {
+          "context": "T-31 / hold-concurrency",
+          "app_id": 15368
+        }
+      ]
+    }
+  },
+  "protection_url": "https://api.github.com/repos/TTCS-T926-K19C5-N2/thudemo/branches/develop/protection"
+}

@@ -1,0 +1,23 @@
+{
+  "time": "2026-10-16T16:11:51.841Z",
+  "source": "02a8e86a6fea05a49bd27902c08652920e444a10",
+  "environment": "Owned laptop HTTPS staging, PostgreSQL15 with30 migrations",
+  "result": "PASS",
+  "checks": [
+    {
+      "assertion": "Actual rollback to previous API/web with current30-migration database; HTTPS health and authenticated deployment smoke; data counts and key bytes unchanged",
+      "result": "PASS",
+      "source": "a2e5f675a371e9a0200b1ab7d2a83ac837d3717d"
+    },
+    {
+      "assertion": "Restored final candidate through actual rollback command; trusted HTTPS home/health200; data counts and key bytes unchanged",
+      "result": "PASS",
+      "source": "02a8e86a6fea05a49bd27902c08652920e444a10"
+    }
+  ],
+  "limitations": [
+    "Previous API does not implement new S03 activation; old plaintext activation fields cleared by migration, so rollback is core auth/event service compatibility, not S03 feature downgrade",
+    "No down migration or volume reset",
+    "Manual candidate, not integrated develop auto-deploy"
+  ]
+}

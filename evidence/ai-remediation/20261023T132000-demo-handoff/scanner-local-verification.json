@@ -1,0 +1,78 @@
+{
+  "recordedAt": "2026-10-23T06:34:42.029Z",
+  "profile": "s1demo-384da3d43b41",
+  "sourceTree": "prepared clean file tree with current selected dirty/untracked source; not Git clone/HEAD",
+  "mainDatabase": "verified stopped (thudemo-postgres-1)",
+  "scanner": {
+    "requirement": "S-29-AC01",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "staffUiLoginRedirect": "/scanner",
+    "showtime": {
+      "name": "Bệnh sĩ",
+      "startLocal": "2026-10-23 15:00",
+      "status": "ON_SALE"
+    },
+    "uiSteps": [
+      "select assigned same-day showtime",
+      "load assigned gate Cửa demo",
+      "scanner becomes ready only after gate loaded",
+      "enter TK-DEMO-NOTFOUND",
+      "UI rejects: Không phải vé của hệ thống hoặc chữ ký không hợp lệ."
+    ],
+    "api": {
+      "todayShowtimeReturned": true,
+      "staffGateReturned": true,
+      "createdThrough": [
+        "organizer showtime route",
+        "organizer seat-map route",
+        "organizer pricing route",
+        "organizer open-sales route",
+        "admin staff assignment route"
+      ]
+    },
+    "postgresOracle": {
+      "status": "ON_SALE",
+      "startTimeUtc": "2026-10-23T08:00:00Z",
+      "seatCount": 120,
+      "staffAssignments": 1,
+      "gates": 1,
+      "gatePermissions": 1
+    },
+    "limitations": [
+      "invalid dummy QR only; no valid paid ticket tested against rehearsal showtime",
+      "camera permission and physical camera not tested",
+      "offline browser sync not tested in this slice"
+    ],
+    "evidence": [
+      "scanner-invalid-code-mobile-full.png",
+      "scanner-invalid-code-desktop.png",
+      "demo-scanner-showtime.log"
+    ]
+  },
+  "accountantUi": {
+    "login": "PASS",
+    "role": "ACCOUNTANT",
+    "operationsPage": "rendered with empty refund queue and CSV reconciliation form",
+    "adminUsersPage": "explicit no-access message",
+    "evidence": [
+      "accountant-operations-mobile.png"
+    ]
+  },
+  "cleanProof": {
+    "restart": "READY after rebuild/migrations/catalog import and stable scanner fixture setup",
+    "sourceFilesMatched": [
+      {
+        "file": "scripts/sprint1-onboarding.mjs",
+        "sha256": "05693908DCE60FBC5F5CCC558886DC868428BABFC2689B29E97796CAAE8DCE9C"
+      },
+      {
+        "file": "apps/api/scripts/create-demo-scanner-showtime.mjs",
+        "sha256": "85B2EF13BDABE4A6FA325DE56524CEF23CFFE53BD7576A15152422C4C21DBD4A"
+      }
+    ]
+  },
+  "status": "S-29-AC01 PASS within its UI/API/DB scope; no claim for camera, valid scan, or offline sync"
+}

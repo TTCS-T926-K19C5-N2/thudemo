@@ -1,0 +1,798 @@
+[
+  {
+    "id": "INT-01",
+    "requirement_id": [
+      "S-03",
+      "S-04",
+      "S-05",
+      "S-07",
+      "S-08",
+      "S-10",
+      "S-16",
+      "S-18",
+      "S-25",
+      "S-27",
+      "S-30",
+      "S-32",
+      "S-50"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Mua vé đầu-cuối từ khách mới",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "F01–F05; SMTP catcher",
+    "steps": [
+      "Organizer A tạo event draft, suất tương lai, import 6 ghế/3 hạng, đặt giá và mở bán; công bố nếu ứng dụng yêu cầu.",
+      "Ẩn danh tìm suất ở catalog, xem chi tiết; đăng ký tài khoản mới, kích hoạt từ catcher và đăng nhập.",
+      "Chọn VIP A1 và STD A2, kiểm TTL; tạo order, so tổng 300.000 đồng; chọn mock thành công.",
+      "Chờ server PAID; mở 2 vé, tải QR và xem email; STAFF được gán cửa A quét một vé.",
+      "Mở lịch sử, vé và báo cáo organizer; đối chiếu toàn bộ ID và số liệu."
+    ],
+    "expected": [
+      "Đúng 1 order, 2 dòng/2 vé riêng, tổng 300000 VND, ghế SOLD, không còn hold của order, email đúng QR, 1 admission NORMAL.",
+      "Không phải tạo/sửa dữ liệu bằng SQL để vượt bước UI bị hỏng."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-02",
+    "requirement_id": [
+      "S-18",
+      "S-20",
+      "S-24",
+      "S-25"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Thất bại, retry và webhook đến sau browser",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "Order 2 ghế; catcher",
+    "steps": [
+      "Bấm mock thất bại, kiểm pending/hold/TTL không đổi.",
+      "Retry cùng order, tắt tab sau trả tiền; webhook tới khi browser đóng.",
+      "Mở lại lịch sử; gửi lại webhook 5 lần và 2 bản đồng thời."
+    ],
+    "expected": [
+      "Một payment thành công hiệu lực và một bộ vé; không order mới, không nhân email job do webhook replay."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-03",
+    "requirement_id": [
+      "S-13",
+      "T-29",
+      "T-30",
+      "T-31"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "200 request tranh 100 ghế, 10 vòng",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "100 ghế/vòng mới, 200 buyer hoặc session theo luật, quota không gây nhiễu",
+    "steps": [
+      "Tạo đúng hai contender/ghế, barrier cùng thời điểm, phát 200 request; không dùng 200 lần await tuần tự.",
+      "Lưu status/body/latency từng request, đếm DB hold còn hiệu lực và audit conflict.",
+      "Lặp 10 vòng độc lập; kiểm ràng buộc SQL trực tiếp trong DB thử."
+    ],
+    "expected": [
+      "Mỗi vòng chính xác 100 thắng/100 conflict, không 500 và không ghế có hai chủ.",
+      "Nếu gặp 429/admission rejection, fixture không hợp lệ cho phép đo này; báo và chạy lại sau cấu hình thử, không tính là conflict ghế."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-04",
+    "requirement_id": [
+      "S-20",
+      "S-23"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Webhook đua hết hạn đơn",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "Order sát deadline, clock/server barrier",
+    "steps": [
+      "Cho expiry worker và webhook hợp lệ bắt đầu cùng barrier trên cùng order.",
+      "Lặp 50 lần như mẫu kiểm kỹ thuật đề xuất, tách fixture mỗi lần; ghi tất cả outcome.",
+      "Sau mỗi vòng kiểm order/payment/ticket/seat/hold và dấu cần hoàn."
+    ],
+    "expected": [
+      "Mỗi vòng rơi vào một trạng thái hợp lệ theo S-23; không PAID mà ghế FREE, không EXPIRED mà vé hợp lệ.",
+      "50 vòng là cỡ mẫu đề xuất của kế hoạch, không sửa AC gốc."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-05",
+    "requirement_id": [
+      "S-30",
+      "S-31"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Hai máy quét online cùng vé",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "2 context STAFF/cửa, 1 QR paid",
+    "steps": [
+      "Hai context quét tại barrier bằng requestId khác nhau.",
+      "Lặp request thắng với cùng requestId; quét lại ở cửa kia.",
+      "Thử override thiếu lý do/thiếu quyền rồi override hợp lệ."
+    ],
+    "expected": [
+      "Một NORMAL; duplicate có first gate/time; replay không thêm admission; ngoại lệ có reason/staff riêng."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-06",
+    "requirement_id": [
+      "S-33",
+      "S-34",
+      "S-35",
+      "S-36",
+      "S-52"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Hai cửa ngoại tuyến và đồng bộ đảo thứ tự",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "2 context/IndexedDB riêng, cùng snapshot, T1<T2",
+    "steps": [
+      "Ngắt mạng cả hai, A quét T1 và B quét T2; đóng/mở browser A.",
+      "B online sync trước, A sync sau; so giờ/offset thiết bị.",
+      "Mở conflict/attendance report và kiểm bản ghi gốc không mất."
+    ],
+    "expected": [
+      "Áp đúng luật AC S-36 hoặc báo sai khác với contract được duyệt; đầy đủ 2 cửa/2 thời điểm/offset và một khách duy nhất."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-07",
+    "requirement_id": [
+      "S-34",
+      "S-35",
+      "S-37"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Queue sync không mất khi lỗi phản hồi",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "40 scan, network fault injection",
+    "steps": [
+      "Lần lượt gây timeout sau commit server, offline giữa batch, 401, 403, 409 và 5xx.",
+      "Reload/đóng mở app rồi sync lại; đếm scanId ở IndexedDB và server.",
+      "Đổi account và quay lại account cũ, xác minh phạm vi queue."
+    ],
+    "expected": [
+      "Chỉ xoá mục có ack bền; dữ liệu chưa ack còn phục hồi/retry được; server không ghi đôi và không trộn tài khoản."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-08",
+    "requirement_id": [
+      "S-45",
+      "S-46",
+      "S-48",
+      "S-49",
+      "S-50"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Huỷ, hoàn, bán lại và QR cũ",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "Paid chưa check-in, suất >24h theo policy ứng viên; A/B",
+    "steps": [
+      "A xem preview, huỷ toàn order, worker hoàn mock; bắn hai cancel đồng thời.",
+      "B giữ và mua lại đúng ghế vừa nhả.",
+      "Quét QR cũ online/offline với cache cũ rồi sync; xem QR mới và báo cáo."
+    ],
+    "expected": [
+      "Một refund hiệu lực theo policy; một chủ ghế hiện tại; QR cũ bị vô hiệu theo contract thu hồi; doanh thu gộp/ròng và audit đối soát được."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-09",
+    "requirement_id": [
+      "S-47",
+      "S-48"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Huỷ suất theo lô và restart worker",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "N đơn paid/pending, 2 batch trở lên, 1 refund gây lỗi",
+    "steps": [
+      "Organizer huỷ suất; kiểm mua mới bị chặn ngay.",
+      "Dừng worker riêng sau một batch, restart rồi retry lô lỗi.",
+      "So tập order cần hoàn, số refund và email catcher; mở operations kế toán."
+    ],
+    "expected": [
+      "Không bỏ/nhân refund, lỗi từng phần lộ rõ; mọi vé huỷ; thư không gửi tới khách thật."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-10",
+    "requirement_id": [
+      "S-02",
+      "S-28",
+      "S-35"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Khóa/đổi vai trò khi session còn sống",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "Account phụ STAFF/BUYER có session trên 2 context",
+    "steps": [
+      "Admin đổi role và gọi API ngay trên hai session cũ.",
+      "Admin disable; gọi API/đăng nhập lại; thử queue offline sync.",
+      "Kiểm audit và sự cách ly queue thiết bị."
+    ],
+    "expected": [
+      "Quyền cập nhật ở request tiếp theo; disabled không còn session hợp lệ; scan chưa sync không bị xoá âm thầm do 401/403."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-11",
+    "requirement_id": [
+      "S-53",
+      "S-54",
+      "S-49"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Xoá dữ liệu nhưng giữ sổ giao dịch",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "Tài khoản giả có đơn/hoàn/email/token/reset/transfer",
+    "steps": [
+      "Lưu oracle số order, tiền, refund; gửi yêu cầu erasure rồi duyệt bằng ADMIN.",
+      "Tìm PII canary trên tất cả bảng/outbox/log/cached snapshot thuộc phạm vi đã chốt.",
+      "Thử session/token cũ và đối chiếu lại báo cáo tài chính."
+    ],
+    "expected": [
+      "Không đăng nhập được, định danh đã ẩn danh ở phạm vi chốt; order/payment/totals giữ nguyên, không phát email tới định danh đã xoá."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-12",
+    "requirement_id": [
+      "EXT-RESET",
+      "EXT-PUBLISH",
+      "EXT-RESCHEDULE",
+      "EXT-MAIL",
+      "S-61"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Khởi động đúng source mới và nối module core",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "Fresh build từ working tree, profile thử",
+    "steps": [
+      "Lưu fingerprint trước build; khởi động dist vừa build, ghi PID/port/source.",
+      "Gọi forgot/reset/reschedule/operations-mail và publication bằng đúng method/role.",
+      "Đi từ login, event editor, showtime workspace và operations bằng nút nhìn thấy."
+    ],
+    "expected": [
+      "Endpoint phải có thật và thực thi nghiệp vụ; route trả 404 hoặc nút không có được ghi lỗi tích hợp.",
+      "HTTP 200 cho trang wrapper hoặc file component tồn tại không chứng minh chức năng đã nối."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "EXT-RESET-01",
+    "requirement_id": [
+      "Chức năng bổ sung theo docs/CORE_COMPLETION_HANDOVER_20261022.md"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P1",
+    "readiness": "TEST_PLAN",
+    "title": "Quên mật khẩu đúng luồng UI/API",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "Active+verified email; inactive/unverified/unknown; SMTP catcher",
+    "steps": [
+      "Từ login đi tới forgot; gửi email mới/đã có, kiểm phản hồi 202 chung.",
+      "Mở link reset mới, đặt mật khẩu 8 ký tự; login bằng mật khẩu mới.",
+      "Thử mật khẩu cũ, session cũ, token dùng lần hai, token hết 15 phút và token khác trước reset."
+    ],
+    "expected": [
+      "Không dò được email; token một lần, hết hạn theo contract ứng viên; thu hồi session/token cũ; không tự login sau reset."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "EXT-RESET-02",
+    "requirement_id": [
+      "EXT-RESET"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P1",
+    "readiness": "TEST_PLAN",
+    "title": "Biên và race reset mật khẩu",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "Token fixture, 2 requests cùng token, header IP giả",
+    "steps": [
+      "Thử password 7/8/1024/1025 ký tự; đồng thời reset cùng token.",
+      "Thử quota 3/email, 20/IP/15 phút và reset submit 20/IP/15 phút theo contract ứng viên.",
+      "Giả forwarded header; kiểm token chỉ lưu hash, log không có token/password; disable/erasure trước reset."
+    ],
+    "expected": [
+      "Một reset thắng; inactive/erased không phục hồi; IP lấy từ transport được tin cậy; quota trước Argon2."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "EXT-PUBLISH-01",
+    "requirement_id": [
+      "S-04",
+      "S-07",
+      "S-08",
+      "Chức năng publication mô tả trong handover"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P1",
+    "readiness": "TEST_PLAN",
+    "title": "Công bố/ẩn có điều kiện và quyền sở hữu",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "Organizer A/B; event thiếu thông tin/map/giá, demo và hợp lệ",
+    "steps": [
+      "Thử công bố từng trường hợp thiếu điều kiện và bằng chủ khác.",
+      "Công bố hợp lệ; xem catalog/chi tiết/map bằng ẩn danh.",
+      "Ẩn event rồi gọi URL chi tiết/map/SSE trực tiếp; kiểm order/ticket/scanner vẫn theo quyền; replay publication."
+    ],
+    "expected": [
+      "Chặn thiếu điều kiện; catalog phản ánh trong hợp đồng cache; event ẩn không lộ public; vé/đơn đã mua giữ nguyên; audit không nhân vì replay."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "EXT-RESCHEDULE-01",
+    "requirement_id": [
+      "S-61",
+      "EXT-RESCHEDULE"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P1",
+    "readiness": "TEST_PLAN",
+    "title": "Đổi giờ giữ nguyên QR và hạn thanh toán",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "Suất tương lai có paid/pending, bản sao QR trước đổi, catcher",
+    "steps": [
+      "Organizer đổi startTime có timezone, reason 3–1000 ký tự, requestId UUID.",
+      "So showtime, schedule version/audit, order TTL, ghế và hash payload QR trước/sau.",
+      "Cùng requestId+cùng body retry rồi cùng ID+khác body; thử người khác, suất đã bắt đầu/huỷ/có admission."
+    ],
+    "expected": [
+      "Giữ nguyên QR/ghế/TTL, email lịch mới; replay trả cũ, khác nội dung 409; các trạng thái cấm bị chặn."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "EXT-MAIL-01",
+    "requirement_id": [
+      "S-27",
+      "S-61",
+      "EXT-MAIL"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P1",
+    "readiness": "TEST_PLAN",
+    "title": "Admin xử lý mail lỗi và worker tắt",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "55 mail hỗn hợp trạng thái/loại; ADMIN và BUYER; catcher",
+    "steps": [
+      "Mở operations/mail, lọc ALL/TICKET/REMINDER/RESCHEDULED và trạng thái; kiểm 20 dòng/trang, total, không trùng/sót.",
+      "Retry FAILED với requestId; replay; retry SENT/CANCELLED/đối tượng không còn hợp lệ.",
+      "Worker off phải báo queued/chưa gửi; bật worker fixture và gây crash quanh lease, retry SMTP; đối chiếu audit/lịch sử."
+    ],
+    "expected": [
+      "Chỉ ADMIN; giữ job cũ và tạo lượt mới đúng contract; không nhận QUEUED là SENT; SMTP có thể gửi lặp trong crash window, không tuyên bố exactly-once inbox."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-13",
+    "requirement_id": [
+      "S-02",
+      "S-04",
+      "S-17",
+      "S-28",
+      "S-32"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Phân quyền mọi endpoint và mọi chủ sở hữu",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "Inventory runtime; ẩn danh+5 role; resource A/B",
+    "steps": [
+      "Mỗi METHOD+path chạy với anonymous, role đúng, role sai, chủ đúng và chủ khác.",
+      "Thử URL trực tiếp, web proxy /api và API direct; không dùng việc ẩn menu thay API guard.",
+      "Đối chiếu route public opt-in; thêm route test-only không có khai báo quyền trong app fixture."
+    ],
+    "expected": [
+      "401/403/404 theo hợp đồng đã chốt; no mutation khi bị từ chối; public chỉ đúng dữ liệu công khai; role thay đổi có hiệu lực tức thời."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-14",
+    "requirement_id": [
+      "S-01",
+      "S-12",
+      "S-20",
+      "S-23",
+      "S-35"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Lỗi hạ tầng và phục hồi không làm hỏng tiền/ghế",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "DB/Redis/SMTP/gateway của profile thử riêng",
+    "steps": [
+      "Ngắt từng dependency trong lúc hold/order/payment/scan; timeout sau commit và restart app.",
+      "Retry cùng idempotency key; đọc lại state từ server.",
+      "Đối chiếu health, log redaction và job backlog phục hồi; chỉ dừng process/container của profile thử."
+    ],
+    "expected": [
+      "Không ghi nửa giao dịch, không double-charge/double-ticket/double-admission; UI có lỗi/thử lại đúng, dữ liệu đã lưu không mất."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-15",
+    "requirement_id": [
+      "T-10",
+      "T-14",
+      "T-18",
+      "T-20",
+      "T-24",
+      "T-35",
+      "S-30",
+      "S-38"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P1",
+    "readiness": "TEST_PLAN",
+    "title": "UI đầy đủ trạng thái trên desktop và mobile",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "1440×900, 390×844, 360×800; route inventory; dữ liệu loading/empty/error/success",
+    "steps": [
+      "Đi lần lượt mọi trang theo từng role; kiểm hành động chính bằng bàn phím và chuột/chạm.",
+      "Giả response chậm/lỗi/rỗng; kiểm double-submit, focus/labels, menu, scroll bảng, zoom map, QR/camera.",
+      "Ghi screenshot/video và console/network error cho mỗi route/state quan trọng; browser bị chặn thì ghi BLOCKED."
+    ],
+    "expected": [
+      "Không tràn ngang toàn trang/cắt nút, các trạng thái hiểu được, phân biệt màu+kí hiệu, focus dùng được; mỗi hành động có backend effect đúng."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-16",
+    "requirement_id": [
+      "S-57",
+      "S-61",
+      "S-47",
+      "S-53"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P1",
+    "readiness": "TEST_PLAN",
+    "title": "Chuyển nhượng rồi đổi lịch/huỷ/erasure",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "Vé chuyển từ A sang B; QR cũ/mới; catcher",
+    "steps": [
+      "Chuyển nhượng A→B, sau đó đổi giờ hoặc huỷ suất.",
+      "Đối chiếu vé/người nhận hiện tại trong mail/reminder/reschedule, tài khoản và scanner.",
+      "Erasure A không làm lộ mail A hoặc xoá quyền B ngoài phạm vi chốt."
+    ],
+    "expected": [
+      "Email và quyền vé đi theo người nhận hiện tại, QR cũ vô hiệu; số vé và tổng tiền không tăng do transfer/reschedule."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "INT-17",
+    "requirement_id": [
+      "S-55",
+      "S-26"
+    ],
+    "kind": "INTEGRATION",
+    "group": "Hành trình và rủi ro bổ sung",
+    "tier": "IMPLEMENTED_OR_PROPOSED",
+    "priority": "P0",
+    "readiness": "TEST_PLAN",
+    "title": "Bằng chứng restore đủ cả dữ liệu và khóa",
+    "source": {
+      "origin": "Kịch bản bổ sung do kế hoạch thiết kế; không phải yêu cầu mới trong Excel"
+    },
+    "fixture": "Backup thử + key retained, app source rõ; kho ngoài host nếu có",
+    "steps": [
+      "Restore bản sao vào DB mới và cấu hình app cổng riêng.",
+      "Đăng nhập, đọc order lịch sử, tải vé và xác minh QR đã phát trước backup bằng public key lưu giữ.",
+      "Kiểm lịch chạy/retention/upload qua receiver ngoài máy; nếu chỉ local drill thì tách outcome."
+    ],
+    "expected": [
+      "Khôi phục dữ liệu và xác minh vé cũ; thiếu encryption/signing key không được PASS; local restore không tự chứng minh backup off-host hàng ngày."
+    ],
+    "evidence_required": [
+      "Ảnh/video các bước UI",
+      "Network/HTTP và DB oracle đã che thông tin",
+      "Source fingerprint, run-id, browser/device, thời gian"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

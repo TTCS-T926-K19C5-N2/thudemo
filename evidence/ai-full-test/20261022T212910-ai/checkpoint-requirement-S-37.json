@@ -1,0 +1,120 @@
+[
+  {
+    "id": "S-37-AC01",
+    "requirement_id": "S-37",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Máy quét hiện rõ trạng thái mạng và số lần quét chưa đồng bộ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L39"
+    },
+    "original_requirement": "Giả sử mất mạng, Khi màn hình quét đang mở, Thì có dải cảnh báo ngoại tuyến và bộ đếm lần quét chưa đồng bộ",
+    "fixture": "navigator online nhưng API không tới được; queue 0/40; sync lỗi/thành công.",
+    "surfaces": "/scanner; dải mạng và số chưa sync",
+    "code_candidates": "apps/web/src/features/ticket-scanner/network-status.ts; offline-banner.tsx",
+    "test_candidates": "offline-banner.spec.ts; offline-sync.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: mất mạng.",
+      "Thực hiện trên /scanner; dải mạng và số chưa sync: màn hình quét đang mở.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Chặn API trong khi browser báo online: banner phải dựa vào lần gọi server thực. Kiểm counter tăng khi ghi queue và giảm sau ack, không biến mất chỉ vì navigator.onLine=true; hiển thị lại đúng sau refresh.",
+    "expected": [
+      "có dải cảnh báo ngoại tuyến và bộ đếm lần quét chưa đồng bộ"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-37-AC02",
+    "requirement_id": "S-37",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Máy quét hiện rõ trạng thái mạng và số lần quét chưa đồng bộ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L39"
+    },
+    "original_requirement": "Giả sử có mạng lại và đẩy xong, Khi bộ đếm về 0, Thì dải cảnh báo biến mất",
+    "fixture": "navigator online nhưng API không tới được; queue 0/40; sync lỗi/thành công.",
+    "surfaces": "/scanner; dải mạng và số chưa sync",
+    "code_candidates": "apps/web/src/features/ticket-scanner/network-status.ts; offline-banner.tsx",
+    "test_candidates": "offline-banner.spec.ts; offline-sync.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: có mạng lại và đẩy xong.",
+      "Thực hiện trên /scanner; dải mạng và số chưa sync: bộ đếm về 0.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Chặn API trong khi browser báo online: banner phải dựa vào lần gọi server thực. Kiểm counter tăng khi ghi queue và giảm sau ack, không biến mất chỉ vì navigator.onLine=true; hiển thị lại đúng sau refresh.",
+    "expected": [
+      "dải cảnh báo biến mất"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-37-NFR",
+    "requirement_id": "S-37",
+    "kind": "NFR",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Máy quét hiện rõ trạng thái mạng và số lần quét chưa đồng bộ — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N39"
+    },
+    "original_requirement": "trạng thái mạng đo bằng lần gọi máy chủ gần nhất, không chỉ dựa vào cờ của trình duyệt. Ước lượng thô 2 SP — tier Next",
+    "fixture": "navigator online nhưng API không tới được; queue 0/40; sync lỗi/thành công.",
+    "surfaces": "/scanner; dải mạng và số chưa sync",
+    "code_candidates": "apps/web/src/features/ticket-scanner/network-status.ts; offline-banner.tsx",
+    "test_candidates": "offline-banner.spec.ts; offline-sync.spec.ts",
+    "steps": [
+      "Chặn API trong khi browser báo online: banner phải dựa vào lần gọi server thực. Kiểm counter tăng khi ghi queue và giảm sau ack, không biến mất chỉ vì navigator.onLine=true; hiển thị lại đúng sau refresh.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "trạng thái mạng đo bằng lần gọi máy chủ gần nhất, không chỉ dựa vào cờ của trình duyệt. Ước lượng thô 2 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

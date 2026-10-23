@@ -107,7 +107,13 @@ export async function holdTransaction<T>(
         limits.validatedRoutine &&
         (routineSubmitted ||
           (!sql.text.trim().startsWith('SELECT * FROM public.claim_hold_v2(') &&
-            !sql.text.trim().startsWith('SELECT * FROM public.claim_hold_v3(')))
+            !sql.text
+              .trim()
+              .startsWith('SELECT * FROM public.claim_hold_v3(') &&
+            !sql.text
+              .trim()
+              .startsWith('SELECT * FROM public.claim_hold_v4(') &&
+            !sql.text.trim().startsWith('SELECT * FROM public.claim_hold_v5(')))
       )
         throw Error('Only the validated hold routine can pipeline commit');
       const querying = client.query({

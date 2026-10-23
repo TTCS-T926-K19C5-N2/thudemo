@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-20-AC",
+    "requirement_id": "T-20",
+    "parent_requirement": "S-09",
+    "kind": "TASK_AC",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Vẽ sơ đồ ghế trên trình duyệt kèm màu và ký hiệu trạng thái",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G21"
+    },
+    "original_requirement": "Sơ đồ 2000 ghế cuộn và phóng mượt trên máy tính lẫn điện thoại; bấm vào ghế đã bán thì không có tác dụng",
+    "fixture": "Suất 2.000 ghế, có FREE/HELD/SOLD; desktop và điện thoại.",
+    "surfaces": "/shows/:id/seats; GET /showtimes/:id/seats",
+    "code_candidates": "apps/api/src/showtimes/seat-status.sql.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-availability.query.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Mở map, so toàn bộ trạng thái với DB; người B giữ rồi A refresh. Thử suất chưa có map; zoom/pan/chọn chính xác trên điện thoại; ghế bán không chọn được. Đo truy vấn dưới 200 ms và render đầy đủ dưới 2 giây; theo dõi query count để phát hiện N+1.",
+      "Kiểm riêng tiêu chí task T-20: Sơ đồ 2000 ghế cuộn và phóng mượt trên máy tính lẫn điện thoại; bấm vào ghế đã bán thì không có tác dụng",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Sơ đồ 2000 ghế cuộn và phóng mượt trên máy tính lẫn điện thoại; bấm vào ghế đã bán thì không có tác dụng"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-20-NFR",
+    "requirement_id": "T-20",
+    "parent_requirement": "S-09",
+    "kind": "TASK_NFR",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Vẽ sơ đồ ghế trên trình duyệt kèm màu và ký hiệu trạng thái",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I21"
+    },
+    "original_requirement": "phân biệt trạng thái không chỉ bằng màu, thêm ký hiệu để người mù màu vẫn dùng được",
+    "fixture": "Suất 2.000 ghế, có FREE/HELD/SOLD; desktop và điện thoại.",
+    "surfaces": "/shows/:id/seats; GET /showtimes/:id/seats",
+    "code_candidates": "apps/api/src/showtimes/seat-status.sql.ts; apps/web/src/features/seat-selection/",
+    "test_candidates": "seat-availability.query.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Mở map, so toàn bộ trạng thái với DB; người B giữ rồi A refresh. Thử suất chưa có map; zoom/pan/chọn chính xác trên điện thoại; ghế bán không chọn được. Đo truy vấn dưới 200 ms và render đầy đủ dưới 2 giây; theo dõi query count để phát hiện N+1.",
+      "Kiểm riêng tiêu chí task T-20: phân biệt trạng thái không chỉ bằng màu, thêm ký hiệu để người mù màu vẫn dùng được",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "phân biệt trạng thái không chỉ bằng màu, thêm ký hiệu để người mù màu vẫn dùng được"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

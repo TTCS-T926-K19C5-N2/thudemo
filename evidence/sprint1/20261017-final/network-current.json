@@ -1,0 +1,54 @@
+{
+  "time": "2026-10-17T02:16:01.0023259Z",
+  "source": "eb53a0657b2f1120a057e688084a69f1f518f047",
+  "origin": "https://10.228.54.197:3470",
+  "https": {
+    "status": 200,
+    "subject": "CN=Sprint1 Laptop Staging",
+    "thumbprint": "C47633C185CFE6D564B05C5C8BAACFAB72C770B0",
+    "result": "PASS",
+    "tlsBypass": false,
+    "windowsTrust": true
+  },
+  "firewall": {
+    "remoteAddress": ["LocalSubnet"],
+    "action": "Allow",
+    "reason": "Read back exact owned rule after Administrator update: Inbound Allow enabled TCP3470 current LAN address only, RemoteAddress LocalSubnet retained; no policy mutation by this verification",
+    "port": "3470",
+    "enabled": "True",
+    "name": "Sprint1LaptopStaging-20261015-3470",
+    "result": "PASS",
+    "protocol": "TCP",
+    "localAddress": ["10.228.54.197"]
+  },
+  "data": {
+    "retainedKeyBytes": true,
+    "before": {
+      "users": 6608,
+      "events": 51,
+      "showtimes": 69,
+      "orders": 1,
+      "tickets": 0,
+      "migrations": 30
+    },
+    "after": {
+      "users": 6608,
+      "events": 51,
+      "showtimes": 69,
+      "orders": 1,
+      "tickets": 0,
+      "migrations": 30
+    },
+    "privateBackupCreated": true
+  },
+  "watcher": {
+    "pid": 31628,
+    "minimumSource": "eb53a0657b2f1120a057e688084a69f1f518f047"
+  },
+  "limitations": [
+    "Laptop HTTPS and owned firewall configuration verified, not a new second-device browser test",
+    "Administrator update verified by actual rule readback; earlier Access is denied5 remains historical",
+    "Same private key reused; new leaf certificate is trusted explicitly by user",
+    "Original auto-deploy321.303s was measured on10.88.164.155; not re-labelled as new-network run"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "run_id": "20261022T230000-remediation",
+  "updated_at_local": "2026-10-23T11:02:55.6163012+07:00",
+  "scope": "R18 INT-02 payment retry/idempotent ticket issuance",
+  "coverage_total": 432,
+  "coverage": "BLOCKED=4, MISSING=1, NEEDS_DECISION=4, NOT_RUN=362, PASS=61",
+  "latest_api_e2e": "22 files / 134 tests PASS",
+  "latest_waitlist_e2e": "10 tests PASS",
+  "latest_api_unit": "60 files / 471 tests PASS",
+  "api_typecheck": "PASS",
+  "api_build": "PASS",
+  "api_lint": "PASS, 23 repository warnings",
+  "new_cases": [
+    "INT-02",
+    "R13-PLAN-06.05"
+  ],
+  "remaining_r18": [
+    "INT-01",
+    "INT-08",
+    "INT-14",
+    "seat map/price/clock/device cases",
+    "staging T-31",
+    "GOV-06"
+  ],
+  "evidence": [
+    "int02-mock-gateway-retry-e2e.log",
+    "int02-retry-payment-oracle.json",
+    "int02-fixture-cleanup.json",
+    "r22-full-api-e2e-current-134.log",
+    "r13-waitlist-d16-final.log",
+    "int04-order-expiry-webhook-race.json"
+  ],
+  "overall_remediation": "IN_PROGRESS"
+}

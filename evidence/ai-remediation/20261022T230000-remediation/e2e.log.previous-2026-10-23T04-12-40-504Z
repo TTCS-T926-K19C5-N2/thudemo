@@ -1,0 +1,18 @@
+
+ RUN  v4.1.11 D:/Merge_2/Codegym/apps/api
+
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  11:09:27
+   Duration  2.65s (transform 655ms, setup 33ms, import 1.51s, tests 952ms, environment 0ms)
+
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+(node:32556) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[Nest] 32556  - 10/23/2026, 11:09:29 AM   ERROR [ExceptionsHandler] Error: INT-14 fixture transport failure; provider acceptance unknown
+    at MockPaymentGateway.gateway.createPayment (D:/Merge_2/Codegym/apps/api/test/mock-gateway.e2e-spec.ts:572:13)
+    at PaymentsService.initiatePayment (D:/Merge_2/Codegym/apps/api/src/payments/payments.service.ts:133:46)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at file:///D:/Merge_2/Codegym/node_modules/.pnpm/@nestjs+core@12.1.0_@nestjs_470e0a43d0242a02d4b5d876c5d0d26e/node_modules/@nestjs/core/router/router-execution-context.js:68:62
+    at PaymentsController.initiatePayment (file:///D:/Merge_2/Codegym/node_modules/.pnpm/@nestjs+core@12.1.0_@nestjs_470e0a43d0242a02d4b5d876c5d0d26e/node_modules/@nestjs/core/router/router-proxy.js:6:17)

@@ -1,0 +1,456 @@
+{
+  "run_id": "20261022T212910-ai",
+  "source_workbook_sha256": "7fa009f53a82d23786e95ce9bd0ecd5aed0c6968bdbb6358a36ee14a10dd9c18",
+  "source_fingerprint_sha256": "2732cf4d3d8da46a515f99cfd7ab0baabe0a7812d29d50bfd528123591267ebb",
+  "case_design_count": 404,
+  "case_statuses": [
+    {
+      "status": "NOT_RUN",
+      "count": 381
+    },
+    {
+      "status": "PASS",
+      "count": 0
+    },
+    {
+      "status": "FAIL",
+      "count": 0
+    },
+    {
+      "status": "BLOCKED",
+      "count": 7
+    },
+    {
+      "status": "MISSING",
+      "count": 16
+    },
+    {
+      "status": "NEEDS_DECISION",
+      "count": 0
+    },
+    {
+      "status": "NOT_APPLICABLE",
+      "count": 0
+    }
+  ],
+  "by_tier": [
+    {
+      "tier": "GOVERNANCE",
+      "total": 23,
+      "NOT_RUN": 19,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 4,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "tier": "IMPLEMENTED_OR_PROPOSED",
+      "total": 22,
+      "NOT_RUN": 15,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 1,
+      "MISSING": 6,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "tier": "Later",
+      "total": 56,
+      "NOT_RUN": 46,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 10,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "tier": "Next",
+      "total": 60,
+      "NOT_RUN": 60,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "tier": "Ready",
+      "total": 133,
+      "NOT_RUN": 131,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 2,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "tier": "TECHNICAL",
+      "total": 110,
+      "NOT_RUN": 110,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    }
+  ],
+  "by_priority": [
+    {
+      "priority": "Could",
+      "total": 18,
+      "NOT_RUN": 8,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 10,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "priority": "Must",
+      "total": 159,
+      "NOT_RUN": 157,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 2,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "priority": "P0",
+      "total": 15,
+      "NOT_RUN": 14,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 1,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "priority": "P1",
+      "total": 7,
+      "NOT_RUN": 1,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 1,
+      "MISSING": 5,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "priority": "Should",
+      "total": 73,
+      "NOT_RUN": 73,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "priority": "Theo quy định gốc",
+      "total": 14,
+      "NOT_RUN": 10,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 4,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "priority": "Theo scope Sprint",
+      "total": 8,
+      "NOT_RUN": 8,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "priority": "Theo story cha",
+      "total": 110,
+      "NOT_RUN": 110,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    }
+  ],
+  "by_group": [
+    {
+      "group": "Báo cáo và dữ liệu",
+      "total": 8,
+      "NOT_RUN": 8,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Điều kiện nghiệm thu",
+      "total": 14,
+      "NOT_RUN": 10,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 4,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Đối chiếu tổng thể",
+      "total": 22,
+      "NOT_RUN": 22,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Đơn hàng",
+      "total": 21,
+      "NOT_RUN": 21,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Giữ ghế",
+      "total": 49,
+      "NOT_RUN": 49,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Hạ tầng",
+      "total": 15,
+      "NOT_RUN": 14,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 1,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Hành trình và rủi ro bổ sung",
+      "total": 22,
+      "NOT_RUN": 15,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 1,
+      "MISSING": 6,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Huỷ và hoàn",
+      "total": 8,
+      "NOT_RUN": 8,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Khám phá",
+      "total": 9,
+      "NOT_RUN": 8,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 1,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Mở rộng",
+      "total": 10,
+      "NOT_RUN": 0,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 10,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Mục tiêu tích hợp",
+      "total": 9,
+      "NOT_RUN": 9,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Ngoại tuyến",
+      "total": 19,
+      "NOT_RUN": 19,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Quản trị",
+      "total": 4,
+      "NOT_RUN": 4,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Riêng tư",
+      "total": 4,
+      "NOT_RUN": 4,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Sơ đồ và giá",
+      "total": 42,
+      "NOT_RUN": 42,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Soát vé",
+      "total": 16,
+      "NOT_RUN": 16,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Sự kiện",
+      "total": 21,
+      "NOT_RUN": 21,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Tài khoản",
+      "total": 22,
+      "NOT_RUN": 22,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Thanh toán",
+      "total": 62,
+      "NOT_RUN": 62,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Thông báo",
+      "total": 2,
+      "NOT_RUN": 2,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Vận hành",
+      "total": 8,
+      "NOT_RUN": 8,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    },
+    {
+      "group": "Vé",
+      "total": 17,
+      "NOT_RUN": 17,
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "MISSING": 0,
+      "NEEDS_DECISION": 0,
+      "NOT_APPLICABLE": 0
+    }
+  ],
+  "workbook_counts": {
+    "backlog": 64,
+    "stories": 63,
+    "spikes": 1,
+    "ready": 25,
+    "next": 15,
+    "later": 24,
+    "must": 32,
+    "should": 23,
+    "could": 9,
+    "tasks": 55,
+    "epics": 11,
+    "sprints": 8,
+    "risks": 9,
+    "dod": 9,
+    "dor": 5
+  },
+  "coverage_note": "Only cases with explicit execution evidence changed from original NOT_RUN."
+}

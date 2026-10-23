@@ -1,0 +1,832 @@
+{
+  "base": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
+  "head": "f77429689334394f8c6eacbd689fe1a09a2511bc",
+  "actualFailedCheckout": "7c356abd0868cf61e20e4e8502022f1cab85b64c",
+  "failedRun": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38877028565",
+  "failedStep": "Real browser and S-33 compatibility / scanFile of owner SVG screenshot",
+  "camera": false,
+  "environment": {
+    "node": "v24.21.0",
+    "platform": "win32",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "deviceScaleFactor": 1,
+    "placement": "fixed1001px centered parent, fractional SVGx380.5",
+    "method": "Matched failing-step reproduction, not full base/candidate API browser E2E. Actual unchanged QRCodeSVG props from both revisions, same pinned React/qrcode.react/html5-qrcode/Playwright runtime, same fixture bytes and CSS. No acceptance assertion changed."
+  },
+  "sourceFiles": [
+    {
+      "path": "apps/web/src/features/order-review/signed-tickets.tsx",
+      "baseSha256": "123b30f1c78103e7fd93cd2673faecbdb2c2b7ea1d6184ffb6c821d35b784792",
+      "headSha256": "123b30f1c78103e7fd93cd2673faecbdb2c2b7ea1d6184ffb6c821d35b784792",
+      "identical": true
+    },
+    {
+      "path": "apps/web/scripts/verify-s30-signed-browser.mjs",
+      "baseSha256": "3fbc1ea076c29b2a7d4a5ea4059354189547bf65f1e0969dc87ff133b1bd0217",
+      "headSha256": "3fbc1ea076c29b2a7d4a5ea4059354189547bf65f1e0969dc87ff133b1bd0217",
+      "identical": true
+    },
+    {
+      "path": "packages/shared/ticket-qr.js",
+      "baseSha256": "6bb71e19bcb73d72956042a2aa692201741312d0ba8802a41a111dc62fb4f6af",
+      "headSha256": "6bb71e19bcb73d72956042a2aa692201741312d0ba8802a41a111dc62fb4f6af",
+      "identical": true
+    },
+    {
+      "path": ".github/workflows/s30-signed-qr.yml",
+      "baseSha256": "2754c2ff488cb7d0724c66dfe79c83a831e3c9f2c8eda4531e4b2cccd325521d",
+      "headSha256": "2754c2ff488cb7d0724c66dfe79c83a831e3c9f2c8eda4531e4b2cccd325521d",
+      "identical": true
+    }
+  ],
+  "fixtures": [
+    {
+      "index": 0,
+      "payloadSha256": "8e5e549659de6e1aee7563c7b1b37149380519f09c5424310a83ae18eb96df10",
+      "base": {
+        "imageSha256": "4dc738d9477ac4e0108d386deaf665c63831bb1ec5d9967d4a9a888e9b28bd88",
+        "decoded": false
+      },
+      "head": {
+        "imageSha256": "4dc738d9477ac4e0108d386deaf665c63831bb1ec5d9967d4a9a888e9b28bd88",
+        "decoded": false
+      }
+    },
+    {
+      "index": 1,
+      "payloadSha256": "ded97def77185d75c01c29d1b6e46025198319f8dc815f968edd5d0083f5ae9c",
+      "base": {
+        "imageSha256": "4166820584b13899cce13542989238af22c673c5a7ffbdc4dad1b7f89c23c776",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "4166820584b13899cce13542989238af22c673c5a7ffbdc4dad1b7f89c23c776",
+        "decoded": true
+      }
+    },
+    {
+      "index": 2,
+      "payloadSha256": "9d258959ea63c98f0b2ec4f1d6927dff9898992e1709c3f974a12daa1e312788",
+      "base": {
+        "imageSha256": "94f52c2dd763e69a255ea221c3609409e0030c0edc5dd7c6b709443715bc2c46",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "94f52c2dd763e69a255ea221c3609409e0030c0edc5dd7c6b709443715bc2c46",
+        "decoded": true
+      }
+    },
+    {
+      "index": 3,
+      "payloadSha256": "2218df08444b36978638ba48e77a137d90e7941e63cbc74e57432076f4d5e4e7",
+      "base": {
+        "imageSha256": "a71a50d6f0f1f501a3212345bf8a31916b8c5a3ec6028bf75499416958975c16",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "a71a50d6f0f1f501a3212345bf8a31916b8c5a3ec6028bf75499416958975c16",
+        "decoded": true
+      }
+    },
+    {
+      "index": 4,
+      "payloadSha256": "69a7ce5f210acdb434bef29357c530dcd00b0b46d65da4adad17366ca4ec12b5",
+      "base": {
+        "imageSha256": "5a132f050613017e899dd2da7faa704b0e81c1d0cda5214ce422a00bffd2d5fe",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "5a132f050613017e899dd2da7faa704b0e81c1d0cda5214ce422a00bffd2d5fe",
+        "decoded": true
+      }
+    },
+    {
+      "index": 5,
+      "payloadSha256": "5edac764c8fe334c70c897ce1f36f44bca333969c7b0d87210dd8c6fdd395104",
+      "base": {
+        "imageSha256": "0875f288e47c99bc93aa05e1f47c9c60e3b9db1182b0327ccba787eb87e80c91",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "0875f288e47c99bc93aa05e1f47c9c60e3b9db1182b0327ccba787eb87e80c91",
+        "decoded": true
+      }
+    },
+    {
+      "index": 6,
+      "payloadSha256": "dcfad51e8ef101c8b94036c6b2c97c6c204829ea9295ba27091f5c42098e256f",
+      "base": {
+        "imageSha256": "ebead5953fe9b36eb49c617b38bf7d7ec5b65775eb77bffcc42e59822f2eff92",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "ebead5953fe9b36eb49c617b38bf7d7ec5b65775eb77bffcc42e59822f2eff92",
+        "decoded": true
+      }
+    },
+    {
+      "index": 7,
+      "payloadSha256": "91c09639da81b8864b8c1d2d8c8bf76470b894b698ae98df4553cc531427add7",
+      "base": {
+        "imageSha256": "d39b6a1090aacc5ac07f90c862261e345e937970e5ed1ad122bf382a5c419300",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "d39b6a1090aacc5ac07f90c862261e345e937970e5ed1ad122bf382a5c419300",
+        "decoded": true
+      }
+    },
+    {
+      "index": 8,
+      "payloadSha256": "cb8c21e0d1536cb7556310b0819e640a2e1639084ea880cd995e1a2800b95746",
+      "base": {
+        "imageSha256": "31f1210b78234847cacd5e2686ba3c9e923c1a181b35d3704aa3923d8d3b2bca",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "31f1210b78234847cacd5e2686ba3c9e923c1a181b35d3704aa3923d8d3b2bca",
+        "decoded": true
+      }
+    },
+    {
+      "index": 9,
+      "payloadSha256": "ed8a314996517a6eea8296a54ba1015108bc83628b4d6eec9e5cd9fb326703ec",
+      "base": {
+        "imageSha256": "a6fe04b832c462203b93dec4f68f3138193dbcf8dc820f89371f923d00922e87",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "a6fe04b832c462203b93dec4f68f3138193dbcf8dc820f89371f923d00922e87",
+        "decoded": true
+      }
+    },
+    {
+      "index": 10,
+      "payloadSha256": "5c2d9478c722306cbb131af29dcc0a44c467d56b3ada8e726e15d8f160fdadac",
+      "base": {
+        "imageSha256": "53a509293397a3c9143ac1133705129a5892c89e414e31ad8395d45f88017070",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "53a509293397a3c9143ac1133705129a5892c89e414e31ad8395d45f88017070",
+        "decoded": true
+      }
+    },
+    {
+      "index": 11,
+      "payloadSha256": "c48e8ea747e18b34b89436e8ba55afe47d84952c38ebb65bf711b25ad253e22c",
+      "base": {
+        "imageSha256": "b8fc6c66dc10e73bcb252a3192b3d3ce35703db66a7b9c65039b668ab3930dd9",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "b8fc6c66dc10e73bcb252a3192b3d3ce35703db66a7b9c65039b668ab3930dd9",
+        "decoded": true
+      }
+    },
+    {
+      "index": 12,
+      "payloadSha256": "02dd30dc13225f792f0af080720dd67094fae0fa4fdc2d6c589a19a0a3c265eb",
+      "base": {
+        "imageSha256": "49980624d6ec9d02db5af2b49ce4978040a309ae4545971d0b9ed50df8a0b239",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "49980624d6ec9d02db5af2b49ce4978040a309ae4545971d0b9ed50df8a0b239",
+        "decoded": true
+      }
+    },
+    {
+      "index": 13,
+      "payloadSha256": "43e283a7a6691c8e77326d798b8742e11a77de919cbea13e2eca5d4feda547a7",
+      "base": {
+        "imageSha256": "ca3738829cd1f713d775b623b69fb88c740cda71ec29fa01ad1bdebdcd710690",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "ca3738829cd1f713d775b623b69fb88c740cda71ec29fa01ad1bdebdcd710690",
+        "decoded": true
+      }
+    },
+    {
+      "index": 14,
+      "payloadSha256": "e87fef715516412c0419d9141826382fe77c4fd4cdcf3bbe286d3742f42da195",
+      "base": {
+        "imageSha256": "c0af8389f966f74b4740b6ecaae75fe074ba08ec1ea5ffb2bc7f687383e1b9cd",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "c0af8389f966f74b4740b6ecaae75fe074ba08ec1ea5ffb2bc7f687383e1b9cd",
+        "decoded": true
+      }
+    },
+    {
+      "index": 15,
+      "payloadSha256": "d7a3d413aeae91d55fe0e34e50f6d3a077859f0c374527171396bb57d0eb0224",
+      "base": {
+        "imageSha256": "ac785562b68bc692efcb4eea298e72230a40a61c60eed11b2236ede0bbba3697",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "ac785562b68bc692efcb4eea298e72230a40a61c60eed11b2236ede0bbba3697",
+        "decoded": true
+      }
+    },
+    {
+      "index": 16,
+      "payloadSha256": "25bfc5cc5173b3f07ed186cf9d63eed8c63c7a2dd85300b37280b428d35c4dfb",
+      "base": {
+        "imageSha256": "67e597135199b5d8350e41d5bfd25c7dfa411234eed4c250e3e87d277bddfaf3",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "67e597135199b5d8350e41d5bfd25c7dfa411234eed4c250e3e87d277bddfaf3",
+        "decoded": true
+      }
+    },
+    {
+      "index": 17,
+      "payloadSha256": "d59cdd487a17f76dc56579696c873a17453ba8c07d306647566632e1675a9093",
+      "base": {
+        "imageSha256": "12ddf9432f92e720668c12eead00a522d5c2e86c3e4a423a26b31ae3aaa7dc56",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "12ddf9432f92e720668c12eead00a522d5c2e86c3e4a423a26b31ae3aaa7dc56",
+        "decoded": true
+      }
+    },
+    {
+      "index": 18,
+      "payloadSha256": "713a2e7dbd9da0a2511674b4af0e4b67e5c6d8bc16f7378dc9c28ca2e39992aa",
+      "base": {
+        "imageSha256": "e0561ec17eb05cb4658f786b6ecc1c3dbc12add5a21d05a4320eecb0d05d4129",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "e0561ec17eb05cb4658f786b6ecc1c3dbc12add5a21d05a4320eecb0d05d4129",
+        "decoded": true
+      }
+    },
+    {
+      "index": 19,
+      "payloadSha256": "5aeb462ff3207d7968f010403fd926528c4d265f7afb9534e82de87ceaf69fe5",
+      "base": {
+        "imageSha256": "13b5c53f52ebe732744f49ab8d6fb47b640d941570c27ed1fc07f4ba8b5595cd",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "13b5c53f52ebe732744f49ab8d6fb47b640d941570c27ed1fc07f4ba8b5595cd",
+        "decoded": true
+      }
+    },
+    {
+      "index": 20,
+      "payloadSha256": "3d67649f2bdf545a42cc17e67788399f8be1427e6f0ad2b16525f68336223d62",
+      "base": {
+        "imageSha256": "9d24a09b5f79d920227e7da9201e4d63dd566f120ea2c0b88ea6752538710212",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "9d24a09b5f79d920227e7da9201e4d63dd566f120ea2c0b88ea6752538710212",
+        "decoded": true
+      }
+    },
+    {
+      "index": 21,
+      "payloadSha256": "0dfa1b79e4d756ecc6023d927313b9da7737e12ed80aeab987c2229a6b70ec46",
+      "base": {
+        "imageSha256": "108b87a1fa83f702b44e33b20eb70d8bb719d36687d7a3cdbc3eab871ba9db7b",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "108b87a1fa83f702b44e33b20eb70d8bb719d36687d7a3cdbc3eab871ba9db7b",
+        "decoded": true
+      }
+    },
+    {
+      "index": 22,
+      "payloadSha256": "cd54ceb0b089d2912e0803c07193dbefdba15eb1485a78121b363a5c34e404e6",
+      "base": {
+        "imageSha256": "9e781d0b1f8230bedc946d54dbf646bf93e259ff5cf94ef1938d40173e0552ea",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "9e781d0b1f8230bedc946d54dbf646bf93e259ff5cf94ef1938d40173e0552ea",
+        "decoded": true
+      }
+    },
+    {
+      "index": 23,
+      "payloadSha256": "0eff4fdc337d6b02ce7da041d56a68f5debfae6f4d54576551d3f1d21d078896",
+      "base": {
+        "imageSha256": "01e5617e6b76222a347eef673edf552960b4f71a39f6b3677c0d74056be266b0",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "01e5617e6b76222a347eef673edf552960b4f71a39f6b3677c0d74056be266b0",
+        "decoded": true
+      }
+    },
+    {
+      "index": 24,
+      "payloadSha256": "0e6c2f018c56b61405ab9b95892890183cb6305e55255b6ea0b78e01eb215c40",
+      "base": {
+        "imageSha256": "54d28a2d907ce011d28403b6f635518dd3c722dd00987ab2117e2aeb692a0b73",
+        "decoded": false,
+        "error": "D: No MultiFormat Readers were able to detect the code."
+      },
+      "head": {
+        "imageSha256": "54d28a2d907ce011d28403b6f635518dd3c722dd00987ab2117e2aeb692a0b73",
+        "decoded": false,
+        "error": "D: No MultiFormat Readers were able to detect the code."
+      }
+    },
+    {
+      "index": 25,
+      "payloadSha256": "9c7e14d52ce682f106c7a890de4594965f0050f11ffd4385dd7ea344e4ce25de",
+      "base": {
+        "imageSha256": "1ebfa3f454985cc84d14acb660e93f7804e09517e80f67f069ab1ed3f2c700d1",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "1ebfa3f454985cc84d14acb660e93f7804e09517e80f67f069ab1ed3f2c700d1",
+        "decoded": true
+      }
+    },
+    {
+      "index": 26,
+      "payloadSha256": "194d13e14088674d9a001cff5435d9de304d806094f10a65193da9cab4d43aa2",
+      "base": {
+        "imageSha256": "96f5b4f87a35c71966ff602c9a5b5819585751b4fae6501738ce0c1318f3004e",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "96f5b4f87a35c71966ff602c9a5b5819585751b4fae6501738ce0c1318f3004e",
+        "decoded": true
+      }
+    },
+    {
+      "index": 27,
+      "payloadSha256": "0ade897a258e11115fd0aedb9598ab31c706a7b804e0c4f414f61b0fa706fb01",
+      "base": {
+        "imageSha256": "061456e9c0f3a8227fc4f5b9b910a7728f18fa8226cbf75da0ee9ab35b87e78a",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "061456e9c0f3a8227fc4f5b9b910a7728f18fa8226cbf75da0ee9ab35b87e78a",
+        "decoded": true
+      }
+    },
+    {
+      "index": 28,
+      "payloadSha256": "9c49d55eebdc3081770669a5015470fa611c01855e9c462165142d6f77aa8f7b",
+      "base": {
+        "imageSha256": "cb58dd4363aae196ce63121883cc38bee72a5155909343b9668f2a7e07210e4f",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "cb58dd4363aae196ce63121883cc38bee72a5155909343b9668f2a7e07210e4f",
+        "decoded": true
+      }
+    },
+    {
+      "index": 29,
+      "payloadSha256": "45626759aae930ceb6cc09c57cb840d4505ce335eaeb0e937418fd28644b2cd5",
+      "base": {
+        "imageSha256": "c9faa13181e63536c4adaea0b746e5a4f46392c36a52203b47a6c687a479f1ab",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "c9faa13181e63536c4adaea0b746e5a4f46392c36a52203b47a6c687a479f1ab",
+        "decoded": true
+      }
+    },
+    {
+      "index": 30,
+      "payloadSha256": "cbce4eb100757620059550ef04da7d77ff93c37b2f1d03a36e291072d1490fd3",
+      "base": {
+        "imageSha256": "f6e352476ef9721870be113ec016f87aa92421f3734dfeafce4af85d2d3cd635",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "f6e352476ef9721870be113ec016f87aa92421f3734dfeafce4af85d2d3cd635",
+        "decoded": true
+      }
+    },
+    {
+      "index": 31,
+      "payloadSha256": "4857a7968c47bb970f4e0978405a728eb4b604f4fe9f77acb96a7405856f5dce",
+      "base": {
+        "imageSha256": "a9ed73414caf05c265db9fd21d3455f5dfb3fe5731b2f8c6c85f6c942ae92612",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "a9ed73414caf05c265db9fd21d3455f5dfb3fe5731b2f8c6c85f6c942ae92612",
+        "decoded": true
+      }
+    },
+    {
+      "index": 32,
+      "payloadSha256": "b9fb8653ea7fefe59459cea6f82da73ea7dd38f4277b0bc56cb9d20ae6571af4",
+      "base": {
+        "imageSha256": "90b6eed553ec2cd56e9607219d2c60949eb459d244147f18987c130ae2d40327",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "90b6eed553ec2cd56e9607219d2c60949eb459d244147f18987c130ae2d40327",
+        "decoded": true
+      }
+    },
+    {
+      "index": 33,
+      "payloadSha256": "e991c6119efe07b49a208bf70661bbecf260b39411cc8eb4f416d822a853db12",
+      "base": {
+        "imageSha256": "4d72470a175f3f75fc11bd096bbe7bb60d0a2d6902ef3fca73d5f8c0b7c97bd2",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "4d72470a175f3f75fc11bd096bbe7bb60d0a2d6902ef3fca73d5f8c0b7c97bd2",
+        "decoded": true
+      }
+    },
+    {
+      "index": 34,
+      "payloadSha256": "b8ed16cebd5b4601a4924e7d9e240420a9be104014213b25c56fbc5177a7df16",
+      "base": {
+        "imageSha256": "c02001b33e799cd7f1557f0452bdd8d62dd7ec41b469e3b25f1f1617729f2e9e",
+        "decoded": false,
+        "error": "D: No MultiFormat Readers were able to detect the code."
+      },
+      "head": {
+        "imageSha256": "c02001b33e799cd7f1557f0452bdd8d62dd7ec41b469e3b25f1f1617729f2e9e",
+        "decoded": false,
+        "error": "D: No MultiFormat Readers were able to detect the code."
+      }
+    },
+    {
+      "index": 35,
+      "payloadSha256": "cc85ec8cd8cf42f2cd6cdee376055943581c8a669ebc435e5797d207992aebf9",
+      "base": {
+        "imageSha256": "e5181aa9025cd7ff8b52a3e8c8f9233f0f55ec45536119cc8a68ff70326eea4b",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "e5181aa9025cd7ff8b52a3e8c8f9233f0f55ec45536119cc8a68ff70326eea4b",
+        "decoded": true
+      }
+    },
+    {
+      "index": 36,
+      "payloadSha256": "ce12f94057cbd2f0aaea8466aaf7d81e996e5eebada576a71da794c2e9e2c26b",
+      "base": {
+        "imageSha256": "b725f4b6ad76f5fd69188066471b937412d991968bc1464a504180540363c06f",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "b725f4b6ad76f5fd69188066471b937412d991968bc1464a504180540363c06f",
+        "decoded": true
+      }
+    },
+    {
+      "index": 37,
+      "payloadSha256": "46c225f29bcdd2841cc9714f8a904e01bd6c805a434d18c5b3c25b4e93707604",
+      "base": {
+        "imageSha256": "b308a90e9f7b779c85eeadff3f376b21b793fed32061323bceb542e917c8b3c4",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "b308a90e9f7b779c85eeadff3f376b21b793fed32061323bceb542e917c8b3c4",
+        "decoded": true
+      }
+    },
+    {
+      "index": 38,
+      "payloadSha256": "b95066cb020830fe3dca111025571a7f80e7e6af7c7c219d2f254b9f6d0881af",
+      "base": {
+        "imageSha256": "840aa78c4b049549484b4bc2c490ef895fdaf29a5ffabe819217e9e7ec0dca65",
+        "decoded": false,
+        "error": "D: No MultiFormat Readers were able to detect the code."
+      },
+      "head": {
+        "imageSha256": "840aa78c4b049549484b4bc2c490ef895fdaf29a5ffabe819217e9e7ec0dca65",
+        "decoded": false,
+        "error": "D: No MultiFormat Readers were able to detect the code."
+      }
+    },
+    {
+      "index": 39,
+      "payloadSha256": "4e50a959e023d582e5f149889c18d7199e546c220c0f3b77ac61468f3bbe24cc",
+      "base": {
+        "imageSha256": "1ea502de2432f6f99e8130a4ff03e20973750ec0882815881ccd8fb32edb556b",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "1ea502de2432f6f99e8130a4ff03e20973750ec0882815881ccd8fb32edb556b",
+        "decoded": true
+      }
+    },
+    {
+      "index": 40,
+      "payloadSha256": "57fb24d48c23fb4ba32ad3437fb839e2f5b49937218329175ac90bbf686b0033",
+      "base": {
+        "imageSha256": "1fb6948e0b7521430e58457143206c4646493ca8ef78d7deb8142e0f2ac7c29a",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "1fb6948e0b7521430e58457143206c4646493ca8ef78d7deb8142e0f2ac7c29a",
+        "decoded": true
+      }
+    },
+    {
+      "index": 41,
+      "payloadSha256": "7715e052b29791426e26b82cbad6a7a07d1ca200cfa4b92fdc898e71c04c04b8",
+      "base": {
+        "imageSha256": "f802e5111800e92245c179eca92ca80ed1cd2b5954bc6efee4075adea8316331",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "f802e5111800e92245c179eca92ca80ed1cd2b5954bc6efee4075adea8316331",
+        "decoded": true
+      }
+    },
+    {
+      "index": 42,
+      "payloadSha256": "9bd9fcec1379ef16bc27fde65a07451ad65dfa68a2eea88b0028448a86530268",
+      "base": {
+        "imageSha256": "fe841a1faf084abf11d41791686d5525d5483694ca3aa259d87c2670898d42d0",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "fe841a1faf084abf11d41791686d5525d5483694ca3aa259d87c2670898d42d0",
+        "decoded": true
+      }
+    },
+    {
+      "index": 43,
+      "payloadSha256": "cb45ac8bc7cfc4145ff14b1a6fd8876c123356f860c952d0bc45fc6b9b06c823",
+      "base": {
+        "imageSha256": "4902e7ca1b351029d0d1fe4971befea1dc9be7e1bef1d0153be585a9915aed3b",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "4902e7ca1b351029d0d1fe4971befea1dc9be7e1bef1d0153be585a9915aed3b",
+        "decoded": true
+      }
+    },
+    {
+      "index": 44,
+      "payloadSha256": "e6d0fa6b7bf75ee651bf049c5350527e3c4894da11769b5b60ae9309f2ff0299",
+      "base": {
+        "imageSha256": "6dd97febf34de66fadb5bfbe6b3378b83fea42f2304c2ff655a896595f2fda92",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "6dd97febf34de66fadb5bfbe6b3378b83fea42f2304c2ff655a896595f2fda92",
+        "decoded": true
+      }
+    },
+    {
+      "index": 45,
+      "payloadSha256": "d0034e720859a5d2e02036a77e8666a1f9c25b72d92a9f030eeb2a9affebba52",
+      "base": {
+        "imageSha256": "ed817c50a1b15099119704f969c2d1125ac3c775dcb4e59ff008ad29c27f1b59",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "ed817c50a1b15099119704f969c2d1125ac3c775dcb4e59ff008ad29c27f1b59",
+        "decoded": true
+      }
+    },
+    {
+      "index": 46,
+      "payloadSha256": "afbd0d1271d6a4811f24727859110d4f5d3444ead3e248f6884bf45d3c4c9ef2",
+      "base": {
+        "imageSha256": "369af3a262001ef6d2440c269b1aa73a00905689840a062cc1817c3c940f7981",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "369af3a262001ef6d2440c269b1aa73a00905689840a062cc1817c3c940f7981",
+        "decoded": true
+      }
+    },
+    {
+      "index": 47,
+      "payloadSha256": "c23473b3c4ed0e78e5d5b91b50fefe6bb83467f3fc24e21a721131cb9a5cb753",
+      "base": {
+        "imageSha256": "e5fdffe323fd13e5d9ed2c3d0b9f6403927151f5d688167613104a3a741d4cb4",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "e5fdffe323fd13e5d9ed2c3d0b9f6403927151f5d688167613104a3a741d4cb4",
+        "decoded": true
+      }
+    },
+    {
+      "index": 48,
+      "payloadSha256": "608ee0e0e3a4d9f98333c694157fb682f2293d5504a9dc761656c7ceb4eea6f3",
+      "base": {
+        "imageSha256": "1540d0a0b359e9d5f2d91b95475f68214f5c89b2407a9f0db0453bb20033e5fb",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "1540d0a0b359e9d5f2d91b95475f68214f5c89b2407a9f0db0453bb20033e5fb",
+        "decoded": true
+      }
+    },
+    {
+      "index": 49,
+      "payloadSha256": "5a00ff8b78438dfe5e16ba505f515cf822c0772e2c8e98e4c3bc1b734de86070",
+      "base": {
+        "imageSha256": "5e8751fc4a3ca3a02466f8870a6a75ea620454c5833fc6692dfea7271af5d34c",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "5e8751fc4a3ca3a02466f8870a6a75ea620454c5833fc6692dfea7271af5d34c",
+        "decoded": true
+      }
+    },
+    {
+      "index": 50,
+      "payloadSha256": "aa2af39e2975c1d8456072000ba18187ea4751b35524e2da36dcc9e1480068f3",
+      "base": {
+        "imageSha256": "89373730e4110d63a8950d1d8aaf5dc5a83c9552479d31acb1f4555e0572c6fd",
+        "decoded": false
+      },
+      "head": {
+        "imageSha256": "89373730e4110d63a8950d1d8aaf5dc5a83c9552479d31acb1f4555e0572c6fd",
+        "decoded": false
+      }
+    },
+    {
+      "index": 51,
+      "payloadSha256": "5a73b28e61a0e8e27a4fc76f460fd48b1eb93bb3720ef8c2bc8dcb5bc68b6a89",
+      "base": {
+        "imageSha256": "4a0a510959a2abf3175ea190fa569975dcca88e4c6ca92ddb5f66d6e897efcbe",
+        "decoded": false,
+        "error": "D: No MultiFormat Readers were able to detect the code."
+      },
+      "head": {
+        "imageSha256": "4a0a510959a2abf3175ea190fa569975dcca88e4c6ca92ddb5f66d6e897efcbe",
+        "decoded": false,
+        "error": "D: No MultiFormat Readers were able to detect the code."
+      }
+    },
+    {
+      "index": 52,
+      "payloadSha256": "47d1825f7e941816ab55aa470b4d3a0f906381d59515c84b50087dd8d8bbd6cd",
+      "base": {
+        "imageSha256": "241c86e4467dadad0146b3830d08f6e43f2fb9b70a40ccfd25d0b9253a1dc25b",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "241c86e4467dadad0146b3830d08f6e43f2fb9b70a40ccfd25d0b9253a1dc25b",
+        "decoded": true
+      }
+    },
+    {
+      "index": 53,
+      "payloadSha256": "3fc63ccb89af361614922568a87f1b2a8054b2f2192fee74e528af0c2ae20bc5",
+      "base": {
+        "imageSha256": "79d1313122dd9eb762c58a10aced249c005b88403469ea58d1c4bc52c03bc0f9",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "79d1313122dd9eb762c58a10aced249c005b88403469ea58d1c4bc52c03bc0f9",
+        "decoded": true
+      }
+    },
+    {
+      "index": 54,
+      "payloadSha256": "3d9b663b08936718c67cadd45c884746fd092ac878d32f45d87407ebb4273510",
+      "base": {
+        "imageSha256": "707e9ed712082219bed7b52f9d1e34d9d4c724b5421a819a2b6f178060f1fa84",
+        "decoded": false,
+        "error": "D: No MultiFormat Readers were able to detect the code."
+      },
+      "head": {
+        "imageSha256": "707e9ed712082219bed7b52f9d1e34d9d4c724b5421a819a2b6f178060f1fa84",
+        "decoded": false,
+        "error": "D: No MultiFormat Readers were able to detect the code."
+      }
+    },
+    {
+      "index": 55,
+      "payloadSha256": "12943ef5c7a50fb2b84250972439c1d673df2c95e98bde0b26345e4073642c2d",
+      "base": {
+        "imageSha256": "52bf935da5cd6c19cc1a9aadb21069096514b4b3ae6617611f958bb9b920080c",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "52bf935da5cd6c19cc1a9aadb21069096514b4b3ae6617611f958bb9b920080c",
+        "decoded": true
+      }
+    },
+    {
+      "index": 56,
+      "payloadSha256": "a7690dda56bbef5489368739bc95a8ab5ec3de0fa0bdaa609f9277ae7452f58d",
+      "base": {
+        "imageSha256": "e6efc1fea6213248a5488c0094227f8b2a50b0d4b2c54ffc124f7a736c4503f1",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "e6efc1fea6213248a5488c0094227f8b2a50b0d4b2c54ffc124f7a736c4503f1",
+        "decoded": true
+      }
+    },
+    {
+      "index": 57,
+      "payloadSha256": "ec61e1ec6ac1df041140d8bd4f6c719b77efdcf14874df180d93d162fcd1ad77",
+      "base": {
+        "imageSha256": "eb8de8fec3424eb0813f46fad75d0bbce4dee30a4019f159213341901c865d30",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "eb8de8fec3424eb0813f46fad75d0bbce4dee30a4019f159213341901c865d30",
+        "decoded": true
+      }
+    },
+    {
+      "index": 58,
+      "payloadSha256": "36824c2b42408022b848ee594027c2c956ec6db6f1415675cb69963c43a52470",
+      "base": {
+        "imageSha256": "e590d3993dfaec59ec9e480036f94506d41a32dc0d347f3cc04d27db79595b04",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "e590d3993dfaec59ec9e480036f94506d41a32dc0d347f3cc04d27db79595b04",
+        "decoded": true
+      }
+    },
+    {
+      "index": 59,
+      "payloadSha256": "9bae36d82238b69f776c42030ebf01ac46b5b4180d53cb8a0bdfe9e5ece1f562",
+      "base": {
+        "imageSha256": "655e9ba71a706c472c5044280a2d5858e54d226c28b179ba8dc94d1b723d0a56",
+        "decoded": true
+      },
+      "head": {
+        "imageSha256": "655e9ba71a706c472c5044280a2d5858e54d226c28b179ba8dc94d1b723d0a56",
+        "decoded": true
+      }
+    }
+  ],
+  "classification": "Existing baseline image/decoder-harness failure reproduced with identical inputs/raster on base and PR; no PR-caused regression at this failing step. Exact deeper decoder/raster cause unresolved.",
+  "renderProps": {
+    "base": {
+      "size": 256,
+      "marginSize": 4,
+      "level": "M",
+      "style": {
+        "width": 256,
+        "height": 256,
+        "maxWidth": "100%"
+      }
+    },
+    "head": {
+      "size": 256,
+      "marginSize": 4,
+      "level": "M",
+      "style": {
+        "width": 256,
+        "height": 256,
+        "maxWidth": "100%"
+      }
+    }
+  },
+  "libraryVersions": {
+    "react": "19.2.8",
+    "reactDom": "19.2.8",
+    "html5Qrcode": "2.3.8",
+    "qrcodeReact": "4.2.0",
+    "playwright": "1.62.1"
+  },
+  "results": {
+    "matchedFixtures": 60,
+    "baseFailures": 7,
+    "headFailures": 7,
+    "identicalRasterAndOutcomes": true
+  },
+  "integrationPolicy": {
+    "protectionRequired": false,
+    "proof": "GraphQL current PR status checks isRequired=false; protection5 excludes S30",
+    "deployment": "watcher rejects any reported non-success check for the exact developSHA. This workflow does not trigger on develop push; PR check presence does not add a Sprint1 AC. No policy or assertion disabled."
+  },
+  "followup": {
+    "severity": "Medium; nondeterministic repository regression check blocks a fully green PR; image reliability needs separate S30 investigation",
+    "files": [
+      "apps/web/scripts/verify-s30-signed-browser.mjs:198",
+      "apps/web/src/features/order-review/signed-tickets.tsx:114"
+    ],
+    "proposal": "Separate S30 task/PR: retain failing payload fixtures privately, compare SVG rasterization and bundled decoder; validate proposed fix on matched failing images and actual desktop/mobile/camera separately. Do not rescale, select payloads, retry-to-green or weaken assertions in Sprint1."
+  },
+  "reproductionOnThisLaptop": {
+    "driver": ".sprint1-local/compare-s30-base-head.mjs",
+    "privateFixtureSet": ".sprint1-local/s30-comparison-fixtures.json",
+    "publicReport": "Hashes/outcomes only; no QR payload/session/private key published",
+    "noQrSourceOrTestAssertionsChanged": true
+  }
+}

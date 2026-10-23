@@ -1,0 +1,120 @@
+[
+  {
+    "id": "S-38-AC01",
+    "requirement_id": "S-38",
+    "kind": "AC",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Xem vé của tôi trong tài khoản và tải lại mã QR",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L40"
+    },
+    "original_requirement": "Giả sử tôi có vé cho suất sắp tới, Khi mở mục \"vé của tôi\", Thì thấy vé sắp diễn lên trước, vé đã qua xếp sau",
+    "fixture": "Vé tương lai/quá khứ/huỷ/chuyển nhượng; QR có thể tải.",
+    "surfaces": "/account/tickets; GET /tickets/me",
+    "code_candidates": "apps/web/src/features/tickets/my-tickets.tsx; apps/api/src/tickets/",
+    "test_candidates": "tickets.e2e-spec.ts; ticket-qr-image.tsx",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi có vé cho suất sắp tới.",
+      "Thực hiện trên /account/tickets; GET /tickets/me: mở mục \"vé của tôi\".",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Kiểm thứ tự sắp diễn trước, đã qua sau; tải ảnh QR và quét lại từ điện thoại. Vé huỷ phải mờ không QR; người B không lấy ảnh/QR vé A qua URL trực tiếp hoặc cache browser.",
+    "expected": [
+      "thấy vé sắp diễn lên trước, vé đã qua xếp sau"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-38-AC02",
+    "requirement_id": "S-38",
+    "kind": "AC",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Xem vé của tôi trong tài khoản và tải lại mã QR",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L40"
+    },
+    "original_requirement": "Giả sử tôi mở một vé, Khi trang hiện, Thì QR đủ lớn để quét từ màn hình điện thoại và có nút tải ảnh",
+    "fixture": "Vé tương lai/quá khứ/huỷ/chuyển nhượng; QR có thể tải.",
+    "surfaces": "/account/tickets; GET /tickets/me",
+    "code_candidates": "apps/web/src/features/tickets/my-tickets.tsx; apps/api/src/tickets/",
+    "test_candidates": "tickets.e2e-spec.ts; ticket-qr-image.tsx",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi mở một vé.",
+      "Thực hiện trên /account/tickets; GET /tickets/me: trang hiện.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Kiểm thứ tự sắp diễn trước, đã qua sau; tải ảnh QR và quét lại từ điện thoại. Vé huỷ phải mờ không QR; người B không lấy ảnh/QR vé A qua URL trực tiếp hoặc cache browser.",
+    "expected": [
+      "QR đủ lớn để quét từ màn hình điện thoại và có nút tải ảnh"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-38-NFR",
+    "requirement_id": "S-38",
+    "kind": "NFR",
+    "group": "Vé",
+    "tier": "Next",
+    "priority": "Should",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Xem vé của tôi trong tài khoản và tải lại mã QR — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N40"
+    },
+    "original_requirement": "vé đã huỷ hiện mờ và không có QR. Ước lượng thô 2 SP — tier Next",
+    "fixture": "Vé tương lai/quá khứ/huỷ/chuyển nhượng; QR có thể tải.",
+    "surfaces": "/account/tickets; GET /tickets/me",
+    "code_candidates": "apps/web/src/features/tickets/my-tickets.tsx; apps/api/src/tickets/",
+    "test_candidates": "tickets.e2e-spec.ts; ticket-qr-image.tsx",
+    "steps": [
+      "Kiểm thứ tự sắp diễn trước, đã qua sau; tải ảnh QR và quét lại từ điện thoại. Vé huỷ phải mờ không QR; người B không lấy ảnh/QR vé A qua URL trực tiếp hoặc cache browser.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "vé đã huỷ hiện mờ và không có QR. Ước lượng thô 2 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

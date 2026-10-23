@@ -1,0 +1,78 @@
+{
+  "source": "038f8baff4c175e88c53b19a553105be15735dec",
+  "approvedTreeEqualsMergedTree": true,
+  "pullRequest": {
+    "baseRefOid": "90188e572d41d3f95e1dac13a42256260fd68a22",
+    "headRefOid": "0bc47dc54c3977d4598da8c7d6e48a23a7c6f15e",
+    "mergeCommit": {
+      "oid": "038f8baff4c175e88c53b19a553105be15735dec"
+    },
+    "mergedAt": "2026-10-17T00:46:15Z",
+    "mergedBy": {
+      "id": "U_kgDODNLCNQ",
+      "is_bot": false,
+      "login": "thuytrang158",
+      "name": ""
+    },
+    "reviews": [
+      {
+        "id": "PRR_kwDOUttVO88AAAABSxlubQ",
+        "author": {
+          "login": "thuytrang158"
+        },
+        "authorAssociation": "MEMBER",
+        "body": "",
+        "submittedAt": "2026-10-17T00:01:52Z",
+        "includesCreatedEdit": false,
+        "reactionGroups": [],
+        "state": "APPROVED",
+        "commit": {
+          "oid": "0bc47dc54c3977d4598da8c7d6e48a23a7c6f15e"
+        }
+      }
+    ],
+    "state": "MERGED",
+    "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/pull/96"
+  },
+  "ci": {
+    "conclusion": "success",
+    "createdAt": "2026-10-17T00:46:18Z",
+    "headSha": "038f8baff4c175e88c53b19a553105be15735dec",
+    "jobs": [
+      {
+        "name": "T-02 / build-and-typecheck",
+        "conclusion": "success",
+        "startedAt": "2026-10-17T00:46:21Z",
+        "completedAt": "2026-10-17T00:47:15Z"
+      },
+      {
+        "name": "T-02 / test",
+        "conclusion": "success",
+        "startedAt": "2026-10-17T00:46:21Z",
+        "completedAt": "2026-10-17T00:47:55Z"
+      },
+      {
+        "name": "T-02 / lint",
+        "conclusion": "success",
+        "startedAt": "2026-10-17T00:46:21Z",
+        "completedAt": "2026-10-17T00:46:52Z"
+      },
+      {
+        "name": "K-01 / candidate-research",
+        "conclusion": "success",
+        "startedAt": "2026-10-17T00:47:58Z",
+        "completedAt": "2026-10-17T00:48:34Z"
+      },
+      {
+        "name": "T-31 / hold-concurrency",
+        "conclusion": "success",
+        "startedAt": "2026-10-17T00:47:58Z",
+        "completedAt": "2026-10-17T00:50:11Z"
+      }
+    ],
+    "updatedAt": "2026-10-17T00:50:11Z",
+    "url": "https://github.com/TTCS-T926-K19C5-N2/thudemo/actions/runs/38987895447",
+    "wallSeconds": 233.0
+  },
+  "result": "PASS"
+}

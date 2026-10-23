@@ -1,0 +1,15 @@
+{
+  "runId": "20261022T230000-remediation",
+  "roundCount": 10,
+  "requestSamples": 2000,
+  "totalSuccess": 1000,
+  "totalConflict": 1000,
+  "totalRateLimited": 0,
+  "totalOtherErrors": 0,
+  "overallLatencyMs": {
+    "p95": 302.0233000000003,
+    "max": 434.8323999999998
+  },
+  "sqlOracleAllRounds": true,
+  "roundCountsAllPass": true
+}

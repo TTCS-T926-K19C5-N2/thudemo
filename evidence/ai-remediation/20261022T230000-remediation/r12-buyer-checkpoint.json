@@ -1,0 +1,112 @@
+{
+  "runId": "20261022T230000-remediation",
+  "recordedLocal": "2026-10-23T03:33:33.993Z",
+  "slice": "S-56 buyer coupon workflow",
+  "statuses": {
+    "S-56-AC01": "MISSING",
+    "S-56-AC01.07": "PASS",
+    "BUG-S56-01": "FIXED/VERIFIED local"
+  },
+  "browser": {
+    "checks": 8,
+    "invalidCouponHttp": 400,
+    "applyHttp": 200,
+    "removeHttp": 200,
+    "desktopApplied": true,
+    "mobileRemoved": true,
+    "pageErrors": 0
+  },
+  "pricing": {
+    "subtotal": 101,
+    "discount": 10,
+    "payable": 91,
+    "afterRemoval": {
+      "subtotal": 101,
+      "discount": 0,
+      "payable": 101
+    }
+  },
+  "databaseOracle": {
+    "runId": "20261022T230000-remediation",
+    "verified": true,
+    "subtotalAmount": 101,
+    "discountAmount": 0,
+    "totalAmount": 101,
+    "couponId": null,
+    "redemptionStatus": "RELEASED",
+    "paymentCount": 0
+  },
+  "regression": {
+    "apiUnit": "60 files / 471 tests PASS",
+    "couponE2E": "1 file / 4 tests PASS",
+    "apiTypecheck": "PASS",
+    "apiBuild": "PASS",
+    "apiLint": "PASS with existing warnings; newly added unused variable removed",
+    "fullApiE2E": "22 files / 127 tests PASS"
+  },
+  "fixtureCleanup": "PASS",
+  "limitations": [
+    "isolated local only",
+    "provider sandbox not tested",
+    "expired/not-yet-valid coupon boundary cases remain",
+    "D12 refund/report allocation requires user decision"
+  ],
+  "evidence": [
+    "s56-buyer-browser.json",
+    "s56-browser-db-oracle.json",
+    "s56-buyer-coupon-applied-desktop.png",
+    "s56-buyer-coupon-removed-mobile.png",
+    "s56-browser-fixture-seed.log",
+    "s56-browser-fixture-verify.log",
+    "s56-browser-fixture-cleanup.log",
+    "apps/api/src/orders/order-history.service.ts",
+    "apps/api/src/orders/order-history.service.spec.ts",
+    "apps/api/scripts/ai-remediation-s56-browser-fixture.mjs",
+    "apps/api/scripts/ai-remediation-profile.mjs",
+    "apps/web/scripts/ai-remediation-s56-buyer-browser.mjs",
+    "r12-api-build-coupon-response.log",
+    "r12-api-unit-current.log",
+    "r12-api-unit-current.exitcode",
+    "r12-api-lint-current.log",
+    "r12-api-lint-current.exitcode",
+    "e2e.log",
+    "e2e.exitcode",
+    "bugs.md",
+    "bug-retest.md",
+    "r12-full-api-e2e-after-d12.log",
+    "r12-full-api-e2e-after-d12.exitcode",
+    "r12-api-unit-post-d12.log",
+    "r12-api-typecheck-post-d12.log",
+    "r12-api-build-post-d12.log",
+    "r12-api-lint-post-d12.log"
+  ],
+  "ownerManagement": {
+    "ownerList": 200,
+    "ownerUpdate": 200,
+    "differentOrganizerUpdate": 403,
+    "buyerRoleCreate": 403,
+    "invalidExpiry": 400,
+    "deactivate": 200,
+    "inactiveVisible": true,
+    "ui": "Organizer create/deactivate passed desktop and mobile viewport checks"
+  },
+  "limits": [
+    "isolated local only",
+    "provider sandbox not tested",
+    "partial refund/item selection not supported by existing whole-order cancellation flow"
+  ],
+  "decisionD12": {
+    "status": "APPROVED_USER",
+    "choice": "Proportional per ticket; floor each share and distribute leftover VND one by one in ascending ticket-code order.",
+    "evidence": [
+      "reports.service.spec.ts",
+      "e2e.log"
+    ]
+  },
+  "refundAllocation": {
+    "implementation": "Coupon discount allocation uses integer VND proportional floor and ticket-code ordered remainder.",
+    "unit": "reports.service.spec.ts: 6 tests PASS",
+    "postgresE2e": "lifecycle-cancellation.e2e-spec.ts: 6 tests PASS; full-order discounted cancellation reconciles gross 250000 - discount 1 - refunded 249999 = net 0.",
+    "limitation": "No partial-refund API or item-level refund selection exists; not demonstrated."
+  }
+}

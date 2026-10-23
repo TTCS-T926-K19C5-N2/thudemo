@@ -1,0 +1,33 @@
+{
+  "source": {
+    "rows": 500,
+    "PASS": 162,
+    "FAIL": 0,
+    "NOT_RUN": 326,
+    "BLOCKED": 6,
+    "NEEDS_DECISION": 5,
+    "MISSING": 1,
+    "NOT_APPLICABLE": 0
+  },
+  "supplemental": {
+    "rows": 21,
+    "PASS": 18,
+    "FAIL": 0,
+    "NOT_RUN": 0,
+    "BLOCKED": 3,
+    "NEEDS_DECISION": 0,
+    "MISSING": 0,
+    "NOT_APPLICABLE": 0
+  },
+  "combined": {
+    "rows": 521,
+    "PASS": 180,
+    "FAIL": 0,
+    "NOT_RUN": 326,
+    "BLOCKED": 9,
+    "NEEDS_DECISION": 5,
+    "MISSING": 1,
+    "NOT_APPLICABLE": 0
+  },
+  "readyMustNonPass": 90
+}

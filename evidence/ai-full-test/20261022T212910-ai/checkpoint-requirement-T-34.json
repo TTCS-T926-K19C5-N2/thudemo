@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-34-AC",
+    "requirement_id": "T-34",
+    "parent_requirement": "S-15",
+    "kind": "TASK_AC",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Cột giá trên `seat_categories` kèm migration",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G35"
+    },
+    "original_requirement": "Migration tiến và lùi được; mở bán khi còn hạng chưa có giá thì hàm ở T-15 từ chối kèm tên hạng",
+    "fixture": "3 hạng VIP/STD/ECO; giá 200000/100000/50000; đơn pending giá cũ.",
+    "surfaces": "PATCH /showtimes/:id/prices",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/seat-pricing/",
+    "test_candidates": "s15-s16-acceptance.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Nhập/lưu giá, hover/click ghế. Thử âm, chữ, số thập phân và thiếu giá; kiểm phía server. Đổi giá sau khi có order: order cũ không đổi, order tạo sau dùng giá mới. Kiểm schema integer VND, hiển thị 200.000.",
+      "Kiểm riêng tiêu chí task T-34: Migration tiến và lùi được; mở bán khi còn hạng chưa có giá thì hàm ở T-15 từ chối kèm tên hạng",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Migration tiến và lùi được; mở bán khi còn hạng chưa có giá thì hàm ở T-15 từ chối kèm tên hạng"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-34-NFR",
+    "requirement_id": "T-34",
+    "parent_requirement": "S-15",
+    "kind": "TASK_NFR",
+    "group": "Sơ đồ và giá",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Cột giá trên `seat_categories` kèm migration",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I35"
+    },
+    "original_requirement": "không dùng kiểu số thực cho tiền",
+    "fixture": "3 hạng VIP/STD/ECO; giá 200000/100000/50000; đơn pending giá cũ.",
+    "surfaces": "PATCH /showtimes/:id/prices",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/seat-pricing/",
+    "test_candidates": "s15-s16-acceptance.e2e-spec.ts; showtimes.service.spec.ts",
+    "steps": [
+      "Nhập/lưu giá, hover/click ghế. Thử âm, chữ, số thập phân và thiếu giá; kiểm phía server. Đổi giá sau khi có order: order cũ không đổi, order tạo sau dùng giá mới. Kiểm schema integer VND, hiển thị 200.000.",
+      "Kiểm riêng tiêu chí task T-34: không dùng kiểu số thực cho tiền",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "không dùng kiểu số thực cho tiền"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

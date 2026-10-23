@@ -1,0 +1,166 @@
+{
+  "run": "R58",
+  "profile": "s1demo-384da3d43b41",
+  "showtimeId": "914556a8-ba19-4766-9e20-00a3d93df432",
+  "seat": "A-3",
+  "twoDistinctBuyers": true,
+  "initialBothAvailable": true,
+  "ownerHoldConfirmed": true,
+  "staleClientStreamBlocked": true,
+  "staleSelectionSubmitted": true,
+  "rejectedPost": {
+    "buyer": 1,
+    "method": "POST",
+    "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+    "status": 409
+  },
+  "conflictMessage": true,
+  "mapAutoUpdated": true,
+  "ownerReleased": true,
+  "before": {
+    "orders": 5,
+    "tickets": 5,
+    "holds": 0,
+    "sessions": 4
+  },
+  "after": {
+    "orders": 5,
+    "tickets": 5,
+    "holds": 0,
+    "sessions": 4
+  },
+  "countsRestored": true,
+  "http": [
+    {
+      "buyer": 0,
+      "method": "GET",
+      "path": "/shows/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+      "status": 200
+    },
+    {
+      "buyer": 0,
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 200
+    },
+    {
+      "buyer": 0,
+      "method": "GET",
+      "path": "/shows/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+      "status": 200
+    },
+    {
+      "buyer": 0,
+      "method": "GET",
+      "path": "/shows/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+      "status": 200
+    },
+    {
+      "buyer": 0,
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+      "status": 200
+    },
+    {
+      "buyer": 0,
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "buyer": 0,
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/seats/stream",
+      "status": 200
+    },
+    {
+      "buyer": 1,
+      "method": "GET",
+      "path": "/shows/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+      "status": 200
+    },
+    {
+      "buyer": 1,
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 200
+    },
+    {
+      "buyer": 1,
+      "method": "GET",
+      "path": "/shows/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+      "status": 200
+    },
+    {
+      "buyer": 1,
+      "method": "GET",
+      "path": "/shows/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+      "status": 200
+    },
+    {
+      "buyer": 1,
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+      "status": 200
+    },
+    {
+      "buyer": 1,
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "buyer": 0,
+      "method": "POST",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "buyer": 0,
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+      "status": 200
+    },
+    {
+      "buyer": 0,
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "buyer": 1,
+      "method": "POST",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 409
+    },
+    {
+      "buyer": 1,
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+      "status": 200
+    },
+    {
+      "buyer": 1,
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "buyer": 0,
+      "method": "DELETE",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds/43b1ed36-e35f-483b-b2a4-7ec4ba86ce79",
+      "status": 200
+    },
+    {
+      "buyer": 0,
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "evidence": [
+    "r58-buyer-a-held-seat.png",
+    "r58-buyer-b-conflict.png"
+  ]
+}

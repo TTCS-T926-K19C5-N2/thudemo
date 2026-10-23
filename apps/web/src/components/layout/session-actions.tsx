@@ -21,7 +21,6 @@ export function SessionActions({ accountLink = true }: SessionActionsProps) {
       const response = await fetch("/api/auth/logout", { method: "POST" });
       if (!response.ok) throw new Error();
       notifySessionChanged();
-      // A new document drops the router's in-memory private route history.
       window.location.replace("/login");
     } catch {
       setError("Không thể đăng xuất. Hãy thử lại.");
@@ -32,7 +31,7 @@ export function SessionActions({ accountLink = true }: SessionActionsProps) {
   return (
     <div className="session-actions">
       <Link href="/orders" className="session-orders-link">
-        Đơn hàng của tôi
+        Đơn hàng
       </Link>
       {accountLink && (
         <Link href="/account">

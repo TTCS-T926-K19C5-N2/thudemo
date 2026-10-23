@@ -1,0 +1,9 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "One Chromium context, same persistent IndexedDB across reloads, isolated PostgreSQL/API; role and active mutations scoped to synthetic fixture; no real provider or email.",
+  "stages": [],
+  "api": [],
+  "pageErrors": [],
+  "screenshots": [],
+  "failure": "locator.fill: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('Hoặc nhập mã vé')\u001b[22m\n\u001b[2m    - locator resolved to <input disabled value=\"\" id=\"ticket-code\" autocomplete=\"off\" class=\"min-w-0 flex-1 rounded-md border bg-background px-3 py-2 font-mono\"/>\u001b[22m\n\u001b[2m    - fill(\"ET1.Ed25519.ai-remediation.ca0d25b2-a47d-4a1d-ae50-ad754104986b.fe3d521c-e7fb-4b11-88f9-666b53005ea7.WiM79DwGvf9m976Zi39bHWpkebese5e2vOQ6QVdF-Lg2oxj0_m2kdfMP6hjAfTvRiTR3A3VwryUSKknQpOFZAA\")\u001b[22m\n\u001b[2m  - attempting fill action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying fill action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+}

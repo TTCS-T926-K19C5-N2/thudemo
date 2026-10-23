@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-30-AC",
+    "requirement_id": "T-30",
+    "parent_requirement": "S-13",
+    "kind": "TASK_AC",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Đổi lỗi vi phạm ràng buộc thành phản hồi 409 kèm danh sách ghế bị từ chối",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G31"
+    },
+    "original_requirement": "Giữ ghế đã có người thì nhận 409 kèm danh sách ghế bị từ chối, không phải 500; log ghi mỗi lần tranh chấp",
+    "fixture": "100 ghế; 200 request, đúng 2 người/request cạnh tranh mỗi ghế, quota đủ cao.",
+    "surfaces": "API hold và ràng buộc PostgreSQL",
+    "code_candidates": "apps/api/src/prisma/hold-transaction.ts; apps/api/prisma/migrations/",
+    "test_candidates": "apps/api/test/k01-benchmark.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Đồng bộ barrier cho 200 request tranh 100 ghế, đúng 100 thành công và 100 conflict, lặp 10 vòng với dữ liệu mới. Thử 5 ghế có ghế thứ 3 bận phải rollback cả 5; thử hold cũ hết hạn và chèn SQL cạnh tranh để chứng minh DB bảo vệ.",
+      "Kiểm riêng tiêu chí task T-30: Giữ ghế đã có người thì nhận 409 kèm danh sách ghế bị từ chối, không phải 500; log ghi mỗi lần tranh chấp",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Giữ ghế đã có người thì nhận 409 kèm danh sách ghế bị từ chối, không phải 500; log ghi mỗi lần tranh chấp"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-30-NFR",
+    "requirement_id": "T-30",
+    "parent_requirement": "S-13",
+    "kind": "TASK_NFR",
+    "group": "Giữ ghế",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Đổi lỗi vi phạm ràng buộc thành phản hồi 409 kèm danh sách ghế bị từ chối",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I31"
+    },
+    "original_requirement": "không nuốt lỗi — mọi lần từ chối đều ghi log để đếm được tần suất tranh chấp",
+    "fixture": "100 ghế; 200 request, đúng 2 người/request cạnh tranh mỗi ghế, quota đủ cao.",
+    "surfaces": "API hold và ràng buộc PostgreSQL",
+    "code_candidates": "apps/api/src/prisma/hold-transaction.ts; apps/api/prisma/migrations/",
+    "test_candidates": "apps/api/test/k01-benchmark.ts; seat-hold-api.e2e-spec.ts",
+    "steps": [
+      "Đồng bộ barrier cho 200 request tranh 100 ghế, đúng 100 thành công và 100 conflict, lặp 10 vòng với dữ liệu mới. Thử 5 ghế có ghế thứ 3 bận phải rollback cả 5; thử hold cũ hết hạn và chèn SQL cạnh tranh để chứng minh DB bảo vệ.",
+      "Kiểm riêng tiêu chí task T-30: không nuốt lỗi — mọi lần từ chối đều ghi log để đếm được tần suất tranh chấp",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "không nuốt lỗi — mọi lần từ chối đều ghi log để đếm được tần suất tranh chấp"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

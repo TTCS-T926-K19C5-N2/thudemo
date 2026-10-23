@@ -1,0 +1,70 @@
+{
+  "recordedAt": "2026-10-23T06:54:32.7796823Z",
+  "profile": "s1demo-384da3d43b41",
+  "sourceTree": "Prepared clean file tree rebuilt after current public-session UI fix",
+  "fixture": {
+    "event": "Bệnh sĩ",
+    "showtime": "scanner rehearsal 2026-10-23 15:00 local",
+    "showtimeId": "6ce1aa53-fc92-42de-ae37-46a7b09ad408",
+    "seat": "A-1",
+    "priceVnd": 580000,
+    "sourceScheduleDatesPreserved": true
+  },
+  "procedure": [
+    "Buyer signed in through local UI and account page confirmed the synthetic BUYER role.",
+    "On this ON_SALE rehearsal seat map, A-1 changed from available to selected through mouse interaction.",
+    "Clicking Giữ ghế returned server-confirmed state, 10-minute timer, and 119/120 available.",
+    "Independent PostgreSQL query during active hold returned 120 seats, 0 sold, 1 seat_holds row, and A-1 held.",
+    "Clicking Bỏ ghế returned the seat to available; PostgreSQL query after response returned 120 seats, 0 sold, 0 seat_holds rows, A-1 not held.",
+    "The public header showed orders/account/logout after source fix."
+  ],
+  "ui": {
+    "viewport": "desktop 1280x900",
+    "selection": "PASS",
+    "holdTimer": "09:57 / 09:53 from captured browser states",
+    "serverConfirmation": "PASS",
+    "release": "PASS",
+    "images": [
+      "seat-map-held-and-sold-desktop.png",
+      "seat-map-held-and-sold-mobile.png",
+      "seat-map-hold-active-current.png",
+      "seat-map-authenticated-mobile-current.png"
+    ],
+    "mobileHold": {
+      "viewport": "390x844",
+      "seat": "E-11",
+      "priceVnd": 380000,
+      "serverConfirmed": true,
+      "timer": "09:57 to 09:52 observed",
+      "available": "119/120",
+      "releaseUi": "120/120 after release",
+      "image": "seat-map-hold-mobile-current.png"
+    }
+  },
+  "database": {
+    "duringHold": "120|0|1|1",
+    "afterRelease": "120|0|0|0",
+    "columnOrder": "seat count | sold count | active hold rows | A-1 has active hold",
+    "ticketOrderPreserved": "Prior oracle records 1 paid order and 1 valid ticket; this test created no order/payment/ticket.",
+    "mobileHoldActive": "120|0|1|1 (seats|sold|active holds|E-11 held)",
+    "mobileAfterRelease": "120|0|0|0"
+  },
+  "cases": {
+    "S-09-AC01": "PASS: complete map showed available, held and sold seats with visually distinct color/symbols. UI screenshot plus current source DB/screenshot evidence.",
+    "S-09-AC02": "NOT_RUN: this retest did not use a distinct second buyer session to hold then reload the first buyer; do not infer from own hold.",
+    "S-10-AC01": "PASS: on desktop and 390x844 mobile, UI selected available seat then server-confirmed 10-minute hold; independent PostgreSQL verified one live hold, then zero after UI release."
+  },
+  "limitations": [
+    "No second-browser ownership reload in this slice.",
+    "Concurrency and multi-seat expiry remain separate cases."
+  ],
+  "evidence": [
+    "seat-map-held-and-sold-desktop.png",
+    "seat-map-held-and-sold-mobile.png",
+    "seat-map-hold-active-current.png",
+    "post-restart-db-oracle.json",
+    "seat-map-hold-mobile-current.png",
+    "seat-map-authenticated-mobile-current.png"
+  ],
+  "publicHeaderFixEvidence": "public-session-header-verification.json"
+}

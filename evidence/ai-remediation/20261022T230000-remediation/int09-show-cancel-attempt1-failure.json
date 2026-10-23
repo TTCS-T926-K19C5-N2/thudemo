@@ -1,0 +1,12 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Isolated local API/PostgreSQL/Mailpit, two authenticated Chromium viewports; lifecycle worker explicitly off; synthetic fixture only.",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "http": [],
+  "errors": [],
+  "screenshots": [],
+  "failure": "page.waitForURL: Timeout 15000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"**/operations\" until \"load\"\n  navigated to \"http://127.0.0.1:3410/events\"\n============================================================"
+}

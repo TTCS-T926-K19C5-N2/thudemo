@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-35-AC01",
+    "requirement_id": "S-35",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Đồng bộ các lần quét ngoại tuyến lên máy chủ khi có mạng lại",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L37"
+    },
+    "original_requirement": "Giả sử máy có 40 lần quét trong hàng đợi, Khi có mạng lại, Thì tự đẩy lên theo lô và hàng đợi về 0",
+    "fixture": "40 scan duy nhất; timeout sau server commit; response một phần, 401/403/409/5xx.",
+    "surfaces": "POST /scanner/sync-scans",
+    "code_candidates": "apps/api/src/scanner/offline-admissions.service.ts; apps/web/src/features/ticket-scanner/sync-manager.ts",
+    "test_candidates": "offline-sync.spec.ts; scanner.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: máy có 40 lần quét trong hàng đợi.",
+      "Thực hiện trên POST /scanner/sync-scans: có mạng lại.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Sync lô 40, ngắt giữa chừng rồi nối lại; mỗi scanId được nhận một lần. Chỉ xoá queue khi server xác nhận bền từng mục; lỗi HTTP không làm mất scan. Đổi account không trộn queue người cũ; conflict được lưu chứ không ghi đè.",
+    "expected": [
+      "tự đẩy lên theo lô và hàng đợi về 0"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-35-AC02",
+    "requirement_id": "S-35",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Đồng bộ các lần quét ngoại tuyến lên máy chủ khi có mạng lại",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L37"
+    },
+    "original_requirement": "Giả sử đẩy lên bị ngắt giữa chừng, Khi có mạng lại lần nữa, Thì gửi tiếp phần còn lại và máy chủ không ghi trùng lần đã nhận — mỗi lần quét có mã duy nhất sinh trên thiết bị",
+    "fixture": "40 scan duy nhất; timeout sau server commit; response một phần, 401/403/409/5xx.",
+    "surfaces": "POST /scanner/sync-scans",
+    "code_candidates": "apps/api/src/scanner/offline-admissions.service.ts; apps/web/src/features/ticket-scanner/sync-manager.ts",
+    "test_candidates": "offline-sync.spec.ts; scanner.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: đẩy lên bị ngắt giữa chừng.",
+      "Thực hiện trên POST /scanner/sync-scans: có mạng lại lần nữa.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Sync lô 40, ngắt giữa chừng rồi nối lại; mỗi scanId được nhận một lần. Chỉ xoá queue khi server xác nhận bền từng mục; lỗi HTTP không làm mất scan. Đổi account không trộn queue người cũ; conflict được lưu chứ không ghi đè.",
+    "expected": [
+      "gửi tiếp phần còn lại và máy chủ không ghi trùng lần đã nhận — mỗi lần quét có mã duy nhất sinh trên thiết bị"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-35-AC03",
+    "requirement_id": "S-35",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Đồng bộ các lần quét ngoại tuyến lên máy chủ khi có mạng lại",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L37"
+    },
+    "original_requirement": "Giả sử máy chủ nhận lần quét cho vé đã vào trước đó ở cửa khác, Khi xử lý, Thì ghi nhận là xung đột để S-36 xử lý, không ghi đè",
+    "fixture": "40 scan duy nhất; timeout sau server commit; response một phần, 401/403/409/5xx.",
+    "surfaces": "POST /scanner/sync-scans",
+    "code_candidates": "apps/api/src/scanner/offline-admissions.service.ts; apps/web/src/features/ticket-scanner/sync-manager.ts",
+    "test_candidates": "offline-sync.spec.ts; scanner.service.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: máy chủ nhận lần quét cho vé đã vào trước đó ở cửa khác.",
+      "Thực hiện trên POST /scanner/sync-scans: xử lý.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Sync lô 40, ngắt giữa chừng rồi nối lại; mỗi scanId được nhận một lần. Chỉ xoá queue khi server xác nhận bền từng mục; lỗi HTTP không làm mất scan. Đổi account không trộn queue người cũ; conflict được lưu chứ không ghi đè.",
+    "expected": [
+      "ghi nhận là xung đột để S-36 xử lý, không ghi đè"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-35-NFR",
+    "requirement_id": "S-35",
+    "kind": "NFR",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Đồng bộ các lần quét ngoại tuyến lên máy chủ khi có mạng lại — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N37"
+    },
+    "original_requirement": "xử lý một lần quét nhiều lần cho kết quả giống xử lý một lần. Ước lượng thô 3 SP — tier Next",
+    "fixture": "40 scan duy nhất; timeout sau server commit; response một phần, 401/403/409/5xx.",
+    "surfaces": "POST /scanner/sync-scans",
+    "code_candidates": "apps/api/src/scanner/offline-admissions.service.ts; apps/web/src/features/ticket-scanner/sync-manager.ts",
+    "test_candidates": "offline-sync.spec.ts; scanner.service.spec.ts",
+    "steps": [
+      "Sync lô 40, ngắt giữa chừng rồi nối lại; mỗi scanId được nhận một lần. Chỉ xoá queue khi server xác nhận bền từng mục; lỗi HTTP không làm mất scan. Đổi account không trộn queue người cũ; conflict được lưu chứ không ghi đè.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "xử lý một lần quét nhiều lần cho kết quả giống xử lý một lần. Ước lượng thô 3 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

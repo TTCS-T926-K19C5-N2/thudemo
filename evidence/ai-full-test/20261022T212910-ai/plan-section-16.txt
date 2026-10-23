@@ -1,0 +1,10 @@
+## 16. Mẫu báo cáo chatbot phải trả
+
+```markdown
+# Báo cáo kiểm thử Codegym
+Run-id / thời gian / source fingerprint / workbook hash / môi trường:
+Kết luận: Đạt phạm vi ... / Chưa đủ điều kiện nghiệm thu ...
+
+| Nhóm/Tier | Tổng yêu cầu | Đã chạy | PASS | FAIL | BLOCKED | MISSING | NEEDS_DECISION | NOT_RUN |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+

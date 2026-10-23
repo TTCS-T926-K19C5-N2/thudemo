@@ -1,0 +1,78 @@
+{
+  "run": "R54",
+  "profile": "s1demo-384da3d43b41",
+  "account": "synthetic BUYER",
+  "showtimeId": "914556a8-ba19-4766-9e20-00a3d93df432",
+  "freshSessionCreated": true,
+  "sessionExpiredInDemoDb": true,
+  "apiAuthMeStatus": 401,
+  "browserRedirectedToLogin": true,
+  "returnToPreserved": true,
+  "relevantHttp": [
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 401
+    }
+  ],
+  "pageErrors": [],
+  "sessionFixtureCleaned": true,
+  "redisLockAndFailureStateRestored": true,
+  "businessCountsUnchanged": true,
+  "screenshot": "r54-expired-session-login-redirect.png"
+}

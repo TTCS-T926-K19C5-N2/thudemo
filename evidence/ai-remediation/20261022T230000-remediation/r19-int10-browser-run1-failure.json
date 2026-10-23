@@ -1,0 +1,9 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "One Chromium context, same persistent IndexedDB across reloads, isolated PostgreSQL/API; role and active mutations scoped to synthetic fixture; no real provider or email.",
+  "stages": [],
+  "api": [],
+  "pageErrors": [],
+  "screenshots": [],
+  "failure": "page.waitForFunction: Timeout 30000ms exceeded."
+}

@@ -1,0 +1,19 @@
+{
+  "capturedAt": "2026-10-23T08:27:30.515Z",
+  "profile": "s1demo-384da3d43b41",
+  "readOnlyOracle": {
+    "eventId": "53aa698e-b812-4bd4-a954-1e237545dde7",
+    "name": "AI-R39-S04-PAST-20261023T1530Z",
+    "status": "DRAFT",
+    "ownerRole": "organizer-b",
+    "showtimeCount": 0
+  },
+  "ui": {
+    "attemptedLocalDateTime": "2026-10-23T10:00",
+    "inputValueAfterFill": "",
+    "message": "Vui lòng chọn thời gian bắt đầu trong tương lai.",
+    "showtimeNotAdded": true
+  },
+  "cleanupEvidence": "s04-ac03-r39-cleanup.json",
+  "fixtureRemoved": true
+}\n

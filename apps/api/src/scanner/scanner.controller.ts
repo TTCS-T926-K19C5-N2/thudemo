@@ -1,4 +1,16 @@
-import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+  ParseUUIDPipe,
+  Header,
+} from '@nestjs/common';
 import {
   SessionAuthGuard,
   type AuthenticatedRequest,
@@ -6,11 +18,18 @@ import {
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { ScannerService } from './scanner.service.js';
+import { OfflineAdmissionsService } from './offline-admissions.service.js';
+import { ScannerSnapshotService } from './scanner-snapshot.service.js';
+import { orderPagination } from '../orders/order-pagination.js';
 
 @Controller('scanner')
 @UseGuards(SessionAuthGuard, RolesGuard)
 export class ScannerController {
-  constructor(private readonly scannerService: ScannerService) {}
+  constructor(
+    private readonly scannerService: ScannerService,
+    private readonly offline: OfflineAdmissionsService,
+    private readonly snapshots: ScannerSnapshotService,
+  ) {}
 
   @Get('qr-keys')
   @Roles('STAFF', 'ADMIN', 'ORGANIZER')
@@ -27,13 +46,54 @@ export class ScannerController {
     );
   }
 
+  @Get('showtimes/:showtimeId/attendance')
+  @Header('Cache-Control', 'private, no-store')
+  @Roles('STAFF', 'ADMIN', 'ORGANIZER')
+  async getAttendance(
+    @Param('showtimeId', ParseUUIDPipe) showtimeId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.scannerService.getAttendance(
+      showtimeId,
+      req.user.id,
+      req.user.roles,
+    );
+  }
+
   @Get('showtimes/:showtimeId/tickets')
+  @Header('Cache-Control', 'private, no-store')
   @Roles('STAFF', 'ADMIN', 'ORGANIZER')
   async getShowtimeTickets(
-    @Param('showtimeId') showtimeId: string,
+    @Param('showtimeId', ParseUUIDPipe) showtimeId: string,
     @Query('since') since: string | undefined,
     @Req() req: AuthenticatedRequest,
   ) {
-    return this.scannerService.getShowtimeTickets(showtimeId, since, req.user);
+    return this.snapshots.snapshot(showtimeId, since, req.user);
+  }
+
+  @Post('sync-scans')
+  @HttpCode(200)
+  @Roles('STAFF')
+  async syncOfflineScans(
+    @Body()
+    body: unknown,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.offline.sync(body, req);
+  }
+
+  @Get('showtimes/:showtimeId/conflicts')
+  @Header('Cache-Control', 'private, no-store')
+  @Roles('ADMIN', 'ORGANIZER')
+  conflicts(
+    @Param('showtimeId', ParseUUIDPipe) showtimeId: string,
+    @Req() req: AuthenticatedRequest,
+    @Query('page') page?: unknown,
+  ) {
+    return this.offline.conflicts(
+      showtimeId,
+      req,
+      orderPagination({ page, pageSize: '20' }),
+    );
   }
 }

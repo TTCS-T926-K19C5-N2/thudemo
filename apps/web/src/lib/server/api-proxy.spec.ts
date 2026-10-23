@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { proxyApi, upstreamUrl } from "./api-proxy";
+import { signLoginPeer, LOGIN_PEER_HEADER } from "shared/login-peer";
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
@@ -20,9 +21,12 @@ describe("Runtime same-origin API proxy", () => {
     ).toThrow();
   });
   it("forwards cookie and real origin, strips spoofed headers and preserves errors/cookies", async () => {
+    const secret = "test-only-peer-attestation-secret-32-characters";
+    vi.stubEnv("AUTH_PROXY_SECRET", secret);
     vi.stubEnv("API_INTERNAL_URL", "https://sang-api.onrender.com");
     const headers = new Headers({
       "content-type": "application/json",
+      "content-disposition": 'attachment; filename="report.pdf"',
       "retry-after": "60",
     });
     headers.append(
@@ -39,6 +43,7 @@ describe("Runtime same-origin API proxy", () => {
       new Request("https://sang-web.onrender.com/api/auth/login", {
         method: "POST",
         headers: {
+          [LOGIN_PEER_HEADER]: signLoginPeer("192.0.2.10", secret),
           origin: "https://sang-web.onrender.com",
           cookie: "session=fixture",
           "x-forwarded-host": "spoof",
@@ -50,12 +55,63 @@ describe("Runtime same-origin API proxy", () => {
     );
     expect(res.status).toBe(429);
     expect(res.headers.get("retry-after")).toBe("60");
+    expect(res.headers.get("content-disposition")).toBe('attachment; filename="report.pdf"');
     expect(res.headers.get("set-cookie")).toContain("HttpOnly");
     const forwarded = fetchMock.mock.calls[0][1].headers as Headers;
     expect(forwarded.get("origin")).toBe("https://sang-web.onrender.com");
     expect(forwarded.get("cookie")).toBe("session=fixture");
     expect(forwarded.has("x-forwarded-host")).toBe(false);
     expect(res.headers.get("cache-control")).toBe("no-store");
+  });
+  it("fails closed on missing or forged transport identity before forwarding login", async () => {
+    vi.stubEnv(
+      "AUTH_PROXY_SECRET",
+      "test-only-peer-attestation-secret-32-characters",
+    );
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    for (const value of ["", "forged"]) {
+      const res = await proxyApi(
+        new Request("http://localhost/api/auth/login", {
+          method: "POST",
+          headers: { [LOGIN_PEER_HEADER]: value },
+          body: "{}",
+        }),
+        ["auth", "login"],
+      );
+      expect(res.status).toBe(503);
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+  it("also requires attestation for case variants that Express accepts as login", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const result = await proxyApi(
+      new Request("http://localhost/api/Auth/LOGIN", {
+        method: "POST",
+        body: "{}",
+      }),
+      ["Auth", "LOGIN"],
+    );
+    expect(result.status).toBe(503);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+  it("requires transport peer attestation on forgot and reset password variants", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    for (const [url, path] of [
+      ["/api/auth/forgot-password", ["auth", "forgot-password"]],
+      ["/API/AUTH/FORGOT-PASSWORD/", ["AUTH", "FORGOT-PASSWORD"]],
+      ["/api/auth/%66orgot-password/", ["auth", "%66orgot-password"]],
+      ["/api/auth/reset-password", ["auth", "reset-password"]],
+    ] as const) {
+      const response = await proxyApi(
+        new Request(`http://localhost${url}`, { method: "POST", body: "{}" }),
+        [...path],
+      );
+      expect(response.status).toBe(503);
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
   });
   it("fails closed without exposing upstream credentials and bounds body before forwarding", async () => {
     vi.stubGlobal(
@@ -75,5 +131,28 @@ describe("Runtime same-origin API proxy", () => {
       ["upload"],
     );
     expect(big.status).toBe(413);
+  });
+  it("keeps the same-origin event stream open without the JSON request timeout", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(new ReadableStream(), {
+        headers: { "content-type": "text/event-stream" },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    const request = new Request(
+      "http://localhost/api/showtimes/fixture/seats/stream",
+      { headers: { accept: "text/event-stream" } },
+    );
+
+    const response = await proxyApi(request, [
+      "showtimes",
+      "fixture",
+      "seats",
+      "stream",
+    ]);
+
+    expect(response.headers.get("content-type")).toBe("text/event-stream");
+    expect(fetchMock.mock.calls[0][1].signal).toBe(request.signal);
+    await response.body?.cancel();
   });
 });

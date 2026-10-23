@@ -1,0 +1,72 @@
+{
+  "run": "R60",
+  "profile": "s1demo-384da3d43b41",
+  "showtimeId": "914556a8-ba19-4766-9e20-00a3d93df432",
+  "selected": true,
+  "closedFixtureApplied": true,
+  "closedResponseStatus": 409,
+  "expectedMessage": true,
+  "unrelatedError": "",
+  "restoredStatus": true,
+  "finalShowtime": {
+    "status": "ON_SALE",
+    "isDemo": false
+  },
+  "before": {
+    "orders": 5,
+    "tickets": 5,
+    "holds": 0,
+    "sessions": 4
+  },
+  "after": {
+    "orders": 5,
+    "tickets": 5,
+    "holds": 0,
+    "sessions": 4
+  },
+  "countsRestored": true,
+  "http": [
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/seats/stream",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/waiting-room",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/holds",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/showtimes/914556a8-ba19-4766-9e20-00a3d93df432/seats",
+      "status": 404
+    }
+  ],
+  "pageErrors": [],
+  "screenshot": "r60-closed-showtime-hold-ui.png"
+}

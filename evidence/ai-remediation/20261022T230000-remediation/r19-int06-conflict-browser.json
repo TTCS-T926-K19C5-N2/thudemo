@@ -1,0 +1,105 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Two isolated Chromium browser contexts, run-bound staff/organizer account, current local build, isolated API/PostgreSQL; no camera or real network.",
+  "syncOrder": [
+    "mobile-device-B (later timestamp)",
+    "desktop-device-A (earlier timestamp)"
+  ],
+  "devices": [
+    {
+      "name": "desktop-device-A",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "gateName": "R19 Gate A",
+      "sync": {
+        "httpStatus": 200,
+        "ackStatus": "synced",
+        "ackCode": "SCAN_RECORDED"
+      },
+      "scan": {
+        "scanId": "5ce1ba21-65fd-41b0-8425-b0ddcd6896d7",
+        "ticketCode": "03d059a6-46ea-4800-8b57-d814c449e539",
+        "scannedAt": "2026-10-23T04:35:16.741Z",
+        "deviceId": "a6df29a0-8e38-457f-867f-f1f63fce8e2a",
+        "gateId": "1f8b7861-84f0-4eb2-a23d-e322b41bd2b6",
+        "status": "pending",
+        "mode": "offline_admission"
+      }
+    },
+    {
+      "name": "mobile-device-B",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "gateName": "R19 Gate B",
+      "sync": {
+        "httpStatus": 200,
+        "ackStatus": "synced",
+        "ackCode": "SCAN_RECORDED"
+      },
+      "scan": {
+        "scanId": "816cf934-a884-4316-9bc1-c0b0c3b48a8b",
+        "ticketCode": "03d059a6-46ea-4800-8b57-d814c449e539",
+        "scannedAt": "2026-10-23T04:35:18.023Z",
+        "deviceId": "0ab6c329-7639-4c7d-baea-fe2c45de523b",
+        "gateId": "998ef0ef-ea2a-4dfc-a38f-8c7c23bea7a3",
+        "status": "pending",
+        "mode": "offline_admission"
+      }
+    }
+  ],
+  "http": [
+    {
+      "device": "mobile-device-B",
+      "method": "POST",
+      "path": "/api/scanner/sync-scans",
+      "status": 200
+    },
+    {
+      "device": "desktop-device-A",
+      "method": "POST",
+      "path": "/api/scanner/sync-scans",
+      "status": 200
+    },
+    {
+      "device": "desktop-device-A",
+      "method": "GET",
+      "path": "/api/scanner/showtimes/<fixture-showtime>/conflicts",
+      "status": 200
+    },
+    {
+      "device": "mobile-device-B",
+      "method": "GET",
+      "path": "/api/scanner/showtimes/<fixture-showtime>/conflicts",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "screenshots": [
+    "int06-offline-before-sync-desktop.png",
+    "int06-offline-before-sync-mobile.png",
+    "int06-conflict-report-desktop-device-A.png",
+    "int06-conflict-report-mobile-device-B.png"
+  ],
+  "conflictReports": [
+    {
+      "visible": true,
+      "ticketCode": "03d059a6-46ea-4800-8b57-d814c449e539",
+      "winningGate": "R19 Gate A",
+      "losingGate": "R19 Gate B",
+      "offsetsVisible": true,
+      "device": "desktop-device-A"
+    },
+    {
+      "visible": true,
+      "ticketCode": "03d059a6-46ea-4800-8b57-d814c449e539",
+      "winningGate": "R19 Gate A",
+      "losingGate": "R19 Gate B",
+      "offsetsVisible": true,
+      "device": "mobile-device-B"
+    }
+  ]
+}

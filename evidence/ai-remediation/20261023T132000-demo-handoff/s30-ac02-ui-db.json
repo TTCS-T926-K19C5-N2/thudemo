@@ -1,0 +1,29 @@
+{
+  "capturedAt": "2026-10-23T08:13:23.865Z",
+  "profile": "s1demo-384da3d43b41",
+  "requirement": "S-30-AC02",
+  "fixture": {
+    "type": "synthetic invalid QR code",
+    "value": "TK-DEMO-NOTFOUND",
+    "databaseWritesExpected": false
+  },
+  "desktop": {
+    "viewport": "default desktop",
+    "showtime": "Bệnh sĩ — 23/10/2026 15:00, demo gate Cửa demo",
+    "uiResult": "Không phải vé của hệ thống hoặc chữ ký không hợp lệ.",
+    "screenshot": "s30-ac02-invalid-ticket.jpg"
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "uiResult": "Same rejection remained visible in DOM after viewport switch.",
+    "documentWidth": 375,
+    "bodyWidth": 375,
+    "noHorizontalOverflow": true,
+    "screenshot": "s30-ac02-invalid-ticket-mobile.jpg"
+  },
+  "databaseOracle": "s30-ac02-db-oracle.json",
+  "notes": "No real camera permission was requested. Valid-ticket admission remains untested."
+}

@@ -1,0 +1,151 @@
+import { createRequire } from 'node:module';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { resolve } from 'node:path';
+import assert from 'node:assert/strict';
+const require = createRequire(import.meta.url);
+const { chromium } = require('playwright');
+const root = resolve(import.meta.dirname, '../../..');
+const runId = process.env.AI_REMEDIATION_RUN_ID;
+assert.match(runId ?? '', /^\d{8}T\d{6}-remediation$/);
+const stateDir = resolve(root, '.cache/ai-remediation', runId);
+const evidenceDir = resolve(root, 'evidence/ai-remediation', runId);
+const fixture = JSON.parse(readFileSync(resolve(stateDir, 's56-browser-fixture.json'), 'utf8'));
+assert.equal(fixture.runId, runId);
+mkdirSync(evidenceDir, { recursive: true });
+const report = { runId, environment: 'Authenticated Chromium, current local build, isolated PostgreSQL profile; synthetic buyer/order/coupon only.', viewports: ['1440x1000', '390x844'], api: [], pageErrors: [], checks: [], screenshots: [] };
+let context;
+try {
+  context = await chromium.launchPersistentContext(resolve(stateDir, 's56-buyer-browser-profile'), { headless: true, viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
+  await context.addCookies([{ name: 'event_session', value: fixture.token, url: 'http://127.0.0.1:3410', expires: Math.floor(Date.now() / 1000) + 7200, httpOnly: true, sameSite: 'Lax' }]);
+  const page = context.pages()[0] ?? await context.newPage();
+  page.on('pageerror', error => report.pageErrors.push(error.message));
+  page.on('response', async response => {
+    const url = new URL(response.url());
+    if (url.pathname.startsWith('/api/')) report.api.push({ method: response.request().method(), path: url.pathname, status: response.status() });
+    if (url.pathname === `/api/orders/${fixture.orderId}` && response.status() === 200) {
+      try {
+        const body = await response.json();
+        report.orderReads ??= [];
+        report.orderReads.push({ status: body.status, subtotalAmount: body.subtotalAmount, discountAmount: body.discountAmount, totalAmount: body.totalAmount, couponCode: body.couponCode });
+      } catch {}
+    }
+  });
+  await page.goto(`http://127.0.0.1:3410/orders/${fixture.orderId}`, { waitUntil: 'domcontentloaded', timeout: 15000 });
+  await page.getByRole('heading', { name: 'Mã giảm giá' }).waitFor({ timeout: 15000 });
+  await page.getByText(/Tạm tính:/).waitFor();
+  const orderMain = page.locator('main.order-review-container');
+  assert.match(await orderMain.innerText(), /Tạm tính:[\s\S]*101/);
+  report.checks.push('authenticated buyer order review loaded and showed baseline subtotal 101');
+  await page.getByRole('textbox', { name: 'Mã giảm giá' }).fill('BADCODE');
+  await page.getByRole('button', { name: 'Áp dụng mã' }).click();
+  await page.getByRole('alert').filter({ hasText: 'Mã không áp dụng cho sự kiện này.' }).waitFor({ timeout: 10000 });
+  report.checks.push('invalid coupon surfaced API validation error in browser');
+  await page.getByRole('textbox', { name: 'Mã giảm giá' }).fill('S56FLOOR10');
+  await page.getByRole('button', { name: 'Áp dụng mã' }).click();
+  await page.getByRole('status').filter({ hasText: 'Đã áp dụng mã giảm giá.' }).waitFor({ timeout: 10000 });
+  const appliedText = await orderMain.innerText();
+  report.appliedViewText = appliedText;
+  assert.match(appliedText, /Đang áp dụng S56FLOOR10/);
+  assert.match(appliedText, /Tạm tính:[\s\S]*101/);
+  assert.match(appliedText, /Giảm giá:[\s\S]*10/);
+  assert.match(appliedText, /Tổng cộng:[\s\S]*91/);
+  report.checks.push('buyer applied coupon through browser/API; refreshed floor discount 10 and payable 91 rendered');
+  await page.screenshot({ path: resolve(evidenceDir, 's56-buyer-coupon-applied-desktop.png'), fullPage: true, animations: 'disabled' });
+  report.screenshots.push('s56-buyer-coupon-applied-desktop.png');
+  await page.setViewportSize({ width: 390, height: 844 });
+  report.mobileNoOverflowApplied = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
+  assert.equal(report.mobileNoOverflowApplied, true);
+  await page.getByRole('button', { name: 'Bỏ mã' }).click();
+  await page.getByRole('status').filter({ hasText: 'Đã bỏ mã giảm giá.' }).waitFor({ timeout: 10000 });
+  await page.getByRole('textbox', { name: 'Mã giảm giá' }).waitFor();
+  const removedText = await orderMain.innerText();
+  assert.match(removedText, /Tạm tính:[\s\S]*101/);
+  assert.match(removedText, /Giảm giá:[\s\S]*0/);
+  assert.match(removedText, /Tổng cộng:[\s\S]*101/);
+  report.checks.push('buyer removed coupon; refreshed payable restored to original 101');
+  report.mobileNoOverflowRemoved = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
+  assert.equal(report.mobileNoOverflowRemoved, true);
+  await page.screenshot({ path: resolve(evidenceDir, 's56-buyer-coupon-removed-mobile.png'), fullPage: true, animations: 'disabled' });
+  report.screenshots.push('s56-buyer-coupon-removed-mobile.png');
+  const rejectedBoundaryCodes = [];
+  for (const code of ['S56FUTURE', 'S56EXPIRED']) {
+    await page.getByRole('textbox', { name: 'Mã giảm giá' }).fill(code);
+    const responsePromise = page.waitForResponse(response => response.request().method() === 'POST' && new URL(response.url()).pathname === `/api/orders/${fixture.orderId}/coupon`);
+    await page.getByRole('button', { name: 'Áp dụng mã' }).click();
+    const response = await responsePromise;
+    assert.equal(response.status(), 400);
+    await page.getByRole('alert').filter({ hasText: 'Mã giảm giá chưa có hiệu lực hoặc đã hết hạn.' }).waitFor({ timeout: 10000 });
+    rejectedBoundaryCodes.push(code);
+  }
+  report.expiryBoundaryRejections = rejectedBoundaryCodes;
+  report.checks.push('not-yet-started and expired coupons were rejected by the API and surfaced in buyer UI');
+  assert(report.api.some(item => item.method === 'POST' && item.path === `/api/orders/${fixture.orderId}/coupon` && item.status === 200));
+  assert(report.api.some(item => item.method === 'DELETE' && item.path === `/api/orders/${fixture.orderId}/coupon` && item.status === 200));
+  assert.equal(report.pageErrors.length, 0);
+  assert(!report.api.some(item => item.status >= 500));
+  report.checks.push('API apply/remove both returned 200; no page errors or API 5xx');
+
+  const couponRoute = `/api/events/${fixture.eventId}/coupons`;
+  const callAs = async (token, path, method, body) => {
+    await context.addCookies([{ name: 'event_session', value: token, url: 'http://127.0.0.1:3410', expires: Math.floor(Date.now() / 1000) + 7200, httpOnly: true, sameSite: 'Lax' }]);
+    return page.evaluate(async ({ path, method, body }) => {
+      const response = await fetch(path, { method, headers: body ? { 'content-type': 'application/json' } : undefined, body: body ? JSON.stringify(body) : undefined });
+      return { status: response.status, body: await response.json().catch(() => null) };
+    }, { path, method, body });
+  };
+  const ownerList = await callAs(fixture.ownerToken, couponRoute, 'GET');
+  assert.equal(ownerList.status, 200);
+  assert(ownerList.body?.coupons?.some(item => item.id === fixture.couponId));
+  const update = await callAs(fixture.ownerToken, `${couponRoute}/${fixture.couponId}`, 'PATCH', { value: 12 });
+  assert.equal(update.status, 200);
+  const wrongOwnerUpdate = await callAs(fixture.otherOwnerToken, `${couponRoute}/${fixture.couponId}`, 'PATCH', { value: 13 });
+  assert.equal(wrongOwnerUpdate.status, 403);
+  const buyerManagement = await callAs(fixture.token, couponRoute, 'POST', { code: 'FORBIDDEN', type: 'FIXED', value: 1, maxUses: 1, startsAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 60_000).toISOString() });
+  assert.equal(buyerManagement.status, 403);
+  const badExpiry = await callAs(fixture.ownerToken, `${couponRoute}/${fixture.couponId}`, 'PATCH', { expiresAt: 'not-a-date' });
+  assert.equal(badExpiry.status, 400);
+  const deactivated = await callAs(fixture.ownerToken, `${couponRoute}/${fixture.couponId}`, 'DELETE');
+  assert.equal(deactivated.status, 200);
+  const inactiveList = await callAs(fixture.ownerToken, couponRoute, 'GET');
+  assert.equal(inactiveList.body?.coupons?.find(item => item.id === fixture.couponId)?.isActive, false);
+  report.ownerManagement = { ownerList: ownerList.status, ownerUpdate: update.status, differentOwnerUpdate: wrongOwnerUpdate.status, buyerRoleCreate: buyerManagement.status, invalidExpiry: badExpiry.status, deactivate: deactivated.status, inactiveVisible: true };
+  report.checks.push('owner management HTTP list/update/deactivate and expiry validation passed; different organizer and BUYER were denied');
+  await context.addCookies([{ name: 'event_session', value: fixture.ownerToken, url: 'http://127.0.0.1:3410', expires: Math.floor(Date.now() / 1000) + 7200, httpOnly: true, sameSite: 'Lax' }]);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(`http://127.0.0.1:3410/events/${fixture.eventId}`, { waitUntil: 'domcontentloaded', timeout: 15000 });
+  await page.getByRole('heading', { name: 'Mã giảm giá theo sự kiện' }).waitFor({ timeout: 15000 });
+  const createCode = 'S56UIR12';
+  await page.locator('#coupon-code').fill(createCode);
+  await page.locator('#coupon-type').selectOption('PERCENT');
+  await page.locator('#coupon-value').fill('12');
+  await page.locator('#coupon-max-uses').fill('3');
+  await page.getByRole('button', { name: 'Tạo mã' }).click();
+  await page.getByRole('status').filter({ hasText: 'Đã tạo mã giảm giá.' }).waitFor({ timeout: 10000 });
+  const createdCoupon = page.getByRole('listitem').filter({ hasText: createCode });
+  await createdCoupon.waitFor({ timeout: 10000 });
+  assert.match(await createdCoupon.innerText(), /12%[\s\S]*0\/3 lượt[\s\S]*Đang bật/);
+  report.organizerDesktopNoOverflow = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
+  assert.equal(report.organizerDesktopNoOverflow, true);
+  await page.screenshot({ path: resolve(evidenceDir, 's56-organizer-coupon-created-desktop.png'), fullPage: true, animations: 'disabled' });
+  report.screenshots.push('s56-organizer-coupon-created-desktop.png');
+  await page.setViewportSize({ width: 390, height: 844 });
+  report.organizerMobileNoOverflow = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
+  assert.equal(report.organizerMobileNoOverflow, true);
+  await createdCoupon.getByRole('button', { name: 'Ngừng mã' }).click();
+  await page.getByRole('status').filter({ hasText: 'Đã ngừng áp dụng mã giảm giá.' }).waitFor({ timeout: 10000 });
+  await page.waitForFunction((code) => {
+    const item = Array.from(document.querySelectorAll('[aria-label="Danh sách mã giảm giá"] li')).find((node) => node.textContent?.includes(code));
+    return item?.textContent?.includes('Đã ngừng') ?? false;
+  }, createCode, { timeout: 10000 });
+  await page.screenshot({ path: resolve(evidenceDir, 's56-organizer-coupon-deactivated-mobile.png'), fullPage: true, animations: 'disabled' });
+  report.screenshots.push('s56-organizer-coupon-deactivated-mobile.png');
+  report.checks.push('organizer desktop/mobile UI created coupon and deactivated it; list refreshed with correct status');
+  assert.equal(report.pageErrors.length, 0);
+  assert(!report.api.some(item => item.status >= 500));
+  writeFileSync(resolve(evidenceDir, 's56-buyer-browser.json'), JSON.stringify(report, null, 2) + '\n');
+  console.log(`S-56 buyer browser checks passed: ${report.checks.length}.`);
+} catch (error) {
+  report.failure = error instanceof Error ? error.message : String(error);
+  writeFileSync(resolve(evidenceDir, 's56-buyer-browser.json'), JSON.stringify(report, null, 2) + '\n');
+  throw error;
+} finally { await context?.close(); }

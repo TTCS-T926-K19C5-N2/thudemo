@@ -1,0 +1,33 @@
+{
+  "recordedAt": "2026-10-23T06:55:30.1154108Z",
+  "sourceFix": "PublicLayout public pages now resolve the current user from /auth/me and refresh after account-session-changed/BroadcastChannel events. It distinguishes loading and API error from a confirmed signed-out state.",
+  "reproBeforeFix": [
+    "Sign in with the synthetic BUYER through /login; /account displays the BUYER role and an existing paid order.",
+    "Navigate using the site event navigation into the public catalog, event detail and seat map.",
+    "Before fix these public routes displayed Đăng nhập while /orders remained authenticated and the seat map accepted an authenticated hold."
+  ],
+  "expected": "Authenticated pages consistently show buyer order/account/logout controls; confirmed signed-out users see login; API errors are not presented as logged out.",
+  "actualAfterFix": "In the prepared tree, while the existing buyer cookie/session remained active, a fresh public seat-map navigation rendered Đơn hàng, Tài khoản and Đăng xuất. The same buyer held and released A-1 via API-backed controls; no new purchase was created. Focused UI tests 3/3, ESLint and web typecheck passed; clean prepared profile rebuilt/restarted READY.",
+  "ui": {
+    "desktop": "1280x900 default viewport; seat map showed authenticated header actions",
+    "mobile": "390x844; seat map and existing mobile navigation rendered; viewport reset afterward",
+    "browserEvidence": [
+      "public-session-authenticated-desktop.png",
+      "seat-map-authenticated-mobile-current.png",
+      "seat-map-hold-active-current.png"
+    ]
+  },
+  "limitations": [
+    "Browser verification uses local synthetic BUYER and local API; not staging identity provider.",
+    "The header shows role-neutral account actions; authorization remains enforced by API."
+  ],
+  "status": "FIXED_AND_VERIFIED_LOCALLY",
+  "test": {
+    "command": "pnpm --filter web test -- src/components/layout/public-session-controls.spec.tsx",
+    "result": "1 file, 3 tests passed"
+  },
+  "build": {
+    "command": "node scripts/sprint1-onboarding.mjs Restart in prepared clean file tree",
+    "result": "READY; profile DB/Redis/Mailpit volumes and secrets retained"
+  }
+}

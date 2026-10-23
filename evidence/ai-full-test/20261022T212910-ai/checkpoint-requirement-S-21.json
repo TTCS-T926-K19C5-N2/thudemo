@@ -1,0 +1,120 @@
+[
+  {
+    "id": "S-21-AC01",
+    "requirement_id": "S-21",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Webhook có chữ ký sai bị từ chối",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L23"
+    },
+    "original_requirement": "Giả sử webhook có chữ ký không khớp khoá của cổng, Khi nhận, Thì trả 401, không đọc nội dung, không đổi đơn, và ghi log kèm địa chỉ nguồn",
+    "fixture": "Payload đúng, sửa 1 byte, thiếu chữ ký, JSON hỏng và chữ ký sai, order không có.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/webhook-security.filter.ts; apps/api/src/payments/gateways/",
+    "test_candidates": "payments-signature-verification.e2e-spec.ts; momo-signature.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: webhook có chữ ký không khớp khoá của cổng.",
+      "Thực hiện trên POST /payments/webhook: nhận.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Gửi raw body bảo toàn byte; sai chữ ký trả 401 trước parse/nghiệp vụ và không thay DB. Hợp lệ nhưng order không tồn tại trả 404. Kiểm structured log có nguồn và mã lỗi, không payload thanh toán; review so sánh constant-time.",
+    "expected": [
+      "trả 401, không đọc nội dung, không đổi đơn, và ghi log kèm địa chỉ nguồn"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-21-AC02",
+    "requirement_id": "S-21",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Webhook có chữ ký sai bị từ chối",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L23"
+    },
+    "original_requirement": "Giả sử webhook đúng chữ ký nhưng mã đơn không tồn tại, Khi nhận, Thì trả 404 và ghi log",
+    "fixture": "Payload đúng, sửa 1 byte, thiếu chữ ký, JSON hỏng và chữ ký sai, order không có.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/webhook-security.filter.ts; apps/api/src/payments/gateways/",
+    "test_candidates": "payments-signature-verification.e2e-spec.ts; momo-signature.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: webhook đúng chữ ký nhưng mã đơn không tồn tại.",
+      "Thực hiện trên POST /payments/webhook: nhận.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Gửi raw body bảo toàn byte; sai chữ ký trả 401 trước parse/nghiệp vụ và không thay DB. Hợp lệ nhưng order không tồn tại trả 404. Kiểm structured log có nguồn và mã lỗi, không payload thanh toán; review so sánh constant-time.",
+    "expected": [
+      "trả 404 và ghi log"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-21-NFR",
+    "requirement_id": "S-21",
+    "kind": "NFR",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Webhook có chữ ký sai bị từ chối — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N23"
+    },
+    "original_requirement": "kiểm chữ ký trước khi phân tích nội dung; khoá ký đọc từ biến môi trường",
+    "fixture": "Payload đúng, sửa 1 byte, thiếu chữ ký, JSON hỏng và chữ ký sai, order không có.",
+    "surfaces": "POST /payments/webhook",
+    "code_candidates": "apps/api/src/payments/webhook-security.filter.ts; apps/api/src/payments/gateways/",
+    "test_candidates": "payments-signature-verification.e2e-spec.ts; momo-signature.spec.ts",
+    "steps": [
+      "Gửi raw body bảo toàn byte; sai chữ ký trả 401 trước parse/nghiệp vụ và không thay DB. Hợp lệ nhưng order không tồn tại trả 404. Kiểm structured log có nguồn và mã lỗi, không payload thanh toán; review so sánh constant-time.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "kiểm chữ ký trước khi phân tích nội dung; khoá ký đọc từ biến môi trường"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

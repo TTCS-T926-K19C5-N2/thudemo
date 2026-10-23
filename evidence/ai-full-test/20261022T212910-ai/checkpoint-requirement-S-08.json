@@ -1,0 +1,200 @@
+[
+  {
+    "id": "S-08-AC01",
+    "requirement_id": "S-08",
+    "kind": "AC",
+    "group": "Khám phá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Người mua xem danh sách sự kiện đang mở bán và chi tiết suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L16"
+    },
+    "original_requirement": "Giả sử có suất diễn đang bán, Khi mở trang chủ mà chưa đăng nhập, Thì thấy danh sách sự kiện kèm suất gần nhất, sắp theo ngày diễn",
+    "fixture": "Ẩn danh; 21+ sự kiện và bộ 200 suất; draft/closed/on-sale; cache nóng/lạnh.",
+    "surfaces": "/; /shows/:id; GET /showtimes",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/event-catalog/",
+    "test_candidates": "sprint2.e2e-spec.ts; apps/web/src/lib/contracts/",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: có suất diễn đang bán.",
+      "Thực hiện trên /; /shows/:id; GET /showtimes: mở trang chủ mà chưa đăng nhập.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đi từ trang chủ tới chọn ghế tối đa hai lần bấm. Lật hết các trang, đối chiếu tập ID không trùng/sót và thứ tự ngày. Gọi URL draft/closed trực tiếp; kiểm khoảng giá và thông tin. Đo p95 và TTL cache 30 giây, quan sát cache invalidation khi đổi trạng thái.",
+    "expected": [
+      "thấy danh sách sự kiện kèm suất gần nhất, sắp theo ngày diễn"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-08-AC02",
+    "requirement_id": "S-08",
+    "kind": "AC",
+    "group": "Khám phá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Người mua xem danh sách sự kiện đang mở bán và chi tiết suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L16"
+    },
+    "original_requirement": "Giả sử suất diễn ở trạng thái nháp hoặc đã đóng, Khi mở trang chi tiết bằng đường dẫn trực tiếp, Thì thấy thông báo không mở bán, không thấy sơ đồ",
+    "fixture": "Ẩn danh; 21+ sự kiện và bộ 200 suất; draft/closed/on-sale; cache nóng/lạnh.",
+    "surfaces": "/; /shows/:id; GET /showtimes",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/event-catalog/",
+    "test_candidates": "sprint2.e2e-spec.ts; apps/web/src/lib/contracts/",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: suất diễn ở trạng thái nháp hoặc đã đóng.",
+      "Thực hiện trên /; /shows/:id; GET /showtimes: mở trang chi tiết bằng đường dẫn trực tiếp.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đi từ trang chủ tới chọn ghế tối đa hai lần bấm. Lật hết các trang, đối chiếu tập ID không trùng/sót và thứ tự ngày. Gọi URL draft/closed trực tiếp; kiểm khoảng giá và thông tin. Đo p95 và TTL cache 30 giây, quan sát cache invalidation khi đổi trạng thái.",
+    "expected": [
+      "thấy thông báo không mở bán, không thấy sơ đồ"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-08-AC03",
+    "requirement_id": "S-08",
+    "kind": "AC",
+    "group": "Khám phá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Người mua xem danh sách sự kiện đang mở bán và chi tiết suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L16"
+    },
+    "original_requirement": "Giả sử mở trang chi tiết suất đang bán, Khi trang tải xong, Thì thấy tên sự kiện, thời gian, địa điểm, khoảng giá và nút vào chọn ghế",
+    "fixture": "Ẩn danh; 21+ sự kiện và bộ 200 suất; draft/closed/on-sale; cache nóng/lạnh.",
+    "surfaces": "/; /shows/:id; GET /showtimes",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/event-catalog/",
+    "test_candidates": "sprint2.e2e-spec.ts; apps/web/src/lib/contracts/",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: mở trang chi tiết suất đang bán.",
+      "Thực hiện trên /; /shows/:id; GET /showtimes: trang tải xong.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đi từ trang chủ tới chọn ghế tối đa hai lần bấm. Lật hết các trang, đối chiếu tập ID không trùng/sót và thứ tự ngày. Gọi URL draft/closed trực tiếp; kiểm khoảng giá và thông tin. Đo p95 và TTL cache 30 giây, quan sát cache invalidation khi đổi trạng thái.",
+    "expected": [
+      "thấy tên sự kiện, thời gian, địa điểm, khoảng giá và nút vào chọn ghế"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-08-AC04",
+    "requirement_id": "S-08",
+    "kind": "AC",
+    "group": "Khám phá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Người mua xem danh sách sự kiện đang mở bán và chi tiết suất diễn",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L16"
+    },
+    "original_requirement": "Giả sử có hơn 20 sự kiện, Khi cuộn xuống cuối, Thì tải thêm trang tiếp theo",
+    "fixture": "Ẩn danh; 21+ sự kiện và bộ 200 suất; draft/closed/on-sale; cache nóng/lạnh.",
+    "surfaces": "/; /shows/:id; GET /showtimes",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/event-catalog/",
+    "test_candidates": "sprint2.e2e-spec.ts; apps/web/src/lib/contracts/",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: có hơn 20 sự kiện.",
+      "Thực hiện trên /; /shows/:id; GET /showtimes: cuộn xuống cuối.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Đi từ trang chủ tới chọn ghế tối đa hai lần bấm. Lật hết các trang, đối chiếu tập ID không trùng/sót và thứ tự ngày. Gọi URL draft/closed trực tiếp; kiểm khoảng giá và thông tin. Đo p95 và TTL cache 30 giây, quan sát cache invalidation khi đổi trạng thái.",
+    "expected": [
+      "tải thêm trang tiếp theo"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-08-NFR",
+    "requirement_id": "S-08",
+    "kind": "NFR",
+    "group": "Khám phá",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "2",
+    "readiness": "SPECIFIED",
+    "title": "Người mua xem danh sách sự kiện đang mở bán và chi tiết suất diễn — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N16"
+    },
+    "original_requirement": "trang danh sách phản hồi dưới 500ms ở p95 khi có 200 suất diễn; cache 30 giây",
+    "fixture": "Ẩn danh; 21+ sự kiện và bộ 200 suất; draft/closed/on-sale; cache nóng/lạnh.",
+    "surfaces": "/; /shows/:id; GET /showtimes",
+    "code_candidates": "apps/api/src/showtimes/; apps/web/src/features/event-catalog/",
+    "test_candidates": "sprint2.e2e-spec.ts; apps/web/src/lib/contracts/",
+    "steps": [
+      "Đi từ trang chủ tới chọn ghế tối đa hai lần bấm. Lật hết các trang, đối chiếu tập ID không trùng/sót và thứ tự ngày. Gọi URL draft/closed trực tiếp; kiểm khoảng giá và thông tin. Đo p95 và TTL cache 30 giây, quan sát cache invalidation khi đổi trạng thái.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "trang danh sách phản hồi dưới 500ms ở p95 khi có 200 suất diễn; cache 30 giây"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

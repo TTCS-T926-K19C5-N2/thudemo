@@ -14,14 +14,27 @@ import { HoldsModule } from './holds/holds.module.js';
 import { OrdersModule } from './orders/orders.module.js';
 import { PaymentsModule } from './payments/payments.module.js';
 import { MonitoringModule } from './monitoring/monitoring.module.js';
+import { CheckInModuleS29 } from './check-in/check-in-s29.module.js';
+import { TicketsModule } from './tickets/tickets.module.js';
 import { WebhookSecurityFilter } from './payments/webhook-security.filter.js';
 import { ScannerModule } from './scanner/scanner.module.js';
+import { BookingAccessModule } from './booking-access/booking-access.module.js';
+import { LifecycleModule } from './lifecycle/lifecycle.module.js';
+import { LocalDashboardModule } from './monitoring/local-dashboard.js';
+import { CoreCompletionModule } from './core-completion/core.module.js';
+import { CouponsModule } from './coupons/coupons.module.js';
+import { WaitlistModule } from './waitlist/waitlist.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: resolve(process.cwd(), '../../.env'),
+      ignoreEnvFile: process.env.CONFIG_IGNORE_ENV_FILE === 'true',
+      envFilePath: [
+        resolve(process.cwd(), '.env'),
+        resolve(process.cwd(), '../../.env'),
+        resolve(process.cwd(), '../.env'),
+      ],
     }),
     PrismaModule,
     RedisModule,
@@ -33,7 +46,15 @@ import { ScannerModule } from './scanner/scanner.module.js';
     OrdersModule,
     PaymentsModule,
     MonitoringModule,
+    CheckInModuleS29,
+    TicketsModule,
     ScannerModule,
+    BookingAccessModule,
+    LifecycleModule,
+    LocalDashboardModule,
+    CoreCompletionModule,
+    CouponsModule,
+    WaitlistModule,
   ],
   controllers: [AppController],
   providers: [

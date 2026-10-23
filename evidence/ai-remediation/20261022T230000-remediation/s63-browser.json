@@ -1,0 +1,62 @@
+{
+  "runId": "20261022T230000-remediation",
+  "showtimeId": "4ad9e650-9c65-4177-9958-55b279bcab9d",
+  "viewports": [
+    {
+      "name": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "reportVisible": true,
+      "summary": "Chuyển đổi lượt giữ chỗ\n\nCohort A theo thời điểm bắt đầu lượt giữ; thống kê đến hết ngày kết thúc (UTC lưu trữ).\n\nTừ ngày\nĐến ngày\nXem báo cáo\n\nBắt đầu: 10 · Thành đơn: 5 · Đã trả: 3 · Hết hạn: 5 · Đã hủy: 0 · Đang giữ tại cutoff: 1\n\nGiữ → thành đơn: trung bình 180 giây, p90 276 giây.\n\nGiữ → đã trả: trung bình 892.822 giây, p90 2.084.273 giây.\n\nCutoff: 00:00:00 24/10/2026 · cập nhật lúc 00:46:08 23/10/2026.\n\nDữ liệu giữ có từ 00:00:00 23/9/2026; thời lượng tính bằng giây, tập rỗng hiển thị “Chưa có mẫu”.",
+      "horizontalOverflow": false
+    },
+    {
+      "name": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reportVisible": true,
+      "summary": "Chuyển đổi lượt giữ chỗ\n\nCohort A theo thời điểm bắt đầu lượt giữ; thống kê đến hết ngày kết thúc (UTC lưu trữ).\n\nTừ ngày\nĐến ngày\nXem báo cáo\n\nBắt đầu: 10 · Thành đơn: 5 · Đã trả: 3 · Hết hạn: 5 · Đã hủy: 0 · Đang giữ tại cutoff: 1\n\nGiữ → thành đơn: trung bình 180 giây, p90 276 giây.\n\nGiữ → đã trả: trung bình 892.822 giây, p90 2.084.273 giây.\n\nCutoff: 00:00:00 24/10/2026 · cập nhật lúc 00:46:09 23/10/2026.\n\nDữ liệu giữ có từ 00:00:00 23/9/2026; thời lượng tính bằng giây, tập rỗng hiển thị “Chưa có mẫu”.",
+      "horizontalOverflow": false
+    }
+  ],
+  "pageErrors": [],
+  "oracle": {
+    "started": 10,
+    "orderCreated": 5,
+    "paid": 3,
+    "expired": 5,
+    "pendingAtCutoff": 1
+  },
+  "apiResponse": {
+    "showtimeId": "4ad9e650-9c65-4177-9958-55b279bcab9d",
+    "cohort": "A",
+    "from": "2026-09-22T17:00:00.000Z",
+    "to": "2026-10-23T17:00:00.000Z",
+    "cutoff": "2026-10-23T17:00:00.000Z",
+    "timezone": "UTC",
+    "durationUnit": "seconds",
+    "startedSessions": 10,
+    "orderCreatedSessions": 5,
+    "paidSessions": 3,
+    "expiredSessions": 5,
+    "cancelledSessions": 0,
+    "pendingAtCutoff": 1,
+    "holdToOrder": {
+      "meanSeconds": 180,
+      "p90Seconds": 276
+    },
+    "holdToPaid": {
+      "meanSeconds": 892822.3104996667,
+      "p90Seconds": 2084273.4273038
+    },
+    "dataAvailableFrom": "2026-09-22T17:00:00.000Z",
+    "generatedAt": "2026-10-22T17:46:09.959Z"
+  },
+  "loadingStateObserved": true,
+  "emptyStateObserved": true,
+  "errorStateObserved": true
+}

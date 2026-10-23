@@ -1,0 +1,26 @@
+{
+  "observedAt": "2026-10-23T07:43:11.558Z",
+  "profile": "s1demo-384da3d43b41",
+  "mailpit": "http://127.0.0.1:24931",
+  "messageCount": 3,
+  "latest": {
+    "fromDomain": "sprint1.demo.invalid",
+    "recipientDomain": "s1demo-384da3d43b41.demo.invalid",
+    "subject": "Vé điện tử — Bệnh sĩ",
+    "received": "a few seconds after resend action",
+    "body": "Bệnh sĩ; 07/12/2026; STANDARD · D-1; embedded QR image present."
+  },
+  "assertions": {
+    "catcherAccepted": true,
+    "syntheticRecipient": true,
+    "qrAttachmentOrInlineImage": true,
+    "receivedWithinOneMinute": true,
+    "internetInboxDelivery": false,
+    "duplicateEmailsPossible": true
+  },
+  "redactions": {
+    "messageIds": true,
+    "emailLocalParts": true,
+    "rawMime": true
+  }
+}

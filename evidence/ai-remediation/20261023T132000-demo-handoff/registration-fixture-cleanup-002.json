@@ -1,0 +1,15 @@
+{
+  "runId": "20261023T132000-demo-handoff",
+  "exactSyntheticFixtureMatched": true,
+  "userAndConsentRemoved": true,
+  "activationTokenAndOutboxRemovedByCascade": true,
+  "matchingMailpitMessageDeleted": true,
+  "durableDemoState": {
+    "events": 40,
+    "showtimes": 42,
+    "tickets": 1,
+    "paidOrders": 1
+  },
+  "persistentDemoCatalogUntouched": true,
+  "result": "CLEAN"
+}

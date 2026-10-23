@@ -1,0 +1,17 @@
+Datasource "db": PostgreSQL database "codegym_remediation", schema "public" at "127.0.0.1:62636"
+
+43 migrations found in prisma/migrations
+
+Applying migration `202610230003_s57_transfer_delivery`
+
+The following migration(s) have been applied:
+
+migrations/
+  └─ 202610230003_s57_transfer_delivery/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+◇ injected env (31) from ..\..\.env
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.

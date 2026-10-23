@@ -1,14 +1,27 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ConfigService } from '@nestjs/config';
 import { MomoGateway } from './momo.gateway.js';
-import { buildMomoSignature } from './momo-signature.js';
+import { PaymentGatewayOutcomeUnknownError } from './payment-gateway.errors.js';
+import {
+  buildMomoCreateRawString,
+  buildMomoSignature,
+  calculateHmacSha256,
+} from './momo-signature.js';
 
 describe('MomoGateway Adapter', () => {
   let gateway: MomoGateway;
   const accessKey = 'test_access_key';
   const secretKey = 'test_secret_key';
+  const fetchMock = vi.fn<typeof fetch>();
 
   beforeEach(() => {
+    // This is an adapter unit test, not a provider sandbox acceptance test.
+    // Never let CI latency or sandbox availability decide whether it passes.
+    fetchMock.mockReset();
+    fetchMock.mockImplementation(async () =>
+      Response.json({ payUrl: 'https://payment.example.invalid/fixture' }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
     const config = {
       get: vi.fn((key: string, defaultValue?: string) => {
         if (key === 'MOMO_PARTNER_CODE') return 'MOMO_PARTNER';
@@ -22,16 +35,100 @@ describe('MomoGateway Adapter', () => {
     gateway = new MomoGateway(config);
   });
 
-  it('createPayment generates unique gatewayRef containing orderId', async () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('createPayment uses the client-persisted gatewayRef for the provider request', async () => {
     const orderId = 'd8248149-2e71-46ca-86b3-a3d827f8a701';
-    const result = await gateway.createPayment({
+    const params = {
       orderId,
+      gatewayRef: `${orderId}_1792770000000_ab12cd34`,
       amount: 250000,
       returnUrl: 'http://localhost:3000/payment/result',
-    });
+    };
+    const result = await gateway.createPayment(params);
+    const retry = await gateway.createPayment(params);
 
-    expect(result.gatewayRef).toContain(orderId);
+    expect(result.gatewayRef).toBe(params.gatewayRef);
     expect(result.redirectUrl).toBeTruthy();
+    expect(result.redirectUrl).toBe('https://payment.example.invalid/fixture');
+    expect(retry.gatewayRef).toBe(params.gatewayRef);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    for (const [index, payment] of [result, retry].entries()) {
+      const [url, options] = fetchMock.mock.calls[index];
+      expect(url).toBe('https://test-payment.momo.vn/v2/gateway/api/create');
+      expect(options?.method).toBe('POST');
+      const requestBody = JSON.parse(String(options?.body)) as Omit<
+        Parameters<typeof buildMomoCreateRawString>[0],
+        'accessKey'
+      > & { signature: string };
+      expect(requestBody.orderId).toBe(payment.gatewayRef);
+      expect(requestBody.requestId).toBe(payment.gatewayRef);
+      expect(requestBody.amount).toBe(params.amount);
+      expect(requestBody.redirectUrl).toBe(params.returnUrl);
+      expect(
+        JSON.parse(
+          Buffer.from(String(requestBody.extraData), 'base64').toString(),
+        ),
+      ).toEqual({ orderId });
+      expect(requestBody.signature).toBe(
+        calculateHmacSha256(
+          buildMomoCreateRawString({ ...requestBody, accessKey }),
+          secretKey,
+        ),
+      );
+    }
+  });
+
+  it('does not fabricate a sandbox payment URL when transport outcome is unknown', async () => {
+    fetchMock.mockRejectedValueOnce(new Error('offline fixture transport'));
+    const params = {
+      orderId: 'd8248149-2e71-46ca-86b3-a3d827f8a701',
+      gatewayRef: 'd8248149-2e71-46ca-86b3-a3d827f8a701_1792770000000_ab12cd34',
+      amount: 250000,
+      returnUrl: 'http://localhost:3000/payment/result',
+    };
+    await expect(gateway.createPayment(params)).rejects.toBeInstanceOf(PaymentGatewayOutcomeUnknownError);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses a caller-persisted gateway reference so an early webhook can be matched', async () => {
+    const params = {
+      orderId: 'd8248149-2e71-46ca-86b3-a3d827f8a701',
+      gatewayRef: 'd8248149-2e71-46ca-86b3-a3d827f8a701_1792770000000_ab12cd34',
+      amount: 250000,
+      returnUrl: 'http://localhost:3000/payment/result',
+    };
+    const result = await gateway.createPayment(params);
+    const [, options] = fetchMock.mock.calls.at(-1)!;
+    const body = JSON.parse(String(options?.body));
+    expect(result.gatewayRef).toBe(params.gatewayRef);
+    expect(body.orderId).toBe(params.gatewayRef);
+    expect(body.requestId).toBe(params.gatewayRef);
+  });
+
+  it('treats a definitive provider resultCode rejection as retryable failure', async () => {
+    fetchMock.mockImplementationOnce(async () => Response.json({ resultCode: 1006, message: 'declined' }));
+    await expect(gateway.createPayment({
+      orderId: 'd8248149-2e71-46ca-86b3-a3d827f8a701',
+      gatewayRef: 'd8248149-2e71-46ca-86b3-a3d827f8a701_1792770000000_ab12cd34',
+      amount: 250000,
+      returnUrl: 'http://localhost:3000/payment/result',
+    })).rejects.toMatchObject({
+      providerCode: 'MOMO_1006',
+    });
+  });
+
+  it('treats a provider 5xx response as outcome unknown, not a rejection', async () => {
+    fetchMock.mockImplementationOnce(async () => new Response('upstream failure', { status: 503 }));
+    await expect(gateway.createPayment({
+      orderId: 'd8248149-2e71-46ca-86b3-a3d827f8a701',
+      gatewayRef: 'd8248149-2e71-46ca-86b3-a3d827f8a701_1792770000000_ab12cd34',
+      amount: 250000,
+      returnUrl: 'http://localhost:3000/payment/result',
+    })).rejects.toBeInstanceOf(PaymentGatewayOutcomeUnknownError);
   });
 
   it('verifyWebhook validates signature against secret key', async () => {

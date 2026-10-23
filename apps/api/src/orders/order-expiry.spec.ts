@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { OrdersService } from './orders.service.js';
 import { OrderExpiryScheduler } from './order-expiry.scheduler.js';
 import { ConfigService } from '@nestjs/config';
-import type { OrderHistoryService } from './order-history.service.js';
 
 describe('S-23 Order Expiry & Seat Release', () => {
   let ordersService: OrdersService;
@@ -24,8 +23,13 @@ describe('S-23 Order Expiry & Seat Release', () => {
       seatHold: {
         deleteMany: vi.fn(),
       },
+      // Order expiry now atomically creates a waitlist availability signal
+      // when a released seat has active subscribers.
+      waitlistEntry: {
+        count: vi.fn().mockResolvedValue(0),
+      },
     };
-    ordersService = new OrdersService(mockPrisma, {} as OrderHistoryService);
+    ordersService = new OrdersService(mockPrisma);
   });
 
   describe('expireOrder (Unit & Acceptance Criteria)', () => {

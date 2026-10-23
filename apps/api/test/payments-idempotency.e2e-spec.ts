@@ -1,4 +1,7 @@
+import { assertIntegrationDatabase } from './integration-database.js';
 import { randomBytes, randomUUID } from 'node:crypto';
+import { writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
@@ -9,6 +12,7 @@ import { hashSessionToken, SESSION_COOKIE } from '../src/auth/auth.service.js';
 import { OrderStatus, PaymentStatus } from '@prisma/client';
 import { buildMomoSignature } from '../src/payments/gateways/momo-signature.js';
 import { AccountantNotifier } from '../src/payments/accountant-notifier.js';
+import { OrdersService } from '../src/orders/orders.service.js';
 
 describe('Payments S-20 Idempotency & Concurrency E2E Integration', () => {
   let app: INestApplication;
@@ -130,16 +134,7 @@ describe('Payments S-20 Idempotency & Concurrency E2E Integration', () => {
   }
 
   beforeAll(async () => {
-    const target = new URL(process.env.DATABASE_URL ?? '');
-    if (
-      target.hostname !== '127.0.0.1' ||
-      (target.port !== '15432' &&
-        (target.port !== '15434' ||
-          process.env.S32_ISOLATED_TEST !== 'true')) ||
-      target.pathname !== '/sprint2_integration'
-    ) {
-      throw new Error('Run only on the isolated sprint2_integration database');
-    }
+    assertIntegrationDatabase();
 
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
@@ -323,6 +318,66 @@ describe('Payments S-20 Idempotency & Concurrency E2E Integration', () => {
         transactionId: transId,
       }),
     );
+  });
+
+  it('R18: payment webhook racing the expiry transaction ends in review without selling the seat', async () => {
+    const expiryService = app.get(OrdersService);
+    const rounds: Array<Record<string, unknown>> = [];
+    for (let iteration = 0; iteration < 50; iteration++) {
+      const seat = await createTestSeat('R', iteration + 1);
+      const { order, gatewayRef } = await createOrderWithSeat(seat, true);
+      const payload = signWebhook(order.id, gatewayRef, `momo_expiry_race_${iteration}_${Date.now()}`);
+      let release!: () => void;
+      const barrier = new Promise<void>((resolve) => { release = resolve; });
+      const expiryPromise = (async () => {
+        await barrier;
+        return expiryService.expireOrder(order.id);
+      })();
+      const webhookPromise = (async () => {
+        await barrier;
+        return request(app.getHttpServer()).post('/payments/webhook').send(payload);
+      })();
+      release();
+      const [expiry, webhook] = await Promise.all([expiryPromise, webhookPromise]);
+
+      expect(['expired', 'skipped']).toContain(expiry.status);
+      expect(webhook.status).toBe(200);
+      expect(webhook.body).toEqual({ received: true, status: 'LATE' });
+      const finalOrder = await db.order.findUniqueOrThrow({ where: { id: order.id } });
+      const finalPayment = await db.payment.findFirstOrThrow({ where: { orderId: order.id } });
+      const finalSeat = await db.seat.findUniqueOrThrow({ where: { id: seat.id } });
+      expect(finalOrder.status).toBe(OrderStatus.NEEDS_REVIEW);
+      expect(finalPayment.status).toBe(PaymentStatus.LATE);
+      expect(finalSeat.isSold).toBe(false);
+      const activeHolds = await db.seatHold.count({ where: { seatId: seat.id } });
+      expect(activeHolds).toBe(0);
+      rounds.push({
+        iteration: iteration + 1,
+        webhookHttp: webhook.status,
+        webhookStatus: webhook.body.status,
+        expiryStatus: expiry.status,
+        orderStatus: finalOrder.status,
+        paymentStatus: finalPayment.status,
+        seatSold: finalSeat.isSold,
+        activeHolds,
+      });
+    }
+    const manifestPath = process.env.AI_REMEDIATION_PROFILE_MANIFEST;
+    if (manifestPath)
+      writeFileSync(
+        resolve(dirname(manifestPath), 'int04-order-expiry-webhook-race.json'),
+        JSON.stringify({
+          runId: process.env.AI_REMEDIATION_RUN_ID,
+          workload: { rounds: rounds.length, perRound: 'one expired order; webhook and expiry released at barrier' },
+          outcomeCounts: rounds.reduce<Record<string, number>>((counts, round) => {
+            const key = `${round.orderStatus}/${round.paymentStatus}`;
+            counts[key] = (counts[key] ?? 0) + 1;
+            return counts;
+          }, {}),
+          allExpected: rounds.every((round) => round.webhookHttp === 200 && round.webhookStatus === 'LATE' && round.orderStatus === 'NEEDS_REVIEW' && round.paymentStatus === 'LATE' && round.seatSold === false && round.activeHolds === 0),
+          rounds,
+        }, null, 2),
+      );
   });
 
   it('AC 4: Webhook arrives before user returns to result page: user immediately sees PAID order', async () => {

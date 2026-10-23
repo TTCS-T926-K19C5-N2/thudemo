@@ -1,0 +1,61 @@
+[
+  {
+    "id": "E-07-AC",
+    "requirement_id": "E-07",
+    "kind": "EPIC",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Later",
+    "priority": "Should",
+    "readiness": "SPECIFIED",
+    "title": "Phòng chờ và chống bot khi mở bán",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "G9"
+    },
+    "original_requirement": "Hệ thống vẫn phản hồi khi lượng truy cập vượt ngưỡng, thay vì sập; người vào phòng chờ trước được chọn ghế trước",
+    "steps": [
+      "Đối chiếu tập story con và các hành trình đầu-cuối trong kế hoạch.",
+      "Kiểm từng mệnh đề ở cấp tích hợp; mọi story đơn lẻ PASS chưa tự chứng minh epic PASS."
+    ],
+    "expected": [
+      "Hệ thống vẫn phản hồi khi lượng truy cập vượt ngưỡng, thay vì sập; người vào phòng chờ trước được chọn ghế trước"
+    ],
+    "evidence_required": [
+      "Liên kết các case con và E2E đã chạy"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "E-07-NFR",
+    "requirement_id": "E-07",
+    "kind": "EPIC_NFR",
+    "group": "Đối chiếu tổng thể",
+    "tier": "Later",
+    "priority": "Should",
+    "readiness": "SPECIFIED",
+    "title": "Phòng chờ và chống bot khi mở bán",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Epics",
+      "range": "I9"
+    },
+    "original_requirement": "người đã vào được phòng chờ không bị đẩy ra khi tải tăng",
+    "steps": [
+      "Kiểm NFR ở phạm vi epic, đối chiếu các story con và số đo tích hợp; không chỉ suy từ unit test."
+    ],
+    "expected": [
+      "người đã vào được phòng chờ không bị đẩy ra khi tải tăng"
+    ],
+    "evidence_required": [
+      "Bằng chứng kỹ thuật hoặc số đo tương ứng"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

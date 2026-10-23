@@ -1,0 +1,27 @@
+{
+  "case": "S-04-AC01.01",
+  "profile": "s1demo-384da3d43b41",
+  "fixture": {
+    "runId": "20261023T132000-demo-handoff-R33",
+    "name": "AI-TEST-R33-20261023T1515",
+    "id": "01021da6-03e5-4afe-8b4b-dcba1172616e"
+  },
+  "action": "Synthetic Organizer submitted the create-event form in desktop browser; no showtime was added.",
+  "uiObserved": {
+    "route": "/events/01021da6-03e5-4afe-8b4b-dcba1172616e",
+    "status": "Nháp",
+    "title": "AI-TEST-R33-20261023T1515",
+    "location": "QA Local · Dữ liệu thử",
+    "descriptionVisible": true
+  },
+  "dbOracle": "organizer-create-draft-db-oracle.json",
+  "independentAssertions": {
+    "statusDRAFT": true,
+    "organizerOwnerMatchesSyntheticAccount": true,
+    "showtimes": 0,
+    "orders": 0,
+    "coupons": 0
+  },
+  "screenshot": "organizer-create-draft-r33.png",
+  "cleanup": "Exact ID/name/owner/status fixture deleted after oracle; durable catalog restored to 40 events/42 showtimes; orders/tickets unchanged."
+}

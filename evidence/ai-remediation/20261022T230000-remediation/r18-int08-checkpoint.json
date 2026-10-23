@@ -1,0 +1,25 @@
+{
+  "run_id": "20261022T230000-remediation",
+  "updated_at_local": "2026-10-23T04:07:02.504Z",
+  "scope": "R18 INT-08 cancellation/refund, seat resale, revoked QR, audit and coupon-aware financial reconciliation",
+  "coverage_total": 436,
+  "coverage": "BLOCKED=4, MISSING=1, NEEDS_DECISION=4, NOT_RUN=361, PASS=66",
+  "latest_int08_e2e": "1 file / 8 tests PASS; isolated PostgreSQL, local mock refund",
+  "int08": "PASS (supplemental case; whole-order local mock only)",
+  "remaining_r18": [
+    "INT-01",
+    "INT-14",
+    "remaining seat/map/price/clock/device cases",
+    "staging T-31 BLOCKED",
+    "GOV-06 external evidence"
+  ],
+  "evidence": [
+    "r18-int08-cancel-refund-revoked-qr-resale.log",
+    "r18-int08-cancel-refund-revoked-qr-resale.exitcode",
+    "apps/api/test/lifecycle-cancellation.e2e-spec.ts",
+    "r20-s48-refund-retry-e2e.log",
+    "s45-cancellation-result-desktop.png",
+    "s45-cancellation-result-mobile.png"
+  ],
+  "overall_remediation": "IN_PROGRESS"
+}

@@ -1,0 +1,318 @@
+## 14. Các hành trình tích hợp và chức năng bổ sung
+
+Các case này kiểm tương tác giữa module, bổ sung cho AC gốc. Nhãn P0/P1 ở đây là ưu tiên chạy do kế hoạch đề xuất, không thay Must/Should/Could trong Excel.
+
+### INT-01 — Mua vé đầu-cuối từ khách mới
+
+Dữ liệu: F01–F05; SMTP catcher
+
+1. Organizer A tạo event draft, suất tương lai, import 6 ghế/3 hạng, đặt giá và mở bán; công bố nếu ứng dụng yêu cầu.
+2. Ẩn danh tìm suất ở catalog, xem chi tiết; đăng ký tài khoản mới, kích hoạt từ catcher và đăng nhập.
+3. Chọn VIP A1 và STD A2, kiểm TTL; tạo order, so tổng 300.000 đồng; chọn mock thành công.
+4. Chờ server PAID; mở 2 vé, tải QR và xem email; STAFF được gán cửa A quét một vé.
+5. Mở lịch sử, vé và báo cáo organizer; đối chiếu toàn bộ ID và số liệu.
+
+Mong đợi:
+
+- Đúng 1 order, 2 dòng/2 vé riêng, tổng 300000 VND, ghế SOLD, không còn hold của order, email đúng QR, 1 admission NORMAL.
+- Không phải tạo/sửa dữ liệu bằng SQL để vượt bước UI bị hỏng.
+
+Liên quan: S-03, S-04, S-05, S-07, S-08, S-10, S-16, S-18, S-25, S-27, S-30, S-32, S-50. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-02 — Thất bại, retry và webhook đến sau browser
+
+Dữ liệu: Order 2 ghế; catcher
+
+1. Bấm mock thất bại, kiểm pending/hold/TTL không đổi.
+2. Retry cùng order, tắt tab sau trả tiền; webhook tới khi browser đóng.
+3. Mở lại lịch sử; gửi lại webhook 5 lần và 2 bản đồng thời.
+
+Mong đợi:
+
+- Một payment thành công hiệu lực và một bộ vé; không order mới, không nhân email job do webhook replay.
+
+Liên quan: S-18, S-20, S-24, S-25. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-03 — 200 request tranh 100 ghế, 10 vòng
+
+Dữ liệu: 100 ghế/vòng mới, 200 buyer hoặc session theo luật, quota không gây nhiễu
+
+1. Tạo đúng hai contender/ghế, barrier cùng thời điểm, phát 200 request; không dùng 200 lần await tuần tự.
+2. Lưu status/body/latency từng request, đếm DB hold còn hiệu lực và audit conflict.
+3. Lặp 10 vòng độc lập; kiểm ràng buộc SQL trực tiếp trong DB thử.
+
+Mong đợi:
+
+- Mỗi vòng chính xác 100 thắng/100 conflict, không 500 và không ghế có hai chủ.
+- Nếu gặp 429/admission rejection, fixture không hợp lệ cho phép đo này; báo và chạy lại sau cấu hình thử, không tính là conflict ghế.
+
+Liên quan: S-13, T-29, T-30, T-31. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-04 — Webhook đua hết hạn đơn
+
+Dữ liệu: Order sát deadline, clock/server barrier
+
+1. Cho expiry worker và webhook hợp lệ bắt đầu cùng barrier trên cùng order.
+2. Lặp 50 lần như mẫu kiểm kỹ thuật đề xuất, tách fixture mỗi lần; ghi tất cả outcome.
+3. Sau mỗi vòng kiểm order/payment/ticket/seat/hold và dấu cần hoàn.
+
+Mong đợi:
+
+- Mỗi vòng rơi vào một trạng thái hợp lệ theo S-23; không PAID mà ghế FREE, không EXPIRED mà vé hợp lệ.
+- 50 vòng là cỡ mẫu đề xuất của kế hoạch, không sửa AC gốc.
+
+Liên quan: S-20, S-23. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-05 — Hai máy quét online cùng vé
+
+Dữ liệu: 2 context STAFF/cửa, 1 QR paid
+
+1. Hai context quét tại barrier bằng requestId khác nhau.
+2. Lặp request thắng với cùng requestId; quét lại ở cửa kia.
+3. Thử override thiếu lý do/thiếu quyền rồi override hợp lệ.
+
+Mong đợi:
+
+- Một NORMAL; duplicate có first gate/time; replay không thêm admission; ngoại lệ có reason/staff riêng.
+
+Liên quan: S-30, S-31. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-06 — Hai cửa ngoại tuyến và đồng bộ đảo thứ tự
+
+Dữ liệu: 2 context/IndexedDB riêng, cùng snapshot, T1<T2
+
+1. Ngắt mạng cả hai, A quét T1 và B quét T2; đóng/mở browser A.
+2. B online sync trước, A sync sau; so giờ/offset thiết bị.
+3. Mở conflict/attendance report và kiểm bản ghi gốc không mất.
+
+Mong đợi:
+
+- Áp đúng luật AC S-36 hoặc báo sai khác với contract được duyệt; đầy đủ 2 cửa/2 thời điểm/offset và một khách duy nhất.
+
+Liên quan: S-33, S-34, S-35, S-36, S-52. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-07 — Queue sync không mất khi lỗi phản hồi
+
+Dữ liệu: 40 scan, network fault injection
+
+1. Lần lượt gây timeout sau commit server, offline giữa batch, 401, 403, 409 và 5xx.
+2. Reload/đóng mở app rồi sync lại; đếm scanId ở IndexedDB và server.
+3. Đổi account và quay lại account cũ, xác minh phạm vi queue.
+
+Mong đợi:
+
+- Chỉ xoá mục có ack bền; dữ liệu chưa ack còn phục hồi/retry được; server không ghi đôi và không trộn tài khoản.
+
+Liên quan: S-34, S-35, S-37. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-08 — Huỷ, hoàn, bán lại và QR cũ
+
+Dữ liệu: Paid chưa check-in, suất >24h theo policy ứng viên; A/B
+
+1. A xem preview, huỷ toàn order, worker hoàn mock; bắn hai cancel đồng thời.
+2. B giữ và mua lại đúng ghế vừa nhả.
+3. Quét QR cũ online/offline với cache cũ rồi sync; xem QR mới và báo cáo.
+
+Mong đợi:
+
+- Một refund hiệu lực theo policy; một chủ ghế hiện tại; QR cũ bị vô hiệu theo contract thu hồi; doanh thu gộp/ròng và audit đối soát được.
+
+Liên quan: S-45, S-46, S-48, S-49, S-50. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-09 — Huỷ suất theo lô và restart worker
+
+Dữ liệu: N đơn paid/pending, 2 batch trở lên, 1 refund gây lỗi
+
+1. Organizer huỷ suất; kiểm mua mới bị chặn ngay.
+2. Dừng worker riêng sau một batch, restart rồi retry lô lỗi.
+3. So tập order cần hoàn, số refund và email catcher; mở operations kế toán.
+
+Mong đợi:
+
+- Không bỏ/nhân refund, lỗi từng phần lộ rõ; mọi vé huỷ; thư không gửi tới khách thật.
+
+Liên quan: S-47, S-48. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-10 — Khóa/đổi vai trò khi session còn sống
+
+Dữ liệu: Account phụ STAFF/BUYER có session trên 2 context
+
+1. Admin đổi role và gọi API ngay trên hai session cũ.
+2. Admin disable; gọi API/đăng nhập lại; thử queue offline sync.
+3. Kiểm audit và sự cách ly queue thiết bị.
+
+Mong đợi:
+
+- Quyền cập nhật ở request tiếp theo; disabled không còn session hợp lệ; scan chưa sync không bị xoá âm thầm do 401/403.
+
+Liên quan: S-02, S-28, S-35. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-11 — Xoá dữ liệu nhưng giữ sổ giao dịch
+
+Dữ liệu: Tài khoản giả có đơn/hoàn/email/token/reset/transfer
+
+1. Lưu oracle số order, tiền, refund; gửi yêu cầu erasure rồi duyệt bằng ADMIN.
+2. Tìm PII canary trên tất cả bảng/outbox/log/cached snapshot thuộc phạm vi đã chốt.
+3. Thử session/token cũ và đối chiếu lại báo cáo tài chính.
+
+Mong đợi:
+
+- Không đăng nhập được, định danh đã ẩn danh ở phạm vi chốt; order/payment/totals giữ nguyên, không phát email tới định danh đã xoá.
+
+Liên quan: S-53, S-54, S-49. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-12 — Khởi động đúng source mới và nối module core
+
+Dữ liệu: Fresh build từ working tree, profile thử
+
+1. Lưu fingerprint trước build; khởi động dist vừa build, ghi PID/port/source.
+2. Gọi forgot/reset/reschedule/operations-mail và publication bằng đúng method/role.
+3. Đi từ login, event editor, showtime workspace và operations bằng nút nhìn thấy.
+
+Mong đợi:
+
+- Endpoint phải có thật và thực thi nghiệp vụ; route trả 404 hoặc nút không có được ghi lỗi tích hợp.
+- HTTP 200 cho trang wrapper hoặc file component tồn tại không chứng minh chức năng đã nối.
+
+Liên quan: EXT-RESET, EXT-PUBLISH, EXT-RESCHEDULE, EXT-MAIL, S-61. Trạng thái ban đầu: `NOT_RUN`.
+
+### EXT-RESET-01 — Quên mật khẩu đúng luồng UI/API
+
+Dữ liệu: Active+verified email; inactive/unverified/unknown; SMTP catcher
+
+1. Từ login đi tới forgot; gửi email mới/đã có, kiểm phản hồi 202 chung.
+2. Mở link reset mới, đặt mật khẩu 8 ký tự; login bằng mật khẩu mới.
+3. Thử mật khẩu cũ, session cũ, token dùng lần hai, token hết 15 phút và token khác trước reset.
+
+Mong đợi:
+
+- Không dò được email; token một lần, hết hạn theo contract ứng viên; thu hồi session/token cũ; không tự login sau reset.
+
+Liên quan: Chức năng bổ sung theo docs/CORE_COMPLETION_HANDOVER_20261022.md. Trạng thái ban đầu: `NOT_RUN`.
+
+### EXT-RESET-02 — Biên và race reset mật khẩu
+
+Dữ liệu: Token fixture, 2 requests cùng token, header IP giả
+
+1. Thử password 7/8/1024/1025 ký tự; đồng thời reset cùng token.
+2. Thử quota 3/email, 20/IP/15 phút và reset submit 20/IP/15 phút theo contract ứng viên.
+3. Giả forwarded header; kiểm token chỉ lưu hash, log không có token/password; disable/erasure trước reset.
+
+Mong đợi:
+
+- Một reset thắng; inactive/erased không phục hồi; IP lấy từ transport được tin cậy; quota trước Argon2.
+
+Liên quan: EXT-RESET. Trạng thái ban đầu: `NOT_RUN`.
+
+### EXT-PUBLISH-01 — Công bố/ẩn có điều kiện và quyền sở hữu
+
+Dữ liệu: Organizer A/B; event thiếu thông tin/map/giá, demo và hợp lệ
+
+1. Thử công bố từng trường hợp thiếu điều kiện và bằng chủ khác.
+2. Công bố hợp lệ; xem catalog/chi tiết/map bằng ẩn danh.
+3. Ẩn event rồi gọi URL chi tiết/map/SSE trực tiếp; kiểm order/ticket/scanner vẫn theo quyền; replay publication.
+
+Mong đợi:
+
+- Chặn thiếu điều kiện; catalog phản ánh trong hợp đồng cache; event ẩn không lộ public; vé/đơn đã mua giữ nguyên; audit không nhân vì replay.
+
+Liên quan: S-04, S-07, S-08, Chức năng publication mô tả trong handover. Trạng thái ban đầu: `NOT_RUN`.
+
+### EXT-RESCHEDULE-01 — Đổi giờ giữ nguyên QR và hạn thanh toán
+
+Dữ liệu: Suất tương lai có paid/pending, bản sao QR trước đổi, catcher
+
+1. Organizer đổi startTime có timezone, reason 3–1000 ký tự, requestId UUID.
+2. So showtime, schedule version/audit, order TTL, ghế và hash payload QR trước/sau.
+3. Cùng requestId+cùng body retry rồi cùng ID+khác body; thử người khác, suất đã bắt đầu/huỷ/có admission.
+
+Mong đợi:
+
+- Giữ nguyên QR/ghế/TTL, email lịch mới; replay trả cũ, khác nội dung 409; các trạng thái cấm bị chặn.
+
+Liên quan: S-61, EXT-RESCHEDULE. Trạng thái ban đầu: `NOT_RUN`.
+
+### EXT-MAIL-01 — Admin xử lý mail lỗi và worker tắt
+
+Dữ liệu: 55 mail hỗn hợp trạng thái/loại; ADMIN và BUYER; catcher
+
+1. Mở operations/mail, lọc ALL/TICKET/REMINDER/RESCHEDULED và trạng thái; kiểm 20 dòng/trang, total, không trùng/sót.
+2. Retry FAILED với requestId; replay; retry SENT/CANCELLED/đối tượng không còn hợp lệ.
+3. Worker off phải báo queued/chưa gửi; bật worker fixture và gây crash quanh lease, retry SMTP; đối chiếu audit/lịch sử.
+
+Mong đợi:
+
+- Chỉ ADMIN; giữ job cũ và tạo lượt mới đúng contract; không nhận QUEUED là SENT; SMTP có thể gửi lặp trong crash window, không tuyên bố exactly-once inbox.
+
+Liên quan: S-27, S-61, EXT-MAIL. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-13 — Phân quyền mọi endpoint và mọi chủ sở hữu
+
+Dữ liệu: Inventory runtime; ẩn danh+5 role; resource A/B
+
+1. Mỗi METHOD+path chạy với anonymous, role đúng, role sai, chủ đúng và chủ khác.
+2. Thử URL trực tiếp, web proxy /api và API direct; không dùng việc ẩn menu thay API guard.
+3. Đối chiếu route public opt-in; thêm route test-only không có khai báo quyền trong app fixture.
+
+Mong đợi:
+
+- 401/403/404 theo hợp đồng đã chốt; no mutation khi bị từ chối; public chỉ đúng dữ liệu công khai; role thay đổi có hiệu lực tức thời.
+
+Liên quan: S-02, S-04, S-17, S-28, S-32. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-14 — Lỗi hạ tầng và phục hồi không làm hỏng tiền/ghế
+
+Dữ liệu: DB/Redis/SMTP/gateway của profile thử riêng
+
+1. Ngắt từng dependency trong lúc hold/order/payment/scan; timeout sau commit và restart app.
+2. Retry cùng idempotency key; đọc lại state từ server.
+3. Đối chiếu health, log redaction và job backlog phục hồi; chỉ dừng process/container của profile thử.
+
+Mong đợi:
+
+- Không ghi nửa giao dịch, không double-charge/double-ticket/double-admission; UI có lỗi/thử lại đúng, dữ liệu đã lưu không mất.
+
+Liên quan: S-01, S-12, S-20, S-23, S-35. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-15 — UI đầy đủ trạng thái trên desktop và mobile
+
+Dữ liệu: 1440×900, 390×844, 360×800; route inventory; dữ liệu loading/empty/error/success
+
+1. Đi lần lượt mọi trang theo từng role; kiểm hành động chính bằng bàn phím và chuột/chạm.
+2. Giả response chậm/lỗi/rỗng; kiểm double-submit, focus/labels, menu, scroll bảng, zoom map, QR/camera.
+3. Ghi screenshot/video và console/network error cho mỗi route/state quan trọng; browser bị chặn thì ghi BLOCKED.
+
+Mong đợi:
+
+- Không tràn ngang toàn trang/cắt nút, các trạng thái hiểu được, phân biệt màu+kí hiệu, focus dùng được; mỗi hành động có backend effect đúng.
+
+Liên quan: T-10, T-14, T-18, T-20, T-24, T-35, S-30, S-38. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-16 — Chuyển nhượng rồi đổi lịch/huỷ/erasure
+
+Dữ liệu: Vé chuyển từ A sang B; QR cũ/mới; catcher
+
+1. Chuyển nhượng A→B, sau đó đổi giờ hoặc huỷ suất.
+2. Đối chiếu vé/người nhận hiện tại trong mail/reminder/reschedule, tài khoản và scanner.
+3. Erasure A không làm lộ mail A hoặc xoá quyền B ngoài phạm vi chốt.
+
+Mong đợi:
+
+- Email và quyền vé đi theo người nhận hiện tại, QR cũ vô hiệu; số vé và tổng tiền không tăng do transfer/reschedule.
+
+Liên quan: S-57, S-61, S-47, S-53. Trạng thái ban đầu: `NOT_RUN`.
+
+### INT-17 — Bằng chứng restore đủ cả dữ liệu và khóa
+
+Dữ liệu: Backup thử + key retained, app source rõ; kho ngoài host nếu có
+
+1. Restore bản sao vào DB mới và cấu hình app cổng riêng.
+2. Đăng nhập, đọc order lịch sử, tải vé và xác minh QR đã phát trước backup bằng public key lưu giữ.
+3. Kiểm lịch chạy/retention/upload qua receiver ngoài máy; nếu chỉ local drill thì tách outcome.
+
+Mong đợi:
+
+- Khôi phục dữ liệu và xác minh vé cũ; thiếu encryption/signing key không được PASS; local restore không tự chứng minh backup off-host hàng ngày.
+
+Liên quan: S-55, S-26. Trạng thái ban đầu: `NOT_RUN`.
+

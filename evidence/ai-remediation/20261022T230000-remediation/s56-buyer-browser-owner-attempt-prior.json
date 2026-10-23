@@ -1,0 +1,93 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Authenticated Chromium, current local build, isolated PostgreSQL profile; synthetic buyer/order/coupon only.",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "api": [
+    {
+      "method": "GET",
+      "path": "/api/orders/d3431273-2b8a-4857-ad5e-919e380f9fab",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/d3431273-2b8a-4857-ad5e-919e380f9fab/audit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/d3431273-2b8a-4857-ad5e-919e380f9fab/coupon",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/orders/d3431273-2b8a-4857-ad5e-919e380f9fab/coupon",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/d3431273-2b8a-4857-ad5e-919e380f9fab",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/d3431273-2b8a-4857-ad5e-919e380f9fab/audit",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/orders/d3431273-2b8a-4857-ad5e-919e380f9fab/coupon",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/d3431273-2b8a-4857-ad5e-919e380f9fab",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/d3431273-2b8a-4857-ad5e-919e380f9fab/audit",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "checks": [
+    "authenticated buyer order review loaded and showed baseline subtotal 101",
+    "invalid coupon surfaced API validation error in browser",
+    "buyer applied coupon through browser/API; refreshed floor discount 10 and payable 91 rendered",
+    "buyer removed coupon; refreshed payable restored to original 101",
+    "API apply/remove both returned 200; no page errors or API 5xx"
+  ],
+  "screenshots": [
+    "s56-buyer-coupon-applied-desktop.png",
+    "s56-buyer-coupon-removed-mobile.png"
+  ],
+  "orderReads": [
+    {
+      "status": "PENDING_PAYMENT",
+      "subtotalAmount": 101,
+      "discountAmount": 0,
+      "totalAmount": 101,
+      "couponCode": null
+    },
+    {
+      "status": "PENDING_PAYMENT",
+      "subtotalAmount": 101,
+      "discountAmount": 10,
+      "totalAmount": 91,
+      "couponCode": "S56FLOOR10"
+    },
+    {
+      "status": "PENDING_PAYMENT",
+      "subtotalAmount": 101,
+      "discountAmount": 0,
+      "totalAmount": 101,
+      "couponCode": null
+    }
+  ],
+  "appliedViewText": "← Đơn hàng của tôi\narrow_back\nChọn ghế\nXem lại chi tiết đơn hàng\n\nMã đơn hàng: d3431273-2b8a-4857-ad5e-919e380f9fab\n\nChờ thanh toán\ntimer\nThời gian còn lại để hoàn tất thanh toán\nGhế sẽ được giữ cho đến khi hết thời gian đếm ngược.\n29:56\nconfirmation_number\nThông tin sự kiện & Suất diễn\nTÊN SỰ KIỆN\nS56 fixture 20261022T230000-remediation\nTHỜI GIAN SUẤT DIỄN\ncalendar_month\nThứ Bảy, 24/10/2026 · 10:22\nĐỊA ĐIỂM TỔ CHỨC\nlocation_on\nLoopback test only\nchair\nDanh sách ghế đã chọn (1)\nĐơn giá niêm yết từ ban tổ chức\nSTT\tVị trí ghế\tHạng ghế\tĐơn giá\n1\tQA-1(Hàng QA, Số 1)\tS56 QA\t101 ₫\nMã giảm giá\n\nMỗi đơn áp dụng tối đa một mã.\n\nĐã áp dụng mã giảm giá.\n\nĐang áp dụng S56FLOOR10.\n\nBỏ mã\n\nTạm tính: 101 ₫\n\nGiảm giá: 10 ₫\n\nTổng cộng: 1 vé\nTỔNG TIỀN THANH TOÁN\n91 ₫\nNhật ký đơn hàng và vé\nrefresh\nThay đổi ghế\nThanh toán ngay",
+  "mobileNoOverflowApplied": true,
+  "mobileNoOverflowRemoved": true
+}

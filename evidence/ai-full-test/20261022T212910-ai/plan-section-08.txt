@@ -1,0 +1,15 @@
+## 8. Oracle dữ liệu và bất biến phải kiểm sau mỗi luồng quan trọng
+
+1. **Không trùng ghế:** mỗi seat của một showtime có tối đa một quyền giữ/đặt/bán còn hiệu lực theo state model; hold quá hạn không chặn ghế. Thử vi phạm DB trực tiếp, không chỉ đọc câu `if` ở service.
+2. **Không vượt sức chứa:** số ghế SOLD + ghế HELD/PENDING còn hiệu lực + ghế FREE = tổng ghế bán được; tập ID không giao nhau. Không cộng hold đã chuyển thành order hai lần.
+3. **Đúng tiền:** tổng order bằng tổng unitPrice snapshot của items bằng số tiền gateway khi ghi nhận; giá integer VND. Sửa total phía client không có tác dụng. Thay bảng giá không sửa order cũ.
+4. **Nguyên tử:** tạo order/gia hạn hold; paid/sold/xoá hold; expired/nhả ghế là các cụm chuyển cùng giao dịch. Chèn lỗi giữa bước trong DB thử để kiểm rollback.
+5. **Idempotency:** webhook/scan/refund/cancel/retry/worker replay không tạo thêm nghiệp vụ hiệu lực. Đếm theo transactionId/requestId/scanId/dedupeKey và kiểm constraint, không chỉ đếm HTTP 200.
+6. **Đúng vé:** mỗi ghế paid có một vé hiệu lực của người sở hữu hiện tại, QR đúng showtime và public key; unpaid/cancelled không lộ QR hợp lệ. Transfer/reschedule không làm nhân ghế/tiền.
+7. **Đúng admission:** một lượt NORMAL hiệu lực theo contract, duplicate và EXCEPTION tách biệt, có lý do/actor; conflict offline giữ đủ nguồn để kiểm tra.
+8. **Queue bền:** chỉ gỡ scan khỏi local queue sau ack server bền tương ứng; crash/timeout/login change không làm mất bản ghi chưa xác nhận.
+9. **Đúng báo cáo:** doanh thu/tồn/admission từ oracle tập ID/order items độc lập, không so dashboard với endpoint dùng cùng query rồi tự coi là kiểm độc lập.
+10. **Không lộ dữ liệu:** rejected request không đổi DB; người B không xem A; log/bundle/cache/mail/snapshot không có secrets hoặc PII ngoài hợp đồng. Erasure giữ nguyên transaction totals.
+
+Tên bảng/cột và enum thực phải lấy từ Prisma schema/migration tại lần chạy, không viết SQL dựa vào tên trong Excel nếu code dùng khác. Ghi query oracle đã che thông tin, chỉ đọc đối với DB dữ liệu chính.
+

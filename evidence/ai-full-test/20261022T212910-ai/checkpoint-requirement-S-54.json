@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-54-AC01",
+    "requirement_id": "S-54",
+    "kind": "AC",
+    "group": "Riêng tư",
+    "tier": "Later",
+    "priority": "Must",
+    "sprint": "8",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Người dùng đồng ý điều khoản và chính sách riêng tư, thu hồi được",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L54"
+    },
+    "original_requirement": "Khi đăng ký phải tích đồng ý, hệ thống lưu phiên bản và thời điểm; đổi phiên bản chính sách thì lần đăng nhập sau phải đồng ý lại; người dùng thu hồi được và khi đó không nhận email tiếp thị nữa. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP",
+    "fixture": "Checkbox chưa chọn/đã chọn, policy V1→V2 trong profile thử; có/không marketing consent.",
+    "surfaces": "/register; /privacy; /account/privacy; /privacy/consent",
+    "code_candidates": "apps/api/src/lifecycle/privacy.service.ts; apps/api/src/users/registration.service.ts",
+    "test_candidates": "registration-admission.e2e-spec.ts; lifecycle.spec.ts",
+    "steps": [
+      "Chuẩn bị fixture: Checkbox chưa chọn/đã chọn, policy V1→V2 trong profile thử; có/không marketing consent.",
+      "UI/API đăng ký thiếu đồng ý phải bị chặn; lưu version/time. Tăng version rồi login, phải xác nhận lại, không bypass bằng direct API. Thu hồi marketing consent phải dừng marketing; email nghiệp vụ được kiểm theo quyết định riêng đã chốt.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "UI/API đăng ký thiếu đồng ý phải bị chặn; lưu version/time. Tăng version rồi login, phải xác nhận lại, không bypass bằng direct API. Thu hồi marketing consent phải dừng marketing; email nghiệp vụ được kiểm theo quyết định riêng đã chốt.",
+    "expected": [
+      "Khi đăng ký phải tích đồng ý, hệ thống lưu phiên bản và thời điểm; đổi phiên bản chính sách thì lần đăng nhập sau phải đồng ý lại; người dùng thu hồi được và khi đó không nhận email tiếp thị nữa. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-54-NFR",
+    "requirement_id": "S-54",
+    "kind": "NFR",
+    "group": "Riêng tư",
+    "tier": "Later",
+    "priority": "Must",
+    "sprint": "8",
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Người dùng đồng ý điều khoản và chính sách riêng tư, thu hồi được — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N54"
+    },
+    "original_requirement": "chưa refine — nội dung điều khoản do người có thẩm quyền cung cấp, không phải dev soạn",
+    "fixture": "Checkbox chưa chọn/đã chọn, policy V1→V2 trong profile thử; có/không marketing consent.",
+    "surfaces": "/register; /privacy; /account/privacy; /privacy/consent",
+    "code_candidates": "apps/api/src/lifecycle/privacy.service.ts; apps/api/src/users/registration.service.ts",
+    "test_candidates": "registration-admission.e2e-spec.ts; lifecycle.spec.ts",
+    "steps": [
+      "UI/API đăng ký thiếu đồng ý phải bị chặn; lưu version/time. Tăng version rồi login, phải xác nhận lại, không bypass bằng direct API. Thu hồi marketing consent phải dừng marketing; email nghiệp vụ được kiểm theo quyết định riêng đã chốt.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine — nội dung điều khoản do người có thẩm quyền cung cấp, không phải dev soạn"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

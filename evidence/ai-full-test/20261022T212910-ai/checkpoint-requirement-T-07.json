@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-07-AC",
+    "requirement_id": "T-07",
+    "parent_requirement": "S-03",
+    "kind": "TASK_AC",
+    "group": "Tài khoản",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "API và form đăng ký kèm kiểm tra dữ liệu",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G8"
+    },
+    "original_requirement": "Đăng ký hợp lệ thì có bản ghi mới với vai trò người mua; email trùng hoặc mật khẩu ngắn thì bị chặn với thông báo đúng",
+    "fixture": "Email mới/trùng, mật khẩu 7/8 ký tự, token mới/đã dùng/24 giờ, SMTP catcher.",
+    "surfaces": "/register; /activate; /resend-activation; /users/register",
+    "code_candidates": "apps/api/src/users/registration.service.ts; apps/api/src/users/activation-delivery.service.ts",
+    "test_candidates": "registration.e2e-spec.ts; registration-admission.e2e-spec.ts; registration.service.spec.ts",
+    "steps": [
+      "Đăng ký ở UI và API; so phản hồi email có/không tồn tại; bắt email local, kích hoạt một lần rồi replay. Dùng fake time cho 24 giờ; gửi lại lần 5 và 6 trong một giờ; kiểm tài khoản chưa kích hoạt không đăng nhập được.",
+      "Kiểm riêng tiêu chí task T-07: Đăng ký hợp lệ thì có bản ghi mới với vai trò người mua; email trùng hoặc mật khẩu ngắn thì bị chặn với thông báo đúng",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Đăng ký hợp lệ thì có bản ghi mới với vai trò người mua; email trùng hoặc mật khẩu ngắn thì bị chặn với thông báo đúng"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-07-NFR",
+    "requirement_id": "T-07",
+    "parent_requirement": "S-03",
+    "kind": "TASK_NFR",
+    "group": "Tài khoản",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "API và form đăng ký kèm kiểm tra dữ liệu",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I8"
+    },
+    "original_requirement": "thông báo lỗi không phân biệt email đã tồn tại hay chưa",
+    "fixture": "Email mới/trùng, mật khẩu 7/8 ký tự, token mới/đã dùng/24 giờ, SMTP catcher.",
+    "surfaces": "/register; /activate; /resend-activation; /users/register",
+    "code_candidates": "apps/api/src/users/registration.service.ts; apps/api/src/users/activation-delivery.service.ts",
+    "test_candidates": "registration.e2e-spec.ts; registration-admission.e2e-spec.ts; registration.service.spec.ts",
+    "steps": [
+      "Đăng ký ở UI và API; so phản hồi email có/không tồn tại; bắt email local, kích hoạt một lần rồi replay. Dùng fake time cho 24 giờ; gửi lại lần 5 và 6 trong một giờ; kiểm tài khoản chưa kích hoạt không đăng nhập được.",
+      "Kiểm riêng tiêu chí task T-07: thông báo lỗi không phân biệt email đã tồn tại hay chưa",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "thông báo lỗi không phân biệt email đã tồn tại hay chưa"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

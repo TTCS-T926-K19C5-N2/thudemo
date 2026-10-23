@@ -1,0 +1,77 @@
+{
+  "capturedAt": "2026-10-23T07:54:54.708Z",
+  "proofRoot": "D:\\Merge_2\\Codegym-clean-package-proof-20261023T1544",
+  "profile": "s1demo-4e0cf076290e",
+  "ports": {
+    "web": 3001,
+    "api": 3003,
+    "mailpitUi": 24933
+  },
+  "preparedFiles": {
+    "selected": 1049,
+    "expected": 1049,
+    "allSha256Match": true,
+    "metadataExcluded": [
+      "apps/api/tsconfig.build.tsbuildinfo",
+      "apps/web/next-env.d.ts",
+      "PREPARED_FILESET.json"
+    ]
+  },
+  "catalog": {
+    "browserVisibleEvents": 40,
+    "showtimes": 42,
+    "eventDetailAndArtworkLoaded": true
+  },
+  "roleLogins": [
+    {
+      "role": "ADMIN",
+      "result": "PASS",
+      "surface": "/admin/users"
+    },
+    {
+      "role": "ORGANIZER",
+      "result": "PASS",
+      "surface": "/events",
+      "observedEvents": 40,
+      "observedShowtimes": 42
+    },
+    {
+      "role": "BUYER",
+      "result": "PASS",
+      "surface": "/account"
+    },
+    {
+      "role": "STAFF",
+      "result": "PASS",
+      "surface": "/scanner"
+    },
+    {
+      "role": "ACCOUNTANT",
+      "result": "PASS",
+      "surface": "/operations"
+    }
+  ],
+  "buyerJourney": {
+    "show": "Bệnh sĩ",
+    "showtime": "2026-12-07 19:30",
+    "seat": "A-1 VIP",
+    "amountVnd": 580000,
+    "seatHoldConfirmed": true,
+    "mockPaymentResult": "PAID",
+    "ticketUi": "QR rendered; ticket VALID"
+  },
+  "restart": {
+    "action": "Restart -SkipBuild",
+    "exitCode": 0,
+    "status": "READY",
+    "databaseOracle": "clean-package-order-oracle.json",
+    "browserAfterRestart": "Order still PAID; A-1 ticket still VALID and QR rendered"
+  },
+  "limits": {
+    "notAGitClone": true,
+    "screenshotsPersisted": false,
+    "externalPaymentNotTested": true,
+    "staffCameraPermissionNotRequested": true,
+    "allRoleActionsNotFullyWalked": true
+  }
+}

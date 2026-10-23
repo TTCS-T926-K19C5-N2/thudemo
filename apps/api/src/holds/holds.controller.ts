@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -41,6 +42,22 @@ export class HoldsController {
       id,
       req.user.id,
       req.sessionHash ?? hashSessionToken(req.sessionToken),
+    );
+  }
+
+  @Delete(':seatId')
+  @HttpCode(200)
+  releaseSeat(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('seatId', ParseUUIDPipe) seatId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.service.releaseSeat(
+      id,
+      req.user.id,
+      req.sessionHash ?? hashSessionToken(req.sessionToken),
+      seatId,
+      req.holdClient,
     );
   }
 }

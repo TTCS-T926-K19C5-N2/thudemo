@@ -1,0 +1,11 @@
+{
+  "runId": "20261022T230000-remediation",
+  "fixtureEventId": "9246a47c-af36-456d-8063-620ae044cd8e",
+  "fixtureShowtimeId": "5514f5ac-17b6-43f4-ba06-4ef9a46cd59c",
+  "ownerUserId": "a62cabcc-afab-4297-9e99-c166e3ebdf2e",
+  "adminUserId": "4c38fb88-9a6a-4abb-96d9-bafda78f7525",
+  "ticketCount": 2,
+  "admissionCount": 1,
+  "conflictScanCount": 2,
+  "synthetic": true
+}

@@ -1,0 +1,142 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Isolated Codegym app on loopback backed by run-bound PostgreSQL; no camera/provider/real network.",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "camera": false,
+  "checks": [
+    "assigned showtime rendered",
+    "full snapshot reports exactly 40 paid fixture tickets",
+    "snapshot contains no fixture email or staff name",
+    "IndexedDB durably stores download time, key, all 40 valid ticket identities and check-in states",
+    "all 40 offline scans are durably queued in IndexedDB before success is reported",
+    "offline scan UI has no horizontal overflow at desktop",
+    "all 40 durable queue records and stable request IDs survive browser process relaunch",
+    "scanner input remains enabled after offline browser relaunch",
+    "offline queue survives browser context close/reopen at 390px without horizontal overflow",
+    "real server returns durable ACKs for the full 40-item batch",
+    "40 pending scans are removed only after the full real PostgreSQL-backed batch ACK",
+    "browser has no uncaught page errors",
+    "captured scanner API requests have no server error"
+  ],
+  "screenshots": [
+    "r19-snapshot-desktop.png",
+    "r19-offline-queued-desktop.png",
+    "r19-offline-reopened-mobile.png"
+  ],
+  "api": [
+    {
+      "method": "GET",
+      "path": "/scanner/snapshot",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/showtimes",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/showtimes/47f4dad5-3bcc-457f-9032-8e9123816ed3/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/showtimes/47f4dad5-3bcc-457f-9032-8e9123816ed3/tickets",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/scanner/snapshot",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/scanner/snapshot",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/scanner/qr-keys",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/scanner/sync-scans",
+      "status": 200,
+      "batchCount": 40
+    }
+  ],
+  "pageErrors": [],
+  "localSnapshotSummary": {
+    "hasValidDownloadTime": true,
+    "metaStatus": "ready",
+    "hasVerificationKey": true,
+    "ticketCount": 40,
+    "allFixtureTicketsPresent": true,
+    "ticketStatus": "valid",
+    "checkedInAtIsNull": true
+  },
+  "offlineReopenState": {
+    "inputDisabled": false,
+    "showtimeId": "47f4dad5-3bcc-457f-9032-8e9123816ed3",
+    "selectedGate": "R19 Gate A",
+    "alerts": [
+      "ĐANG NGOẠI TUYẾN — 40 lượt quét chưa đồng bộDữ liệu quét được lưu an toàn trên máy. Không tắt thiết bị khi còn dữ liệu chưa đẩy lên.Thử kết nối lại"
+    ],
+    "persistedShowtimeSelected": true,
+    "persistedStaffIdentity": true,
+    "persistedShowtimeGrant": true
+  },
+  "syncedRequestId": "07f847b5-5d48-43f3-b96f-d01c9bfb58c3",
+  "reconnectState": {
+    "navigatorOnline": true,
+    "networkStatus": "Ngoại tuyến"
+  },
+  "syncHttpStatus": 200,
+  "syncAckStatus": "synced",
+  "syncedRequestIds": [
+    "8eb1b51c-f549-43d0-82f7-65288491902b",
+    "80d1c683-7183-470d-9c0c-230cf1b133f3",
+    "cfeafa66-2674-4761-aebd-1761ad563f6f",
+    "8698b8a5-c013-445e-b8c5-68ad9c3b9b30",
+    "ed98af59-9eaf-4951-8ffb-5597a3be3353",
+    "d226d918-785e-4df5-baea-c7420c4d2f20",
+    "41ee9cfa-27ea-44f2-8a0c-9ed1e6ca8e65",
+    "c3c320c7-ab7d-4211-b5f1-0ce647a16de4",
+    "3f671a79-74f3-4ef6-ba9a-0ff1aa94706f",
+    "6f7b62fa-6128-4043-ba05-a962530d28cc",
+    "a9aa08a4-10a4-4148-b420-40f44744b9f3",
+    "ee483d12-b628-4fdf-8250-ee8c646beeb1",
+    "501e8bc3-af46-4a1d-84bb-186ffbdcfaff",
+    "f6904ebf-f1d4-46dc-9e98-9fd5d1bf8d12",
+    "5efa7820-0432-48f9-9266-49f177465b35",
+    "713985b8-9b75-4d9b-94b7-dc0bcb6c0966",
+    "541dc00f-b2d4-4413-9f4d-6a6c6a13e4b6",
+    "241af335-6642-4d66-aa3e-8121456297da",
+    "50081f21-a91a-443b-9e16-e8bb17bd3014",
+    "401ffce9-b815-44ee-89d6-28bbed593d2a",
+    "7eee4b1a-e5bb-433f-ac1b-fa3cfdcf3132",
+    "5095ab8c-55c6-4712-8fd6-05b52e4c0809",
+    "1e9dd96d-da76-4a78-a463-fa70ab98c411",
+    "e4fdcfa3-5a3b-4d2c-9846-e15cb21ba4fa",
+    "5b53525b-ce7e-4d5c-b685-705a9cf9e5c7",
+    "519485e9-cbce-462a-b5a7-6fb45aa7cc8b",
+    "a851414c-fa6c-4f77-b487-76130483759f",
+    "880563a3-a085-4e58-9ea0-0dd3d74e4f82",
+    "7e74332a-1c20-4a70-984d-a56094f68a7d",
+    "74e00fac-fad9-4af4-bdbb-35bf4450bc2e",
+    "4d6e155c-4320-429b-9d25-83a29af74f93",
+    "fefb7e13-52ce-4093-b8de-a7d0ed0d7bef",
+    "fc53c798-41a5-444d-b8b5-fc064319f24b",
+    "9178c1e6-10b3-40bd-8537-e92deddfb00c",
+    "07f847b5-5d48-43f3-b96f-d01c9bfb58c3",
+    "2dbf8384-f4f5-404e-a2ea-a84eea827f52",
+    "b5a8714d-2080-406b-b9ed-d52a895d0787",
+    "93d7125b-cc5d-449b-8ffb-6a4422e7aa21",
+    "72ef7af4-93f9-47f2-abd3-6e8bc4bba52a",
+    "4873feae-cb8c-457c-ab04-95b1afdbe550"
+  ]
+}

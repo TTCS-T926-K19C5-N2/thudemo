@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-58-AC01",
+    "requirement_id": "S-58",
+    "kind": "AC",
+    "group": "Sự kiện",
+    "tier": "Later",
+    "priority": "Could",
+    "sprint": null,
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Nhân bản suất diễn kèm sơ đồ và bảng giá",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L58"
+    },
+    "original_requirement": "Chọn \"nhân bản\" thì suất mới ở trạng thái nháp có cùng sơ đồ và giá, chỉ khác thời gian; ghế của suất mới đều trống. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP. Phần đệm, chưa xếp sprint",
+    "fixture": "Suất nguồn có sơ đồ, giá và ghế đã bán/giữ.",
+    "surfaces": "POST /showtimes/:id/clone",
+    "code_candidates": "apps/api/src/showtimes/showtimes.service.ts; apps/web/src/features/showtime-management/clone-showtime-form.tsx",
+    "test_candidates": "showtimes.service.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị fixture: Suất nguồn có sơ đồ, giá và ghế đã bán/giữ.",
+      "Nhân bản giờ tương lai, so layout/category/prices nhưng ID khác và tất cả ghế mới trống, trạng thái DRAFT. Không mang hold/order/admission từ nguồn; sửa clone không đổi nguồn; kiểm chủ sở hữu.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Nhân bản giờ tương lai, so layout/category/prices nhưng ID khác và tất cả ghế mới trống, trạng thái DRAFT. Không mang hold/order/admission từ nguồn; sửa clone không đổi nguồn; kiểm chủ sở hữu.",
+    "expected": [
+      "Chọn \"nhân bản\" thì suất mới ở trạng thái nháp có cùng sơ đồ và giá, chỉ khác thời gian; ghế của suất mới đều trống. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP. Phần đệm, chưa xếp sprint"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-58-NFR",
+    "requirement_id": "S-58",
+    "kind": "NFR",
+    "group": "Sự kiện",
+    "tier": "Later",
+    "priority": "Could",
+    "sprint": null,
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Nhân bản suất diễn kèm sơ đồ và bảng giá — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N58"
+    },
+    "original_requirement": "chưa refine",
+    "fixture": "Suất nguồn có sơ đồ, giá và ghế đã bán/giữ.",
+    "surfaces": "POST /showtimes/:id/clone",
+    "code_candidates": "apps/api/src/showtimes/showtimes.service.ts; apps/web/src/features/showtime-management/clone-showtime-form.tsx",
+    "test_candidates": "showtimes.service.spec.ts; sprint2.e2e-spec.ts",
+    "steps": [
+      "Nhân bản giờ tương lai, so layout/category/prices nhưng ID khác và tất cả ghế mới trống, trạng thái DRAFT. Không mang hold/order/admission từ nguồn; sửa clone không đổi nguồn; kiểm chủ sở hữu.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

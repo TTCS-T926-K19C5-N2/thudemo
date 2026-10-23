@@ -1,20 +1,24 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { SeatEventsService } from '../showtimes/seat-events.service.js';
 
 type EventInput = { name: string; description: string; location: string };
 
-function parseEventInput(value: unknown): EventInput {
+function parseEventInput(value: unknown, descriptionLimit = 2000): EventInput {
   const input =
     value && typeof value === 'object'
       ? (value as Record<string, unknown>)
       : {};
   const errors: Record<string, string> = {};
-  const limits = { name: 120, description: 2000, location: 200 } as const;
+  const limits = { name: 120, description: descriptionLimit, location: 200 } as const;
   for (const field of Object.keys(limits) as (keyof EventInput)[]) {
     const content = input[field];
     if (typeof content !== 'string' || content.trim().length === 0) {
@@ -38,7 +42,10 @@ function parseEventInput(value: unknown): EventInput {
 
 @Injectable()
 export class EventsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly seatEvents?: SeatEventsService,
+  ) {}
 
   async create(organizerId: string, data: unknown) {
     return this.prisma.event.create({
@@ -62,6 +69,90 @@ export class EventsService {
     return event;
   }
 
+  async publication(id: string, organizerId: string, input: unknown) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))
+      throw new BadRequestException('Mã sự kiện không hợp lệ.');
+    const status =
+      input && typeof input === 'object'
+        ? (input as Record<string, unknown>).status
+        : undefined;
+    if (status !== 'DRAFT' && status !== 'PUBLISHED')
+      throw new BadRequestException('Trạng thái công bố không hợp lệ.');
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM events WHERE id=${id}::uuid FOR UPDATE`;
+      const event = await tx.event.findUnique({ where: { id } });
+      if (!event) throw new NotFoundException('Không tìm thấy sự kiện.');
+      if (event.organizerId !== organizerId)
+        throw new ForbiddenException('Bạn không có quyền sửa sự kiện này.');
+      if (event.status === status)
+        return { event, showtimeIds: [] as string[], changed: false };
+
+      let showtimeIds: string[] = [];
+      if (status === 'PUBLISHED') {
+        await tx.$queryRaw`SELECT id FROM showtimes WHERE "eventId"=${id}::uuid FOR UPDATE`;
+        const showtimes = await tx.showtime.findMany({
+          where: {
+            eventId: id,
+            status: 'ON_SALE',
+            isDemo: false,
+            startTime: { gt: new Date() },
+          },
+          select: {
+            id: true,
+            categories: { select: { price: true } },
+            _count: { select: { seats: true } },
+          },
+        });
+        const ready = showtimes.filter(
+          (showtime) =>
+            showtime._count.seats > 0 &&
+            showtime.categories.length > 0 &&
+            showtime.categories.every(
+              (category) => category.price !== null && category.price >= 0,
+            ),
+        );
+        if (!ready.length)
+          throw new ConflictException(
+            'Cần ít nhất một suất ON_SALE trong tương lai có sơ đồ ghế và giá hợp lệ.',
+          );
+        showtimeIds = ready.map((showtime) => showtime.id);
+      } else {
+        const showtimes = await tx.showtime.findMany({
+          where: { eventId: id },
+          select: { id: true },
+        });
+        showtimeIds = showtimes.map((showtime) => showtime.id);
+      }
+
+      const updated = await tx.event.update({
+        where: { id },
+        data: { status },
+      });
+      await tx.catalogRevision.update({
+        where: { id: 1 },
+        data: { version: { increment: 1 } },
+      });
+      await tx.domainAudit.create({
+        data: {
+          entityType: 'EVENT',
+          entityId: id,
+          actorId: organizerId,
+          actorType: 'ORGANIZER',
+          action: status === 'PUBLISHED' ? 'EVENT_PUBLISHED' : 'EVENT_HIDDEN',
+          beforeState: { status: event.status } as Prisma.InputJsonValue,
+          afterState: { status } as Prisma.InputJsonValue,
+        },
+      });
+      return { event: updated, showtimeIds, changed: true };
+    });
+
+    if (result.changed)
+      for (const showtimeId of result.showtimeIds)
+        this.seatEvents?.invalidate(showtimeId);
+    return result.event;
+  }
+
   async findMine(organizerId: string) {
     return this.prisma.event.findMany({
       where: { organizerId },
@@ -82,10 +173,10 @@ export class EventsService {
   }
 
   async update(id: string, organizerId: string, input: unknown) {
-    await this.findOwned(id, organizerId);
+    const current = await this.findOwned(id, organizerId);
     return this.prisma.event.update({
       where: { id },
-      data: parseEventInput(input),
+      data: parseEventInput(input, Math.max(2000, current.description.length)),
     });
   }
 

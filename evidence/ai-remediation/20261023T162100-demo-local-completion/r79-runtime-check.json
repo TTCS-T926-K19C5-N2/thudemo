@@ -1,0 +1,40 @@
+{
+  "runId": "20261023T162100-demo-local-completion",
+  "checkpoint": "R79",
+  "profile": "isolated local demo",
+  "status": "READY",
+  "sourceFingerprint": "33f1ca42285ba277a8f6c7a1cc75cfb82a1b683ee916d5c1eba6aa00a8a303c2",
+  "readyAt": "2026-10-23T15:25:33.489Z",
+  "activeProcessCount": 2,
+  "officialRestart": true,
+  "buildCompleted": true,
+  "migrationsApplied": 0,
+  "seedReplay": false,
+  "catalogSeedReplay": false,
+  "demoShowtimeReplay": false,
+  "database": {
+    "events": 40,
+    "showtimes": 44,
+    "paidOrders": 5,
+    "tickets": 5,
+    "seats": 5904,
+    "activeHolds": 0
+  },
+  "health": {
+    "web": "HTTP 200",
+    "mailpit": "HTTP 200",
+    "api": "READY via official launcher smoke"
+  },
+  "freeRamGiBAfterBuild": 0.74,
+  "fullRegressionAfterRestart": "not run; deferred to preserve active demo",
+  "secretsIncluded": false,
+  "sourceParity": {
+    "selectedContentMatches": true,
+    "canonicalFileCount": 793,
+    "preparedOnlyGenerated": [
+      "apps/api/tsconfig.build.tsbuildinfo",
+      "apps/web/next-env.d.ts"
+    ],
+    "rawFingerprintDifferenceExplainedByGeneratedFiles": true
+  }
+}

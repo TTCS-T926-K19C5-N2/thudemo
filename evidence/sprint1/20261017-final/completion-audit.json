@@ -1,0 +1,100 @@
+{
+  "time": "2026-10-17T02:31:15.093Z",
+  "acceptedSoftware": "4033da4dde1484fc777806421006f9c17e831f8b",
+  "assertionResults": {
+    "PASS": 94,
+    "BLOCKED": 1
+  },
+  "scope": "DEC15 S01-S04/K01,T01-T10,72 original clauses+23 S03/onboarding; no future Sprint AC",
+  "sourceStatus": {
+    "tasks": 10,
+    "backlogCells": 15,
+    "result": "PASS"
+  },
+  "goalConditions": [
+    {
+      "id": 1,
+      "result": "PASS",
+      "evidence": "acceptance-current.json",
+      "limit": "Final publication gate below still required for global Done"
+    },
+    {
+      "id": 2,
+      "result": "BLOCKED",
+      "remaining": "Only final documentation publication review/checks/merge and compatible runtime verification; no functional failure concealed"
+    },
+    {
+      "id": 3,
+      "result": "PASS",
+      "evidence": "integration-and-auto-deploy.json",
+      "limit": "PR99 member review/CI/PO decisions; final publication review separate"
+    },
+    {
+      "id": 4,
+      "result": "PASS",
+      "evidence": "PR99 develop403 exact approved tree"
+    },
+    {
+      "id": 5,
+      "result": "PASS",
+      "evidence": "integration-and-auto-deploy.json",
+      "actualSeconds": 320.279
+    },
+    {
+      "id": 6,
+      "result": "PASS",
+      "evidence": [
+        "api-current/https-api.json",
+        "browser-current-network.json",
+        "registration-session.json",
+        "network-current.json"
+      ]
+    },
+    {
+      "id": 7,
+      "result": "PASS",
+      "evidence": [
+        "../20261016-s03-onboarding/fresh-exact-clone-bootstrap.json",
+        "../20261016-s03-onboarding/fresh-exact-clone-lifecycle.json",
+        "source-compatibility.json"
+      ]
+    },
+    {
+      "id": 8,
+      "result": "PASS",
+      "evidence": [
+        "integration-and-auto-deploy.json",
+        "../20261017-integrated/rollback-90188e5.json",
+        "source-compatibility.json"
+      ]
+    },
+    {
+      "id": 9,
+      "result": "BLOCKED",
+      "evidence": "source-status-sync.json",
+      "remaining": "Task/workbook/source consistency applied; publish final matching docs via protected develop PR"
+    }
+  ],
+  "publicationGate": {
+    "statusAtPreparation": "BLOCKED",
+    "condition": "After explicit DEC18 approval and protection readback: actual automated technical review on exact base/head/diff, required Review / technical-review success plus all original required CI success, no unresolved conversations, scoped develop PR, then merge and integrated CI/automatic staging/AC verification.",
+    "acceptedSoftwareSource": "4033da4dde1484fc777806421006f9c17e831f8b",
+    "afterVerifiedPublication": "PASS; Sprint1 Done for approved R0 laptop fake-data scope",
+    "noRetroactiveHumanApproval": true
+  },
+  "sprintDoneAtPreparation": false,
+  "artifactJsonParsed": 9,
+  "originalArtifactFilesValidated": 47,
+  "limits": [
+    "94 requirement assertions retain accepted-software evidence; DOD-row2 now BLOCKED pending actual exact-SHA DEC18 review/enforcement. Final publication and postmerge staging remain required.",
+    "All old artifacts retain original source/environment; compatibility proved by exact unchanged app/schema/lock/demo/deploy inputs.",
+    "K01 current technical output accepted DEC17; historical1day timebox/mentor NOT RUN remains disclosed.",
+    "No new second-device browser test; historical twopeer original source remains applicable to unchanged classifier/proxy.",
+    "No new Internet mail claimed; actual SMTP/inbox receipt remains at02a and activated-session regression at403.",
+    "S30/S31/S43 regression and required T31 policy are not Sprint1 AC; existing F15 payment logger remains separate."
+  ],
+  "status": "Historical accepted-software audit at403 with prospective DEC18 publication overlay; not a new runtime run",
+  "assertionResultsAtOriginalPreparation": {
+    "PASS": 95
+  }
+}

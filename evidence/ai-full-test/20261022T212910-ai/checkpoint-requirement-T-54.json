@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-54-AC",
+    "requirement_id": "T-54",
+    "parent_requirement": "S-24",
+    "kind": "TASK_AC",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Nhận kết quả thất bại từ cổng và giữ nguyên trạng thái chờ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G55"
+    },
+    "original_requirement": "Kết quả thất bại thì đơn vẫn chờ, giữ chỗ còn nguyên; test với cổng giả lập ở T-43",
+    "fixture": "Order pending còn hạn; gateway mock fail rồi success, biến thể đã quá hạn.",
+    "surfaces": "/orders/:id; POST /orders/:id/pay",
+    "code_candidates": "apps/api/src/payments/; apps/web/src/features/order-review/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments.e2e-spec.ts",
+    "steps": [
+      "Chọn thất bại: order/hold/TTL không đổi, có log lần thử. Thanh toán lại dùng cùng orderId; double click không tạo hai attempt đang xử lý. Quá hạn thì cả UI/API chặn retry.",
+      "Kiểm riêng tiêu chí task T-54: Kết quả thất bại thì đơn vẫn chờ, giữ chỗ còn nguyên; test với cổng giả lập ở T-43",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Kết quả thất bại thì đơn vẫn chờ, giữ chỗ còn nguyên; test với cổng giả lập ở T-43"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-54-NFR",
+    "requirement_id": "T-54",
+    "parent_requirement": "S-24",
+    "kind": "TASK_NFR",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Nhận kết quả thất bại từ cổng và giữ nguyên trạng thái chờ",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I55"
+    },
+    "original_requirement": "không đổi bất kỳ trạng thái nào ngoài ghi nhận sự kiện",
+    "fixture": "Order pending còn hạn; gateway mock fail rồi success, biến thể đã quá hạn.",
+    "surfaces": "/orders/:id; POST /orders/:id/pay",
+    "code_candidates": "apps/api/src/payments/; apps/web/src/features/order-review/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments.e2e-spec.ts",
+    "steps": [
+      "Chọn thất bại: order/hold/TTL không đổi, có log lần thử. Thanh toán lại dùng cùng orderId; double click không tạo hai attempt đang xử lý. Quá hạn thì cả UI/API chặn retry.",
+      "Kiểm riêng tiêu chí task T-54: không đổi bất kỳ trạng thái nào ngoài ghi nhận sự kiện",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "không đổi bất kỳ trạng thái nào ngoài ghi nhận sự kiện"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

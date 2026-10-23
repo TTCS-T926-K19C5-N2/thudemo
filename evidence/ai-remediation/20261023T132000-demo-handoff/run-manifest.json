@@ -1,0 +1,56 @@
+{
+  "runId": "20261023T132000-demo-handoff",
+  "createdAt": "2026-10-23T05:32:13.243Z",
+  "branch": "feature/sprint-4-8-complete",
+  "head": "ce777bd13e472c089eef4a3c1ed4455e501ae3ba",
+  "workingTree": "dirty; preserved; no reset/stash/checkout",
+  "target": "DEMO_READY",
+  "profilePolicy": "Keep test profile separate; create durable demo DB/profile separately. No production/main DB writes.",
+  "baselineRun": "20261022T212910-ai",
+  "inheritedEvidenceRun": "20261022T230000-remediation",
+  "matrixInheritedCounts": {
+    "NOT_RUN": 356,
+    "PASS": 95,
+    "BLOCKED": 4,
+    "NEEDS_DECISION": 4,
+    "MISSING": 1,
+    "FAIL": 1
+  },
+  "manifestFileCount": 198,
+  "uiAssetFileCount": 198,
+  "datasets": [
+    {
+      "file": "su_kien_nha_hat_40_su_kien_chi_tiet_2026.json",
+      "sha256": "e40bc432963bcc9c486d5a315588307fb23d9f54167b042f7050ac0ca9c4c671",
+      "eventCount": 40,
+      "venueCount": 11,
+      "seatMapCount": 4
+    },
+    {
+      "file": "theater_chamber_events_seed.json",
+      "sha256": "a7927cc1ae88dadab48d659f9028981df15cdd392994e5c59848c9724bea02de",
+      "eventCount": 12,
+      "venueCount": 4,
+      "seatMapCount": 3
+    }
+  ],
+  "secretHandling": "No raw .env/URL/token/cookie/key/PII is written to manifest.",
+  "currentMatrixCounts": {
+    "NOT_RUN": 336,
+    "PASS": 142,
+    "BLOCKED": 10,
+    "NEEDS_DECISION": 5,
+    "MISSING": 1,
+    "NOT_APPLICABLE": 0
+  },
+  "lastCheckpointAt": "2026-10-23T08:45:25.948Z",
+  "latestCheckpoint": "R43",
+  "preparedSourceFileCount": 1049,
+  "proofMissingSourceFiles": 0,
+  "proofChangedSourceFiles": 0,
+  "preparedFilesetEvidence": "prepared-fileset-current.json",
+  "preparedFilesetSha256": "3748120a6f7f2a2a15e635763a2652f7da159971c18c2a0b82bfe29fb3484e45",
+  "evidenceReferenceResolution": "evidence-reference-resolution.json",
+  "unresolvedEvidenceReferences": 0,
+  "passRowsWithoutEvidence": []
+}

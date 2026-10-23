@@ -1,0 +1,71 @@
+## 4. Chuẩn bị môi trường và dữ liệu
+
+### 4.1. Ba lớp môi trường
+
+| Lớp | Dùng để làm gì | Cách ghi kết quả |
+|---|---|---|
+| TEST-LOCAL | DB/Redis/SMTP và tài khoản giả riêng; unit/integration/browser/load/fault injection | Chỉ kết luận local với cấu hình đã ghi. |
+| STAGING | Xác nhận build đang deploy, HTTPS/proxy/session, AC quan trọng và smoke | Là điều kiện riêng của DoD gốc; local đạt chưa thành staging đạt. Không tự deploy hay merge để tạo bằng chứng. |
+| DEVICE | Điện thoại/camera, 4G thật, ánh nắng và mất mạng | Ghi model/OS/browser/network; mô phỏng ghi rõ là mô phỏng. Thiếu thiết bị là `BLOCKED`, không PASS suy diễn. |
+
+Kiểm Node và pnpm theo `package.json`/README hiện hành: Node 24.x, pnpm 10.15.1; ghi phiên bản thực cài. PostgreSQL/Redis theo compose/profile thực tế. Không tự nâng dependency trong đợt nghiệm thu.
+
+Không đọc/in toàn bộ `.env`, mật khẩu, cookie, private key hoặc connection string vào chat/report. Có thể nạp cấu hình local theo quyền nhưng chỉ ghi host/cổng/tên DB đã che thông tin; mọi thao tác ghi phải xác nhận DB thử tách biệt. Clone DB có PII vẫn là dữ liệu nhạy cảm; ưu tiên dữ liệu tổng hợp và SMTP catcher, không đưa payload vào báo cáo công khai.
+
+### 4.2. Bộ dữ liệu tối thiểu
+
+| ID | Dữ liệu | Mục đích |
+|---|---|---|
+| F01 | 2 BUYER, 2 ORGANIZER, 2 STAFF, 1 ACCOUNTANT, 1 ADMIN; account inactive/unverified/erased phụ | Kiểm 5 vai trò, quyền sở hữu, thay role và thu hồi session; không khóa tài khoản chính. |
+| F02 | Event draft/published/hidden; suất hôm nay, tương lai >48h, sát cutoff 24h, quá khứ, đóng bán, huỷ | Kiểm trạng thái, public URL và timezone. Tính giờ tương đối theo server, không hard-code ngày mẫu đã qua. |
+| F03 | Map 6 ghế/3 hạng, map 2.000 ghế, tệp malformed/trùng/thiếu field/nhiều lỗi; tệp sát/vượt 5 MB | Import, preview, rollback, giới hạn dung lượng và hiệu năng. Lấy schema JSON từ code/fixture thật. |
+| F04 | VIP=200000, STD=100000, ECO=50000 VND; dữ liệu giá thiếu/âm/chữ/decimal | Oracle tiền nguyên; order 1 VIP+1 STD có tổng 300000. |
+| F05 | Hold còn hạn/hết hạn/thuộc người khác; order pending/paid/expired/cancelled/needs-review | Giữ ghế, gia hạn, thanh toán, race expiry và bảo mật. Ghi tên enum thực trong schema. |
+| F06 | QR đúng, sửa 1 ký tự, thiếu signature, kid không biết, vé sai suất/huỷ/đã vào; K1/K2 thử | Chữ ký, xoay khóa, reject reason, offline. Không dùng khóa production để thử luân chuyển. |
+| F07 | 2 cửa, 2 context thiết bị, 40 offline scans, 5.000 tickets snapshot | Chống dùng lại, lưu bền, sync lô, conflict và hiệu năng 4G. |
+| F08 | CSV đối soát 4 nhóm; nhiều order và refund/transfer/audit | Báo cáo, đối soát, không cộng trùng. |
+| F09 | 55 email đủ loại/trạng thái; catcher có chế độ lỗi; worker off/on | Phân trang 20 dòng, resend/retry/lease và thời hạn gửi mail. |
+| F10 | Snapshot dữ liệu trước test, manifest checksum/counts và key fixture giữ riêng | So integrity sau lỗi và restore; đối chiếu số liệu hiện tại thay vì hard-code count lịch sử. |
+
+Mỗi fixture có `run-id`, owner và danh sách ID để cleanup có chọn lọc. Không dùng reset DB, `down -v`, flush Redis dùng chung, sửa 40 sự kiện thật hoặc gửi email tới khách để tạo PASS. Chỉ dừng process/container thuộc profile thử. Thư catcher chứng minh gửi/nhận nội bộ, không chứng minh Inbox Internet.
+
+### 4.3. Hướng dẫn lệnh và điều kiện dùng script sẵn có
+
+Các lệnh dưới đây để chatbot thực hiện **khi được giao chạy kiểm thử**, chưa được chạy trong lượt lập kế hoạch. Chạy từ `D:\Merge_2\Codegym` nếu không ghi khác.
+
+```powershell
+git status --short
+git rev-parse HEAD
+node --version
+pnpm --version
+pnpm lint
+pnpm typecheck
+pnpm --filter api test
+pnpm --filter web test
+pnpm build
+```
+
+`pnpm test` ở root còn chạy các bài `deploy/*.spec.mjs`; phải kiểm nhóm này khi đánh giá toàn dự án. Suite dùng chung DB phải chạy tuần tự theo cấu hình repo, không tự tăng parallelism làm nhiễu kết quả. Không cài dependency lại nếu đã đủ; nếu cần cài, dùng lockfile và đúng phiên bản.
+
+**Không chạy thẳng `pnpm --filter api run test:e2e` với `.env` trỏ DB chính.** File `test/integration-database.ts` đòi DB thử và opt-in rõ ràng. Script tiện ích `apps/api/scripts/run-isolated-e2e.mjs` tạo `codegym_e2e_<timestamp>`, dùng Redis DB15 và tắt worker thư, nhưng có hard-code container/cổng/output; đọc và kiểm trước khi dùng.
+
+```powershell
+# Chỉ sau khi kiểm container local, DB isolation, Redis DB15 chưa dùng, output đã bảo toàn.
+Set-Location D:\Merge_2\Codegym\apps\api
+node --env-file=../../.env scripts/run-isolated-e2e.mjs
+```
+
+| Script ứng viên | Điều kiện/phụ thuộc phải kiểm trước |
+|---|---|
+| `scripts/sprint1-demo.ps1` | Clone riêng; không ghi đè `.env` đang dùng. Dùng profile và cổng được launcher trả về, không mặc định cổng trống. |
+| `apps/api/scripts/prepare-sprint-test-db.mjs` | Có backup `.cache/sprint4-8-evidence/20261022/before-sprint-implementation.dump`, container được hard-code phù hợp. Tạo DB thử nhưng ghi file env nhạy cảm, không công khai. Nếu backup thiếu, tạo fixture mới thay vì giả kết quả. |
+| `apps/api/scripts/verify-sprint6-8.mjs` | Chỉ nhận DB `codegym_sprint_<timestamp>`, chạy API fixture 3392; kiểm Redis riêng và cổng trống trước. |
+| `apps/api/scripts/verify-core-completion.mjs` | Có `.cache/core-completion/before-core.dump`; tạo `codegym_core_*`, Redis DB14, SMTP catcher; cần `dist` vừa build. Import class trực tiếp chỉ xác nhận phần class, vẫn phải test route thật. |
+| `apps/api/scripts/start-sprint-browser-fixture.mjs` | DB `codegym_sprint_*`, web3393/API3392; tắt thư thật. Kiểm cách dừng process và cache build riêng. |
+| `apps/api/scripts/start-core-browser-fixture.mjs` | DB `codegym_core_*`, web3400/API3401; worker mới tắt. Không coi fixture worker tắt là bằng chứng thư đã gửi. |
+| `apps/api/scripts/verify-sse-load.mjs` | DB `codegym_sprint_*`, API3392 đang chạy đúng DB, tới 2.000 viewers. Script tìm fixture cụ thể; nếu không khớp phải chuẩn bị data trước. |
+| `apps/api/scripts/verify-backup-drill.mjs` | Có count hard-code 40 event/40 suất/5544 ghế, cần paid order và key; chỉ chứng minh local restore, ghi `offhost:false`, key mã hoá drill không được giữ. Không dùng thay nghiệm thu nightly/off-host/key retention. |
+| `verify-s30-signed-qr`, `verify-s31-http`, `verify-s31-storage`, `verify-s43`, script browser cũ | Đọc assert DB/port/cwd/worker/cleanup/output và fixture của từng script trước; tên “verify” không tự bảo đảm an toàn hay coverage. |
+
+Một số script ghi đè thư mục bằng chứng có ngày cố định. Sao chép/bảo toàn log cũ trước và lưu output mới ở `evidence/ai-full-test/<run-id>/`; không retag log lịch sử thành lần chạy mới. Khởi động app thật từ build mới, ghi PID/cổng/fingerprint; file `dist` có sẵn có thể khác source.
+

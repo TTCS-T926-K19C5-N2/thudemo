@@ -1,3 +1,4 @@
+import { assertIntegrationDatabase } from './integration-database.js';
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { INestApplication } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
@@ -13,7 +14,9 @@ describe('Ticket check-in integration', () => {
   let app: INestApplication;
   let db: PrismaService;
   let staffCookie: string;
+  let staffId: string;
   let gateId: string;
+  let secondGateId: string;
   let otherGateId: string;
   let otherOrganizerCookie: string;
   let buyerId: string;
@@ -26,6 +29,27 @@ describe('Ticket check-in integration', () => {
   let concurrentTicketId: string;
   let unpaidTicketId: string;
   const userIds: string[] = [];
+
+  async function createOfflineTicket(seatNumber: number): Promise<string> {
+    const itemId = await createOrderItem(seatNumber, OrderStatus.PAID);
+    const item = await db.orderItem.findUniqueOrThrow({
+      where: { id: itemId },
+      include: { order: true },
+    });
+    await db.ticket.create({
+      data: {
+        orderId: item.orderId,
+        showtimeId,
+        seatId: item.seatId,
+        code: `OFFLINE-${randomUUID()}`,
+        seatLabel: `B-${seatNumber}`,
+        ticketType: 'VIP',
+        status: 'VALID',
+        price: 500000,
+      },
+    });
+    return itemId;
+  }
 
   async function createAccount(role: string) {
     await db.role.createMany({ data: [{ name: role }], skipDuplicates: true });
@@ -91,20 +115,7 @@ describe('Ticket check-in integration', () => {
   }
 
   beforeAll(async () => {
-    const target = new URL(process.env.DATABASE_URL ?? '');
-    if (
-      target.hostname !== '127.0.0.1' ||
-      !(
-        (target.port === '15432' &&
-          target.pathname === '/sprint2_integration') ||
-        (target.port === '15438' &&
-          target.pathname === '/s31_admission_integration') ||
-        (target.port === '15440' &&
-          target.pathname === '/signed_qr_integration')
-      )
-    ) {
-      throw new Error('Run only on the isolated sprint2_integration database');
-    }
+    assertIntegrationDatabase();
 
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
@@ -121,6 +132,7 @@ describe('Ticket check-in integration', () => {
     otherOrganizerCookie = otherOrganizer.cookie;
     buyerId = buyer.id;
     staffCookie = staff.cookie;
+    staffId = staff.id;
 
     const event = await db.event.create({
       data: {
@@ -159,6 +171,10 @@ describe('Ticket check-in integration', () => {
       data: { showtimeId, name: 'Cửa A' },
     });
     gateId = gate.id;
+    const secondGate = await db.checkInGate.create({
+      data: { showtimeId, name: 'Cửa B' },
+    });
+    secondGateId = secondGate.id;
     const otherGate = await db.checkInGate.create({
       data: { showtimeId: otherShowtimeId, name: 'Cửa A' },
     });
@@ -166,6 +182,11 @@ describe('Ticket check-in integration', () => {
     await db.checkInPermission.createMany({
       data: [
         { userId: staff.id, gateId, staffName: 'Nhân viên thử nghiệm' },
+        {
+          userId: staff.id,
+          gateId: secondGateId,
+          staffName: 'Nhân viên thử nghiệm',
+        },
         {
           userId: staff.id,
           gateId: otherGateId,
@@ -186,6 +207,9 @@ describe('Ticket check-in integration', () => {
   afterAll(async () => {
     if (db && eventId) {
       const showtimeIds = [showtimeId, otherShowtimeId].filter(Boolean);
+      await db.offlineScanLog.deleteMany({
+        where: { showtimeId: { in: showtimeIds } },
+      });
       await db.ticketAdmission.deleteMany({
         where: { showtimeId: { in: showtimeIds } },
       });
@@ -313,6 +337,85 @@ describe('Ticket check-in integration', () => {
     expect(stored.checkedInAt).toBeInstanceOf(Date);
   });
 
+  it('INT-05: replays admission idempotently, reports first gate, and records an authorized exception', async () => {
+    const itemId = await createOrderItem(8, OrderStatus.PAID);
+    const qrPayload = app.get(ScannerCryptoService).issueQr(itemId, showtimeId);
+    const normalRequestId = randomUUID();
+    const normalCommand = { gateId, requestId: normalRequestId, qrPayload };
+    const first = await request(app.getHttpServer())
+      .post(`/showtimes/${showtimeId}/check-in`)
+      .set('Cookie', staffCookie)
+      .send(normalCommand)
+      .expect(200);
+    expect(first.body).toMatchObject({ status: 'SUCCESS', kind: 'NORMAL', gateName: 'Cửa A' });
+    const firstAdmission = await db.ticketAdmission.findFirstOrThrow({
+      where: { ticketId: itemId, kind: 'NORMAL' },
+    });
+
+    const replay = await request(app.getHttpServer())
+      .post(`/showtimes/${showtimeId}/check-in`)
+      .set('Cookie', staffCookie)
+      .send(normalCommand)
+      .expect(200);
+    expect(replay.body.status).toBe('ALREADY_RECORDED');
+    const duplicate = await request(app.getHttpServer())
+      .post(`/showtimes/${showtimeId}/check-in`)
+      .set('Cookie', staffCookie)
+      .send({ gateId: secondGateId, requestId: randomUUID(), qrPayload })
+      .expect(409);
+    expect(duplicate.body).toMatchObject({
+      code: 'TICKET_ALREADY_CHECKED_IN',
+      firstAdmission: { gateName: 'Cửa A', checkedInAt: firstAdmission.enteredAt.toISOString() },
+      canOverride: false,
+    });
+    expect(await db.ticketAdmission.count({ where: { ticketId: itemId, kind: 'NORMAL' } })).toBe(1);
+
+    await db.checkInPermission.update({
+      where: { userId_gateId: { userId: staffId, gateId: secondGateId } },
+      data: { canOverride: true },
+    });
+    const exceptionRequestId = randomUUID();
+    const exceptionCommand = {
+      gateId: secondGateId, requestId: exceptionRequestId, qrPayload,
+      ownerConfirmed: true, reason: 'Đã kiểm tra chủ vé tại cửa B',
+    };
+    const exception = await request(app.getHttpServer())
+      .post(`/showtimes/${showtimeId}/check-in/exception`)
+      .set('Cookie', staffCookie)
+      .send(exceptionCommand)
+      .expect(200);
+    expect(exception.body).toMatchObject({ status: 'EXCEPTION_RECORDED', kind: 'EXCEPTION', gateName: 'Cửa B' });
+    const exceptionRow = await db.ticketAdmission.findFirstOrThrow({
+      where: { ticketId: itemId, kind: 'EXCEPTION' },
+    });
+    expect(exceptionRow).toMatchObject({ reason: exceptionCommand.reason, staffId, staffName: 'Nhân viên thử nghiệm', ownerConfirmed: true });
+    expect(exceptionRow.enteredAt.getTime()).toBeGreaterThanOrEqual(firstAdmission.enteredAt.getTime());
+    const exceptionReplay = await request(app.getHttpServer())
+      .post(`/showtimes/${showtimeId}/check-in/exception`)
+      .set('Cookie', staffCookie)
+      .send(exceptionCommand)
+      .expect(200);
+    expect(exceptionReplay.body.status).toBe('ALREADY_RECORDED');
+    expect(await db.ticketAdmission.count({ where: { ticketId: itemId } })).toBe(2);
+    const manifestPath = process.env.AI_REMEDIATION_PROFILE_MANIFEST;
+    if (manifestPath) {
+      const { writeFileSync } = await import('node:fs');
+      const { dirname, resolve } = await import('node:path');
+      writeFileSync(resolve(dirname(manifestPath), 'int05-admission-oracle.json'), JSON.stringify({
+        runId: process.env.AI_REMEDIATION_RUN_ID,
+        fixture: { showtimeId, ticketItemId: itemId },
+        oracle: {
+          normalCount: await db.ticketAdmission.count({ where: { ticketId: itemId, kind: 'NORMAL' } }),
+          exceptionCount: await db.ticketAdmission.count({ where: { ticketId: itemId, kind: 'EXCEPTION' } }),
+          firstAdmission: { gateName: firstAdmission.gateName, enteredAt: firstAdmission.enteredAt.toISOString() },
+          exception: { gateName: exceptionRow.gateName, staffName: exceptionRow.staffName, reason: exceptionRow.reason, ownerConfirmed: exceptionRow.ownerConfirmed },
+          normalReplay: replay.body.status, exceptionReplay: exceptionReplay.body.status,
+          admissionCountAfterReplay: await db.ticketAdmission.count({ where: { ticketId: itemId } }),
+        },
+      }, null, 2));
+    }
+  });
+
   it('requires staff roles plus explicit showtime/gate grants, including organizers', async () => {
     const organizerToken = randomBytes(32).toString('base64url');
     await db.session.create({
@@ -355,5 +458,123 @@ describe('Ticket check-in integration', () => {
           .issueQr(organizerTicketId, showtimeId),
       })
       .expect(200);
+  });
+
+  it('commits an offline scan once and returns the durable receipt on retry', async () => {
+    const ticketId = await createOfflineTicket(5);
+    const scanId = randomUUID();
+    const scannedAt = new Date('2026-10-23T04:00:00.000Z').toISOString();
+    const command = {
+      scanId,
+      showtimeId,
+      gateId,
+      ticketCode: ticketId,
+      qrPayload: app.get(ScannerCryptoService).issueQr(ticketId, showtimeId),
+      deviceId: 'fixture-device-0001',
+      scannedAt,
+      deviceSentAt: new Date('2026-10-23T04:00:01.000Z').toISOString(),
+      mode: 'offline_admission',
+    };
+    const sync = () =>
+      request(app.getHttpServer())
+        .post('/scanner/sync-scans')
+        .set('Cookie', staffCookie)
+        .send({ scans: [command] })
+        .expect(200);
+
+    const first = await sync();
+    const retry = await sync();
+    expect(first.body.results[0]).toMatchObject({
+      scanId,
+      ticketCode: ticketId,
+      status: 'synced',
+    });
+    expect(retry.body.results).toEqual(first.body.results);
+    expect(
+      await db.ticketAdmission.count({ where: { ticketId, kind: 'NORMAL' } }),
+    ).toBe(1);
+    expect(await db.offlineScanLog.count({ where: { scanId } })).toBe(1);
+    expect(
+      (await db.orderItem.findUniqueOrThrow({ where: { id: ticketId } }))
+        .checkedInAt,
+    ).toEqual(new Date(scannedAt));
+  });
+
+  it('keeps the earlier device scan when a later scan uploads first', async () => {
+    const ticketId = await createOfflineTicket(6);
+    const signedQr = app
+      .get(ScannerCryptoService)
+      .issueQr(ticketId, showtimeId);
+    const makeScan = (
+      deviceId: string,
+      scanIdGate: string,
+      seconds: number,
+      sentAt: string,
+    ) => ({
+      scanId: randomUUID(),
+      showtimeId,
+      gateId: scanIdGate,
+      ticketCode: ticketId,
+      qrPayload: signedQr,
+      deviceId,
+      scannedAt: new Date(
+        `2026-10-23T04:01:${String(seconds).padStart(2, '0')}.000Z`,
+      ).toISOString(),
+      deviceSentAt: new Date(sentAt).toISOString(),
+      mode: 'offline_admission',
+    });
+    const a = makeScan(
+      'fixture-device-0002',
+      gateId,
+      10,
+      '2026-10-23T04:02:30.000Z',
+    );
+    const b = makeScan(
+      'fixture-device-0003',
+      secondGateId,
+      20,
+      '2026-10-23T03:58:00.000Z',
+    );
+    const upload = (scan: typeof a) =>
+      request(app.getHttpServer())
+        .post('/scanner/sync-scans')
+        .set('Cookie', staffCookie)
+        .send({ scans: [scan] })
+        .expect(200);
+
+    await upload(b);
+    await upload(a);
+    expect(
+      await db.ticketAdmission.count({ where: { ticketId, kind: 'NORMAL' } }),
+    ).toBe(1);
+    const admission = await db.ticketAdmission.findFirstOrThrow({
+      where: { ticketId, kind: 'NORMAL' },
+    });
+    expect(admission.requestId).toBe(a.scanId);
+    expect(admission.enteredAt).toEqual(new Date(a.scannedAt));
+    expect(admission.gateId).toBe(a.gateId);
+    expect(
+      await db.offlineScanLog.count({ where: { ticketCode: ticketId } }),
+    ).toBe(2);
+    expect(
+      await db.offlineScanLog.count({
+        where: { ticketCode: ticketId, status: 'CONFLICT' },
+      }),
+    ).toBe(1);
+    expect(
+      await db.offlineScanLog.findUniqueOrThrow({
+        where: { scanId: b.scanId },
+      }),
+    ).toMatchObject({ status: 'CONFLICT' });
+    expect(
+      await db.offlineScanLog.findUniqueOrThrow({
+        where: { scanId: a.scanId },
+      }),
+    ).toMatchObject({ status: 'ACCEPTED' });
+    const [aLog, bLog] = await Promise.all([
+      db.offlineScanLog.findUniqueOrThrow({ where: { scanId: a.scanId } }),
+      db.offlineScanLog.findUniqueOrThrow({ where: { scanId: b.scanId } }),
+    ]);
+    expect(aLog.clockOffsetMs).not.toBe(bLog.clockOffsetMs);
   });
 });

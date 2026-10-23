@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-55-AC",
+    "requirement_id": "T-55",
+    "parent_requirement": "S-24",
+    "kind": "TASK_AC",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Nút thanh toán lại trên trang đơn hàng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G56"
+    },
+    "original_requirement": "Thất bại rồi bấm lại thì tới cổng với cùng mã đơn; hết hạn thì nút ẩn",
+    "fixture": "Order pending còn hạn; gateway mock fail rồi success, biến thể đã quá hạn.",
+    "surfaces": "/orders/:id; POST /orders/:id/pay",
+    "code_candidates": "apps/api/src/payments/; apps/web/src/features/order-review/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments.e2e-spec.ts",
+    "steps": [
+      "Chọn thất bại: order/hold/TTL không đổi, có log lần thử. Thanh toán lại dùng cùng orderId; double click không tạo hai attempt đang xử lý. Quá hạn thì cả UI/API chặn retry.",
+      "Kiểm riêng tiêu chí task T-55: Thất bại rồi bấm lại thì tới cổng với cùng mã đơn; hết hạn thì nút ẩn",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Thất bại rồi bấm lại thì tới cổng với cùng mã đơn; hết hạn thì nút ẩn"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-55-NFR",
+    "requirement_id": "T-55",
+    "parent_requirement": "S-24",
+    "kind": "TASK_NFR",
+    "group": "Thanh toán",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Nút thanh toán lại trên trang đơn hàng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I56"
+    },
+    "original_requirement": "không tạo yêu cầu thanh toán mới khi yêu cầu cũ còn đang xử lý",
+    "fixture": "Order pending còn hạn; gateway mock fail rồi success, biến thể đã quá hạn.",
+    "surfaces": "/orders/:id; POST /orders/:id/pay",
+    "code_candidates": "apps/api/src/payments/; apps/web/src/features/order-review/",
+    "test_candidates": "mock-gateway.e2e-spec.ts; payments.e2e-spec.ts",
+    "steps": [
+      "Chọn thất bại: order/hold/TTL không đổi, có log lần thử. Thanh toán lại dùng cùng orderId; double click không tạo hai attempt đang xử lý. Quá hạn thì cả UI/API chặn retry.",
+      "Kiểm riêng tiêu chí task T-55: không tạo yêu cầu thanh toán mới khi yêu cầu cũ còn đang xử lý",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "không tạo yêu cầu thanh toán mới khi yêu cầu cũ còn đang xử lý"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

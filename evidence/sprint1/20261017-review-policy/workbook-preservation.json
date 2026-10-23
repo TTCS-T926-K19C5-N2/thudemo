@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-17T04:03:31.573273+00:00",
+  "decision": "DEC-18 user approved",
+  "beforeSha256": "3def9ef4b845f3a4374e604cab3f2d646d4826a1abf5e0b595c8419cbe073cac",
+  "afterSha256": "957492ff6cb1b934b4b31b1e1cf73cb0a0438cb297dee752f1f0498816103c73",
+  "changes": [
+    {
+      "sheet": "DoD-DoR",
+      "cell": "C2",
+      "before": "Code review đã duyệt bởi ít nhất một thành viên khác",
+      "after": "Review kỹ thuật tự động đã hoàn tất trên đúng base/head/diff, có artifact truy vết và không còn finding bắt buộc; required status Review / technical-review cùng mọi required CI đều success. Không yêu cầu approval độc lập của thành viên khác từ thời điểm DEC-18 có hiệu lực; không thay gate nghiệm thu staging sau merge."
+    }
+  ],
+  "permittedFormatChanges": [["DoD-DoR", 2, "height"]],
+  "otherValuesFormulasStylesFeaturesPreserved": true,
+  "visualInspection": "ArtifactTool DoD-DoR A1:C4 before/after inspected; C2 wraps and row2 fitted",
+  "applied": true
+}

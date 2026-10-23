@@ -1,0 +1,953 @@
+[
+  {
+    "id": "R00",
+    "title": "Đóng băng bằng chứng và xác nhận source trước khi sửa",
+    "dependencies": [],
+    "status": "VERIFIED",
+    "actual": "Đọc nguồn yêu cầu, chụp dirty tree trước sửa và tạo run-bound checkpoint. Cần sửa cách ghi fingerprint SHA-256 vì giá trị hiện lưu dạng byte array; snapshot ban đầu được giữ.",
+    "evidence": [
+      "../20261022T230000-remediation/dirty-tree-before.txt",
+      "../20261022T230000-remediation/tracked-diff-before.patch",
+      "../20261022T230000-remediation/untracked-before.txt",
+      "run-manifest.json"
+    ]
+  },
+  {
+    "id": "R01",
+    "title": "Tạo một profile kiểm thử đầy đủ, có kiểm tra cách ly",
+    "dependencies": [
+      "R00"
+    ],
+    "status": "VERIFIED",
+    "actual": "Profile compose riêng PostgreSQL/Redis/Mailpit được dựng trên loopback với cổng động; migrations trên DB rỗng thành công; DB/Redis/catcher health check đạt; API/Web chạy riêng, worker off. Không chạy vào DB chính.",
+    "evidence": [
+      "../20261022T230000-remediation/profile-manifest.json",
+      "migration-deploy.log",
+      "../20261022T230000-remediation/http-smoke-masked.json",
+      "../20261022T230000-remediation/smtp-catcher-before.json"
+    ]
+  },
+  {
+    "id": "R02",
+    "title": "Sửa lỗi hợp đồng hàm giải mã làm API không build",
+    "dependencies": [
+      "R00"
+    ],
+    "status": "VERIFIED",
+    "actual": "decryptActivation được export, regression AES-GCM đã thêm; API typecheck/build và suite mục tiêu qua.",
+    "evidence": [
+      "../20261022T230000-remediation/api-unit.log",
+      "../20261022T230000-remediation/build.log",
+      "../20261022T230000-remediation/typecheck.log"
+    ]
+  },
+  {
+    "id": "R03",
+    "title": "Hoàn thiện publication phía server, cache và quyền xem công khai",
+    "dependencies": [
+      "R02"
+    ],
+    "status": "IMPLEMENTED",
+    "actual": "Đã thêm service/route publication, kiểm quyền/đầu vào, kiểm showtime/giá, transaction/audit/cache invalidation và lọc public detail/seats/SSE theo trạng thái event. Unit mục tiêu qua; chưa browser/API workflow với fixture publication.",
+    "evidence": [
+      "../20261022T230000-remediation/api-unit.log",
+      "../20261022T230000-remediation/http-smoke-masked.json"
+    ]
+  },
+  {
+    "id": "R04",
+    "title": "Nối module core và kiểm migration/provider trên fresh app",
+    "dependencies": [
+      "R01",
+      "R02",
+      "R03"
+    ],
+    "status": "IMPLEMENTED",
+    "actual": "CoreCompletionModule được mount; worker reset opt-in; migration fresh DB áp dụng được; API boot/health thành công. Provider flow chưa tích hợp đủ.",
+    "evidence": [
+      "migration-deploy.log",
+      "../20261022T230000-remediation/api.log",
+      "../20261022T230000-remediation/http-smoke-masked.json"
+    ]
+  },
+  {
+    "id": "R05",
+    "title": "Sửa chứng thực IP từ proxy cho quên/đặt lại mật khẩu",
+    "dependencies": [
+      "R02"
+    ],
+    "status": "VERIFIED",
+    "actual": "Peer path canonicalization và forgot/reset peer protection đã thêm; proxy/component targeted suite 22 tests pass, gồm proxy specs.",
+    "evidence": [
+      "../20261022T230000-remediation/web-build.log"
+    ]
+  },
+  {
+    "id": "R06",
+    "title": "Sửa mail báo thành công giả và thống nhất reminder/reschedule",
+    "dependencies": [
+      "R04"
+    ],
+    "status": "IMPLEMENTED",
+    "actual": "Mail send chỉ báo thành công khi transport nhận; legacy reminder scheduler không tự khởi chạy worker thứ hai; pagination chunk regression thêm. API suite hiện qua; chưa gửi thử qua catcher sau sửa.",
+    "evidence": [
+      "../20261022T230000-remediation/api-unit.log",
+      "../20261022T230000-remediation/smtp-catcher-before.json"
+    ]
+  },
+  {
+    "id": "R07",
+    "title": "Khép 12 test API lỗi và loại nhiễu timer có chứng cứ",
+    "dependencies": [
+      "R03",
+      "R05",
+      "R06"
+    ],
+    "status": "VERIFIED",
+    "actual": "Full API unit suite on current source: 55 files / 447 tests pass. Full Web unit suite: 25 files / 155 tests pass. Deploy tests 20/20 pass. Root concurrent runner OOM was rerun package-by-package successfully.",
+    "evidence": [
+      "../20261022T230000-remediation/api-unit-final.log",
+      "../20261022T230000-remediation/web-unit-final.log",
+      "../20261022T230000-remediation/deploy-tests-final.log"
+    ]
+  },
+  {
+    "id": "R08",
+    "title": "Nối giao diện các chức năng core vào trang hiện hữu",
+    "dependencies": [
+      "R03",
+      "R04",
+      "R05",
+      "R06"
+    ],
+    "status": "IMPLEMENTED",
+    "actual": "Publication, reschedule, mail admin and forgot-password flows have browser evidence on isolated app. A later rerun against S-62 fixture was correctly rejected for reschedule because that fixture already contains admission data; use a separate fixture for reschedule. Desktop/mobile catalogue, loading, empty and injected error evidence retained.",
+    "evidence": [
+      "../20261022T230000-remediation/browser-ui-smoke.json",
+      "../20261022T230000-remediation/publication-ui-success.png",
+      "../20261022T230000-remediation/reschedule-ui-success.png",
+      "../20261022T230000-remediation/admin-mail-failures-empty.png",
+      "../20261022T230000-remediation/catalog-empty-desktop.png",
+      "../20261022T230000-remediation/catalog-empty-mobile.png",
+      "../20261022T230000-remediation/catalog-loading-delayed-desktop.png",
+      "../20261022T230000-remediation/catalog-error-desktop.png"
+    ]
+  },
+  {
+    "id": "R09",
+    "title": "Nghiệm thu lát cắt core đầu-cuối trước khi mở rộng",
+    "dependencies": [
+      "R01",
+      "R07",
+      "R08"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "Publication/reschedule/admin-mail browser paths passed in prior browser flow; S-62 real download also passed. Full core end-to-end, reset/mailer catcher and mock payment admission suite plus all baseline 404 cases remain outstanding. Browser core UI smoke now completes end-to-end after correcting only the test fixture and CSV assertion: catalog states, owner hide/re-publish, past/future reschedule, CSV download and admin mail empty-state were exercised. This supplies narrow UI slices, not full INT-12; password reset lifecycle, full mail retry/filter, purchase/payment journey and direct DB/API oracles for all core operations remain open.",
+    "evidence": [
+      "../20261022T230000-remediation/browser-ui-smoke.json",
+      "../20261022T230000-remediation/browser-ui-smoke-rerun-2.log",
+      "../20261022T230000-remediation/browser-ui-smoke-rerun-2.exitcode",
+      "../20261022T230000-remediation/publication-ui-success.png",
+      "../20261022T230000-remediation/reschedule-ui-success.png",
+      "../20261022T230000-remediation/attendance-csv-browser.json",
+      "../20261022T230000-remediation/attendance-csv-report-ui.png",
+      "../20261022T230000-remediation/admin-mail-failures-empty.png",
+      "../20261022T230000-remediation/browser-fixture-cleanup.json"
+    ]
+  },
+  {
+    "id": "R10",
+    "title": "Chạy baseline còn chưa kiểm, lập hàng đợi lỗi thật",
+    "dependencies": [
+      "R09"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "R10 remains IN_PROGRESS: execution-queue.json retains all 404 unchanged source rows, source cells, prerequisites, surfaces, steps, strategy and external-environment flags; Later/non-ready rows remain inventoried. The isolated Docker profile was restored and is healthy at the latest checkpoint; R19 browser and 5,000-ticket work ran against it, then run-owned API/Web were stopped while DB/Redis/Mailpit remain up. The broad baseline matrix is still incomplete and no DB fallback was used. Current AST inventory remains 113 API decorator declarations and 28 Next pages plus 1 route handler; this is source inventory, not runtime proof.",
+    "evidence": [
+      "../20261022T230000-remediation/e2e-after-s48.log",
+      "../20261022T230000-remediation/api-unit-after-s45.log",
+      "../20261022T230000-remediation/api-lint-after-remediation-tests.log",
+      "../20261022T230000-remediation/execution-queue.json",
+      "../20261022T230000-remediation/route-source-inventory.json"
+    ]
+  },
+  {
+    "id": "R11",
+    "title": "Chốt hợp đồng cho tính năng thiếu và truy vết quyết định cũ",
+    "dependencies": [
+      "R00"
+    ],
+    "status": "VERIFIED",
+    "actual": "D01, D02, D04 được người dùng chốt trực tiếp trong hội thoại 2026-10-23; D03 và DEC-18 được xác minh từ nguồn nội bộ. D06-D09 vẫn mở; không tự đặt policy.",
+    "evidence": [
+      "../20261022T230000-remediation/decision-register.json",
+      "../20261022T230000-remediation/decision-options.md"
+    ]
+  },
+  {
+    "id": "R12",
+    "title": "Hoàn thiện S-56: mã giảm giá theo sự kiện từ quản lý tới thanh toán",
+    "dependencies": [
+      "R11",
+      "R18"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "D01 được chốt. Đã triển khai schema/migration coupon, owner management UI/API, pricing snapshots, reservation/redemption, order apply/remove, zero-payable fulfillment và khóa với payment initiation. Current checks: API typecheck/build PASS; focused API tests 41/41 PASS; isolated PostgreSQL S-56 E2E 4/4 PASS gồm barrier race cap=1, floor/remove, zero-payable ticket/no payment và local fake-gateway amount 91; authenticated organizer browser at 535x756 created/listed coupon. Chưa chứng minh desktop viewport, buyer apply/remove UI, update/deactivate/negative expiry/API auth matrix, provider sandbox, refund/reversal allocation policy; local fake gateway is not provider proof. R18 and remaining R12 dependencies remain open. Additional component-level buyer UI check PASS (3 tests): apply/remove and server-refreshed totals, validation alert, and initiated-payment lock; this is mocked API component evidence only, not the required browser/PostgreSQL acceptance. Buyer browser apply/remove still needs live isolated profile. After adding the buyer component checks, full current Web regression is 27 files/157 tests PASS, typecheck/build/lint PASS (2 warnings, 0 errors). Additional organizer management service unit coverage: 5/5 targeted tests pass for update/deactivate, owner scope, invalid date/percent, and quota lower bound; mocked Prisma only. Full API unit after this source test: 59 files/465 tests PASS. Composite S-56-AC01 stays MISSING: live buyer browser/API/DB, HTTP authorization negative matrix, complete expiry cases, and refund/reversal allocation remain unproven. Latest 2026-10-23 live buyer browser/API/DB acceptance now passed: invalid coupon 400, apply 200 with subtotal 101/discount 10/payable 91, remove 200 restoring 101; independent DB oracle confirms RELEASED redemption. Reproduced/fixed BUG-S56-01: OrderHistoryService.current omitted coupon price snapshot fields; current API unit suite 60/468 and isolated coupon E2E 4/4 pass. Composite AC remains MISSING for owner/non-owner live HTTP matrix and expiry cases; D12 refund/report allocation still NEEDS_DECISION. Latest owner-management HTTP retest also passed on isolated PostgreSQL: owner list/update/deactivate 200, wrong organizer update 403, BUYER management create 403, invalid expiry 400; coupon inactive state visible. Focused service tests cover percent/quota/date bounds. Remaining coupon expiry boundary cases and D12 refund allocation decision are open. User D12 decision received: coupon discount must be allocated proportionally per ticket for partial refunds. Fractional-VND rounding/remainder policy is still pending; current cancellation code is whole-order only, so partial-refund behavior is not yet demonstrated. D12 fully resolved by user: proportional discount per ticket, floor shares and assign remainder one VND at a time in ascending ticket-code order. Implemented integer-safe allocation and applied it to coupon-aware financial reporting. New isolated PostgreSQL cancellation E2E verifies 250000 gross - 1 discount - 249999 refunded = 0 net; lifecycle-cancellation 6/6 PASS. Unit report tests 6/6; API unit 60 files/471 tests, API typecheck/build pass. Existing product only supports full-order cancellation/refund; partial refund/item selection remains unavailable and no policy was inferred.",
+    "evidence": [
+      "../20261022T230000-remediation/r12-api-typecheck3.log",
+      "../20261022T230000-remediation/r12-api-build-final.log",
+      "../20261022T230000-remediation/r12-api-unit-rerun3.log",
+      "../20261022T230000-remediation/e2e.log",
+      "../20261022T230000-remediation/r12-coupon-browser-ui.json",
+      "../20261022T230000-remediation/decision-register.json",
+      "../20261022T230000-remediation/r12-buyer-ui-unit.log",
+      "../../../apps/web/src/features/order-review/order-review.coupon.spec.tsx",
+      "../20261022T230000-remediation/r22-web-unit-current.log",
+      "../20261022T230000-remediation/r22-web-typecheck-current.log",
+      "../20261022T230000-remediation/r22-web-build-current.log",
+      "../20261022T230000-remediation/r22-web-lint-current.log",
+      "../20261022T230000-remediation/r12-coupon-management-unit.log",
+      "../../../apps/api/src/coupons/coupons.service.spec.ts",
+      "../20261022T230000-remediation/r22-api-unit-current.log",
+      "../20261022T230000-remediation/s56-buyer-browser.json",
+      "../20261022T230000-remediation/s56-browser-db-oracle.json",
+      "../20261022T230000-remediation/s56-buyer-coupon-applied-desktop.png",
+      "../20261022T230000-remediation/s56-buyer-coupon-removed-mobile.png",
+      "../20261022T230000-remediation/s56-browser-fixture-seed.log",
+      "../20261022T230000-remediation/s56-browser-fixture-verify.log",
+      "../20261022T230000-remediation/s56-browser-fixture-cleanup.log",
+      "../../../apps/api/src/orders/order-history.service.ts",
+      "../../../apps/api/src/orders/order-history.service.spec.ts",
+      "../../../apps/api/scripts/ai-remediation-s56-browser-fixture.mjs",
+      "../../../apps/api/scripts/ai-remediation-profile.mjs",
+      "../../../apps/web/scripts/ai-remediation-s56-buyer-browser.mjs",
+      "../20261022T230000-remediation/r12-api-build-coupon-response.log",
+      "../20261022T230000-remediation/r12-api-unit-current.log",
+      "../20261022T230000-remediation/r12-api-unit-current.exitcode",
+      "../20261022T230000-remediation/r12-api-lint-current.log",
+      "../20261022T230000-remediation/r12-api-lint-current.exitcode",
+      "../20261022T230000-remediation/e2e.exitcode",
+      "bugs.md",
+      "../20261022T230000-remediation/bug-retest.md",
+      "../20261022T230000-remediation/r12-api-unit-post-d12.log",
+      "../20261022T230000-remediation/r12-api-unit-post-d12.exitcode",
+      "../20261022T230000-remediation/r12-api-typecheck-post-d12.log",
+      "../20261022T230000-remediation/r12-api-build-post-d12.log",
+      "../20261022T230000-remediation/r12-api-lint-post-d12.log",
+      "../20261022T230000-remediation/r12-full-api-e2e-after-d12.log",
+      "../20261022T230000-remediation/r12-full-api-e2e-after-d12.exitcode"
+    ]
+  },
+  {
+    "id": "R13",
+    "title": "Hoàn thiện S-59: đăng ký chờ hết vé và thông báo FIFO",
+    "dependencies": [
+      "R11",
+      "R06",
+      "R18"
+    ],
+    "status": "VERIFIED",
+    "actual": "D02/D14/D15 approved. Added additive waitlist schema/migration, authenticated buyer registration/status/unsubscribe API, sold-out UI, durable release signals for expired holds and expired orders, and opt-in worker. Final current-source API typecheck/build/lint PASS (lint has 21 repository warnings, none in waitlist files); Web typecheck/build PASS; seat-selection unit 3/3 PASS; isolated PostgreSQL/Mailpit E2E 6/6 PASS including concurrent duplicate join, two concurrent signal/delivery claims, exact N FIFO, Mailpit acceptance, 3 SMTP attempts, hold-expiry cleanup and order-expiry transaction. Mobile-sized browser registration and independent DB oracle PASS; HTTP health/home 200. Remaining: showtime-cancel/refund release, opt-out/erasure and buy-before-email race, desktop viewport and saved screenshot PNG, provider/staging/performance/device proof. Workers remain off. New 2026-10-23 cancellation/refund integration: a paid two-ticket buyer order was cancelled; isolated PostgreSQL confirmed releasedCount=2 and the real waitlist worker queued exactly two notices in FIFO join order without creating holds. Targeted lifecycle-cancellation E2E 7/7, typecheck PASS; lint exit 0 with existing repository warnings. S-59 AC01.06 is now PASS. Desktop persisted screenshot and cancelled-show suppression/opt-out/erasure/buy-before-email race remain open. Latest browser retest with the current local build saved desktop 1440x1000 and mobile 390x844 screenshots; FIFO/no-reservation copy, position 1, unsubscribe control, no email disclosure, no overflow/page errors passed. Independent DB oracle showed ACTIVE position 1, zero holds/unsold seats; exact fixture cleanup passed. Original S-59-AC01 and children .06/.07 now PASS. Supplemental R13 cancelled-show suppression, opt-out/erasure and purchase-before-email race remain open. Added plan-labelled supplementary cases: show-cancel suppression, unsubscribe, completed account erasure and seats sold before worker revalidation all PASS on isolated PostgreSQL/catcher. Exact purchase-after-check/before-SMTP-accept race is NEEDS_DECISION because D02 mandates notify/no hold and external SMTP cannot participate atomically; actual inbox ordering is not claimed. D16 is now APPROVED_USER: check seat availability immediately before SMTP and suppress if sold out. Implemented a final PostgreSQL recheck after initial worker validation; deterministic race E2E changed all seats to sold at the boundary and confirmed CANCELLED/SEATS_SOLD_BEFORE_NOTICE, ACTIVE FIFO entry, and no MailService.send invocation. Waitlist E2E 10/10; full API E2E 22 files/133 tests; API unit 60 files/471 tests; API typecheck/build/lint exit 0 (23 existing warnings). Scope is local isolated PostgreSQL/Mailpit. The external SMTP acceptance cannot be atomic with the database read; a sale after the last check is an inherent residual race, documented rather than claimed away.",
+    "evidence": [
+      "../20261022T230000-remediation/decision-register.json",
+      "migration-deploy.log",
+      "../20261022T230000-remediation/e2e.log",
+      "../20261022T230000-remediation/e2e.exitcode",
+      "../20261022T230000-remediation/r13-api-typecheck.log",
+      "../20261022T230000-remediation/r13-api-build.log",
+      "../20261022T230000-remediation/r13-api-lint.log",
+      "../20261022T230000-remediation/r13-web-typecheck.log",
+      "../20261022T230000-remediation/r13-web-build.log",
+      "../20261022T230000-remediation/r13-web-seat-unit.log",
+      "../20261022T230000-remediation/r13-http-smoke-masked.json",
+      "../20261022T230000-remediation/r13-waitlist-browser-ui.json",
+      "../20261022T230000-remediation/waitlist-browser-db-oracle.json",
+      "../20261022T230000-remediation/waitlist-browser-fixture-summary.json",
+      "../20261022T230000-remediation/waitlist-browser-fixture-cleanup.json",
+      "../../../apps/api/src/waitlist/waitlist.service.ts",
+      "../../../apps/api/test/waitlist.e2e-spec.ts",
+      "../20261022T230000-remediation/r13-cancel-waitlist-e2e.log",
+      "../20261022T230000-remediation/r13-cancel-waitlist-e2e.exitcode",
+      "../../../apps/api/test/lifecycle-cancellation.e2e-spec.ts",
+      "../20261022T230000-remediation/r13-waitlist-desktop-browser.json",
+      "../20261022T230000-remediation/r13-waitlist-desktop.png",
+      "../20261022T230000-remediation/r13-waitlist-mobile.png",
+      "../20261022T230000-remediation/r13-waitlist-navigation-diagnostic.png",
+      "../20261022T230000-remediation/r13-show-cancel-and-refund-final.log",
+      "../20261022T230000-remediation/r13-waitlist-optout-erasure-race-final.log",
+      "../20261022T230000-remediation/r13-waitlist-d16-final.log",
+      "../20261022T230000-remediation/r13-waitlist-d16-final.exitcode",
+      "../20261022T230000-remediation/r22-full-api-e2e-current-133.log",
+      "../20261022T230000-remediation/r13-waitlist-d16-api-unit.log",
+      "../20261022T230000-remediation/r13-waitlist-d16-typecheck.log",
+      "../20261022T230000-remediation/r13-waitlist-d16-build.log",
+      "../20261022T230000-remediation/r13-waitlist-d16-lint.log"
+    ]
+  },
+  {
+    "id": "R14",
+    "title": "Hoàn thiện S-60: xuất sơ đồ ghế PDF một trang",
+    "dependencies": [
+      "R01",
+      "R03",
+      "R08"
+    ],
+    "status": "VERIFIED",
+    "actual": "S-60 được nối vào showtime workspace; endpoint Organizer kiểm owner và lấy event/startTime/ghế/status trong một query PostgreSQL, tạo PDF vector một trang có font DejaVu Sans nhúng, timestamp/legend. Browser tải PDF từ app với owner; 403 cho admin không phải owner; trạng thái loading/error được kiểm; PDF fixture 2.002 ghế render đúng một trang (Poppler pdfinfo), bản render được kiểm trực quan. API unit 6/2.000 ghế, typecheck/build API và Web đều qua.",
+    "evidence": [
+      "../20261022T230000-remediation/seat-pdf-browser.json",
+      "../20261022T230000-remediation/seat-map-2002.pdf",
+      "../20261022T230000-remediation/seat-map-render-1.png",
+      "../20261022T230000-remediation/r14-pdfinfo.log",
+      "../20261022T230000-remediation/r14-pdf-unit.log",
+      "../20261022T230000-remediation/r14-browser.log",
+      "../20261022T230000-remediation/r14-proxy-test.log",
+      "../20261022T230000-remediation/r14-api-typecheck.log",
+      "../20261022T230000-remediation/r14-api-build.log",
+      "../20261022T230000-remediation/r14-web-typecheck.log",
+      "../20261022T230000-remediation/r14-web-build.log"
+    ]
+  },
+  {
+    "id": "R15",
+    "title": "Hoàn thiện S-62: xuất CSV khách vào cửa có xung đột",
+    "dependencies": [
+      "R01",
+      "R08",
+      "R19"
+    ],
+    "status": "VERIFIED",
+    "actual": "S-62 minimal-fields CSV wired through authenticated UI and API, downloaded in Chromium against isolated Postgres fixture, parsed against two synthetic tickets/conflict rows, UTF-8 BOM/header/seat/gate/conflict and no-PII columns checked. Fixture cleaned. API CSV unit tests 2 pass; build/typecheck were run after implementation.",
+    "evidence": [
+      "../20261022T230000-remediation/attendance-csv-browser.json",
+      "../20261022T230000-remediation/attendance-conflicts.csv",
+      "../20261022T230000-remediation/attendance-csv-report-ui.png",
+      "../../../apps/api/src/lifecycle/attendance-csv.spec.ts",
+      "../20261022T230000-remediation/r15-web-build.log"
+    ]
+  },
+  {
+    "id": "R16",
+    "title": "Bổ sung dữ liệu quan sát giữ chỗ bền để tính S-63",
+    "dependencies": [
+      "R11",
+      "R18"
+    ],
+    "status": "VERIFIED",
+    "actual": "Không cần migration: hold_sessions.createdAt lưu cohort start và append-only domain_audit ghi biến động hold_sessions/orders, gồm PAID; kiểm fixture sau khi xóa seat_holds xác nhận số liệu còn tái dựng được. Một session nhiều ghế không nhân cohort; session đúng from được tính, sentinel đúng to bị loại trừ; truy vấn chọn một order/session và MIN(PAID) để dedupe outcome. Năm lượt seed/cleanup: bốn fixture 52 audit rows và fixture cuối 54, tổng 262 synthetic snapshots còn trong DB remediation vì append-only trigger. Mutable fixture rows đã cleanup. Lưu ý schema audit không có run_id nên các residual rows không thể gắn ngược chính xác từng run sau khi private fixture map được xoá; snapshots chỉ có UUID/trạng thái, không có PII.",
+    "evidence": [
+      "../../../apps/api/prisma/migrations/202610220001_sprint_foundations/migration.sql",
+      "../../../apps/api/src/lifecycle/reports.service.ts",
+      "../20261022T230000-remediation/s63-independent-oracle.json",
+      "../20261022T230000-remediation/s63-fixture-cleanup.json"
+    ]
+  },
+  {
+    "id": "R17",
+    "title": "Hoàn thiện S-63: báo cáo bỏ giỏ, thời gian giữ tới trả",
+    "dependencies": [
+      "R16"
+    ],
+    "status": "VERIFIED",
+    "actual": "S-63 local slice: owner-scoped API cohort A (from inclusive/to exclusive, cutoff to), counts started/order/paid/expired/cancelled/pending, hold→order and hold→paid mean/p90 in seconds, UTC and dataAvailableFrom; UI in showtime workspace. Fixture 10 cohort session + 1 to-boundary sentinel/5 order/3 paid/5 expired/1 pending, one 2-seat session; inclusive from/exclusive to verified. Independent raw-PostgreSQL oracle matched counts and durations. Authenticated owner browser desktop/mobile verified loading, empty/no-sample, error and success; zero page errors and no horizontal overflow. Service unit enforces non-owner/invalid-range denial. Provider/staging scale NFR is not implied; S-63-NFR stays NEEDS_DECISION.",
+    "evidence": [
+      "../20261022T230000-remediation/s63-browser.json",
+      "../20261022T230000-remediation/s63-independent-oracle.json",
+      "../20261022T230000-remediation/s63-fixture-summary.json",
+      "../20261022T230000-remediation/s63-fixture-cleanup.json",
+      "../20261022T230000-remediation/s63-conversion-desktop.png",
+      "../20261022T230000-remediation/s63-conversion-mobile.png",
+      "../20261022T230000-remediation/s63-conversion-empty.png",
+      "../20261022T230000-remediation/s63-conversion-error.png",
+      "../20261022T230000-remediation/r17-api-report-focused.log",
+      "../20261022T230000-remediation/r17-api-unit.log",
+      "../20261022T230000-remediation/r17-api-build.log",
+      "../20261022T230000-remediation/r17-api-typecheck.log",
+      "../20261022T230000-remediation/r17-web-unit.log",
+      "../20261022T230000-remediation/r17-web-typecheck.log",
+      "../20261022T230000-remediation/r17-web-build.log"
+    ]
+  },
+  {
+    "id": "R18",
+    "title": "Kiểm và sửa mọi lỗi tiền/ghế, giữ baseline trước thêm coupon",
+    "dependencies": [
+      "R10"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "Current local evidence on isolated PostgreSQL: INT-03 passed 10×200 real simultaneous HTTP holds on 100 seats with 100 winners/100 conflicts per round and zero 429; INT-04 passed 50 barrier-released expiry/webhook races with NEEDS_REVIEW/LATE and no sold seat/hold; INT-02 passed same-order failed-payment retry and replay idempotency. INT-08 now passes the supplemental cancellation/refund/seat-reclaim/revoked-QR/audit/financial-reconciliation E2E (8/8 tests in lifecycle suite); refund uses approved local mock policy and only whole-order cancellation exists. D16 waitlist boundary race passes. API unit 60/471 and API E2E 22/134 were previously green; latest focused INT-08 E2E 8/8. Still open: INT-01 full buyer checkout/browser journey, INT-14 dependency-failure atomicity and UI recovery, remaining seat/map/price/clock/device cases, T-31 staging blocked and GOV-06 external evidence. Mock gateway is not provider proof. INT-14 gateway transport rejection now has isolated API/PostgreSQL repro (7/7 mock-gateway suite): HTTP 500 leaves order PENDING, held seat unsold, zero tickets, but one INITIATED payment attempt. Retry/reconciliation semantics are D17 PENDING_USER; buyer UI recovery is NOT_RUN. No gateway policy was inferred. D17 subsequently approved and implemented: explicit rejection is retryable; ambiguous initiation is blocked pending reconciliation. Isolated API/PostgreSQL E2E, full API suites, web tests/build/typecheck, and injected desktop/mobile browser UI verification are recorded under r18-d17 and d17-browser-verification. External gateway behavior remains unverified.",
+    "evidence": [
+      "../20261022T230000-remediation/seat-race-results.json",
+      "../20261022T230000-remediation/seat-race-aggregate.json",
+      "../20261022T230000-remediation/seat-race-environment.json",
+      "../20261022T230000-remediation/r18-webhook-e2e.log",
+      "../20261022T230000-remediation/e2e-current-wrapper.log",
+      "../20261022T230000-remediation/e2e-s15bulk.log",
+      "../20261022T230000-remediation/r18-s45-cancellation-e2e.log",
+      "../20261022T230000-remediation/r18-s45-cancellation-unit.log",
+      "../20261022T230000-remediation/s45-cancellation-browser.json",
+      "../20261022T230000-remediation/s45-cancellation-browser.log",
+      "../20261022T230000-remediation/r20-s48-refund-retry-e2e.log",
+      "../20261022T230000-remediation/e2e-after-s48.log",
+      "../20261022T230000-remediation/r18-expiry-webhook-race.log",
+      "../20261022T230000-remediation/r18-cancel-webhook-race.log",
+      "../20261022T230000-remediation/r18-full-e2e.log",
+      "../20261022T230000-remediation/int02-mock-gateway-retry-e2e.log",
+      "../20261022T230000-remediation/int02-mock-gateway-retry-e2e.exitcode",
+      "../20261022T230000-remediation/int02-retry-payment-oracle.json",
+      "../20261022T230000-remediation/int02-fixture-cleanup.json",
+      "../../../apps/api/test/mock-gateway.e2e-spec.ts",
+      "../20261022T230000-remediation/r22-full-api-e2e-current-134.log",
+      "../20261022T230000-remediation/int02-typecheck.log",
+      "../20261022T230000-remediation/int02-lint.log",
+      "../20261022T230000-remediation/int04-order-expiry-webhook-race.json",
+      "../20261022T230000-remediation/r18-int08-cancel-refund-revoked-qr-resale.log",
+      "../20261022T230000-remediation/r18-int08-cancel-refund-revoked-qr-resale.exitcode",
+      "../../../apps/api/test/lifecycle-cancellation.e2e-spec.ts",
+      "../20261022T230000-remediation/r18-int14-gateway-failure-repro.log",
+      "../20261022T230000-remediation/r18-int14-gateway-failure-repro.exitcode",
+      "../20261022T230000-remediation/r18-d17-full-api-e2e-final.log",
+      "../20261022T230000-remediation/r18-d17-full-api-e2e-final.exitcode",
+      "../20261022T230000-remediation/r18-d17-payment-unit-final.log",
+      "../20261022T230000-remediation/r18-d17-payment-unit-final.exitcode",
+      "../20261022T230000-remediation/r18-d17-order-review-ui-unit.log",
+      "../20261022T230000-remediation/r18-d17-order-review-ui-unit.exitcode",
+      "../20261022T230000-remediation/d17-browser-verification.json",
+      "../20261022T230000-remediation/d17-payment-unknown-desktop.png",
+      "../20261022T230000-remediation/d17-payment-unknown-mobile.png",
+      "../../../apps/api/src/payments/payments.service.ts",
+      "../../../apps/web/src/features/order-review/order-review.tsx"
+    ]
+  },
+  {
+    "id": "R19",
+    "title": "Kiểm và sửa vé, admission và offline queue không mất dữ liệu",
+    "dependencies": [
+      "R10"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "Local slices INT-05/06/07/10 retain their prior isolated evidence. INT-16.01 was rerun against the current dirty source: fixed recipient ticket projection; transfer now revokes old QR, exposes replacement QR to recipient on desktop/mobile, preserves order privacy and total, and creates one delivery outbox row. INT-16.02 (reschedule/cancel/erasure/scanner interactions) remains NOT_RUN; SMTP worker delivery not yet exercised in this checkpoint.",
+    "evidence": [
+      "../20261022T230000-remediation/r19-int05-checkpoint.json",
+      "../20261022T230000-remediation/r19-int06-checkpoint.json",
+      "../20261022T230000-remediation/r19-int07-checkpoint.json",
+      "../20261022T230000-remediation/int09-int10-checkpoint.json",
+      "../20261022T230000-remediation/int16-transfer-baseline-browser.json",
+      "int16-transfer-postgres-oracle.json",
+      "bugs.md"
+    ]
+  },
+  {
+    "id": "R20",
+    "title": "Hoàn thiện phần vận hành, riêng tư và báo cáo theo lỗi tái hiện",
+    "dependencies": [
+      "R10"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "S-45 local mock cancellation/refund and S-48 retry/manual resolution are verified. S-40 is now verified locally end to end: real isolated Redis/PostgreSQL/API FIFO, bypass guard, lease expiry/promotion plus authenticated desktop/mobile browser loading, admission, position and error states. NFR policy remains NEEDS_DECISION. Refund UNKNOWN, showtime-cancel batch, reconciliation/privacy/retention/backup, and quota/NAT remain unverified. Final assertion also verified that the expired admission owner receives HTTP 429 WAITING_ROOM_REQUIRED on both hold and order routes.",
+    "evidence": [
+      "../20261022T230000-remediation/r18-s45-cancellation-e2e.log",
+      "../20261022T230000-remediation/r18-s45-cancellation-unit.log",
+      "../20261022T230000-remediation/s45-cancellation-browser.json",
+      "../20261022T230000-remediation/s45-cancellation-browser.log",
+      "../20261022T230000-remediation/r20-s48-refund-retry-e2e.log",
+      "../20261022T230000-remediation/e2e-after-s48.log",
+      "../20261022T230000-remediation/api-lint-after-remediation-tests.log",
+      "../20261022T230000-remediation/r20-s40-waiting-room-e2e.log",
+      "../20261022T230000-remediation/e2e-after-s40.log",
+      "../20261022T230000-remediation/api-lint-after-s40.log",
+      "../20261022T230000-remediation/s40-waiting-room-browser.json",
+      "../20261022T230000-remediation/s40-waiting-room-browser.log",
+      "../20261022T230000-remediation/s40-browser-fixture-cleanup.json",
+      "../20261022T230000-remediation/web-unit-after-s40-ui.log",
+      "../20261022T230000-remediation/web-build-after-s40-ui.log",
+      "../20261022T230000-remediation/e2e-after-s40-final.log",
+      "../20261022T230000-remediation/api-lint-after-s40-final.log",
+      "../20261022T230000-remediation/r18-cancel-webhook-race.log",
+      "../20261022T230000-remediation/r18-full-e2e.log"
+    ]
+  },
+  {
+    "id": "R21",
+    "title": "Đóng kiểm UI/NFR và chuẩn bị nghiệm thu bên ngoài",
+    "dependencies": [
+      "R08",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R17",
+      "R18",
+      "R19",
+      "R20"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "At R21, final package regression was scheduled for handoff. Superseded by verified R31: exact-file package API/web/deployment test suites passed with zero failures; staging/provider/device/off-host remain outside demo scope.",
+    "evidence": [
+      "../20261022T230000-remediation/typecheck-after-s40.log",
+      "../20261022T230000-remediation/api-build-after-s40.log",
+      "../20261022T230000-remediation/web-build-after-s40.log",
+      "../20261022T230000-remediation/api-unit-after-s40.log",
+      "../20261022T230000-remediation/web-unit-after-s40.log",
+      "../20261022T230000-remediation/deploy-tests-after-s40.log",
+      "../20261022T230000-remediation/api-lint-after-s40.log",
+      "../20261022T230000-remediation/e2e-after-s40.log",
+      "../20261022T230000-remediation/catalog-empty-profile.json",
+      "../20261022T230000-remediation/s40-waiting-room-browser.json",
+      "../20261022T230000-remediation/web-unit-after-s40-ui.log",
+      "../20261022T230000-remediation/web-lint-after-s40-ui.log",
+      "../20261022T230000-remediation/web-typecheck-after-s40-ui.log",
+      "../20261022T230000-remediation/web-build-after-s40-ui.log",
+      "../20261022T230000-remediation/r18-full-e2e.log",
+      "../20261022T230000-remediation/s63-browser.json",
+      "../20261022T230000-remediation/s63-independent-oracle.json",
+      "../20261022T230000-remediation/r18-cancel-webhook-race.log",
+      "../20261022T230000-remediation/r19-browser.json",
+      "../20261022T230000-remediation/r19-web-build.log",
+      "../20261022T230000-remediation/r19-web-typecheck.log",
+      "../20261022T230000-remediation/r19-web-full-unit.log",
+      "../20261022T230000-remediation/r19-web-full-lint.log",
+      "../20261022T230000-remediation/r22-web-unit-current.log",
+      "../20261022T230000-remediation/r22-web-typecheck-current.log",
+      "../20261022T230000-remediation/r22-web-build-current.log",
+      "../20261022T230000-remediation/r22-web-lint-current.log",
+      "../20261022T230000-remediation/r22-api-unit-current.log",
+      "../20261022T230000-remediation/r22-api-unit-current.exitcode",
+      "../20261022T230000-remediation/r12-coupon-management-unit.log",
+      "../20261022T230000-remediation/r22-root-test-current.log",
+      "../20261022T230000-remediation/r22-root-test-current.exitcode",
+      "../20261022T230000-remediation/r22-api-typecheck-current.log",
+      "../20261022T230000-remediation/r22-api-build-current.log",
+      "../20261022T230000-remediation/r22-api-lint-current.log",
+      "../20261022T230000-remediation/r22-root-test-final.log",
+      "../20261022T230000-remediation/r22-root-test-final-retry.log",
+      "../20261022T230000-remediation/r22-root-test-after-qr-optimization.log",
+      "../20261022T230000-remediation/r22-root-test-after-qr-optimization.exitcode",
+      "../20261022T230000-remediation/r22-root-typecheck-final.log",
+      "../20261022T230000-remediation/r22-root-build-final.log",
+      "../20261022T230000-remediation/r22-root-lint-final.log",
+      "../20261022T230000-remediation/r22-full-api-e2e-current-132.log",
+      "../20261022T230000-remediation/r13-show-cancel-and-refund-final.log",
+      "../20261022T230000-remediation/r13-waitlist-optout-erasure-race-final.log"
+    ]
+  },
+  {
+    "id": "R22",
+    "title": "Chạy lại404 case và các regression mới trên source cuối",
+    "dependencies": [
+      "R09",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R17",
+      "R18",
+      "R19",
+      "R20"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "Latest aggregate R43: 494 rows; PASS 142, FAIL 0, NOT_RUN 336, BLOCKED 10, NEEDS_DECISION 5, MISSING 1. R42 fixed BUG-R40-01; focused EventEditor 8/8 and UI retest passed. R43 exact-file regression passed API 481, web 163 and laptop/deploy 20; typecheck/build passed; lint exited 0 with warnings. Main local profile is READY and read-only oracle confirms 40 events/42 showtimes/2 paid orders/2 tickets. DEMO_PARTIAL remains due outstanding local/external cases.",
+    "evidence": [
+      "results.json",
+      "seat-selection-local-verification.json",
+      "public-session-header-verification.json",
+      "prepared-fileset-current.json",
+      "../20261022T230000-remediation/r22-full-api-e2e-current-134.log",
+      "event-catalog-browser-verification.json",
+      "event-catalog-api-oracle.json",
+      "s08-ac02-demo-reference-decision.json",
+      "demo-core-walkthrough-browser.json",
+      "demo-core-walkthrough-db-oracle.json",
+      "demo-mailpit-after-checkout.json",
+      "clean-package-copy-proof.json",
+      "clean-package-browser-verification.json",
+      "clean-package-order-oracle.json",
+      "final-regression-summary.json",
+      "r30-full-regression.log",
+      "organizer-create-draft-db-oracle.json",
+      "s04-ac01-01-draft-state-ui-db.json",
+      "s04-ac01-02-not-public-catalog.json",
+      "s04-ac01-mobile-ui-db.json",
+      "organizer-create-draft-mobile-db-oracle.json",
+      "organizer-create-form-mobile.png",
+      "organizer-create-draft-mobile.png",
+      "s30-ac02-ui-db.json",
+      "s30-ac02-db-oracle.json",
+      "s30-ac02-invalid-ticket.jpg",
+      "s30-ac02-invalid-ticket-mobile.jpg",
+      "s04-ac02-ui-db.json",
+      "s04-ac02-db-oracle.json",
+      "s04-ac02-cleanup.json",
+      "s04-ac02-add-showtime-desktop.jpg",
+      "s04-ac02-add-showtime-mobile.jpg",
+      "s04-ac05-r38-ui-api-db.json",
+      "s04-ac05-r38-before.json",
+      "s04-ac05-organizer-a-denied-desktop.png",
+      "s04-ac05-r38-cleanup.json",
+      "s04-ac03-r39-rejected.json",
+      "s04-ac03-r39-cleanup.json",
+      "s04-ac03-past-showtime-desktop.jpg",
+      "s04-ac04-r40-db-oracle.json",
+      "s04-ac04-r40-cleanup.json",
+      "s04-ac04-duplicate-showtime-success-desktop.jpg",
+      "bugs.md",
+      "r42-clean-package-event-editor-test.log",
+      "r42-clean-package-web-build.log",
+      "bug-r40-fixed-organizer-desktop.jpg",
+      "bug-r40-fixed-ui-db-cleanup.json",
+      "r43-final-regression-test.log",
+      "r43-final-regression-typecheck.log",
+      "r43-final-regression-lint.log",
+      "r43-final-regression-build.log",
+      "r43-demo-db-final-oracle.json"
+    ]
+  },
+  {
+    "id": "R23",
+    "title": "Bàn giao bản sửa và trạng thái nghiệm thu có thể kiểm chứng",
+    "dependencies": [
+      "R22"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "Main Buyer journey and clean-package role login/purchase/restart are evidenced. Final local package regression passes; all-role action workflows, UI states and remaining ACs are not complete.",
+    "evidence": [
+      "run-manifest.json",
+      "demo-ui-assets-manifest.json",
+      "demo-catalog-source-audit.json",
+      "scanner-local-verification.json",
+      "demo-role-ui-verification.json",
+      "public-session-header-verification.json",
+      "seat-selection-local-verification.json",
+      "demo-core-walkthrough-browser.json",
+      "demo-core-walkthrough-db-oracle.json",
+      "demo-mailpit-after-checkout.json",
+      "clean-package-browser-verification.json",
+      "clean-package-order-oracle.json",
+      "final-regression-summary.json"
+    ]
+  },
+  {
+    "id": "R24",
+    "title": "Kiểm tra bản demo sạch, catalog bền và GitHub package",
+    "dependencies": [
+      "R23"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "Prepared package verified from an exact 1049-file source list: all source and clean-copy hashes match. New profile installed, migrated, guarded-seeded, built; all five roles signed in and Buyer checkout/ticket survived restart. This is a local prepared-file tree, not a Git clone/remote proof.",
+    "evidence": [
+      "prepared-fileset-current.json",
+      "demo-catalog-source-audit.json",
+      "demo-ui-assets-manifest.json",
+      "demo-scanner-showtime.json",
+      "scanner-local-verification.json",
+      "seat-selection-local-verification.json",
+      "public-session-header-verification.json",
+      "clean-package-copy-proof.json",
+      "clean-package-browser-verification.json",
+      "clean-package-order-oracle.json"
+    ]
+  },
+  {
+    "id": "R25",
+    "title": "Xác minh đăng ký UI và email kích hoạt qua Mailpit trên profile demo bền",
+    "dependencies": [
+      "R01",
+      "R22"
+    ],
+    "status": "VERIFIED",
+    "actual": "Browser desktop/mobile showed registration validation and generic success; API/PostgreSQL verified pending BUYER/consent/token and server negative validation; Mailpit accepted activation email with link token hash matching DB. Exact synthetic user, consent audit, outbox and catcher message were removed; independent DB counts remained 40 events/42 showtimes/1 ticket/1 paid order. No real email sent. Screenshot files for this slice were not persisted.",
+    "evidence": [
+      "registration-browser-verification.json",
+      "registration-mailpit-oracle.json",
+      "registration-fixture-cleanup.json",
+      "../../../apps/api/test/registration.e2e-spec.ts",
+      "../../../apps/web/src/components/registration-form.spec.tsx"
+    ]
+  },
+  {
+    "id": "R26",
+    "title": "Sửa và xác minh tải nối tiếp catalog theo AC S-08-AC04",
+    "dependencies": [
+      "R22",
+      "R24"
+    ],
+    "status": "VERIFIED",
+    "actual": "Catalog pagination fix remains verified. At R26 the durable database had 1 paid order/1 ticket; checkpoint R27 added a separate Buyer demo purchase and independently verified 2 paid orders/2 tickets. No catalog data replaced.",
+    "evidence": [
+      "event-catalog-browser-verification.json",
+      "event-catalog-api-oracle.json",
+      "catalog-status-counts.mjs",
+      "../../../apps/web/src/features/event-catalog/event-catalog.tsx",
+      "demo-state-after-catalog-fix.json",
+      "prepared-fileset-current.json",
+      "demo-core-walkthrough-db-oracle.json"
+    ]
+  },
+  {
+    "id": "R27",
+    "title": "Buyer demo purchase to valid ticket with isolated DB and Mailpit oracle",
+    "dependencies": [
+      "R22",
+      "R23"
+    ],
+    "status": "VERIFIED",
+    "actual": "Buyer purchased one D-1 STANDARD seat for 380000 VND through the UI. The local mock gateway success route returned a paid result; read-only PostgreSQL confirms exact totals, one succeeded payment, one SOLD seat, no active hold and one valid ticket. Mailpit accepted the synthetic ticket email; no Internet email sent. S-18-AC02 atomicity subassertion remains NOT_RUN; order retained as durable demo data.",
+    "evidence": [
+      "demo-core-walkthrough-browser.json",
+      "demo-core-walkthrough-db-oracle.json",
+      "results.json"
+    ]
+  },
+  {
+    "id": "R28",
+    "title": "Xác minh vé, gửi lại email qua Mailpit và lịch sử đơn sau restart",
+    "dependencies": [
+      "R27"
+    ],
+    "status": "VERIFIED",
+    "actual": "My Tickets shows two valid QR tickets and history shows two paid orders newest first. Resend accepted and Mailpit received matching D-1 QR mail within seconds. Read-only DB confirms exactly one ticket for the new order; pagination across multiple pages remains NOT_RUN.",
+    "evidence": [
+      "demo-core-walkthrough-browser.json",
+      "demo-core-walkthrough-db-oracle.json",
+      "demo-mailpit-after-checkout.json",
+      "results.json"
+    ]
+  },
+  {
+    "id": "R29",
+    "title": "Clean exact-file package boot, all-role login and restart persistence proof",
+    "dependencies": [
+      "R24",
+      "R27",
+      "R28"
+    ],
+    "status": "VERIFIED",
+    "actual": "Copied the exact 1049 selected working-tree/package files into a new folder; all SHA-256 matched. Fresh isolated profile installed, migrated, guarded-seeded and built. Browser showed 40 events/42 showtimes and artwork; ADMIN/ORGANIZER/BUYER/STAFF/ACCOUNTANT logins succeeded. Buyer completed A-1 VIP 580000-VND mock checkout; independent read-only PostgreSQL confirms PAID, one successful payment, SOLD seat, released hold and one valid ticket. Restart returned READY; DB and browser still showed the paid order and QR ticket. Stopped only the secondary profile afterward, retaining its local DB volume. No fresh Git clone, external provider or camera test.",
+    "evidence": [
+      "clean-package-copy-proof.json",
+      "clean-package-browser-verification.json",
+      "clean-package-order-oracle.json",
+      "prepared-fileset-current.json"
+    ]
+  },
+  {
+    "id": "R30",
+    "title": "Đồng bộ tài liệu bàn giao và xác nhận gói exact-file cuối",
+    "dependencies": [
+      "R29"
+    ],
+    "status": "VERIFIED",
+    "actual": "Updated handoff text for durable demo data and revalidated the selected exact-file package. Clean-copy hash check at that checkpoint: 0 missing, 0 different. Later checkpoint R31 completed the final regression; R32 added catalog search/filter/empty-state UI evidence.",
+    "evidence": [
+      "prepared-fileset-current.json",
+      "clean-package-copy-proof.json",
+      "run-manifest.json",
+      "results.json",
+      "report.md",
+      "progress.json"
+    ]
+  },
+  {
+    "id": "R31",
+    "title": "Final local regression and handoff checkpoint",
+    "dependencies": [
+      "R29",
+      "R30"
+    ],
+    "status": "VERIFIED",
+    "actual": "Exact-file package full regression exit 0: API 481/481 across 61 files, web 162/162 across 28 files, laptop/deployment 20/20. 1049 selected source/package hashes rechecked against clean proof tree; missing 0, different 0. Main local profile reported READY. Matrix remains DEMO_PARTIAL with unrun/blockers intact.",
+    "evidence": [
+      "final-regression-summary.json",
+      "r30-full-regression.log",
+      "prepared-fileset-current.json",
+      "clean-package-copy-proof.json",
+      "report.md"
+    ]
+  },
+  {
+    "id": "R32",
+    "title": "Catalog search/filter and empty-state UI smoke",
+    "dependencies": [
+      "R31"
+    ],
+    "status": "VERIFIED",
+    "actual": "Desktop browser on the durable demo profile verified search, category filter, no-result empty state and Clear filters. Search returned 3 Bệnh sĩ showtimes; Kịch Nói returned 4 after clearing the search; unmatched text showed the explicit empty message and Clear filters restored 42. UI restored to unfiltered state; no DB writes. No matrix status promoted because this slice has no direct mapped case.",
+    "evidence": [
+      "catalog-search-filter-ui-verification.json",
+      "report.md"
+    ]
+  },
+  {
+    "id": "R33",
+    "title": "Organizer catalog and existing event detail UI smoke",
+    "dependencies": [
+      "R32"
+    ],
+    "status": "VERIFIED",
+    "actual": "Synthetic Organizer signed in on the durable local profile. Browser list showed 40 events, 42 showtimes, 40 published and 0 drafts; the Bệnh sĩ event page displayed its existing published/draft/on-sale showtimes and coupon panel. Read-only; no catalog mutation. This smoke does not prove create/edit/publication, price/map validation, ownership denial or audit ACs; those remain NOT_RUN.",
+    "evidence": [
+      "organizer-event-detail-ui-verification.json",
+      "organizer-event-detail-desktop.png"
+    ]
+  },
+  {
+    "id": "R34",
+    "title": "Organizer create draft and verify unpublished catalog visibility",
+    "dependencies": [
+      "R33"
+    ],
+    "status": "VERIFIED",
+    "actual": "S-04-AC01 split into .01 and .02; desktop create-draft UI, ownership/status DB oracle and public catalog negative query passed. Exact run-bound fixture cleaned and durable counts restored. R35 adds mobile create-draft proof.",
+    "evidence": [
+      "s04-ac01-01-draft-state-ui-db.json",
+      "s04-ac01-02-not-public-catalog.json",
+      "organizer-create-draft-db-oracle.json",
+      "organizer-create-draft-r33.png"
+    ]
+  },
+  {
+    "id": "R35",
+    "title": "Responsive mobile follow-up for S-04-AC01",
+    "dependencies": [
+      "R34"
+    ],
+    "status": "VERIFIED",
+    "actual": "At 390×844, Organizer completed the create-event form and the UI returned the new event as DRAFT. Read-only DOM metrics showed 375px document/body width within 390px viewport. PostgreSQL confirmed owner/status and exact fixture cleanup restored catalog and left orders/tickets unchanged. Matrix counts did not change.",
+    "evidence": [
+      "s04-ac01-mobile-ui-db.json",
+      "organizer-create-draft-mobile-db-oracle.json",
+      "organizer-create-form-mobile.png",
+      "organizer-create-draft-mobile.png"
+    ]
+  },
+  {
+    "id": "R36",
+    "title": "S-30-AC02 invalid ticket rejection on desktop and mobile",
+    "dependencies": [
+      "R35"
+    ],
+    "status": "VERIFIED",
+    "actual": "Staff demo UI loaded the assigned same-day showtime and gate, rejected a synthetic unknown ticket on default desktop and 390×844 viewport with the expected message. Read-only DOM measured 375px document/body within 390px; read-only PostgreSQL showed zero admissions and checked-in items and 2 unchanged valid tickets. Buyer catalog session was restored and temporary tab closed. No product source changed.",
+    "evidence": [
+      "s30-ac02-ui-db.json",
+      "s30-ac02-db-oracle.json",
+      "s30-ac02-invalid-ticket.jpg",
+      "s30-ac02-invalid-ticket-mobile.jpg"
+    ]
+  },
+  {
+    "id": "R37",
+    "title": "Organizer creates a run-bound draft and persists its showtime",
+    "dependencies": [
+      "R36"
+    ],
+    "status": "VERIFIED",
+    "actual": "S-04-AC02 verified through Organizer UI on desktop and 390×844 mobile. The saved showtime is attached to the run-bound draft and stored as 2026-10-24 08:00Z; database oracle found no seats/orders. Exact fixture cleanup restored the original durable catalog and paid order/ticket counts. No product source changed.",
+    "evidence": [
+      "s04-ac02-ui-db.json",
+      "s04-ac02-db-oracle.json",
+      "s04-ac02-cleanup.json",
+      "s04-ac02-add-showtime-desktop.jpg",
+      "s04-ac02-add-showtime-mobile.jpg"
+    ]
+  },
+  {
+    "id": "R38",
+    "title": "Cross-owner Organizer denial on an isolated draft fixture",
+    "dependencies": [
+      "R37"
+    ],
+    "status": "VERIFIED",
+    "actual": "S-04-AC05 desktop denial passed; mobile subcase is explicitly BLOCKED because current browser controls cannot set a mobile viewport. Owner guard and UI 403 mapping inspected; DB unchanged after denied route; guarded fixture cleanup. No product source changed; raw HTTP response not independently captured.",
+    "evidence": [
+      "s04-ac05-r38-ui-api-db.json",
+      "s04-ac05-r38-before.json",
+      "s04-ac05-organizer-a-denied-desktop.png",
+      "s04-ac05-r38-cleanup.json",
+      "s04-ac05-r38-oracle.mjs",
+      "cleanup-s04-ac05-r38.mjs"
+    ]
+  },
+  {
+    "id": "R39",
+    "title": "Past showtime rejection and responsive subcase split",
+    "dependencies": [
+      "R38"
+    ],
+    "status": "VERIFIED",
+    "actual": "Organizer UI desktop rejected an attempted past start and displayed a clear future-time validation; read-only PostgreSQL confirmed zero showtimes and exact fixture cleanup. S-04-AC03 was split into desktop PASS and mobile BLOCKED because current CUA has no viewport sizing control; S-04-AC05 now similarly records desktop PASS/mobile BLOCKED under parent BLOCKED. This preserves coverage truth without treating desktop as mobile evidence.",
+    "evidence": [
+      "s04-ac03-r39-rejected.json",
+      "s04-ac03-r39-cleanup.json",
+      "s04-ac03-past-showtime-desktop.jpg",
+      "s04-ac05-r38-ui-api-db.json",
+      "s04-ac05-r38-cleanup.json"
+    ]
+  },
+  {
+    "id": "R40",
+    "title": "Exact-time duplicate showtime warning and persistence",
+    "dependencies": [
+      "R39"
+    ],
+    "status": "VERIFIED",
+    "actual": "Organizer B saved a second draft showtime at exactly the existing timestamp via the quick preset. UI showed the required warning while allowing save; PostgreSQL confirmed two exact matching UTC starts and zero seat/order descendants. Exact run fixture and child showtimes were safely deleted after guard checks. Parent S-04-AC04 remains BLOCKED until mobile subcase runs. Observed a non-blocking stale validation message after quick-preset recovery; recorded BUG-R40-01 (P3), no source changes.",
+    "evidence": [
+      "s04-ac04-r40-db-oracle.json",
+      "s04-ac04-r40-cleanup.json",
+      "s04-ac04-duplicate-showtime-success-desktop.jpg",
+      "bugs.md"
+    ]
+  },
+  {
+    "id": "R41",
+    "title": "First post-edit browser check isolated stale production build",
+    "dependencies": [
+      "R40"
+    ],
+    "status": "VERIFIED",
+    "actual": "The copied source contained the fix, but the already-running production web process still served its previous build and retained the stale validation. The run-bound fixture was safely cleaned. This was classified as stale runtime/build evidence, not a failed source fix; profile containers and durable catalog were preserved.",
+    "evidence": [
+      "bug-r40-fixed-ui-db-cleanup.json",
+      "r42-clean-package-web-build.log"
+    ]
+  },
+  {
+    "id": "R42",
+    "title": "Rebuild active demo and verify quick-preset recovery fix",
+    "dependencies": [
+      "R41"
+    ],
+    "status": "VERIFIED",
+    "actual": "Added a regression assertion; it failed before the handler fix (7/8 existing component tests), then passed 8/8 after adding startTime error clearing. Built web in both prepared and clean exact-file trees. Restarted the isolated demo via its own onboarding entrypoint with skip-build resume, retaining DB/Redis/Mailpit volumes and without running migrations, base seed, or catalog seed/reset; the normal demo-showtime and scanner ensure helpers ran and completed; health returned READY. Browser R42 showed validation before preset, no validation after preset, successful showtime save and no stale error. Read-only PostgreSQL oracle and exact guarded cleanup confirmed the run fixture removed. Full regression is still pending.",
+    "evidence": [
+      "r42-clean-package-event-editor-test.log",
+      "r42-clean-package-event-editor-test.exitcode",
+      "r42-clean-package-web-build.log",
+      "r42-clean-package-web-build.exitcode",
+      "bug-r40-fixed-organizer-desktop.jpg",
+      "bug-r40-fixed-ui-db-cleanup.json"
+    ]
+  },
+  {
+    "id": "R43",
+    "title": "Final exact-file regression and demo profile integrity check",
+    "dependencies": [
+      "R42"
+    ],
+    "status": "VERIFIED",
+    "actual": "On the updated clean exact-file proof tree, pnpm test passed API 61 files/481 tests, web 28 files/163 tests and laptop/deploy 20 tests with zero failures/skips. Typecheck passed. Lint exited 0 with existing warnings (2 web unused-variable warnings and API type-aware warnings); full monorepo build passed. Main isolated demo launcher Status returned READY; a read-only PostgreSQL oracle confirmed 40 events, 42 showtimes, 2 PAID orders and 2 tickets after all run fixtures were cleaned. Public Buyer home remains on the catalog. No source changes occurred after R42. Overall remains DEMO_PARTIAL because many cases remain NOT_RUN/BLOCKED/NEEDS_DECISION/MISSING and full role action matrix/external conditions are not proven.",
+    "evidence": [
+      "r43-final-regression-test.log",
+      "r43-final-regression-test.exitcode",
+      "r43-final-regression-typecheck.log",
+      "r43-final-regression-typecheck.exitcode",
+      "r43-final-regression-lint.log",
+      "r43-final-regression-lint.exitcode",
+      "r43-final-regression-build.log",
+      "r43-final-regression-build.exitcode",
+      "r43-demo-db-final-oracle.json",
+      "prepared-fileset-current.json"
+    ]
+  }
+]

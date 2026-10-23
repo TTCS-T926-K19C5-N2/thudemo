@@ -1,0 +1,25 @@
+{
+  "canonical": {
+    "fingerprint": "efc989c97228d4aa0aaab852c7177b5ce26e5397dad2324f0d34f43beb90803e",
+    "selectedFileCount": 793
+  },
+  "prepared": {
+    "fingerprint": "33f1ca42285ba277a8f6c7a1cc75cfb82a1b683ee916d5c1eba6aa00a8a303c2",
+    "selectedFileCount": 795
+  },
+  "onlyCanonical": [],
+  "onlyPrepared": [
+    "apps/api/tsconfig.build.tsbuildinfo",
+    "apps/web/next-env.d.ts"
+  ],
+  "contentMismatch": [],
+  "preparedStateFingerprint": "33f1ca42285ba277a8f6c7a1cc75cfb82a1b683ee916d5c1eba6aa00a8a303c2",
+  "preparedStateMatchesPreparedTree": true,
+  "canonicalMatchesPrepared": false,
+  "nonGeneratedSourceContentMatches": true,
+  "preparedOnlyGeneratedArtifacts": [
+    "apps/api/tsconfig.build.tsbuildinfo",
+    "apps/web/next-env.d.ts"
+  ],
+  "safety": "Only selected source file paths and hashes compared; no env/config/private values read into output"
+}

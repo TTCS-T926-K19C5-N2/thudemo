@@ -1,0 +1,80 @@
+[
+  {
+    "id": "S-63-AC01",
+    "requirement_id": "S-63",
+    "kind": "AC",
+    "group": "Mở rộng",
+    "tier": "Later",
+    "priority": "Could",
+    "sprint": null,
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Báo cáo tỉ lệ bỏ giỏ và thời gian giữ chỗ thực tế",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L65"
+    },
+    "original_requirement": "Báo cáo theo suất: số lượt giữ, số thành đơn, số hết hạn, thời gian trung bình và p90 từ giữ tới trả. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP. Phần đệm, chưa xếp sprint",
+    "fixture": "10 hold sessions: thành đơn, hết hạn và đang giữ; oracle thời gian trung bình/p90.",
+    "surfaces": "Báo cáo bỏ giỏ/giữ chỗ",
+    "code_candidates": "Chưa tìm thấy báo cáo abandonment trong inventory hiện tại",
+    "test_candidates": "Chưa xác định suite chuyên biệt",
+    "steps": [
+      "Chuẩn bị fixture: 10 hold sessions: thành đơn, hết hạn và đang giữ; oracle thời gian trung bình/p90.",
+      "Tìm route/UI; nếu có đối chiếu số lượt giữ/thành đơn/hết hạn bằng session ID, không đếm số ghế thay lượt. Chốt mẫu số và cách tính p90; test cửa sổ thời gian, một lượt nhiều ghế và retry.",
+      "Đối chiếu từng mệnh đề yêu cầu gốc; tách thành subcase khi có nhiều hành vi."
+    ],
+    "execution_strategy": "Tìm route/UI; nếu có đối chiếu số lượt giữ/thành đơn/hết hạn bằng session ID, không đếm số ghế thay lượt. Chốt mẫu số và cách tính p90; test cửa sổ thời gian, một lượt nhiều ghế và retry.",
+    "expected": [
+      "Báo cáo theo suất: số lượt giữ, số thành đơn, số hết hạn, thời gian trung bình và p90 từ giữ tới trả. Chưa refine chi tiết — tier Later, ước lượng thô 2 SP. Phần đệm, chưa xếp sprint"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-63-NFR",
+    "requirement_id": "S-63",
+    "kind": "NFR",
+    "group": "Mở rộng",
+    "tier": "Later",
+    "priority": "Could",
+    "sprint": null,
+    "readiness": "NEEDS_REFINEMENT",
+    "title": "Báo cáo tỉ lệ bỏ giỏ và thời gian giữ chỗ thực tế — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N65"
+    },
+    "original_requirement": "chưa refine",
+    "fixture": "10 hold sessions: thành đơn, hết hạn và đang giữ; oracle thời gian trung bình/p90.",
+    "surfaces": "Báo cáo bỏ giỏ/giữ chỗ",
+    "code_candidates": "Chưa tìm thấy báo cáo abandonment trong inventory hiện tại",
+    "test_candidates": "Chưa xác định suite chuyên biệt",
+    "steps": [
+      "Tìm route/UI; nếu có đối chiếu số lượt giữ/thành đơn/hết hạn bằng session ID, không đếm số ghế thay lượt. Chốt mẫu số và cách tính p90; test cửa sổ thời gian, một lượt nhiều ghế và retry.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "chưa refine"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "id": "SPRINT-2-GOAL",
+  "requirement_id": "Sprint 2",
+  "kind": "SPRINT_GOAL",
+  "group": "Mục tiêu tích hợp",
+  "tier": "GOVERNANCE",
+  "priority": "Theo scope Sprint",
+  "readiness": "SPECIFIED",
+  "title": "Người mua tìm được suất đang bán, chọn được ghế và ghế đó chắc chắn là của họ, kể cả khi nhiều người bấm cùng lúc",
+  "source": {
+    "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+    "sheet": "Sprints",
+    "range": "D3"
+  },
+  "original_requirement": "Người mua tìm được suất đang bán, chọn được ghế và ghế đó chắc chắn là của họ, kể cả khi nhiều người bấm cùng lúc",
+  "steps": [
+    "Xác định các story có Sprint tương ứng trong baseline.",
+    "Đi trọn hành trình tích hợp cho Sprint Goal; đối chiếu dependency và bằng chứng môi trường, không chỉ cộng số story PASS."
+  ],
+  "expected": [
+    "Người mua tìm được suất đang bán, chọn được ghế và ghế đó chắc chắn là của họ, kể cả khi nhiều người bấm cùng lúc"
+  ],
+  "evidence_required": [
+    "Liên kết case story và hành trình tích hợp đã chạy"
+  ],
+  "status": "NOT_RUN",
+  "actual": null,
+  "evidence_files": [],
+  "approved_override": null
+}

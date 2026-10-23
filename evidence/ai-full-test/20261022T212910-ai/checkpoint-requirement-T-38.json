@@ -1,0 +1,76 @@
+[
+  {
+    "id": "T-38-AC",
+    "requirement_id": "T-38",
+    "parent_requirement": "S-17",
+    "kind": "TASK_AC",
+    "group": "Đơn hàng",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Tính tổng tiền ở máy chủ từ giá hạng ghế, không tin số từ trình duyệt",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "G39"
+    },
+    "original_requirement": "Tổng luôn bằng tổng giá dòng đơn; gửi tổng giả lên API thì bị bỏ qua",
+    "fixture": "Order A pending/expired; B đăng nhập; hai hạng giá khác nhau.",
+    "surfaces": "/orders/:id; GET /orders/:id",
+    "code_candidates": "apps/web/src/features/order-review/; apps/api/src/orders/",
+    "test_candidates": "orders.e2e-spec.ts; order-review.spec.ts",
+    "steps": [
+      "UI hiển thị từng dòng, tổng và thời gian; so SUM(unitPrice) với server. Gửi giá/tổng sửa bằng API; B đọc ID của A phải 403. Hết hạn thì nút trả tiền ẩn và API cũng từ chối.",
+      "Kiểm riêng tiêu chí task T-38: Tổng luôn bằng tổng giá dòng đơn; gửi tổng giả lên API thì bị bỏ qua",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "Tổng luôn bằng tổng giá dòng đơn; gửi tổng giả lên API thì bị bỏ qua"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "T-38-NFR",
+    "requirement_id": "T-38",
+    "parent_requirement": "S-17",
+    "kind": "TASK_NFR",
+    "group": "Đơn hàng",
+    "tier": "TECHNICAL",
+    "priority": "Theo story cha",
+    "readiness": "SPECIFIED",
+    "title": "Tính tổng tiền ở máy chủ từ giá hạng ghế, không tin số từ trình duyệt",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Tasks",
+      "range": "I39"
+    },
+    "original_requirement": "hàm thuần, không đụng cơ sở dữ liệu",
+    "fixture": "Order A pending/expired; B đăng nhập; hai hạng giá khác nhau.",
+    "surfaces": "/orders/:id; GET /orders/:id",
+    "code_candidates": "apps/web/src/features/order-review/; apps/api/src/orders/",
+    "test_candidates": "orders.e2e-spec.ts; order-review.spec.ts",
+    "steps": [
+      "UI hiển thị từng dòng, tổng và thời gian; so SUM(unitPrice) với server. Gửi giá/tổng sửa bằng API; B đọc ID của A phải 403. Hết hạn thì nút trả tiền ẩn và API cũng từ chối.",
+      "Kiểm riêng tiêu chí task T-38: hàm thuần, không đụng cơ sở dữ liệu",
+      "Với yêu cầu schema/constraint/migration: kiểm schema SQL và thử vi phạm trên DB biệt lập; với UI: thao tác trực tiếp; với CI/deploy: dùng receipt đúng revision."
+    ],
+    "expected": [
+      "hàm thuần, không đụng cơ sở dữ liệu"
+    ],
+    "evidence_required": [
+      "Bằng chứng riêng theo từng mệnh đề task",
+      "Không dùng PASS của story cha thay task chưa kiểm"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

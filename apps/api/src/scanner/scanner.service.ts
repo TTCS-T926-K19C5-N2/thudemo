@@ -1,17 +1,16 @@
 import {
   ForbiddenException,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ScannerCryptoService } from './scanner-crypto.service.js';
-import { TicketStatus } from '@prisma/client';
-import { Prisma } from '@prisma/client';
+import { TicketStatus, Prisma } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
 
 export interface ScannerTicketItem {
   code: string;
+  legacyCodes?: string[];
   status: 'valid' | 'checked_in' | 'cancelled';
   checkedInAt: string | null;
   seatLabel: string;
@@ -27,6 +26,10 @@ export interface ShowtimeTicketsResponse {
     keyId: string;
     key: string;
   };
+  publicKeys?: {
+    keyId: string;
+    publicKey: string;
+  }[];
   tickets: ScannerTicketItem[];
 }
 
@@ -43,8 +46,6 @@ export interface AssignedShowtimeItem {
 
 @Injectable()
 export class ScannerService {
-  private readonly logger = new Logger(ScannerService.name);
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly crypto: ScannerCryptoService,
@@ -119,6 +120,31 @@ export class ScannerService {
     return results;
   }
 
+  async getAttendance(
+    showtimeId: string,
+    userId: string,
+    roles: string[],
+  ): Promise<{
+    showtimeId: string;
+    totalTickets: number;
+    checkedInTickets: number;
+    generatedAt: string;
+  }> {
+    await this.verifyStaffAccess(showtimeId, userId, roles);
+    const [totalTickets, checkedInTickets] = await Promise.all([
+      this.prisma.ticket.count({ where: { showtimeId } }),
+      this.prisma.ticket.count({
+        where: { showtimeId, status: TicketStatus.CHECKED_IN },
+      }),
+    ]);
+    return {
+      showtimeId,
+      totalTickets,
+      checkedInTickets,
+      generatedAt: new Date().toISOString(),
+    };
+  }
+
   async verifyStaffAccess(
     showtimeId: string,
     userId: string,
@@ -159,6 +185,63 @@ export class ScannerService {
     throw new ForbiddenException(
       'Nhân viên chưa được phân công cho suất diễn này.',
     );
+  }
+
+  async assignStaffToShowtime(
+    showtimeId: string,
+    userId: string,
+  ): Promise<void> {
+    await this.prisma.showtimeStaff.upsert({
+      where: {
+        showtimeId_userId: { showtimeId, userId },
+      },
+      update: {},
+      create: { showtimeId, userId },
+    });
+  }
+
+  async createTicketsForPaidOrder(orderId: string): Promise<void> {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: {
+          include: {
+            seat: true,
+          },
+        },
+      },
+    });
+
+    if (!order) return;
+
+    for (const item of order.items) {
+      const existing = await this.prisma.ticket.findFirst({
+        where: {
+          orderId: order.id,
+          seatId: item.seatId,
+        },
+      });
+
+      if (!existing) {
+        const code = `TK-${randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
+        const seatLabel = item.seat
+          ? `${item.seat.row}-${item.seat.seatNumber}`
+          : item.categoryName;
+
+        await this.prisma.ticket.create({
+          data: {
+            orderId: order.id,
+            showtimeId: order.showtimeId,
+            seatId: item.seatId,
+            code,
+            seatLabel,
+            ticketType: item.categoryName,
+            status: TicketStatus.VALID,
+            price: item.unitPrice,
+          },
+        });
+      }
+    }
   }
 
   async getShowtimeTickets(
@@ -262,8 +345,10 @@ export class ScannerService {
         !codes.has(item.code) &&
         (isIncremental || item.status !== 'cancelled')
       ) {
+        codes.add(item.code);
         tickets.push({
           code: item.code,
+          legacyCodes: item.legacyCodes ?? [],
           seatLabel: item.seatLabel,
           ticketType: item.ticketType,
           status: item.status as ScannerTicketItem['status'],
@@ -277,64 +362,250 @@ export class ScannerService {
       generatedAt: now.toISOString(),
       cursor: now.toISOString(),
       publicKey: this.crypto.getPublicKeyInfo(),
+      ...(typeof this.crypto.getPublicKeys === 'function'
+        ? {
+            publicKeys: this.crypto.getPublicKeys().map((k) => ({
+              keyId: k.keyId,
+              publicKey: k.key,
+              key: k.key,
+            })),
+          }
+        : {}),
       tickets,
     };
   }
 
-  async assignStaffToShowtime(
-    showtimeId: string,
-    userId: string,
-  ): Promise<void> {
-    await this.prisma.showtimeStaff.upsert({
-      where: {
-        showtimeId_userId: { showtimeId, userId },
-      },
-      update: {},
-      create: { showtimeId, userId },
-    });
-  }
+  async syncOfflineScans(
+    scans: {
+      scanId: string;
+      ticketCode: string;
+      showtimeId: string;
+      gateId?: string;
+      scannedAt: string;
+      deviceId: string;
+    }[],
+    user: { id: string; roles: string[]; [key: string]: unknown },
+  ): Promise<
+    {
+      scanId: string;
+      ticketCode: string;
+      status: 'synced' | 'conflict' | 'rejected';
+      message: string;
+    }[]
+  > {
+    const results: {
+      scanId: string;
+      ticketCode: string;
+      status: 'synced' | 'conflict' | 'rejected';
+      message: string;
+    }[] = [];
 
-  async createTicketsForPaidOrder(orderId: string): Promise<void> {
-    const order = await this.prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        items: {
+    for (const item of scans) {
+      try {
+        const existingLog = await this.prisma.offlineScanLog.findUnique({
+          where: { scanId: item.scanId },
+        });
+        if (existingLog) {
+          results.push({
+            scanId: item.scanId,
+            ticketCode: item.ticketCode,
+            status:
+              existingLog.status === 'ACCEPTED'
+                ? 'synced'
+                : existingLog.status === 'CONFLICT'
+                  ? 'conflict'
+                  : 'rejected',
+            message: existingLog.message ?? 'Lượt quét đã được xử lý trước đó.',
+          });
+          continue;
+        }
+
+        try {
+          await this.verifyStaffAccess(item.showtimeId, user.id, user.roles);
+        } catch {
+          await this.prisma.offlineScanLog.create({
+            data: {
+              scanId: item.scanId,
+              ticketCode: item.ticketCode,
+              showtimeId: item.showtimeId,
+              gateId: item.gateId ?? null,
+              staffId: user.id,
+              deviceId: item.deviceId,
+              scannedAt: new Date(item.scannedAt),
+              status: 'INVALID',
+              message: 'Nhân viên không có quyền soát vé tại suất này.',
+            },
+          });
+          results.push({
+            scanId: item.scanId,
+            ticketCode: item.ticketCode,
+            status: 'rejected',
+            message: 'Nhân viên không có quyền soát vé tại suất này.',
+          });
+          continue;
+        }
+
+        const scannedAt = new Date(item.scannedAt);
+
+        const orderItem = await this.prisma.orderItem.findFirst({
+          where: {
+            id: item.ticketCode,
+            order: {
+              showtimeId: item.showtimeId,
+              status: 'PAID',
+            },
+          },
           include: {
+            order: true,
             seat: true,
           },
-        },
-      },
-    });
+        });
 
-    if (!order) return;
+        const legacyTicket = !orderItem
+          ? await this.prisma.ticket.findFirst({
+              where: {
+                code: item.ticketCode,
+                showtimeId: item.showtimeId,
+              },
+            })
+          : null;
 
-    for (const item of order.items) {
-      const existing = await this.prisma.ticket.findFirst({
-        where: {
-          orderId: order.id,
-          seatId: item.seatId,
-        },
-      });
+        if (!orderItem && !legacyTicket) {
+          await this.prisma.offlineScanLog.create({
+            data: {
+              scanId: item.scanId,
+              ticketCode: item.ticketCode,
+              showtimeId: item.showtimeId,
+              gateId: item.gateId ?? null,
+              staffId: user.id,
+              deviceId: item.deviceId,
+              scannedAt,
+              status: 'INVALID',
+              message: 'Mã vé không tồn tại hoặc không thuộc suất diễn này.',
+            },
+          });
+          results.push({
+            scanId: item.scanId,
+            ticketCode: item.ticketCode,
+            status: 'rejected',
+            message: 'Mã vé không tồn tại hoặc không thuộc suất diễn này.',
+          });
+          continue;
+        }
 
-      if (!existing) {
-        const code = `TK-${randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
-        const seatLabel = item.seat
-          ? `${item.seat.row}-${item.seat.seatNumber}`
-          : item.categoryName;
+        const isCancelled =
+          (orderItem && orderItem.order.status !== 'PAID') ||
+          (legacyTicket && legacyTicket.status === TicketStatus.CANCELLED);
 
-        await this.prisma.ticket.create({
+        if (isCancelled) {
+          await this.prisma.offlineScanLog.create({
+            data: {
+              scanId: item.scanId,
+              ticketCode: item.ticketCode,
+              showtimeId: item.showtimeId,
+              gateId: item.gateId ?? null,
+              staffId: user.id,
+              deviceId: item.deviceId,
+              scannedAt,
+              status: 'INVALID',
+              message: 'Vé đã bị huỷ.',
+            },
+          });
+          results.push({
+            scanId: item.scanId,
+            ticketCode: item.ticketCode,
+            status: 'rejected',
+            message: 'Vé đã bị huỷ.',
+          });
+          continue;
+        }
+
+        const alreadyCheckedInAt =
+          orderItem?.checkedInAt ??
+          legacyTicket?.checkedInAt ??
+          (legacyTicket?.status === TicketStatus.CHECKED_IN ? new Date() : null);
+
+        if (alreadyCheckedInAt) {
+          await this.prisma.offlineScanLog.create({
+            data: {
+              scanId: item.scanId,
+              ticketCode: item.ticketCode,
+              showtimeId: item.showtimeId,
+              gateId: item.gateId ?? null,
+              staffId: user.id,
+              deviceId: item.deviceId,
+              scannedAt,
+              status: 'CONFLICT',
+              message: `Vé đã được check-in trước đó lúc ${alreadyCheckedInAt.toISOString()}.`,
+            },
+          });
+          results.push({
+            scanId: item.scanId,
+            ticketCode: item.ticketCode,
+            status: 'conflict',
+            message: 'Vé đã được check-in trước đó trên thiết bị khác.',
+          });
+          continue;
+        }
+
+        if (orderItem) {
+          await this.prisma.orderItem.update({
+            where: { id: orderItem.id },
+            data: { checkedInAt: scannedAt },
+          });
+          await this.prisma.ticket.updateMany({
+            where: {
+              orderId: orderItem.orderId,
+              seatId: orderItem.seatId,
+            },
+            data: {
+              status: TicketStatus.CHECKED_IN,
+              checkedInAt: scannedAt,
+            },
+          });
+        } else if (legacyTicket) {
+          await this.prisma.ticket.update({
+            where: { id: legacyTicket.id },
+            data: {
+              status: TicketStatus.CHECKED_IN,
+              checkedInAt: scannedAt,
+            },
+          });
+        }
+
+        await this.prisma.offlineScanLog.create({
           data: {
-            orderId: order.id,
-            showtimeId: order.showtimeId,
-            seatId: item.seatId,
-            code,
-            seatLabel,
-            ticketType: item.categoryName,
-            status: TicketStatus.VALID,
-            price: item.unitPrice,
+            scanId: item.scanId,
+            ticketCode: item.ticketCode,
+            showtimeId: item.showtimeId,
+            gateId: item.gateId ?? null,
+            staffId: user.id,
+            deviceId: item.deviceId,
+            scannedAt,
+            status: 'ACCEPTED',
+            message: 'Đồng bộ lượt quét ngoại tuyến thành công.',
           },
+        });
+
+        results.push({
+          scanId: item.scanId,
+          ticketCode: item.ticketCode,
+          status: 'synced',
+          message: 'Đồng bộ thành công.',
+        });
+      } catch (err: unknown) {
+        results.push({
+          scanId: item.scanId,
+          ticketCode: item.ticketCode,
+          status: 'rejected',
+          message:
+            err instanceof Error
+              ? err.message
+              : 'Lỗi không xác định khi đồng bộ.',
         });
       }
     }
+
+    return results;
   }
 }

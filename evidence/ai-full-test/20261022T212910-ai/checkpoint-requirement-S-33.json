@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-33-AC01",
+    "requirement_id": "S-33",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Tải trước danh sách vé của suất diễn xuống máy quét",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L35"
+    },
+    "original_requirement": "Giả sử tôi đã chọn suất ở S-29 và đang có mạng, Khi bấm \"tải danh sách\", Thì toàn bộ mã vé hợp lệ và trạng thái đã vào của suất được lưu trên thiết bị kèm thời điểm tải",
+    "fixture": "5.000 vé; snapshot mới/cũ 30 phút; đổi trạng thái sau tải; 4G thật và mô phỏng.",
+    "surfaces": "/scanner/snapshot; GET /scanner/showtimes/:id/tickets",
+    "code_candidates": "apps/api/src/scanner/scanner-snapshot.service.ts; apps/web/src/features/scanner/scanner-db.ts",
+    "test_candidates": "scanner.service.spec.ts; scanner.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: tôi đã chọn suất ở S-29 và đang có mạng.",
+      "Thực hiện trên /scanner/snapshot; GET /scanner/showtimes/:id/tickets: bấm \"tải danh sách\".",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Tải full, kiểm count/checksum và cache không tên/email. Qua 30 phút phải delta; cursor người/suất khác không lộ dữ liệu. Đo dưới 10 giây, ghi rõ mô hình 4G và phân biệt phép đo trên 4G thật.",
+    "expected": [
+      "toàn bộ mã vé hợp lệ và trạng thái đã vào của suất được lưu trên thiết bị kèm thời điểm tải"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-33-AC02",
+    "requirement_id": "S-33",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Tải trước danh sách vé của suất diễn xuống máy quét",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L35"
+    },
+    "original_requirement": "Giả sử danh sách đã tải quá 30 phút, Khi còn mạng, Thì máy tự tải lại phần thay đổi",
+    "fixture": "5.000 vé; snapshot mới/cũ 30 phút; đổi trạng thái sau tải; 4G thật và mô phỏng.",
+    "surfaces": "/scanner/snapshot; GET /scanner/showtimes/:id/tickets",
+    "code_candidates": "apps/api/src/scanner/scanner-snapshot.service.ts; apps/web/src/features/scanner/scanner-db.ts",
+    "test_candidates": "scanner.service.spec.ts; scanner.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: danh sách đã tải quá 30 phút.",
+      "Thực hiện trên /scanner/snapshot; GET /scanner/showtimes/:id/tickets: còn mạng.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Tải full, kiểm count/checksum và cache không tên/email. Qua 30 phút phải delta; cursor người/suất khác không lộ dữ liệu. Đo dưới 10 giây, ghi rõ mô hình 4G và phân biệt phép đo trên 4G thật.",
+    "expected": [
+      "máy tự tải lại phần thay đổi"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-33-AC03",
+    "requirement_id": "S-33",
+    "kind": "AC",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Tải trước danh sách vé của suất diễn xuống máy quét",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L35"
+    },
+    "original_requirement": "Giả sử suất có 5000 vé, Khi tải, Thì xong dưới 10 giây trên mạng 4G",
+    "fixture": "5.000 vé; snapshot mới/cũ 30 phút; đổi trạng thái sau tải; 4G thật và mô phỏng.",
+    "surfaces": "/scanner/snapshot; GET /scanner/showtimes/:id/tickets",
+    "code_candidates": "apps/api/src/scanner/scanner-snapshot.service.ts; apps/web/src/features/scanner/scanner-db.ts",
+    "test_candidates": "scanner.service.spec.ts; scanner.spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: suất có 5000 vé.",
+      "Thực hiện trên /scanner/snapshot; GET /scanner/showtimes/:id/tickets: tải.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Tải full, kiểm count/checksum và cache không tên/email. Qua 30 phút phải delta; cursor người/suất khác không lộ dữ liệu. Đo dưới 10 giây, ghi rõ mô hình 4G và phân biệt phép đo trên 4G thật.",
+    "expected": [
+      "xong dưới 10 giây trên mạng 4G"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-33-NFR",
+    "requirement_id": "S-33",
+    "kind": "NFR",
+    "group": "Ngoại tuyến",
+    "tier": "Next",
+    "priority": "Must",
+    "sprint": "5",
+    "readiness": "SPECIFIED",
+    "title": "Tải trước danh sách vé của suất diễn xuống máy quét — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N35"
+    },
+    "original_requirement": "dữ liệu trên thiết bị chỉ có mã vé và trạng thái, không có tên hay email khách. Ước lượng thô 3 SP — tier Next",
+    "fixture": "5.000 vé; snapshot mới/cũ 30 phút; đổi trạng thái sau tải; 4G thật và mô phỏng.",
+    "surfaces": "/scanner/snapshot; GET /scanner/showtimes/:id/tickets",
+    "code_candidates": "apps/api/src/scanner/scanner-snapshot.service.ts; apps/web/src/features/scanner/scanner-db.ts",
+    "test_candidates": "scanner.service.spec.ts; scanner.spec.ts",
+    "steps": [
+      "Tải full, kiểm count/checksum và cache không tên/email. Qua 30 phút phải delta; cursor người/suất khác không lộ dữ liệu. Đo dưới 10 giây, ghi rõ mô hình 4G và phân biệt phép đo trên 4G thật.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "dữ liệu trên thiết bị chỉ có mã vé và trạng thái, không có tên hay email khách. Ước lượng thô 3 SP — tier Next"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

@@ -1,6 +1,51 @@
 "use client";
+import { OrderCancellation } from "@/features/lifecycle/order-cancellation";
+import { OrderAudit } from "@/features/lifecycle/order-audit";
 
-import { OrderDetail } from "@/features/orders/order-detail";
+import { useEffect, useState, useRef, useCallback } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  Clock3,
+  CircleAlert,
+  ArrowLeft,
+  RotateCw,
+  Armchair,
+  MapPin,
+  CalendarDays,
+  Ticket,
+} from "@/components/ui/material-icon";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { SignedTickets } from "./signed-tickets";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
+import { PublicLayout } from "@/components/layout/product-layout";
+import { api, ApiError, object } from "@/lib/api/client";
+import { loadCurrentUser } from "@/lib/api";
+import {
+  decodeOrderDetail,
+  decodePayResponse,
+  type OrderDetail,
+} from "@/lib/contracts/orders";
+import { formatVnd, formatShowtime } from "@/lib/formatting";
+import {
+  countdownLabel,
+  remainingSeconds,
+  type ServerClock,
+} from "@/features/seat-selection/server-countdown";
+import { OrderTickets } from "@/features/tickets/order-tickets";
+import { OrderBadge } from "@/features/orders/order-badge";
 
 export interface OrderReviewProps {
   id: string;
@@ -8,7 +53,676 @@ export interface OrderReviewProps {
   onPay?: () => void;
 }
 
-// S-17 and S-32 share the V1 detail surface and authenticated reader.
 export function OrderReview({ id, page = 1, onPay }: OrderReviewProps) {
-  return <OrderDetail id={id} page={page} onPay={onPay} />;
+  const router = useRouter();
+  const [order, setOrder] = useState<OrderDetail | null>(null);
+  const [clock, setClock] = useState<ServerClock | null>(null);
+  const [remaining, setRemaining] = useState<number>(0);
+  const [expired, setExpired] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+  const [unauthorized, setUnauthorized] = useState<boolean>(false);
+  const [notFound, setNotFound] = useState<boolean>(false);
+  const [paying, setPaying] = useState<boolean>(false);
+  const [payError, setPayError] = useState<string>("");
+  const [paymentOutcomeUnknown, setPaymentOutcomeUnknown] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponBusy, setCouponBusy] = useState(false);
+  const [couponError, setCouponError] = useState("");
+  const [couponMessage, setCouponMessage] = useState("");
+  const alive = useRef(true);
+  const reader = useRef<AbortController | null>(null);
+  const [readVersion, setReadVersion] = useState(0);
+
+  useEffect(() => {
+    const forget = () => {
+      reader.current?.abort();
+      setOrder(null);
+      setClock(null);
+      setError("");
+      setNotFound(false);
+      setUnauthorized(false);
+      setLoading(true);
+      if (document.visibilityState !== "hidden")
+        setReadVersion((value) => value + 1);
+    };
+    const channel =
+      typeof BroadcastChannel === "undefined"
+        ? null
+        : new BroadcastChannel("account-session");
+    if (channel) channel.onmessage = forget;
+    for (const event of [
+      "focus",
+      "pageshow",
+      "pagehide",
+      "account-session-changed",
+    ])
+      window.addEventListener(event, forget);
+    document.addEventListener("visibilitychange", forget);
+    return () => {
+      channel?.close();
+      for (const event of [
+        "focus",
+        "pageshow",
+        "pagehide",
+        "account-session-changed",
+      ])
+        window.removeEventListener(event, forget);
+      document.removeEventListener("visibilitychange", forget);
+    };
+  }, []);
+
+  const refresh = useCallback(async () => {
+    reader.current?.abort();
+    const controller = new AbortController();
+    reader.current = controller;
+    setLoading(true);
+    setOrder(null);
+    setError("");
+    try {
+      const data = await api(`/orders/${id}`, decodeOrderDetail, {
+        signal: controller.signal,
+      });
+      if (controller.signal.aborted) return;
+      setOrder(data);
+      setPaymentOutcomeUnknown(data.latestPayment?.status === "INITIATED");
+      const serverAnchor: ServerClock = {
+        serverMs: Date.parse(data.serverTime),
+        receivedAt: performance.now(),
+      };
+      setClock(serverAnchor);
+      const rem = remainingSeconds(
+        data.expiresAt,
+        serverAnchor,
+        serverAnchor.receivedAt,
+      );
+      setRemaining(rem);
+      setExpired(
+        data.status === "EXPIRED" ||
+          ((data.status === "PENDING" || data.status === "PENDING_PAYMENT") &&
+            (data.isExpired || rem <= 0)),
+      );
+    } catch (err) {
+      if (controller.signal.aborted) return;
+      if (
+        err instanceof ApiError &&
+        (err.status === 404 || err.status === 403)
+      ) {
+        setNotFound(true);
+      } else if (err instanceof ApiError && err.status === 401) {
+        setUnauthorized(true);
+      } else {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Không thể tải thông tin đơn hàng. Vui lòng thử lại.",
+        );
+      }
+    } finally {
+      if (!controller.signal.aborted) setLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    alive.current = true;
+    const controller = new AbortController();
+    reader.current = controller;
+
+    async function load() {
+      const user = await loadCurrentUser();
+      if (controller.signal.aborted) return;
+      if (!user) {
+        setUnauthorized(true);
+        setLoading(false);
+        return;
+      }
+
+      const data = await api(`/orders/${id}`, decodeOrderDetail, {
+        signal: controller.signal,
+      });
+      if (controller.signal.aborted) return;
+      setOrder(data);
+      setPaymentOutcomeUnknown(data.latestPayment?.status === "INITIATED");
+
+      const serverAnchor: ServerClock = {
+        serverMs: Date.parse(data.serverTime),
+        receivedAt: performance.now(),
+      };
+      setClock(serverAnchor);
+
+      const rem = remainingSeconds(
+        data.expiresAt,
+        serverAnchor,
+        serverAnchor.receivedAt,
+      );
+      setRemaining(rem);
+      setExpired(
+        data.status === "EXPIRED" ||
+          ((data.status === "PENDING" || data.status === "PENDING_PAYMENT") &&
+            (data.isExpired || rem <= 0)),
+      );
+      setLoading(false);
+    }
+
+    void load().catch((err: unknown) => {
+      if (controller.signal.aborted) return;
+      if (
+        err instanceof ApiError &&
+        (err.status === 404 || err.status === 403)
+      ) {
+        setNotFound(true);
+      } else if (err instanceof ApiError && err.status === 401) {
+        setUnauthorized(true);
+      } else {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Không thể tải thông tin đơn hàng. Vui lòng thử lại.",
+        );
+      }
+      setLoading(false);
+    });
+
+    return () => {
+      alive.current = false;
+      controller.abort();
+    };
+  }, [id, readVersion]);
+
+  // Live countdown timer based on server clock synchronization
+  useEffect(() => {
+    if (
+      !order ||
+      (order.status !== "PENDING" && order.status !== "PENDING_PAYMENT") ||
+      expired ||
+      !clock
+    )
+      return;
+    const interval = setInterval(() => {
+      const rem = remainingSeconds(order.expiresAt, clock, performance.now());
+      setRemaining(rem);
+      if (rem <= 0) {
+        setExpired(true);
+        clearInterval(interval);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [order, expired, clock]);
+
+  const defaultPayHandler = async () => {
+    if (onPay) {
+      onPay();
+      return;
+    }
+    if (paying) return;
+    setPaying(true);
+    setPayError("");
+    try {
+      const result = await api(`/orders/${id}/pay`, decodePayResponse, {
+        method: "POST",
+      });
+      if (result.redirectUrl) {
+        window.location.href = result.redirectUrl;
+      }
+    } catch (err) {
+      setPayError(
+        err instanceof ApiError && err.code === "PAYMENT_OUTCOME_UNKNOWN"
+          ? "Chưa xác định được kết quả khởi tạo. Đang chờ đối soát; vui lòng không thanh toán lại."
+          : err instanceof Error
+          ? err.message
+          : "Không thể khởi tạo thanh toán. Vui lòng thử lại.",
+      );
+      setPaying(false);
+      if (!(err instanceof ApiError && err.code === "PAYMENT_REJECTED"))
+        setPaymentOutcomeUnknown(true);
+      void refresh();
+    }
+  };
+
+  const applyCoupon = async () => {
+    if (couponBusy || !couponCode.trim()) return;
+    setCouponBusy(true);
+    setCouponError("");
+    setCouponMessage("");
+    try {
+      const result = await api(
+        `/orders/${id}/coupon`,
+        (value) => ({ confirmedFree: object(value).confirmedFree === true }),
+        { method: "POST", body: { code: couponCode.trim() } },
+      );
+      setCouponCode("");
+      await refresh();
+      setCouponMessage(
+        result.confirmedFree
+          ? "Đơn 0₫ đã được xác nhận. Vé sẽ xuất hiện trong đơn hàng."
+          : "Đã áp dụng mã giảm giá.",
+      );
+    } catch (err) {
+      setCouponError(err instanceof Error ? err.message : "Không áp dụng được mã giảm giá.");
+    } finally {
+      setCouponBusy(false);
+    }
+  };
+
+  const removeCoupon = async () => {
+    if (couponBusy) return;
+    setCouponBusy(true);
+    setCouponError("");
+    setCouponMessage("");
+    try {
+      await api(
+        `/orders/${id}/coupon`,
+        (value) => object(value),
+        { method: "DELETE" },
+      );
+      await refresh();
+      setCouponMessage("Đã bỏ mã giảm giá.");
+    } catch (err) {
+      setCouponError(err instanceof Error ? err.message : "Không bỏ được mã giảm giá.");
+    } finally {
+      setCouponBusy(false);
+    }
+  };
+
+  return (
+    <PublicLayout signedIn={!unauthorized}>
+      <main className="order-review-container max-w-4xl mx-auto px-4 py-8">
+        <Button variant="link" asChild>
+          <Link href={`/orders?page=${page}`}>← Đơn hàng của tôi</Link>
+        </Button>
+        {loading && (
+          <div className="space-y-6" data-testid="order-loading">
+            <Skeleton className="h-10 w-48" />
+            <Skeleton className="h-32 w-full rounded-xl" />
+            <Skeleton className="h-64 w-full rounded-xl" />
+          </div>
+        )}
+
+        {unauthorized && (
+          <div className="py-12 text-center" data-testid="order-unauthorized">
+            <Alert variant="destructive" className="max-w-md mx-auto mb-6">
+              <CircleAlert className="h-4 w-4" />
+              <AlertTitle>Cần đăng nhập</AlertTitle>
+              <AlertDescription>
+                Bạn cần đăng nhập tài khoản người mua để xem chi tiết đơn hàng
+                này.
+              </AlertDescription>
+            </Alert>
+            <Button
+              onClick={() =>
+                router.replace(
+                  `/login?returnTo=${encodeURIComponent(`/orders/${id}?page=${page}`)}`,
+                )
+              }
+            >
+              Đăng nhập ngay
+            </Button>
+          </div>
+        )}
+
+        {notFound && (
+          <div className="py-12 text-center" data-testid="order-not-found">
+            <Alert variant="destructive" className="max-w-md mx-auto mb-6">
+              <CircleAlert className="h-4 w-4" />
+              <AlertTitle>Không tìm thấy đơn hàng</AlertTitle>
+              <AlertDescription>
+                Đơn hàng không tồn tại hoặc bạn không có quyền xem đơn hàng này.
+              </AlertDescription>
+            </Alert>
+            <Button variant="outline" asChild>
+              <Link href="/">
+                <ArrowLeft className="mr-2 h-4 w-4" /> Về trang chủ
+              </Link>
+            </Button>
+          </div>
+        )}
+
+        {error && (
+          <div className="py-8" data-testid="order-error">
+            <Alert variant="destructive" className="mb-4">
+              <CircleAlert className="h-4 w-4" />
+              <AlertTitle>Có lỗi xảy ra</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+            <Button onClick={() => void refresh()}>
+              <RotateCw className="mr-2 h-4 w-4" /> Thử lại
+            </Button>
+          </div>
+        )}
+
+        {!loading && !unauthorized && !notFound && !error && order && (
+          <div className="space-y-6" data-testid="order-detail">
+            {/* Page Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b pb-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Link
+                    href={`/shows/${order.showtime.id}/seats`}
+                    className="text-muted-foreground hover:text-foreground text-sm flex items-center gap-1"
+                  >
+                    <ArrowLeft className="h-4 w-4" /> Chọn ghế
+                  </Link>
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+                  Xem lại chi tiết đơn hàng
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Mã đơn hàng: <span className="font-mono">{order.id}</span>
+                </p>
+              </div>
+              <div>
+                {expired ? (
+                  <Badge
+                    variant="destructive"
+                    className="text-sm px-3 py-1 font-semibold"
+                    data-testid="status-expired-badge"
+                  >
+                    Đã hết hạn
+                  </Badge>
+                ) : order.status === "CANCELLED" ||
+                  order.status === "NEEDS_REVIEW" ? (
+                  <OrderBadge status={order.status} />
+                ) : order.status === "PAID" ? (
+                  <Badge
+                    variant="secondary"
+                    className="text-sm px-3 py-1 font-semibold"
+                  >
+                    Đã thanh toán
+                  </Badge>
+                ) : (
+                  <Badge
+                    variant="outline"
+                    className="text-sm px-3 py-1 font-semibold border-primary text-primary"
+                  >
+                    Chờ thanh toán
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            {/* Countdown / Expiration Notice */}
+            {expired ? (
+              <Alert
+                variant="destructive"
+                className="bg-destructive/10 border-destructive/30"
+                data-testid="expired-notice"
+              >
+                <CircleAlert className="h-5 w-5 text-destructive" />
+                <AlertTitle className="text-base font-bold">
+                  Đơn đã hết hạn thanh toán
+                </AlertTitle>
+                <AlertDescription className="text-sm mt-1">
+                  Thời gian giữ chỗ cho đơn hàng này đã kết thúc. Các ghế đã
+                  được giải phóng. Vui lòng quay lại sơ đồ ghế để chọn lại.
+                </AlertDescription>
+              </Alert>
+            ) : order.status === "PENDING" ||
+              order.status === "PENDING_PAYMENT" ? (
+              <div
+                className="flex items-center justify-between p-4 rounded-lg bg-secondary/50 border border-secondary text-secondary-foreground"
+                data-testid="countdown-banner"
+              >
+                <div className="flex items-center gap-3">
+                  <Clock3 className="h-6 w-6 text-primary animate-pulse" />
+                  <div>
+                    <strong className="block text-sm font-semibold">
+                      Thời gian còn lại để hoàn tất thanh toán
+                    </strong>
+                    <span className="text-xs text-muted-foreground">
+                      Ghế sẽ được giữ cho đến khi hết thời gian đếm ngược.
+                    </span>
+                  </div>
+                </div>
+                <div
+                  className="font-mono text-2xl font-bold text-primary tracking-wider"
+                  data-testid="countdown-timer"
+                >
+                  {countdownLabel(remaining)}
+                </div>
+              </div>
+            ) : null}
+
+            {/* Event & Showtime Summary */}
+            <div className="rounded-xl border bg-card p-5 shadow-sm space-y-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Ticket className="h-5 w-5 text-primary" />
+                Thông tin sự kiện & Suất diễn
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider block">
+                    Tên sự kiện
+                  </span>
+                  <strong className="text-base text-foreground font-semibold">
+                    {order.event.name}
+                  </strong>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider block">
+                    Thời gian suất diễn
+                  </span>
+                  <div className="flex items-center gap-1.5 mt-0.5 font-medium">
+                    <CalendarDays className="h-4 w-4 text-primary" />
+                    <span>{formatShowtime(order.showtime.startTime)}</span>
+                  </div>
+                </div>
+                <div className="md:col-span-2">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider block">
+                    Địa điểm tổ chức
+                  </span>
+                  <div className="flex items-center gap-1.5 mt-0.5 text-muted-foreground">
+                    <MapPin className="h-4 w-4 text-primary shrink-0" />
+                    <span>{order.event.location}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Seats Breakdown Table */}
+            <div className="rounded-xl border bg-card overflow-hidden shadow-sm">
+              <div className="p-4 bg-muted/40 border-b flex items-center justify-between">
+                <h2 className="text-lg font-semibold flex items-center gap-2">
+                  <Armchair className="h-5 w-5 text-primary" />
+                  Danh sách ghế đã chọn ({order.items.length})
+                </h2>
+                <span className="text-xs text-muted-foreground">
+                  Đơn giá niêm yết từ ban tổ chức
+                </span>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16 text-center">STT</TableHead>
+                    <TableHead>Vị trí ghế</TableHead>
+                    <TableHead>Hạng ghế</TableHead>
+                    <TableHead className="text-right">Đơn giá</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {order.items.map((item, idx) => (
+                    <TableRow
+                      key={item.id}
+                      data-testid={`order-seat-${item.seatId}`}
+                    >
+                      <TableCell className="text-center text-muted-foreground font-mono text-xs">
+                        {idx + 1}
+                      </TableCell>
+                      <TableCell className="font-semibold">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary font-mono text-xs text-secondary-foreground">
+                          {item.label}
+                        </span>
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          (Hàng {item.row}, Số {item.seatNumber})
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className="font-normal text-xs"
+                        >
+                          {item.tierName}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right font-medium">
+                        {formatVnd(item.unitPrice)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <Separator />
+              {!expired && (order.status === "PENDING" || order.status === "PENDING_PAYMENT") && (
+                <section className="space-y-3 rounded-md border p-4" aria-labelledby="order-coupon-title">
+                  <div>
+                    <h2 id="order-coupon-title" className="font-semibold">Mã giảm giá</h2>
+                    <p className="text-sm text-muted-foreground">Mỗi đơn áp dụng tối đa một mã.</p>
+                  </div>
+                  {couponError && <p role="alert" className="text-sm text-destructive">{couponError}</p>}
+                  {couponMessage && <p role="status" className="text-sm">{couponMessage}</p>}
+                  {order.couponCode ? (
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <p>Đang áp dụng <strong>{order.couponCode}</strong>.</p>
+                      <Button type="button" variant="outline" onClick={() => void removeCoupon()} disabled={couponBusy || order.latestPayment?.status === "INITIATED"}>
+                        {couponBusy ? "Đang cập nhật…" : "Bỏ mã"}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <Input aria-label="Mã giảm giá" value={couponCode} onChange={(event) => setCouponCode(event.target.value.toUpperCase())} maxLength={32} autoComplete="off" disabled={couponBusy || order.latestPayment?.status === "INITIATED"} />
+                      <Button type="button" onClick={() => void applyCoupon()} disabled={couponBusy || !couponCode.trim() || order.latestPayment?.status === "INITIATED"}>
+                        {couponBusy ? "Đang áp dụng…" : "Áp dụng mã"}
+                      </Button>
+                    </div>
+                  )}
+                  {order.latestPayment?.status === "INITIATED" && <p className="text-sm text-muted-foreground">Đang có giao dịch chờ xác nhận; chưa thể đổi mã hoặc tổng tiền.</p>}
+                </section>
+              )}
+              <div className="space-y-1 p-5 text-right text-sm">
+                <p>Tạm tính: <strong>{formatVnd(order.subtotalAmount)}</strong></p>
+                <p>Giảm giá: <strong>{formatVnd(order.discountAmount)}</strong></p>
+              </div>
+              <div className="p-5 bg-card flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="text-sm text-muted-foreground">
+                  Tổng cộng:{" "}
+                  <strong className="text-foreground">
+                    {order.items.length} vé
+                  </strong>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider block">
+                    Tổng tiền thanh toán
+                  </span>
+                  <span
+                    className="text-2xl sm:text-3xl font-extrabold text-primary"
+                    data-testid="total-amount"
+                  >
+                    {formatVnd(order.totalAmount)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {["PAID", "CANCELLED"].includes(order.status) && <OrderCancellation id={order.id} />}
+            <OrderAudit id={order.id} />
+            {order.status === "PAID" && (
+              <>
+                <SignedTickets key={order.id} orderId={order.id} />
+                <OrderTickets orderId={order.id} />
+              </>
+            )}
+
+            {/* S-24: Failed previous payment notice */}
+            {!expired &&
+              (order.status === "PENDING" ||
+                order.status === "PENDING_PAYMENT") &&
+              order.latestPayment?.status === "FAILED" && (
+                <Alert
+                  className="mt-4 border-amber-300 bg-amber-50 text-amber-900"
+                  data-testid="payment-retry-alert"
+                >
+                  <CircleAlert className="h-4 w-4 text-amber-600" />
+                  <AlertTitle>Thanh toán lần trước không thành công</AlertTitle>
+                  <AlertDescription>
+                    Thanh toán lần trước không thành công, ghế của bạn vẫn được
+                    giữ.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+            {/* S-24: Initiated payment warning */}
+            {!expired &&
+              (order.status === "PENDING" ||
+                order.status === "PENDING_PAYMENT") &&
+              order.latestPayment?.status === "INITIATED" && (
+                <Alert
+                  className="mt-4 border-blue-300 bg-blue-50 text-blue-900"
+                  data-testid="payment-pending-alert"
+                >
+                  <CircleAlert className="h-4 w-4 text-blue-600" />
+                  <AlertTitle>Giao dịch đang chờ xác nhận</AlertTitle>
+                  <AlertDescription>
+                    Giao dịch đang chờ đối soát. Vui lòng không thanh toán lại
+                    để tránh bị trừ tiền hai lần.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+            {/* Pay Error Alert */}
+            {payError && (
+              <Alert
+                variant="destructive"
+                className="mt-4"
+                data-testid="pay-error-alert"
+              >
+                <CircleAlert className="h-4 w-4" />
+                <AlertTitle>Lỗi thanh toán</AlertTitle>
+                <AlertDescription>{payError}</AlertDescription>
+              </Alert>
+            )}
+
+            {/* Actions */}
+            <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 pt-4 border-t">
+              <Button
+                variant="outline"
+                asChild
+                className="w-full sm:w-auto"
+                disabled={paying}
+              >
+                <Link href={`/shows/${order.showtime.id}/seats`}>
+                  <RotateCw className="mr-2 h-4 w-4" />
+                  {expired ? "Chọn lại ghế mới" : "Thay đổi ghế"}
+                </Link>
+              </Button>
+
+              {/* Pay button is rendered ONLY when pending and not expired */}
+              {!expired &&
+                (order.status === "PENDING" ||
+                  order.status === "PENDING_PAYMENT") && (
+                  <Button
+                    size="lg"
+                    className="w-full sm:w-auto min-w-[200px] text-base font-semibold shadow-md"
+                    onClick={defaultPayHandler}
+                    disabled={paying || paymentOutcomeUnknown || order.latestPayment?.status === "INITIATED"}
+                    data-testid="pay-button"
+                  >
+                    {paying ? (
+                      <>
+                        <RotateCw className="mr-2 h-4 w-4 animate-spin" />
+                        Đang kết nối cổng thanh toán...
+                      </>
+                    ) : paymentOutcomeUnknown || order.latestPayment?.status === "INITIATED" ? (
+                      "Đang chờ đối soát"
+                    ) : order.latestPayment?.status === "FAILED" ? (
+                      "Thanh toán lại"
+                    ) : (
+                      "Thanh toán ngay"
+                    )}
+                  </Button>
+                )}
+            </div>
+          </div>
+        )}
+      </main>
+    </PublicLayout>
+  );
 }

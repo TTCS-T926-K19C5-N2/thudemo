@@ -1,0 +1,69 @@
+{
+  "runId": "20261023T132000-demo-handoff",
+  "profile": "prepared-file-tree with isolated local demo PostgreSQL/Redis/Mailpit",
+  "route": "/",
+  "browser": {
+    "desktop": {
+      "viewport": "1259x706",
+      "publicUnauthenticated": true,
+      "catalogItemsAfterScroll": 42,
+      "pagesLoaded": 4,
+      "pageSizes": [
+        12,
+        12,
+        12,
+        6
+      ],
+      "noHorizontalOverflowObserved": true
+    },
+    "mobile": {
+      "viewport": "520x742",
+      "publicUnauthenticated": true,
+      "initialPageItems": 12,
+      "afterScrollItems": 24,
+      "pagesLoaded": 2,
+      "noHorizontalOverflowObserved": true
+    },
+    "loading": "The component hides the loaded-page count while the initial page is loading. Initial skeleton resolved to 12 results; reload restored the list, and the current browser session reached 42 results across 4 pages. The short transient state was not slowed or fault-injected.",
+    "empty": "Search empty-state was observed before this code change; this patch preserves the existing empty state.",
+    "error": "Load-more error was not fault-injected in this UI slice.",
+    "screenshotsObserved": [
+      "desktop list and appended pages",
+      "mobile list and appended page",
+      "mobile public showtime detail"
+    ],
+    "screenshotFilesPersisted": false
+  },
+  "publicCatalogApi": {
+    "httpStatus": 200,
+    "totalCount": 42,
+    "pages": 4,
+    "returnedItems": 42,
+    "uniqueShowtimeIds": 42,
+    "sortedAscending": true,
+    "demoReferenceShowtimes": 40,
+    "sellableDemoShowtimes": 2
+  },
+  "publicSaleDetail": {
+    "event": "Bệnh sĩ",
+    "startTime": "2026-10-23T15:00:00+07:00",
+    "venue": "Nhà hát Kịch Việt Nam — Số 1 Tràng Tiền, Hà Nội",
+    "minimumPriceVnd": 250000,
+    "seatSelectionLinkVisible": true,
+    "viewport": "mobile"
+  },
+  "demoReferenceDirectDetail": {
+    "route": "/shows/c64afe9a-0f24-4a7c-be8a-4c59f3ee3bf9",
+    "explicitlyMarkedReferenceOnly": true,
+    "referenceMapLinkVisible": true,
+    "bookingApplicable": false,
+    "originalS08AC02StrictExpectation": "Draft/closed details show not-on-sale notice and no map.",
+    "disposition": "NEEDS_DECISION: demo scope preserves full view-only reference schedule, while source AC expects draft showtimes not exposed. No booking route/transaction was enabled for this reference fixture."
+  },
+  "sourceChange": "EventCatalog now appends the next cursor page when the bottom sentinel intersects; explicit Tải thêm button remains as a manual/accessibility fallback.",
+  "limits": [
+    "No database writes or fixture changes in this catalog slice.",
+    "Local only; observed latency is not the 200-showtime/30-second-cache production NFR workload.",
+    "Screenshots were observed through the browser tool but not persisted as files."
+  ]
+}

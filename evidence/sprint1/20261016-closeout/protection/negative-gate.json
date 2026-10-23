@@ -1,0 +1,11 @@
+{
+  "result": "PASS for observed protected-branch negative gate",
+  "probePR": 95,
+  "head": "3051bba97a2f08171f6a780ae8fd486fc595b031",
+  "lint": "Real Next internal-anchor error at apps/web/src/sprint1-ci-lint-probe.tsx:3:10; required=true, FAILURE",
+  "otherFourRequiredChecks": "SUCCESS",
+  "mergeState": "BLOCKED",
+  "closedUnmerged": true,
+  "limitation": "Human approval also missing. No merge endpoint invoked or approval fabricated; no claim of isolating GitHub internal blocking cause independently of review. Policy enforces both required lint and review, including admins.",
+  "developMainUntouchedByBrokenCommit": true
+}

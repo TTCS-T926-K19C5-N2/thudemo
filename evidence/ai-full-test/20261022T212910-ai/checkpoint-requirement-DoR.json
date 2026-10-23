@@ -1,0 +1,157 @@
+[
+  {
+    "id": "GOV-10",
+    "requirement_id": "DoR",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C11"
+    },
+    "title": "Đủ nhỏ để Done trong 1 sprint",
+    "original_requirement": "Đủ nhỏ để Done trong 1 sprint",
+    "blocking_rule": "Có",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "Đủ nhỏ để Done trong 1 sprint"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "GOV-11",
+    "requirement_id": "DoR",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C12"
+    },
+    "title": "Dependency ngoài đã có cam kết (ví dụ: tài khoản sandbox thanh toán đã có, hoặc đã chấp nhận dùng S-19)",
+    "original_requirement": "Dependency ngoài đã có cam kết (ví dụ: tài khoản sandbox thanh toán đã có, hoặc đã chấp nhận dùng S-19)",
+    "blocking_rule": "Có",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "Dependency ngoài đã có cam kết (ví dụ: tài khoản sandbox thanh toán đã có, hoặc đã chấp nhận dùng S-19)"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "GOV-12",
+    "requirement_id": "DoR",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C13"
+    },
+    "title": "Có AC viết dạng Giả sử / Khi / Thì (hướng dẫn)",
+    "original_requirement": "Có AC viết dạng Giả sử / Khi / Thì (hướng dẫn)",
+    "blocking_rule": "Không",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "Có AC viết dạng Giả sử / Khi / Thì (hướng dẫn)"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "GOV-13",
+    "requirement_id": "DoR",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C14"
+    },
+    "title": "Đã ước lượng lại story point khi lên tier Ready, không dùng số thô (hướng dẫn)",
+    "original_requirement": "Đã ước lượng lại story point khi lên tier Ready, không dùng số thô (hướng dẫn)",
+    "blocking_rule": "Không",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "Đã ước lượng lại story point khi lên tier Ready, không dùng số thô (hướng dẫn)"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "GOV-14",
+    "requirement_id": "DoR",
+    "kind": "GOVERNANCE",
+    "group": "Điều kiện nghiệm thu",
+    "tier": "GOVERNANCE",
+    "priority": "Theo quy định gốc",
+    "readiness": "SPECIFIED",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "DoD-DoR",
+      "range": "C15"
+    },
+    "title": "Team hiểu story nói gì mà không cần hỏi lại người viết (hướng dẫn)",
+    "original_requirement": "Team hiểu story nói gì mà không cần hỏi lại người viết (hướng dẫn)",
+    "blocking_rule": "Không",
+    "steps": [
+      "Đối chiếu hồ sơ đúng revision và môi trường với điều kiện gốc.",
+      "Áp dụng quy tắc xung đột tài liệu trong mục 2 của kế hoạch; không coi hướng dẫn DoR được ghi Không là gate bắt buộc."
+    ],
+    "expected": [
+      "Team hiểu story nói gì mà không cần hỏi lại người viết (hướng dẫn)"
+    ],
+    "evidence_required": [
+      "Receipt/CI/test/report được kiểm lại, hoặc quyết định ngoại lệ hợp lệ"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

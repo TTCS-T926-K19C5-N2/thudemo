@@ -1,4 +1,9 @@
 const BODY_LIMIT = 5 * 1024 * 1024;
+import {
+  verifyLoginPeer,
+  LOGIN_PEER_HEADER,
+  isPeerProtectedProxyPath,
+} from "shared/login-peer";
 
 export function upstreamUrl(base: string, path: string[], search: string): URL {
   const url = new URL(base);
@@ -66,6 +71,14 @@ export async function proxyApi(
       new URL(request.url).search,
     );
     const headers = new Headers();
+    if (
+      request.method === "POST" &&
+      isPeerProtectedProxyPath("/api/" + path.join("/"))
+    ) {
+      const attestation = request.headers.get(LOGIN_PEER_HEADER) ?? "";
+      verifyLoginPeer(attestation, process.env.AUTH_PROXY_SECRET);
+      headers.set(LOGIN_PEER_HEADER, attestation);
+    }
     for (const name of [
       "accept",
       "content-type",
@@ -77,16 +90,21 @@ export async function proxyApi(
       if (value) headers.set(name, value);
     }
     const body = await boundedBody(request);
+    const eventStream = request.headers
+      .get("accept")
+      ?.includes("text/event-stream");
     const upstream = await fetch(url, {
       method: request.method,
       headers,
       body: body?.buffer,
-      signal: AbortSignal.any([request.signal, AbortSignal.timeout(15000)]),
+      signal: eventStream
+        ? request.signal
+        : AbortSignal.any([request.signal, AbortSignal.timeout(15000)]),
       redirect: "manual",
       cache: "no-store",
     });
     const responseHeaders = new Headers({ "Cache-Control": "no-store" });
-    for (const name of ["content-type", "retry-after"]) {
+    for (const name of ["content-type", "content-disposition", "retry-after"]) {
       const value = upstream.headers.get(name);
       if (value) responseHeaders.set(name, value);
     }

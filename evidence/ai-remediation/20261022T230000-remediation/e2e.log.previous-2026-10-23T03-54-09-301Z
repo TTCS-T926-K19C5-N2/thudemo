@@ -1,0 +1,10 @@
+
+ RUN  v4.1.11 D:/Merge_2/Codegym/apps/api
+
+
+ Test Files  1 passed (1)
+      Tests  10 passed (10)
+   Start at  10:52:25
+   Duration  2.72s (transform 588ms, setup 39ms, import 1.36s, tests 1.16s, environment 0ms)
+
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.

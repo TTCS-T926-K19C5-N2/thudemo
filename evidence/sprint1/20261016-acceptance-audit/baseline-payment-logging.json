@@ -1,0 +1,20 @@
+{
+  "id": "F15",
+  "severity": "Medium",
+  "scope": "Later payment story baseline, outside Sprint1 acceptance; no PR-caused regression",
+  "path": "apps/api/src/payments/accountant-notifier.ts",
+  "lines": [
+    35,
+    43,
+    53,
+    61
+  ],
+  "base": "80f7a53d752d78ea6b65da3f8c6c08ca23e78176",
+  "candidate": "5b3f67bc343729dd6d87140b77af6536ec704086",
+  "identicalSha256": "fbbf810feb2c9d959e58150dcc055da5de4162498db1e2e9c3896c283b0bed85",
+  "reproduction": "Existing orders.e2e-spec.ts late/mismatch cases in88pass integration suite; private integration.log emits payment amount/reference via payload spread",
+  "expected": "Operational alert logs allowlisted code/requestID, no raw payment/PII payload",
+  "actual": "Payload amount, transaction/gateway references and configured accountant email logged",
+  "proposal": "Separate scoped redaction task/PR with canary log regression; preserve useful alert event and business record. No payment feature work performed in Sprint1",
+  "rawLogPublished": false
+}

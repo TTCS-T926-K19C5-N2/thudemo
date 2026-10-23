@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { PublicLayout } from "@/components/layout/product-layout";
 import { MockGatewayPayment } from "@/features/mock-gateway/mock-gateway-payment";
-import { upstreamUrl } from "@/lib/server/api-proxy";
 
 export interface MockGatewayPayPageProps {
   searchParams: Promise<{
@@ -17,19 +16,14 @@ export default async function MockGatewayPayPage({
 }: MockGatewayPayPageProps) {
   const isMockEnv =
     (process.env.PAYMENT_GATEWAY ?? "").toLowerCase() === "mock";
-
+  
   if (!isMockEnv) {
     try {
       const apiOrigin =
-        process.env.API_INTERNAL_URL ??
-        process.env.NEXT_PUBLIC_API_URL ??
-        "http://localhost:3001";
-      const statusRes = await fetch(
-        upstreamUrl(apiOrigin, ["mock-gateway", "status"], ""),
-        {
-          cache: "no-store",
-        },
-      );
+        process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+      const statusRes = await fetch(`${apiOrigin}/mock-gateway/status`, {
+        cache: "no-store",
+      });
       if (!statusRes.ok) {
         notFound();
       }
@@ -46,9 +40,7 @@ export default async function MockGatewayPayPage({
 
   return (
     <PublicLayout compact>
-      <main
-        style={{ padding: "2rem 1rem", maxWidth: "700px", margin: "0 auto" }}
-      >
+      <main style={{ padding: "2rem 1rem", maxWidth: "700px", margin: "0 auto" }}>
         <MockGatewayPayment
           orderId={orderId}
           amount={amount}

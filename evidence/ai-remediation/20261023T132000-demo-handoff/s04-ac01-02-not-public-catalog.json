@@ -1,0 +1,19 @@
+{
+  "case": "S-04-AC01.02",
+  "profile": "s1demo-384da3d43b41",
+  "fixture": {
+    "runId": "20261023T132000-demo-handoff-R33",
+    "name": "AI-TEST-R33-20261023T1515",
+    "id": "01021da6-03e5-4afe-8b4b-dcba1172616e"
+  },
+  "action": "Before cleanup, exact fixture title entered into public catalog UI search.",
+  "uiObserved": {
+    "search": "AI-TEST-R33-20261023T1515",
+    "resultCount": 0,
+    "emptyHeading": "Chưa có suất phù hợp",
+    "clearFilterVisible": true
+  },
+  "dbOracle": "organizer-create-draft-db-oracle.json",
+  "cleanup": "Fixture removed with exact-owner guard; public catalog query cleared; 42 original catalog showtimes visible after cleanup.",
+  "screenshot": "No screenshot persisted for this filtered state; accessibility-tree result captured in the verification log."
+}

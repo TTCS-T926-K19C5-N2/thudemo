@@ -1,0 +1,579 @@
+[
+  {
+    "id": "R00",
+    "title": "Đóng băng bằng chứng và xác nhận source trước khi sửa",
+    "dependencies": [],
+    "status": "VERIFIED",
+    "actual": "Đọc nguồn yêu cầu, chụp dirty tree trước sửa và tạo run-bound checkpoint. Cần sửa cách ghi fingerprint SHA-256 vì giá trị hiện lưu dạng byte array; snapshot ban đầu được giữ.",
+    "evidence": [
+      "dirty-tree-before.txt",
+      "tracked-diff-before.patch",
+      "untracked-before.txt",
+      "run-manifest.json"
+    ]
+  },
+  {
+    "id": "R01",
+    "title": "Tạo một profile kiểm thử đầy đủ, có kiểm tra cách ly",
+    "dependencies": [
+      "R00"
+    ],
+    "status": "VERIFIED",
+    "actual": "Profile compose riêng PostgreSQL/Redis/Mailpit được dựng trên loopback với cổng động; migrations trên DB rỗng thành công; DB/Redis/catcher health check đạt; API/Web chạy riêng, worker off. Không chạy vào DB chính.",
+    "evidence": [
+      "profile-manifest.json",
+      "migration-deploy.log",
+      "http-smoke-masked.json",
+      "smtp-catcher-before.json"
+    ]
+  },
+  {
+    "id": "R02",
+    "title": "Sửa lỗi hợp đồng hàm giải mã làm API không build",
+    "dependencies": [
+      "R00"
+    ],
+    "status": "VERIFIED",
+    "actual": "decryptActivation được export, regression AES-GCM đã thêm; API typecheck/build và suite mục tiêu qua.",
+    "evidence": [
+      "api-unit.log",
+      "build.log",
+      "typecheck.log"
+    ]
+  },
+  {
+    "id": "R03",
+    "title": "Hoàn thiện publication phía server, cache và quyền xem công khai",
+    "dependencies": [
+      "R02"
+    ],
+    "status": "IMPLEMENTED",
+    "actual": "Đã thêm service/route publication, kiểm quyền/đầu vào, kiểm showtime/giá, transaction/audit/cache invalidation và lọc public detail/seats/SSE theo trạng thái event. Unit mục tiêu qua; chưa browser/API workflow với fixture publication.",
+    "evidence": [
+      "api-unit.log",
+      "http-smoke-masked.json"
+    ]
+  },
+  {
+    "id": "R04",
+    "title": "Nối module core và kiểm migration/provider trên fresh app",
+    "dependencies": [
+      "R01",
+      "R02",
+      "R03"
+    ],
+    "status": "IMPLEMENTED",
+    "actual": "CoreCompletionModule được mount; worker reset opt-in; migration fresh DB áp dụng được; API boot/health thành công. Provider flow chưa tích hợp đủ.",
+    "evidence": [
+      "migration-deploy.log",
+      "api.log",
+      "http-smoke-masked.json"
+    ]
+  },
+  {
+    "id": "R05",
+    "title": "Sửa chứng thực IP từ proxy cho quên/đặt lại mật khẩu",
+    "dependencies": [
+      "R02"
+    ],
+    "status": "VERIFIED",
+    "actual": "Peer path canonicalization và forgot/reset peer protection đã thêm; proxy/component targeted suite 22 tests pass, gồm proxy specs.",
+    "evidence": [
+      "web-build.log"
+    ]
+  },
+  {
+    "id": "R06",
+    "title": "Sửa mail báo thành công giả và thống nhất reminder/reschedule",
+    "dependencies": [
+      "R04"
+    ],
+    "status": "IMPLEMENTED",
+    "actual": "Mail send chỉ báo thành công khi transport nhận; legacy reminder scheduler không tự khởi chạy worker thứ hai; pagination chunk regression thêm. API suite hiện qua; chưa gửi thử qua catcher sau sửa.",
+    "evidence": [
+      "api-unit.log",
+      "smtp-catcher-before.json"
+    ]
+  },
+  {
+    "id": "R07",
+    "title": "Khép 12 test API lỗi và loại nhiễu timer có chứng cứ",
+    "dependencies": [
+      "R03",
+      "R05",
+      "R06"
+    ],
+    "status": "VERIFIED",
+    "actual": "Full API unit suite on current source: 55 files / 447 tests pass. Full Web unit suite: 25 files / 155 tests pass. Deploy tests 20/20 pass. Root concurrent runner OOM was rerun package-by-package successfully.",
+    "evidence": "api-unit-final.log, web-unit-final.log, deploy-tests-final.log"
+  },
+  {
+    "id": "R08",
+    "title": "Nối giao diện các chức năng core vào trang hiện hữu",
+    "dependencies": [
+      "R03",
+      "R04",
+      "R05",
+      "R06"
+    ],
+    "status": "IMPLEMENTED",
+    "actual": "Publication, reschedule, mail admin and forgot-password flows have browser evidence on isolated app. A later rerun against S-62 fixture was correctly rejected for reschedule because that fixture already contains admission data; use a separate fixture for reschedule. Desktop/mobile catalogue, loading, empty and injected error evidence retained.",
+    "evidence": "browser-ui-smoke.json, publication-ui-success.png, reschedule-ui-success.png, admin-mail-failures-empty.png, catalog-empty-desktop.png, catalog-empty-mobile.png, catalog-loading-delayed-desktop.png, catalog-error-desktop.png"
+  },
+  {
+    "id": "R09",
+    "title": "Nghiệm thu lát cắt core đầu-cuối trước khi mở rộng",
+    "dependencies": [
+      "R01",
+      "R07",
+      "R08"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "Publication/reschedule/admin-mail browser paths passed in prior browser flow; S-62 real download also passed. Full core end-to-end, reset/mailer catcher and mock payment admission suite plus all baseline 404 cases remain outstanding. Browser core UI smoke now completes end-to-end after correcting only the test fixture and CSV assertion: catalog states, owner hide/re-publish, past/future reschedule, CSV download and admin mail empty-state were exercised. This supplies narrow UI slices, not full INT-12; password reset lifecycle, full mail retry/filter, purchase/payment journey and direct DB/API oracles for all core operations remain open.",
+    "evidence": [
+      "b",
+      "r",
+      "o",
+      "w",
+      "s",
+      "e",
+      "-",
+      "u",
+      "i",
+      "m",
+      "k",
+      ".",
+      "j",
+      "n",
+      ",",
+      " ",
+      "a",
+      "t",
+      "d",
+      "c",
+      "v",
+      "2",
+      "l",
+      "g",
+      "browser-ui-smoke.json",
+      "browser-ui-smoke-rerun-2.log",
+      "browser-ui-smoke-rerun-2.exitcode",
+      "publication-ui-success.png",
+      "reschedule-ui-success.png",
+      "attendance-csv-browser.json",
+      "attendance-csv-report-ui.png",
+      "admin-mail-failures-empty.png",
+      "browser-fixture-cleanup.json"
+    ]
+  },
+  {
+    "id": "R10",
+    "title": "Chạy baseline còn chưa kiểm, lập hàng đợi lỗi thật",
+    "dependencies": [
+      "R09"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "R10 remains IN_PROGRESS: execution-queue.json retains all 404 unchanged source rows, source cells, prerequisites, surfaces, steps, strategy and external-environment flags; Later/non-ready rows remain inventoried. The isolated Docker profile was restored and is healthy at the latest checkpoint; R19 browser and 5,000-ticket work ran against it, then run-owned API/Web were stopped while DB/Redis/Mailpit remain up. The broad baseline matrix is still incomplete and no DB fallback was used. Current AST inventory remains 113 API decorator declarations and 28 Next pages plus 1 route handler; this is source inventory, not runtime proof.",
+    "evidence": [
+      "e2e-after-s48.log",
+      "api-unit-after-s45.log",
+      "api-lint-after-remediation-tests.log",
+      "execution-queue.json",
+      "route-source-inventory.json"
+    ]
+  },
+  {
+    "id": "R11",
+    "title": "Chốt hợp đồng cho tính năng thiếu và truy vết quyết định cũ",
+    "dependencies": [
+      "R00"
+    ],
+    "status": "VERIFIED",
+    "actual": "D01, D02, D04 được người dùng chốt trực tiếp trong hội thoại 2026-10-23; D03 và DEC-18 được xác minh từ nguồn nội bộ. D06-D09 vẫn mở; không tự đặt policy.",
+    "evidence": [
+      "decision-register.json",
+      "decision-options.md"
+    ]
+  },
+  {
+    "id": "R12",
+    "title": "Hoàn thiện S-56: mã giảm giá theo sự kiện từ quản lý tới thanh toán",
+    "dependencies": [
+      "R11",
+      "R18"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "D01 được chốt. Đã triển khai schema/migration coupon, owner management UI/API, pricing snapshots, reservation/redemption, order apply/remove, zero-payable fulfillment và khóa với payment initiation. Current checks: API typecheck/build PASS; focused API tests 41/41 PASS; isolated PostgreSQL S-56 E2E 4/4 PASS gồm barrier race cap=1, floor/remove, zero-payable ticket/no payment và local fake-gateway amount 91; authenticated organizer browser at 535x756 created/listed coupon. Chưa chứng minh desktop viewport, buyer apply/remove UI, update/deactivate/negative expiry/API auth matrix, provider sandbox, refund/reversal allocation policy; local fake gateway is not provider proof. R18 and remaining R12 dependencies remain open. Additional component-level buyer UI check PASS (3 tests): apply/remove and server-refreshed totals, validation alert, and initiated-payment lock; this is mocked API component evidence only, not the required browser/PostgreSQL acceptance. Buyer browser apply/remove still needs live isolated profile. After adding the buyer component checks, full current Web regression is 27 files/157 tests PASS, typecheck/build/lint PASS (2 warnings, 0 errors). Additional organizer management service unit coverage: 5/5 targeted tests pass for update/deactivate, owner scope, invalid date/percent, and quota lower bound; mocked Prisma only. Full API unit after this source test: 59 files/465 tests PASS. Composite S-56-AC01 stays MISSING: live buyer browser/API/DB, HTTP authorization negative matrix, complete expiry cases, and refund/reversal allocation remain unproven. Latest 2026-10-23 live buyer browser/API/DB acceptance now passed: invalid coupon 400, apply 200 with subtotal 101/discount 10/payable 91, remove 200 restoring 101; independent DB oracle confirms RELEASED redemption. Reproduced/fixed BUG-S56-01: OrderHistoryService.current omitted coupon price snapshot fields; current API unit suite 60/468 and isolated coupon E2E 4/4 pass. Composite AC remains MISSING for owner/non-owner live HTTP matrix and expiry cases; D12 refund/report allocation still NEEDS_DECISION. Latest owner-management HTTP retest also passed on isolated PostgreSQL: owner list/update/deactivate 200, wrong organizer update 403, BUYER management create 403, invalid expiry 400; coupon inactive state visible. Focused service tests cover percent/quota/date bounds. Remaining coupon expiry boundary cases and D12 refund allocation decision are open. User D12 decision received: coupon discount must be allocated proportionally per ticket for partial refunds. Fractional-VND rounding/remainder policy is still pending; current cancellation code is whole-order only, so partial-refund behavior is not yet demonstrated. D12 fully resolved by user: proportional discount per ticket, floor shares and assign remainder one VND at a time in ascending ticket-code order. Implemented integer-safe allocation and applied it to coupon-aware financial reporting. New isolated PostgreSQL cancellation E2E verifies 250000 gross - 1 discount - 249999 refunded = 0 net; lifecycle-cancellation 6/6 PASS. Unit report tests 6/6; API unit 60 files/471 tests, API typecheck/build pass. Existing product only supports full-order cancellation/refund; partial refund/item selection remains unavailable and no policy was inferred.",
+    "evidence": [
+      "r12-api-typecheck3.log",
+      "r12-api-build-final.log",
+      "r12-api-unit-rerun3.log",
+      "e2e.log",
+      "r12-coupon-browser-ui.json",
+      "decision-register.json",
+      "r12-buyer-ui-unit.log",
+      "apps/web/src/features/order-review/order-review.coupon.spec.tsx",
+      "r22-web-unit-current.log",
+      "r22-web-typecheck-current.log",
+      "r22-web-build-current.log",
+      "r22-web-lint-current.log",
+      "r12-coupon-management-unit.log",
+      "apps/api/src/coupons/coupons.service.spec.ts",
+      "r22-api-unit-current.log",
+      "s56-buyer-browser.json",
+      "s56-browser-db-oracle.json",
+      "s56-buyer-coupon-applied-desktop.png",
+      "s56-buyer-coupon-removed-mobile.png",
+      "s56-browser-fixture-seed.log",
+      "s56-browser-fixture-verify.log",
+      "s56-browser-fixture-cleanup.log",
+      "apps/api/src/orders/order-history.service.ts",
+      "apps/api/src/orders/order-history.service.spec.ts",
+      "apps/api/scripts/ai-remediation-s56-browser-fixture.mjs",
+      "apps/api/scripts/ai-remediation-profile.mjs",
+      "apps/web/scripts/ai-remediation-s56-buyer-browser.mjs",
+      "r12-api-build-coupon-response.log",
+      "r12-api-unit-current.log",
+      "r12-api-unit-current.exitcode",
+      "r12-api-lint-current.log",
+      "r12-api-lint-current.exitcode",
+      "e2e.exitcode",
+      "bugs.md",
+      "bug-retest.md",
+      "r12-api-unit-post-d12.log",
+      "r12-api-unit-post-d12.exitcode",
+      "r12-api-typecheck-post-d12.log",
+      "r12-api-build-post-d12.log",
+      "r12-api-lint-post-d12.log",
+      "r12-full-api-e2e-after-d12.log",
+      "r12-full-api-e2e-after-d12.exitcode"
+    ]
+  },
+  {
+    "id": "R13",
+    "title": "Hoàn thiện S-59: đăng ký chờ hết vé và thông báo FIFO",
+    "dependencies": [
+      "R11",
+      "R06",
+      "R18"
+    ],
+    "status": "VERIFIED",
+    "actual": "D02/D14/D15 approved. Added additive waitlist schema/migration, authenticated buyer registration/status/unsubscribe API, sold-out UI, durable release signals for expired holds and expired orders, and opt-in worker. Final current-source API typecheck/build/lint PASS (lint has 21 repository warnings, none in waitlist files); Web typecheck/build PASS; seat-selection unit 3/3 PASS; isolated PostgreSQL/Mailpit E2E 6/6 PASS including concurrent duplicate join, two concurrent signal/delivery claims, exact N FIFO, Mailpit acceptance, 3 SMTP attempts, hold-expiry cleanup and order-expiry transaction. Mobile-sized browser registration and independent DB oracle PASS; HTTP health/home 200. Remaining: showtime-cancel/refund release, opt-out/erasure and buy-before-email race, desktop viewport and saved screenshot PNG, provider/staging/performance/device proof. Workers remain off. New 2026-10-23 cancellation/refund integration: a paid two-ticket buyer order was cancelled; isolated PostgreSQL confirmed releasedCount=2 and the real waitlist worker queued exactly two notices in FIFO join order without creating holds. Targeted lifecycle-cancellation E2E 7/7, typecheck PASS; lint exit 0 with existing repository warnings. S-59 AC01.06 is now PASS. Desktop persisted screenshot and cancelled-show suppression/opt-out/erasure/buy-before-email race remain open. Latest browser retest with the current local build saved desktop 1440x1000 and mobile 390x844 screenshots; FIFO/no-reservation copy, position 1, unsubscribe control, no email disclosure, no overflow/page errors passed. Independent DB oracle showed ACTIVE position 1, zero holds/unsold seats; exact fixture cleanup passed. Original S-59-AC01 and children .06/.07 now PASS. Supplemental R13 cancelled-show suppression, opt-out/erasure and purchase-before-email race remain open. Added plan-labelled supplementary cases: show-cancel suppression, unsubscribe, completed account erasure and seats sold before worker revalidation all PASS on isolated PostgreSQL/catcher. Exact purchase-after-check/before-SMTP-accept race is NEEDS_DECISION because D02 mandates notify/no hold and external SMTP cannot participate atomically; actual inbox ordering is not claimed. D16 is now APPROVED_USER: check seat availability immediately before SMTP and suppress if sold out. Implemented a final PostgreSQL recheck after initial worker validation; deterministic race E2E changed all seats to sold at the boundary and confirmed CANCELLED/SEATS_SOLD_BEFORE_NOTICE, ACTIVE FIFO entry, and no MailService.send invocation. Waitlist E2E 10/10; full API E2E 22 files/133 tests; API unit 60 files/471 tests; API typecheck/build/lint exit 0 (23 existing warnings). Scope is local isolated PostgreSQL/Mailpit. The external SMTP acceptance cannot be atomic with the database read; a sale after the last check is an inherent residual race, documented rather than claimed away.",
+    "evidence": [
+      "decision-register.json",
+      "migration-deploy.log",
+      "e2e.log",
+      "e2e.exitcode",
+      "r13-api-typecheck.log",
+      "r13-api-build.log",
+      "r13-api-lint.log",
+      "r13-web-typecheck.log",
+      "r13-web-build.log",
+      "r13-web-seat-unit.log",
+      "r13-http-smoke-masked.json",
+      "r13-waitlist-browser-ui.json",
+      "waitlist-browser-db-oracle.json",
+      "waitlist-browser-fixture-summary.json",
+      "waitlist-browser-fixture-cleanup.json",
+      "apps/api/src/waitlist/waitlist.service.ts",
+      "apps/api/test/waitlist.e2e-spec.ts",
+      "r13-cancel-waitlist-e2e.log",
+      "r13-cancel-waitlist-e2e.exitcode",
+      "apps/api/test/lifecycle-cancellation.e2e-spec.ts",
+      "r13-waitlist-desktop-browser.json",
+      "r13-waitlist-desktop.png",
+      "r13-waitlist-mobile.png",
+      "r13-waitlist-navigation-diagnostic.png",
+      "r13-show-cancel-and-refund-final.log",
+      "r13-waitlist-optout-erasure-race-final.log",
+      "decision-register.json",
+      "r13-waitlist-d16-final.log",
+      "r13-waitlist-d16-final.exitcode",
+      "r22-full-api-e2e-current-133.log",
+      "r13-waitlist-d16-api-unit.log",
+      "r13-waitlist-d16-typecheck.log",
+      "r13-waitlist-d16-build.log",
+      "r13-waitlist-d16-lint.log",
+      "apps/api/src/waitlist/waitlist.service.ts",
+      "apps/api/test/waitlist.e2e-spec.ts"
+    ]
+  },
+  {
+    "id": "R14",
+    "title": "Hoàn thiện S-60: xuất sơ đồ ghế PDF một trang",
+    "dependencies": [
+      "R01",
+      "R03",
+      "R08"
+    ],
+    "status": "VERIFIED",
+    "actual": "S-60 được nối vào showtime workspace; endpoint Organizer kiểm owner và lấy event/startTime/ghế/status trong một query PostgreSQL, tạo PDF vector một trang có font DejaVu Sans nhúng, timestamp/legend. Browser tải PDF từ app với owner; 403 cho admin không phải owner; trạng thái loading/error được kiểm; PDF fixture 2.002 ghế render đúng một trang (Poppler pdfinfo), bản render được kiểm trực quan. API unit 6/2.000 ghế, typecheck/build API và Web đều qua.",
+    "evidence": [
+      "seat-pdf-browser.json",
+      "seat-map-2002.pdf",
+      "seat-map-render-1.png",
+      "r14-pdfinfo.log",
+      "r14-pdf-unit.log",
+      "r14-browser.log",
+      "r14-proxy-test.log",
+      "r14-api-typecheck.log",
+      "r14-api-build.log",
+      "r14-web-typecheck.log",
+      "r14-web-build.log"
+    ]
+  },
+  {
+    "id": "R15",
+    "title": "Hoàn thiện S-62: xuất CSV khách vào cửa có xung đột",
+    "dependencies": [
+      "R01",
+      "R08",
+      "R19"
+    ],
+    "status": "VERIFIED",
+    "actual": "S-62 minimal-fields CSV wired through authenticated UI and API, downloaded in Chromium against isolated Postgres fixture, parsed against two synthetic tickets/conflict rows, UTF-8 BOM/header/seat/gate/conflict and no-PII columns checked. Fixture cleaned. API CSV unit tests 2 pass; build/typecheck were run after implementation.",
+    "evidence": "attendance-csv-browser.json, attendance-conflicts.csv, attendance-csv-report-ui.png, apps/api/src/lifecycle/attendance-csv.spec.ts, r15-web-build.log"
+  },
+  {
+    "id": "R16",
+    "title": "Bổ sung dữ liệu quan sát giữ chỗ bền để tính S-63",
+    "dependencies": [
+      "R11",
+      "R18"
+    ],
+    "status": "VERIFIED",
+    "actual": "Không cần migration: hold_sessions.createdAt lưu cohort start và append-only domain_audit ghi biến động hold_sessions/orders, gồm PAID; kiểm fixture sau khi xóa seat_holds xác nhận số liệu còn tái dựng được. Một session nhiều ghế không nhân cohort; session đúng from được tính, sentinel đúng to bị loại trừ; truy vấn chọn một order/session và MIN(PAID) để dedupe outcome. Năm lượt seed/cleanup: bốn fixture 52 audit rows và fixture cuối 54, tổng 262 synthetic snapshots còn trong DB remediation vì append-only trigger. Mutable fixture rows đã cleanup. Lưu ý schema audit không có run_id nên các residual rows không thể gắn ngược chính xác từng run sau khi private fixture map được xoá; snapshots chỉ có UUID/trạng thái, không có PII.",
+    "evidence": [
+      "apps/api/prisma/migrations/202610220001_sprint_foundations/migration.sql",
+      "apps/api/src/lifecycle/reports.service.ts",
+      "s63-independent-oracle.json",
+      "s63-fixture-cleanup.json"
+    ]
+  },
+  {
+    "id": "R17",
+    "title": "Hoàn thiện S-63: báo cáo bỏ giỏ, thời gian giữ tới trả",
+    "dependencies": [
+      "R16"
+    ],
+    "status": "VERIFIED",
+    "actual": "S-63 local slice: owner-scoped API cohort A (from inclusive/to exclusive, cutoff to), counts started/order/paid/expired/cancelled/pending, hold→order and hold→paid mean/p90 in seconds, UTC and dataAvailableFrom; UI in showtime workspace. Fixture 10 cohort session + 1 to-boundary sentinel/5 order/3 paid/5 expired/1 pending, one 2-seat session; inclusive from/exclusive to verified. Independent raw-PostgreSQL oracle matched counts and durations. Authenticated owner browser desktop/mobile verified loading, empty/no-sample, error and success; zero page errors and no horizontal overflow. Service unit enforces non-owner/invalid-range denial. Provider/staging scale NFR is not implied; S-63-NFR stays NEEDS_DECISION.",
+    "evidence": [
+      "s63-browser.json",
+      "s63-independent-oracle.json",
+      "s63-fixture-summary.json",
+      "s63-fixture-cleanup.json",
+      "s63-conversion-desktop.png",
+      "s63-conversion-mobile.png",
+      "s63-conversion-empty.png",
+      "s63-conversion-error.png",
+      "r17-api-report-focused.log",
+      "r17-api-unit.log",
+      "r17-api-build.log",
+      "r17-api-typecheck.log",
+      "r17-web-unit.log",
+      "r17-web-typecheck.log",
+      "r17-web-build.log"
+    ]
+  },
+  {
+    "id": "R18",
+    "title": "Kiểm và sửa mọi lỗi tiền/ghế, giữ baseline trước thêm coupon",
+    "dependencies": [
+      "R10"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "Current local evidence on isolated PostgreSQL: INT-03 passed 10×200 real simultaneous HTTP holds on 100 seats with 100 winners/100 conflicts per round and zero 429; INT-04 passed 50 barrier-released expiry/webhook races with NEEDS_REVIEW/LATE and no sold seat/hold; INT-02 passed same-order failed-payment retry and replay idempotency. INT-08 now passes the supplemental cancellation/refund/seat-reclaim/revoked-QR/audit/financial-reconciliation E2E (8/8 tests in lifecycle suite); refund uses approved local mock policy and only whole-order cancellation exists. D16 waitlist boundary race passes. API unit 60/471 and API E2E 22/134 were previously green; latest focused INT-08 E2E 8/8. Still open: INT-01 full buyer checkout/browser journey, INT-14 dependency-failure atomicity and UI recovery, remaining seat/map/price/clock/device cases, T-31 staging blocked and GOV-06 external evidence. Mock gateway is not provider proof. INT-14 gateway transport rejection now has isolated API/PostgreSQL repro (7/7 mock-gateway suite): HTTP 500 leaves order PENDING, held seat unsold, zero tickets, but one INITIATED payment attempt. Retry/reconciliation semantics are D17 PENDING_USER; buyer UI recovery is NOT_RUN. No gateway policy was inferred. D17 subsequently approved and implemented: explicit rejection is retryable; ambiguous initiation is blocked pending reconciliation. Isolated API/PostgreSQL E2E, full API suites, web tests/build/typecheck, and injected desktop/mobile browser UI verification are recorded under r18-d17 and d17-browser-verification. External gateway behavior remains unverified.",
+    "evidence": [
+      "seat-race-results.json",
+      "seat-race-aggregate.json",
+      "seat-race-environment.json",
+      "r18-webhook-e2e.log",
+      "e2e-current-wrapper.log",
+      "e2e-s15bulk.log",
+      "r18-s45-cancellation-e2e.log",
+      "r18-s45-cancellation-unit.log",
+      "s45-cancellation-browser.json",
+      "s45-cancellation-browser.log",
+      "s45-cancellation-fixture-cleanup.json",
+      "r20-s48-refund-retry-e2e.log",
+      "e2e-after-s48.log",
+      "r18-expiry-webhook-race.log",
+      "r18-cancel-webhook-race.log",
+      "r18-full-e2e.log",
+      "int02-mock-gateway-retry-e2e.log",
+      "int02-mock-gateway-retry-e2e.exitcode",
+      "int02-retry-payment-oracle.json",
+      "int02-fixture-cleanup.json",
+      "apps/api/test/mock-gateway.e2e-spec.ts",
+      "r22-full-api-e2e-current-134.log",
+      "int02-typecheck.log",
+      "int02-lint.log",
+      "int04-order-expiry-webhook-race.json",
+      "r18-int08-cancel-refund-revoked-qr-resale.log",
+      "r18-int08-cancel-refund-revoked-qr-resale.exitcode",
+      "apps/api/test/lifecycle-cancellation.e2e-spec.ts",
+      "r18-int14-gateway-failure-repro.log",
+      "r18-int14-gateway-failure-repro.exitcode",
+      "r18-d17-full-api-e2e-final.log",
+      "r18-d17-full-api-e2e-final.exitcode",
+      "r18-d17-payment-unit-final.log",
+      "r18-d17-payment-unit-final.exitcode",
+      "r18-d17-order-review-ui-unit.log",
+      "r18-d17-order-review-ui-unit.exitcode",
+      "d17-browser-verification.json",
+      "d17-payment-unknown-desktop.png",
+      "d17-payment-unknown-mobile.png",
+      "apps/api/src/payments/payments.service.ts",
+      "apps/web/src/features/order-review/order-review.tsx"
+    ]
+  },
+  {
+    "id": "R19",
+    "title": "Kiểm và sửa vé, admission và offline queue không mất dữ liệu",
+    "dependencies": [
+      "R10"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "INT-05/06/07/10 và R19 migration/offline slices có local browser/API/PostgreSQL evidence ở các checkpoint riêng. INT-16.01 hiện FAIL: transfer API 201 nhưng recipient có 0 vé và không có mail outbox (BUG-INT16-01). INT-16.02 (reschedule/cancel/erasure/scanner) và INT-15 còn NOT_RUN; camera/4G/staging cần môi trường ngoài. Không dùng suite cũ để suy PASS.",
+    "evidence": [
+      "r19-int05-checkpoint.json",
+      "r19-int06-checkpoint.json",
+      "r19-int07-checkpoint.json",
+      "int09-int10-checkpoint.json",
+      "int16-transfer-baseline-browser.json",
+      "int16-transfer-postgres-oracle.json",
+      "bugs.md"
+    ]
+  },
+  {
+    "id": "R20",
+    "title": "Hoàn thiện phần vận hành, riêng tư và báo cáo theo lỗi tái hiện",
+    "dependencies": [
+      "R10"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "S-45 local mock cancellation/refund and S-48 retry/manual resolution are verified. S-40 is now verified locally end to end: real isolated Redis/PostgreSQL/API FIFO, bypass guard, lease expiry/promotion plus authenticated desktop/mobile browser loading, admission, position and error states. NFR policy remains NEEDS_DECISION. Refund UNKNOWN, showtime-cancel batch, reconciliation/privacy/retention/backup, and quota/NAT remain unverified. Final assertion also verified that the expired admission owner receives HTTP 429 WAITING_ROOM_REQUIRED on both hold and order routes.",
+    "evidence": [
+      "r18-s45-cancellation-e2e.log",
+      "r18-s45-cancellation-unit.log",
+      "s45-cancellation-browser.json",
+      "s45-cancellation-browser.log",
+      "r20-s48-refund-retry-e2e.log",
+      "e2e-after-s48.log",
+      "api-lint-after-remediation-tests.log",
+      "r20-s40-waiting-room-e2e.log",
+      "e2e-after-s40.log",
+      "api-lint-after-s40.log",
+      "s40-waiting-room-browser.json",
+      "s40-waiting-room-browser.log",
+      "s40-browser-fixture-cleanup.json",
+      "web-unit-after-s40-ui.log",
+      "web-build-after-s40-ui.log",
+      "e2e-after-s40-final.log",
+      "api-lint-after-s40-final.log",
+      "r18-cancel-webhook-race.log",
+      "r18-full-e2e.log"
+    ]
+  },
+  {
+    "id": "R21",
+    "title": "Đóng kiểm UI/NFR và chuẩn bị nghiệm thu bên ngoài",
+    "dependencies": [
+      "R08",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R17",
+      "R18",
+      "R19",
+      "R20"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "Latest source regression evidence: API unit 60 files/468 tests PASS; Web unit 27/157 and deploy 20/20 PASS from previous full root run; root lint/typecheck/build previously PASS. Current API typecheck/build/lint PASS after BUG-S56-01 fix; current isolated coupon E2E 4/4 PASS; prior full isolated API E2E 22/126 PASS. Current S-56 buyer browser/API/DB local slice and R19 migration/offline local slices pass. Staging/provider, camera/4G, hosted CI/off-host and DEC-18 readback remain open. Latest full current-source regression after test-harness QR loop optimization: API 60 files/471 tests PASS, Web 27 files/157 tests PASS, deploy 20/20 PASS; root pnpm test PASS. Root typecheck/build/lint PASS. Full isolated API E2E 22 files/132 tests PASS; R13 cancellation 8/8 and waitlist 9/9 PASS. Two earlier root attempts retained with QR mutation test timing out at 5 seconds during package-parallel load; focused run and root run passed after reducing redundant replacements while still mutating every character position, test timeout 15s. No source AC status promoted from function-only verifier tests without UI/runtime evidence.",
+    "evidence": [
+      "typecheck-after-s40.log",
+      "api-build-after-s40.log",
+      "web-build-after-s40.log",
+      "api-unit-after-s40.log",
+      "web-unit-after-s40.log",
+      "deploy-tests-after-s40.log",
+      "api-lint-after-s40.log",
+      "e2e-after-s40.log",
+      "catalog-empty-profile.json",
+      "s40-waiting-room-browser.json",
+      "web-unit-after-s40-ui.log",
+      "web-lint-after-s40-ui.log",
+      "web-typecheck-after-s40-ui.log",
+      "web-build-after-s40-ui.log",
+      "r18-full-e2e.log",
+      "s63-browser.json",
+      "s63-independent-oracle.json",
+      "r18-cancel-webhook-race.log",
+      "r19-browser.json",
+      "r19-web-build.log",
+      "r19-web-typecheck.log",
+      "r19-web-full-unit.log",
+      "r19-web-full-lint.log",
+      "r22-web-unit-current.log",
+      "r22-web-typecheck-current.log",
+      "r22-web-build-current.log",
+      "r22-web-lint-current.log",
+      "r22-api-unit-current.log",
+      "r22-api-unit-current.exitcode",
+      "r12-coupon-management-unit.log",
+      "r22-root-test-current.log",
+      "r22-root-test-current.exitcode",
+      "r22-api-typecheck-current.log",
+      "r22-api-build-current.log",
+      "r22-api-lint-current.log",
+      "r22-root-test-final.log",
+      "r22-root-test-final-retry.log",
+      "r22-root-test-after-qr-optimization.log",
+      "r22-root-test-after-qr-optimization.exitcode",
+      "r22-root-typecheck-final.log",
+      "r22-root-build-final.log",
+      "r22-root-lint-final.log",
+      "r22-full-api-e2e-current-132.log",
+      "r13-show-cancel-and-refund-final.log",
+      "r13-waitlist-optout-erasure-race-final.log"
+    ]
+  },
+  {
+    "id": "R22",
+    "title": "Chạy lại404 case và các regression mới trên source cuối",
+    "dependencies": [
+      "R09",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R17",
+      "R18",
+      "R19",
+      "R20"
+    ],
+    "status": "IN_PROGRESS",
+    "actual": "Regression cũ có API unit 60 files/471 tests PASS, isolated API E2E 22 files/134 tests PASS, Web unit 27/157 và deploy 20/20 PASS theo các log/checkpoint tương ứng. Kết quả gốc 459 dòng có PASS 95, NOT_RUN 355, BLOCKED 4, MISSING 1, NEEDS_DECISION 4. Đã bổ sung INT-16.01 FAIL và INT-16.02 NOT_RUN; hiện 461 dòng: PASS 95, FAIL 1, NOT_RUN 356, BLOCKED 4, MISSING 1, NEEDS_DECISION 4. Chưa full regression từ exact latest source; đây là baseline gần nhất, không tuyên bố nghiệm thu toàn dự án.",
+    "evidence": [
+      "r22-full-api-e2e-current-134.log",
+      "r13-waitlist-d16-api-unit.log",
+      "web-unit-final.log",
+      "deploy-tests-final.log",
+      "results.json",
+      "int16-transfer-baseline-browser.json",
+      "int16-transfer-postgres-oracle.json"
+    ]
+  },
+  {
+    "id": "R23",
+    "title": "Bàn giao bản sửa và trạng thái nghiệm thu có thể kiểm chứng",
+    "dependencies": [
+      "R22"
+    ],
+    "status": "PLANNED",
+    "actual": null,
+    "evidence": []
+  }
+]

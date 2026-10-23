@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import type { Request, Response } from 'express';
+import { metrics } from '../monitoring/metrics.js';
 
 @Catch()
 export class WebhookSecurityFilter extends BaseExceptionFilter {
@@ -24,13 +25,22 @@ export class WebhookSecurityFilter extends BaseExceptionFilter {
       originalUrl.includes('/payments/webhook');
 
     if (isWebhookRoute) {
+      metrics.safe(() => metrics.producer.set({ subsystem: 'webhook' }, 1));
       const isSyntaxError =
         exception instanceof SyntaxError ||
         (exception as any)?.type === 'entity.parse.failed';
       const status =
         exception instanceof HttpException
           ? exception.getStatus()
-          : (exception as any)?.status ?? (exception as any)?.statusCode;
+          : ((exception as any)?.status ?? (exception as any)?.statusCode);
+      if (isSyntaxError || [400, 401, 403].includes(Number(status)))
+        metrics.rejectWebhook(
+          isSyntaxError || status === 400
+            ? 'schema'
+            : status === 403
+              ? 'permission'
+              : 'signature',
+        );
 
       // When payload is not valid JSON or fails body parsing on webhook endpoint
       if (isSyntaxError || status === HttpStatus.BAD_REQUEST) {

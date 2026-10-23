@@ -1,0 +1,19 @@
+{
+  "runId": "20261022T230000-remediation",
+  "environment": "Authenticated Chromium, current local build, isolated PostgreSQL profile; synthetic buyer/order/coupon only.",
+  "viewports": [
+    "1440x1000",
+    "390x844"
+  ],
+  "api": [
+    {
+      "method": "GET",
+      "path": "/api/orders/cc6d90e6-6287-4541-8dac-5942cd96a6d8",
+      "status": 200
+    }
+  ],
+  "pageErrors": [],
+  "checks": [],
+  "screenshots": [],
+  "failure": "locator.innerText: Error: strict mode violation: locator('main') resolved to 2 elements:\n    1) <main class=\"public-main\">…</main> aka getByRole('main').first()\n    2) <main class=\"order-review-container max-w-4xl mx-auto px-4 py-8\">…</main> aka getByText('← Đơn hàng của tôiarrow_back')\n\nCall log:\n\u001b[2m  - waiting for locator('main')\u001b[22m\n"
+}

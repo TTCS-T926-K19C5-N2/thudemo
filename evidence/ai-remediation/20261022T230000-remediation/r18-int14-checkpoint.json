@@ -1,0 +1,23 @@
+{
+  "run_id": "20261022T230000-remediation",
+  "updated_at_local": "2026-10-23T04:10:09.336Z",
+  "scope": "R18 INT-14 gateway-initiation failure containment and unresolved retry semantics",
+  "coverage_total": 439,
+  "coverage": "BLOCKED=4, MISSING=1, NEEDS_DECISION=6, NOT_RUN=361, PASS=67",
+  "latest_gateway_e2e": "1 file / 7 tests PASS on isolated PostgreSQL with local mock gateway",
+  "observed": "HTTP 500; order PENDING; held seat unsold; zero tickets; payment attempt remains INITIATED",
+  "decision": "D17 PENDING_USER; retry/reconciliation policy not inferred",
+  "remaining": [
+    "INT-14 browser recovery",
+    "INT-01 full checkout UI",
+    "INT-14 other dependency outage/restart cases",
+    "INT-14.02 after decision",
+    "remaining R18 cases"
+  ],
+  "overall_remediation": "IN_PROGRESS",
+  "evidence": [
+    "r18-int14-gateway-failure-repro.log",
+    "r18-int14-gateway-failure-repro.exitcode",
+    "apps/api/test/mock-gateway.e2e-spec.ts"
+  ]
+}

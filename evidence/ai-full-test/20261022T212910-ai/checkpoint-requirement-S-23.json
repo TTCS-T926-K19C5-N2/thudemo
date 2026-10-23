@@ -1,0 +1,160 @@
+[
+  {
+    "id": "S-23-AC01",
+    "requirement_id": "S-23",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Đơn hàng quá hạn thanh toán thì nhả ghế",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L25"
+    },
+    "original_requirement": "Giả sử đơn ở trạng thái chờ quá thời hạn thanh toán, Khi job chạy, Thì đơn chuyển sang hết hạn và ghế trở lại trống trong cùng một giao dịch",
+    "fixture": "Order pending quá hạn, paid và pending sát ranh; webhook đúng ký.",
+    "surfaces": "Worker order-expiry",
+    "code_candidates": "apps/api/src/orders/order-expiry.scheduler.ts; apps/api/src/orders/order-expiration.ts",
+    "test_candidates": "order-expiry.spec.ts; payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: đơn ở trạng thái chờ quá thời hạn thanh toán.",
+      "Thực hiện trên Worker order-expiry: job chạy.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Chạy job lặp, chỉ pending quá hạn nhả ghế nguyên tử. Cho job và webhook tranh cùng order tại barrier, lặp nhiều lần; cuối cùng PAID+SOLD hoặc EXPIRED+nhả ghế+cần hoàn, không trạng thái lửng.",
+    "expected": [
+      "đơn chuyển sang hết hạn và ghế trở lại trống trong cùng một giao dịch"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-23-AC02",
+    "requirement_id": "S-23",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Đơn hàng quá hạn thanh toán thì nhả ghế",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L25"
+    },
+    "original_requirement": "Giả sử đơn đã thanh toán, Khi job chạy nhiều lần, Thì đơn và ghế không bị đụng tới",
+    "fixture": "Order pending quá hạn, paid và pending sát ranh; webhook đúng ký.",
+    "surfaces": "Worker order-expiry",
+    "code_candidates": "apps/api/src/orders/order-expiry.scheduler.ts; apps/api/src/orders/order-expiration.ts",
+    "test_candidates": "order-expiry.spec.ts; payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: đơn đã thanh toán.",
+      "Thực hiện trên Worker order-expiry: job chạy nhiều lần.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Chạy job lặp, chỉ pending quá hạn nhả ghế nguyên tử. Cho job và webhook tranh cùng order tại barrier, lặp nhiều lần; cuối cùng PAID+SOLD hoặc EXPIRED+nhả ghế+cần hoàn, không trạng thái lửng.",
+    "expected": [
+      "đơn và ghế không bị đụng tới"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-23-AC03",
+    "requirement_id": "S-23",
+    "kind": "AC",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Đơn hàng quá hạn thanh toán thì nhả ghế",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "L25"
+    },
+    "original_requirement": "Giả sử webhook thành công tới đúng lúc job đang huỷ đơn đó, Khi cả hai xong, Thì chỉ một bên thắng: hoặc đơn đã trả và ghế đã bán, hoặc đơn hết hạn và được đánh dấu cần hoàn tiền — không có trạng thái lửng",
+    "fixture": "Order pending quá hạn, paid và pending sát ranh; webhook đúng ký.",
+    "surfaces": "Worker order-expiry",
+    "code_candidates": "apps/api/src/orders/order-expiry.scheduler.ts; apps/api/src/orders/order-expiration.ts",
+    "test_candidates": "order-expiry.spec.ts; payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Chuẩn bị đúng trạng thái: webhook thành công tới đúng lúc job đang huỷ đơn đó.",
+      "Thực hiện trên Worker order-expiry: cả hai xong.",
+      "Kiểm kết quả UI/API và dữ liệu liên quan, lưu bằng chứng trước/sau; không chỉ kiểm HTTP 200."
+    ],
+    "execution_strategy": "Chạy job lặp, chỉ pending quá hạn nhả ghế nguyên tử. Cho job và webhook tranh cùng order tại barrier, lặp nhiều lần; cuối cùng PAID+SOLD hoặc EXPIRED+nhả ghế+cần hoàn, không trạng thái lửng.",
+    "expected": [
+      "chỉ một bên thắng: hoặc đơn đã trả và ghế đã bán, hoặc đơn hết hạn và được đánh dấu cần hoàn tiền — không có trạng thái lửng"
+    ],
+    "evidence_required": [
+      "Ảnh/video nếu có UI",
+      "HTTP request/response đã che thông tin",
+      "Oracle DB/read-only trước và sau nếu có ghi dữ liệu",
+      "Log gắn run-id/source fingerprint"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  },
+  {
+    "id": "S-23-NFR",
+    "requirement_id": "S-23",
+    "kind": "NFR",
+    "group": "Thanh toán",
+    "tier": "Ready",
+    "priority": "Must",
+    "sprint": "3",
+    "readiness": "SPECIFIED",
+    "title": "Đơn hàng quá hạn thanh toán thì nhả ghế — phi chức năng",
+    "source": {
+      "path": "D:\\BookSys\\Bán vé sự kiện có sơ đồ ghế.xlsx",
+      "sheet": "Backlog",
+      "range": "N25"
+    },
+    "original_requirement": "huỷ đơn và nhả ghế nằm trong một giao dịch; job chạy lặp lại được",
+    "fixture": "Order pending quá hạn, paid và pending sát ranh; webhook đúng ký.",
+    "surfaces": "Worker order-expiry",
+    "code_candidates": "apps/api/src/orders/order-expiry.scheduler.ts; apps/api/src/orders/order-expiration.ts",
+    "test_candidates": "order-expiry.spec.ts; payments-idempotency.e2e-spec.ts",
+    "steps": [
+      "Chạy job lặp, chỉ pending quá hạn nhả ghế nguyên tử. Cho job và webhook tranh cùng order tại barrier, lặp nhiều lần; cuối cùng PAID+SOLD hoặc EXPIRED+nhả ghế+cần hoàn, không trạng thái lửng.",
+      "Đọc từng điều kiện NFR và đo/kiểm độc lập; đánh dấu từng mệnh đề, tách thành subcase có ID con nếu cần.",
+      "Ghi workload, thời gian, môi trường, số mẫu và oracle; điều chưa được chốt không tự gán ngưỡng."
+    ],
+    "expected": [
+      "huỷ đơn và nhả ghế nằm trong một giao dịch; job chạy lặp lại được"
+    ],
+    "evidence_required": [
+      "Số đo thô hoặc trích đoạn kiểm tra đúng phạm vi",
+      "Kết luận từng mệnh đề NFR",
+      "Bằng chứng thiết bị thật nếu NFR yêu cầu"
+    ],
+    "status": "NOT_RUN",
+    "actual": null,
+    "evidence_files": [],
+    "approved_override": null
+  }
+]

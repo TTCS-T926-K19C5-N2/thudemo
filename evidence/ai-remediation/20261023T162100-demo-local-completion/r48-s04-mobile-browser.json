@@ -1,0 +1,31 @@
+{
+  "runTag": "R48 QA fixture 20261023101000",
+  "profile": "s1demo-384da3d43b41",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "pageErrors": [],
+  "assertions": {
+    "mobilePastStartRejected": {
+      "passed": true,
+      "invalidValue": "2020-01-01T19:00",
+      "serverRequests": []
+    },
+    "mobileDuplicateShowtimeSaved": {
+      "passed": true,
+      "warning": "Đã có suất diễn cùng giờ; vẫn lưu vì sự kiện có thể diễn ở nhiều phòng.",
+      "showtimePostStatuses": [
+        201,
+        201
+      ]
+    },
+    "mobileCrossOwnerDenied": {
+      "passed": true,
+      "status": 403
+    },
+    "mobileNoHorizontalOverflow": true
+  },
+  "eventId": "37afb928-3ba8-4129-ac9f-c9cd7c0e310c",
+  "completed": true
+}

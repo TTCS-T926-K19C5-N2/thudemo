@@ -1,0 +1,25 @@
+{
+  "initial": {
+    "scanId": "8abeb814-6c8d-49b2-af65-8cf7a4ad310c",
+    "finding": "P2 shared-proxy IP lockout",
+    "report": "C:/Users/Admin/.codex/state/plugins/codex-security/scans/thudemo-sprint1-review-20261015/81d1dd9d8f453b32ed0c6956399e5600f71a32d6_20261015T080708Z_5j0eer2d/report.md"
+  },
+  "followup": {
+    "scanId": "fe95f5d7-8cfb-40d3-a2d2-e44a1bcf9657",
+    "report": "C:/Users/Admin/.codex/state/plugins/codex-security/scans/thudemo-sprint1-review-20261015/81d1dd9d8f453b32ed0c6956399e5600f71a32d6_20261015T082732Z_1rsbvh92/report.md",
+    "newReportableFindings": 0,
+    "immutableSnapshot": "4519339ccd84652be46eb2956fafb02ea7daa1ed8a05ddec8dbbc29b2fc73455",
+    "postSnapshot": "Nine operational packaging/guard files reviewed separately with exact contents/digests in managed artifacts/03_coverage/post-snapshot-source-review.json; plugin changed-tree warning retained"
+  },
+  "parentVerifiedAfterScan": [
+    "Actual Docker web custom entry and login smoke passed",
+    "PowerShell full start READY",
+    "Final browser15 checks and supplemental5 checks"
+  ],
+  "limits": [
+    "Cloud edge source IP/TLS and Redis durability not verified",
+    "Dependency audit12 signals not clean",
+    "Not independent human approval",
+    "No publication clearance"
+  ]
+}
